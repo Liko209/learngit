@@ -227,8 +227,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     if (this.isMyselfAtMentioned(post)) {
       if (isOne2One) {
         title = await i18nT('notification.mentionedOne2One', translationArgs);
+      } else {
+        title = await i18nT('notification.mentioned', translationArgs);
       }
-      title = await i18nT('notification.mentioned', translationArgs);
     } else if (isActivity) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
