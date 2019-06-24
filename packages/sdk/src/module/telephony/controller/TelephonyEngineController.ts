@@ -185,6 +185,10 @@ class TelephonyEngineController {
       });
     }
   }
+
+  getRingerDevicesList() {
+    return this.mediaDevicesController.getRingerDevicesList();
+  }
 }
 
 export { TelephonyEngineController };

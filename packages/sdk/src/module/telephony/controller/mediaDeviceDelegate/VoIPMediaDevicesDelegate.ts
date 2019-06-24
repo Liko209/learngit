@@ -11,15 +11,31 @@ import { TelephonyGlobalConfig } from '../../config/TelephonyGlobalConfig';
 import { TELEPHONY_GLOBAL_KEYS } from '../../config/configKeys';
 import { DeviceSyncManger } from './DeviceSyncManger';
 import { LastUsedDeviceManager } from './LastUsedDeviceManager';
-import { SOURCE_TYPE, IStorage } from './types';
+import { SOURCE_TYPE, IStorage, RINGER_ADDITIONAL_TYPE } from './types';
 import { notificationCenter } from 'sdk/service';
 
 const LOG_TAG = '[MediaDevicesDelegate]';
 const DEFAULT_VOLUME = 0.5;
-
+const ringerStorage: IStorage = {
+  get: () => TelephonyGlobalConfig.getCurrentRinger(),
+  set: (deviceId: string) => TelephonyGlobalConfig.setCurrentRinger(deviceId),
+  on: handleChanged => {
+    const finalCallback = (type: number, value: string) => handleChanged(value);
+    TelephonyGlobalConfig.on(
+      TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+      finalCallback,
+    );
+    return () =>
+      TelephonyGlobalConfig.off(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+        finalCallback,
+      );
+  },
+};
 export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneSyncManager: DeviceSyncManger;
   private _speakerSyncManager: DeviceSyncManger;
+  private _ringerSyncManager: DeviceSyncManger;
   constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
     const speakerStorage: IStorage = {
       get: () => TelephonyGlobalConfig.getCurrentSpeaker(),
@@ -100,6 +116,24 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
           TelephonyGlobalConfig.setUsedSpeakerHistory(value),
       }),
     );
+    this._ringerSyncManager = new DeviceSyncManger(
+      ringerStorage,
+      {
+        getDevices: (): MediaDeviceInfo[] => {
+          return this.getRingerDevicesList();
+        },
+        setDeviceId: (id: string): void =>
+          this._rtcEngine.setCurrentAudioOutput(id),
+        getDeviceId: (): string => this._rtcEngine.getCurrentAudioOutput(),
+        getDefaultDeviceId: (devices: MediaDeviceInfo[]): string =>
+          this._rtcEngine.getDefaultDeviceId(devices),
+      },
+      new LastUsedDeviceManager({
+        get: () => TelephonyGlobalConfig.getUsedRingerHistory(),
+        set: (value: string) =>
+          TelephonyGlobalConfig.setUsedRingerHistory(value),
+      }),
+    );
     this._initDevicesState();
     this._subscribe();
   }
@@ -116,11 +150,13 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     this._rtcEngine.setVolume(volume);
     this._microphoneSyncManager.ensureDevice();
     this._speakerSyncManager.ensureDevice();
+    this._ringerSyncManager.ensureDevice();
   }
 
   private _subscribe() {
     this._microphoneSyncManager.startSync();
     this._speakerSyncManager.startSync();
+    this._ringerSyncManager.startSync();
     TelephonyGlobalConfig.on(TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME, () =>
       this._rtcEngine.setVolume(
         Number(TelephonyGlobalConfig.getCurrentVolume()),
@@ -195,10 +231,51 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         audioOutputs.devices,
         audioOutputs.delta,
       );
+      this._handlerDeviceChangeForRinger(
+        this._ringerSyncManager,
+        audioOutputs.devices,
+        audioOutputs.delta,
+      );
       notificationCenter.emit(
         RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED,
         audioOutputs.devices,
       );
     }
+  }
+
+  private _handlerDeviceChangeForRinger(
+    manager: DeviceSyncManger,
+    devices: MediaDeviceInfo[],
+    delta: {
+      added: MediaDeviceInfo[];
+      deleted: MediaDeviceInfo[];
+    },
+  ) {
+    if (
+      !([
+        RINGER_ADDITIONAL_TYPE.ALL,
+        RINGER_ADDITIONAL_TYPE.OFF,
+      ] as string[]).includes(ringerStorage.get())
+    ) {
+      this._handlerDeviceChange(manager, devices, delta);
+    }
+  }
+
+  getRingerDevicesList() {
+    const outputs = this._rtcEngine.getAudioOutputs();
+    if (outputs.length) {
+      return [
+        ...outputs,
+        {
+          deviceId: RINGER_ADDITIONAL_TYPE.ALL,
+          label: RINGER_ADDITIONAL_TYPE.ALL,
+        } as MediaDeviceInfo,
+        {
+          deviceId: RINGER_ADDITIONAL_TYPE.OFF,
+          label: RINGER_ADDITIONAL_TYPE.OFF,
+        } as MediaDeviceInfo,
+      ];
+    }
+    return outputs;
   }
 }

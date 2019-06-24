@@ -190,6 +190,10 @@ class TelephonyService extends EntityBaseService<IdModel>
     return accountController ? accountController.getLastCalledNumber() : '';
   }
 
+  getRingerDevicesList = () => {
+    return this.telephonyController.getRingerDevicesList();
+  }
+
   get phoneSetting() {
     if (!this._phoneSetting) {
       this._phoneSetting = new PhoneSetting(this);

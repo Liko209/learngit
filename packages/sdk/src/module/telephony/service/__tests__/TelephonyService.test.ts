@@ -286,4 +286,11 @@ describe('TelephonyService', () => {
       );
     });
   });
+
+  describe('getRingerDevicesList', () => {
+    it('should call getRingerDevicesList', () => {
+      telephonyService.getRingerDevicesList();
+      expect(engineController.getRingerDevicesList).toBeCalled();
+    });
+  });
 });
