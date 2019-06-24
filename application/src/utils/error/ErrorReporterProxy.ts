@@ -5,7 +5,7 @@
  */
 import { SentryErrorReporter } from './SentryErrorReporter';
 import { IErrorReporter, UserContextInfo } from './types';
-import { mainLogger } from 'sdk/src';
+import { mainLogger } from 'sdk';
 
 export class ErrorReporterProxy implements IErrorReporter {
   private _enabled: boolean;
