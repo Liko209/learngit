@@ -19,17 +19,14 @@ module.exports = {
   transform: {
     '^.+\\.(jsx?|tsx?)$': '<rootDir>/config/jest/typescriptTransform.js',
     '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
-    '^(?!.*\\.(js|jsx|mjs|css|json)$)':
-      '<rootDir>/config/jest/fileTransform.js',
+    '^(?!.*\\.(js|jsx|mjs|css|json)$)': '<rootDir>/config/jest/fileTransform.js',
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$',
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
-    '^@/i18n$': '<rootDir>/tests/shield/src/mocks/i18next.ts',
-    '^@/containers/ThemeProvider$':
-      '<rootDir>/tests/shield/src/mocks/ThemeProvider.tsx',
+    '^@/containers/ThemeProvider$': '<rootDir>/tests/shield/src/mocks/ThemeProvider.tsx',
     '^@/(.*)$': '<rootDir>/application/src/$1',
     '^foundation/(.*)$': '<rootDir>/packages/foundation/src/$1',
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
