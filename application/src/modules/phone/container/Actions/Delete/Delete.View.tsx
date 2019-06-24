@@ -3,7 +3,7 @@
  * @Date: 2019-05-24 07:28:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { withTranslation, WithTranslation, Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
@@ -38,9 +38,7 @@ class DeleteViewComponent extends Component<Props> {
       title: t('voicemail.deleteVoicemail'),
       content: (
         <JuiDialogContentText>
-          <Trans
-            i18nKey="voicemail.areYouSureYouWantToDeleteTheVoicemail"
-          />
+          {t('voicemail.areYouSureYouWantToDeleteTheVoicemail')}
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
@@ -67,9 +65,7 @@ class DeleteViewComponent extends Component<Props> {
       title: t('calllog.deleteCallLog'),
       content: (
         <JuiDialogContentText>
-          <Trans
-            i18nKey="calllog.doYouWanttoDeleteThisCallLog"
-          />
+          {t('calllog.doYouWanttoDeleteThisCallLog')}
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
@@ -92,7 +88,7 @@ class DeleteViewComponent extends Component<Props> {
 
     switch (entity) {
       case ENTITY_TYPE.VOICEMAIL:
-        return t('phone.delete');
+        return t('common.delete');
       case ENTITY_TYPE.CALL_LOG:
         return t('calllog.deleteCallLog');
       default:

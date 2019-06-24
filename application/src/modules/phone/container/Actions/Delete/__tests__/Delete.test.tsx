@@ -17,7 +17,6 @@ import { ENTITY_TYPE } from '../../../constants';
 
 jest.mock('@/containers/Dialog');
 jest.mock('react-i18next');
-(Trans as jest.Mock) = jest.fn();
 
 const deleteDialogConfig = {
   modalProps: { 'data-test-automation-id': 'deleteCallLogConfirmDialog' },
@@ -26,9 +25,7 @@ const deleteDialogConfig = {
   cancelText: "common.dialog.cancel",
   content: (
     <JuiDialogContentText>
-      <Trans
-        i18nKey="calllog.doYouWanttoDeleteThisCallLog"
-      />
+      calllog.doYouWanttoDeleteThisCallLog
     </JuiDialogContentText>
   ),
   okText: "common.dialog.delete",
@@ -43,9 +40,7 @@ const deleteVoicemailDialogConfig = {
   cancelText: "common.dialog.cancel",
   content: (
     <JuiDialogContentText>
-      <Trans
-        i18nKey="voicemail.areYouSureYouWantToDeleteTheVoicemail"
-      />
+      voicemail.areYouSureYouWantToDeleteTheVoicemail
     </JuiDialogContentText>
   ),
   okText: "common.dialog.delete",
@@ -61,7 +56,7 @@ describe('Delete', () => {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.ICON} entity={ENTITY_TYPE.VOICEMAIL} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('delete');
-      expect(buttonProps.tooltipTitle).toBe('phone.delete');
+      expect(buttonProps.tooltipTitle).toBe('common.delete');
       expect(buttonProps.ariaLabel).toBe('voicemail.deleteVoicemail');
     }
 
