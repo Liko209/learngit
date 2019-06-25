@@ -153,6 +153,7 @@ class GroupStateScenarioDataHelper
 
   createGroupState(groupId: number, partial?: Partial<GlipGroupState>) {
     return this.factory.build({
+      _id: groupId,
       group_id: groupId,
       ...partial,
     });

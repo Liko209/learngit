@@ -17,6 +17,20 @@ export class MockSocketServer {
     this.socket.emit(channel, message);
   }
 
+  emitEntityCreate(entity: object) {
+    setTimeout(() => {
+      this.socket.emit(
+        'message',
+        JSON.stringify({
+          body: {
+            timestamp: Date.now(),
+            objects: [[{ ...entity }]],
+          },
+        }),
+      );
+    });
+  }
+
   emitPartial(partial: object) {
     this.emit('partial', partial);
   }

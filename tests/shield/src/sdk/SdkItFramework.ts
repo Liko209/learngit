@@ -14,6 +14,8 @@ import { parseState } from './mocks/server/glip/utils';
 const debug = createDebug('SdkItFramework');
 
 type ItContext = {
+  currentUserId: () => number;
+  currentCompanyId: () => number;
   data: {
     template: {
       BASIC: InitialData;
@@ -105,10 +107,14 @@ export function itForSdk(
   name: string,
   caseExecutor: (itCtx: ItContext) => void,
 ) {
+  let userId: number;
+  let companyId: number;
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
-  const useAccount = (companyId: number, userId: number) => {
-    return new GlipDataHelper(companyId, userId);
+  const useAccount = (_companyId: number, _userId: number) => {
+    userId = _userId;
+    companyId = _companyId;
+    return new GlipDataHelper(_companyId, _userId);
   };
   let glipData: GlipData;
   let dataHelper: GlipDataHelper;
@@ -129,6 +135,8 @@ export function itForSdk(
 
   // provide for it case to mock data.
   const itCtx: ItContext = {
+    currentUserId: () => userId,
+    currentCompanyId: () => companyId,
     data: {
       useInitialData,
       helper,

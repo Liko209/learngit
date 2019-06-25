@@ -10,6 +10,7 @@ export class ResponseAdapter implements IResponseAdapter {
       try {
         handlerResp = handler(request);
       } catch (error) {
+        console.log('TCL: ResponseAdapter -> adapt -> error', error);
         cb.onFailure(
           createResponse({
             request,
@@ -27,6 +28,8 @@ export class ResponseAdapter implements IResponseAdapter {
             cb.onSuccess(response);
           })
           .catch(error => {
+            console.log('TCL: ResponseAdapter -> adapt -> error', error);
+
             cb.onFailure(
               createResponse({
                 request,

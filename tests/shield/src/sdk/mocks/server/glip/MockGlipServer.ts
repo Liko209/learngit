@@ -36,6 +36,7 @@ import {
   GlipPost,
   GlipGroupState,
   GlipState,
+  GlipGroup,
 } from './types';
 import { genPostId, parseState } from './utils';
 import { GlipDataHelper } from './data/data';
@@ -58,6 +59,9 @@ interface IGlipApi extends IApi {
     get: Handler;
   };
   '/api/post': {
+    post: Handler;
+  };
+  '/api/group': {
     post: Handler;
   };
   '/api/save_state_partial': {
@@ -88,6 +92,7 @@ export class MockGlipServer implements IMockServer {
       get: async request => await this.getPostsItemsByIds(request),
     },
     '/api/post': { post: async request => await this.createPost(request) },
+    '/api/group': { post: async request => await this.createGroup(request) },
     '/api/save_state_partial': {
       put: async request => await this.saveStatePartial(request),
     },
@@ -229,16 +234,9 @@ export class MockGlipServer implements IMockServer {
       this.dataHelper.groupState.createGroupState(groupId);
     groupState.post_cursor += 1;
     groupState.read_through = serverPost._id;
+    this.groupStateDao.put(groupState);
     // emit partial serverGroup
-    this.socketServer.emit(
-      'message',
-      JSON.stringify({
-        body: {
-          timestamp: Date.now(),
-          objects: [[{ ...serverPost }]],
-        },
-      }),
-    );
+    this.socketServer.emitEntityCreate(serverPost);
     this.socketServer.emit(
       'partial',
       JSON.stringify({
@@ -297,6 +295,16 @@ export class MockGlipServer implements IMockServer {
     return createResponse({
       status: 500,
       statusText: 'saveStatePartial failed',
+    });
+  }
+
+  createGroup = async (request: IRequest<GlipGroup>) => {
+    const serverGroup = this.dataHelper.group.factory.build(request.data);
+    this.groupDao.put(serverGroup);
+    this.socketServer.emitEntityCreate(serverGroup);
+    return createResponse({
+      request,
+      data: serverGroup,
     });
   }
 
