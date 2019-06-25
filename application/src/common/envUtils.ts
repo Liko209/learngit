@@ -21,3 +21,8 @@ export const isStage = Boolean(
     GIT_TARGET_BRANCH === GIT_SOURCE_BRANCH &&
     /^stage\/.*/.test(GIT_TARGET_BRANCH),
 );
+export const isHotfix = Boolean(
+  GIT_SOURCE_BRANCH &&
+    GIT_TARGET_BRANCH === GIT_SOURCE_BRANCH &&
+    /^hotfix\/.*/.test(GIT_TARGET_BRANCH),
+);
