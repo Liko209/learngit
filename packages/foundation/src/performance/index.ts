@@ -4,4 +4,3 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { PerformanceTracer } from './PerformanceTracer';
-export { PERFORMANCE_KEYS } from './types';

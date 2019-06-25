@@ -3,8 +3,8 @@
  * @Date: 2019-05-10 16:48:10
  * Copyright © RingCentral. All rights reserved.
  */
-import { PerformanceTracer } from '../PerformanceTracer';
 import { PerformanceInfo } from '../types';
+import { PerformanceTracer } from '../PerformanceTracer';
 
 describe('PerformanceTracer', () => {
   let performanceTracer: PerformanceTracer;
@@ -16,7 +16,7 @@ describe('PerformanceTracer', () => {
 
   describe('start()', () => {
     beforeEach(() => {
-      performanceTracer = PerformanceTracer.initial();
+      performanceTracer = PerformanceTracer.start();
       clearMocks();
     });
     it('should add start time to time line', () => {
@@ -31,7 +31,7 @@ describe('PerformanceTracer', () => {
 
   describe('trace()', () => {
     beforeEach(() => {
-      performanceTracer = PerformanceTracer.initial();
+      performanceTracer = PerformanceTracer.start();
       clearMocks();
     });
     it('should trace performance info', () => {
@@ -52,7 +52,7 @@ describe('PerformanceTracer', () => {
 
   describe('end()', () => {
     beforeEach(() => {
-      performanceTracer = PerformanceTracer.initial();
+      performanceTracer = PerformanceTracer.start();
       clearMocks();
     });
     it('should trace performance info', () => {
