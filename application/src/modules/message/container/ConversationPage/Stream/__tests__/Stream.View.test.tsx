@@ -2,11 +2,10 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import i18next from 'i18next';
 import { ThemeProvider } from 'styled-components';
-import { JuiAutoSizerProps } from 'jui/components/AutoSizer/AutoSizer';
 import GroupStateModel from '@/store/models/GroupState';
-import { ConversationInitialPost } from '@/modules/message/container/ConversationInitialPost';
 import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
+import { ConversationInitialPost } from '../../../ConversationInitialPost';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
@@ -16,12 +15,8 @@ import { StreamItemType, StreamViewProps, STATUS } from '../types';
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
 
-jest.mock('jui/components/AutoSizer/AutoSizer', () => {
-  return {
-    JuiAutoSizer: ({ children }: JuiAutoSizerProps) =>
-      children({ height: 200 }),
-  };
-});
+jest.mock('jui/components/AutoSizer/AutoSizer');
+jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('sdk/module/post');
 jest.mock('../../../ConversationSheet', () => ({}));
 

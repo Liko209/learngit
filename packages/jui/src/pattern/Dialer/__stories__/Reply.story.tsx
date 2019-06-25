@@ -49,10 +49,7 @@ const DetachOrAttachAction = () => (
   />
 );
 
-const Actions = [
-  <DetachOrAttachAction key="detch" />,
-  <MinimizeAction key="df" />,
-];
+const Actions = [DetachOrAttachAction, MinimizeAction];
 
 const Back = () => (
   <JuiIconButton
