@@ -39,7 +39,7 @@ const beforeDefaultPhoneAppSettingSave = async (value: any) => {
           okText: await i18nT('common.dialog.OK'),
           cancelText: await i18nT('common.dialog.cancel'),
           onCancel() {
-            reject(false);
+            resolve(false);
           },
           onOK() {
             resolve(true);
