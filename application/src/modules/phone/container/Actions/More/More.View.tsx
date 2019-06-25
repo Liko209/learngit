@@ -39,6 +39,7 @@ class MoreViewComponent extends Component<Props, State> {
         tooltipTitle={t('voicemail.more')}
         tooltipForceHide={tooltipForceHide}
         onClick={this.openPopper}
+        className="phone-more-button"
       >
         more_horiz
       </JuiIconButton>
@@ -71,9 +72,7 @@ class MoreViewComponent extends Component<Props, State> {
         placement="bottom-start"
         onClose={this.closePopper}
       >
-        <JuiMenuList onClick={this.closePopper}>
-          {children}
-        </JuiMenuList>
+        <JuiMenuList onClick={this.closePopper}>{children}</JuiMenuList>
       </JuiPopperMenu>
     );
   }

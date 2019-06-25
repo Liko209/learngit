@@ -12,6 +12,12 @@ import { DataList } from '@/modules/common/container/DataList';
 import { CallLogItem } from '../CallLogItem';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import {
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+} from 'jui/pattern/RightShelf';
+import { JuiEmptyScreen } from 'jui/pattern/Phone/EmptyScreen';
+
+import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
   CALL_HISTORY_USED_HEIGHT,
@@ -23,13 +29,14 @@ type Props = WithTranslation & AllCallsViewProps;
 class AllCallsViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <div />, // TODO add loading
-    loadingMoreRenderer: <div />, // TODO add loading more
+    loadingRenderer: <JuiRightRailContentLoading delay={100} />,
+    loadingMoreRenderer: <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
   private _renderItems() {
     const { listHandler } = this.props;
+    console.log(listHandler.sortableListStore.getIds, '--nello all log');
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem
@@ -68,7 +75,7 @@ class AllCallsViewComponent extends Component<Props> {
           reverse={true}
           InfiniteListProps={Object.assign(this._infiniteListProps, {
             height: height - CALL_HISTORY_USED_HEIGHT,
-            noRowsRenderer: <div>{t('telephony.nocalllogs')}</div>, // TODO add empty page
+            noRowsRenderer: <JuiEmptyScreen text={t('telephony.nocalllogs')} />,
           })}
         >
           {this._renderItems()}
