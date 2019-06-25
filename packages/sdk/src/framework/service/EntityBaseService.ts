@@ -41,7 +41,10 @@ class EntityBaseService<
   private _entityNotificationController: IEntityNotificationController<T>;
 
   constructor(
-    public isSupportedCache: boolean,
+    public entityOptions: {
+      isSupportedCache: boolean;
+      entityName?: string;
+    },
     public dao?: BaseDao<T, IdType>,
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
@@ -136,7 +139,7 @@ class EntityBaseService<
   }
 
   protected buildEntityCacheController() {
-    return buildEntityCacheController<T, IdType>();
+    return buildEntityCacheController<T, IdType>(this.entityOptions.entityName);
   }
 
   protected canSaveRemoteEntity(): boolean {
@@ -144,7 +147,7 @@ class EntityBaseService<
   }
 
   private _initControllers() {
-    if (this.isSupportedCache && !this._entityCacheController) {
+    if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
       this._entityCacheController = this.buildEntityCacheController();
       this.initialEntitiesCache();
     }

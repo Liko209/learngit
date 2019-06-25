@@ -9,7 +9,6 @@ import { CallActionsProps, CallActionsViewProps } from './types';
 import { CALL_ACTION } from '../../interface/constant';
 import { container } from 'framework';
 import { TelephonyStore } from '../../store';
-import { CALL_STATE } from '../../FSM';
 
 class CallActionsViewModel extends StoreViewModel<CallActionsProps>
   implements CallActionsViewProps {
@@ -35,7 +34,7 @@ class CallActionsViewModel extends StoreViewModel<CallActionsProps>
 
   @computed
   get isIncomingPage() {
-    return this._telephonyStore.callState === CALL_STATE.INCOMING;
+    return this._telephonyStore.isIncomingCall;
   }
 }
 

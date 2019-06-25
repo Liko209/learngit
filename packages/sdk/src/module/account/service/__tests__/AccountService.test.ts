@@ -111,11 +111,12 @@ describe('AccountService', () => {
       });
     });
 
-    it('should return null when refresh token error', async () => {
-      RCAuthApi.refreshToken.mockRejectedValueOnce('error');
+    it('should throw error when refresh token error', async () => {
+      RCAuthApi.refreshToken.mockRejectedValueOnce('error2');
       expect.assertions(1);
-      const result = await accountService.refreshRCToken();
-      expect(result).toBe(null);
+      const result = await accountService.refreshRCToken().catch(reason => {
+        expect(reason).toEqual('error2');
+      });
     });
 
     it('should only refresh token once when has multiple request to refresh token', async () => {

@@ -5,7 +5,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { h } from '../../v2/helpers';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from "../../v2/models";
+import { IGroup, ITestMeta } from "../../v2/models";
 
 declare var test: TestFn;
 fixture('ConversationList/CloseConversation')
@@ -188,7 +188,12 @@ const content = 'Closing a conversation will remove it from the left pane, but w
 const checkboxLabel = "Don't ask me again";
 const button = 'Close';
 
-test(formalName('Close current conversation in confirm alert(without UMI)', ['JPT-134', 'JPT-130', 'P2', 'ConversationList']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['p2'],
+  caseIds: ['JPT-134', 'JPT-1370'],
+  keywords: ['ConversationList', 'closeConversation'],
+  maintainers: ['Potar.he']
+})('Close current conversation in confirm alert(without UMI)', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
@@ -224,7 +229,11 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
   const privateConversation = directMessageSection.conversationEntryById(privateChat.glipId);
   const teamConversation = teamsSection.conversationEntryById(team.glipId);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -240,15 +249,16 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     await privateConversation.umi.shouldBeNumber(0);
   });
 
-  await h(t).withLog("When I click conversation A's close buttom", async () => {
+  await h(t).withLog("When I click conversation A's close bottom", async () => {
     await privateConversation.openMoreMenu();
     await app.homePage.messageTab.moreMenu.close.enter();
   });
 
+  // JPT-1370
   const dialog = app.homePage.messageTab.closeConversationModal;
   await h(t).withLog('Then a confirm dialog should be popup', async () => {
     await t.expect(dialog.title.withText(title).exists).ok();
-    await t.expect(dialog.getSelector('p').withText(content)).ok();
+    await t.expect(dialog.getSelector('p').withText(content).exists).ok();
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
     await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
   });

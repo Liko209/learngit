@@ -1898,6 +1898,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                   <button
                     aria-describedby={null}
                     className="MuiButtonBase-root MuiIconButton-root c20"
+                    data-test-automation-id="expand-button"
                     disabled={false}
                     onBlur={[Function]}
                     onClick={[Function]}

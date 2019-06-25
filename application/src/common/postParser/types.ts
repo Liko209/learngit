@@ -29,7 +29,6 @@ type AtMentionParserOption = ParserOption & {
     name: string,
     isCurrent: boolean,
   ) => ChildrenType;
-  textEncoded?: boolean;
 };
 
 enum EmojiConvertType {
@@ -76,6 +75,7 @@ type PostParserOptions = {
   emoji?: EmojiTransformerOption;
   html?: boolean | HTMLParserOption;
   emojiTransformed?: boolean;
+  atMentionTransformed?: boolean;
 };
 
 interface IPostParser {

@@ -92,6 +92,7 @@ class About extends Component<Props> {
         title={t('home.aboutRingCentral')}
         okText={t('common.dialog.done')}
         onOK={this._handleAboutPage}
+        modalProps={{ 'data-test-automation-id': 'about-page-dialog' }}
       >
         <Param>
           {t('home.version')}: {appVersion ? appVersion : pkg.version}

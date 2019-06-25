@@ -15,7 +15,7 @@ fixture('Profile/addTeamMember')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName(`The Add Team Members dialog display correctly after clicking 'Add team members' button`, ['P1', 'JPT-912', 'addTeamMember', 'Potar.He']), async t => {
+test(formalName(`The Add team members dialog display correctly after clicking 'Add team members' button`, ['P1', 'JPT-912', 'addTeamMember', 'Potar.He']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const otherUser = users[5];
@@ -66,6 +66,7 @@ test(formalName(`The Add Team Members dialog display correctly after clicking 'A
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();
+    await t.expect(addTeamMemberDialog.input.focused).ok()
   });
 });
 
