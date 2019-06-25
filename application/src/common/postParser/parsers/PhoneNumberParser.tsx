@@ -32,10 +32,6 @@ class PhoneNumberParser extends PostParser implements IPostParser {
     return new RegExp(VALID_PHONE_REG);
   }
 
-  checkPreCondition(str: string) {
-    return this.getRegexp().test(str.trim());
-  }
-
   isValidMatch(match: string) {
     return isValidPhoneNumber(match);
   }

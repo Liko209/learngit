@@ -41,8 +41,9 @@ const getBodyInfo = async (id: number) => {
   }
 };
 
-const buildRefHandle = (bodyInfo: any) => (iframe: any) => {
-  if (!iframe) return;
+const buildIframeContentDocumentUpdate = (iframe: HTMLIFrameElement) => (
+  bodyInfo: string,
+) => {
   const iframeContentDocument = iframe.contentDocument;
   if (!iframeContentDocument) return;
   iframeContentDocument.open();
@@ -50,11 +51,18 @@ const buildRefHandle = (bodyInfo: any) => (iframe: any) => {
   iframeContentDocument.close();
 };
 
+const buildRefHandle = (id: number) => async (iframe: any) => {
+  if (!iframe) return;
+  const iframeContentDocumentUpdate = buildIframeContentDocumentUpdate(iframe);
+  iframeContentDocumentUpdate('loading...');
+  const bodyInfo = await getBodyInfo(id);
+  iframeContentDocumentUpdate(bodyInfo);
+};
+
 const openNoteViewer = async (title: string, id: number) => {
   const showNoteDialog = await getShowDialogPermission();
   if (!showNoteDialog) return;
-  const bodyInfo = await getBodyInfo(id);
-  const handleRef = buildRefHandle(bodyInfo);
+  const handleRef = buildRefHandle(id);
   const { dismiss } = Dialog.simple(
     <>
       <>

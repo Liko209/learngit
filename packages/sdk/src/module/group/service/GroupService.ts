@@ -34,7 +34,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   groupController: GroupController;
   groupConfigController: GroupConfigController;
   constructor() {
-    super(true, daoManager.getDao(GroupDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
     });

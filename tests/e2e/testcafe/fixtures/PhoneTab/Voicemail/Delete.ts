@@ -10,7 +10,8 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta, IUser } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from '../../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
+
 
 import * as assert from 'assert'
 

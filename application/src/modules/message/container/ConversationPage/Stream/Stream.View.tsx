@@ -26,7 +26,6 @@ import {
   StreamProps,
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
-import { toTitleCase } from '@/utils/string';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
@@ -171,10 +170,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
     const { t } = this.props;
+    const dividerText: string = t('message.stream.newMessagesDivider');
     return (
       <TimeNodeDivider
         key="TimeNodeDividerNewMessagesDivider"
-        value={toTitleCase(t('message.stream.newMessages'))}
+        value={dividerText}
       />
     );
   }
@@ -240,7 +240,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {countText} {toTitleCase(t('message.stream.newMessages'))}
+          {countText} {t('message.stream.newMessages')}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;

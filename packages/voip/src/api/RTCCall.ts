@@ -25,6 +25,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTCUserInfo,
+  RECORD_STATE,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -38,13 +39,6 @@ const LOG_TAG = 'RTCCall';
 enum SDH_DIRECTION {
   SEND_ONLY = 'sendonly',
   SEND_RECV = 'sendrecv',
-}
-
-enum RECORD_STATE {
-  IDLE = 'idle',
-  RECORDING = 'recording',
-  START_RECORD_IN_PROGRESS = 'startRecordInProgress',
-  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
 class RTCCall {

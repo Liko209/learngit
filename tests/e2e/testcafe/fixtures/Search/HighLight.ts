@@ -117,6 +117,97 @@ test.meta(<ITestMeta>{
 
 });
 
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2298'],
+  maintainers: ['chris.zhan'],
+  keywords: ['search', 'HighLight'],
+})('Different language can be highlighted', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
+
+  const keyword1 = "我们";
+  const keyword2 = "привет";
+
+  const multipleKeyWord = `${keyword1} ${keyword2}`;
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`And I have a team named:${team.name} `, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  let postId;
+  await h(t).withLog(`And the team has a post with text ${multipleKeyWord}`, async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(`${multipleKeyWord}${uuid()}`, team, loginUser);
+  });
+
+  const app = new AppRoot(t)
+
+  await h(t).withLog(`And I login with the extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the team`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`When I search keyword ${keyword1}`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.typeSearchKeyword(keyword1);
+  }, true);
+
+  await h(t).withLog(`And I click ${keyword1} in this conversation`, async () => {
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog(`Then messages tab should be open`, async () => {
+    await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
+  });
+
+  const messageTab = searchDialog.fullSearchPage.messagesTab;
+  await h(t).withLog(`And display the post`, async () => {
+    await messageTab.postItemById(postId).ensureLoaded();
+  });
+
+  await h(t).withLog(`And the posts highlight the keyword ${keyword1} `, async () => {
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.textContent).eql(keyword1);
+  });
+
+  await h(t).withLog(`When I search keyword ${multipleKeyWord}`, async () => {
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.typeSearchKeyword(multipleKeyWord);
+  }, true);
+
+  await h(t).withLog(`And I click ${multipleKeyWord} in this conversation`, async () => {
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog(`Then messages tab should be open`, async () => {
+    await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
+  });
+
+  await h(t).withLog(`And display at least one post`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(1);
+    await messageTab.postItemById(postId).ensureLoaded();
+  });
+
+  await h(t).withLog(`And the post highlight the keyword ${multipleKeyWord} `, async () => {
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.nth(0).textContent).eql(keyword1);
+    await t.expect(messageTab.postItemById(postId).keywordsByHighLight.nth(1).textContent).eql(keyword2);
+  });
+
+});
+
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
