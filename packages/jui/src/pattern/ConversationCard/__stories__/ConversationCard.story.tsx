@@ -35,7 +35,7 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
       disabled={disabled}
     />
   );
-  const card = (
+  const card = key => (
     <JuiConversationCard
       Avatar={
         <JuiAvatar color="lake" size="medium">
@@ -43,7 +43,7 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
         </JuiAvatar>
       }
       mode={mode}
-      key={1}
+      key={key}
     >
       <JuiConversationCardHeader
         name={name}
@@ -65,8 +65,8 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
   );
   return (
     <>
-      {card}
-      {card}
+      {card(1)}
+      {card(2)}
     </>
   );
 });

@@ -67,8 +67,8 @@ if (process.env.NODE_ENV === 'test') {
     count: jest.fn(),
     countReset: jest.fn(),
     debug: jest.fn(),
-    error: (message) => {
-      throw (message instanceof Error ? message : new Error(message))
+    error: message => {
+      throw message instanceof Error ? message : new Error(message);
     },
     group: jest.fn(),
     groupCollapsed: jest.fn(),
@@ -80,9 +80,9 @@ if (process.env.NODE_ENV === 'test') {
     timeLog: jest.fn(),
     timeStamp: jest.fn(),
     trace: jest.fn(),
-    warn: (message) => {
-      throw message
-    }
+    warn: message => {
+      throw message;
+    },
   };
 
   global.fetch = require('jest-fetch-mock');
@@ -95,3 +95,7 @@ if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
   // Avoid memory leak by adding too many listeners
   process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
 }
+
+// polyfill require.context
+import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
+registerRequireContextHook();

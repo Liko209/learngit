@@ -215,7 +215,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 
 .c16.c16 .c2,
 .c16.c16 .c2 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c16.c16:hover .c2 {
@@ -227,23 +227,6 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 }
 
 .c16.c16.c16.c16.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c17.c17 .c2,
-.c17.c17 .c2 svg {
-  font-size: 20px;
-}
-
-.c17.c17:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c17.c17:active .c2 {
-  color: #fff;
-}
-
-.c17.c17.c17.c17.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 

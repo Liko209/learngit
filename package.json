@@ -28,6 +28,7 @@
     "test:cover": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
+    "update-snapshot": "npm run test snapshot -- --updateSnapshot",
     "lint": "tslint",
     "lint-all": "concurrently \"tslint -p application/tsconfig.dev.json\"  \"tslint -p packages/foundation/tsconfig.dev.json\" \"tslint -p packages/sdk/tsconfig.dev.json\" \"tslint -p packages/jui/tsconfig.dev.json\" \"tslint -p packages/voip/tsconfig.dev.json\"",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
@@ -98,7 +99,10 @@
     "tslint": "5.13.0",
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
-    "typescript": "3.4.2"
+    "typescript": "3.4.2",
+    "babel-plugin-macros": "2.5.1",
+    "babel-plugin-require-context-hook": "1.0.0",
+    "jest-styled-components": "6.3.1"
   },
   "husky": {
     "hooks": {

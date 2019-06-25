@@ -150,6 +150,8 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
             id="downshift-multiple-input"
             onBlur={[Function]}
             onChange={[Function]}
+            onCompositionEnd={[Function]}
+            onCompositionStart={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             placeholder="placeholder"
@@ -196,6 +198,8 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
             id="downshift-multiple-input"
             onBlur={[Function]}
             onChange={[Function]}
+            onCompositionEnd={[Function]}
+            onCompositionStart={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             placeholder="placeholder"

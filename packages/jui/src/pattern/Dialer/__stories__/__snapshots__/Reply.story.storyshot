@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
-.c13.c13 {
+.c9.c9 {
   width: 40px;
   height: 40px;
   font-size: 1rem;
@@ -11,16 +11,16 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   background-color: #f5f6fb;
 }
 
-.c13.c13:hover {
+.c9.c9:hover {
   opacity: 0.88;
   cursor: pointer;
 }
 
-.c13.c13:active {
+.c9.c9:active {
   opacity: 0.76;
 }
 
-.c13 > .avatar-short-name {
+.c9 > .avatar-short-name {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -55,7 +55,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   font-size: 24px;
 }
 
-.c25 {
+.c21 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -67,17 +67,85 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   fill: #9e9e9e;
 }
 
+.c25.c25 .c6,
+.c25.c25 .c6 svg {
+  font-size: 20px;
+}
+
+.c25.c25:hover .c6 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c25.c25:active .c6 {
+  color: #9e9e9e;
+}
+
+.c25.c25.c25.c25.disabled .c6 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c6,
+.c26.c26 .c6 svg {
+  font-size: 20px;
+}
+
+.c26.c26:hover .c6 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c26.c26:active .c6 {
+  color: #9e9e9e;
+}
+
+.c26.c26.c26.c26.disabled .c6 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c6,
+.c27.c27 .c6 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c6 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c27.c27:active .c6 {
+  color: #0684bd;
+}
+
+.c27.c27.c27.c27.disabled .c6 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c6,
+.c28.c28 .c6 svg {
+  font-size: 20px;
+}
+
+.c28.c28:hover .c6 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c28.c28:active .c6 {
+  color: #0684bd;
+}
+
+.c28.c28.c28.c28.disabled .c6 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c29.c29 .c6,
 .c29.c29 .c6 svg {
   font-size: 20px;
 }
 
 .c29.c29:hover .c6 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c29.c29:active .c6 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c29.c29.c29.c29.disabled .c6 {
@@ -86,7 +154,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
 
 .c30.c30 .c6,
 .c30.c30 .c6 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c30.c30:hover .c6 {
@@ -120,7 +188,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
 
 .c32.c32 .c6,
 .c32.c32 .c6 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c32.c32:hover .c6 {
@@ -137,15 +205,15 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
 
 .c33.c33 .c6,
 .c33.c33 .c6 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c33.c33:hover .c6 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c33.c33:active .c6 {
-  color: #edb63c;
+  color: #fff;
 }
 
 .c33.c33.c33.c33.disabled .c6 {
@@ -154,59 +222,25 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
 
 .c34.c34 .c6,
 .c34.c34 .c6 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c34.c34:hover .c6 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c34.c34:active .c6 {
-  color: #9e9e9e;
+  color: #212121;
 }
 
 .c34.c34.c34.c34.disabled .c6 {
   color: rgba(0,0,0,0.12);
 }
 
-.c35.c35 .c6,
-.c35.c35 .c6 svg {
-  font-size: 20px;
-}
-
-.c35.c35:hover .c6 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c35.c35:active .c6 {
-  color: #0684bd;
-}
-
-.c35.c35.c35.c35.disabled .c6 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c36.c36 .c6,
-.c36.c36 .c6 svg {
-  font-size: 16px;
-}
-
-.c36.c36:hover .c6 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c36.c36:active .c6 {
-  color: #0684bd;
-}
-
-.c36.c36.c36.c36.disabled .c6 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c5.c5 {
   padding: 0;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   color: #fff;
   opacity: 1;
   padding: 0;
@@ -215,7 +249,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
 
 .c5.c5 .c6,
 .c5.c5 .c6 svg {
-  font-size: 16px;
+  font-size: 24px;
 }
 
 .c5.c5:hover {
@@ -244,65 +278,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   animation-name: cBKRfH;
 }
 
-.c37.c37 .c6,
-.c37.c37 .c6 svg {
-  font-size: 32px;
-}
-
-.c37.c37:hover .c6 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c37.c37:active .c6 {
-  color: #212121;
-}
-
-.c37.c37.c37.c37.disabled .c6 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 {
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  color: #fff;
-  opacity: 1;
-  padding: 0;
-  background-color: inherit;
-}
-
-.c12.c12 .c6,
-.c12.c12 .c6 svg {
-  font-size: 24px;
-}
-
-.c12.c12:hover {
-  background-color: transparent;
-}
-
-.c12.c12:hover .c6 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c12.c12:active .c6 {
-  color: #fff;
-}
-
-.c12.c12.c12.c12.disabled .c6 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c12.c12 .rippleVisible {
-  color: #fff;
-  opacity: 0.24;
-  -webkit-transform: scale(1);
-  -ms-transform: scale(1);
-  transform: scale(1);
-  -webkit-animation-name: cBKRfH;
-  animation-name: cBKRfH;
-}
-
-.c26 {
+.c22 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
@@ -310,7 +286,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   width: 100%;
 }
 
-.c28.c28 textarea {
+.c24.c24 textarea {
   height: 72px;
   background: #f5f6fb;
   margin: 8px 0 0 0;
@@ -318,12 +294,12 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   font-size: 16px;
 }
 
-.c28.c28 textarea:hover,
-.c28.c28 textarea:focus {
+.c24.c24 textarea:hover,
+.c24.c24 textarea:focus {
   background: #fff;
 }
 
-.c28 .input-root {
+.c24 .input-root {
   padding: 0;
   font-size: 0.875rem;
   font-weight: 400;
@@ -331,11 +307,11 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   line-height: 20px;
 }
 
-.c28 .input-root.input-underline:after {
+.c24 .input-root.input-underline:after {
   border-color: #0684bd;
 }
 
-.c28 .form-label-root {
+.c24 .form-label-root {
   color: #757575;
   font-size: 0.75rem;
   font-weight: 500;
@@ -348,11 +324,11 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   z-index: 1;
 }
 
-.c28 .form-label-root.form-label-focus {
+.c24 .form-label-root.form-label-focus {
   color: #0684bd;
 }
 
-.c19.c19 {
+.c15.c15 {
   padding: 8px;
   width: 100%;
   display: -webkit-box;
@@ -362,17 +338,17 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   padding-left: 8px;
 }
 
-.c23 {
+.c19 {
   -webkit-flex: 1 1 auto;
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
 }
 
-.c23.c23 {
+.c19.c19 {
   padding: 0;
 }
 
-.c23.c23 .list-item-primary {
+.c19.c19 .list-item-primary {
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -384,7 +360,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   word-break: break-word;
 }
 
-.c23.c23 .list-item-secondary {
+.c19.c19 .list-item-secondary {
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -396,9 +372,43 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   word-break: break-word;
 }
 
+.c4 {
+  margin-right: 12px;
+}
+
+.c10 {
+  margin-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c11 {
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c12 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c2.c2 {
   color: #fff;
-  padding: 0px 16px;
+  padding: 4px 16px 12px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -407,7 +417,8 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  height: 36px;
+  box-sizing: border-box;
+  height: 56px;
 }
 
 .c3.c3 {
@@ -423,93 +434,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c3.c3 span {
-  margin-right: 8px;
-}
-
-.c4.c4 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c4.c4 button {
-  margin-left: 8px;
-}
-
-.c11 {
-  margin-right: 12px;
-}
-
-.c14 {
-  margin-left: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c15 {
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c16 {
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c9.c9 {
-  color: #fff;
-  padding: 4px 16px 12px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  box-sizing: border-box;
-  height: 56px;
-}
-
-.c10.c10 {
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
   width: 100%;
 }
 
-.c10.c10 caption {
+.c3.c3 caption {
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -530,18 +458,18 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   background-color: #4475fd;
 }
 
-.c17 {
+.c13 {
   background-color: #fff;
   padding-top: 24px;
   height: 396px;
   box-sizing: border-box;
 }
 
-.c20.c20 {
+.c16.c16 {
   padding: 0;
 }
 
-.c18.c18 {
+.c14.c14 {
   padding: 8px 16px;
   height: 40px;
   font-size: 0.875rem;
@@ -552,11 +480,11 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   color: #616161;
 }
 
-.c18.c18 span {
+.c14.c14 span {
   color: #0684bd;
 }
 
-.c22.c22 {
+.c18.c18 {
   padding: 8px 16px;
   height: 40px;
   font-size: 0.875rem;
@@ -566,39 +494,39 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   color: #212121;
 }
 
-.c24 {
+.c20 {
   display: none;
   height: 16px;
   line-height: 16px;
 }
 
-.c24.c24 {
+.c20.c20 {
   margin: 0px 8px;
 }
 
-.c24.c24 a,
-.c24.c24 button {
+.c20.c20 a,
+.c20.c20 button {
   margin-right: 0;
 }
 
-.c21:hover .c24 {
+.c17:hover .c20 {
   display: inline-block;
 }
 
-.c38:hover .c24 {
+.c35:hover .c20 {
   display: inline-block;
 }
 
-.c27.c27 {
+.c23.c23 {
   margin-top: 16px;
 }
 
-.c27.c27 textarea {
+.c23.c23 textarea {
   height: 100px;
   padding: 4px 16px;
 }
 
-.c27.c27 textarea::-webkit-input-placeholder {
+.c23.c23 textarea::-webkit-input-placeholder {
   color: #757575;
   font-size: 0.875rem;
   font-weight: 400;
@@ -606,7 +534,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   line-height: 20px;
 }
 
-.c27.c27 textarea::-moz-placeholder {
+.c23.c23 textarea::-moz-placeholder {
   color: #757575;
   font-size: 0.875rem;
   font-weight: 400;
@@ -614,7 +542,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   line-height: 20px;
 }
 
-.c27.c27 textarea:-ms-input-placeholder {
+.c23.c23 textarea:-ms-input-placeholder {
   color: #757575;
   font-size: 0.875rem;
   font-weight: 400;
@@ -622,7 +550,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   line-height: 20px;
 }
 
-.c27.c27 textarea::placeholder {
+.c23.c23 textarea::placeholder {
   color: #757575;
   font-size: 0.875rem;
   font-weight: 400;
@@ -630,7 +558,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   line-height: 20px;
 }
 
-.c27.c27 .form-label-root {
+.c23.c23 .form-label-root {
   padding: 0px 16px;
 }
 
@@ -643,108 +571,19 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   >
     <div
       className="c2"
-      data-test-automation-id="telephony-dialer-title"
-    >
-      <div
-        className="c3"
-        data-test-automation-id="telephony-dialer-title-left"
-      />
-      <div
-        className="c4"
-      >
-        <button
-          aria-describedby={null}
-          className="MuiButtonBase-root MuiIconButton-root c5"
-          disabled={false}
-          onBlur={[Function]}
-          onContextMenu={[Function]}
-          onFocus={[Function]}
-          onKeyDown={[Function]}
-          onKeyUp={[Function]}
-          onMouseDown={[Function]}
-          onMouseLeave={[Function]}
-          onMouseOver={[Function]}
-          onMouseUp={[Function]}
-          onTouchEnd={[Function]}
-          onTouchMove={[Function]}
-          onTouchStart={[Function]}
-          size="small"
-          tabIndex="0"
-          title={null}
-          type="button"
-          variant="plain"
-        >
-          <span
-            className="MuiIconButton-label"
-          >
-            <span
-              className="c6  icon c7"
-              size="small"
-            >
-              <svg
-                className="c8"
-                role="img"
-              >
-                <use />
-              </svg>
-            </span>
-          </span>
-        </button>
-        <button
-          aria-describedby={null}
-          className="MuiButtonBase-root MuiIconButton-root c5"
-          disabled={false}
-          onBlur={[Function]}
-          onContextMenu={[Function]}
-          onFocus={[Function]}
-          onKeyDown={[Function]}
-          onKeyUp={[Function]}
-          onMouseDown={[Function]}
-          onMouseLeave={[Function]}
-          onMouseOver={[Function]}
-          onMouseUp={[Function]}
-          onTouchEnd={[Function]}
-          onTouchMove={[Function]}
-          onTouchStart={[Function]}
-          size="small"
-          tabIndex="0"
-          title={null}
-          type="button"
-          variant="plain"
-        >
-          <span
-            className="MuiIconButton-label"
-          >
-            <span
-              className="c6  icon c7"
-              size="small"
-            >
-              <svg
-                className="c8"
-                role="img"
-              >
-                <use />
-              </svg>
-            </span>
-          </span>
-        </button>
-      </div>
-    </div>
-    <div
-      className="c9"
       data-test-automation-id="telephony-dialer-header"
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
     >
       <div
-        className="c10"
+        className="c3"
       >
         <div
-          className="c11"
+          className="c4"
         >
           <button
             aria-describedby={null}
-            className="MuiButtonBase-root MuiIconButton-root c12"
+            className="MuiButtonBase-root MuiIconButton-root c5"
             disabled={false}
             onBlur={[Function]}
             onContextMenu={[Function]}
@@ -782,7 +621,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
           </button>
         </div>
         <div
-          className="MuiAvatar-root c13"
+          className="MuiAvatar-root c9"
           size="large"
         >
           <img
@@ -791,16 +630,16 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
           />
         </div>
         <div
-          className="c14"
+          className="c10"
         >
           <div
-            className="c15"
+            className="c11"
             data-test-automation-id="telephony-dialer-header-name"
           >
             Terry Webster
           </div>
           <div
-            className="c16"
+            className="c12"
             data-test-automation-id="telephony-dialer-header-phone"
           >
             (650) 555-12345
@@ -810,10 +649,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
     </div>
   </div>
   <div
-    className="c17"
+    className="c13"
   >
     <li
-      className="MuiListItem-root MuiListItem-default MuiListItem-gutters c18 c19"
+      className="MuiListItem-root MuiListItem-default MuiListItem-gutters c14 c15"
       disabled={false}
     >
       Reply in 
@@ -823,10 +662,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
       s
     </li>
     <ul
-      className="MuiList-root MuiList-padding c20"
+      className="MuiList-root MuiList-padding c16"
     >
       <div
-        className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c21 c22 c19"
+        className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c17 c18 c15"
         onBlur={[Function]}
         onClick={[Function]}
         onContextMenu={[Function]}
@@ -843,7 +682,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
         tabIndex="0"
       >
         <div
-          className="MuiListItemText-root c23"
+          className="MuiListItemText-root c19"
         >
           <span
             className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
@@ -852,13 +691,13 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
           </span>
         </div>
         <div
-          className="c24"
+          className="c20"
         >
           <span
             className=" send icon c7"
           >
             <svg
-              className="c25"
+              className="c21"
               role="img"
               size="small"
             >
@@ -874,7 +713,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
         />
       </div>
       <div
-        className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c21 c22 c19"
+        className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c17 c18 c15"
         onBlur={[Function]}
         onClick={[Function]}
         onContextMenu={[Function]}
@@ -891,7 +730,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
         tabIndex="0"
       >
         <div
-          className="MuiListItemText-root c23"
+          className="MuiListItemText-root c19"
         >
           <span
             className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
@@ -900,13 +739,13 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
           </span>
         </div>
         <div
-          className="c24"
+          className="c20"
         >
           <span
             className=" send icon c7"
           >
             <svg
-              className="c25"
+              className="c21"
               role="img"
               size="small"
             >
@@ -923,12 +762,12 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
       </div>
       <div>
         <div
-          className="c26"
+          className="c22"
           onClick={[Function]}
           onMouseDown={[Function]}
         >
           <div
-            className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c21 c22 c19"
+            className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c17 c18 c15"
             data-test-automation-id="reply-with-will-call-back"
             onBlur={[Function]}
             onContextMenu={[Function]}
@@ -945,7 +784,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
             tabIndex="0"
           >
             <div
-              className="MuiListItemText-root c23"
+              className="MuiListItemText-root c19"
             >
               <span
                 className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
@@ -961,12 +800,12 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
       </div>
       <div>
         <div
-          className="c26"
+          className="c22"
           onClick={[Function]}
           onMouseDown={[Function]}
         >
           <div
-            className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c21 c22 c19"
+            className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c17 c18 c15"
             onBlur={[Function]}
             onContextMenu={[Function]}
             onFocus={[Function]}
@@ -982,7 +821,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
             tabIndex="0"
           >
             <div
-              className="MuiListItemText-root c23"
+              className="MuiListItemText-root c19"
             >
               <span
                 className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
@@ -998,7 +837,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
       </div>
     </ul>
     <div
-      className="MuiFormControl-root MuiFormControl-fullWidth c27 c28"
+      className="MuiFormControl-root MuiFormControl-fullWidth c23 c24"
       draggable={false}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
