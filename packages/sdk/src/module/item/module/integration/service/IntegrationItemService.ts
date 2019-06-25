@@ -12,7 +12,7 @@ class IntegrationItemService extends EntityBaseService<IntegrationItem> {
   private _integrationItemController: IntegrationItemController;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setCheckTypeFunc((id: number) => {
       return GlipTypeUtil.isIntegrationType(id);
     });

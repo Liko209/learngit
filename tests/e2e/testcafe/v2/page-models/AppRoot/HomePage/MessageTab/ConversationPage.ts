@@ -307,7 +307,7 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get newMessageDeadLine() {
     this.warnFlakySelector();
-    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
+    return this.stream.find('span').withText('New messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -338,7 +338,7 @@ export class BaseConversationPage extends BaseWebComponent {
   async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 

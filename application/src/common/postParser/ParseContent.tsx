@@ -44,9 +44,13 @@ class ParseContent {
       }
     };
 
-    this._replacers.forEach(({ element }) =>
-      Array.isArray(element) ? element.forEach(pushChild) : pushChild(element),
-    );
+    this._replacers
+      .sort((a, b) => a.startIndex - b.startIndex)
+      .forEach(({ element }) =>
+        Array.isArray(element)
+          ? element.forEach(pushChild)
+          : pushChild(element),
+      );
 
     if (children.length === 1 && typeof children[0] === 'string') {
       return children[0];
@@ -59,9 +63,7 @@ class ParseContent {
   }
 
   addReplacers(replacers: Replacer[]) {
-    this._replacers = this._replacers
-      .concat(replacers)
-      .sort((a, b) => a.startIndex - b.startIndex);
+    this._replacers = this._replacers.concat(replacers);
   }
 
   removeReplacersBy(identifier: (replacer: Replacer) => boolean) {

@@ -23,7 +23,9 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IdListPagingDataProvider } from '../base/fetch/IdListPagingDataProvider';
 import PersonModel from '@/store/models/Person';
 import { IEntityDataProvider, IMatchFunc } from '../base/fetch/types';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils/performance';
+import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { PerformanceTracer } from 'sdk';
+
 class PersonProvider implements IEntityDataProvider<Person> {
   async getByIds(ids: number[]) {
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -114,7 +116,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   private async _initGroupData() {
-    const tracer = PerformanceTracer.initial();
+    const tracer = PerformanceTracer.start();
     const group = await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     ).getById(this._groupId);
@@ -125,7 +127,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       this._subscribeGroupChange();
     }
     tracer.end({
-      key: PERFORMANCE_KEYS.INIT_GROUP_MEMBERS,
+      key: STORE_PERFORMANCE_KEYS.INIT_GROUP_MEMBERS,
       count:
         (this._sortedGroupMemberIds && this._sortedGroupMemberIds.length) || 0,
     });
