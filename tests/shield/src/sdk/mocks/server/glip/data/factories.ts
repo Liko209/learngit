@@ -1,5 +1,6 @@
 import * as Factory from 'factory.ts';
 import faker from 'faker';
+import { TypeDictionary, TYPE_ID_MASK } from 'sdk/utils/glip-type-dictionary';
 
 import {
   GlipProfile,
@@ -10,14 +11,19 @@ import {
   GlipGroup,
   GlipPost,
   GlipClientConfig,
-  InitialData,
+  // InitialData,
   GlipGroupState,
-  GlipData,
+  // GlipData,
 } from '../types';
-
+import { genId } from '../utils';
 const each = <T>(f: (seqNum: number) => T) => Factory.each(f);
+
+const idGenerator = (table: string, typeId: number) =>
+  each(() => genId(table, typeId));
+
 const uniqueNumber = () => each(i => faker.random.number(Date.now() + i));
-// each<T>(f: (seqNum: number) => T): Generator<T>;
+const uniqueStringNumber = () =>
+  each(i => String(faker.random.number(Date.now() + i)));
 const startTime = 1560016277707;
 const fakeTimestamp = each(i => startTime + i * 1234);
 const fakeEmail = each(() => faker.internet.email());
@@ -36,6 +42,7 @@ const base = {
 
 const companyFactory = Factory.Sync.makeFactory<GlipCompany>({
   ...base,
+  _id: idGenerator('company', TypeDictionary.TYPE_ID_COMPANY),
   name: faker.company.companyName(),
   domain: faker.internet.domainName(),
   admins: [faker.random.number(10000)],
@@ -43,6 +50,7 @@ const companyFactory = Factory.Sync.makeFactory<GlipCompany>({
 
 const userFactory = Factory.Sync.makeFactory<GlipPerson>({
   ...base,
+  _id: idGenerator('person', TypeDictionary.TYPE_ID_PERSON),
   email: fakeEmail,
   first_name: faker.name.findName(),
   last_name: faker.name.lastName(),
@@ -62,6 +70,7 @@ const userFactory = Factory.Sync.makeFactory<GlipPerson>({
 
 const personFactory = Factory.Sync.makeFactory<GlipPerson>({
   ...base,
+  _id: idGenerator('person', TypeDictionary.TYPE_ID_PERSON),
   email: fakeEmail,
   first_name: faker.name.findName(),
   last_name: faker.name.lastName(),
@@ -81,6 +90,7 @@ const personFactory = Factory.Sync.makeFactory<GlipPerson>({
 
 const groupFactory = Factory.Sync.makeFactory<GlipGroup>({
   ...base,
+  _id: idGenerator('group', TypeDictionary.TYPE_ID_GROUP),
   members: [faker.random.number(100000000)],
   company_id: faker.random.number(100000000),
   email_friendly_abbreviation: fakeEmail,
@@ -90,12 +100,15 @@ const groupFactory = Factory.Sync.makeFactory<GlipGroup>({
   most_recent_content_modified_at: 0,
   most_recent_post_id: 0,
   most_recent_post_created_at: 0,
-  // post_cursor: 0,
   deactivated_post_cursor: 0,
   is_company_team: false,
+  team_mention_cursor: 0,
+  admin_mention_cursor: 0,
+  post_cursor: 0,
 });
 
 const teamFactory = groupFactory.extend({
+  _id: idGenerator('group', TypeDictionary.TYPE_ID_TEAM),
   privacy: each(() =>
     faker.random.arrayElement(['private', 'protected', 'public']),
   ),
@@ -110,6 +123,19 @@ const teamFactory = groupFactory.extend({
       uids: [],
     },
   },
+});
+
+const postFactory = Factory.Sync.makeFactory<GlipPost>({
+  ...base,
+  _id: idGenerator('post', TypeDictionary.TYPE_ID_POST),
+  unique_id: uniqueStringNumber(),
+  item_ids: [],
+  post_ids: [],
+  group_id: faker.random.number(100000000),
+  text: faker.lorem.lines(),
+  company_id: faker.random.number(100000000),
+  at_mention_item_ids: [],
+  at_mention_non_item_ids: [],
 });
 
 const clientConfigFactory = Factory.Sync.makeFactory<GlipClientConfig>({
@@ -153,6 +179,7 @@ const clientConfigFactory = Factory.Sync.makeFactory<GlipClientConfig>({
 });
 const stateFactory = Factory.Sync.makeFactory<GlipState>({
   ...base,
+  _id: idGenerator('state', TypeDictionary.TYPE_ID_STATE),
   person_id: uniqueNumber(),
 });
 
@@ -165,9 +192,16 @@ const groupStateFactory = Factory.Sync.makeFactory<GlipGroupState>({
   unread_mentions_count: 0,
   unread_deactivated_count: 0,
   marked_as_unread: false,
+
+  deactivated_post_cursor: 0,
+  group_missed_calls_count: 0,
+  group_tasks_count: 0,
+  last_read_through: 0,
+  previous_post_cursor: 0,
 });
 const profileFactory = Factory.Sync.makeFactory<GlipProfile>({
   ...base,
+  _id: idGenerator('profile', TypeDictionary.TYPE_ID_PROFILE),
   person_id: uniqueNumber(),
   me_tab: true,
   favorite_group_ids: [],
@@ -194,6 +228,7 @@ export {
   personFactory,
   groupFactory,
   teamFactory,
+  postFactory,
   clientConfigFactory,
   stateFactory,
   groupStateFactory,

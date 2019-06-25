@@ -1,13 +1,18 @@
 import assert from 'assert';
-import { LokiDB } from 'foundation';
+import { LokiDB } from 'foundation/db';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { Post } from 'sdk/module/post/entity/Post';
+import { State } from 'sdk/module/state/entity/State';
 import url from 'url';
 
 import { Router } from '../Router';
-import { IMockServer, INetworkRequestExecutorListener, IRequest } from '../types';
+import {
+  IMockServer,
+  INetworkRequestExecutorListener,
+  IRequest,
+} from '../types';
 import { createResponse } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
@@ -21,7 +26,20 @@ import { GlipStateDao } from './dao/state';
 import { schema } from './glipSchema';
 import { MockSocketServer } from './MockSocketServer';
 import { ResponseAdapter } from './ResponseAdapter';
-import { GlipData, Handler, IApi, InitialData, IResponseAdapter, VerbHandler } from './types';
+import {
+  GlipData,
+  Handler,
+  IApi,
+  InitialData,
+  IResponseAdapter,
+  VerbHandler,
+  GlipPost,
+  GlipGroupState,
+  GlipState,
+} from './types';
+import { genPostId, parseState } from './utils';
+import { GlipDataHelper } from './data/data';
+import { STATE_KEYS } from './constants';
 
 interface IGlipApi extends IApi {
   '/api/login': {
@@ -42,6 +60,9 @@ interface IGlipApi extends IApi {
   '/api/post': {
     post: Handler;
   };
+  '/api/save_state_partial': {
+    put: Handler;
+  };
   '*': VerbHandler;
 }
 
@@ -58,6 +79,7 @@ export class MockGlipServer implements IMockServer {
   groupStateDao: GlipGroupStateDao;
   db: LokiDB;
   socketServer: MockSocketServer;
+  dataHelper: GlipDataHelper;
 
   api: IGlipApi = {
     '/api/login': { put: request => this.login(request) },
@@ -66,6 +88,9 @@ export class MockGlipServer implements IMockServer {
       get: async request => await this.getPostsItemsByIds(request),
     },
     '/api/post': { post: async request => await this.createPost(request) },
+    '/api/save_state_partial': {
+      put: async request => await this.saveStatePartial(request),
+    },
     '/v1.0/desktop/initial': {
       get: async request => await this.getInitialData(request),
     },
@@ -90,6 +115,10 @@ export class MockGlipServer implements IMockServer {
     this.init();
   }
 
+  setDataHelper(dataHelper: GlipDataHelper) {
+    this.dataHelper = dataHelper;
+  }
+
   public init() {
     this.db = new LokiDB(schema);
     this.companyDao = new GlipCompanyDao(this.db);
@@ -108,16 +137,19 @@ export class MockGlipServer implements IMockServer {
   }
 
   applyGlipData = (glipData: GlipData) => {
-    // const glipDataTemplate = parseInitialData(initialData);
     this.companyDao.bulkPut(glipData.company);
     this.profileDao.bulkPut(glipData.profile);
     this.stateDao.bulkPut(glipData.state);
     glipData.groupState && this.groupStateDao.bulkPut(glipData.groupState);
     // this.personDao.insert(glipDataTemplate.user);
+    glipData.posts && this.postDao.bulkPut(glipData.posts);
     this.personDao.bulkPut(glipData.people);
     this.groupDao.bulkPut(glipData.groups);
     this.groupDao.bulkPut(glipData.teams);
     this.clientConfigDao.bulkPut(glipData.clientConfig);
+    const companyId = glipData.company['_id'];
+    const userId = glipData.profile.person_id!;
+    this.dataHelper = new GlipDataHelper(companyId, userId);
   }
 
   login = (request: IRequest) => {
@@ -132,15 +164,23 @@ export class MockGlipServer implements IMockServer {
     const company = this.companyDao.findOne();
     assert(company, 'company not found.');
     // const profile = this.profileDao.findOne();
+    const state = this.stateDao.findOne()!;
+    const groupStates = this.groupStateDao.lokiCollection.find() || [];
+    groupStates.forEach(groupState => {
+      STATE_KEYS.forEach(key => {
+        state[`${key}:${groupState.group_id}`] = groupState[key];
+      });
+    });
     const buildInitialData: InitialData = {
+      state,
       user_id: user!._id,
       company_id: company!._id,
       profile: this.profileDao.findOne()!,
       companies: [company!],
-      state: this.stateDao.findOne()!,
       people: this.personDao.lokiCollection.find(),
       groups: await this.groupDao.getGroups(),
       teams: await this.groupDao.getTeams(),
+      posts: this.postDao.getPosts() || [],
       client_config: this.clientConfigDao.findOne()!,
       timestamp: 1561008777444,
       scoreboard: 'wss://glip.socket.com',
@@ -174,11 +214,89 @@ export class MockGlipServer implements IMockServer {
   }
 
   createPost = async (request: IRequest<Post>) => {
-    const updateResult = this.postDao.put(request.data as any);
+    const serverPost: GlipPost = { _id: genPostId(), ...request.data };
+    const groupId = serverPost.group_id;
+    const updateResult = this.postDao.put(serverPost);
+    const serverGroup = this.groupDao.getById(groupId)!;
+    serverGroup.most_recent_post_id = serverPost._id;
+    serverGroup.most_recent_post_created_at = serverPost.created_at;
+    serverGroup.most_recent_content_modified_at = serverPost.modified_at;
+    serverGroup.post_cursor += 1;
+    serverGroup.last_author_id = serverPost.creator_id;
+    this.groupDao.put(serverGroup);
+    const groupState =
+      this.groupStateDao.getById(groupId) ||
+      this.dataHelper.groupState.createGroupState(groupId);
+    groupState.post_cursor += 1;
+    groupState.read_through = serverPost._id;
+    // emit partial serverGroup
+    this.socketServer.emit(
+      'message',
+      JSON.stringify({
+        body: {
+          timestamp: Date.now(),
+          objects: [[{ ...serverPost }]],
+        },
+      }),
+    );
+    this.socketServer.emit(
+      'partial',
+      JSON.stringify({
+        body: {
+          timestamp: Date.now(),
+          partial: true,
+          hint: {
+            post_creator_ids: {
+              [String(serverGroup._id)]: serverPost.creator_id,
+            },
+          },
+          objects: [[{ ...serverGroup }]],
+        },
+      }),
+    );
+    this.socketServer.emit(
+      'partial',
+      JSON.stringify({
+        body: {
+          timestamp: Date.now(),
+          partial: true,
+          hint: {
+            post_creator_ids: {
+              [String(serverGroup._id)]: serverPost.creator_id,
+            },
+          },
+          objects: [[{ ...groupState }]],
+        },
+      }),
+    );
+
+    // create post
+    // message post
+    // update group cursor
+    // update person state
     // mockServer.emit('partial')
     return createResponse({
       request,
       data: updateResult,
+    });
+  }
+
+  saveStatePartial = async (request: IRequest<GlipState>) => {
+    console.log('TCL: MockGlipServer -> saveStatePartial -> request', request);
+    const groupStates = parseState(request.data);
+    if (groupStates && groupStates[0]) {
+      console.log(
+        'TCL: MockGlipServer -> saveStatePartial -> groupStates[0]',
+        groupStates[0],
+      );
+      return createResponse({
+        request,
+        data: this.groupStateDao.put(groupStates[0]),
+      });
+    }
+    return createResponse({
+      status: 500,
+      statusText: 'saveStatePartial failed',
     });
   }
 
@@ -210,7 +328,7 @@ export class MockGlipServer implements IMockServer {
     const relatePath = `${hostname}${uri}`;
     const mockDataPath = path.resolve(
       __dirname,
-      '../../../../../../',
+      '../../../../../',
       `./testingData/http/${relatePath.replace(/\~/g, '-')}/200.json`,
     );
     return mockDataPath;

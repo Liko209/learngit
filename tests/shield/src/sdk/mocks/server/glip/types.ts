@@ -3,7 +3,7 @@ import {
   INetworkRequestExecutorListener,
   IRequest,
   IResponse,
-} from 'foundation';
+} from 'foundation/network';
 import { Company } from 'sdk/module/company/entity';
 import { Group } from 'sdk/module/group/entity';
 import { Item } from 'sdk/module/item/entity';
@@ -25,7 +25,15 @@ export type GlipBase = {
 
 type ToMongo<T> = Omit<T, 'id'> & { _id: number };
 
-export type GlipGroup = ToMongo<Group>;
+export type GlipGroup = ToMongo<Group> & {
+  most_recent_content_modified_at: number;
+  most_recent_post_id: number;
+  most_recent_post_created_at: number;
+  team_mention_cursor: number;
+  admin_mention_cursor: number;
+  post_cursor: number;
+  last_author_id?: number;
+};
 export type GlipProfile = ToMongo<Profile>;
 export type GlipPerson = ToMongo<Omit<Person, 'me_group_id'>>;
 export type GlipCompany = ToMongo<Omit<Company, 'custom_emoji'>>;
@@ -45,6 +53,12 @@ export type GlipGroupState = GlipBase & {
   unread_mentions_count: number;
   unread_deactivated_count: number;
   marked_as_unread: boolean;
+
+  deactivated_post_cursor: number;
+  group_missed_calls_count: number;
+  group_tasks_count: number;
+  last_read_through: number;
+  previous_post_cursor: number;
 };
 
 export type GlipClientConfig = GlipBase & {
@@ -92,6 +106,7 @@ export type GlipModel =
   | GlipCompany
   | GlipPost
   | GlipItem
+  | GlipGroupState
   | GlipClientConfig;
 
 export type InitialData = {
@@ -120,9 +135,10 @@ export type GlipData = {
   people: GlipPerson[];
   groups: GlipGroup[];
   teams: GlipGroup[];
+  posts?: GlipPost[];
   clientConfig: GlipClientConfig;
   state: GlipState;
-  groupState?: GlipGroupState[];
+  groupState: GlipGroupState[];
   profile: GlipProfile;
 };
 

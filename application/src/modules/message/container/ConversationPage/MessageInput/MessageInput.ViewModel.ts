@@ -32,7 +32,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import JSZip from 'jszip';
-import { NETWORK_VIA } from '../../../../../../../packages/foundation/src';
+import { NETWORK_VIA } from '../../../../../../../packages/foundation';
 const URL = require('url-parse');
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 

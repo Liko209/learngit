@@ -1,7 +1,7 @@
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { mountWithTheme } from 'shield/utils';
-import { itForSdk } from 'shield/src/sdk/SdkItFramework';
+import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
 import { LeftRail } from '../../message/container/LeftRail';
 import { JuiListNavItem } from 'jui/components';

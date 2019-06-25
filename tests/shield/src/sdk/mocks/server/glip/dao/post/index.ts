@@ -12,4 +12,8 @@ export class GlipPostDao extends GlipBaseDao<GlipPost> {
       .equal('group_id', groupId)
       .toArray();
   }
+
+  getPosts() {
+    return this.lokiCollection.find();
+  }
 }

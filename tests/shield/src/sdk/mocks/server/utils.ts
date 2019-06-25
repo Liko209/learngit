@@ -3,7 +3,7 @@ import _ from 'lodash';
 export function createResponse<T>(
   partial: Partial<IResponse<T>>,
 ): IResponse<T> {
-  return _.defaults(
+  return _.merge(
     {
       status: 200,
       statusText: 'ok',

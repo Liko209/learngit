@@ -6,10 +6,11 @@ import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { InstanceManager } from './mocks/server/InstanceManager';
 import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
-import { InitialData, GlipData } from './mocks/server/glip/types';
+import { InitialData, GlipData, GlipState } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
 import assert = require('assert');
+import { parseState } from './mocks/server/glip/utils';
 const debug = createDebug('SdkItFramework');
 
 type ItContext = {
@@ -32,13 +33,6 @@ type ItContext = {
   };
 };
 
-type LifeCycleHooks = {
-  beforeAll: jest.Lifecycle;
-  beforeEach: jest.Lifecycle;
-  afterAll: jest.Lifecycle;
-  afterEach: jest.Lifecycle;
-};
-
 function parseInitialData(initialData: InitialData): GlipData {
   const company = _.find(
     initialData.companies,
@@ -51,6 +45,7 @@ function parseInitialData(initialData: InitialData): GlipData {
   assert(company, 'Data invalid. company_id not found in companies');
   assert(user, 'Data invalid. user_id not found in people');
   // initialData.profile.
+  const userGroupStates = parseState(initialData.state);
   const result: GlipData = {
     company,
     user,
@@ -60,7 +55,7 @@ function parseInitialData(initialData: InitialData): GlipData {
     clientConfig: initialData.client_config,
     state: initialData.state,
     // todo parse to groupState
-    // groupState: initialData.
+    groupState: userGroupStates,
     profile: initialData.profile,
   };
   return result;
@@ -93,7 +88,7 @@ async function setup() {
   await initSdk();
   login();
   await initEnd();
-  await new Promise(resolve => setTimeout(resolve));
+  await new Promise(resolve => setTimeout(resolve, 1));
   debug('setup sdk cost end.');
 }
 
