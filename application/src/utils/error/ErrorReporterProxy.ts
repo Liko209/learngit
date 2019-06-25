@@ -5,6 +5,7 @@
  */
 import { SentryErrorReporter } from './SentryErrorReporter';
 import { IErrorReporter, UserContextInfo } from './types';
+import { mainLogger } from 'sdk';
 
 export class ErrorReporterProxy implements IErrorReporter {
   private _enabled: boolean;
@@ -13,6 +14,7 @@ export class ErrorReporterProxy implements IErrorReporter {
   private _isInit: boolean = false;
   constructor(enabled: boolean) {
     this._enabled = enabled;
+    mainLogger.info(`ErrorReporter enabled status: ${enabled}`);
     this._init();
   }
 
