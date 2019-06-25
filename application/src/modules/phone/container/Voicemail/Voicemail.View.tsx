@@ -49,6 +49,7 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
 
     return (
       <JuiEmptyPage
+        data-test-automation-id="voicemailEmptyPage"
         image={noVoicemailImage}
         message={t('phone.noVoicemailAvailable')}
         height={this._height}

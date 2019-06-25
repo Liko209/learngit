@@ -42,6 +42,7 @@ class AllCallsViewComponent extends Component<Props> {
 
     return (
       <JuiEmptyPage
+        data-test-automation-id="callHistoryEmptyPage"
         image={noCallLogImage}
         message={t('phone.noCallLogAvailable')}
         height={this._height}
