@@ -46,7 +46,7 @@
     "make-pseudo": "node ./scripts/make-pseudo.js"
   },
   "devDependencies": {
-    "@jest-runner/electron": "1.1.1",
+    "@jest-runner/electron": "2.0.1",
     "@types/enzyme": "3.9.0",
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.11",
