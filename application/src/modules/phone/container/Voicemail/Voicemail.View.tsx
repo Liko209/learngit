@@ -35,7 +35,7 @@ type State = {
 class VoicemailComp extends Component<Props, State> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY * 0} />,
+    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
     loadingMoreRenderer: <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };

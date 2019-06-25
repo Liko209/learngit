@@ -30,7 +30,7 @@ const checkNotification = (message: string) => ({
   type: 'error',
 });
 
-describe('VoicemailDataProvider', () => {
+describe('AllCallsDataProvider', () => {
   const calllogService = {
     name: ServiceConfig.CALL_LOG_SERVICE,
     fetchCallLogs() {},
