@@ -90,7 +90,7 @@ class SelectSettingItemViewComponent<
       return null;
     }
 
-    return <ValueComponent value={rawValue} />;
+    return <ValueComponent value={rawValue} source={source} />;
   }
 
   private _renderSource() {

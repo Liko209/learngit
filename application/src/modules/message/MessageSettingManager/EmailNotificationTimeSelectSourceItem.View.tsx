@@ -18,6 +18,17 @@ class EmailNotificationTimeSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
+    return t(
+      `setting.notificationAndSounds.emailNotifications.options.${value}`,
+    );
+  }
+}
+
+class EmailNotificationTimeSelectValue extends Component<
+  EmailNotificationItemProps & WithTranslation
+> {
+  render() {
+    const { value, t } = this.props;
     return (
       <JuiText>
         {t(`setting.notificationAndSounds.emailNotifications.options.${value}`)}
@@ -30,4 +41,8 @@ const EmailNotificationTimeSourceItem = withTranslation('translations')(
   EmailNotificationTimeSelectItem,
 );
 
-export { EmailNotificationTimeSourceItem };
+const EmailNotificationTimeSourceValue = withTranslation('translations')(
+  EmailNotificationTimeSelectValue,
+);
+
+export { EmailNotificationTimeSourceItem, EmailNotificationTimeSourceValue };

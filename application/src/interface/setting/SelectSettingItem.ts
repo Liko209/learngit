@@ -12,7 +12,7 @@ type SelectSettingItem<T> = SettingItem & {
   /**
    * Decide how the select renders value
    */
-  valueRenderer?: ComponentType<{ value: T }>;
+  valueRenderer?: ComponentType<{ value: T; source?: T[] }>;
 
   /**
    * Decide how the select renders source

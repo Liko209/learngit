@@ -25,10 +25,19 @@ import {
   NEW_MESSAGE_BADGES_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
-import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
+import {
+  NewMessageSelectSourceItem,
+  NewMessageSelectSourceValue,
+} from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
-import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
-import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
+import {
+  BadgeCountSourceItem,
+  BadgeCountSourceValue,
+} from './NewMessageBadgeCountSelectSouceItem.View';
+import {
+  EmailNotificationTimeSourceItem,
+  EmailNotificationTimeSourceValue,
+} from './EmailNotificationTimeSelectSourceItem.View';
 
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
@@ -46,6 +55,7 @@ class MessageSettingManager implements IMessageSettingManager {
           'setting.notificationAndSounds.desktopNotifications.newMessages.description',
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: NewMessageSelectSourceItem,
+        valueRenderer: NewMessageSelectSourceValue,
         weight: 200,
       } as SelectSettingItem<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>,
     );
@@ -60,6 +70,7 @@ class MessageSettingManager implements IMessageSettingManager {
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: EmailNotificationTimeSourceItem,
+        valueRenderer: EmailNotificationTimeSourceValue,
         ...emailNotificationTitleAndDescBuilder('directMessages'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
@@ -76,6 +87,7 @@ class MessageSettingManager implements IMessageSettingManager {
         type: SETTING_ITEM_TYPE.SELECT,
         weight: 300,
         sourceRenderer: EmailNotificationTimeSourceItem,
+        valueRenderer: EmailNotificationTimeSourceValue,
         ...emailNotificationTitleAndDescBuilder('teams'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
@@ -87,7 +99,7 @@ class MessageSettingManager implements IMessageSettingManager {
       },
     ];
 
-    emailNotificationSettingItems.forEach((i) =>
+    emailNotificationSettingItems.forEach(i =>
       this._settingService.registerItem(
         MESSAGE_SETTING_SCOPE,
         SETTING_SECTION__EMAIL_NOTIFICATIONS,
@@ -103,6 +115,7 @@ class MessageSettingManager implements IMessageSettingManager {
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: BadgeCountSourceItem,
+        valueRenderer: BadgeCountSourceValue,
         ...buildTitleAndDesc(
           'notificationAndSounds',
           'otherNotificationSettings',

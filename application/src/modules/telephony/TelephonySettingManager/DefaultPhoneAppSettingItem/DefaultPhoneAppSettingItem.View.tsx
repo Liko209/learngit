@@ -17,7 +17,13 @@ type DefaultPhoneAppSelectItemProps = {
   value: CALLING_OPTIONS;
 };
 
-const DefaultPhoneAppSelectItem: SFC<
+const options = {
+  [CALLING_OPTIONS.GLIP]: 'setting.phone.general.defaultPhoneApp.option.glip',
+  [CALLING_OPTIONS.RINGCENTRAL]:
+    'setting.phone.general.defaultPhoneApp.option.ringcentral',
+};
+
+const DefaultPhoneAppSelectItemCom: SFC<
   DefaultPhoneAppSelectItemProps & WithTranslation
 > = ({ value, t }) => {
   // to-do: This dialog logic should be moved into settings built-in component
@@ -81,24 +87,26 @@ const DefaultPhoneAppSelectItem: SFC<
     return noop;
   },        []);
 
-  const options = {
-    [CALLING_OPTIONS.GLIP]: t(
-      'setting.phone.general.defaultPhoneApp.option.glip',
-    ),
-    [CALLING_OPTIONS.RINGCENTRAL]: t(
-      'setting.phone.general.defaultPhoneApp.option.ringcentral',
-    ),
-  };
-  return (
-    <JuiText>
-      <span ref={optionRef}>{options[value]}</span>
-    </JuiText>
-  );
+  return <span ref={optionRef}>{t(options[value])}</span>;
 };
 
-const withTranslationComp = withTranslation()(DefaultPhoneAppSelectItem);
+const DefaultPhoneAppSelectValueCom = ({
+  value,
+  t,
+}: DefaultPhoneAppSelectItemProps & WithTranslation) => {
+  return <JuiText>{t(options[value])}</JuiText>;
+};
+
+const DefaultPhoneAppSelectValue = withTranslation('translations')(
+  DefaultPhoneAppSelectValueCom,
+);
+
+const DefaultPhoneAppSelectItem = withTranslation('translations')(
+  DefaultPhoneAppSelectItemCom,
+);
 
 export {
-  withTranslationComp as DefaultPhoneAppSelectItem,
+  DefaultPhoneAppSelectItem,
+  DefaultPhoneAppSelectValue,
   DefaultPhoneAppSelectItemProps,
 };

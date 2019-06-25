@@ -18,6 +18,17 @@ class BadgeCountSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
+    return t(
+      `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
+    );
+  }
+}
+
+class BadgeCountSelectValue extends Component<
+  BadgeCountItemProps & WithTranslation
+> {
+  render() {
+    const { value, t } = this.props;
     return (
       <JuiText>
         {t(
@@ -32,4 +43,8 @@ const BadgeCountSourceItem = withTranslation('translations')(
   BadgeCountSelectItem,
 );
 
-export { BadgeCountSourceItem };
+const BadgeCountSourceValue = withTranslation('translations')(
+  BadgeCountSelectValue,
+);
+
+export { BadgeCountSourceItem, BadgeCountSourceValue };

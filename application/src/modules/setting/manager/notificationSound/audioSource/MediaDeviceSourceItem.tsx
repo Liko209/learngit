@@ -16,8 +16,18 @@ type Props = MediaDeviceSourceItemProps & WithTranslation;
 
 const MediaDeviceSourceItem = withTranslation('translations')(
   ({ value, source, t }: Props) => (
+    <>{DeviceNameHelper.getDeviceName(value, source, t)}</>
+  ),
+);
+
+const MediaDeviceSourceValue = withTranslation('translations')(
+  ({ value, source, t }: Props) => (
     <JuiText>{DeviceNameHelper.getDeviceName(value, source, t)}</JuiText>
   ),
 );
 
-export { MediaDeviceSourceItem, MediaDeviceSourceItemProps };
+export {
+  MediaDeviceSourceItem,
+  MediaDeviceSourceValue,
+  MediaDeviceSourceItemProps,
+};

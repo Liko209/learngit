@@ -18,6 +18,18 @@ class NewMessageSelectItem extends Component<
 > {
   render() {
     const { value, t } = this.props;
+
+    return t(
+      `setting.notificationAndSounds.desktopNotifications.newMessages.options.${value}`,
+    );
+  }
+}
+
+class NewMessageSelectValue extends Component<
+  NewMessageSelectItemProps & WithTranslation
+> {
+  render() {
+    const { value, t } = this.props;
     return (
       <JuiText>
         {t(
@@ -32,4 +44,8 @@ const NewMessageSelectSourceItem = withTranslation('translations')(
   NewMessageSelectItem,
 );
 
-export { NewMessageSelectSourceItem };
+const NewMessageSelectSourceValue = withTranslation('translations')(
+  NewMessageSelectValue,
+);
+
+export { NewMessageSelectSourceItem, NewMessageSelectSourceValue };
