@@ -41,7 +41,7 @@ type SearchResult = {
 type SectionType<T> = {
   terms: string[];
   sortableModels: SortableModel<T>[];
-} | null;
+};
 
 type InstantSearchProps = {};
 

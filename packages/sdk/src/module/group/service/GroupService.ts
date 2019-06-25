@@ -34,7 +34,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   groupController: GroupController;
   groupConfigController: GroupConfigController;
   constructor() {
-    super(true, daoManager.getDao(GroupDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
     });
@@ -104,6 +104,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getHandleDataController()
       .handleGroupMostRecentPostChanged(payload);
+  }
+
+  handleGroupFetchedPosts(groupId: number, posts: Post[]) {
+    this.getGroupController()
+      .getHandleDataController()
+      .handleGroupFetchedPost(groupId, posts);
   }
 
   deleteAllTeamInformation = async (ids: number[]) => {
@@ -310,7 +316,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -326,7 +332,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -342,7 +348,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Group>[];
-  } | null> {
+  }> {
     return await this._groupFetchDataController.doFuzzySearchTeams(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -392,6 +398,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getIndividualGroups() {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getIndividualGroups();
+  }
+
+  getTeamIdsIncludeMe() {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getTeamIdsIncludeMe();
   }
 
   private get _groupFetchDataController() {

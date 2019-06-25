@@ -9,7 +9,9 @@ import { TelephonyService } from '../../../service/TelephonyService';
 import { EndViewModel } from '../End.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
+import { getEntity } from '@/store/utils';
 
+jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
 
 const jupiter = container.get(Jupiter);
@@ -17,13 +19,29 @@ jupiter.registerModule(telephony.config);
 
 let endViewModel: EndViewModel;
 
-beforeAll(() => {
-  endViewModel = new EndViewModel();
-  endViewModel._telephonyService.hangUp = jest.fn();
-});
-
 describe('EndViewModel', () => {
-  it('should call hangUp function', () => {
+  it('should not call hangUp function', () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      connectTime: Date.now(),
+    });
+    endViewModel = new EndViewModel({});
+    endViewModel.end();
+    const _telephonyService: TelephonyService = container.get(
+      TELEPHONY_SERVICE,
+    );
+    expect(_telephonyService.hangUp).not.toBeCalled();
+  });
+
+  it('should call hangUp function', async () => {
+    (getEntity as jest.Mock).mockReturnValue({
+      startTime: Date.now(),
+    });
+    endViewModel = new EndViewModel({});
+
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
+
     endViewModel.end();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,

@@ -293,7 +293,31 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
+                    { reusePaths: true },
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
+            use: [
+              {
+                loader: 'svg-sprite-loader',
+                options: {
+                  extract: true,
+                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
+                  symbolId: 'jupiter-[name]',
+                },
+              },
+              {
+                loader: 'svgo-loader',
+                options: {
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },

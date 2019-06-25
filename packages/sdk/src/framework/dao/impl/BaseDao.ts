@@ -85,10 +85,16 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
 
   async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     try {
+      const validIds = ids.filter(
+        (id: IdType) => id !== undefined && id !== null,
+      );
+      if (!validIds.length) {
+        return [];
+      }
       await this.db.ensureDBOpened();
       const query = this.createQuery();
 
-      let entities: T[] = await query.anyOf('id', ids).toArray();
+      let entities: T[] = await query.anyOf('id', validIds).toArray();
 
       if (order) {
         const entitiesMap = new Map<IdType, T>();
@@ -96,7 +102,7 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
           entitiesMap.set(entity.id, entity);
         });
         entities = [];
-        ids.forEach((id: IdType) => {
+        validIds.forEach((id: IdType) => {
           entities.push(entitiesMap.get(id)!);
         });
       }
@@ -300,10 +306,10 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
   }
 
   private _validateKey(key: IdType) {
-    if (!_.isInteger(key)) {
+    if (!_.isInteger(key) && !_.isString(key)) {
       Throw(
         ERROR_CODES_DB.INVALID_USAGE_ERROR,
-        `Key for db get method should be an integer. ${key}`,
+        `Key for db get method should be an integer or string. ${key}`,
       );
     }
   }

@@ -8,19 +8,15 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { DialerContainerProps, DialerContainerViewProps } from './types';
 import { container } from 'framework';
 import { computed } from 'mobx';
-import { TelephonyStore } from '../../store';
+import { TelephonyStore, INCOMING_STATE } from '../../store';
 import { TelephonyService } from '../../service';
 import audios from './sounds/sounds.json';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { RefObject } from 'react';
 import ReactDOM from 'react-dom';
-import { focusCampo } from '../../helpers';
-
-const sleep = function () {
-  return new Promise((resolve: (args: any) => any) => {
-    requestAnimationFrame(resolve);
-  });
-};
+import { debounce } from 'lodash';
+import { focusCampo, sleep } from '../../helpers';
+import { CALL_WINDOW_STATUS } from '../../FSM';
 
 class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   implements DialerContainerViewProps {
@@ -51,13 +47,28 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
+  get enteredDialer() {
+    return this._telephonyStore.enteredDialer;
+  }
+
+  @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
 
   @computed
   get isDialer() {
-    return this._telephonyStore.shouldDisplayDialer;
+    return (
+      this._telephonyStore.shouldDisplayDialer &&
+      (!this.trimmedInputString.length ||
+        (!!this.trimmedInputString.length &&
+          this._telephonyStore.firstLetterEnteredThroughKeypad))
+    );
+  }
+
+  @computed
+  get isForward() {
+    return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
   }
 
   @computed
@@ -76,16 +87,24 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
       value: el.phoneNumber,
       usageType: el.usageType,
       phoneNumber: el.phoneNumber,
+      label: el.label,
     }));
   }
-
   @computed
   get hasDialerOpened() {
     return this._telephonyStore.dialerOpenedCount !== 0;
   }
 
   @computed
-  get canTypeString() {
+  get shouldCloseToolTip() {
+    return (
+      this._telephonyStore.startMinimizeAnimation ||
+      this._telephonyStore.callWindowState === CALL_WINDOW_STATUS.MINIMIZED
+    );
+  }
+
+  @computed
+  get canClickToInput() {
     return (
       this._telephonyStore.inputString.length <
       this._telephonyStore.maximumInputLength
@@ -97,6 +116,16 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     return (
       this._telephonyStore.dialerFocused && this._telephonyStore.keypadEntered
     );
+  }
+
+  @computed
+  get trimmedInputString() {
+    return this._telephonyStore.inputString.trim();
+  }
+
+  @computed
+  get shouldEnterContactSearch() {
+    return this._telephonyStore.shouldEnterContactSearch;
   }
   /**
    * Perf: since it's a loop around search, we should not block the main thread
@@ -113,7 +142,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
     // if the current <audio/> is playing, search for the next none
     if (!currentSoundTrack.paused) {
-      await sleep();
+      const { promise } = sleep();
+      await promise;
       return Array.isArray(this._audioPool)
         ? this.getPlayableSoundTrack(
             ((cursor as number) + 1) % this._audioPool.length,
@@ -156,7 +186,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   playAudio = (digit: string) => {
-    if (!this.canTypeString) {
+    if (!this.canClickToInput) {
       return;
     }
     this._playAudio(digit === '+' ? '0' : digit);
@@ -170,9 +200,17 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     }
   }
 
-  typeString = (str: string) => {
-    if (!this.canTypeString) {
+  private _focusCampo = debounce(focusCampo, 30, {
+    leading: false,
+    trailing: true,
+  });
+
+  clickToInput = (str: string) => {
+    if (!this.canClickToInput) {
       return;
+    }
+    if (!this.trimmedInputString.length && !this.isForward) {
+      this._telephonyStore.enterFirstLetterThroughKeypad();
     }
     this.playAudio(str);
     this._telephonyService.concatInputString(str);
@@ -185,7 +223,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     ) as HTMLDivElement).querySelector('input');
 
     if (input && this._telephonyStore.inputString) {
-      focusCampo(input);
+      this._focusCampo(input);
     }
   }
 

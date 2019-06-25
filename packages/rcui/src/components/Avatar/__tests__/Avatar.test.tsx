@@ -4,6 +4,13 @@ import { RuiAvatar } from '../Avatar';
 import ThemeProvider from '../../../foundation/styles/ThemeProvider';
 
 describe('Avatar', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('renders correctly', () => {
     const tree = renderer
       .create(

@@ -17,9 +17,14 @@ import { IdModel } from 'sdk/framework/model';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
+import { TelephonyService } from 'sdk/module/telephony';
+import { BadgeService } from 'sdk/module/badge';
+import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
 
 const CACHE_COUNT = 1000;
 const PHONE_NUMBER_CACHE_COUNT = 100;
+const CALL_CACHE_COUNT = 10;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {
@@ -162,6 +167,38 @@ const ENTITY_SETTING = {
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: PHONE_NUMBER_CACHE_COUNT,
   },
+  [ENTITY_NAME.CALL]: {
+    event: [ENTITY.CALL],
+    service: () =>
+      ServiceLoader.getInstance<TelephonyService>(
+        ServiceConfig.TELEPHONY_SERVICE,
+      ),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CALL_CACHE_COUNT,
+  },
+  [ENTITY_NAME.BADGE]: {
+    event: [ENTITY.BADGE],
+    service: () =>
+      ServiceLoader.getInstance<BadgeService>(ServiceConfig.BADGE_SERVICE),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.VOICE_MAIL]: {
+    event: [ENTITY.VOICE_MAIL],
+    service: () =>
+      ServiceLoader.getInstance<VoicemailService>(
+        ServiceConfig.VOICEMAIL_SERVICE,
+      ),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.CALL_LOG]: {
+    event: [ENTITY.CALL_LOG],
+    service: () =>
+      ServiceLoader.getInstance<CallLogService>(ServiceConfig.CALL_LOG_SERVICE),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
 };
 
 const GLOBAL_VALUES = {
@@ -184,12 +221,10 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.CURRENT_POST_LIST_TYPE]: '',
   [GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW]: false,
   [GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS]: [] as number[],
-  [GLOBAL_KEYS.TOTAL_UNREAD]: {},
-  [GLOBAL_KEYS.FAVORITE_UNREAD]: {},
-  [GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD]: {},
-  [GLOBAL_KEYS.TEAM_UNREAD]: {},
   [GLOBAL_KEYS.CURRENT_SETTING_LIST_TYPE]: '',
   [GLOBAL_KEYS.IS_RC_USER]: false,
+  [GLOBAL_KEYS.CURRENT_TELEPHONY_TAB]: '',
+  [GLOBAL_KEYS.INCOMING_CALL]: false,
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

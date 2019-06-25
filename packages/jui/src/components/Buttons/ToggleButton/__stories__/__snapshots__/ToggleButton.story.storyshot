@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleButton 1`] = `
+.c0.c0 {
+  width: 36px;
+}
+
+.c0 .custom-switchBase {
+  width: 36px;
+  height: 20px;
+  -webkit-transform: translateX(-8px);
+  -ms-transform: translateX(-8px);
+  transform: translateX(-8px);
+}
+
+.c0:hover .custom-bar {
+  opacity: 0.88 !important;
+}
+
+.c0:active .custom-bar {
+  opacity: 0.76 !important;
+}
+
+.c0 .custom-bar {
+  opacity: 1;
+  background: #bfbfbf;
+  border-radius: 10px;
+  padding: 4px;
+  width: 36px;
+  height: 18px;
+  box-sizing: border-box;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  margin: 0;
+}
+
+.c0.c0 .custom-icon {
+  width: 12px;
+  height: 12px;
+  box-shadow: none;
+}
+
+.c0 .custom-disabled .custom-icon {
+  background: #fff;
+}
+
+.c0 .custom-checked {
+  -webkit-transform: translateX(8px);
+  -ms-transform: translateX(8px);
+  transform: translateX(8px);
+}
+
+.c0 .custom-checked .custom-icon {
+  background: #fff;
+}
+
+.c0 .custom-checked + .custom-bar {
+  opacity: 1;
+}
+
+.c0 .custom-disabled.custom-checked + .custom-bar {
+  opacity: 1;
+  background: #b2e3f4;
+}
+
+.c0 input {
+  -webkit-transform: translateX(8px);
+  -ms-transform: translateX(8px);
+  transform: translateX(8px);
+}
+
+<span
+  className="MuiSwitch-root custom-root c0"
+>
+  <span
+    className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiSwitch-switchBase custom-switchBase MuiSwitch-colorPrimary"
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    tabIndex={null}
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="MuiSwitch-icon custom-icon"
+      />
+      <input
+        className="MuiPrivateSwitchBase-input"
+        disabled={false}
+        onChange={[Function]}
+        type="checkbox"
+      />
+    </span>
+  </span>
+  <span
+    className="MuiSwitch-bar custom-bar"
+  />
+</span>
+`;

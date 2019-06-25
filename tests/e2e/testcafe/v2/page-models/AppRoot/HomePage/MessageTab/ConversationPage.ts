@@ -54,18 +54,41 @@ class HeaderMoreMenu extends BaseWebComponent {
   get convertToTeam() {
     return this.getEntry('Convert to team');
   }
+
+  get profile() {
+    return this.getSelectorByAutomationId('profileEntry');
+  }
+
+  async openProfile() {
+    return await this.t.click(this.profile);
+  }
+
+  get adminActions() {
+    return this.self.find('li').withText('Admin actions');
+  }
+
+  async enterAdminActions() {
+    return await this.t.hover(this.adminActions);
+  }
+
+  get teamArchiveMenu() {
+    return this.self.find('li').withText('Archive team');
+  }
+
+  async archiveTeam() {
+    return this.t.click(this.teamArchiveMenu);
+  }
+
+  get teamDeleteMenu() {
+    return this.self.find('li').withText('Delete team');
+  }
+
+  async deleteTeam() {
+    return this.t.click(this.teamDeleteMenu);
+  }
 }
 
 export class BaseConversationPage extends BaseWebComponent {
-  private _self: Selector = this.getSelectorByAutomationId('messagePanel');
-
-  get self() {
-    return this._self;
-  }
-
-  set self(root: Selector) {
-    this._self = root;
-  }
 
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
@@ -253,15 +276,16 @@ export class BaseConversationPage extends BaseWebComponent {
     return await this.scrollDiv.scrollHeight;
   }
 
-  async scrollUpToViewPostById(postId: string) {
+  async scrollUpToViewPostById(postId: string, maxRetry: number = 10, retryInterval: number = 1e3) {
     const postItem = this.postItemById(postId)
-    for (const i of _.range(10)) {
+    for (const i of _.range(maxRetry)) {
       if (await postItem.exists) {
         await postItem.scrollIntoView()
         break
       } else {
+        await this.h.scrollBy(this.scrollDiv, 0, -1); // FIXME: work around scrollUp bug
         await this.scrollUpOnePage();
-        await this.t.wait(1e3);
+        await this.t.wait(retryInterval);
       }
     }
     assert(await postItem.visible, "this post does not exist");
@@ -283,7 +307,7 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get newMessageDeadLine() {
     this.warnFlakySelector();
-    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
+    return this.stream.find('span').withText('New messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -314,7 +338,7 @@ export class BaseConversationPage extends BaseWebComponent {
   async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 
@@ -332,6 +356,10 @@ export class BaseConversationPage extends BaseWebComponent {
 }
 
 export class ConversationPage extends BaseConversationPage {
+  get self() {
+    return this.getSelectorByAutomationId('messagePanel');
+  }
+
   get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
@@ -425,17 +453,17 @@ export class ConversationPage extends BaseConversationPage {
   async typeAtMentionUserNameAndPressEnter(userName: string) {
     await this.typeAtSymbol();
     await this.t.typeText(this.messageInputArea, userName, { paste: true })
-    await this.mentionUser.ensureLoaded();
+    await this.mentionUserList.ensureLoaded();
     await this.t.pressKey('enter');
   }
 
   async addMentionUser(userName: string) {
     await this.t.typeText(this.messageInputArea, `@${userName}`);
-    await this.mentionUser.ensureLoaded();
-    await this.mentionUser.selectMemberByName(userName);
+    await this.mentionUserList.ensureLoaded();
+    await this.mentionUserList.selectMemberByName(userName);
   }
 
-  get mentionUser() {
+  get mentionUserList() {
     return this.getComponent(MentionUsers);
   }
 
@@ -524,7 +552,7 @@ export class ConversationPage extends BaseConversationPage {
 
   /* 1:1 */
   get telephonyButton() {
-    return this.telephonyIcon.parent('button'); //TODO: add automationId
+    return this.getSelectorByAutomationId('telephony-call-btn');
   }
 
   get telephonyIcon() {
@@ -640,7 +668,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
-  get href(){
+  get quote() {
+    return this.self.find(`[data-name="text"]`).find('q');
+  }
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -676,8 +707,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -810,7 +841,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {
@@ -833,6 +864,10 @@ export class PostItem extends BaseWebComponent {
 
   get fileSizes() {
     return this.getSelectorByAutomationId('file-no-preview-size', this.self);
+  }
+
+  async nameShouldBe(name: string) {
+    await this.t.expect(this.fileNames.withText(name).exists).ok();
   }
 
   async nthFileNameShouldBe(n: number, name: string) {
@@ -915,71 +950,77 @@ export class PostItem extends BaseWebComponent {
     return this.phoneLink.withAttribute('data-id', dataId);
   }
   // be searched item
-  get keyworkdsByHighLight() {
+  get keywordsByHighLight() {
     return this.self.find('span.highlight-term');
   }
 
   // special item card
   get itemCard() {
-    return this.self.find('.conversation-item-cards');
+    return this.getComponent(ConversationCardItem, this.self.find('.conversation-item-cards'))
   }
 
+}
+
+class ConversationCardItem extends BaseWebComponent {
   get eventIcon() {
-    return this.getSelectorByIcon('event', this.itemCard);
+    return this.getSelectorByIcon('event');
   }
 
-  get eventTitle() {
-    this.warnFlakySelector();
-    return this.eventIcon.nextSibling('span'); // todo: automation id
+  get title() {
+    return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
   get eventLocation() {
-    this.warnFlakySelector();
-    return this.itemCard.find('div').withExactText('Location').nextSibling('div'); // todo: automation id
+    return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
 
   get eventDue() {
-    this.warnFlakySelector();
-    return this.itemCard.find('div').withExactText('Due').nextSibling('div'); // todo: automation id
+    return this.getSelectorByAutomationIdUnderSelf('event-due');
   }
 
-  get eventDescripton() {
-    this.warnFlakySelector();
-    return // todo: automation id
+  get eventDescription() {
+    return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
-  get noteTitle() {
-    return this.itemCard.child('div').nth(0); // todo: automation id
+  get eventShowOld() {
+    return this.getSelectorByAutomationIdUnderSelf('event-show-old');
+  }
+
+  get eventOldLocation() {
+    return this.getSelectorByAutomationIdUnderSelf('event-old-location');
   }
 
   get noteBody() {
-    return this.itemCard.child('div').nth(1); // todo: automation id
-  }
-
-  get taskTitle() {
-    return this.itemCard.child('div').nth(0).child('span').nth(1);
+    return this.getSelectorByAutomationIdUnderSelf('note-body');
   }
 
   get taskAssignee() {
-    return this.itemCard.find('.task-avatar-name');
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name');
   }
 
   get taskSection() {
-    return this.itemCard.find('div').withExactText('Section').nextSibling('div');
+    return this.getSelectorByAutomationIdUnderSelf('task-section');
   }
 
   get taskDescription() {
-    return this.itemCard.find('div').withExactText('Description').nextSibling('div');
+    return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
-  get codeTitle() {
-    return this.getSelectorByIcon('code', this.itemCard).nextSibling('span');
+  get taskShowOld() {
+    return this.getSelectorByAutomationIdUnderSelf('task-show-old');
+  }
+
+  get taskOldAssigneesDiv() {
+    return this.getSelectorByAutomationIdUnderSelf('task-old-assignees');
+  }
+
+  get taskOldAssignees() {
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
   }
 
   get codeBody() {
-    return this.getSelectorByAutomationId('codeSnippetBody', this.itemCard);
+    return this.getSelectorByAutomationId('codeSnippetBody');
   }
-
 }
 
 class AudioConference extends BaseWebComponent {

@@ -131,6 +131,7 @@ class EntityPersistentController<
       items = await this.dao.getAll();
       if (items && items.length && this.entityCacheController) {
         await this.entityCacheController.bulkPut(items);
+        items = await this.entityCacheController.getEntities(filterFunc);
       }
     }
 
@@ -180,7 +181,7 @@ class EntityPersistentController<
   }
 
   private _subscribeEntityChange() {
-    if (this.dao && this.entityCacheController) {
+    if (this.entityCacheController) {
       const eventKey: string = this.getEntityNotificationKey();
       notificationCenter.on(
         eventKey,

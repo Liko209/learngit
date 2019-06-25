@@ -18,7 +18,7 @@ jest.mock('sdk/module/config');
 
 import { ListSearchResultViewModel } from '../ListSearchResult.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
+const userId = 1232222;
 const mockGroupEntity = {
   displayName: 'Socket001',
   entity: {
@@ -78,7 +78,7 @@ describe('ListSearchResultViewModel', () => {
       if (type === ServiceConfig.SEARCH_SERVICE) {
         return searchService;
       }
-      return null;
+      return { userConfig: { getGlipUserId: () => userId } };
     });
   }
 
@@ -109,8 +109,6 @@ describe('ListSearchResultViewModel', () => {
     });
 
     it('search groups: returns ids and update store', async (done: jest.DoneCallback) => {
-      const store = storeManager.getEntityMapStore(ENTITY_NAME.GROUP);
-      jest.spyOn(store, 'batchSet');
       groupService.doFuzzySearchGroups = jest
         .fn()
         .mockResolvedValue({ terms: [], sortableModels: [mockGroupEntity] });
@@ -121,16 +119,10 @@ describe('ListSearchResultViewModel', () => {
         true,
       );
       expect(result).toContain(mockGroupEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith(
-        [mockGroupEntity.entity],
-        true,
-      );
       done();
     });
 
     it('search teams: returns ids and update store', async (done: jest.DoneCallback) => {
-      const store = storeManager.getEntityMapStore(ENTITY_NAME.GROUP);
-      jest.spyOn(store, 'batchSet');
       groupService.doFuzzySearchTeams = jest
         .fn()
         .mockResolvedValue({ terms: [], sortableModels: [mockTeamsEntity] });
@@ -141,22 +133,12 @@ describe('ListSearchResultViewModel', () => {
         true,
       );
       expect(result).toContain(mockTeamsEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith(
-        [mockTeamsEntity.entity],
-        true,
-      );
       done();
     });
 
     it('search people: returns ids and update store', async (done: jest.DoneCallback) => {
-      const store = storeManager.getEntityMapStore(ENTITY_NAME.PERSON);
-      jest.spyOn(store, 'batchSet');
       const result = await listSearchResultViewModel.search(TAB_TYPE.PEOPLE);
       expect(result).toContain(mockPeopleEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith(
-        [mockPeopleEntity.entity],
-        true,
-      );
       done();
     });
   });

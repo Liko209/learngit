@@ -5,7 +5,7 @@
  */
 import { getLogger } from 'log4js';
 
-import { filterByTags } from './libs/filter';
+import { filterByTags, readTestLog } from './libs/filter';
 import { RUNNER_OPTS } from './config';
 import { accountPoolClient, finishRun } from './init';
 
@@ -22,13 +22,13 @@ const sslOptions = RUNNER_OPTS.ENABLE_SSL ? {
 
 async function runTests(runnerOpts) {
   let failed = 0;
-  const testCafe = await createTestCafe(undefined, undefined, undefined, sslOptions);
+  const testCafe = await createTestCafe(runnerOpts.TESTCAFE_HOST, undefined, undefined, sslOptions);
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 
   runner
-    .src(runnerOpts.FIXTURES)
-    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS))
+    .src([`${__dirname}/.dummy-test.ts`, ...runnerOpts.FIXTURES])
+    .filter(filterByTags(runnerOpts.INCLUDE_TAGS, runnerOpts.EXCLUDE_TAGS, readTestLog(runnerOpts.TESTS_LOG)))
     .browsers(runnerOpts.BROWSERS)
     .reporter(runnerOpts.REPORTER, process.stdout)
     .screenshots(runnerOpts.SCREENSHOTS_PATH, runnerOpts.SCREENSHOT_ON_FAIL)
@@ -43,8 +43,11 @@ async function runTests(runnerOpts) {
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
     });
   } finally {
+    logger.info(`runner exit with ${failed} failed cases`);
     await finishRun().catch(error => logger.error(error));
+    logger.info(`start to close testcafe`);
     await testCafe.close();
+    logger.info(`testcafe stop`);
   }
   return failed;
 }
@@ -52,6 +55,8 @@ async function runTests(runnerOpts) {
 (async function cli() {
   try {
     const failed = await runTests(RUNNER_OPTS);
+    logger.info(`test exit normally`);
+    await finishRun().catch(error => logger.error(error));
     process.exitCode = failed > 0 ? 3 : 0;
   } catch (err) {
     logger.error(err);

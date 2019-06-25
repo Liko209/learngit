@@ -39,12 +39,13 @@ const MORE_SECTION_LENGTH = 3;
 const SEARCH_DELAY = 50;
 
 const InvalidIndexPath: number[] = [-1, -1];
+const DefaultIndexPath: number[] = [0, 0];
 
 class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   implements InstantSearchViewProps {
   @observable terms: string[] = [];
   @observable searchResult: SearchItems[] = [];
-  @observable selectIndex: number[] = InvalidIndexPath;
+  @observable selectIndex: number[] = DefaultIndexPath;
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
   );
@@ -200,7 +201,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     ];
     this.searchResult = data;
     this.terms = terms;
-    this.resetSelectIndex();
+    this.setSelectIndexToDefault();
   }
 
   get contentSearchIds() {
@@ -232,6 +233,11 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   @action
   resetSelectIndex = () => {
     this.selectIndex = InvalidIndexPath;
+  }
+
+  @action
+  setSelectIndexToDefault = () => {
+    this.selectIndex = DefaultIndexPath;
   }
 
   @action

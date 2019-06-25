@@ -31,7 +31,7 @@ export interface IGroup {
   glipId?: string;
   owner?: IUser;
   members: IUser[];
-  type: string; // Team or DirectMessage(Group, Direct, Personal)
+  type: "Team" | "DirectMessage" | "Group"; // "DirectMessage is 1:1; Group need 3 members";
   privacy?: string;
   isPublic?: boolean;
   description?: string;

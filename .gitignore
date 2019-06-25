@@ -11,6 +11,7 @@ node_modules
 /packages/*/build-es/
 /packages/*/coverage/
 /packages/*/node_modules/
+/packages/*/package-lock.json/
 /packages/jui/storybook-static
 /application/node_modules/
 /application/build/
@@ -46,3 +47,5 @@ v8-compile-cache*
 
 # ts cache
 .tsc_cache*
+packages/jui/package-lock.json
+packages/rcui/package-lock.json

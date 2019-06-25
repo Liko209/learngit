@@ -1,0 +1,26 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-05-29 14:29:19
+ * Copyright © RingCentral. All rights reserved.
+ */
+const SETTING_PAGE__GENERAL = 'SETTING_PAGE.GENERAL';
+const SETTING_PAGE__1 = 'SETTING_PAGE.1';
+const SETTING_PAGE__2 = 'SETTING_PAGE.2';
+
+const SETTING_SECTION__GENERAL = 'SETTING_SECTION.GENERAL';
+const SETTING_SECTION__1 = 'SETTING_SECTION.1';
+const SETTING_SECTION__2 = 'SETTING_SECTION.2';
+
+const SETTING_ITEM__1 = 1;
+const SETTING_ITEM__2 = 2;
+
+export {
+  SETTING_PAGE__GENERAL,
+  SETTING_PAGE__1,
+  SETTING_PAGE__2,
+  SETTING_SECTION__GENERAL,
+  SETTING_SECTION__1,
+  SETTING_SECTION__2,
+  SETTING_ITEM__1,
+  SETTING_ITEM__2,
+};

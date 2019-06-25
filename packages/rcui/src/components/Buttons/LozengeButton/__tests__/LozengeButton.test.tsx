@@ -4,6 +4,13 @@ import ThemeProvider from '../../../../foundation/styles/ThemeProvider';
 import * as renderer from 'react-test-renderer';
 
 describe('<Button />', () => {
+  // will remove until upgrade material ui
+  beforeAll(() => {
+    // mock console for jest
+    (global as any)['console'] = {
+      error: jest.fn(),
+    };
+  });
   it('should render with loading', () => {
     const component = renderer
       .create(

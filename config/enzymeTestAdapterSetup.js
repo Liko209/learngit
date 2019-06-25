@@ -11,7 +11,7 @@ import 'reflect-metadata';
 faker.seed(1);
 
 const withTranslation = () => Component => {
-  Component.defaultProps = { ...Component.defaultProps, t: () => '' };
+  Component.defaultProps = { ...Component.defaultProps, t: (key) => key };
   return Component;
 };
 

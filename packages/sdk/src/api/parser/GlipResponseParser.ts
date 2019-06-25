@@ -3,13 +3,24 @@
  * @Date: 2019-01-08 15:22:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseResponse } from 'foundation';
+import { BaseResponse, NETWORK_HANDLE_TYPE } from 'foundation';
 import { JError, JServerError, ERROR_CODES_SERVER } from '../../error';
 import { IResponseParser } from './types';
 
 export class GlipResponseParser implements IResponseParser {
-  name: 'GlipResponseParser';
+  name = 'GlipResponseParser';
   parse(response: BaseResponse): JError | null {
+    if (
+      response.request.handlerType &&
+      response.request.handlerType.name &&
+      ![
+        NETWORK_HANDLE_TYPE.GLIP,
+        NETWORK_HANDLE_TYPE.UPLOAD,
+        NETWORK_HANDLE_TYPE.DEFAULT,
+      ].includes(response.request.handlerType.name)
+    ) {
+      return null;
+    }
     const { data } = response;
     /**
      * From resp.data
@@ -40,5 +51,4 @@ export class GlipResponseParser implements IResponseParser {
     }
     return null;
   }
-
 }

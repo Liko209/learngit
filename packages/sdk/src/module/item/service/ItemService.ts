@@ -28,13 +28,14 @@ import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
+import { NoteItemService } from '../module/note/service';
 const INVALID_ITEM_ID = [-1, -2, null];
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
   constructor() {
-    super(false, daoManager.getDao(ItemDao), {
+    super({ isSupportedCache: false }, daoManager.getDao(ItemDao), {
       basePath: '/item',
       networkClient: Api.glipNetworkClient,
     });
@@ -111,6 +112,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this.itemServiceController.getSubItemService(
       TypeDictionary.TYPE_ID_FILE,
     ) as FileItemService;
+  }
+
+  protected get noteService() {
+    return this.itemServiceController.getSubItemService(
+      TypeDictionary.TYPE_ID_PAGE,
+    ) as NoteItemService;
   }
 
   async sendItemFile(
@@ -256,6 +263,17 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     options: ItemQueryOptions,
   ): Promise<{ index: number; totalCount: number }> {
     return this.itemServiceController.getItemIndexInfo(itemId, options);
+  }
+  async editFileName(itemId: number, newName: string): Promise<void> {
+    await this.fileService.editFileName(itemId, newName);
+  }
+
+  async deleteFile(itemId: number, version: number): Promise<void> {
+    await this.fileService.deleteFile(itemId, version);
+  }
+
+  async getNoteBody(itemId: number) {
+    return await this.noteService.getNoteBody(itemId);
   }
 }
 

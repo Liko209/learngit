@@ -14,6 +14,7 @@ module.exports = {
       tsConfig: './tsconfig.test.json',
     },
   },
+  modulePathIgnorePatterns: ["<rootDir>/tests/testcafe/"],
   transform: {
     '\\.svg$': 'jest-raw-loader',
   },

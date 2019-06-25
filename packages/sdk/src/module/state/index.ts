@@ -5,8 +5,8 @@
  */
 
 import { IStateService, StateService } from './service';
-import { SectionUnread } from './types';
-import { UMI_SECTION_TYPE } from './constants';
+import { GroupBadge } from './types';
+import { GROUP_BADGE_TYPE } from './constants';
 export * from './entity';
 
-export { IStateService, StateService, SectionUnread, UMI_SECTION_TYPE };
+export { IStateService, StateService, GroupBadge, GROUP_BADGE_TYPE };

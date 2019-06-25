@@ -13,6 +13,11 @@ import copy from 'copy-to-clipboard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { saveBlob } from '@/common/blobUtils';
+import {
+  postParser,
+  HighlightContextInfo,
+  SearchHighlightContext,
+} from '@/common/postParser';
 
 const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
@@ -22,6 +27,8 @@ const MAX_EDITOR_LINES = 200;
 class CodeSnippet extends React.Component<
   WithTranslation & CodeSnippetViewProps
 > {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
   state = {
     showHeaderActions: false,
     isCollapse: true,
@@ -134,7 +141,7 @@ class CodeSnippet extends React.Component<
     return (
       <JuiConversationItemCard
         Icon="code"
-        title={title}
+        title={postParser(title, { keyword: this.context.keyword })}
         contentHasPadding={false}
         headerActions={this._getHeaderActions()}
         showHeaderActions={this.state.showHeaderActions}

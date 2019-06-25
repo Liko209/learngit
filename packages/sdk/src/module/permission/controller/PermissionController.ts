@@ -53,9 +53,6 @@ class PermissionController {
 
   // move to permissionController
   private _initControllers() {
-    this._initSplitIOController();
-  }
-  private _initSplitIOController() {
     this.splitIOController = new SplitIOController(
       this._refreshPermissions.bind(this),
     );

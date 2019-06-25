@@ -18,7 +18,11 @@ class FileItemController {
 
   get fileActionController() {
     if (!this._fileActionController) {
+      const partialModifyController = buildPartialModifyController<Item>(
+        this._entitySourceController,
+      );
       this._fileActionController = new FileActionController(
+        partialModifyController,
         this._entitySourceController,
       );
     }

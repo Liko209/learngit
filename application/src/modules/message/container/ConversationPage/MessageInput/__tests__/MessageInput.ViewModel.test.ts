@@ -15,7 +15,6 @@ import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
-import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -24,7 +23,7 @@ jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
 
 const postService = new PostService();
-
+const userId = 1232222;
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
@@ -49,7 +48,7 @@ ServiceLoader.getInstance = jest
       return groupConfigService;
     }
 
-    return null;
+    return { userConfig: { getGlipUserId: () => userId } };
   });
 
 const mockGroupEntityData = {
@@ -201,9 +200,26 @@ describe('MessageInputViewModel', () => {
         expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(draft);
       });
       it('should remove empty line without any text when save draft', () => {
+        messageInputViewModel.draft = '<p><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove multiple empty lines without any text when save draft', () => {
         messageInputViewModel.draft = '<p><br></p><p><br></p>';
         messageInputViewModel.forceSaveDraft();
         expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove empty line with 2 <br> when save draft', () => {
+        messageInputViewModel.draft = '<p><br><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove empty line with <br> and some text when save draft', () => {
+        messageInputViewModel.draft = '<p><br>abc</p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(
+          '<p><br>abc</p>',
+        );
       });
     });
     describe('insertEmoji', () => {

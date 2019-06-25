@@ -27,7 +27,7 @@ test.meta(<ITestMeta>{
     await h(t).log('This case (resize) is not working on Electron or Edge!');
     return;
   }
-  
+
   const company = h(t).rcData.mainCompany;
   const [loginUser, ...rest] = company.users;
   const otherUsers = rest.map(({ rcId: id }) => ({ id }));
@@ -53,10 +53,12 @@ test.meta(<ITestMeta>{
 
   const messageTab = app.homePage.messageTab;
   const profileDialog = app.homePage.profileDialog;
+  const conversationPage = app.homePage.messageTab.conversationPage;
 
   const openTeamT1Profile = async () => {
-    await messageTab.teamsSection.conversationEntryById(teamT1Id).openMoreMenu();
-    await messageTab.moreMenu.profile.enter();
+    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.ensureLoaded();
   }
 

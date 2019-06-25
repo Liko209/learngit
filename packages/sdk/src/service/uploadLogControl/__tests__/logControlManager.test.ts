@@ -11,6 +11,7 @@ import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
+import { ZipItemLevel } from '../types';
 
 jest.mock('../utils', () => {
   return {
@@ -121,6 +122,43 @@ describe('LogControlManager', () => {
       expect(spyMainLoggerWarn).toBeCalled();
       expect(spyLogManagerConfig).not.toHaveBeenCalled();
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getZipLog()', () => {
+    it('should get zip items from ZipItemProviders', async () => {
+      logControlManager.worker = {
+        zip: jest.fn().mockImplementation(item => item),
+      };
+      logControlManager['_zipItemProviders'] = [
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['a']),
+        },
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['b']),
+        },
+      ];
+      const result = await logControlManager.getZipLog();
+      expect(result).toEqual(['a', 'b']);
+    });
+    it('should filter zip items by level', async () => {
+      logControlManager.worker = {
+        zip: jest.fn().mockImplementation(item => item),
+      };
+      logControlManager['_zipItemProviders'] = [
+        {
+          level: ZipItemLevel.DEBUG_ALL,
+          getZipItems: jest.fn().mockResolvedValue(['a']),
+        },
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['b']),
+        },
+      ];
+      const result = await logControlManager.getZipLog();
+      expect(result).toEqual(['b']);
     });
   });
 });

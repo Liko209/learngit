@@ -18,7 +18,7 @@ type CallProps = {
 
 type CallViewProps = {
   phoneNumber: string;
-  directCall: () => void;
+  call: () => void;
   trackCall: (analysisSource?: string) => void;
   showIcon: PromisedComputedValue<boolean>;
 };

@@ -6,6 +6,7 @@
 import UserPermissionType from '../../module/permission/types';
 import { IPermissionService } from '../../module/permission/service/IPermissionService';
 import { container } from '../../container';
+import _ from 'lodash';
 
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
 
@@ -51,6 +52,35 @@ class SearchUtils {
     );
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_SEARCH_SUPPORT_BY_SOUNDEX,
+    );
+  }
+
+  static getValidPhoneNumber(value: string): string {
+    let result: string = '';
+    for (let i = 0; i < value.length; ++i) {
+      const c = value.charAt(i);
+      if (SearchUtils.isSpecialChar(c)) {
+        continue;
+      }
+
+      if (_.isNaN(parseInt(c, 10))) {
+        return '';
+      }
+
+      result = result.concat(c);
+    }
+    return result;
+  }
+
+  static isSpecialChar(c: string) {
+    return (
+      c === '+' ||
+      c === '(' ||
+      c === ')' ||
+      c === '-' ||
+      c === '*' ||
+      c === '#' ||
+      c === ','
     );
   }
 }

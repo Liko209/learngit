@@ -7,62 +7,116 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiTypography } from 'jui/foundation/Typography';
 import { MenuProps, MenuViewProps } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList, JuiMenuItem, JuiSubMenu } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
+import { CONVERSATION_TYPES } from '@/constants';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { teamActionHandler } from '@/common/handleTeamAction';
 
 @observer
-class Menu extends React.Component<
+class MenuComponent extends React.Component<
   WithTranslation & MenuProps & MenuViewProps
 > {
-  private _renderAnchor = () => {
+  renderProfile = (title: string) => (
+    <OpenProfileDialog id={this.props.profileId}>
+      <JuiMenuItem data-test-automation-id="profileEntry">{title}</JuiMenuItem>
+    </OpenProfileDialog>
+  )
+
+  renderPeopleMenu = () => {
     const { t } = this.props;
+
     return (
-      <JuiIconButton
-        size="medium"
-        tooltipTitle={t('common.more')}
-        ariaLabel={t('common.more')}
-      >
-        more_vert
-      </JuiIconButton>
+      <JuiMenuList>{this.renderProfile(t('people.team.profile'))}</JuiMenuList>
     );
   }
 
-  private _openConvertToTeam = () => {
-    const { id } = this.props;
-    ConvertToTeam.show({ id });
+  renderGroupMenu = () => {
+    const { t } = this.props;
+
+    return (
+      <JuiMenuList>
+        {this.renderProfile(t('people.team.profile'))}
+        <JuiMenuItem onClick={this.onConvertToTeam}>
+          {t('people.team.convertToTeam')}
+        </JuiMenuItem>
+      </JuiMenuList>
+    );
   }
 
-  render() {
-    const { t, isGroup } = this.props;
-    // Use isGroup to determine whether to display the menu,
-    // Sprint 16 only one `Convert to team` menu item.
-    // https://jira.ringcentral.com/browse/FIJI-3899
+  onConvertToTeam = () => ConvertToTeam.show({ id: this.props.id });
+
+  renderTeamMenu = () => {
+    const { t, isAdmin, isCompanyTeam } = this.props;
+
+    const adminActions = (
+      <JuiSubMenu title={t('people.team.adminActions')}>
+        <JuiMenuItem onClick={this.onArchiveTeam}>
+          {t('people.team.archiveTeam')}
+        </JuiMenuItem>
+        <JuiMenuItem onClick={this.onDeleteTeam}>
+          <JuiTypography color="error" variant="caption">
+            {t('people.team.deleteTeam')}
+          </JuiTypography>
+        </JuiMenuItem>
+      </JuiSubMenu>
+    );
+
     return (
-      isGroup && (
-        <JuiPopoverMenu
-          Anchor={this._renderAnchor}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <JuiMenuList>
-            {isGroup && (
-              <JuiMenuItem onClick={this._openConvertToTeam}>
-                {t('people.team.convertToTeam')}
-              </JuiMenuItem>
-            )}
-          </JuiMenuList>
-        </JuiPopoverMenu>
-      )
+      <JuiMenuList>
+        {this.renderProfile(t('people.team.teamDetails'))}
+        {isAdmin && !isCompanyTeam ? adminActions : null}
+      </JuiMenuList>
+    );
+  }
+
+  onDeleteTeam = () => teamActionHandler.onTeamDelete(this.props.id);
+
+  onArchiveTeam = () => teamActionHandler.onTeamArchive(this.props.id);
+
+  renderMenuList = () => {
+    switch (this.props.groupType) {
+      case CONVERSATION_TYPES.TEAM:
+        return this.renderTeamMenu();
+      case CONVERSATION_TYPES.NORMAL_GROUP:
+        return this.renderGroupMenu();
+      default:
+        return this.renderPeopleMenu();
+    }
+  }
+
+  renderMenuAnchor = () => (
+    <JuiIconButton
+      size="medium"
+      tooltipTitle={this.props.t('common.more')}
+      ariaLabel={this.props.t('common.more')}
+    >
+      more_vert
+    </JuiIconButton>
+  )
+
+  render() {
+    return (
+      <JuiPopoverMenu
+        Anchor={this.renderMenuAnchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        {this.renderMenuList()}
+      </JuiPopoverMenu>
     );
   }
 }
-const MenuView = withTranslation('translations')(Menu);
+
+const MenuView = withTranslation('translations')(MenuComponent);
+
 export { MenuView };

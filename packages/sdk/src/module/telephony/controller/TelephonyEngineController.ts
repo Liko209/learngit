@@ -12,9 +12,8 @@ import {
 import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
-import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+import { ITelephonyDelegate } from 'sdk/module/telephony';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
-import { ITelephonyCallDelegate } from '../service';
 import { TelephonyLogController } from './TelephonyLogController';
 import { notificationCenter } from '../../../service';
 import { RC_INFO, SERVICE } from '../../../service/eventKey';
@@ -24,6 +23,10 @@ import { PermissionService, UserPermissionType } from '../../permission';
 import { ENTITY } from 'sdk/service/eventKey';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { Call } from '../entity';
+import _ from 'lodash';
+import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -60,13 +63,19 @@ class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
+  mediaDevicesController: VoIPMediaDevicesDelegate;
   private _accountController: TelephonyAccountController;
   private _preCallingPermission: boolean = false;
+  private _accountDelegate: ITelephonyDelegate;
+  private _entityCacheController: IEntityCacheController<Call>;
 
-  constructor(telephonyConfig: TelephonyUserConfig) {
+  constructor(
+    telephonyConfig: TelephonyUserConfig,
+    entityCacheController: IEntityCacheController<Call>,
+  ) {
     this.voipNetworkDelegate = new VoIPNetworkClient();
     this.voipDaoDelegate = new VoIPDaoClient(telephonyConfig);
-
+    this._entityCacheController = entityCacheController;
     this.subscribeNotifications();
   }
 
@@ -99,11 +108,13 @@ class TelephonyEngineController {
     }
     if (currentCallingPermission) {
       this._preCallingPermission = true;
+      this.createAccount();
       notificationCenter.emitKVChange(
         SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
         true,
       );
     } else {
+      telephonyLogger.info('voip calling permission is revoked');
       this.logout();
     }
   }
@@ -128,25 +139,47 @@ class TelephonyEngineController {
   initEngine() {
     RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
+    this.mediaDevicesController = new VoIPMediaDevicesDelegate(this.rtcEngine);
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
+    this.rtcEngine.setMediaDeviceDelegate(this.mediaDevicesController);
   }
 
-  createAccount(
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) {
+  setAccountDelegate(delegate: ITelephonyDelegate) {
+    this._accountDelegate = delegate;
+    this._accountController &&
+      this._accountController.setAccountDelegate(delegate);
+  }
+
+  async createAccount() {
     // Engine can hold multiple accounts for multiple calls
-    this._preCallingPermission = true;
-    this.rtcEngine.setUserAgentInfo({
+    this._preCallingPermission = await this.getVoipCallPermission();
+    this.rtcEngine.setUserInfo(await this.getUserInfo());
+    if (this._preCallingPermission) {
+      this._accountController = new TelephonyAccountController(this.rtcEngine);
+      this._accountDelegate &&
+        this._accountController.setAccountDelegate(this._accountDelegate);
+      this._entityCacheController &&
+        this._accountController.setDependentController(
+          this._entityCacheController,
+        );
+    }
+  }
+
+  async getUserInfo() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const rcBrandId = await rcInfoService.getRCBrandId();
+    const rcAccountId = await rcInfoService.getRCAccountId();
+    const rcExtensionId = await rcInfoService.getRCExtensionId();
+    return {
+      rcBrandId,
+      rcAccountId,
+      rcExtensionId,
       endpointId: this.getEndpointId(),
       userAgent: PlatformUtils.getRCUserAgent(),
-    });
-    this._accountController = new TelephonyAccountController(
-      this.rtcEngine,
-      accountDelegate,
-      callDelegate,
-    );
+    };
   }
 
   getAccountController() {
@@ -161,6 +194,7 @@ class TelephonyEngineController {
           SERVICE.TELEPHONY_SERVICE.VOIP_CALLING,
           false,
         );
+        delete this._accountController;
       });
     }
   }

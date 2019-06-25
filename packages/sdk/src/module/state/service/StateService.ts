@@ -16,17 +16,18 @@ import { Group } from '../../group/entity';
 import { IGroupService } from '../../group/service/IGroupService';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
-import { SectionUnread } from '../types';
+import { GroupBadge } from '../types';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { MyStateConfig } from '../config';
+import { UndefinedAble } from 'sdk/types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
   private _stateController: StateController;
   private _myStateConfig: MyStateConfig;
   constructor(private _groupService: IGroupService) {
-    super(true, daoManager.getDao(GroupStateDao));
+    super({ isSupportedCache: true }, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
@@ -45,6 +46,17 @@ class StateService extends EntityBaseService<GroupState>
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
       );
     });
+  }
+
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
+  }
+
+  private _initBadge = async () => {
+    await this.getStateController()
+      .getTotalUnreadController()
+      .initializeTotalUnread();
   }
 
   protected getStateController(): StateController {
@@ -146,10 +158,10 @@ class StateService extends EntityBaseService<GroupState>
       .handleProfile(payload);
   }
 
-  getSingleUnreadInfo(id: number): SectionUnread | undefined {
+  getSingleGroupBadge(id: number): UndefinedAble<GroupBadge> {
     return this.getStateController()
       .getTotalUnreadController()
-      .getSingleUnreadInfo(id);
+      .getSingleGroupBadge(id);
   }
 }
 

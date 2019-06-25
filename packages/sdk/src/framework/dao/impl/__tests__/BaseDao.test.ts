@@ -201,6 +201,38 @@ describe('BaseDao', () => {
     expect(result[0].boolean).toBe(false);
   });
 
+  it('should return correctly result even has invalid ids', async () => {
+    await dao.bulkPut([
+      {
+        id: 1,
+        name: 'name1',
+        boolean: false,
+      },
+      {
+        id: 2,
+        name: 'name2',
+        boolean: false,
+      },
+      {
+        id: 3,
+        name: 'name3',
+        boolean: true,
+      },
+    ]);
+
+    const result = await dao.batchGet([1, null, 3, undefined]);
+    expect(result.length).toBe(2);
+    expect(result[0].name).toBe('name1');
+    expect(result[1].name).toBe('name3');
+    expect(result[0].boolean).toBe(false);
+    expect(result[1].boolean).toBe(true);
+  });
+
+  it('should return [] if has not valid ids', async () => {
+    const result = await dao.batchGet([null, undefined]);
+    expect(result.length).toBe(0);
+  });
+
   it('should update item', async () => {
     await dao.update({
       id: 1,

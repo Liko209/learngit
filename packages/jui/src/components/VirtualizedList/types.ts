@@ -6,6 +6,8 @@
 
 type Direction = 'up' | 'down';
 
+type UndefinedAble<T> = T | undefined;
+
 type IndexRange = {
   startIndex: number;
   stopIndex: number;
@@ -34,6 +36,7 @@ type JuiVirtualizedListProps = {
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   fixedWrapper?: boolean;
+  onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
 export {
@@ -42,4 +45,5 @@ export {
   IndexConstraint,
   Direction,
   Delta,
+  UndefinedAble,
 };

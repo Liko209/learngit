@@ -128,6 +128,14 @@ class DataHelper {
     return this.t.ctx.__rcData;
   }
 
+  set needDeleted(needDeleted: boolean) {
+    this.t.ctx.__needDeleted = needDeleted;
+  }
+
+  get needDeleted(): boolean {
+    return this.t.ctx.__needDeleted;
+  }
+
   set originData(data: any) {
     this.t.ctx.__originData = data;
   }
@@ -136,9 +144,11 @@ class DataHelper {
     return this.t.ctx.__originData;
   }
 
-  async setup(accountPoolClient: IAccountPoolClient, accountType: string) {
+  async setup(accountPoolClient: IAccountPoolClient, accountType: string, needDeleted: boolean = false) {
     this.accountPoolClient = accountPoolClient;
-    this.originData = await this.accountPoolClient.checkOutAccounts(accountType);
+    this.needDeleted = needDeleted;
+    const releaseStatus = needDeleted ? 'dirty' : undefined;
+    this.originData = await this.accountPoolClient.checkOutAccounts(accountType, releaseStatus);
     if (this.originData.accountType.startsWith('kamino')) {
       this.rcData = DataHelper.formatKaminoRcData(this.originData);
     } else {
@@ -147,7 +157,11 @@ class DataHelper {
   }
 
   async teardown() {
-    await this.accountPoolClient.checkInAccounts(this.originData);
+    if (this.needDeleted) {
+      await this.accountPoolClient.checkInAccounts(this.originData);
+    } else {
+      await this.accountPoolClient.addIntoAccounts(this.originData);
+    }
   }
 }
 

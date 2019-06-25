@@ -8,14 +8,12 @@ import { Profile } from 'sdk/module/profile/entity';
 import { MouseEvent } from 'react';
 
 type MenuProps = {
-  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   onClose: (event: MouseEvent<HTMLElement> | UIEvent) => void;
 };
 
 type MenuViewProps = {
-  personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;

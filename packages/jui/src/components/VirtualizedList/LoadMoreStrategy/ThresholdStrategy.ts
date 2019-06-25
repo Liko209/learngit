@@ -10,19 +10,26 @@ import {
   LoadMoreInfo,
 } from './ILoadMoreStrategy';
 
+import { UndefinedAble } from '../types';
+
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
   private _minBatchCount: number;
+  private _preloadInfo: UndefinedAble<LoadMoreInfo>;
 
-  constructor({
-    threshold,
-    minBatchCount,
-  }: {
-    threshold: number;
-    minBatchCount: number;
-  }) {
+  constructor(
+    {
+      threshold,
+      minBatchCount,
+    }: {
+      threshold: number;
+      minBatchCount: number;
+    },
+    preloadInfo?: LoadMoreInfo,
+  ) {
     this._threshold = threshold;
     this._minBatchCount = minBatchCount;
+    this._preloadInfo = preloadInfo;
   }
 
   getLoadMoreInfo({
@@ -59,6 +66,10 @@ class ThresholdStrategy implements ILoadMoreStrategy {
 
     // Load nothing
     return { count: 0 };
+  }
+
+  getPreloadInfo(): UndefinedAble<LoadMoreInfo> {
+    return this._preloadInfo;
   }
 }
 

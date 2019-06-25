@@ -26,7 +26,7 @@ Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 describe('AddMembersView', () => {
   describe('render()', () => {
-    it('should display flash toast notification with content AddTeamMembersBackendError when add members fail in backend error. [JPT-926]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification with content AddTeamMembersBackendError when add members fail in backend error. [JPT-926]', async () => {
       const props: any = {
         ...someProps,
         addTeamMembers: () => {
@@ -34,20 +34,17 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      Wrapper.find(JuiModal)
+      await Wrapper.find(JuiModal)
         .shallow()
         .find(JuiButton)
         .simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'people.prompt.AddTeamMembersBackendError',
-          }),
-        );
-        done();
-      },         0);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'people.prompt.AddTeamMembersBackendError',
+        }),
+      );
     });
-    it('should display flash toast notification with content AddTeamMembersNetworkError when add members fail in network error. [JPT-925]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification with content AddTeamMembersNetworkError when add members fail in network error. [JPT-925]', async () => {
       const props: any = {
         ...someProps,
         addTeamMembers: () => {
@@ -55,18 +52,15 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<AddMembersComponent {...props} />);
-      Wrapper.find(JuiModal)
+      await Wrapper.find(JuiModal)
         .shallow()
         .find(JuiButton)
         .simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
+      expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
             message: 'people.prompt.AddTeamMembersNetworkError',
           }),
         );
-        done();
-      },         0);
     });
   });
 });

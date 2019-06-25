@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { mainLogger } from 'foundation';
+import { mainLogger, DEFAULT_BEFORE_EXPIRED, JError } from 'foundation';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
@@ -28,11 +28,18 @@ import { Nullable } from '../../../types';
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 const LOG_TAG = 'AccountService';
 
+type refreshTokenCallBack = {
+  resolve: (token: ITokenModel | null) => void;
+  reject: (reason: JError) => void;
+};
+
 class AccountService extends AbstractService
   implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
   static _instance: AccountService;
 
+  private _refreshTokenQueue: refreshTokenCallBack[] = [];
+  private _isRefreshingToken: boolean;
   private _authController: AuthController;
   private _userConfig: AccountUserConfig;
   private _authUserConfig: AuthUserConfig;
@@ -101,12 +108,58 @@ class AccountService extends AbstractService
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
+    if (this._isRefreshingToken) {
+      return new Promise<ITokenModel | null>((resolve, reject) => {
+        this._refreshTokenQueue.push({ resolve, reject });
+      });
+    }
+
+    this._isRefreshingToken = true;
+    const result = await this._doRefreshRCToken()
+      .catch((reason: JError) => {
+        this._refreshTokenQueue.forEach((response: refreshTokenCallBack) => {
+          response.reject(reason);
+        });
+        this._refreshTokenQueue = [];
+        throw reason;
+      })
+      .finally(() => {
+        this._isRefreshingToken = false;
+      });
+    this._refreshTokenQueue.forEach((response: refreshTokenCallBack) => {
+      response.resolve(result);
+    });
+    this._refreshTokenQueue = [];
+    return result;
+  }
+
+  private async _doRefreshRCToken(): Promise<ITokenModel | null> {
     const oldRcToken = this.authUserConfig.getRCToken();
     const newRcToken = (await RCAuthApi.refreshToken(
       oldRcToken,
     )) as ITokenModel;
     setRCToken(newRcToken);
     return newRcToken;
+  }
+
+  async getRCToken() {
+    let rcToken = this.authUserConfig.getRCToken();
+    if (rcToken && this._isRCTokenExpired(rcToken)) {
+      rcToken = await this.refreshRCToken().catch((reason: JError) => {
+        return null;
+      });
+    }
+
+    return rcToken;
+  }
+
+  private _isRCTokenExpired(rcToken: ITokenModel) {
+    const accessTokenExpireInMillisecond = rcToken.expires_in * 1000;
+    const lastValidTime =
+      rcToken.timestamp +
+      accessTokenExpireInMillisecond -
+      DEFAULT_BEFORE_EXPIRED;
+    return Date.now() > lastValidTime;
   }
 
   async onBoardingPreparation() {

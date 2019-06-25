@@ -52,6 +52,10 @@ class Config {
     return productionEnv ? 'production' : 'GLP-DEV-XMN';
   }
 
+  public isProductionAccount() {
+    return this.isPublicBuild() || this.getEnv() === 'production';
+  }
+
   getEnv() {
     return this._env || this.defaultEnv();
   }

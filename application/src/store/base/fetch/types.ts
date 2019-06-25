@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SortableListStore } from './SortableListStore';
+import { ModelIdType } from 'sdk/framework/model';
 
-export interface ISortableModel {
-  id: number;
+export interface ISortableModel<IdType extends ModelIdType = number> {
+  id: IdType;
   sortValue: number;
 }
 
@@ -20,31 +21,37 @@ export interface IMatchFunc<Model> {
 
 export interface ITransformFunc<
   Model,
-  SortableModel extends ISortableModel = ISortableModel
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > {
   (model: Model): SortableModel;
 }
 
 export interface ISortFunc<
-  SortableModel extends ISortableModel = ISortableModel
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > {
   (first: SortableModel, second: SortableModel): number;
 }
 
-export type TDelta<SortableModel extends ISortableModel = ISortableModel> = {
+export type TDelta<
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
+> = {
   added: SortableModel[];
   updated: SortableModel[];
-  deleted: number[];
+  deleted: IdType[];
 };
 
 export type TChangeHandler<
   Model,
-  SortableModel extends ISortableModel = ISortableModel
+  IdType extends ModelIdType = number,
+  SortableModel extends ISortableModel<IdType> = ISortableModel<IdType>
 > = (
   keys: number[],
   entities?: Map<number, Model>,
   transformFunc?: Function,
-  store?: SortableListStore<SortableModel>,
+  store?: SortableListStore<IdType, SortableModel>,
 ) => {
   deleted: number[];
   updated: TUpdated;

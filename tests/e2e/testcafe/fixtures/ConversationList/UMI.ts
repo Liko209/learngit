@@ -5,6 +5,7 @@
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
+import * as assert from 'assert';
 import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -62,7 +63,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And I click a private chat', async () => {
-    directMessagesSection.conversationEntryById(privateChat.glipId).enter();
+    await directMessagesSection.conversationEntryById(privateChat.glipId).enter();
   });
 
   const groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);
@@ -244,7 +245,7 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-
+    await h(t).glip(loginUser).resetProfileAndState();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
@@ -744,6 +745,133 @@ test(formalName('Should be unread when closed conversation received new unread',
 });
 
 test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-197'],
+  maintainers: ['potar.he'],
+  keywords: ['UMI'],
+})('UMI badge in the left navigation panel can be updated when I change to other tab.', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const anotherUser = users[5];
+
+  const chat = <IGroup>{
+    owner: loginUser,
+    members: [loginUser, anotherUser],
+    type: 'DirectMessage',
+  }
+
+  await h(t).withLog(`Given loginUser total umi is 1`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find 1 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 1, 'umi number error');
+  });
+
+  await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, anotherUser);
+  });
+
+  await h(t).withLog('Then I can find 2 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+  });
+
+  await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find keep 2 UMI in the left navigation panel Messages Entry', async () => {
+    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+  });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1273'],
+  maintainers: ['potar.he'],
+  keywords: ['moreMenu'],
+})('Should not change its position in the conversation list when mark conversation as read/unread', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  const anotherUsers = users.filter(user => user.rcId !== loginUser.rcId);
+  const chatsLength = 3;
+
+  const chats = Array.from({ length: chatsLength }, (x, i) => <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, anotherUsers[i]]
+  })
+
+  await h(t).withLog(`Given I have  some 1:1 chat with at least 1 post`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(chats);
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    for (let i = 0; i < chats.length; i++) {
+      const anotherUser = chats[i].members.filter(user => user.rcId !== loginUser.rcId)[0];
+      await h(t).scenarioHelper.sendTextPost(uuid(), chats[i], anotherUser);
+    }
+  });
+
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const moreMenu = app.homePage.messageTab.moreMenu;
+
+  for (let i = 0; i < chats.length; i++) {
+    let chatId: string
+    await h(t).withLog(`When I open moreMenu of nth({i}) conversation (id: {chatId}) of direct message section`, async (step) => {
+      chatId = await directMessagesSection.nthConversationEntry(i).groupId;
+      step.initMetadata({ i: i.toString(), chatId });
+      await directMessagesSection.nthConversationEntry(i).openMoreMenu();
+    });
+
+    await h(t).withLog(`And click 'Mark as read' button`, async () => {
+      await moreMenu.markAsReadOrUnread.enter();
+    });
+
+    await h(t).withLog(`Then The position is not changed in the conversation list`, async () => {
+      await directMessagesSection.nthConversationEntry(i).groupIdShouldBe(chatId);
+    });
+
+    await h(t).withLog(`When I open moreMenu of nth({i}) conversation (id: {chatId}) of direct message section`, async (step) => {
+      chatId = await directMessagesSection.nthConversationEntry(i).groupId;
+      step.initMetadata({ i: i.toString(), chatId });
+      await directMessagesSection.nthConversationEntry(i).openMoreMenu();
+    });
+
+    await h(t).withLog(`And click 'Mark as unread' button`, async () => {
+      await moreMenu.markAsReadOrUnread.enter();
+    });
+
+    await h(t).withLog(`Then The position is not changed in the conversation list`, async () => {
+      await directMessagesSection.nthConversationEntry(i).groupIdShouldBe(chatId);
+    });
+  }
+});
+
+test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-126'],
   maintainers: ['ali.naffaa'],
@@ -826,6 +954,189 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then check UMI in Messages UMI=2+3+4=9 ', async () => {
     await t.expect(await app.homePage.leftPanel.messagesEntry.getUmi()).eql(9);
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-128'],
+  maintainers: ['alexander.zaverukha'],
+  keywords: ['UMI']
+})('should update UMI in the sections/conversations when mark conversations as read/unread.', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+
+
+  let favoriteDirectMessageWithUmiId;
+  let favoriteTeamWithUmiId;
+  let directMessageWithUmiId;
+  let teamWithUmiId;
+
+  await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  },
+  );
+
+  await h(t).withLog('And Fav/DM/Team section is expanded', async () => {
+    await t.expect(directMessagesSection.isExpand).ok();
+    await t.expect(teamsSection.isExpand).ok();
+    await t.expect(favoritesSection.isExpand).ok();
+  });
+
+  await h(t).withLog('And Fav/DM/Team section has multiple conversations with UMI and without UMI', async () => {
+
+    const chats = [
+      { name: 'F1', umi: 1, type: 'DirectMessage' }, { name: 'F2', umi: 1, type: 'Team' }, { name: 'F3', umi: 0, type: 'DirectMessage' }, { name: 'F4', umi: 0, type: 'Team' },
+      { name: 'DM1', umi: 1, type: 'DirectMessage' },
+      { name: 'TM1', umi: 1, type: 'Team' },
+    ];
+    await createChats(t, chats, loginUser);
+    favoriteDirectMessageWithUmiId = getChatByName(chats, 'F1').id;
+    favoriteTeamWithUmiId = getChatByName(chats, 'F2').id;
+    directMessageWithUmiId = getChatByName(chats, 'DM1').id;
+    teamWithUmiId = getChatByName(chats, 'TM1').id;
+
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(1);
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(1);
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(1);
+
+    await favoritesSection.fold();
+    await directMessagesSection.fold();
+    await teamsSection.fold();
+
+    await favoritesSection.headerUmi.shouldBeNumber(2);
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+
+    await favoritesSection.expand();
+    await directMessagesSection.expand();
+    await teamsSection.expand();
+  });
+
+  // Fav entry
+  await h(t).withLog('When I mark DM Fav conversation as read', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(0);
+    await teamsSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Fav section', async () => {
+    await favoritesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI sum minus 1 for Fav section', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark DM/TM Fav conversations as unread', async () => {
+    await favoritesSection.expand();
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
+  });
+
+  await h(t).withLog('And no change for TM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteTeamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Fav section', async () => {
+    await favoritesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM  and no UMI change for TM in Fav section', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(1);
+  });
+
+  // DM entry
+  await h(t).withLog('When I mark DM conversation as read', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the DM conversation', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed DM section', async () => {
+    await directMessagesSection.fold();
+  });
+
+  await h(t).withLog('Then DM section UMI sum minus 1', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark DM conversation as unread', async () => {
+    await directMessagesSection.expand();
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM conversation', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(1);
+  });
+
+  await h(t).withLog('When I collapsed DM section', async () => {
+    await directMessagesSection.fold();
+  });
+
+  await h(t).withLog('Then UMI=1 for DM conversation', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+  });
+
+  // Team entry
+  await h(t).withLog('When I mark Team conversation as read', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no UMI in the Team conversation', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Team section', async () => {
+    await teamsSection.fold();
+  });
+
+  await h(t).withLog('Then Team section UMI sum minus 1', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I mark Team conversation as unread', async () => {
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(teamWithUmiId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
+  });
+
+  await h(t).withLog('Then no change for UMI sum for Team conversation', async () => {
+    await teamsSection.conversationEntryById(teamWithUmiId).umi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When I collapsed Team section', async () => {
+    await teamsSection.fold();
+  });
+
+  await h(t).withLog('Then no change for UMI sum for Team conversation', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
   });
 });
 

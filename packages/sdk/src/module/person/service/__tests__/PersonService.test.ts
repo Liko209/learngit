@@ -9,6 +9,7 @@ import { PersonController } from '../../controller/PersonController';
 import { Raw } from '../../../../framework/model';
 import { Person } from '../../entity';
 import { SYNC_SOURCE } from '../../../../module/sync';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
 jest.mock('../../controller/PersonController');
 jest.mock('../../../../api');
@@ -27,6 +28,26 @@ describe('PersonService', () => {
     Object.assign(personService, {
       _personController: personController,
     });
+  }
+
+  function getPerson() {
+    const person: Person = {
+      id: 1,
+      created_at: 2,
+      modified_at: 2,
+      creator_id: 1,
+      is_new: false,
+      has_registered: true,
+      version: 1,
+      company_id: 1,
+      email: 'test@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'jupiter',
+      last_name: 'rc',
+      display_name: 'jupiter rc',
+    };
+
+    return person;
   }
 
   function clearMocks() {
@@ -93,23 +114,8 @@ describe('PersonService', () => {
   });
 
   describe('getName', () => {
-    const person: Person = {
-      id: 1,
-      created_at: 2,
-      modified_at: 2,
-      creator_id: 1,
-      is_new: false,
-      has_registered: true,
-      version: 1,
-      company_id: 1,
-      email: 'test@ringcentral.com',
-      me_group_id: 1,
-      first_name: 'jupiter',
-      last_name: 'rc',
-      display_name: 'jupiter rc',
-    };
-
     it('should call controller with correct parameter', async () => {
+      const person = getPerson();
       personService.getName(person);
       expect(personController.getName).toBeCalledWith(person);
 
@@ -146,6 +152,18 @@ describe('PersonService', () => {
       } catch (e) {
         expect(e).toBeNull();
       }
+    });
+  });
+
+  describe('getPhoneNumbers', () => {
+    it('should call with correct parameter', () => {
+      const person = getPerson();
+      const eachPhoneNumberFunc = (phoneNumber: PhoneNumber) => {};
+      personService.getPhoneNumbers(person, eachPhoneNumberFunc);
+      expect(personController.getPhoneNumbers).toBeCalledWith(
+        person,
+        eachPhoneNumberFunc,
+      );
     });
   });
 });

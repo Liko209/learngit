@@ -64,16 +64,12 @@ type RTCSipFlags = {
   dscpVideo: Number;
 };
 
-enum RTC_STATUS_CODE {
-  OK = 0,
-  NUMBER_INVALID = 1000,
-  MAX_CALLS_REACHED = 1001,
-  INVALID_STATE = 1002,
-}
-
-type RTCUserAgentInfo = {
+type RTCUserInfo = {
   endpointId?: string;
   userAgent?: string;
+  rcBrandId?: string;
+  rcAccountId?: number;
+  rcExtensionId?: number;
 };
 
 enum RTC_REPLY_MSG_PATTERN {
@@ -93,19 +89,29 @@ enum RTC_REPLY_MSG_TIME_UNIT {
 enum RTC_MEDIA_ACTION {
   INPUT_DEVICE_CHANGED = 'inputDeviceChanged',
   OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
+  INPUT_DEVICE_LIST_CHANGED = 'inputDeviceListChanged',
+  OUTPUT_DEVICE_LIST_CHANGED = 'outputDeviceListChanged',
+  VOLUME_CHANGED = 'VOLUME_CHANGED',
+}
+
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  START_RECORD_IN_PROGRESS = 'startRecordInProgress',
+  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
-  RTCUserAgentInfo,
+  RTCUserInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
-  RTC_STATUS_CODE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
   RTCSipFlags,
   RTC_MEDIA_ACTION,
+  RECORD_STATE,
 };

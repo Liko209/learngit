@@ -9,7 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { typography, grey } from '../../../foundation/utils/styles';
 
 type Props = {
-  description: string;
+  description: React.ReactChild | null | (React.ReactChild | null)[];
 };
 
 const StyledWrapper = styled.div`

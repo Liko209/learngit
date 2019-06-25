@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { TASK_DATA_TYPE, UMI_SECTION_TYPE } from './constants';
+import { TASK_DATA_TYPE } from './constants';
 import { Group } from '../group/entity';
 import { State, GroupState } from './entity';
 import { Profile } from '../profile/entity';
 import { NotificationEntityPayload } from '../../service/notificationCenter';
+import { Badge } from '../badge/entity';
 
 type StateHandleTask = {
   type: TASK_DATA_TYPE.STATE;
@@ -35,12 +36,16 @@ type ProfileEntityHandleTask = {
   data: NotificationEntityPayload<Profile>;
 };
 
-type SectionUnread = {
-  section: UMI_SECTION_TYPE;
-  unreadCount: number;
+type GroupBadge = Badge & {
   mentionCount: number;
   isTeam?: boolean;
 };
+
+enum INIT_STATUS {
+  IDLE,
+  INITIALIZING,
+  INITIALIZED,
+}
 
 export {
   StateHandleTask,
@@ -48,5 +53,6 @@ export {
   GroupCursorHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
-  SectionUnread,
+  GroupBadge,
+  INIT_STATUS,
 };

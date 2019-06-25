@@ -62,6 +62,7 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
+const TESTCAFE_HOST = process.env.TESTCAFE_HOST;
 const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
@@ -84,12 +85,14 @@ const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
+const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString().replace(/[:]/gm, '-')}.log`;
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
 const NEW_VERSION_SITE = process.env.NEW_VERSION_SITE;
 
 const RUNNER_OPTS = {
+  TESTCAFE_HOST,
   REPORTER,
   SCREENSHOT_ON_FAIL,
   SCREENSHOTS_PATH,
@@ -111,6 +114,7 @@ const RUNNER_OPTS = {
   SELENIUM_CAPABILITIES,
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
+  TESTS_LOG,
 }
 
 // beat dashboard configuration
@@ -128,6 +132,7 @@ enum BrandTire {
   "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
   "RC_WITH_GUESS_DID" = "kamino(RC_WITH_GUESS_DID,Jupiter,1210,4488)",
   "SORTED_LAST_NAME" = "kamino(Sorted_Last_Name,Jupiter,1210,4488)",
+  "RC_WITH_PHONE" = "kamino(1C4EWithPhoneAndNumber,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

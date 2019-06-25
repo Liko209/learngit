@@ -4,82 +4,63 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ServiceLoader } from '../../serviceLoader';
-import { IUserModuleSetting } from '../ModuleSettings';
-import { EntityBaseService } from 'sdk/framework';
-import {
-  SettingId2Service,
-  ModuleSettingClass,
-  SupportSettingServices,
-} from './constants';
-import { IdModel } from 'sdk/framework/model';
+import _ from 'lodash';
+
 import { UserSettingEntity } from '../entity';
+import { IModuleSetting } from '../moduleSetting/types';
+
+type SettingItemRequest<T> = {
+  id: number;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason: any) => void;
+};
 
 class SettingController {
-  private _moduleSettings: Map<number, IUserModuleSetting> = new Map();
-  constructor() {
-    for (const iterator of ModuleSettingClass) {
-      const obj = new iterator();
-      this._moduleSettings.set(obj.id(), obj);
-    }
+  private _moduleSettings: IModuleSetting[] = [];
+  private _requestPool: SettingItemRequest<UserSettingEntity>[] = [];
+
+  registerModuleSetting(moduleSetting: IModuleSetting) {
+    moduleSetting.init();
+    this._moduleSettings.push(moduleSetting);
+    const requestsCanBeHandled = this._requestPool.filter(r =>
+      moduleSetting.has(r.id),
+    );
+    this._requestPool = this._requestPool.filter(r => !moduleSetting.has(r.id));
+
+    requestsCanBeHandled.map(r =>
+      moduleSetting.getById(r.id).then(result => {
+        result ? r.resolve(result) : r.reject(result);
+      }),
+    );
   }
 
-  async getModuleSettings() {
-    const promises = [];
-    for (const iterator of this._moduleSettings) {
-      promises.push(iterator[1].buildSettingItem());
-    }
-    return (await Promise.all(promises)) as UserSettingEntity<any>[];
+  unRegisterModuleSetting(moduleSetting: IModuleSetting) {
+    this._moduleSettings = this._moduleSettings.filter(
+      it => it !== moduleSetting,
+    );
+    moduleSetting.dispose();
   }
 
   async getById(id: number) {
-    if (this._moduleSettings.has(id)) {
-      return this._moduleSettings.get(id)!.buildSettingItem();
+    const moduleSetting = _.find(this._moduleSettings, it => it.has(id));
+    if (moduleSetting) {
+      return await moduleSetting.getById(id);
     }
-
-    const serviceConfig = SettingId2Service[id];
-    const service =
-      (serviceConfig &&
-        ServiceLoader.getInstance<EntityBaseService<IdModel>>(serviceConfig)) ||
-      undefined;
-
-    return service ? await service.getSettingItemById(id) : undefined;
-  }
-
-  async getSettingsByParentId(id: number): Promise<UserSettingEntity<any>[]> {
-    const sections = this._getSettingSections(id);
-    const settings = await Promise.all(
-      sections.map((value: UserSettingEntity<any>) => {
-        return this._getUserSettingsByParentId(value.id);
-      }),
-    );
-    return [].concat.apply([], settings).concat(sections);
-  }
-
-  private _getSettingSections(moduleId: number) {
-    const settingModule = this._moduleSettings.get(moduleId);
-    const fc = settingModule && settingModule.getSections;
-    return (fc && fc()) || ([] as UserSettingEntity<any>[]);
-  }
-
-  private async _getUserSettingsByParentId(id: number) {
-    const settings = SupportSettingServices.map(name => {
-      const service = ServiceLoader.getInstance<EntityBaseService<IdModel>>(
-        name,
-      );
-      return (
-        (service.getSettingsByParentId && service.getSettingsByParentId(id)) ||
-        []
-      );
+    return new Promise((resolve, reject) => {
+      this._requestPool.push({
+        id,
+        resolve,
+        reject,
+      });
     });
-    const allSettings = await Promise.all(settings);
-    return [].concat.apply([], allSettings) as UserSettingEntity<any>[];
+  }
+
+  init() {
+    this._moduleSettings.forEach(moduleSetting => moduleSetting.init());
   }
 
   dispose() {
-    this._moduleSettings.forEach(value => {
-      value.dispose && value.dispose();
-    });
+    this._moduleSettings.forEach(moduleSetting => moduleSetting.dispose());
   }
 }
 

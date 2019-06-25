@@ -22,6 +22,7 @@ import {
   JuiTeamSettingButtonListItemText as ButtonListItemText,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
+import { teamActionHandler } from '@/common/handleTeamAction';
 import { ViewProps } from './types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
@@ -147,67 +148,9 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
-  handleDeleteTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const { t, groupName, deleteTeam } = this.props;
-    const dialog = Dialog.confirm({
-      modalProps: { 'data-test-automation-id': 'deleteTeamConfirmDialog' },
-      okBtnProps: { 'data-test-automation-id': 'deleteTeamOkButton' },
-      cancelBtnProps: { 'data-test-automation-id': 'deleteTeamCancelButton' },
-      size: 'small',
-      okType: 'negative',
-      title: t('people.team.deleteTeamConfirmTitle'),
-      content: (
-        <JuiDialogContentText>
-          <Trans
-            i18nKey="people.team.deleteTeamConfirmContent"
-            values={{ teamName: groupName }}
-            components={[<strong key="0" />]}
-          />
-        </JuiDialogContentText>
-      ),
-      okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),
-      cancelText: toTitleCase(t('common.dialog.cancel')),
-      onOK: async () => {
-        dialog.startLoading();
-        const result = await deleteTeam();
-        dialog.stopLoading();
-        if (!result) {
-          return false;
-        }
-        dialog.dismiss();
-        portalManager.dismissLast();
-        return true;
-      },
-    });
-  }
+  onTeamDelete = () => teamActionHandler.onTeamDelete(this.props.id);
 
-  handleArchiveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
-    const { t, groupName, archiveTeam } = this.props;
-    const dialog = Dialog.confirm({
-      modalProps: { 'data-test-automation-id': 'archiveTeamConfirmDialog' },
-      okBtnProps: { 'data-test-automation-id': 'archiveTeamOkButton' },
-      cancelBtnProps: { 'data-test-automation-id': 'archiveTeamCancelButton' },
-      size: 'small',
-      okType: 'primary',
-      title: t('people.team.archiveTeamConfirmTitle'),
-      content: t('people.team.archiveTeamConfirmContent', {
-        teamName: groupName,
-      }),
-      okText: toTitleCase(t('people.team.archiveTeamConfirmOk')),
-      cancelText: toTitleCase(t('cancel')),
-      onOK: async () => {
-        dialog.startLoading();
-        const result = await archiveTeam();
-        dialog.stopLoading();
-        if (!result) {
-          return false;
-        }
-        dialog.dismiss();
-        portalManager.dismissLast();
-        return true;
-      },
-    });
-  }
+  onTeamArchive = () => teamActionHandler.onTeamArchive(this.props.id);
 
   leaveTeamOKButtonHandler = async () => {
     portalManager.dismissLast();
@@ -322,7 +265,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           <ButtonListItem
             data-test-automation-id="archiveTeamButton"
             color="semantic.negative"
-            onClick={this.handleArchiveTeamClick}
+            onClick={this.onTeamArchive}
             hide={noDelete}
           >
             <ButtonListItemText color="semantic.negative">
@@ -330,6 +273,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             </ButtonListItemText>
             <JuiIconButton
               variant="plain"
+              data-test-automation-id="archiveTeamToolTipButton"
               tooltipTitle={t('people.team.archiveTeamToolTip')}
             >
               info
@@ -341,7 +285,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           <ButtonListItem
             data-test-automation-id="deleteTeamButton"
             color="semantic.negative"
-            onClick={this.handleDeleteTeamClick}
+            onClick={this.onTeamDelete}
             hide={noDelete}
           >
             <ButtonListItemText color="semantic.negative">
@@ -349,6 +293,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             </ButtonListItemText>
             <JuiIconButton
               variant="plain"
+              data-test-automation-id="deleteTeamToolTipButton"
               tooltipTitle={t('people.team.deleteTeamToolTip')}
             >
               info
@@ -375,6 +320,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         onOK={this.handleOk}
         okText={toTitleCase(t('common.dialog.save'))}
         cancelText={toTitleCase(t('common.dialog.cancel'))}
+        modalProps={{ 'data-test-automation-id': 'team-setting-dialog' }}
       >
         {isAdmin ? this.renderEditSection() : null}
         {isAdmin ? this.renderMemberPermissionSettings() : null}

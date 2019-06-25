@@ -48,23 +48,7 @@ describe('ReplyViewModel', () => {
       );
     });
   });
-  describe('replyWithPattern()', () => {
-    it('should call replyWithPattern in TelephonyService', async () => {
-      const _telephonyService: TelephonyService = container.get(
-        TELEPHONY_SERVICE,
-      );
-      replyViewModel.replyWithPattern(
-        RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
-        5,
-        RTC_REPLY_MSG_TIME_UNIT.MINUTE,
-      );
-      expect(_telephonyService.replyWithPattern).toHaveBeenCalledWith(
-        RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
-        5,
-        RTC_REPLY_MSG_TIME_UNIT.MINUTE,
-      );
-    });
-  });
+
   describe('startReply()', () => {
     it('should call startReply in TelephonyService', async () => {
       const _telephonyService: TelephonyService = container.get(
@@ -95,6 +79,16 @@ describe('ReplyViewModel', () => {
       const ts = new TelephonyStore();
       ts.inputCustomReplyMessage('    \r \n ');
       expect(ts.customReplyMessage).toEqual('');
+    });
+  });
+
+  describe('replyWithMessage', () => {
+    it('should call `replyWithMessage` on service', () => {
+      const _telephonyService: TelephonyService = container.get(
+        TELEPHONY_SERVICE,
+      );
+      replyViewModel.replyWithMessage();
+      expect(_telephonyService.replyWithMessage).toBeCalled();
     });
   });
 });

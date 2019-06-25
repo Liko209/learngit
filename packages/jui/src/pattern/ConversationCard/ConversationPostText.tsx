@@ -8,10 +8,8 @@ import {
   palette,
   typography,
 } from '../../foundation/utils/styles';
-import React, { memo } from 'react';
-import { withHighlight } from '../../hoc/withHighlight';
 
-const JuiConversationPostTextWrapper = styled('div')`
+const JuiConversationPostText = styled('div')`
   ${typography('body1')}
   overflow-wrap: break-word;
   color: ${grey('900')};
@@ -23,31 +21,6 @@ const JuiConversationPostTextWrapper = styled('div')`
     &:hover {
       text-decoration: underline;
     }
-  }
-
-  .at_mention_compose {
-    max-width: 100%;
-    padding: 0;
-    border: none;
-    background: none;
-    text-align: left;
-    ${typography('body1')};
-    font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
-    color: ${palette('primary', 'main')};
-    cursor: pointer;
-
-    :active {
-      outline: none;
-    }
-
-    :hover {
-      text-decoration: underline;
-    }
-  }
-
-  .current {
-    color: ${grey('900')};
-    background-color: ${palette('secondary', '100')};
   }
 
   .emoji {
@@ -86,28 +59,24 @@ const JuiConversationPostTextWrapper = styled('div')`
   }
 `;
 
-type JuiConversationPostTextProps = {
-  key?: number;
-  url?: string;
-  title?: string;
-  html?: string;
-};
+// type JuiConversationPostTextProps = {
+//   key?: number;
+//   url?: string;
+//   title?: string;
+//   html?: string;
+// };
 
-const JuiConversationPostText = withHighlight(['title'])(
-  memo(React.forwardRef(
-    ({ key, url, title, html, ...rest }: JuiConversationPostTextProps, ref: React.RefObject<any>) => (
-      <JuiConversationPostTextWrapper {...rest} ref={ref}>
-        {url ? (
-          <a
-            key={key}
-            href={url}
-            dangerouslySetInnerHTML={{ __html: title || '' }}
-          />
-        ) : (
-          <div dangerouslySetInnerHTML={{ __html: html || '' }}/>
-        )}
-      </JuiConversationPostTextWrapper>
-    ),
-  ),
-));
-export { JuiConversationPostText, JuiConversationPostTextProps };
+// const JuiConversationPostText = memo(
+//   ({ key, url, title, html, ...rest }: JuiConversationPostTextProps) => (
+//     <JuiConversationPostTextWrapper {...rest}>
+//       {url ? (
+//         <a key={key} href={url}>
+//           {title}
+//         </a>
+//       ) : (
+//         html
+//       )}
+//     </JuiConversationPostTextWrapper>
+//   ),
+// );
+export { JuiConversationPostText };

@@ -1,7 +1,11 @@
 import * as _ from 'lodash';
-import { BaseWebComponent } from "../../BaseWebComponent";
+import { BaseWebComponent, Umi } from "../../BaseWebComponent";
 
 class LeftNavigatorEntry extends BaseWebComponent {
+
+  get text() {
+    return this.self.find('.nav-text');
+  }
 
   public name: string;
 
@@ -23,6 +27,9 @@ class LeftNavigatorEntry extends BaseWebComponent {
     }
     return Number(text);
   }
+  get umi() {
+    return this.getComponent(Umi, this.self.find('.umi'));
+  }
 }
 
 export class LeftPanel extends BaseWebComponent {
@@ -43,6 +50,29 @@ export class LeftPanel extends BaseWebComponent {
     const entry = this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
     entry.name = automationId;
     return entry;
+  }
+
+  async appEntries(selector: Selector): Promise<LeftNavigatorEntry[]> {
+    const entries: LeftNavigatorEntry[] = [];
+    const count = await selector.count;
+    for (let i = 0; i < count; i++) {
+      const automationId = await selector.nth(i).getAttribute('data-test-automation-id');
+      const entry = this.getComponent(LeftNavigatorEntry, this.getSelectorByAutomationId(automationId));
+      entry.name = automationId;
+      entries.push(entry);
+    }
+
+    return entries;
+  }
+
+  async unifiedAppEntries(): Promise<LeftNavigatorEntry[]> {
+    const selector = this.self.find('nav').nth(0).find('div[role="button"]');
+    return await this.appEntries(selector);
+  }
+
+  async otherAppEntries() {
+    const selector = this.self.find('nav').nth(1).find('div[role="button"]');
+    return await this.appEntries(selector);
   }
 
   get dashboardEntry() {

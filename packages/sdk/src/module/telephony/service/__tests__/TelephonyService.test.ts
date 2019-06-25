@@ -17,8 +17,10 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
-import { ServiceLoader } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { TelephonyUserConfig } from '../../config/TelephonyUserConfig';
+import { PhoneSetting } from '../../setting';
+import { SettingService } from 'sdk/module/setting';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -31,6 +33,8 @@ describe('TelephonyService', () => {
   let engineController: TelephonyEngineController;
   let accountController;
   let makeCallController: MakeCallController;
+  let mockSetting: PhoneSetting;
+  let mockSettingService: SettingService;
 
   const callId = '123';
   const toNum = '123';
@@ -54,9 +58,24 @@ describe('TelephonyService', () => {
   }
 
   function setup() {
+    const raw = (key: string) => ServiceLoader.getInstance(key);
+    ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
+      if (key === ServiceConfig.SETTING_SERVICE) {
+        return mockSettingService;
+      }
+      return raw(key);
+    });
     telephonyService = new TelephonyService();
     engineController = new TelephonyEngineController();
     accountController = new TelephonyAccountController(null, null, null);
+    mockSetting = ({
+      getById: jest.fn(),
+      getHandlerMap: jest.fn(),
+    } as any) as PhoneSetting;
+    mockSettingService = ({
+      registerModuleSetting: jest.fn(),
+      unRegisterModuleSetting: jest.fn(),
+    } as any) as SettingService;
 
     engineController.getAccountController = jest
       .fn()
@@ -104,17 +123,6 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('createAccount', () => {
-    it('should call controller to create account', () => {
-      const mockAcc = new MockAcc();
-      const mockCall = new MockCall();
-      telephonyService.createAccount(mockAcc, mockCall);
-      expect(engineController.createAccount).toHaveBeenCalledWith(
-        mockAcc,
-        mockCall,
-      );
-    });
-  });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
       await telephonyService.makeCall('123', '456');
@@ -240,11 +248,23 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('getLastCalledNumber', () => {
-    it('should call account controller to get last called number', () => {
-      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
-      telephonyService.getLastCalledNumber();
-      expect(spy).toBeCalled();
+  describe('onStart', () => {
+    it('should call registerModuleSetting', () => {
+      telephonyService['_phoneSetting'] = mockSetting;
+      telephonyService['onStarted']();
+      expect(mockSettingService.registerModuleSetting).toBeCalledWith(
+        mockSetting,
+      );
+    });
+  });
+
+  describe('onStop', () => {
+    it('should call unsubscribe of profile setting', () => {
+      telephonyService['_phoneSetting'] = mockSetting;
+      telephonyService['onStopped']();
+      expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith(
+        mockSetting,
+      );
     });
   });
 });

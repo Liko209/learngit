@@ -5,6 +5,7 @@
  */
 import { test, testable } from 'shield';
 import { mockSingleEntity, mockEntity } from 'shield/application';
+import { ProfileService } from 'sdk/module/profile';
 import { mockService } from 'shield/sdk';
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
@@ -48,13 +49,11 @@ describe('TestMenuViewModel', () => {
     @test('should current props if pass props to view model')
     t1() {
       const props = {
-        personId: 1,
         groupId: 2,
         anchorEl: null,
         onClose: () => {},
       };
       const model = new MenuViewModel(props);
-      expect(model.personId).toBe(1);
       expect(model.groupId).toBe(2);
       expect(model.onClose).toBeInstanceOf(Function);
       expect(model.anchorEl).toBe(null);
@@ -152,7 +151,6 @@ describe('TestMenuViewModel', () => {
     async t1() {
       const model = new MenuViewModel({
         groupId: 1,
-        personId: 2,
         anchorEl: null,
         onClose: () => {},
       });
@@ -160,6 +158,45 @@ describe('TestMenuViewModel', () => {
       await model.toggleRead();
       expect(utils.getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI)).toBe(true);
       expect(stateService.updateReadStatus).toHaveBeenCalledTimes(1);
+    }
+  }
+
+  const mockToggleFavorite = jest.fn();
+
+  @testable
+  class toggleFavorite {
+    @test('should isFavorite be update when toggle favorite.')
+    @mockService(ProfileService, 'markGroupAsFavorite', mockToggleFavorite)
+    @mockEntity(createGroup({ isFavorite: false }))
+    t1() {
+      const model = new MenuViewModel({
+        groupId: 1,
+        anchorEl: null,
+        onClose: () => {},
+      });
+
+      model.toggleFavorite();
+
+      expect(mockToggleFavorite).toHaveBeenCalledWith(1, true);
+    }
+  }
+
+  const mockHideConversation = jest.fn();
+
+  @testable
+  class closeConversation {
+    @test('should skip next time be update when close conversation .')
+    @mockService(ProfileService, 'hideConversation', mockHideConversation)
+    t1() {
+      const model = new MenuViewModel({
+        groupId: 1,
+        anchorEl: null,
+        onClose: () => {},
+      });
+
+      model.closeConversation(true);
+
+      expect(mockHideConversation).toHaveBeenCalledWith(1, true, true);
     }
   }
 });

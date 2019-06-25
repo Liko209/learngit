@@ -12,6 +12,7 @@ process.env.NODE_ENV = 'test';
 // ignoring them. In the future, promise rejections that are not handled will
 // terminate the Node.js process with a non-zero exit code.
 process.on('unhandledRejection', err => {
+  process.exitCode = 3;
   throw err;
 });
 
@@ -63,7 +64,7 @@ switch (true) {
     break;
   default:
     process.env.APP =
-      '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/jui|packages/rcui|packages/framework)';
+      '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/rcui|packages/framework)';
     break;
 }
 

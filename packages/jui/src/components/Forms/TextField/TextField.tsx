@@ -42,12 +42,15 @@ const TextField = styled(MuiTextField)`
   }
 ` as typeof MuiTextField;
 
-type Props = TextFieldProps;
+type Props = TextFieldProps & {
+  avoidArrowUpKeydown?: boolean;
+};
 
 class JuiTextField extends React.PureComponent<Props> {
   onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const { onKeyDown } = this.props;
-    if (e.key === 'ArrowUp') {
+    const { onKeyDown, avoidArrowUpKeydown = true, type } = this.props;
+    if (e.key === 'ArrowUp' && avoidArrowUpKeydown && type !== 'number') {
+      // https://jira.ringcentral.com/browse/FIJI-1941
       e.preventDefault();
     }
     onKeyDown && onKeyDown(e);

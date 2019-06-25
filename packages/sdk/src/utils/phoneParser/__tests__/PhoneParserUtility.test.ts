@@ -133,7 +133,7 @@ describe('PhoneParserUtility', () => {
 
       const waiter1 = PhoneParserUtility.loadModule();
       const waiter2 = PhoneParserUtility.loadModule();
-      expect(notificationCenter.on).toBeCalledTimes(1);
+      expect(notificationCenter.on).toBeCalledTimes(2);
       expect(PhoneParserUtility['_loadingQueue'].length).toEqual(1);
       PhoneParserUtility['_phoneParserModule']['params'].onRuntimeInitialized();
       expect(PhoneParserUtility['_moduleStatus']).toEqual(MODULE_STATUS.LOADED);
@@ -165,8 +165,8 @@ describe('PhoneParserUtility', () => {
       });
 
       expect(await PhoneParserUtility.loadModule()).toBeFalsy();
-      expect(notificationCenter.on).toBeCalledTimes(1);
-      expect(notificationCenter.off).toBeCalledTimes(1);
+      expect(notificationCenter.on).toBeCalledTimes(2);
+      expect(notificationCenter.off).toBeCalledTimes(2);
       expect(PhoneParserUtility['_loadingQueue']).toEqual([]);
       expect(PhoneParserUtility['_moduleStatus']).toEqual(MODULE_STATUS.IDLE);
       await new Promise(resolve => {
@@ -205,7 +205,7 @@ describe('PhoneParserUtility', () => {
     it('should do nothing when _initialized = true and force = false', async () => {
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
-      expect(PhoneParserUtility.initPhoneParser(false)).toBeTruthy();
+      expect(await PhoneParserUtility.initPhoneParser(false)).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(1);
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
     });

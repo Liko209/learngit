@@ -4,4 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './CallerIdSettingItem';
+export * from './CallerIdSelectSourceItem';
+export * from './CallerIdSelectValue';
+export * from './PhoneNumberRecord';

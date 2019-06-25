@@ -1,0 +1,42 @@
+{
+  "name": "jupiter-performance-tests",
+  "version": "0.0.1",
+  "description": "performance tests for Jupiter",
+  "private": true,
+  "main": "src/start.ts",
+  "scripts": {
+    "perf": "ts-node src/start.ts",
+    "debug": "ts-node src/scenes/indexDataScene.ts"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "dependencies": {
+    "axios": "0.19.0-beta.1",
+    "bluebird": "^3.5.4",
+    "btoa": "^1.2.1",
+    "dateformat": "^3.0.3",
+    "dotenv": "^6.1.0",
+    "form-data": "^2.3.3",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^3.0.6",
+    "mock-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/mock-client-1.0.0.tgz",
+    "mysql2": "^1.6.4",
+    "openssl-self-signed-certificate": "^1.1.6",
+    "plist": "^3.0.1",
+    "qs": "^6.6.0",
+    "reflect-metadata": "^0.1.12",
+    "selenium-webdriver": "^4.0.0-alpha.1",
+    "sequelize": "^4.41.2",
+    "sequelize-typescript": "^0.6.9",
+    "testcafe": "^1.1.4",
+    "testcafe-browser-provider-electron": "0.0.8",
+    "testcafe-browser-provider-selenium": "^0.4.0",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {}
+}

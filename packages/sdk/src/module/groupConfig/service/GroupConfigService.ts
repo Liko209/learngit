@@ -9,11 +9,12 @@ import { EntityBaseService } from '../../../framework/service';
 import { daoManager } from '../../../dao';
 import { GroupConfigDao } from '../dao/GroupConfigDao';
 import { GroupConfigController } from '../controller/GroupConfigController';
+import { Post } from 'sdk/module/post/entity';
 
 class GroupConfigService extends EntityBaseService<GroupConfig> {
   private _groupConfigController: GroupConfigController;
   constructor() {
-    super(true, daoManager.getDao(GroupConfigDao));
+    super({ isSupportedCache: true }, daoManager.getDao(GroupConfigDao));
   }
 
   // update partial groupConfig data
@@ -65,11 +66,8 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
     this.getGroupConfigController().addPostId(groupId, postId);
   }
 
-  async recordMyLastPostTime(groupId: number, timeStamp: number) {
-    await this.getGroupConfigController().recordMyLastPostTime(
-      groupId,
-      timeStamp,
-    );
+  async handleMyMostRecentPostChange(posts: Post[]) {
+    await this.getGroupConfigController().updateMyLastPostTime(posts);
   }
 
   protected getGroupConfigController() {

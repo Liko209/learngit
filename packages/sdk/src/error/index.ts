@@ -9,6 +9,7 @@
 export * from './db';
 export * from './sdk';
 export * from './server';
+export * from './rc';
 export * from './types';
 export * from './constants';
 export * from './ErrorParserHolder';

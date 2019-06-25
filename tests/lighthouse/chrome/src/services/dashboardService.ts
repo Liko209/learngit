@@ -21,6 +21,7 @@ import {
   VersionDto, LoadingTimeReleaseSummaryDto
 } from '../models';
 import { URLSearchParams } from 'url';
+import { parseTracing, summariseTracing } from '../tracing';
 
 class DashboardMetricItemConfig {
   name: string;
@@ -82,6 +83,16 @@ class DashboardConfig {
           "name": "conversation_fetch_from_db",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/102",
           "apiGoal": 1000
+        },
+        "ui_message_render": {
+          "name": "ui_message_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/209",
+          "apiGoal": 1000
+        },
+        "ui_profile_render": {
+          "name": "ui_profile_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/210",
+          "apiGoal": 1000
         }
       }
     },
@@ -94,17 +105,27 @@ class DashboardConfig {
         "search_group": {
           "name": "search_group",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/51",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "search_people": {
           "name": "search_people",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/52",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "search_team": {
           "name": "search_team",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/53",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
+        },
+        "search_post": {
+          "name": "search_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/207",
+          "apiGoal": 2000
+        },
+        "ui_globalsearch_tab_render": {
+          "name": "ui_globalsearch_tab_render",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/208",
+          "apiGoal": 2000
         }
       }
     },
@@ -117,17 +138,17 @@ class DashboardConfig {
         "group_section_fetch_teams": {
           "name": "group_section_fetch_teams",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/54",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "group_section_fetch_favorites": {
           "name": "group_section_fetch_favorites",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/55",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "group_section_fetch_direct_messages": {
           "name": "group_section_fetch_direct_messages",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/56",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         }
       }
     },
@@ -137,68 +158,219 @@ class DashboardConfig {
       "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
       "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
       "metric": {
-        "handle_incoming_account": {
-          "name": "handle_incoming_account",
+        "handle_initial_incoming_account": {
+          "name": "handle_initial_incoming_account",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/141",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_company": {
-          "name": "handle_incoming_company",
+        "handle_remaining_incoming_account": {
+          "name": "handle_remaining_incoming_account",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/181",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_account": {
+          "name": "handle_index_incoming_account",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/182",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_company": {
+          "name": "handle_initial_incoming_company",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/142",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_item": {
-          "name": "handle_incoming_item",
+        "handle_remaining_incoming_company": {
+          "name": "handle_remaining_incoming_company",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/183",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_company": {
+          "name": "handle_index_incoming_company",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/184",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_item": {
+          "name": "handle_initial_incoming_item",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/143",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_presence": {
-          "name": "handle_incoming_presence",
+        "handle_remaining_incoming_item": {
+          "name": "handle_remaining_incoming_item",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/185",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_item": {
+          "name": "handle_index_incoming_item",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/186",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_presence": {
+          "name": "handle_initial_incoming_presence",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/144",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_state": {
-          "name": "handle_incoming_state",
+        "handle_remaining_incoming_presence": {
+          "name": "handle_remaining_incoming_presence",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/187",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_presence": {
+          "name": "handle_index_incoming_presence",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/188",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_state": {
+          "name": "handle_initial_incoming_state",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/145",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_profile": {
-          "name": "handle_incoming_profile",
+        "handle_remaining_incoming_state": {
+          "name": "handle_remaining_incoming_state",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/189",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_state": {
+          "name": "handle_index_incoming_state",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/190",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_profile": {
+          "name": "handle_initial_incoming_profile",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/146",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_person": {
-          "name": "handle_incoming_person",
+        "handle_remaining_incoming_profile": {
+          "name": "handle_remaining_incoming_profile",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/191",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_profile": {
+          "name": "handle_index_incoming_profile",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/192",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_person": {
+          "name": "handle_initial_incoming_person",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/147",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_group": {
-          "name": "handle_incoming_group",
+        "handle_remaining_incoming_person": {
+          "name": "handle_remaining_incoming_person",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/193",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_person": {
+          "name": "handle_index_incoming_person",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/194",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_group": {
+          "name": "handle_initial_incoming_group",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/148",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
-        "handle_incoming_post": {
-          "name": "handle_incoming_post",
+        "handle_remaining_incoming_group": {
+          "name": "handle_remaining_incoming_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/195",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_group": {
+          "name": "handle_index_incoming_group",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/196",
+          "apiGoal": 2000
+        },
+        "handle_initial_incoming_post": {
+          "name": "handle_initial_incoming_post",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/149",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
+        },
+        "handle_remaining_incoming_post": {
+          "name": "handle_remaining_incoming_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/197",
+          "apiGoal": 2000
+        },
+        "handle_index_incoming_post": {
+          "name": "handle_index_incoming_post",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/198",
+          "apiGoal": 2000
         },
         "handle_index_data": {
           "name": "handle_index_data",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/150",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "handle_remaining_data": {
           "name": "handle_remaining_data",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/151",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
         },
         "handle_initial_data": {
           "name": "handle_initial_data",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/152",
-          "apiGoal": Number.MAX_VALUE
+          "apiGoal": 2000
+        },
+      }
+    },
+    "SearchPhoneScene": {
+      "name": "SearchPhoneScene",
+      "gatherer": "SearchPhoneGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "metric": {
+        "search_phone_number": {
+          "name": "search_phone_number",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/180",
+          "apiGoal": 2000
         }
       }
-    }
+    },
+    "CallLogScene": {
+      "name": "CallLogScene",
+      "gatherer": "CallLogGatherer",
+      "memoryUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "cpuUrl": "http://xmn145.rcoffice.ringcentral.com:9005",
+      "metric": {
+        "init_call_log_badge": {
+          "name": "init_call_log_badge",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/199",
+          "apiGoal": 2000
+        },
+        "fetch_call_log": {
+          "name": "fetch_call_log",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/200",
+          "apiGoal": 2000
+        },
+        "fetch_call_log_from_db": {
+          "name": "fetch_call_log_from_db",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/201",
+          "apiGoal": 2000
+        },
+        "fetch_voicemails": {
+          "name": "fetch_voicemails",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/202",
+          "apiGoal": 2000
+        },
+        "fetch_voicemails_from_db": {
+          "name": "fetch_voicemails_from_db",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/203",
+          "apiGoal": 2000
+        },
+        "init_rc_message_badge": {
+          "name": "init_rc_message_badge",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/204",
+          "apiGoal": 2000
+        },
+        "delete_rc_message": {
+          "name": "delete_rc_message",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/205",
+          "apiGoal": 2000
+        },
+        "delete_rc_message_from_server": {
+          "name": "delete_rc_message_from_server",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/206",
+          "apiGoal": 2000
+        }
+      }
+    },
   };
 }
 
@@ -216,6 +388,11 @@ class SceneSummary {
     }
   }
 }
+
+const maxGoalValue = 2000;
+const goalMap: {
+  [key: string]: { [key: string]: number }
+} = {};
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -530,6 +707,10 @@ class DashboardService {
       });
     }
 
+    if (!goalMap[scene.name]) {
+      goalMap[scene.name] = {};
+    }
+
     let memory: number, jsMemory: number, metric: {
       [key: string]: {
         apiAvg: number,
@@ -547,10 +728,10 @@ class DashboardService {
       jsMemory = parseFloat('' + item.jsMemoryUsed);
     }
 
-    let metricKey = [];
+    let metricKeys = [];
     if (loadingTimes && loadingTimes.length > 0) {
       loadingTimes.forEach(time => {
-        metricKey.push(time.name);
+        metricKeys.push(time.name);
         metric[time.name] = {
           apiAvg: parseFloat('' + time.apiAvgTime),
           apiMax: parseFloat('' + time.apiMaxTime),
@@ -578,7 +759,7 @@ class DashboardService {
       lastSummary: { memory: undefined, jsMemory: undefined, metric: releaseMetric }
     };
 
-    if (metricKey.length === 0) {
+    if (metricKeys.length === 0) {
       return result;
     }
 
@@ -591,7 +772,7 @@ class DashboardService {
       return result;
     }
 
-    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { version: pre.name, name: { [Op.in]: metricKey } } });
+    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { platform: scene.platform, version: pre.name, name: { [Op.in]: metricKeys } } });
     if (arr && arr.length > 0) {
       arr.forEach(time => {
         releaseMetric[time.name] = {
@@ -605,7 +786,47 @@ class DashboardService {
       });
     }
 
+    await DashboardService.setGoal(scene.name, scene.platform, metricKeys, now.id);
+
     return result;
+  }
+
+  static async setGoal(sceneName: string, platform: string, metricKeys: Array<string>, versionId: number): Promise<void> {
+    if (!goalMap[sceneName]) {
+      goalMap[sceneName] = {};
+    }
+
+    const array = await VersionDto.findAll({ where: { id: { [Op.lt]: versionId }, isRelease: true }, order: [['id', 'desc']] });
+    if (!array) {
+      return;
+    }
+
+    const versionIds = array.map(v => v.id);
+
+    const arr = await LoadingTimeReleaseSummaryDto.findAll({ where: { platform: platform, versionId: { [Op.in]: versionIds }, name: { [Op.in]: metricKeys } } });
+    const map: { [key: string]: Array<LoadingTimeReleaseSummaryDto> } = {};
+    for (let key of metricKeys) {
+      map[key] = [];
+    }
+
+    for (let dto of arr) {
+      map[dto.name].push(dto);
+    }
+
+    let dtos: Array<LoadingTimeReleaseSummaryDto>, sum;
+    for (let key of metricKeys) {
+      dtos = map[key];
+      if (dtos.length === 0) {
+        if (_config.scenes[sceneName] && _config.scenes[sceneName].metric[key]) {
+          goalMap[sceneName][key] = _config.scenes[sceneName].metric[key].apiGoal;
+        }
+        continue;
+      }
+
+      sum = dtos.map(v => parseFloat('' + v.apiAvgTime)).reduce((a, b) => a + b, 0);
+      goalMap[sceneName][key] = sum / dtos.length;
+      goalMap[sceneName][key] = goalMap[sceneName][key] > maxGoalValue ? maxGoalValue : goalMap[sceneName][key];
+    }
   }
 
   static async getVersionInfo(host?: string): Promise<DashboardVersionInfo> {
@@ -627,13 +848,10 @@ class DashboardService {
     let jupiterVersion;
     const jupiterVersionSelector = "#root > div:nth-child(2) > div > div:nth-child(1)";
     while (cnt-- > 0) {
-      if (!(await PptrUtils.waitForSelector(page, jupiterVersionSelector))) {
-        continue;
-      }
       jupiterVersion = await PptrUtils.text(page, jupiterVersionSelector);
     }
 
-    if (typeof jupiterVersion === 'boolean') {
+    if (!jupiterVersion || typeof jupiterVersion === 'boolean') {
       jupiterVersion = "unknown";
     } else if (jupiterVersion.startsWith("Version: ")) {
       jupiterVersion = jupiterVersion.substring("Version: ".length).trim();
@@ -667,6 +885,9 @@ class DashboardService {
     await PptrUtils.close(browser);
 
     _versionInfo[host] = info;
+
+    logger.info(`${host} => ${JSON.stringify(info)}`);
+
     return info;
   }
 
@@ -696,6 +917,7 @@ class DashboardService {
     htmlArray.push('.dashboard-item-memory{margin:5px 0px 10px;}');
     htmlArray.push('.dashboard-item-point{margin:5px 0px 15px;}');
     htmlArray.push('.dashboard-item-point-title{font-weight:bold;font-size:18px;margin-bottom:10px;}');
+    htmlArray.push('.dashboard-item-point-code{border:1px solid #999;border-radius: 10px;margin-bottom:20px;padding: 10px;overflow-x: auto;}');
     htmlArray.push('.dashboard-item-point-title a {margin-left:20px;text-decoration:none;color:#509ee3;padding: 2px 5px;border-radius: 5px;font-size: 14px;border: 1px solid #eee;}');
     htmlArray.push('.dashboard-item-point-metric{margin-bottom:10px}');
     htmlArray.push('.dashboard-item-point-number{margin-bottom:10px}');
@@ -730,7 +952,7 @@ class DashboardService {
 
       Object.keys(metric).forEach(k => {
         const m = metric[k];
-        const goal = _config.scenes[key].metric[k].apiGoal;
+        const goal = goalMap[key][k];
         // const url = _config.scenes[key].metric[k].url;
         const devIframe = DashboardService.getIframeUrl(157, { name: k });
         const relIframe = DashboardService.getIframeUrl(156, { name: k });
@@ -794,13 +1016,39 @@ class DashboardService {
       }
 
     });
-    htmlArray.push('</body></html>');
+
     if (merticWarnArr.length === 0 && merticBlockArr.length === 0) {
       glipMessage.push('All of metric seem to be good');
     } else {
       glipMessage.push(...merticBlockArr);
       glipMessage.push(...merticWarnArr);
     }
+
+    //FIXME
+    /*
+        let dir = path.join(process.cwd(), Config.reportUri)
+        let files = fs.readdirSync(dir, 'utf8');
+        for (let file of files) {
+          if (file.endsWith('.traces.json')) {
+            await parseTracing(path.join(dir, file));
+          }
+        }
+        let tracingSummary = await summariseTracing();
+
+        if (tracingSummary.length > 0) {
+          glipMessage.push(`\n**There have ${tracingSummary.length} function which time cost over ${Config.functionTimeout}ms.**`)
+
+          htmlArray.push(
+            '<div class="dashboard-item">',
+            '<div class="dashboard-item-title">', 'Function call over ', Config.functionTimeout.toFixed(), 'ms</div>',
+          );
+          for (let item of tracingSummary) {
+            htmlArray.push('<div class="dashboard-item-point-title">', item.filePath, '</div>');
+            htmlArray.push('<pre class="dashboard-item-point-code">', item.code, '</pre>');
+          }
+        }
+    */
+    htmlArray.push('</body></html>');
 
     if (memoryDiff.length > 0) {
       glipMessage.push('\n**Memory Diff:**');

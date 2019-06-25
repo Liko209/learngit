@@ -10,6 +10,7 @@ import MuiIconButton, {
 import {
   JuiIconography,
   JuiIconographyProps,
+  SvgSymbol,
 } from '../../../foundation/Iconography';
 import tinycolor from 'tinycolor2';
 import styled, { keyframes } from '../../../foundation/styled-components';
@@ -36,7 +37,8 @@ type JuiIconButtonProps = {
   ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
   ref?: any;
-  children: ReactNode;
+  children?: ReactNode;
+  icon?: SvgSymbol;
   stretchIcon?: boolean;
   tooltipPlacement?: TooltipProps['placement'];
 } & Omit<MuiIconButtonProps, 'color' | 'children'> &
@@ -189,6 +191,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     alwaysEnableTooltip = false,
     tooltipPlacement,
     ariaLabel,
+    symbol,
     ...rest
   } = props;
   const { size, variant, awake, disabled, invisible } = rest;
@@ -220,6 +223,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
           awake={awake}
           disabled={disabled}
           invisible={invisible}
+          symbol={symbol}
         >
           {children}
         </StyledIcon>

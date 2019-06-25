@@ -53,7 +53,6 @@ enum MAKE_CALL_ERROR_CODE {
   INVALID_STATE,
 }
 
-type CallStateCallback = (callId: string, state: RTC_CALL_STATE) => void;
 type LogoutCallback = () => void;
 
 export {
@@ -63,6 +62,5 @@ export {
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
   TelephonyCallInfo,
-  CallStateCallback,
   LogoutCallback,
 };

@@ -15,7 +15,7 @@ class SegAnalysisController extends AnalysisBaseController {
   }
 
   init() {
-    const key = this.isProductionBuild() ? keys.production : keys.develop;
+    const key = this.isProduction() ? keys.production : keys.develop;
     this._segment = Segment({ key });
   }
 
@@ -24,7 +24,7 @@ class SegAnalysisController extends AnalysisBaseController {
   }
 
   page(name: string, properties?: any) {
-    this._segment && this._segment.page(name, properties);
+    this._segment && this._segment.page(name, this._addEndPoint(properties));
   }
 
   identify(id: number, properties?: any) {
@@ -35,10 +35,11 @@ class SegAnalysisController extends AnalysisBaseController {
     this._segment && this._segment.track(name, this._addEndPoint(properties));
   }
 
-  private _addEndPoint(options?: any) {
-    if (options && !options['endPoint']) {
-      options['endPoint'] = this.getEndPoint();
+  private _addEndPoint(options: any = {}) {
+    if (options['endPoint']) {
+      return options;
     }
+    options['endPoint'] = this.getEndPoint();
     return options;
   }
 }

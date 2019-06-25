@@ -6,7 +6,6 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { number, text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
 import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
@@ -15,36 +14,67 @@ import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
 
-storiesOf('Pattern/MessageInput', module)
-  .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
-  .add('MessageInput', () => {
-    const value = text('value', 'default text');
-    const onChange = () => { };
-    const ref = React.createRef<JuiMessageInput>();
-    return (
-      <>
-        <JuiMessageInput
-          ref={ref}
-          value={value}
-          onChange={onChange}
-          error=""
-          modules={{}}
-        >
-          <div />
-        </JuiMessageInput>
-        <button onClick={() => ref.current!.focusEditor()}>
-          focusEditor()
-        </button>
-      </>
-    );
-  });
+storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
+  const value = text('value', 'default text');
+  const onChange = () => {};
+  const ref = React.createRef<JuiMessageInput>();
+  return (
+    <>
+      <JuiMessageInput
+        ref={ref}
+        value={value}
+        onChange={onChange}
+        error=""
+        modules={{}}
+        placeholder="message.action.typeNewMessage"
+      >
+        <div />
+      </JuiMessageInput>
+      <button onClick={() => ref.current!.focusEditor()}>focusEditor()</button>
+    </>
+  );
+});
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
-  const autoUploadFile = () => { };
+  const autoUploadFile = () => {};
+  const menus = [
+    {
+      icon: 'google',
+      label: 'Google Drive',
+    },
+    {
+      icon: 'dropbox',
+      label: 'Dropbox',
+    },
+    {
+      icon: 'box',
+      label: 'Box',
+    },
+    {
+      icon: 'evernote',
+      label: 'Evernote',
+    },
+    {
+      icon: 'onedrive',
+      label: 'OneDrive',
+    },
+  ];
+
+  const fileMenu = {
+    icon: 'computer',
+    label: 'Computer',
+  };
+
   return (
     <div>
       <MessageActionBar>
-        <AttachmentView onFileChanged={autoUploadFile} />
+        <AttachmentView
+          menus={menus}
+          fileMenu={fileMenu}
+          tooltip="Attach file"
+          onFileChanged={autoUploadFile}
+          title="Upload files from"
+        />
       </MessageActionBar>
     </div>
   );
@@ -94,7 +124,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
-  const removeAttachment = () => { };
+  const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
@@ -114,11 +144,15 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
-  const f2 = 'f2.txt';
-  const f1 = 'f1.txt';
-  const f3 =
-    'This is the name of attachment itemThis is the name of attachment item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf';
-  const files = [{ name: f1 }, { name: f2 }, { name: f3 }];
+  const f2 = <span>f2.txt</span>;
+  const f1 = <span>f1.txt</span>;
+  const f3 = (
+    <span>
+      This is the name of attachment itemThis is the name of attachment
+      item.txtsdfsdfdsfsdfdsfsfsdfsdfsdfsdfsdf
+    </span>
+  );
+  const files = [f1, f2, f3];
   const array = Array(18)
     .fill(files)
     .flat();
@@ -129,7 +163,7 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         title="Update Files?"
         subtitle="The following files already exist."
         footText="Do you want to update the existing files or do you wish to create new files?"
-        duplicateFiles={array}
+        duplicateFileNames={array}
         onCancel={() => callback('cancel')}
         onCreate={() => callback('create')}
         onUpdate={() => callback('update')}

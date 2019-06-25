@@ -37,10 +37,11 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(entity), [
       entity,
     ]);
-    const preInsertId = this._getPreInsertId(entity);
-    if (!this.isInPreInsert(preInsertId)) {
+    const preInsertId = entity.id;
+    const preInsertKey = this._getPreInsertKey(entity);
+    if (preInsertKey && !this.isInPreInsert(preInsertKey)) {
       this.dao && (await this.dao.bulkPut([entity]));
-      this._preInsertIdController.insert(preInsertId);
+      this._preInsertIdController.insert(preInsertKey, preInsertId);
     } else {
       mainLogger.tags(LOG_TAG).info(`insert() ${entity.id} already pre-insert`);
     }
@@ -48,18 +49,23 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
 
   async delete(entity: T): Promise<void> {
     const originalEntityId = this._deleteEntity(entity);
-    originalEntityId && (await this.dao.delete(originalEntityId));
+    if (originalEntityId) {
+      await this.dao.delete(originalEntityId);
+      const preInsertId = this._getPreInsertKey(entity);
+      this._preInsertIdController.delete(preInsertId);
+    }
   }
 
   private _deleteEntity(entity: T): number | undefined {
-    const preInsertId = this._getPreInsertId(entity);
-    if (this.isInPreInsert(preInsertId)) {
-      const originalEntityId = Number(preInsertId);
+    const preInsertKey = this._getPreInsertKey(entity);
+    if (preInsertKey && this.isInPreInsert(preInsertKey)) {
+      const originalEntityId = this._preInsertIdController.getPreInsertId(
+        preInsertKey,
+      );
       const progressEntity = _.cloneDeep(entity);
       progressEntity.id > 0 && (progressEntity.id = originalEntityId);
       this._notifyChange(entity, originalEntityId);
       this.updateStatus(progressEntity, PROGRESS_STATUS.SUCCESS);
-      this._preInsertIdController.delete(preInsertId);
       return originalEntityId;
     }
     mainLogger
@@ -98,8 +104,12 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     const entityMap: Map<number, string> = new Map();
     entities.map((entity: T) => {
       const originalEntityId = this._deleteEntity(entity);
-      originalEntityId &&
-        entityMap.set(originalEntityId, this._getPreInsertId(entity));
+      if (originalEntityId) {
+        const preInsertKey = this._getPreInsertKey(entity);
+        preInsertKey &&
+          originalEntityId &&
+          entityMap.set(originalEntityId, preInsertKey);
+      }
     });
     if (entityMap.size) {
       await this.dao.bulkDelete([...entityMap.keys()]);
@@ -107,8 +117,12 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     }
   }
 
-  isInPreInsert(preInsertId: string): boolean {
-    return this._preInsertIdController.isInPreInsert(preInsertId);
+  isInPreInsert(uniqueId: string): boolean {
+    return this._preInsertIdController.isInPreInsert(uniqueId);
+  }
+
+  getAll(): { uniqueIds: string[]; ids: number[] } {
+    return this._preInsertIdController.getAll();
   }
 
   getEntityNotificationKey(entity: T) {
@@ -116,6 +130,18 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       return this.entityNotificationKey(entity);
     }
     return ControllerUtils.getEntityNotificationKey(this.dao);
+  }
+
+  private _getPreInsertKey(entity: T) {
+    return this._getUniqueId(entity) || entity.version.toString();
+  }
+
+  private _getUniqueId(entity: T) {
+    let preInsertId: string = '';
+    if (entity.hasOwnProperty(UNIQUE_ID)) {
+      preInsertId = entity[UNIQUE_ID];
+    }
+    return preInsertId;
   }
 
   private async _notifyChange(entity: T, originalEntityId: number) {
@@ -130,18 +156,6 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
         [entity.id],
       );
     }
-  }
-
-  private _getPreInsertId(entity: T) {
-    return this._getUniqueId(entity) || entity.version.toString();
-  }
-
-  private _getUniqueId(entity: T) {
-    let preInsertId: string = '';
-    if (entity.hasOwnProperty(UNIQUE_ID)) {
-      preInsertId = entity[UNIQUE_ID];
-    }
-    return preInsertId;
   }
 }
 

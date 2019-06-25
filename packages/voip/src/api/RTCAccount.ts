@@ -20,8 +20,7 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
-  RTC_STATUS_CODE,
-  RTCUserAgentInfo,
+  RTCUserInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -44,12 +43,14 @@ class RTCAccount implements IRTCAccount {
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
+  private _userInfo: RTCUserInfo;
   private _sleepModeListener: Listener;
 
-  constructor(listener: IRTCAccountDelegate, userAgentInfo: RTCUserAgentInfo) {
+  constructor(listener: IRTCAccountDelegate, userInfo: RTCUserInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
     this._delegate = listener;
-    this._regManager = new RTCRegistrationManager(userAgentInfo);
+    this._regManager = new RTCRegistrationManager(userInfo);
+    this._userInfo = userInfo;
     this._provManager = new RTCProvManager();
     this._callManager = new RTCCallManager();
     this._networkListener = (params: any) => {
@@ -84,21 +85,21 @@ class RTCAccount implements IRTCAccount {
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTC_STATUS_CODE {
+  ): RTCCall | null {
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return RTC_STATUS_CODE.NUMBER_INVALID;
+      return null;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return RTC_STATUS_CODE.MAX_CALLS_REACHED;
+      return null;
     }
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to make call. Account is in Unregistered state',
       );
-      return RTC_STATUS_CODE.INVALID_STATE;
+      return null;
     }
     let callOption: RTCCallOptions;
     if (options) {
@@ -107,24 +108,29 @@ class RTCAccount implements IRTCAccount {
       callOption = {};
     }
     this._regManager.makeCall(toNumber, delegate, callOption);
-    const call = new RTCCall(false, toNumber, null, this, delegate, callOption);
+    const call = new RTCCall(
+      false,
+      toNumber,
+      null,
+      this,
+      delegate,
+      callOption,
+      this._userInfo,
+    );
     this._callManager.addCall(call);
-    if (this._delegate) {
-      this._delegate.onMadeOutgoingCall(call);
-    }
     if (this.isReady()) {
       call.onAccountReady();
     } else {
       call.onAccountNotReady();
     }
-    return RTC_STATUS_CODE.OK;
+    return call;
   }
 
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ) {
+  ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
       optionsWithAnonymous = options;
@@ -133,7 +139,7 @@ class RTCAccount implements IRTCAccount {
       optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
     rtcLogger.debug(LOG_TAG, 'make anonymous call');
-    this.makeCall(toNumber, delegate, optionsWithAnonymous);
+    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
@@ -250,7 +256,15 @@ class RTCAccount implements IRTCAccount {
       );
       return;
     }
-    const call = new RTCCall(true, '', session, this, null);
+    const call = new RTCCall(
+      true,
+      '',
+      session,
+      this,
+      null,
+      undefined,
+      this._userInfo,
+    );
     this._callManager.addCall(call);
     this._delegate.onReceiveIncomingCall(call);
   }
