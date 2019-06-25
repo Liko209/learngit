@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { number, text } from '@storybook/addon-knobs';
+import { number, text, boolean, select } from '@storybook/addon-knobs';
 
 import { JuiMessageInput } from '..';
 import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
@@ -13,17 +13,18 @@ import { AttachmentList, ItemInfo } from '../AttachmentList';
 import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
+import { JuiInputFooterContainer, JuiInputFooterItem, InputFooterItemProps } from '../InputFooter';
+import { noop } from '../../../foundation/utils';
 
 storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
   const value = text('value', 'default text');
-  const onChange = () => {};
   const ref = React.createRef<JuiMessageInput>();
   return (
     <>
       <JuiMessageInput
         ref={ref}
         value={value}
-        onChange={onChange}
+        onChange={noop}
         error=""
         modules={{}}
         placeholder="message.action.typeNewMessage"
@@ -36,7 +37,6 @@ storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
-  const autoUploadFile = () => {};
   const menus = [
     {
       icon: 'google',
@@ -72,7 +72,7 @@ storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
           menus={menus}
           fileMenu={fileMenu}
           tooltip="Attach file"
-          onFileChanged={autoUploadFile}
+          onFileChanged={noop}
           title="Upload files from"
         />
       </MessageActionBar>
@@ -124,7 +124,6 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
-  const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
@@ -137,7 +136,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
     <div>
       <AttachmentList
         files={array as ItemInfo[]}
-        removeAttachment={removeAttachment}
+        removeAttachment={noop}
       />
     </div>
   );
@@ -172,5 +171,24 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         createText="Create"
       />
     </div>
+  );
+});
+
+storiesOf('Pattern/MessageInput', module).add('JuiInputFooter', () => {
+  const show = boolean('isShow', true);
+  const align = select<InputFooterItemProps['align']>(
+    'align',
+    {
+      left: 'left',
+      center: 'center',
+      right: 'right',
+    },
+    'left',
+  );
+  const content = text('content', 'This is the content of inputFooterItem');
+  return (
+    <JuiInputFooterContainer>
+      <JuiInputFooterItem show={show} align={align} content={content} />
+    </JuiInputFooterContainer>
   );
 });

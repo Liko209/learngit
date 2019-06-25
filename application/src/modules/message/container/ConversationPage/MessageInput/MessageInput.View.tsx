@@ -14,6 +14,7 @@ import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventD
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { InputFooter } from './InputFooter';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
@@ -140,7 +141,15 @@ class MessageInputViewComponent extends Component<
   }
 
   render() {
-    const { draft, contentChange, error, id, t, insertEmoji } = this.props;
+    const {
+      draft,
+      contentChange,
+      error,
+      id,
+      t,
+      insertEmoji,
+      hasInput,
+    } = this.props;
     const { modules } = this.state;
 
     const toolbarNode = (
@@ -159,6 +168,7 @@ class MessageInputViewComponent extends Component<
     const attachmentsNode = (
       <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
     );
+    const footerNode = <InputFooter hasInput={hasInput} />;
     return (
       <JuiMessageInput
         value={draft}
@@ -167,6 +177,7 @@ class MessageInputViewComponent extends Component<
         modules={modules}
         id={id}
         toolbarNode={toolbarNode}
+        footerNode={footerNode}
         attachmentsNode={attachmentsNode}
         didDropFile={this.handleCopyPasteFile}
         placeholder={t('message.action.typeNewMessage')}

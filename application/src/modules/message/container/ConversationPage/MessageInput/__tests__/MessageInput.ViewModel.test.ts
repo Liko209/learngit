@@ -15,6 +15,7 @@ import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
+import { isEmpty } from '../helper';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -48,7 +49,7 @@ ServiceLoader.getInstance = jest
       return groupConfigService;
     }
 
-    return { userConfig:{ getGlipUserId: () => userId }};
+    return { userConfig: { getGlipUserId: () => userId } };
   });
 
 const mockGroupEntityData = {
@@ -247,6 +248,17 @@ describe('MessageInputViewModel', () => {
         const emoji = { colons: ':baby::skin-tone-2:' };
         messageInputViewModel.insertEmoji(emoji);
         expect(setTimeout).toHaveBeenCalledTimes(1);
+      });
+    });
+    describe('hasInput', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        messageInputViewModel = new MessageInputViewModel({ id: 123 });
+      });
+      it('should be true when there is draft in current conversation input', () => {
+        messageInputViewModel._memoryDraftMap = new Map();
+        messageInputViewModel._memoryDraftMap.set(123, 'test');
+        expect(messageInputViewModel.hasInput).toBeTruthy();
       });
     });
   });

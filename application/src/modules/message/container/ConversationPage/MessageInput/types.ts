@@ -16,6 +16,7 @@ type MessageInputProps = {
 type MessageInputViewProps = {
   draft: string;
   error: string;
+  hasInput: boolean;
   forceSaveDraft(): void;
   forceSendPost(): void;
   addOnPostCallback(callback: OnPostCallback): void;
