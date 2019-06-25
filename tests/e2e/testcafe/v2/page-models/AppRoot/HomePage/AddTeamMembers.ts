@@ -8,11 +8,15 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('DialogTitle').withText('Add team members');
+    return this.getSelectorByAutomationId('DialogTitle').withText('Add Team Members');
   }
 
   get memberInput() {
     return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
+  }
+
+  get input() {
+    return this.memberInput.self.find('input')
   }
 
   get addButton() {
