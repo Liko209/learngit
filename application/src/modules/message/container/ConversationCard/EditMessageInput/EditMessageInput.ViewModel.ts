@@ -164,8 +164,6 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   }
 
   private _handleDelete = async () => {
-    const vm = this as EditMessageInputViewModel;
-
     Dialog.confirm({
       modalProps: { 'data-test-automation-id': 'deleteConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'deleteOkButton' },
@@ -175,8 +173,8 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       okText: await i18nT('common.dialog.delete'),
       okType: 'negative',
       cancelText: await i18nT('common.dialog.cancel'),
-      onOK() {
-        vm._deletePost().catch((e: Error) => {
+      onOK: () => {
+        this._deletePost().catch((e: Error) => {
           mainLogger.error(e);
         });
       },
