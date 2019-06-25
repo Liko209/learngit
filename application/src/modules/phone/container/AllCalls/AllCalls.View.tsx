@@ -36,7 +36,6 @@ class AllCallsViewComponent extends Component<Props> {
 
   private _renderItems() {
     const { listHandler } = this.props;
-    console.log(listHandler.sortableListStore.getIds, '--nello all log');
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem

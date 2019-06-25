@@ -3,34 +3,37 @@
  * @Date: 2019-06-24 13:30:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, computed } from 'mobx';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { StoreViewModel } from '@/store/ViewModel';
 import { catchError } from '@/common/catchError';
+import { analyticsCollector } from '@/AnalyticsCollector';
+
 import { DeleteProps } from './types';
-import { AllCallsListHandler } from '../../AllCalls/AllCallsListHandler';
-import { CallLogType } from '../../AllCalls/types';
 
 class DeleteAllViewModel extends StoreViewModel<DeleteProps> {
   @catchError.flash({
-    network: 'calllog.prompt.notAbleToDeleteCallLogForNetworkIssue',
-    server: 'calllog.prompt.notAbleToDeleteCallLogForServerIssue',
+    network: 'calllog.prompt.notAbleToDeleteAllCallLogForNetworkIssue',
+    server: 'calllog.prompt.notAbleToDeleteAllCallLogForServerIssue',
   })
-  @action
   clearCallLog = async () => {
     const callLogService = ServiceLoader.getInstance<CallLogService>(
       ServiceConfig.CALL_LOG_SERVICE,
     );
-    return callLogService.clearAllCallLogs();
+    try {
+      await callLogService.clearAllCallLogs();
+      analyticsCollector.clearAllCallHistory();
+      return true;
+    } catch (e) {
+      throw e;
+    }
   }
 
-  @computed
-  get listHandler() {
-    const length = new AllCallsListHandler(CallLogType.All)
-      .fetchSortableDataListHandler.sortableListStore.getIds;
-    console.log('nello ', length);
-    return length;
+  totalCount = async () => {
+    const callLogService = ServiceLoader.getInstance<CallLogService>(
+      ServiceConfig.CALL_LOG_SERVICE,
+    );
+    return await callLogService.getTotalCount();
   }
 }
 

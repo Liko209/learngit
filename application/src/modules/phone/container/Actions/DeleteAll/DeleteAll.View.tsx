@@ -14,34 +14,49 @@ import { DeleteViewProps } from './types';
 
 type Props = DeleteViewProps & WithTranslation;
 
+type State = {
+  count: number;
+};
+
 @observer
-class DeleteViewComponent extends Component<Props> {
+class DeleteViewComponent extends Component<Props, State> {
+  state = {
+    count: 0,
+  };
+
+  async componentDidMount() {
+    const count = await this.props.totalCount();
+    this.setState({
+      count,
+    });
+  }
+
   _handleClick = () => {
     const { t } = this.props;
-    Dialog.confirm({
-      modalProps: { 'data-test-automation-id': 'deleteCallLogConfirmDialog' },
-      okBtnProps: { 'data-test-automation-id': 'deleteCallLogOkButton' },
-      cancelBtnProps: {
-        'data-test-automation-id': 'deleteCallLogCancelButton',
+    const dialog = Dialog.confirm({
+      modalProps: {
+        'data-test-automation-id': 'deleteAllCallLogConfirmDialog',
       },
-      title: t('calllog.deleteCallLog'),
+      okBtnProps: { 'data-test-automation-id': 'deleteAllCallLogOkButton' },
+      cancelBtnProps: {
+        'data-test-automation-id': 'deleteAllCallLogCancelButton',
+      },
+      title: t('calllog.deleteAllCallHistory'),
       content: (
         <JuiDialogContentText>
-          <Trans i18nKey="calllog.doYouWanttoDeleteThisCallLog" />
+          <Trans i18nKey="calllog.doYouWanttoDeleteAllCallLog" />
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
       onOK: async () => {
-        await this.props.clearCallLog();
+        dialog.startLoading();
+        const result = await this.props.clearCallLog();
+        dialog.stopLoading();
+        return result ? true : false;
       },
     });
-  }
-
-  get _tooltip() {
-    const { t } = this.props;
-    return t('calllog.deleteCallHistory');
   }
 
   get _screenReader() {
@@ -50,16 +65,18 @@ class DeleteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { entity, listHandler } = this.props;
-    console.log(listHandler, '---nello');
+    const { count } = this.state;
+    const { t } = this.props;
+
     return (
       <JuiMenuItem
-        key={`${entity}-delete`}
+        disabled={count === 0}
+        key={'delete-all'}
         onClick={this._handleClick}
         aria-label={this._screenReader}
-        data-test-automation-id={`${entity}-delete-button`}
+        data-test-automation-id={'delete-all-button'}
       >
-        {this._screenReader}
+        {t('calllog.deleteAllCallHistory')}
       </JuiMenuItem>
     );
   }

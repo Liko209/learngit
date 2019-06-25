@@ -14,8 +14,7 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { CallLogService } from 'sdk/module/RCItems/callLog';
-import { DeleteViewAllModel } from '../DeleteAll.ViewModel';
-import { BUTTON_TYPE } from '../types';
+import { DeleteAllViewModel } from '../DeleteAll.ViewModel';
 
 jest.mock('@/containers/Notification');
 
@@ -36,35 +35,33 @@ const checkNotification = (message: string) => ({
   type: 'error',
 });
 
-describe('DeleteViewModel', () => {
+describe('DeleteAllViewModel', () => {
   @testable
-  class deleteCallLog {
-    @test('should toast error when delete call log fail for network issue')
-    @mockService(CallLogService, 'deleteCallLogs', networkErrorFunc)
+  class clearCallLog {
+    @test(
+      'should toast error when delete all call log fail for network issue [JPT-2344]',
+    )
+    @mockService(CallLogService, 'clearAllCallLogs', networkErrorFunc)
     async t1() {
-      const vm = new DeleteViewAllModel({
-        id: 2031622,
-        type: BUTTON_TYPE.MENU_ITEM,
-      });
-      await vm.deleteCallLog();
+      const vm = new DeleteAllViewModel();
+      await vm.clearCallLog();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification(
-          'calllog.prompt.notAbleToDeleteCallLogForNetworkIssue',
+          'calllog.prompt.notAbleToDeleteAllCallLogForNetworkIssue',
         ),
       );
     }
 
-    @test('should toast error when delete call log fail for server issue')
-    @mockService(CallLogService, 'deleteCallLogs', serverErrorFunc)
+    @test(
+      'should toast error when delete all call log fail for server issue [JPT-2345]',
+    )
+    @mockService(CallLogService, 'clearAllCallLogs', serverErrorFunc)
     async t2() {
-      const vm = new DeleteViewAllModel({
-        id: 2031622,
-        type: BUTTON_TYPE.MENU_ITEM,
-      });
-      await vm.deleteCallLog();
+      const vm = new DeleteAllViewModel();
+      await vm.clearCallLog();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification(
-          'calllog.prompt.notAbleToDeleteCallLogForServerIssue',
+          'calllog.prompt.notAbleToDeleteAllCallLogForServerIssue',
         ),
       );
     }

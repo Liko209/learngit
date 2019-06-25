@@ -4,19 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
-import { ENTITY_TYPE } from '../../constants';
-
-type DeleteProps = {
-  id: number | string;
-  type: BUTTON_TYPE;
-};
+type DeleteProps = {};
 
 type DeleteViewProps = {
-  type: BUTTON_TYPE;
-  entity: ENTITY_TYPE;
-  clearCallLog: () => Promise<void>;
-  listHandler: number;
+  clearCallLog: () => Promise<boolean | undefined>;
+  totalCount: () => Promise<number>;
 };
 
-export { BUTTON_TYPE, DeleteProps, DeleteViewProps };
+export { DeleteProps, DeleteViewProps };

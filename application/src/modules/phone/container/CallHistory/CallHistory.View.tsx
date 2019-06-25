@@ -14,7 +14,6 @@ import { TabConfig, TAB_CONFIG } from './config';
 import ReactResizeDetector from 'react-resize-detector';
 import { More } from '../Actions/More';
 import { DeleteAll } from '../Actions/DeleteAll';
-import { BUTTON_TYPE } from '../Actions/types';
 
 const CallHistoryWrapper = (
   props: { height: number; clearUMI: () => void } & WithTranslation,
@@ -32,7 +31,7 @@ const CallHistoryWrapper = (
         data-test-automation-id="CallHistoryPageHeader"
         SubTitle={
           <More>
-            <DeleteAll type={BUTTON_TYPE.MENU_ITEM} id={123} />
+            <DeleteAll />
           </More>
         }
       />
