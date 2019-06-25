@@ -605,9 +605,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       (sectionType === SECTION_TYPE.DIRECT_MESSAGE
         ? state.unread_count
         : state.unread_mentions_count);
-    if (hasUnread) {
-      this._addToFetchProcessor(groupId);
-    }
+    hasUnread && this._addToFetchProcessor(groupId);
   }
 
   private _addToFetchProcessor(groupId: number) {
