@@ -134,6 +134,19 @@ describe('SelectSettingItemViewModel', () => {
       expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith('B');
     });
 
+    it('should supports string as value and source', async () => {
+      mockSettingItemEntity({
+        valueSetter: jest.fn(),
+        source: ['A', 'B'],
+      });
+      mockSettingItem({
+        beforeSettingSave: () => false,
+      });
+      const vm = new SelectSettingItemViewModel({ id: 1 });
+      await vm.saveSetting('B');
+      expect(vm.settingItemEntity.valueSetter).not.toHaveBeenCalled();
+    });
+
     it('should throw error when source is invalid', async () => {
       mockSettingItemEntity({
         valueSetter: jest.fn(),
