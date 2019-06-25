@@ -116,22 +116,20 @@ class RCPermissionController {
   ) {
     let isFound = false;
     let isEnabled = false;
-    for (const item of this._featurePermissionMap) {
-      if (featurePermission === item[0]) {
-        isFound = true;
-        const feature = item[1];
-        const isFeatureEnabled = feature.featureName
-          ? await this._isRCServiceFeatureEnabled(feature.featureName)
-          : true;
-        const isPermissionEnabled = feature.permissionId
-          ? await this._rolePermissionController.hasPermission(
-              feature.permissionId,
-            )
-          : true;
-        isEnabled = isFeatureEnabled && isPermissionEnabled;
-        break;
-      }
+    const permissionItem = this._featurePermissionMap.get(featurePermission);
+    if (permissionItem) {
+      isFound = true;
+      const isFeatureEnabled = permissionItem.featureName
+        ? await this._isRCServiceFeatureEnabled(permissionItem.featureName)
+        : true;
+      const isPermissionEnabled = permissionItem.permissionId
+        ? await this._rolePermissionController.hasPermission(
+            permissionItem.permissionId,
+          )
+        : true;
+      isEnabled = isFeatureEnabled && isPermissionEnabled;
     }
+
     return { found: isFound, enabled: isEnabled };
   }
 
@@ -226,13 +224,37 @@ class RCPermissionController {
         ERCServiceFeaturePermission.VIDEO_CONFERENCING,
         {
           featureName: RCServiceFeatureName.VIDEO_CONFERENCING,
-          PermissionId: PermissionId.PERMISSION_MEEINGS,
+          permissionId: PermissionId.PERMISSION_MEEINGS,
         },
       ],
       [
         ERCServiceFeaturePermission.CONFERENCING,
         {
           featureName: RCServiceFeatureName.CONFERENCING,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.READ_BLOCKED_PHONE_NUMBER,
+        {
+          permissionId: PermissionId.READ_BLOCKED_NUMBER,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
+        {
+          permissionId: PermissionId.EDIT_BLOCKED_NUMBER,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.READ_CALLLOG,
+        {
+          permissionId: PermissionId.READ_CALLLOG,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.READ_MESSAGES,
+        {
+          permissionId: PermissionId.READ_MESSAGES,
         },
       ],
     ]);

@@ -11,8 +11,10 @@ import { RCCallerIdController } from './RCCallerIdController';
 import { RegionInfoController } from './RegionInfoController';
 import { RCAccountInfoController } from './RCAccountInfoController';
 import { AccountServiceInfoController } from './AccountServiceInfoController';
-
 import { RCWebSettingInfoController } from './RCWebSettingInfoController';
+import { RCInfoUserConfig } from '../config';
+import { BlockNumberController } from './BlockNumberController';
+
 class RCInfoController {
   private _rcInfoFetchController: RCInfoFetchController;
   private _rcPermissionController: RCPermissionController;
@@ -22,8 +24,9 @@ class RCInfoController {
   private _rcAccountInfoController: RCAccountInfoController;
   private _accountServiceInfoController: AccountServiceInfoController;
   private _webSettingInfoController: RCWebSettingInfoController;
+  private _blockNumberController: BlockNumberController;
 
-  constructor() {}
+  constructor(private _DBConfig: RCInfoUserConfig) {}
 
   getRCInfoFetchController(): RCInfoFetchController {
     if (!this._rcInfoFetchController) {
@@ -97,6 +100,13 @@ class RCInfoController {
       );
     }
     return this._webSettingInfoController;
+  }
+
+  get blockNumberController(): BlockNumberController {
+    if (!this._blockNumberController) {
+      this._blockNumberController = new BlockNumberController(this._DBConfig);
+    }
+    return this._blockNumberController;
   }
 
   dispose() {

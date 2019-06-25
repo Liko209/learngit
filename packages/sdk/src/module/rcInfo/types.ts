@@ -43,6 +43,8 @@ enum ERCServiceFeaturePermission {
   RC_PRESENCE,
   MOBILE_VOIP_EMERGENCY_CALLING,
   CALL_FORWARDING,
+  READ_CALLLOG,
+  READ_MESSAGES,
 }
 
 enum PermissionId {
@@ -53,6 +55,10 @@ enum PermissionId {
   READ_COMPANY_CALLLOG = 'ReadCompanyCallLog',
   INTERNAL_SMS = 'InternalSMS',
   PERMISSION_MEEINGS = 'Meetings',
+  READ_BLOCKED_NUMBER = 'ReadBlockedNumbers',
+  EDIT_BLOCKED_NUMBER = 'EditBlockedNumbers',
+  READ_CALLLOG = 'ReadCallLog',
+  READ_MESSAGES = 'ReadMessages',
 }
 
 enum RCServiceFeatureName {

@@ -49,6 +49,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.rcInfoSettings);
+    this.getRCInfoController().blockNumberController.init();
   }
 
   protected onStopped() {
@@ -64,11 +65,12 @@ class RCInfoService extends EntityBaseService<IdModel>
       ).unRegisterModuleSetting(this._rcInfoSettings);
       delete this._rcInfoSettings;
     }
+    this.getRCInfoController().blockNumberController.dispose();
   }
 
   protected getRCInfoController(): RCInfoController {
     if (!this._rcInfoController) {
-      this._rcInfoController = new RCInfoController();
+      this._rcInfoController = new RCInfoController(this.DBConfig);
     }
     return this._rcInfoController;
   }
@@ -273,16 +275,22 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getForwardingFlipNumbers(EForwardingNumberFeatureType.FLIP);
   }
 
-  async isNumberBlocked(): Promise<boolean> {
-    return true;
+  async isNumberBlocked(phoneNumber: string): Promise<boolean> {
+    return await this.getRCInfoController().blockNumberController.isNumberBlocked(
+      phoneNumber,
+    );
   }
 
   async deleteBlockedNumbers(phoneNumbers: string[]): Promise<void> {
-    return;
+    await this.getRCInfoController().blockNumberController.deleteBlockedNumbers(
+      phoneNumbers,
+    );
   }
 
-  async addBlockedNumber(phoneNumbers: string): Promise<void> {
-    return;
+  async addBlockedNumber(phoneNumber: string): Promise<void> {
+    await this.getRCInfoController().blockNumberController.addBlockedNumber(
+      phoneNumber,
+    );
   }
 }
 

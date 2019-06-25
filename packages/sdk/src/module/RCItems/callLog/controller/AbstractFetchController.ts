@@ -20,6 +20,8 @@ import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CallLogService } from '../service';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 
 abstract class AbstractFetchController extends RCItemSyncController<
   CallLog,
@@ -125,6 +127,16 @@ abstract class AbstractFetchController extends RCItemSyncController<
     await await ServiceLoader.getInstance<CallLogService>(
       ServiceConfig.CALL_LOG_SERVICE,
     ).userConfig.setPseudoCallLogInfo({});
+  }
+
+  protected async hasPermission(): Promise<boolean> {
+    if (!(await super.hasPermission())) {
+      return false;
+    }
+
+    return ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    ).isRCFeaturePermissionEnabled(ERCServiceFeaturePermission.READ_CALLLOG);
   }
 
   async reset() {
