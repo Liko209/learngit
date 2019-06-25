@@ -20,13 +20,9 @@ class DeleteAllViewModel extends StoreViewModel<DeleteProps> {
     const callLogService = ServiceLoader.getInstance<CallLogService>(
       ServiceConfig.CALL_LOG_SERVICE,
     );
-    try {
-      await callLogService.clearAllCallLogs();
-      analyticsCollector.clearAllCallHistory();
-      return true;
-    } catch (e) {
-      throw e;
-    }
+    await callLogService.clearAllCallLogs();
+    analyticsCollector.clearAllCallHistory();
+    return true;
   }
 
   totalCount = async () => {

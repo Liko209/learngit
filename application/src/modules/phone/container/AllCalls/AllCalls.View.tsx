@@ -67,19 +67,23 @@ class AllCallsViewComponent extends Component<Props> {
     const { listHandler, t, height } = this.props;
 
     return (
-      <PhoneWrapper>
-        <DataList
-          initialDataCount={INITIAL_COUNT}
-          listHandler={listHandler}
-          reverse={true}
-          InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: height - CALL_HISTORY_USED_HEIGHT,
-            noRowsRenderer: <JuiEmptyScreen text={t('telephony.nocalllogs')} />,
-          })}
-        >
-          {this._renderItems()}
-        </DataList>
-      </PhoneWrapper>
+      <div style={{ height, width: '100%' }}>
+        <PhoneWrapper>
+          <DataList
+            initialDataCount={INITIAL_COUNT}
+            listHandler={listHandler}
+            reverse={true}
+            InfiniteListProps={Object.assign(this._infiniteListProps, {
+              height: height - CALL_HISTORY_USED_HEIGHT,
+              noRowsRenderer: (
+                <JuiEmptyScreen text={t('telephony.nocalllogs')} />
+              ),
+            })}
+          >
+            {this._renderItems()}
+          </DataList>
+        </PhoneWrapper>
+      </div>
     );
   }
 }
