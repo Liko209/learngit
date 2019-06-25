@@ -228,17 +228,19 @@ test.meta(<ITestMeta>{
   });
 
 
-  const entryPoint = ['clickMenu', 'keyBoardEntry']
+  const entryPoint = ['keyBoardEntryAndNameNoChange', 'clickMenu', 'keyBoardEntry']
 
 
   for(let i = 0 ; i < entryPoint.length; i++ ){
+    const isIndexTwo = i === 2
+    const isIndexOne = i === 1
     const isIndexZero = i === 0
 
     await h(t).withLog(`When I am on hover more icon`, async () => {
       await t.hover(moreActionOnFile.more);
     });
 
-    isIndexZero && await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
+    isIndexOne && await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
       await moreActionOnFile.showTooltip(moreTooltip);
     });
 
@@ -246,11 +248,11 @@ test.meta(<ITestMeta>{
       await moreActionOnFile.clickMore();
     });
 
-    isIndexZero && await h(t).withLog(`Then show ${renameFileMenu} menu at the top`, async() => {
+    isIndexOne && await h(t).withLog(`Then show ${renameFileMenu} menu at the top`, async() => {
       await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
     });
 
-    isIndexZero && await h(t).withLog(`And the menu should be enabled`, async() => {
+    isIndexOne && await h(t).withLog(`And the menu should be enabled`, async() => {
       await moreActionOnFile.renameFileMenuDisabledOrNot(false);
     });
 
@@ -262,11 +264,11 @@ test.meta(<ITestMeta>{
       await moreActionOnFile.ensureLoaded();
     });
 
-    await h(t).withLog(`When I clear the file name`, async() => {
+    !isIndexZero && await h(t).withLog(`When I clear the file name`, async() => {
       await renameFileDialog.clearFileNameInput();
     });
 
-    if(isIndexZero) {
+    if(isIndexOne) {
       await h(t).withLog(`The Save button should be disabled`, async() => {
         await renameFileDialog.saveButtonShouldDisabled();
       });
@@ -278,7 +280,7 @@ test.meta(<ITestMeta>{
       await h(t).withLog(`The Save button should be disabled`, async() => {
         await renameFileDialog.saveButtonShouldDisabled();
       });
-    } else {
+    } else if(isIndexTwo) {
       await h(t).withLog(`Then force on file input`, async() => {
         await t.click(renameFileDialog.fileNameInput);
       });
@@ -290,11 +292,11 @@ test.meta(<ITestMeta>{
       });
     }
 
-    await h(t).withLog(`When I update the file name`, async() => {
+    !isIndexZero && await h(t).withLog(`When I update the file name`, async() => {
       await renameFileDialog.updateFileName(nameWithUnSupportChar);
     });
 
-    if(isIndexZero) {
+    if(isIndexOne) {
       await h(t).withLog(`And I click the Save button`, async() => {
         await renameFileDialog.clickSaveButton();
       });
@@ -311,8 +313,8 @@ test.meta(<ITestMeta>{
       await renameFileDialog.ensureDismiss();
     });
 
-    await h(t).withLog(`And show the new file name`, async() => {
-      await postItem.nameShouldBe(newFileName);
+    await h(t).withLog(`And show the file name`, async() => {
+      await postItem.nameShouldBe(isIndexZero ? '1' : newFileName);
     });
   }
 

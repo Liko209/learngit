@@ -35,7 +35,7 @@ class FileNameEditDialogViewComponent extends Component<
     if (event.keyCode === ENTRY_KEY_CODE) {
       const { handleEditFileName } = this.props;
       event.preventDefault();
-      if (!newFileName) return;
+      if (newFileName !== undefined && !newFileName) return;
       handleEditFileName();
     }
   }
