@@ -161,11 +161,13 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
   />
   <div
     className="c2"
+    data-test-automation-id="right-shelf-empty-screen-text"
   >
     No files shared yet
   </div>
   <div
     className="c3"
+    data-test-automation-id="right-shelf-empty-screen-content"
   >
     Files that get shared in your conversation automatically show up here.
   </div>

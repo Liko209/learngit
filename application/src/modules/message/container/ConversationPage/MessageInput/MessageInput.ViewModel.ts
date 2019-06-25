@@ -133,7 +133,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _isEmpty = (content: string) => {
     const commentText = content.trim();
-    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>)+$/gm;
+    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+)*<\/p>)+$/gm;
     return re.test(commentText);
   }
 

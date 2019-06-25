@@ -320,30 +320,5 @@ describe('EntitySourceController', () => {
       });
       expect(entitySourceController.batchGet(ids)).resolves.toEqual([]);
     });
-
-    it('should filter null and undefined and duplicated when do batchGet', async () => {
-      const ids = [1, 2, null, 3, undefined, 1, 5];
-      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
-      const spy = jest.spyOn(entityPersistentController, 'batchGet');
-      spy.mockResolvedValueOnce([]);
-      requestController.get = jest.fn().mockImplementationOnce(() => {
-        throw new Error();
-      });
-      await entitySourceController.batchGet(ids, true);
-      expect(spy).toBeCalledWith([1, 2, 3, 5], true);
-    });
-
-    it('should return [] if has not valid ids', async () => {
-      const ids = [null, undefined];
-      deactivatedDao.batchGet = jest.fn().mockResolvedValue([]);
-      const spy = jest.spyOn(entityPersistentController, 'batchGet');
-      spy.mockResolvedValueOnce([]);
-      requestController.get = jest.fn().mockImplementationOnce(() => {
-        throw new Error();
-      });
-      const result = await entitySourceController.batchGet(ids, true);
-      expect(result).toEqual([]);
-      expect(spy).not.toBeCalled();
-    });
   });
 });

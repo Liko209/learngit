@@ -8,7 +8,6 @@ import { RTCCall } from './RTCCall';
 
 interface IRTCAccountDelegate {
   onAccountStateChanged(accountState: RTC_ACCOUNT_STATE): void;
-  onMadeOutgoingCall(call: RTCCall): void;
   onReceiveIncomingCall(call: RTCCall): void;
   onReceiveNewProvFlags(sipFlags: RTCSipFlags): void;
 }

@@ -354,7 +354,6 @@ test(formalName('Should not display UMI when section is expended & Should displa
     });
 
     await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
-      await t.debug();
       await favoritesSection.headerUmi.shouldBeNumber(2);
     });
 

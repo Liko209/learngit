@@ -19,7 +19,7 @@ const mockGetRCBrandId = jest.fn();
 const mockGetRCAccountId = jest.fn();
 const mockGetRCExtensionId = jest.fn();
 
-describe('', () => {
+describe('TelephonyEngineController', () => {
   let engineController: TelephonyEngineController;
   const mockHasPermission = jest.fn();
 
@@ -75,6 +75,10 @@ describe('', () => {
     it('should emit notification when permission is changed and voip is available', async () => {
       Object.assign(engineController, {
         _isVoipCallingAvailable: false,
+        rtcEngine: { setUserInfo: jest.fn() },
+      });
+      AuthUserConfig.prototype.getRCToken = jest.fn().mockReturnValueOnce({
+        endpoint_id: 'test',
       });
       jest
         .spyOn(engineController, 'getVoipCallPermission')

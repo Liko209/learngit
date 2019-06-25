@@ -12,7 +12,7 @@ class ProgressService extends EntityBaseService<Progress>
   implements IProgressService {
   private _progressCacheController: ProgressCacheController;
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
   }
 
   protected get progressCacheController() {

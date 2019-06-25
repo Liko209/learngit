@@ -48,6 +48,7 @@
     "conj": {
       "and": "and"
     },
+    "delete": "Delete",
     "more": "More",
     "copy": "Copy",
     "remove": "Remove",
@@ -659,7 +660,6 @@
     "tab": {
       "callHistory": "Call history"
     },
-    "delete": "Delete",
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",

@@ -21,7 +21,8 @@ class DeleteViewModel extends StoreViewModel<DeleteProps> {
     const voicemailService = ServiceLoader.getInstance<VoicemailService>(
       ServiceConfig.VOICEMAIL_SERVICE,
     );
-    return voicemailService.deleteVoicemails([this.props.id as number]);
+    await voicemailService.deleteVoicemails([this.props.id as number]);
+    return true;
   }
 
   @catchError.flash({
@@ -33,7 +34,8 @@ class DeleteViewModel extends StoreViewModel<DeleteProps> {
     const callLogService = ServiceLoader.getInstance<CallLogService>(
       ServiceConfig.CALL_LOG_SERVICE,
     );
-    return callLogService.deleteCallLogs([this.props.id as string]);
+    await callLogService.deleteCallLogs([this.props.id as string]);
+    return true;
   }
 }
 

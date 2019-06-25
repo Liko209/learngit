@@ -37,12 +37,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
   private _makeCall = async (val: string) => {
     // make sure line 30 run before end()
-    if (
-      !(await this._telephonyService.makeCall(
-        val,
-        this._telephonyStore.dialerCall,
-      ))
-    ) {
+    if (!(await this._telephonyService.makeCall(val))) {
       await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });

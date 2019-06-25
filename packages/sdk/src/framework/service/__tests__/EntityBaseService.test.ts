@@ -45,7 +45,11 @@ describe('EntityBaseService', () => {
   function setUp() {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new BaseDao('DeactivatedDao', new TestDatabase());
-    service = new EntityBaseService<TestEntity>(false, dao, networkConfig);
+    service = new EntityBaseService<TestEntity>(
+      { isSupportedCache: true },
+      dao,
+      networkConfig,
+    );
   }
 
   beforeEach(() => {
@@ -67,7 +71,11 @@ describe('EntityBaseService', () => {
       jest.spyOn(dao, 'createQuery').mockReturnValue(query);
       query.limit.mockReturnValue(query);
       query.toArray.mockResolvedValue({ id: 1 });
-      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      const service = new EntityBaseService<Person>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
       service['initialEntitiesCache']();
       expect(query.toArray).toBeCalled();
     });
@@ -82,7 +90,11 @@ describe('EntityBaseService', () => {
       jest.spyOn(dao, 'createQuery').mockReturnValue(query);
       query.limit.mockReturnValue(query);
       query.toArray.mockResolvedValue({ id: 1 });
-      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      const service = new EntityBaseService<Person>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
       service['initialEntitiesCache']();
       expect(query.toArray).not.toBeCalled();
     });
@@ -99,7 +111,11 @@ describe('EntityBaseService', () => {
     });
 
     it('should return true when init entity source controller', () => {
-      service = new EntityBaseService<TestEntity>(false, dao, networkConfig);
+      service = new EntityBaseService<TestEntity>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
       expect(service.getEntitySource()['canSaveRemoteData']).toBeTruthy();
     });
   });
@@ -115,7 +131,7 @@ describe('EntityBaseService', () => {
 
     it('should call entity source controller once', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -134,7 +150,7 @@ describe('EntityBaseService', () => {
 
     it('should call network client once', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -150,7 +166,7 @@ describe('EntityBaseService', () => {
 
     it('should call network client once and throw error', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -170,7 +186,7 @@ describe('EntityBaseService', () => {
 
     it('should not call network client once when checkFunc return false', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );

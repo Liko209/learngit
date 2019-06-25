@@ -27,7 +27,7 @@ class CallLogService extends EntityBaseService<CallLog, string> {
   private _missedCallUserConfig: RCItemUserConfig;
 
   constructor() {
-    super(false, daoManager.getDao(CallLogDao));
+    super({ isSupportedCache: false }, daoManager.getDao(CallLogDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL]: this

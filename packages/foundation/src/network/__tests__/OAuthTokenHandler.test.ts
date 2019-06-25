@@ -1,13 +1,21 @@
 import { OAuthTokenHandler } from '..';
 import { fakeHandleType, getFakeTokenHandler, getFakeToken } from './utils';
 
-const handler = new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
+let handler = new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
 const fakeListener = {
   onRefreshTokenFailure: jest.fn(),
 } as any;
 handler.listener = fakeListener;
 
 describe('OAuthTokenHandler', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+    jest.resetAllMocks();
+    handler = new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
+    handler.listener = fakeListener;
+  });
+
   describe('refreshOAuthToken', () => {
     it('should not notifyRefreshTokenFailure if isOAuthTokenRefreshing', () => {
       handler.isOAuthTokenRefreshing = true;
@@ -45,6 +53,7 @@ describe('OAuthTokenHandler', () => {
 
   describe('isTokenExpired', () => {
     it('should return true', () => {
+      handler.token = getFakeToken();
       expect(handler.isTokenExpired(false)).toBeFalsy();
       expect(handler.isTokenExpired(true)).toBeTruthy();
       handler.token = null;
@@ -68,8 +77,16 @@ describe('OAuthTokenHandler', () => {
   });
 
   describe('_notifyRefreshTokenFailure()', () => {
-    it('should not force logout when error code >= 500', () => {
-      handler['_notifyRefreshTokenFailure']('500');
+    it('should not force logout when forceLogout is false', () => {
+      handler['_notifyRefreshTokenFailure'](false);
+      expect(handler.listener!.onRefreshTokenFailure).toBeCalledWith(
+        handler.type,
+        false,
+      );
+    });
+
+    it('should not force logout when forceLogout is undefined', () => {
+      handler['_notifyRefreshTokenFailure']();
       expect(handler.listener!.onRefreshTokenFailure).toBeCalledWith(
         handler.type,
         false,

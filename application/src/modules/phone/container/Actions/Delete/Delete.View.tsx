@@ -3,15 +3,13 @@
  * @Date: 2019-05-24 07:28:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { withTranslation, WithTranslation, Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-import { DeleteViewProps, BUTTON_TYPE } from './types';
+import { DeleteViewProps } from './types';
 import { ENTITY_TYPE } from '../../constants';
 
 type Props = DeleteViewProps & WithTranslation;
@@ -40,9 +38,7 @@ class DeleteViewComponent extends Component<Props> {
       title: t('voicemail.deleteVoicemail'),
       content: (
         <JuiDialogContentText>
-          <Trans
-            i18nKey="voicemail.areYouSureYouWantToDeleteTheVoicemail"
-          />
+          {t('voicemail.areYouSureYouWantToDeleteTheVoicemail')}
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
@@ -69,9 +65,7 @@ class DeleteViewComponent extends Component<Props> {
       title: t('calllog.deleteCallLog'),
       content: (
         <JuiDialogContentText>
-          <Trans
-            i18nKey="calllog.doYouWanttoDeleteThisCallLog"
-          />
+          {t('calllog.doYouWanttoDeleteThisCallLog')}
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),
@@ -94,7 +88,7 @@ class DeleteViewComponent extends Component<Props> {
 
     switch (entity) {
       case ENTITY_TYPE.VOICEMAIL:
-        return t('phone.delete');
+        return t('common.delete');
       case ENTITY_TYPE.CALL_LOG:
         return t('calllog.deleteCallLog');
       default:
@@ -117,35 +111,16 @@ class DeleteViewComponent extends Component<Props> {
 
   render() {
     const { type, entity } = this.props;
-    if (type === BUTTON_TYPE.ICON) {
-      return (
-        <JuiActionIconWrapper>
-          <JuiIconButton
-            color="common.white"
-            variant="round"
-            autoFocus={false}
-            size="small"
-            key={`${entity}-delete`}
-            data-test-automation-id={`${entity}-delete-button`}
-            ariaLabel={this._screenReader}
-            tooltipTitle={this._tooltip}
-            onClick={this._handleClick}
-          >
-            delete
-          </JuiIconButton>
-        </JuiActionIconWrapper>
-      );
-    }
     return (
-      <JuiMenuItem
-        icon="delete"
+      <ActionButton
         key={`${entity}-delete`}
+        icon="delete"
+        type={type}
+        tooltip={this._tooltip}
         onClick={this._handleClick}
-        aria-label={this._screenReader}
-        data-test-automation-id={`${entity}-delete-button`}
-      >
-        {this._screenReader}
-      </JuiMenuItem>
+        screenReader={this._screenReader}
+        automationId={`${entity}-delete-button`}
+      />
     );
   }
 }
