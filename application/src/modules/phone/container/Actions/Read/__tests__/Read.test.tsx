@@ -14,9 +14,8 @@ import { Notification } from '@/containers/Notification';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Read } from '../Read';
-import { BUTTON_TYPE } from '../types';
-import { ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('@/containers/Notification');
 

@@ -10,9 +10,9 @@ import { mountWithTheme } from 'shield/utils';
 import { mockEntity } from 'shield/application';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Download } from '../Download';
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ATTACHMENT_TYPE } from 'sdk/module/RCItems/constants';
+import { Download } from '../Download';
 
 const mockEntityData = {
   attachments: [{

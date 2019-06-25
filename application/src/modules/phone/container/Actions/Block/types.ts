@@ -5,8 +5,8 @@
  */
 
 import { Caller } from 'sdk/module/RCItems/types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
-import { BUTTON_TYPE } from '../types';
 
 type BlockProps = {
   caller: Caller;

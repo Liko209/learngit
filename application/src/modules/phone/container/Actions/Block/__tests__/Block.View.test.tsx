@@ -14,8 +14,8 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { BlockView } from '../Block.View';
-import { BUTTON_TYPE } from '../types';
 
 jest.mock('@/containers/Dialog');
 jest.mock('@/containers/Notification');

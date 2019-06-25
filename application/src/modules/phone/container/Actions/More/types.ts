@@ -4,16 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
+type MoreProps = {};
 
-type MoreProps = {
-};
+type MoreViewProps = {};
 
-type MoreViewProps = {
-};
-
-export {
-  BUTTON_TYPE,
-  MoreProps,
-  MoreViewProps,
-};
+export { MoreProps, MoreViewProps };

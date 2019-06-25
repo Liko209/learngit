@@ -2,8 +2,8 @@ import React, { ComponentType, Component } from 'react';
 import {
   JuiButtonBar,
 } from 'jui/components/Buttons';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import {
-  BUTTON_TYPE,
   ActionsProps,
   ActionsViewProps,
 } from './types';

@@ -1,11 +1,6 @@
 import { Caller } from 'sdk/module/RCItems/types';
 import { ENTITY_TYPE } from '../constants';
 
-enum BUTTON_TYPE {
-  ICON,
-  MENU_ITEM,
-}
-
 type ActionsProps = {
   id: number | string;
   entity: ENTITY_TYPE;
@@ -19,4 +14,4 @@ type ActionsViewProps = {
   shouldShowBlock: boolean;
 };
 
-export { BUTTON_TYPE, ActionsProps, ActionsViewProps, ENTITY_TYPE };
+export { ActionsProps, ActionsViewProps, ENTITY_TYPE };

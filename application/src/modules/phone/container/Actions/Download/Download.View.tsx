@@ -8,8 +8,8 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
-import { DownloadViewProps, BUTTON_TYPE } from './types';
+import { JuiActionIconWrapper, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { DownloadViewProps } from './types';
 
 type Props = DownloadViewProps & WithTranslation;
 

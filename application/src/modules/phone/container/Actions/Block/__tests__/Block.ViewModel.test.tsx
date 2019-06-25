@@ -11,9 +11,9 @@ import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';
 import { Caller } from 'sdk/module/RCItems/types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { BlockViewModel } from '../Block.ViewModel';
-import { BUTTON_TYPE } from '../types';
 
 jest.mock('@/containers/Notification');
 

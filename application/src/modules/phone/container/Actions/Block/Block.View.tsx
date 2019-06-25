@@ -15,6 +15,8 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { SOURCE } from '../../constants';
 import { BlockViewProps } from './types';
 
 type Props = BlockViewProps & WithTranslation;
@@ -32,6 +34,7 @@ class BlockViewComponent extends Component<Props> {
   }
 
   private _handleUnblock = async () => {
+    analyticsCollector.unblockNumber(this._source);
     await this.props.unblock();
     this.notifyActionSuccess('phone.prompt.numberHasBeenUnblocked');
   }
@@ -57,6 +60,7 @@ class BlockViewComponent extends Component<Props> {
 
   onBlockConfirm = async (dialog: any) => {
     dialog.startLoading();
+    analyticsCollector.blockNumber(this._source);
     const result = await this.props.block();
     dialog.stopLoading();
     if (!result) {
