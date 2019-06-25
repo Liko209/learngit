@@ -113,7 +113,7 @@ describe('Delete', () => {
 
   @testable
   class deleteCallLog {
-    @test('should dialog show up when user click delete call log menu item')
+    @test('should dialog show up when user click delete call log menu item [JPT-2358]')
     async t1() {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.MENU_ITEM} entity={ENTITY_TYPE.CALL_LOG} />);
       await wrapper.find(JuiMenuItem).simulate('click');
@@ -122,7 +122,7 @@ describe('Delete', () => {
       );
     }
 
-    @test('should dialog show up when user click delete call log icon button')
+    @test('should dialog show up when user click delete call log icon button [JPT-2358]')
     async t2() {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.ICON} entity={ENTITY_TYPE.CALL_LOG} />);
       await wrapper.find(JuiIconButton).simulate('click');
