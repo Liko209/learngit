@@ -424,7 +424,7 @@ class MetricService {
     if (isDevelop || isRelease) {
       await LoadingTimeReleaseSummaryDto.destroy({
         where: {
-          name: summary.name, version: versionName, platform: platform
+          name: summary.name, versionId: version.id, platform: platform
         }
       });
 
