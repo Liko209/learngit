@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
 import { BrandTire, SITE_URL } from '../../config'
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('ActionBar/LikeAndUnlike')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -262,4 +262,65 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
       assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
     });
   });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1355'],
+  keywords: ['Like and Unlike', 'Action Bar'],
+  maintainers: ['potar.he']
+})('Check the UI display of Like/Unlike button in the Action bar', async (t) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const app = new AppRoot(t);
+
+  let myselfChat = <IGroup>{
+    type: 'DirectMessage',
+    members: [loginUser],
+    owner: loginUser
+  }
+
+  await h(t).withLog(`Given I create meChat`, async () => {
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.createOrOpenChat(myselfChat);
+  });
+
+  let likedPostId, unlikePostId;
+  await h(t).withLog(`And I prepare a post with I had like and one with no like`, async () => {
+    likedPostId = await h(t).scenarioHelper.sentAndGetTextPostId('you have already liked', myselfChat, loginUser);
+    unlikePostId = await h(t).scenarioHelper.sentAndGetTextPostId('you have not like', myselfChat, loginUser);
+    await h(t).scenarioHelper.likePost(likedPostId, loginUser);
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I open the myself chat`, async () => {
+    await app.homePage.messageTab.favoritesSection.conversationEntryById(myselfChat.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+  });
+
+  await h(t).withLog(`When I hover the liked post`, async () => {
+    await conversationPage.postItemById(likedPostId).hoverSelf();
+  });
+
+  await h(t).withLog('Then display Unlike button', async () => {
+    await t.expect(conversationPage.postItemById(likedPostId).unlikeIconOnActionBar.exists).ok();
+  });
+
+  await h(t).withLog(`When I hover the unlike post`, async () => {
+    await conversationPage.postItemById(unlikePostId).hoverSelf();
+  });
+
+  await h(t).withLog('Then display like button', async () => {
+    await t.expect(conversationPage.postItemById(unlikePostId).likeIconOnActionBar.exists).ok();
+  });
+
 });
