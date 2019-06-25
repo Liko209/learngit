@@ -24,6 +24,9 @@ import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
 import { VoicemailBadgeController } from './VoicemailBadgeController';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 
 const MODULE_NAME = 'VoicemailFetchController';
 
@@ -154,6 +157,16 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
         (await this._entitySourceController.bulkDelete(deactivatedVmIds));
     }
     return data.records;
+  }
+
+  protected async hasPermission(): Promise<boolean> {
+    if (!(await super.hasPermission())) {
+      return false;
+    }
+
+    return ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    ).isRCFeaturePermissionEnabled(ERCServiceFeaturePermission.READ_MESSAGES);
   }
 
   protected async sendSyncRequest(

@@ -92,6 +92,11 @@ describe('RCInfoFetchController', () => {
         rcInfoFetchController.requestSpecialNumberRule,
         false,
       );
+      expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledWith(
+        JOB_KEY.FETCH_BLOCK_NUMBER,
+        rcInfoFetchController.requestBlockNumberList,
+        false,
+      );
     });
 
     it('should schedule all rc info job and should ignore first time when _shouldIgnoreFirstTime = true', () => {
@@ -346,6 +351,33 @@ describe('RCInfoFetchController', () => {
         RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
         'extensionPhoneNumberList',
       );
+    });
+  });
+
+  describe('requestBlockNumberList', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getBlockNumberList = jest
+        .fn()
+        .mockResolvedValueOnce({
+          records: [{ id: 1 }, { id: 2 }],
+          paging: { page: 1, totalPages: 2 },
+        })
+        .mockResolvedValueOnce({
+          records: [{ id: 3 }, { id: 4 }],
+          paging: { page: 2, totalPages: 2 },
+        });
+      await rcInfoFetchController.requestBlockNumberList();
+      expect(RCInfoApi.getBlockNumberList).toBeCalledTimes(2);
+      expect(RCInfoApi.getBlockNumberList).toHaveBeenCalledWith({
+        page: 2,
+        perPage: 1000,
+      });
+      expect(RCInfoUserConfig.prototype.setBlockNumbers).toBeCalledWith([
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+        { id: 4 },
+      ]);
     });
   });
 
