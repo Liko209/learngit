@@ -128,6 +128,10 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.missedCallLogFetchController.internalReset();
   }
 
+  async getTotalCount(): Promise<number> {
+    return await this.getEntitySource().getTotalCount();
+  }
+
   private _handleMissedCallEvent = async (payload: MissedCallEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
       payload,
