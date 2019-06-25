@@ -22,7 +22,14 @@ const isFunction = (value: any) =>
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
 const isIEOrEdge =
   typeof navigator !== 'undefined' &&
-  /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+  /(MSIE|Trident|Edge?)/.test(navigator.userAgent);
+
+const isChrome =
+  !isIEOrEdge &&
+  /Chrome/.test(navigator.userAgent) &&
+  /Google Inc/.test(navigator.vendor);
+
+const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
 const transform = <T extends { id: any }>(item: any): T => {
   if (isObject(item)) {
@@ -104,4 +111,12 @@ const baseHandleData = async (
   }
 };
 
-export { transform, transformAll, baseHandleData, isFunction, isIEOrEdge };
+export {
+  transform,
+  transformAll,
+  baseHandleData,
+  isFunction,
+  isIEOrEdge,
+  isChrome,
+  isFirefox,
+};

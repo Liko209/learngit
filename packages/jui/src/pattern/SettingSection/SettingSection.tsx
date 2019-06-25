@@ -64,7 +64,7 @@ class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
         data-test-automation-id={`settingSection-${automationId}`}
         data-test-automation-class={'settingSection'}
       >
-        <TitleHeaderWrap component="div">
+        <TitleHeaderWrap component="div" disableSticky={true}>
           <TitleWrap
             className="setting-section-title"
             data-test-automation-id={`settingSectionTitle-${automationId}`}

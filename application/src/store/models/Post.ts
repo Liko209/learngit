@@ -129,14 +129,16 @@ export default class PostModel extends Base<Post> {
     if (!this.itemData) {
       return 1;
     }
+    const isFileItemReady = fileItem.id > 0;
+    if (!isFileItemReady) return 1;
+
     const version = this.itemData.version_map[fileItem.id];
     if (!version) {
-      // should not come here, due to exist bug, some data might be dirty. bug ticket: FIJI-6596
-      mainLogger.warn('can not find version info in post itemData', {
+      // should not come here, due to exist bug, some data's version_map is incorrect. bug ticket: FIJI-6596
+      mainLogger.error('can not find version info in post itemData', {
         itemData: this.itemData,
         fileId: fileItem.id,
       });
-
       return 1;
     }
     return version;

@@ -81,7 +81,7 @@ class ViewerView extends Component<
               ...rest,
               deleteItem: this.state.deleteItem,
             })}
-            right={<div>commitBlock</div>}
+            right={<></>}
           />
         </JuiViewerBackground>
       </ViewerContext.Provider>

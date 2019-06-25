@@ -46,7 +46,7 @@ const interpolation = {
   escapeValue: false, // not needed for react!!
 };
 
-const config = {
+const config: i18next.InitOptions = {
   interpolation,
   fallbackLng: 'en',
   // have a common namespace used around the full app
@@ -54,9 +54,25 @@ const config = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: ['en', 'zh'],
+  whitelist: [
+    'en',
+    'de-DE',
+    'en-AU',
+    'en-GB',
+    'es-419',
+    'es-ES',
+    'fr-CA',
+    'fr-FR',
+    'it-IT',
+    'ja-JP',
+    'pt-BR',
+    'zh-CN',
+    'zh-HK',
+    'zh-TW',
+  ],
   postProcess: ['pseudo'],
   nsSeparator: ':::',
+  load: 'currentOnly',
 };
 
 const ready = () => {

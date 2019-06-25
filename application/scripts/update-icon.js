@@ -12,7 +12,7 @@ axios
       if (err) throw err;
       console.log('icon updated');
 
-      var markup = fs.readFileSync(svgSpritePath).toString();
+      var markup = res.data;
       var lines = markup.split(/\n/g);
       var symbols = {};
       var currentSymbol = null;
@@ -48,13 +48,13 @@ axios
         content = null,
       }) {
         if (!content) return null;
-        const widthValue = width !== null ? `width="${width}px" ` : '';
-        const heightValue = height !== null ? `height="${width}px" ` : '';
-        const viewBoxValue = viewBox !== null ? `viewBox="${width}" ` : '';
+        const widthValue = width !== null ? `width="${width}px"` : '';
+        const heightValue = height !== null ? `height="${height}px"` : '';
+        const viewBoxValue = viewBox !== null ? `viewBox="${viewBox}"` : '';
         const contentValue = content.join('\n');
 
         return `<?xml version="1.0" encoding="UTF-8"?>
-<svg ${widthValue}${heightValue}${viewBoxValue}version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg ${widthValue} ${heightValue} ${viewBoxValue} version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 ${contentValue}
 </svg>
 `;

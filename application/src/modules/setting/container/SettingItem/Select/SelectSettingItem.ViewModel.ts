@@ -3,6 +3,7 @@
  * @Date: 2019-05-27 10:38:10
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { action, computed } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SelectSettingItem } from '@/interface/setting';
@@ -23,6 +24,7 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
     } else {
       result = this.settingItem.defaultSource || [];
     }
+
     return result;
   }
 

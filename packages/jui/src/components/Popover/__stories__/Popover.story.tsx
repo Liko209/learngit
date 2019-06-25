@@ -7,7 +7,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { select } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiPopover } from '../index';
 import { JuiMenuList, JuiMenuItem } from '../../Menus';
 import { JuiButton } from '../../Buttons';
@@ -110,6 +109,4 @@ class Popover extends React.PureComponent {
   }
 }
 
-storiesOf('Components/Popover', module)
-  .addDecorator(withInfoDecorator(JuiPopover, { inline: true }))
-  .add('Popover', () => <Popover />);
+storiesOf('Components/Popover', module).add('Popover', () => <Popover />);

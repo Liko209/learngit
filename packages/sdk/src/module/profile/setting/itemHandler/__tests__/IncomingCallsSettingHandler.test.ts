@@ -45,13 +45,14 @@ describe('IncomingCallsSettingHandler', () => {
       valueType: 1,
       weight: 1,
       id: SettingEntityIds.Notification_IncomingCalls,
-      state: 0,
+      state: 1,
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
       value: NOTIFICATION_OPTIONS.OFF,
       valueSetter: expect.any(Function),
     };
     profileService = new ProfileService();
     settingService = new SettingService();
+    settingService.getById = jest.fn().mockResolvedValue({ value: 1 });
     accoutService = new AccountService(null);
     accoutService = {
       userConfig: {
@@ -61,8 +62,9 @@ describe('IncomingCallsSettingHandler', () => {
     profileService.updateSettingOptions = jest.fn();
     profileService.getProfile = jest.fn().mockReturnValue({
       [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.OFF,
-      [SETTING_KEYS.CALL_OPTION]: CALLING_OPTIONS.RINGCENTRAL,
+      [SETTING_KEYS.CALL_OPTION]: CALLING_OPTIONS.GLIP,
     });
+    PlatformUtils.isElectron = jest.fn().mockReturnValue(false);
     settingHandler = new IncomingCallsSettingHandler(
       profileService,
       accoutService,
@@ -112,6 +114,22 @@ describe('IncomingCallsSettingHandler', () => {
         expect(result).toEqual(mockDefaultSettingItem);
       },
     );
+    it('should get value is 1 when desktopCall is undefined', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_CALL]: undefined,
+      });
+      mockDefaultSettingItem.value = 1;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
+    it('should get value is 0 when desktopCall is off', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_CALL]: NOTIFICATION_OPTIONS.OFF,
+      });
+      mockDefaultSettingItem.value = 0;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
   });
 
   describe('updateValue()', () => {
@@ -135,9 +153,6 @@ describe('IncomingCallsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -153,7 +168,6 @@ describe('IncomingCallsSettingHandler', () => {
       ]);
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });
@@ -173,9 +187,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -193,9 +204,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).toBeCalled();
-        expect(
-          settingHandler.notifyUserSettingEntityUpdate,
-        ).toHaveBeenCalledWith({});
         done();
       });
     });
@@ -209,7 +217,6 @@ describe('IncomingCallsSettingHandler', () => {
       );
       setTimeout(() => {
         expect(settingHandler.getUserSettingEntity).not.toBeCalled();
-        expect(settingHandler.notifyUserSettingEntityUpdate).not.toBeCalled();
         done();
       });
     });

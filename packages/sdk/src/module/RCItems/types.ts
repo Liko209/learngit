@@ -23,13 +23,19 @@ type UriModel<T> = {
 };
 
 type Caller = {
-  phoneNumber: string;
-  extensionNumber: string;
+  phoneNumber?: string;
+  extensionNumber?: string;
   location: string;
   name: string;
   device?: UriModel<string>;
   messageStatus?: MESSAGE_STATUS; // outbound fax messages
   faxErrorCode?: FAX_ERROR_CODE; // Fax
+};
+
+type CallerView = {
+  phoneNumber?: string;
+  extensionNumber?: string;
+  name?: string;
 };
 
 type Attachment = UriModel<number> & {
@@ -69,4 +75,4 @@ type FetchResult<T> = {
   hasMore: boolean;
 };
 
-export { UriModel, Caller, RCMessage, FetchResult };
+export { UriModel, Caller, CallerView, RCMessage, FetchResult, Attachment };

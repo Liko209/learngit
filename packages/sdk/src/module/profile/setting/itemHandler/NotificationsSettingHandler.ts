@@ -21,6 +21,7 @@ import { ENTITY, APPLICATION } from 'sdk/service';
 import { Pal } from 'sdk/pal';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import { mainLogger } from 'foundation';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   DesktopNotificationsSettingModel
@@ -64,12 +65,10 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   async fetchUserSettingEntity() {
-    const profile = await this._profileService.getProfile();
-    const wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    const wantNotifications = await this._getWantNotifications();
     const { current, isGranted } = Pal.instance.getNotificationPermission();
     const value: DesktopNotificationsSettingModel = {
-      wantNotifications:
-        wantNotifications === undefined ? true : wantNotifications,
+      wantNotifications,
       browserPermission: current,
       desktopNotifications: isGranted && wantNotifications ? true : false,
     };
@@ -92,7 +91,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.browserPermission;
     if (payload !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
   }
 
@@ -104,13 +103,25 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
+
     const lastPermission =
       this.userSettingEntityCache &&
       this.userSettingEntityCache.value &&
       this.userSettingEntityCache.value.wantNotifications;
     if (profile[SETTING_KEYS.DESKTOP_NOTIFICATION] !== lastPermission) {
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+      await this.getUserSettingEntity();
     }
+  }
+  private async _getWantNotifications() {
+    const profile = await this._profileService.getProfile().catch(error => {
+      mainLogger.warn('_getWantNotifications failed');
+    });
+    let wantNotifications =
+      profile && profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    if (wantNotifications === undefined) {
+      wantNotifications = true;
+    }
+    return wantNotifications;
   }
 }
 export { NotificationsSettingHandler, DesktopNotificationsSettingModel };

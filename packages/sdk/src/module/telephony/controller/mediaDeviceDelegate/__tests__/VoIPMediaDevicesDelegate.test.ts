@@ -170,6 +170,22 @@ describe('VoIPMediaDevicesDelegate', () => {
         deviceDelegate['_microphoneSyncManager'].ensureDevice,
       ).toBeCalled();
     });
+    it('should emit device change notification', () => {
+      const deviceIds = ['a', 'b', 'c'];
+      deviceDelegate.onMediaDevicesChanged(
+        createDevicesChangeInfo(deviceIds, { added: ['c'] }),
+        createDevicesChangeInfo(deviceIds, { added: ['a'] }),
+      );
+      expect(notificationCenter.emit).toBeCalled();
+    });
+    it('should not emit device change notification', () => {
+      const deviceIds = ['a', 'b', 'c'];
+      deviceDelegate.onMediaDevicesChanged(
+        createDevicesChangeInfo(deviceIds, { added: [] }),
+        createDevicesChangeInfo(deviceIds, { added: [] }),
+      );
+      expect(notificationCenter.emit).not.toBeCalled();
+    });
   });
 
   describe('onMediaDevicesInitialed', () => {

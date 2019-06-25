@@ -3,13 +3,11 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-// import React from 'react';
 import {
   ISettingService,
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import {
   SETTING_PAGE__PHONE,
@@ -17,10 +15,17 @@ import {
   SETTING_ITEM__PHONE_CALLER_ID,
   SETTING_ITEM__PHONE_REGION,
   SETTING_ITEM__PHONE_EXTENSIONS,
+  SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
   SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
+import {
+  CallerIdSelectSourceItem,
+  CallerIdSelectValue,
+} from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
+import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
 class TelephonySettingManager {
@@ -43,19 +48,29 @@ class TelephonySettingManager {
           weight: 0,
           items: [
             {
+              id: SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+              title: 'setting.phone.general.defaultPhoneApp.label',
+              description: 'setting.phone.general.defaultPhoneApp.description',
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 100,
+              sourceRenderer: DefaultPhoneAppSelectItem,
+              automationId: 'defaultPhoneApp',
+            } as SelectSettingItem<CALLING_OPTIONS>,
+            {
               id: SETTING_ITEM__PHONE_CALLER_ID,
               automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
               type: SETTING_ITEM_TYPE.SELECT,
-              weight: 0,
+              weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
+              valueRenderer: CallerIdSelectValue,
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
               automationId: 'regionSetting',
               type: RegionSettingItem,
-              weight: 100,
+              weight: 300,
             },
             {
               id: SETTING_ITEM__PHONE_EXTENSIONS,
@@ -63,7 +78,7 @@ class TelephonySettingManager {
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
-              weight: 200,
+              weight: 400,
             },
           ],
         },

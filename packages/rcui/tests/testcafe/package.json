@@ -1,0 +1,30 @@
+{
+  "name": "rcui-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "testcafe selenium:chrome test.ts",
+    "mytest": "testcafe chrome test.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "0.19.0-beta.1",
+    "axios-debug-log": "^0.4.0",
+    "dotenv": "^8.0.0",
+    "log4js": "^3.0.5",
+    "sharp": "^0.21.0",
+    "shortid": "2.2.14",
+    "testcafe": "^1.2.1",
+    "ts-node": "^8.2.0",
+    "uuid": "^3.3.2",
+    "zip-dir": "^1.0.2",
+    "attest-node": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-node-2.5.0.tgz",
+    "attest-testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/attest-testcafe-1.0.1.tgz",
+    "testcafe-browser-provider-selenium": "^0.4.0",
+    "typescript": "^3.5.1",
+    "ua-parser": "^0.3.5",
+    "ua-parser-js": "^0.7.19"
+  }
+}

@@ -7,18 +7,7 @@ import React from 'react';
 import { withTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiButton } from 'jui/components/Buttons';
-import {
-  ElectronUpgradeDialogViewProps,
-  UpgradeType,
-  UpgradeUserAction,
-} from './types';
-import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
-import { ElectronUpgradeBanner } from '@/modules/app/container/TopBanner/Banners/ElectronUpgradeBanner';
-import { iframeDownloader } from '@/utils/download';
-
-type Ref = {
-  dismiss: (afterDismiss?: (() => void) | undefined) => void;
-};
+import { ElectronUpgradeDialogViewProps, Ref } from './types';
 
 class ElectronUpgradeDialogComponent extends React.Component<
   ElectronUpgradeDialogViewProps
@@ -33,48 +22,18 @@ class ElectronUpgradeDialogComponent extends React.Component<
     return ElectronUpgradeDialogComponent._portalRef;
   }
 
-  private _close(userAction?: UpgradeUserAction) {
-    if (window.jupiterElectron.handleUpgradeFeedback) {
-      window.jupiterElectron.handleUpgradeFeedback(userAction);
+  handleUpgrade() {
+    if (window.jupiterElectron.onInstallNativeUpgrade) {
+      window.jupiterElectron.onInstallNativeUpgrade();
     }
     ElectronUpgradeDialogComponent._portalRef &&
       ElectronUpgradeDialogComponent._portalRef.dismiss();
     ElectronUpgradeDialogComponent._portalRef = null;
   }
 
-  handleOk = () => {
-    this._close();
-  }
-  handleUpgrade = () => {
-    iframeDownloader('downloadInstaller', this.props.url);
-    this._close();
-  }
-  handleIgnoreOnce = () => {
-    TopBannerViewModel.showBanner(ElectronUpgradeBanner, {
-      downloadUrl: this.props.url,
-    });
-    this._close({ snooze: true });
-  }
-  handleNotNow = () => {
-    this._close({ snooze: true });
-  }
-  handleIgnore = () => {
-    this._close({ skip: true });
-  }
   render() {
-    const { t, needUpgrade, type, snooze } = this.props;
-    const buttons = [];
-    const IgnoreOnce = (
-      <JuiButton
-        onClick={this.handleIgnoreOnce}
-        color="primary"
-        autoFocus={false}
-        key="ignore"
-        aria-label={t('electron.upgrade.ignoreOnce')}
-      >
-        {t('electron.upgrade.ignoreOnce')}
-      </JuiButton>
-    );
+    const { t } = this.props;
+
     const Upgrade = (
       <JuiButton
         onClick={this.handleUpgrade}
@@ -86,68 +45,15 @@ class ElectronUpgradeDialogComponent extends React.Component<
         {t('electron.upgrade.upgrade')}
       </JuiButton>
     );
-    const NotNow = (
-      <JuiButton
-        onClick={this.handleNotNow}
-        color="primary"
-        autoFocus={false}
-        key="not-now"
-        aria-label={t('electron.upgrade.notNow')}
-      >
-        {t('electron.upgrade.notNow')}
-      </JuiButton>
-    );
-    const Ignore = (
-      <JuiButton
-        onClick={this.handleIgnore}
-        color="primary"
-        autoFocus={false}
-        key="ignore"
-        aria-label={t('electron.upgrade.ignore')}
-      >
-        {t('electron.upgrade.ignore')}
-      </JuiButton>
-    );
-    const Ok = (
-      <JuiButton
-        onClick={this.handleOk}
-        color="primary"
-        autoFocus={false}
-        key="ok"
-        aria-label={t('electron.upgrade.noUpgradeDialogOk')}
-      >
-        {t('electron.upgrade.noUpgradeDialogOk')}
-      </JuiButton>
-    );
-    if (needUpgrade) {
-      if (type === UpgradeType.FORCE && !snooze) {
-        buttons.push(IgnoreOnce);
-      } else if (type === UpgradeType.SOFT) {
-        buttons.push(NotNow);
-        buttons.push(Ignore);
-      }
-      buttons.push(Upgrade);
-    } else {
-      buttons.push(Ok);
-    }
+
     return (
       <JuiModal
         open={true}
-        title={t(
-          needUpgrade
-            ? 'electron.upgrade.dialogTitle'
-            : 'electron.upgrade.noUpgradeDialogTitle',
-        )}
-        footer={<>{[...buttons]}</>}
-        aria-label={t(
-          needUpgrade
-            ? 'electron.upgrade.dialogTitle'
-            : 'electron.upgrade.noUpgradeDialogTitle',
-        )}
+        title={t('electron.upgrade.dialogTitle')}
+        footer={Upgrade}
+        aria-label={t('electron.upgrade.dialogTitle')}
       >
-        {needUpgrade
-          ? t('electron.upgrade.dialogMessage')
-          : t('electron.upgrade.noUpgradeDialogMessage')}
+        {t('electron.upgrade.dialogMessage')}
       </JuiModal>
     );
   }

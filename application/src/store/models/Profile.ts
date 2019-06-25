@@ -73,6 +73,9 @@ export default class ProfileModel extends Base<Profile> {
   maxLeftRailGroup: number;
 
   @observable
+  lastReadMissed: number | undefined;
+
+  @observable
   newMessageBadges: string;
 
   constructor(data: Profile) {
@@ -128,6 +131,7 @@ export default class ProfileModel extends Base<Profile> {
       data.desktop_notifications_incoming_calls === NOTIFICATION_OPTIONS.ON;
     this.desktopVoicemailOption =
       data.desktop_notifications_new_voicemails === NOTIFICATION_OPTIONS.ON;
+    this.lastReadMissed = data.last_read_missed;
   }
 
   static fromJS(data: Profile) {

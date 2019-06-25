@@ -6,11 +6,13 @@
 
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
+import { mainLogger } from 'sdk';
 import { JuiBoxSelect } from 'jui/components/Selects';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { SelectSettingItemViewProps, SelectSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 
 type SourceItemType =
@@ -52,7 +54,6 @@ class SelectSettingItemViewComponent<
 
   private _renderSelect() {
     const { value, disabled, settingItem } = this.props;
-
     return (
       <JuiBoxSelect
         onChange={this._handleChange}
@@ -62,10 +63,34 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth={true}
+        name="settings"
+        renderValue={settingItem.valueRenderer && this._renderValue}
       >
         {this._renderSource()}
       </JuiBoxSelect>
     );
+  }
+
+  private _renderValue = (value: string) => {
+    const { source, settingItem } = this.props;
+    const rawValue = source.find(
+      sourceItem => this.props.extractValue(sourceItem) === value,
+    );
+
+    const ValueComponent = settingItem.valueRenderer;
+
+    if (!ValueComponent) {
+      mainLogger.error(
+        '[SelectSettingItemViewComponent] valueRenderer is required for _renderValue()',
+      );
+      return null;
+    }
+
+    if (!rawValue) {
+      return null;
+    }
+
+    return <ValueComponent value={rawValue} />;
   }
 
   private _renderSource() {
@@ -96,7 +121,7 @@ class SelectSettingItemViewComponent<
     return ItemComponent ? (
       <ItemComponent key={itemValue} value={sourceItem} source={source} />
     ) : (
-      itemValue
+      <JuiTextWithEllipsis>{itemValue}</JuiTextWithEllipsis>
     );
   }
 }

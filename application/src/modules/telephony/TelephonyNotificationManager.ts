@@ -5,16 +5,25 @@
  */
 
 import { inject } from 'framework';
-import { reaction, comparer } from 'mobx';
+import { reaction, comparer, computed } from 'mobx';
 import { Disposer } from 'mobx-react';
 import { AbstractNotificationManager } from '@/modules/notification/manager';
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
-import { TELEPHONY_SERVICE } from './interface/constant';
-import { CALL_STATE } from './FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
+import {
+  TELEPHONY_SERVICE,
+  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+} from './interface/constant';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
+
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
+import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -24,25 +33,41 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     super('telephony');
   }
 
+  @computed
+  get incomingCallsSettingItem() {
+    return getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+    );
+  }
+
+  @computed
+  get shouldShowNotification() {
+    return this.incomingCallsSettingItem.value === NOTIFICATION_OPTIONS.ON;
+  }
+
   init() {
     this._disposer = reaction(
       () => ({
         callState: this._telephonyStore.callState,
+        isIncomingCall: this._telephonyStore.isIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
       ({
         callState,
+        isIncomingCall,
         isContactMatched,
       }: {
         callState: CALL_STATE;
+        isIncomingCall: boolean;
         isContactMatched: boolean;
       }) => {
-        if (callState === CALL_STATE.INCOMING && isContactMatched) {
-          this._showNotification();
+        if (isIncomingCall && isContactMatched) {
+          this.shouldShowNotification && this._showNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,
-            CALL_STATE.DIALING,
+            CALL_STATE.DISCONNECTED,
             CALL_STATE.CONNECTING,
             CALL_STATE.CONNECTED,
           ];

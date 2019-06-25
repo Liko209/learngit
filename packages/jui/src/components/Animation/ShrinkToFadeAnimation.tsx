@@ -20,7 +20,7 @@ const MOVE_DELAY = makeSeconds(
 const BLINK_DELAY = ROUND_DURATION;
 
 const DEFAULT_TRANSFORMATION_BEZIER = 'ease-in-out';
-const BLINK_TIMING_BEZIER = 'cubic-bezier(.18,2,0,.62)';
+const BLINK_TIMING_BEZIER = 'ease-in-out';
 const MOVE_TIMING_BEZIER = 'linear';
 
 const ITERATION = 1;

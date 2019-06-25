@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -85,6 +85,7 @@ const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
+const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString().replace(/[:]/gm, '-')}.log`;
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
@@ -113,6 +114,7 @@ const RUNNER_OPTS = {
   SELENIUM_CAPABILITIES,
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
+  TESTS_LOG,
 }
 
 // beat dashboard configuration
@@ -130,6 +132,7 @@ enum BrandTire {
   "RC_VOIP_DISABLE" = "kamino(RC_VOIP_DISABLE,Jupiter,1210,4488)",
   "RC_WITH_GUESS_DID" = "kamino(RC_WITH_GUESS_DID,Jupiter,1210,4488)",
   "SORTED_LAST_NAME" = "kamino(Sorted_Last_Name,Jupiter,1210,4488)",
+  "RC_WITH_PHONE" = "kamino(1C4EWithPhoneAndNumber,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

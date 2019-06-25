@@ -9,6 +9,7 @@ import { MessageNotificationManager } from '../MessageNotificationManager';
 import * as VM from '../MessageNotificationViewModel';
 import GroupModel from '@/store/models/Group';
 import PostModel from '../../../store/models/Post';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AccountUserConfig');
@@ -71,58 +72,40 @@ describe('messageNotificationManager', () => {
       return { 1: team, 0: group }[i];
     },
   };
+
+  const mockedCompanyService = {
+    getById: async (i: number) => {
+      return { customEmoji: {} };
+    },
+  };
   beforeEach(() => {
     const userId = 123432;
     jest.clearAllMocks();
     notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
-    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((type) => {
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
       switch (type) {
         case ServiceConfig.POST_SERVICE:
           return mockedPostService;
         case ServiceConfig.GROUP_SERVICE:
           return mockedGroupService;
+        case ServiceConfig.COMPANY_SERVICE:
+          return mockedCompanyService;
         default:
-          return { userConfig:{ getGlipUserId: () => userId }};
+          return { userConfig: { getGlipUserId: () => userId } };
       }
     });
   });
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockReturnValue({
+        value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
+      });
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
-    it('should not show notification when post is local', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        localPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is deleted', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        mockedDeletedPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is created by user', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        mockedPost,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is from team with no @mention', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        postFromTeam,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should not show notification when post is from team with @mention other users', async () => {
-      const result = await notificationManager.shouldEmitNotification(
-        postFromWithMentionOthers,
-      );
-      expect(result).toBeFalsy();
-    });
-    it('should  show notification when post is from group', async () => {
+
+    it('should show notification when post is from group', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromGroup,
       );
@@ -133,6 +116,59 @@ describe('messageNotificationManager', () => {
         postFromWithMentionMe,
       );
       expect(result).toBeTruthy();
+    });
+    describe('when notification settings turned to off', () => {
+      beforeEach(() => {
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
+      });
+      it('should not show notification when post is from group', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromGroup,
+        );
+        expect(result).toBeFalsy();
+      });
+    });
+    describe('when notification settings turned to @mention and direct message only', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
+      });
+      it('should not show notification when post is from team with no @mention', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromTeam,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should not show notification when post is from team with @mention other users', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromWithMentionOthers,
+        );
+        expect(result).toBeFalsy();
+      });
+    });
+    describe('when notification settings turned to @mention and direct message only', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION);
+      });
+      it('should show notification when post is from team with no @mention', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromTeam,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should show notification when post is from team with @mention other users', async () => {
+        const result = await notificationManager.shouldEmitNotification(
+          postFromWithMentionOthers,
+        );
+        expect(result).toBeFalsy();
+      });
     });
   });
   describe('enqueueVm()', () => {
@@ -169,6 +205,40 @@ describe('messageNotificationManager', () => {
       crushVmIntoManager(1);
       notificationManager._vmQueue[0].vm.dispose();
       expect(notificationManager._vmQueue.length).toEqual(0);
+    });
+  });
+
+  describe('handlePostContent', () => {
+    it('should return only user name for at mention', () => {
+      expect(
+        notificationManager.handlePostContent(
+          `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
+        ),
+      ).toEqual('@Helena');
+      expect(
+        notificationManager.handlePostContent(
+          `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
+        ),
+      ).toEqual('@Jack Sparrow');
+    });
+
+    it('should remove markdown', () => {
+      expect(
+        notificationManager.handlePostContent(
+          `**string words** [code]hello world[/code]`,
+        ),
+      ).toEqual('string words hello world');
+      expect(
+        notificationManager.handlePostContent(
+          `www.google.com https://www.yahoo.com chris@ring.com`,
+        ),
+      ).toEqual('www.google.com https://www.yahoo.com chris@ring.com');
+    });
+
+    it('should return unicode emoji', () => {
+      expect(notificationManager.handlePostContent(`:) <3 :D :joy:`)).toEqual(
+        '🙂 ❤ 😃 😂',
+      );
     });
   });
 });

@@ -9,17 +9,13 @@ import { EntitySourceController } from 'sdk/framework/controller/impl/EntitySour
 import { Voicemail } from '../../entity';
 import { RCItemUserConfig } from '../../../config';
 import { RCItemApi } from 'sdk/api';
-import {
-  notificationCenter,
-  ENTITY_LIST,
-  ENTITY,
-  RELOAD_TARGET,
-} from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
 import { RC_MESSAGE_TYPE, SYNC_DIRECTION } from 'sdk/module/RCItems/constants';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../../dao/VoicemailDao';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
 import { RCMessageBadgeController } from 'sdk/module/RCItems/common/controller/RCMessageBadgeController';
+import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 
 jest.mock('sdk/dao');
 jest.mock('../../dao/VoicemailDao');
@@ -104,7 +100,6 @@ describe('VoicemailFetchController', () => {
       });
       expect(notificationCenter.emitEntityReload).toBeCalledWith(
         'test',
-        RELOAD_TARGET.FOC,
         [],
         true,
       );
@@ -122,21 +117,11 @@ describe('VoicemailFetchController', () => {
       voicemailFetchController.doSync = jest.fn().mockResolvedValue(remoteData);
     });
 
-    it('should get from db and when db has data and do not get from server', async () => {
-      const result = await voicemailFetchController.fetchVoicemails(
-        100,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
-      expect(voicemailFetchController.doSync).not.toBeCalled();
-      expect(result).toEqual({
-        hasMore: true,
-        data: [...localData],
-      });
-    });
-
-    it('should only get from the server and when db has no data', async () => {
-      vmDao.queryVoicemails = jest.fn().mockResolvedValue([]);
+    it('should get from db and server when db has not enough data', async () => {
+      rcItemUserConfig.getHasMore = jest
+        .fn()
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(false);
       const result = await voicemailFetchController.fetchVoicemails(
         100,
         QUERY_DIRECTION.NEWER,
@@ -145,6 +130,21 @@ describe('VoicemailFetchController', () => {
       expect(voicemailFetchController.doSync).toBeCalled();
       expect(result).toEqual({
         hasMore: false,
+        data: localData.concat(remoteData),
+      });
+    });
+
+    it('should only get from the server and when db has no data', async () => {
+      vmDao.queryVoicemails = jest.fn().mockResolvedValue([]);
+      rcItemUserConfig.getHasMore = jest.fn().mockReturnValue(true);
+      const result = await voicemailFetchController.fetchVoicemails(
+        100,
+        QUERY_DIRECTION.NEWER,
+        1,
+      );
+      expect(voicemailFetchController.doSync).toBeCalled();
+      expect(result).toEqual({
+        hasMore: true,
         data: [...remoteData],
       });
       expect(mockBadgeController.handleVoicemails).toBeCalled();
@@ -154,24 +154,66 @@ describe('VoicemailFetchController', () => {
   describe('isTokenInvalidError', () => {
     it('should return true when is token error ', () => {
       const res = voicemailFetchController['isTokenInvalidError'](
-        new JError(
-          '123',
-          ERROR_CODES_RC.MSG_333,
-          ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
-        ),
+        new JError('123', ERROR_CODES_RC.MSG_333),
+      );
+      expect(res).toBeTruthy();
+    });
+
+    it('should return true when is token error ', () => {
+      const res = voicemailFetchController['isTokenInvalidError'](
+        new JError('123', '', ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG),
       );
       expect(res).toBeTruthy();
     });
 
     it('should return false when not is token error ', () => {
       const res = voicemailFetchController['isTokenInvalidError'](
-        new JError(
-          '123',
-          ERROR_CODES_RC.CLG_102,
-          ERROR_MSG_RC.SYNC_TOKEN_INVALID_ERROR_MSG,
-        ),
+        new JError('123', ERROR_CODES_RC.CLG_102),
       );
       expect(res).toBeFalsy();
+    });
+  });
+
+  describe('handleDataAndSave', () => {
+    beforeEach(() => {
+      setUp();
+      clearMocks();
+    });
+
+    it('should update alive vm and delete invalid vm', async () => {
+      const data = {
+        records: [
+          {
+            id: 1,
+            availability: 'Alive',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
+          {
+            id: 2,
+            availability: 'Deleted',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
+          {
+            id: 3,
+            availability: 'Purged',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
+        ],
+        syncInfo: {
+          syncType: SYNC_TYPE.FSYNC,
+        },
+      };
+
+      await voicemailFetchController['handleDataAndSave'](data as any);
+      expect(entitySourceController.bulkUpdate).toBeCalledWith([
+        {
+          id: 1,
+          availability: 'Alive',
+          creationTime: '2018-01-19T07:51:50.000Z',
+          __timestamp: 1516348310000,
+        },
+      ]);
+      expect(entitySourceController.bulkDelete).toBeCalledWith([2, 3]);
     });
   });
 });

@@ -8,6 +8,7 @@ import {
   IToken,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
+  ERROR_CODES_NETWORK,
 } from 'foundation';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
@@ -22,6 +23,10 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
     return (request: IRequest) => {
+      if (!request.authFree && handler && handler.isOAuthAccessTokenExpired()) {
+        return false;
+      }
+
       if (_.isEmpty(handler)) {
         throw new Error('token handler can not be null.');
       }
@@ -38,7 +43,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       if (!authorization) {
         request.data = stringify(request.data);
       }
-      return request;
+      return true;
     };
   }
 
@@ -51,8 +56,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
         } else {
           reject();
         }
-      } catch (errorCode) {
-        reject(errorCode);
+      } catch (reason) {
+        reject(
+          reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
+            reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED,
+        );
       }
     });
   }

@@ -32,7 +32,7 @@ class RCInfoService extends EntityBaseService<IdModel>
   private _DBConfig: RCInfoUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGIN]: this.requestRCInfo,
@@ -253,6 +253,12 @@ class RCInfoService extends EntityBaseService<IdModel>
     return this.getRCInfoController()
       .getRCCallerIdController()
       .getCompanyMainCaller();
+  }
+
+  async getAccountId() {
+    return this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountId();
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

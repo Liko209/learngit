@@ -56,8 +56,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
   }
 
   private _onPermissionChange = async () => {
-    isChrome() &&
-      this.notifyUserSettingEntityUpdate(await this.getUserSettingEntity());
+    isChrome() && (await this.getUserSettingEntity());
   }
 
   private _onVolumeUpdate = (type: number, value: string) => {
@@ -66,9 +65,7 @@ export class VolumeSettingHandler extends AbstractSettingEntityHandler<number> {
       this.userSettingEntityCache &&
       this.userSettingEntityCache.value !== volume
     ) {
-      this.getUserSettingEntity().then(entity =>
-        this.notifyUserSettingEntityUpdate(entity),
-      );
+      this.getUserSettingEntity();
     }
   }
 

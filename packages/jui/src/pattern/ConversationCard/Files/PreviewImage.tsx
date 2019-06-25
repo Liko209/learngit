@@ -31,6 +31,7 @@ type JuiPreviewImageProps = {
   placeholder?: JSX.Element;
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
+  futureCallback?: Function;
 } & SizeType;
 
 const Wrapper = styled.div`
@@ -55,9 +56,9 @@ const Icon = withDelay(() => (
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
-  <Jui.ImageCard {...props}>
+  <Jui.ImageCard transparent={true} {...props}>
     <Wrapper>
-      <Icon delay={400} />
+      <Icon delay={20} />
     </Wrapper>
   </Jui.ImageCard>
 );
@@ -100,7 +101,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     }
     this._loaded = true;
     this._updating = false;
-    didLoad && didLoad();
+    didLoad && didLoad(this.props.futureCallback);
     if (this._mounted) {
       this.forceUpdate();
     }

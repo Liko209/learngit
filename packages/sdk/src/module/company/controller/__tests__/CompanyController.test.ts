@@ -243,6 +243,7 @@ describe('CompanyController', () => {
     });
 
     it('should return value in parameter server parameter 430', async () => {
+      accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValue(16385);
       const company = {
         id: 16385,
         rc_service_parameters: [
@@ -259,6 +260,7 @@ describe('CompanyController', () => {
     });
 
     it('should return value in parameter server parameter 430', async () => {
+      accountUserConfig.getCurrentCompanyId = jest.fn().mockReturnValue(16385);
       const company = {
         id: 16385,
         rc_service_parameters: [

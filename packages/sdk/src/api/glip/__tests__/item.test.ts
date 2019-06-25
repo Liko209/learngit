@@ -69,7 +69,7 @@ describe('ItemAPI', () => {
   describe('getNote()', () => {
     it('glipNetworkClient.get() should be called with specific path', () => {
       (ItemAPI.glipNetworkClient.get as jest.Mock).mockClear();
-      ItemAPI.getNote(1);
+      ItemAPI.getNoteBody(1);
       expect(ItemAPI.glipNetworkClient.get).toHaveBeenCalledWith({
         path: '/pages_body/1',
       });

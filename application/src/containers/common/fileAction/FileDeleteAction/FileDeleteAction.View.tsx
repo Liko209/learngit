@@ -3,7 +3,6 @@
  * @Date: 2019-05-27 17:47:36
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { FileDeleteActionViewProps } from './types';
@@ -52,7 +51,6 @@ class FileDeleteActionViewComponent extends Component<
 
   render() {
     const { canDelete, t } = this.props;
-
     return (
       <JuiMenuItem
         icon={this.iconCom}

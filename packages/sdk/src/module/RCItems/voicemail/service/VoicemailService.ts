@@ -8,24 +8,52 @@ import { Voicemail } from '../entity';
 import { EntityBaseService } from 'sdk/framework';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
-import { DEFAULT_FETCH_SIZE, READ_STATUS } from '../../constants';
+import {
+  DEFAULT_FETCH_SIZE,
+  READ_STATUS,
+  SYNC_DIRECTION,
+} from '../../constants';
 import { FetchResult } from '../../types';
 import { RCItemUserConfig } from '../../config';
 import { MODULE_NAME } from '../constants';
 import { VoicemailController } from '../controller';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
+import { SUBSCRIPTION } from 'sdk/service';
 
 class VoicemailService extends EntityBaseService<Voicemail> {
   private _rcItemUserConfig: RCItemUserConfig;
   private _voicemailController: VoicemailController;
   constructor() {
-    super(false, daoManager.getDao(VoicemailDao));
-    this._rcItemUserConfig = new RCItemUserConfig(MODULE_NAME);
+    super({ isSupportedCache: false }, daoManager.getDao(VoicemailDao));
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SUBSCRIPTION.MESSAGE_STORE]: this._syncImmediately,
+      }),
+    );
+  }
+
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
   }
 
   onStarted() {
     super.onStarted();
     this._getVoicemailController().voicemailFetchController.init();
     this._getVoicemailController().voicemailBadgeController.init();
+  }
+
+  onStopped() {
+    super.onStopped();
+    this._getVoicemailController().voicemailFetchController.dispose();
+    this._getVoicemailController().voicemailBadgeController.dispose();
+  }
+
+  private get userConfig(): RCItemUserConfig {
+    if (!this._rcItemUserConfig) {
+      this._rcItemUserConfig = new RCItemUserConfig(MODULE_NAME);
+    }
+    return this._rcItemUserConfig;
   }
 
   async requestSyncNewer() {
@@ -56,8 +84,8 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     return 'This is transcription.';
   }
 
-  buildDownloadUrl(originalUrl: string): string {
-    return this._getVoicemailController().voicemailActionController.buildDownloadUrl(
+  async buildDownloadUrl(originalUrl: string): Promise<string> {
+    return await this._getVoicemailController().voicemailActionController.buildDownloadUrl(
       originalUrl,
     );
   }
@@ -77,10 +105,22 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     if (!this._voicemailController) {
       this._voicemailController = new VoicemailController(
         this.getEntitySource(),
-        this._rcItemUserConfig,
+        this.userConfig,
       );
     }
     return this._voicemailController;
+  }
+
+  private _syncImmediately = async () => {
+    await this._getVoicemailController().voicemailFetchController.doSync(
+      false,
+      SYNC_DIRECTION.NEWER,
+      true,
+    );
+  }
+
+  private _initBadge = async () => {
+    await this._getVoicemailController().voicemailBadgeController.initializeUnreadCount();
   }
 }
 
