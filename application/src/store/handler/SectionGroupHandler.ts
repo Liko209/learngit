@@ -284,7 +284,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             });
             mainLogger
               .tags(LOG_TAG)
-              .info('subscribe notification|user was removed from current conversation');
+              .info(
+                'subscribe notification|user was removed from current conversation',
+              );
           }
         }
         // update url
@@ -573,32 +575,42 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groups.forEach((group: Group) => {
           this._addToFetchProcessor(group.id);
         });
-      } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
-        groups.forEach(async (group: Group) => {
-          const stateService = ServiceLoader.getInstance<StateService>(
-            ServiceConfig.STATE_SERVICE,
-          );
-          const state = await stateService.getById(group.id);
-          if (state && state.unread_count) {
-            this._addToFetchProcessor(group.id);
-          }
-        });
       } else {
-        groups.forEach(async (group: Group) => {
-          const stateService = ServiceLoader.getInstance<StateService>(
-            ServiceConfig.STATE_SERVICE,
-          );
-          const state = await stateService.getById(group.id);
-          if (state && state.unread_mentions_count) {
-            this._addToFetchProcessor(group.id);
-          }
-        });
+        const stateService = ServiceLoader.getInstance<StateService>(
+          ServiceConfig.STATE_SERVICE,
+        );
+        if (stateService.isCacheInitialized()) {
+          groups.forEach((group: Group) => {
+            const state = stateService.getSynchronously(group.id);
+            this._addToFetchDependUnread(group.id, state, sectionType);
+          });
+        } else {
+          groups.forEach(async (group: Group) => {
+            const state = await stateService.getById(group.id);
+            this._addToFetchDependUnread(group.id, state, sectionType);
+          });
+        }
       }
       performanceTracer.end({ key: performanceKey, count: groups.length });
     }
   }
 
-  private async _addToFetchProcessor(groupId: number) {
+  private _addToFetchDependUnread(
+    groupId: number,
+    state: GroupState | null,
+    sectionType: SECTION_TYPE,
+  ) {
+    const hasUnread =
+      state &&
+      (sectionType === SECTION_TYPE.DIRECT_MESSAGE
+        ? state.unread_count
+        : state.unread_mentions_count);
+    if (hasUnread) {
+      this._addToFetchProcessor(groupId);
+    }
+  }
+
+  private _addToFetchProcessor(groupId: number) {
     preFetchConversationDataHandler.addProcessor(groupId);
   }
 
