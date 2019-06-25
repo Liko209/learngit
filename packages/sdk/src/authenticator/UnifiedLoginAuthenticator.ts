@@ -13,7 +13,8 @@ import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../utils';
+import { PerformanceTracer } from 'foundation';
+import { AUTHENTICATOR_PERFORMANCE_KEYS } from './config/performanceKeys';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -23,14 +24,14 @@ interface IUnifiedLoginAuthenticateParams extends IAuthParams {
 class UnifiedLoginAuthenticator implements IAuthenticator {
   /**
    * should consider 2 cases
-   * 1. RC account
+  * 1. RC account
    * 2. Glip account
    * we only consider 1 now, will implement case 2 in the future
    */
   async authenticate(
     params: IUnifiedLoginAuthenticateParams,
   ): Promise<IAuthResponse> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     if (params.code) {
       return this._authenticateRC(params.code);
     }
@@ -38,7 +39,9 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     if (params.token) {
       return this._authenticateGlip(params.token);
     }
-    performanceTracer.end({ key: PERFORMANCE_KEYS.UNIFIED_LOGIN });
+    performanceTracer.end({
+      key: AUTHENTICATOR_PERFORMANCE_KEYS.UNIFIED_LOGIN,
+    });
     return {
       success: false,
       error: new Error('invalid tokens'),
