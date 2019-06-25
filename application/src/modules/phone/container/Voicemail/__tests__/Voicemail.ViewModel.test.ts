@@ -55,9 +55,7 @@ describe('VoicemailViewModel', () => {
       expect(ret).toBeTruthy();
     }
 
-    @test(
-      'should toast error message when fetch data failed due to network error [JPT-2135]',
-    )
+    @test('should show error page when fetch data error [JPT-2336] [JPT-2369]')
     @mockService(voicemailService, 'fetchVoicemails', () => {
       throw new Error('error');
     })
