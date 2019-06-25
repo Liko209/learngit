@@ -1,6 +1,6 @@
 /*
- * @Author: Paynter Chen
- * @Date: 2019-05-26 21:42:27
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-06-25 09:11:53
  * Copyright © RingCentral. All rights reserved.
  */
 
