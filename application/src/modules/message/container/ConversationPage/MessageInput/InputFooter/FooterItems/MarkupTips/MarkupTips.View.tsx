@@ -15,38 +15,16 @@ class MarkupTipsViewComponent extends React.Component<
   MarkupTipsViewProps,
   MarkupTipsViewState
 > {
-  constructor(props: MarkupTipsViewProps) {
-    super(props);
-    this.state = {
-      exited: !props.show,
-    };
-  }
-  onExited = () => {
-    this.setState({
-      exited: true,
-    });
-  }
-  componentDidUpdate({ show }: MarkupTipsViewProps) {
-    if (!show && this.props.show) {
-      this.setState({
-        exited: false,
-      });
-    }
-  }
   render() {
     const { t, show } = this.props;
-    const { exited } = this.state;
     const content = t('message.markupTips');
     return (
-      (show || !exited) && (
-        <JuiInputFooterItem
-          show={show}
-          align={'right'}
-          content={content}
-          onExited={this.onExited}
-          data-test-automation-id="markup-tips"
-        />
-      )
+      <JuiInputFooterItem
+        show={show}
+        align={'right'}
+        content={content}
+        data-test-automation-id="markup-tips"
+      />
     );
   }
 }

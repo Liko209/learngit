@@ -13,7 +13,11 @@ import { AttachmentList, ItemInfo } from '../AttachmentList';
 import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
-import { JuiInputFooterContainer, JuiInputFooterItem, InputFooterItemProps } from '../InputFooter';
+import {
+  JuiInputFooterContainer,
+  JuiInputFooterItem,
+  InputFooterItemProps,
+} from '../InputFooter';
 import { noop } from '../../../foundation/utils';
 
 storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
@@ -134,10 +138,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
     .flat();
   return (
     <div>
-      <AttachmentList
-        files={array as ItemInfo[]}
-        removeAttachment={noop}
-      />
+      <AttachmentList files={array as ItemInfo[]} removeAttachment={noop} />
     </div>
   );
 });
