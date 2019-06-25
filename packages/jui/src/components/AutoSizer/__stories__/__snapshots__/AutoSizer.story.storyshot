@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/AutoSizer AutoSizer: Components/AutoSizer AutoSizer 1`] = `
+.c0 {
+  height: inherit;
+  max-height: inherit;
+}
+
+.c1 {
+  background: #f1f1f1;
+}
+
+.c2 {
+  height: 20;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="c1"
+  >
+    <div
+      data-test-automation-id="virtualized-list"
+      onScroll={[Function]}
+      onWheel={[Function]}
+      style={
+        Object {
+          "WebkitOverflowScrolling": "touch",
+          "height": "inherit",
+          "maxHeight": "inherit",
+          "minHeight": "inherit",
+          "overflow": "auto",
+          "overflowAnchor": "none",
+          "transform": "translateZ(0)",
+        }
+      }
+    >
+      <div
+        style={
+          Object {
+            "height": 0,
+          }
+        }
+      />
+      <div>
+        <div
+          className="c2"
+        >
+          Row-
+          1
+        </div>
+      </div>
+      <div
+        style={
+          Object {
+            "height": 0,
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
