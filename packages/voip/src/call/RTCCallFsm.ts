@@ -7,7 +7,11 @@ import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import async from 'async';
 import { CALL_FSM_NOTIFY } from './types';
-import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
+import {
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+  RTC_CALL_ACTION_ERROR_CODE,
+} from '../api/types';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -320,7 +324,11 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   }
 
   onReportCallActionFailed(name: string): void {
-    this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, name, -1);
+    this.emit(
+      CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+      name,
+      RTC_CALL_ACTION_ERROR_CODE.INVALID,
+    );
   }
 
   onHoldAction(): void {
