@@ -3,21 +3,20 @@
  * @Date: 2019-05-30 16:35:54
  * Copyright © RingCentral. All rights reserved.
  */
+import { SortUtils } from 'sdk/framework/utils';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
+import { ENTITY } from 'sdk/service/eventKey';
 import {
   FetchSortableDataListHandler,
   ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { SortUtils } from 'sdk/framework/utils';
-import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
-
-import { VoicemailDataProvider } from './VoicemailDataProvider';
-import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
-import { ENTITY } from 'sdk/service/eventKey';
+import { VoicemailFetchData } from './types';
 
 class VoicemailListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<Voicemail>;
-  constructor() {
+  constructor(fetchData: VoicemailFetchData) {
     const isMatchFunc = (model: Voicemail) => {
       return !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
     };
@@ -39,10 +38,8 @@ class VoicemailListHandler {
       return SortUtils.sortModelByKey(lhs, rhs, ['data'], true);
     };
 
-    const dataProvider = new VoicemailDataProvider();
-
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
-      dataProvider,
+      { fetchData },
       {
         isMatchFunc,
         transformFunc,
