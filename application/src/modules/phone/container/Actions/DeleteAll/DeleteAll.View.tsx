@@ -3,7 +3,7 @@
  * @Date: 2019-06-24 13:52:30
  * Copyright © RingCentral. All rights reserved.
  */
-import { withTranslation, WithTranslation, Trans } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components/Menus';
@@ -44,7 +44,7 @@ class DeleteViewComponent extends Component<Props, State> {
       title: t('calllog.deleteAllCallHistory'),
       content: (
         <JuiDialogContentText>
-          <Trans i18nKey="calllog.doYouWanttoDeleteAllCallLog" />
+          {t('calllog.doYouWanttoDeleteAllCallLog')}
         </JuiDialogContentText>
       ),
       okText: t('common.dialog.delete'),

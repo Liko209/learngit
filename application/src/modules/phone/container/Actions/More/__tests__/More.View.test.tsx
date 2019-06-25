@@ -18,11 +18,9 @@ describe('MoreView', () => {
     t1() {
       const wrapper = mountWithTheme(<MoreView />);
       expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe(
-        'voicemail.more',
+        'common.more',
       );
-      expect(wrapper.find(JuiIconButton).props().ariaLabel).toBe(
-        'voicemail.more',
-      );
+      expect(wrapper.find(JuiIconButton).props().ariaLabel).toBe('common.more');
     }
   }
 });

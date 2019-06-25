@@ -35,8 +35,8 @@ class MoreViewComponent extends Component<Props, State> {
         size="small"
         key="voicemail-more"
         data-test-automation-id="voicemail-more-button"
-        ariaLabel={t('voicemail.more')}
-        tooltipTitle={t('voicemail.more')}
+        ariaLabel={t('common.more')}
+        tooltipTitle={t('common.more')}
         tooltipForceHide={tooltipForceHide}
         onClick={this.openPopper}
         className="phone-more-button"

@@ -10,14 +10,12 @@ import { mountWithTheme, asyncMountWithTheme } from 'shield/utils';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-import { Trans } from 'react-i18next';
 import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { DeleteAll } from '../DeleteAll';
 import { DeleteAllView } from '../DeleteAll.View';
 
 jest.mock('@/containers/Dialog');
 jest.mock('react-i18next');
-(Trans as jest.Mock) = jest.fn();
 
 const deleteDialogConfig = {
   modalProps: { 'data-test-automation-id': 'deleteAllCallLogConfirmDialog' },
@@ -26,7 +24,7 @@ const deleteDialogConfig = {
   cancelText: 'common.dialog.cancel',
   content: (
     <JuiDialogContentText>
-      <Trans i18nKey='calllog.doYouWanttoDeleteAllCallLog' />
+      calllog.doYouWanttoDeleteAllCallLog
     </JuiDialogContentText>
   ),
   okText: 'common.dialog.delete',
