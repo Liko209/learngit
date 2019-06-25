@@ -10,7 +10,7 @@ import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { CALL_LOG_SOURCE } from 'sdk/module/RCItems/callLog/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StoreViewModel } from '@/store/ViewModel';
-import { AllCallsProps, AllCallsFetchData, CallLogType } from './types';
+import { AllCallsProps, FetchAllCallsData, CallLogType } from './types';
 import { AllCallsListHandler } from './AllCallsListHandler';
 
 class AllCallsViewModel extends StoreViewModel<AllCallsProps> {
@@ -39,7 +39,7 @@ class AllCallsViewModel extends StoreViewModel<AllCallsProps> {
   }
 
   @action
-  private _fetchData: AllCallsFetchData = async (
+  private _fetchData: FetchAllCallsData = async (
     direction,
     pageSize,
     anchor,

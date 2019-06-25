@@ -10,7 +10,7 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { StoreViewModel } from '@/store/ViewModel';
 import {
-  VoicemailFetchData,
+  FetchVoicemailData,
   VoicemailProps,
   VoicemailViewProps,
 } from './types';
@@ -36,7 +36,7 @@ class VoicemailViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @action
-  private _fetchData: VoicemailFetchData = async (
+  private _fetchData: FetchVoicemailData = async (
     direction,
     pageSize,
     anchor,

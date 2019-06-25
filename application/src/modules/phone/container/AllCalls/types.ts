@@ -20,7 +20,7 @@ enum CallLogType {
   MissedCall,
 }
 
-type AllCallsFetchData = (
+type FetchAllCallsData = (
   direction: QUERY_DIRECTION,
   pageSize: number,
   anchor?: ISortableModel<string>,
@@ -38,7 +38,7 @@ type AllCallsViewProps = {
 } & AllCallsProps;
 
 export {
-  AllCallsFetchData,
+  FetchAllCallsData,
   AllCallsProps,
   AllCallsViewProps,
   CallLogType,

@@ -18,10 +18,10 @@ type VoicemailViewProps = {
   listHandler: FetchSortableDataListHandler<Voicemail>;
 };
 
-type VoicemailFetchData = (
+type FetchVoicemailData = (
   direction: QUERY_DIRECTION,
   pageSize: number,
   anchor?: ISortableModel,
 ) => Promise<{ data: Voicemail[]; hasMore: boolean }>;
 
-export { VoicemailFetchData, VoicemailProps, VoicemailViewProps };
+export { FetchVoicemailData, VoicemailProps, VoicemailViewProps };

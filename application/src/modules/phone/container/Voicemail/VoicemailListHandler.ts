@@ -12,11 +12,11 @@ import {
   ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { VoicemailFetchData } from './types';
+import { FetchVoicemailData } from './types';
 
 class VoicemailListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<Voicemail>;
-  constructor(fetchData: VoicemailFetchData) {
+  constructor(fetchData: FetchVoicemailData) {
     const isMatchFunc = (model: Voicemail) => {
       return !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
     };

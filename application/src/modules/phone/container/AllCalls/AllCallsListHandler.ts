@@ -12,11 +12,11 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { CallLogType, AllCallsFetchData } from './types';
+import { CallLogType, FetchAllCallsData } from './types';
 
 class AllCallsListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<CallLog, string>;
-  constructor(type: CallLogType, fetchData: AllCallsFetchData) {
+  constructor(type: CallLogType, fetchData: FetchAllCallsData) {
     const isMatchFunc = (model: CallLog) => {
       const isMissedCall =
         model.result === CALL_RESULT.MISSED ||
