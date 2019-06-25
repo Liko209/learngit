@@ -324,3 +324,62 @@ test.meta(<ITestMeta>{
   });
 
 });
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-301'],
+  keywords: ['Like and Unlike', 'Action Bar'],
+  maintainers: ['potar.he']
+})('Check the UI display of Like/Unlike button in the conversation card', async (t) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const anotherUser = users[6];
+  const app = new AppRoot(t);
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    members: [loginUser, anotherUser],
+    owner: loginUser
+  }
+
+  await h(t).withLog(`Given I create meChat`, async () => {
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  let likedPostId, unlikePostId;
+  await h(t).withLog(`And I prepare a post with I had like and one which someone had liked and you did not liked`, async () => {
+    likedPostId = await h(t).scenarioHelper.sentAndGetTextPostId('you have already liked', chat, loginUser);
+    unlikePostId = await h(t).scenarioHelper.sentAndGetTextPostId('you have not like', chat, loginUser);
+    await h(t).scenarioHelper.likePost(likedPostId, loginUser);
+    await h(t).scenarioHelper.likePost(unlikePostId, anotherUser);
+
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I open the myself chat`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+  });
+
+  await h(t).withLog('Then display Unlike button with count on liked post footer', async () => {
+    await t.expect(conversationPage.postItemById(likedPostId).unlikeIconOnFooter.exists).ok();
+    await conversationPage.postItemById(likedPostId).likeShouldBe(1);
+  });
+
+  await h(t).withLog('And display like button with count on unlike post footer', async () => {
+    await t.expect(conversationPage.postItemById(unlikePostId).likeIconOnFooter.exists).ok();
+    await conversationPage.postItemById(unlikePostId).likeShouldBe(1);
+  });
+
+});
