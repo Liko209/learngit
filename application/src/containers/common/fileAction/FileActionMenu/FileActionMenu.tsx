@@ -3,7 +3,7 @@
  * @Date: 2019-05-27 14:31:37
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { Component } from 'react';
 import { JuiIconButton, IconButtonVariant } from 'jui/components/Buttons';
 import { FileDeleteAction, FileDeleteActionProps } from '../FileDeleteAction';
 import {
@@ -24,18 +24,23 @@ type Props = {
   WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
-class Component extends React.Component<Props, State> {
+class InnerComponent extends Component<Props, State> {
+  static defaultProps: Partial<Props> = {
+    variant: 'plain',
+  };
+
   state = {
     open: false,
     anchorEl: null,
   };
+
   private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
-    const { t } = this.props;
+    const { t, variant } = this.props;
     return (
       <JuiIconButton
         size="medium"
         ariaLabel={t('common.more')}
-        variant={this.props.variant || 'plain'}
+        variant={variant}
         data-test-automation-id="fileActionMore"
         tooltipTitle={t('common.more')}
         onClick={this.openPopper}
@@ -79,6 +84,6 @@ class Component extends React.Component<Props, State> {
   }
 }
 
-const FileActionMenu = withTranslation('translations')(Component);
+const FileActionMenu = withTranslation('translations')(InnerComponent);
 
 export { FileActionMenu, Props };

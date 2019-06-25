@@ -119,6 +119,15 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         }
       },
     );
+
+    this.reaction(
+      () => this.ids,
+      ids => {
+        if (this.historyIds === null || this.historyIds.length === 0) {
+          this.historyIds = ids;
+        }
+      },
+    );
   }
 
   @computed
@@ -155,11 +164,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @computed
   get ids() {
-    const ids = this._itemListDataSource.getIds();
-    if (this.historyIds === null || this.historyIds.length === 0) {
-      this.historyIds = ids;
-    }
-    return ids;
+    return this._itemListDataSource.getIds();
   }
 
   @action
