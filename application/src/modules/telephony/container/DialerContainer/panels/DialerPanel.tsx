@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { JuiContainer, DialPad } from 'jui/pattern/Dialer';
-import { RuiTooltipProps, RuiTooltip } from 'rcui/components/Tooltip';
+import { RuiTooltipProps } from 'rcui/components/Tooltip';
 import { DialBtn } from '../../DialBtn';
 import { ForwardBtn } from '../../Forward/ForwardBtn';
 import { DialerContainerViewProps } from '../types';
@@ -16,11 +16,13 @@ import {
 } from '../../CallerIdSelector';
 
 type Props = {
-  callerIdProps: CallerIdSelectorProps;
-  tooltipProps: Pick<
-    RuiTooltipProps,
-    Exclude<keyof RuiTooltipProps, 'children'>
-  >;
+  callerIdProps: {
+    tooltipProps: Pick<
+      RuiTooltipProps,
+      Exclude<keyof RuiTooltipProps, 'children' | 'title'>
+    >;
+    callerIdProps: CallerIdSelectorProps;
+  };
 } & Partial<DialerContainerViewProps>;
 
 const emptyFunc = () => {};
@@ -37,9 +39,7 @@ export const DialerPanel = React.memo((props: Props) => {
 
   const keypadActions = (
     <>
-      <RuiTooltip placement="bottom" {...props.tooltipProps}>
-        <CallerIdSelector {...props.callerIdProps} />
-      </RuiTooltip>
+      <CallerIdSelector {...props.callerIdProps} />
       <DialPad
         makeMouseEffect={clickToInput}
         makeKeyboardEffect={playAudio}

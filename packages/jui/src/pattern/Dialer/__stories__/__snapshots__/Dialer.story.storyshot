@@ -735,6 +735,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   >
     <div
       className="c17"
+      onMouseDown={[Function]}
     >
       <div
         className="c18"
