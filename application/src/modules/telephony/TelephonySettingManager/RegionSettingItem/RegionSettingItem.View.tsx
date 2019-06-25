@@ -67,7 +67,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           disabled={disabled}
           data-test-automation-id="settingItemButton-regionSetting"
         >
-          {t('setting.update')}
+          {t('setting.edit')}
         </JuiButton>
         {this._renderDialog()}
       </JuiSettingSectionItem>

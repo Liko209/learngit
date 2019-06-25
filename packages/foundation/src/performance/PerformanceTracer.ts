@@ -3,15 +3,15 @@
  * @Date: 2019-01-03 20:45:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
 import { PerformanceInfo } from './types';
+import { mainLogger } from '../log';
 
 const LOG_TAG = '[PerformanceTracer]';
 class PerformanceTracer {
   private _performanceInfos: PerformanceInfo[] = [];
   private _timeLine: number[] = [];
 
-  static initial(): PerformanceTracer {
+  static start(): PerformanceTracer {
     const performanceTracer = new PerformanceTracer();
     performanceTracer.start();
     return performanceTracer;

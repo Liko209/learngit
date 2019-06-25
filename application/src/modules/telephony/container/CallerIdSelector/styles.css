@@ -7,11 +7,11 @@ div[role="presentation"]>.caller_id-list-container {
   padding: 8px 0;
 }
 
-div[role="presentation"]>.caller_id-list-container div[data-test-automation-id="virtualized-list"] {
-  outline: none;
-}
-
 div[role="presentation"]>.caller_id-list-container>ul {
   box-sizing: border-box;
   padding: 0;
+}
+
+div[role="presentation"]>.caller_id-list-container>ul>div {
+  outline: none;
 }

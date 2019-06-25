@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern EmptyPage: Pattern EmptyPage 1`] = `
+.c0 {
+  box-sizing: border-box;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 336px;
+  height: 100%;
+  padding: 0px 32px;
+}
+
+.c1 {
+  margin-bottom: 28px;
+  width: 268px;
+  height: 212px;
+}
+
+.c2 {
+  margin-bottom: 12px;
+  max-width: 560px;
+  min-width: 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  color: #212121;
+}
+
+<div
+  style={
+    Object {
+      "background": "#fff",
+      "height": "540px",
+      "width": "720px",
+    }
+  }
+>
+  <div
+    className="c0"
+  >
+    <img
+      className="c1"
+      src="test-file-stub"
+    />
+    <span
+      className="c2"
+    >
+      Nothing here.
+    </span>
+  </div>
+</div>
+`;

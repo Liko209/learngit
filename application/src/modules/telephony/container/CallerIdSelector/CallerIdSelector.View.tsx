@@ -14,10 +14,13 @@ import {
   CallerIdSelectorState,
   Direction,
   ICallerPhoneNumber,
+  CallerIdViewProps,
 } from './types';
 import './styles.css';
 import { LazyFormatPhone } from './LazyFormatPhone';
 import { CallerIdContainer } from 'jui/pattern/Dialer';
+import { RuiTooltip } from 'rcui/components/Tooltip';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const MENU_PADDING = 2;
 const MIN_ROW_HEIGHT = 32;
@@ -42,7 +45,7 @@ class RawCallerIdSelector extends PureComponent<
     height: 0,
     focusIndex:
       this.props.menu.findIndex(
-        (item) => item.phoneNumber === this.props.value,
+        item => item.phoneNumber === this.props.value,
       ) || 0,
     displayStartIdx: 0,
     displayEndIdx: 0,
@@ -184,11 +187,36 @@ class RawCallerIdSelector extends PureComponent<
   }
 }
 
-const CallerIdSelector = CallerIdContainer((props: CallerIdSelectorProps) => (
-  <RawCallerIdSelector
-    {...props}
-    renderValue={(i: any) => <LazyFormatPhone value={i} />}
-  />
-));
+const CallerIdSelectorWithLazyFormat = CallerIdContainer(
+  (props: CallerIdSelectorProps) => (
+    <RawCallerIdSelector
+      {...props}
+      renderValue={(i: any) => <LazyFormatPhone value={i} />}
+    />
+  ),
+);
 
-export { CallerIdSelector, CallerIdSelectorProps, RawCallerIdSelector };
+const CallerIdSelector = withTranslation('translations')(
+  ({ tooltipProps, callerIdProps, t }: CallerIdViewProps & WithTranslation) => {
+    return (
+      <RuiTooltip
+        placement="bottom"
+        {...tooltipProps}
+        title={t('telephony.callerIdSelector.tooltip')}
+      >
+        <CallerIdSelectorWithLazyFormat
+          {...callerIdProps}
+          heightSize="default"
+          label={t('telephony.callFrom')}
+        />
+      </RuiTooltip>
+    );
+  },
+);
+
+export {
+  CallerIdSelector,
+  CallerIdSelectorProps,
+  RawCallerIdSelector,
+  CallerIdSelectorWithLazyFormat,
+};
