@@ -9,7 +9,7 @@ jupiter.registerClass(SettingStore);
 
 const URL = 'http://test.com/value';
 const URL2 = 'http://test.com/valueGetter';
-const beforeSavingAsync = jest.fn();
+const beforeSavingAsync = jest.fn().mockReturnValue(true);
 
 describe('LinkSettingItemViewModel', () => {
   beforeAll(() => {
