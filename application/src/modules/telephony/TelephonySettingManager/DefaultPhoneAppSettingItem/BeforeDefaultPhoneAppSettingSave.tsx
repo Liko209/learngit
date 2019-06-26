@@ -12,44 +12,39 @@ import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { getSingleEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
 
-const beforeDefaultPhoneAppSettingSave = async (value: any) => {
+const beforeDefaultPhoneAppSettingSave = (value: any) => {
   const currentValue = getSingleEntity(ENTITY_NAME.PROFILE, 'callOption');
   if (
     value === CALLING_OPTIONS.RINGCENTRAL &&
     currentValue !== CALLING_OPTIONS.RINGCENTRAL
   ) {
-    const confirmDialogPromise: Promise<boolean> = new Promise(
-      async (resolve, reject) => {
-        Dialog.confirm({
-          modalProps: {
-            'data-test-automation-id': 'defaultPhoneAppConfirmDialog',
-          },
-          okBtnProps: {
-            'data-test-automation-id': 'defaultPhoneAppOkButton',
-          },
-          cancelBtnProps: {
-            'data-test-automation-id': 'defaultPhoneAppCancelButton',
-          },
-          title: await i18nT('message.prompt.changeDefaultPhoneAppTitle'),
-          content: (
-            <JuiDialogContentText>
-              {i18nT('message.prompt.changeDefaultPhoneAppContent')}
-            </JuiDialogContentText>
-          ),
-          okText: await i18nT('common.dialog.OK'),
-          cancelText: await i18nT('common.dialog.cancel'),
-          onCancel() {
-            resolve(false);
-          },
-          onOK() {
-            resolve(true);
-          },
-        });
-      },
-    );
-
-    const result = await confirmDialogPromise;
-    return result;
+    return new Promise(async (resolve, reject) => {
+      Dialog.confirm({
+        modalProps: {
+          'data-test-automation-id': 'defaultPhoneAppConfirmDialog',
+        },
+        okBtnProps: {
+          'data-test-automation-id': 'defaultPhoneAppOkButton',
+        },
+        cancelBtnProps: {
+          'data-test-automation-id': 'defaultPhoneAppCancelButton',
+        },
+        title: await i18nT('message.prompt.changeDefaultPhoneAppTitle'),
+        content: (
+          <JuiDialogContentText>
+            {i18nT('message.prompt.changeDefaultPhoneAppContent')}
+          </JuiDialogContentText>
+        ),
+        okText: await i18nT('common.dialog.OK'),
+        cancelText: await i18nT('common.dialog.cancel'),
+        onCancel() {
+          resolve(false);
+        },
+        onOK() {
+          resolve(true);
+        },
+      });
+    });
   }
   return true;
 };
