@@ -6,7 +6,7 @@
 import { VoIPMediaDevicesDelegate } from '../VoIPMediaDevicesDelegate';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
-import { SOURCE_TYPE } from '../types';
+import { SOURCE_TYPE, RINGER_ADDITIONAL_TYPE } from '../types';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import notificationCenter from 'sdk/service/notificationCenter';
 
@@ -267,24 +267,34 @@ describe('VoIPMediaDevicesDelegate', () => {
   });
 
   describe('getRingerDevicesList', () => {
+    const devices = [
+      {
+        deviceId: 'default',
+      },
+      {
+        deviceId: '1',
+      },
+    ];
     it('should return empty array when devices are empty array', () => {
       mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue([]);
       const result = deviceDelegate.getRingerDevicesList();
       expect(result).toEqual([]);
     });
-
-    it('should return device list when devices have value', () => {
-      const devices = [
-        {
-          deviceId: 'default',
-        },
-        {
-          deviceId: '1',
-        },
-      ];
+    it('should return device list when devices have value [JPT-2432]', () => {
       mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue(devices);
       const result = deviceDelegate.getRingerDevicesList();
       expect(result.length).toEqual(devices.length + 2);
+    });
+
+    it('should return last value is off and second to last is all when devices have value [JPT-2434]', () => {
+      mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue(devices);
+      const result = deviceDelegate.getRingerDevicesList();
+      expect(result[result.length - 1].deviceId).toEqual(
+        RINGER_ADDITIONAL_TYPE.OFF,
+      );
+      expect(result[result.length - 2].deviceId).toEqual(
+        RINGER_ADDITIONAL_TYPE.ALL,
+      );
     });
   });
 });
