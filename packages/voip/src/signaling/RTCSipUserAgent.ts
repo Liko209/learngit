@@ -26,7 +26,6 @@ enum WEBPHONE_REGISTER_EVENT {
   INVITE = 'invite',
   TRANSPORT_CREATED = 'transportCreated',
   TRANSPORT_ERROR = 'transportError',
-  TRANSPORT_DISCONNECTED = 'disconnected',
   TRANSPORT_CONNECTED = 'connected',
   SWITCH_BACK_PROXY = 'switchBackProxy',
   PROVISION_UPDATE = 'provisionUpdate',
@@ -171,14 +170,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
           this._clearConnectionTimer();
           this.emit(UA_EVENT.TRANSPORT_ERROR);
         }
-      },
-    );
-    this._webphone.userAgent.transport.on(
-      WEBPHONE_REGISTER_EVENT.TRANSPORT_DISCONNECTED,
-      () => {
-        rtcLogger.debug(LOG_TAG, 'Transport disconnected');
-        this._clearConnectionTimer();
-        this.emit(UA_EVENT.TRANSPORT_ERROR);
       },
     );
     this._webphone.userAgent.transport.on(
