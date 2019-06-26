@@ -22,6 +22,12 @@ import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
+import { UndefinedAble } from 'sdk/types';
+import { daoManager } from 'sdk/dao';
+import { PostDao } from '../../dao';
+import PostAPI from 'sdk/api/glip/post';
+import { transform } from 'sdk/service/utils';
+import { Raw } from 'sdk/framework/model';
 
 const LOG_TAG = 'PostItemController';
 class PostItemController implements IPostItemController {
@@ -227,6 +233,43 @@ class PostItemController implements IPostItemController {
   }
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
+  }
+  private async _getPostsByItem(itemId: number) {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const item = await itemService.getById(itemId);
+    let result: Post[] = [];
+    if (item) {
+      const ids = item.post_ids;
+      const posts: Post[] = await daoManager.getDao(PostDao).batchGet(ids);
+      let remotePosts: Post[] = [];
+      if (posts.length < ids.length) {
+        const restIds = _.difference(ids, posts.map(({ id }) => id));
+        const remoteData = await PostAPI.requestByIds(restIds);
+        remotePosts = remoteData.posts.map((item: Raw<Post>) =>
+          transform<Post>(item),
+        );
+      }
+      result = [...posts, ...remotePosts];
+    }
+    return result;
+  }
+  async getLatestPostIdByItem(
+    groupId: number,
+    itemId: number,
+  ): Promise<UndefinedAble<number>> {
+    const posts = await this._getPostsByItem(itemId);
+    if (posts.length) {
+      const postsInCurrentGroup = posts.filter(
+        post => post.group_id === groupId && !post.deactivated,
+      );
+      if (postsInCurrentGroup.length) {
+        postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
+        return postsInCurrentGroup[0].id;
+      }
+    }
+    return undefined;
   }
 }
 

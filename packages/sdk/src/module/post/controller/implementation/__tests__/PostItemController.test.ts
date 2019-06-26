@@ -14,7 +14,13 @@ import { IPostActionController } from '../../interface/IPostActionController';
 import { PostItemController } from '../PostItemController';
 import { localPostJson4UnitTest } from './PostData';
 import { ServiceLoader } from '../../../../serviceLoader';
+import { daoManager } from 'sdk/dao';
+import { PostDao } from 'sdk/module/post/dao';
+import PostAPI from 'sdk/api/glip/post';
 
+jest.mock('sdk/dao');
+jest.mock('sdk/module/post/dao');
+jest.mock('sdk/api/glip/post');
 jest.mock('../../../../../module/item');
 
 class FakeActionController implements IPostActionController {
@@ -42,7 +48,14 @@ let postItemController: PostItemControllers;
 
 describe('PostItemController', () => {
   const itemService = new ItemService();
+  let postDao: PostDao;
   beforeEach(() => {
+    postDao = new PostDao(null);
+    daoManager.getDao.mockImplementation(arg => {
+      if (arg === PostDao) {
+        return postDao;
+      }
+    });
     ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
     const fakeActionController = new FakeActionController();
     postItemController = new PostItemController(fakeActionController);
@@ -247,6 +260,82 @@ describe('PostItemController', () => {
         PROGRESS_STATUS.INPROGRESS,
       );
       expect(result).toBe(false);
+    });
+  });
+
+  describe('getLatestPostIdByItem()', () => {
+    beforeEach(() => {
+      const localPosts = [
+        {
+          id: 3,
+          group_id: 1,
+          created_at: 3,
+        },
+        {
+          id: 1,
+          group_id: 1,
+          created_at: 1,
+        },
+        {
+          id: 2,
+          group_id: 1,
+          created_at: 2,
+        },
+      ];
+      const remoteData = {
+        posts: [
+          {
+            id: 4,
+            group_id: 1,
+            created_at: 4,
+          },
+          {
+            id: 5,
+            group_id: 1,
+            created_at: 5,
+          },
+          {
+            id: 6,
+            group_id: 1,
+            created_at: 6,
+            deactivated: true,
+          },
+          {
+            id: 7,
+            group_id: 7,
+            created_at: 7,
+          },
+        ],
+      };
+      itemService.getById = jest
+        .fn()
+        .mockResolvedValue({ post_ids: [1, 2, 3] });
+      postDao.batchGet = jest.fn().mockResolvedValue(localPosts);
+      PostAPI.requestByIds = jest.fn().mockResolvedValue(remoteData);
+    });
+    it('should return latest post id is 3 when post_ids all in local', async () => {
+      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      expect(PostAPI.requestByIds).not.toBeCalled();
+      expect(result).toBe(3);
+    });
+    it('should return latest post id is 5 when post_ids are not all in local', async () => {
+      itemService.getById = jest
+        .fn()
+        .mockResolvedValue({ post_ids: [1, 2, 3, 4] });
+      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      expect(PostAPI.requestByIds).toBeCalled();
+      expect(result).toBe(5);
+    });
+    it('should return undefined when post_ids is not in local and remote', async () => {
+      postDao.batchGet = jest.fn().mockResolvedValue([]);
+      PostAPI.requestByIds = jest.fn().mockResolvedValue({ posts: [] });
+      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      expect(result).toBe(undefined);
+    });
+    it('should return undefined when item is null', async () => {
+      itemService.getById = jest.fn().mockResolvedValue(null);
+      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      expect(result).toBe(undefined);
     });
   });
 });
