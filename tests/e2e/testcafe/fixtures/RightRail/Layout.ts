@@ -33,7 +33,8 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.favoritesSection.nthConversationEntry(0).enter();
   });
 
-  await h(t).withLog('Then I should find the title of right shelf to be "Conversation Details"', async () => {
+  const title = 'Conversation Details';
+  await h(t).withLog(`Then I should find the title of right shelf to be "${title}"`, async () => {
     await t.expect(rightRail.title.textContent).eql('Conversation Details');
   });
 
@@ -108,7 +109,7 @@ test.meta(<ITestMeta>{
 
   const expandButtonTooltip = 'Show details';
   await h(t).withLog(`Then I should find a tooltip with content: "${expandButtonTooltip}"`, async () => {
-    await rightRail.shouldBeFolded();
+    await t.expect(app.tooltip.textContent).eql(expandButtonTooltip);
   }, true);
 
   await h(t).withLog('When I click expand button', async () => {
