@@ -8,21 +8,13 @@ import { observable, computed } from 'mobx';
 import Base from './Base';
 
 export default class ItemModel extends Base<Item> {
-  @observable
-  typeId: number;
-  @observable
-  modifiedAt: number;
-  @observable
-  creatorId: number;
-  @observable
-  name: string;
+  @observable typeId: number;
+  @observable modifiedAt: number;
+  @observable creatorId: number;
+  @observable name: string;
   @observable versions: Item['versions'];
-
-  @observable
-  createdAt: number;
-
-  @observable
-  atMentionPostIds?: number[];
+  @observable createdAt: number;
+  @observable atMentionPostIds?: number[];
 
   constructor(data: Item) {
     super(data);
@@ -40,22 +32,23 @@ export default class ItemModel extends Base<Item> {
     return this.versions && this.versions.length > 0;
   }
 
-  protected getVersionsValue(type: string) {
-    if (!this.hasVersions()) return null;
-    return this.latestVersion && this.latestVersion[type]
+  protected getVersionsValue<T = never>(
+    type: keyof ItemVersions,
+  ): T | undefined {
+    if (!this.hasVersions()) return undefined;
+    return (this.latestVersion && this.latestVersion[type]
       ? this.latestVersion[type]
-      : null;
+      : undefined) as T | undefined;
   }
 
   @computed
-  get newestCreatorId(): number | null {
-    if (!this.hasVersions()) return null;
-    return this.getVersionsValue('creator_id');
+  get newestCreatorId(): number {
+    return this.getVersionsValue('creator_id') || 0;
   }
 
   @computed
   get latestVersion(): ItemVersions | undefined {
-    return this.versions.find(item => !item.deactivated)!;
+    return this.versions.find(item => !item.deactivated);
   }
 
   static fromJS(data: Item) {

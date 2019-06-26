@@ -18,6 +18,7 @@ jest.mock('@/containers/Dialog');
 jest.mock('react-i18next');
 
 const deleteDialogConfig = {
+  size: 'small',
   modalProps: { 'data-test-automation-id': 'deleteAllCallLogConfirmDialog' },
   okBtnProps: { 'data-test-automation-id': 'deleteAllCallLogOkButton' },
   cancelBtnProps: { 'data-test-automation-id': 'deleteAllCallLogCancelButton' },

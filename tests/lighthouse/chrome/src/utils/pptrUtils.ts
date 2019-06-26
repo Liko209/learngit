@@ -265,7 +265,7 @@ class PptrUtils {
     if (!(await PptrUtils.waitForSelector(page, selector, options))) {
       return false;
     }
-    
+
     await page.hover(selector);
 
     return true;
@@ -337,7 +337,6 @@ class PptrUtils {
       }
 
       browser = await puppeteer.connect({
-        headless: false,
         defaultViewport: null,
         browserWSEndpoint: wsEndpoint,
         ignoreHTTPSErrors: true

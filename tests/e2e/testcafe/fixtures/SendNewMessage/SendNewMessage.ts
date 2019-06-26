@@ -279,3 +279,60 @@ test.meta(<ITestMeta>{
     await t.expect(sendNewMessageModal.newMessageTextarea.value).eql(specialSymbols);
   });
 });
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-238'],
+  maintainers: ['zack'],
+  keywords: ['SendNewMessage'],
+})('Check the first post_Initial view of a direct message after it is created', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[7];
+  const anotherUser = users[6];
+  const sendNewMessageModal = app.homePage.sendNewMessageModal;
+  const sendNewMessageEntry = app.homePage.addActionMenu.sendNewMessageEntry;
+  await h(t).resetGlipAccount(loginUser);
+  await h(t).glip(otherUser).init();
+  await h(t).glip(anotherUser).init();
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
+  const anotherUserName =await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+  const firstName1 = await h(t).glip(loginUser).getPersonPartialData('first_name', otherUser.rcId);
+  const firstName2 = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId);
+
+
+  const newMessages = `new message ${uuid()}`;
+  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I open add menu in home page', async () => {
+    await app.homePage.openAddActionMenu();
+  });
+
+  await h(t).withLog('And I click the Send New Message button', async () => {
+    await sendNewMessageEntry.enter();
+    await sendNewMessageModal.ensureLoaded();
+  });
+
+  await h(t).withLog('When I input two memeber name', async () => {
+    await sendNewMessageModal.memberInput.addMember(otherUserName);
+    await sendNewMessageModal.memberInput.addMember(anotherUserName);
+  });
+
+  await h(t).withLog('When I input new message', async () => {
+    await sendNewMessageModal.setNewMessage(newMessages);
+  });
+
+  await h(t).withLog('And I click send button', async () => {
+    await sendNewMessageModal.clickSendButton();
+  });
+
+  let expectText = `This is the beginning of your direct message history with ${firstName1} and ${firstName2}`;
+
+  await h(t).withLog('Then jump to the conversation and the content on the center panel should correct', async () => {
+    await t.expect(app.homePage.messageTab.conversationPage.self.find('span').withExactText(expectText).exists).ok(expectText);
+  });
+});

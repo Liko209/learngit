@@ -148,4 +148,31 @@ export class FileAndImagePreviewer extends BaseWebComponent {
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .hover(this.zoomInButton);
   }
+
+  get zoomResetIcon() {
+    return this.getSelectorByIcon('reset_zoom', this.self);
+  }
+
+  get zoomResetButton() {
+    return this.zoomResetIcon.parent('button');
+  }
+
+  async clickZoomResetButton() {
+    await this.t
+      .expect(this.zoomResetButton.hasAttribute('disabled')).notOk()
+      .click(this.zoomResetButton);
+  }
+
+  async zoomResetButtonIsDisabled() {
+    await this.t
+      .expect(this.zoomResetButton.hasAttribute('disabled')).ok();
+  }
+
+  get zoomPercentageText(){
+    return this.self.find('.zoomGroup').child('div').nth(1).textContent;
+  }
+
+  async hoverPreviewer() {
+    await this.t.hover(this.PreviewerDiv);
+  }
 }

@@ -172,6 +172,14 @@ export class GlipSdk {
     });
   }
 
+  removeGuest(rcId?: string) {
+    const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
+    const uri = `api/remove_guest/${personId}`;
+    return this.axiosClient.put(uri, undefined, {
+      headers: this.headers,
+    });
+  }
+
   async getPersonPartialData(keyword: string, rcId?: string) {
     return await this.getPerson(rcId).then(res => res.data[keyword]);
   }

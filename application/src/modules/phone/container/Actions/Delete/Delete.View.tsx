@@ -35,6 +35,7 @@ class DeleteViewComponent extends Component<Props> {
       modalProps: { 'data-test-automation-id': 'deleteVoicemailConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'deleteVoicemailOkButton' },
       cancelBtnProps: { 'data-test-automation-id': 'deleteVoicemailCancelButton' },
+      size: 'small',
       title: t('voicemail.deleteVoicemail'),
       content: (
         <JuiDialogContentText>
@@ -68,6 +69,7 @@ class DeleteViewComponent extends Component<Props> {
           {t('calllog.doYouWanttoDeleteThisCallLog')}
         </JuiDialogContentText>
       ),
+      size: 'small',
       okText: t('common.dialog.delete'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
@@ -81,19 +83,6 @@ class DeleteViewComponent extends Component<Props> {
         return true;
       },
     });
-  }
-
-  get _tooltip() {
-    const { entity, t } = this.props;
-
-    switch (entity) {
-      case ENTITY_TYPE.VOICEMAIL:
-        return t('common.delete');
-      case ENTITY_TYPE.CALL_LOG:
-        return t('calllog.deleteCallLog');
-      default:
-        return '';
-    }
   }
 
   get _screenReader() {
@@ -110,13 +99,13 @@ class DeleteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { type, entity } = this.props;
+    const { type, entity, t } = this.props;
     return (
       <ActionButton
         key={`${entity}-delete`}
         icon="delete"
         type={type}
-        tooltip={this._tooltip}
+        tooltip={t('common.delete')}
         onClick={this._handleClick}
         screenReader={this._screenReader}
         automationId={`${entity}-delete-button`}

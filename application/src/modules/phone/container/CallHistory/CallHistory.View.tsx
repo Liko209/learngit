@@ -30,7 +30,7 @@ const CallHistoryWrapper = (
         title={props.t('phone.callhistory')}
         data-test-automation-id="CallHistoryPageHeader"
         SubTitle={
-          <More>
+          <More automationId="callHistory-header-more">
             <DeleteAll />
           </More>
         }

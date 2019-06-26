@@ -34,6 +34,7 @@ class DeleteViewComponent extends Component<Props, State> {
   _handleClick = () => {
     const { t } = this.props;
     const dialog = Dialog.confirm({
+      size: 'small',
       modalProps: {
         'data-test-automation-id': 'deleteAllCallLogConfirmDialog',
       },
