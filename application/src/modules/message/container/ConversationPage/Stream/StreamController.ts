@@ -192,7 +192,7 @@ class StreamController {
   }
 
   private _unreadPostsLoader = async () => {
-    let hasMore = true;
+    let hasMore = { older: true, newer: true, both: true };
     let postsNewerThanAnchor: Post[] = [];
     let postsOlderThanAnchor: Post[] = [];
 

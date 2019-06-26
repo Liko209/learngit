@@ -64,7 +64,6 @@ describe('PostDataController', () => {
     {} as IEntityPersistentController<Post>,
     {} as DeactivatedDao,
   );
-  const groupService = new GroupService();
   const postDataController = new PostDataController(
     groupService,
     preInsertController,
