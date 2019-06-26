@@ -17,6 +17,11 @@ export class RightRail extends BaseWebComponent {
     return this.getSelector('button[aria-label="Show details"]');
   }
 
+  get title() {
+    this.warnFlakySelector();
+    return this.self.find('#right-rail-header').child().nth(0);
+  }
+
   async expand() {
     await this.t.click(this.foldStatusButton);
   }
@@ -26,7 +31,11 @@ export class RightRail extends BaseWebComponent {
   }
 
   get tabList() {
-    return this.self.find('[role="tablist"]')
+    return this.self.find('[role="tablist"]');
+  }
+
+  get displayedTabButtons() {
+    return this.tabList.find('button[role="tab"]');
   }
 
   get listSubTitle() {
@@ -79,6 +88,14 @@ export class RightRail extends BaseWebComponent {
 
   async openMore() {
     await this.t.click(this.moreButton);
+  }
+
+  get moreTabsMenu() {
+    return this.getSelector('ul[role="menu"]');
+  }
+
+  get moreTabsMenuEntries() {
+    return this.moreTabsMenu.find('li[role="menuitem"]');
   }
 
   get imagesTab() {
@@ -259,11 +276,11 @@ class ImageAndFileItem extends BaseWebComponent {
     await this.t.expect(this.name.withText(name).exists).ok();
   }
 
-  get more(){
-    return this.getSelectorByAutomationId('fileActionMore',this.self);
+  get more() {
+    return this.getSelectorByAutomationId('fileActionMore', this.self);
   }
-  
-  async clickMore(){
+
+  async clickMore() {
     await this.t.click(this.more);
   }
 
