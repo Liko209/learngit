@@ -21,6 +21,7 @@ import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
   CALL_HISTORY_USED_HEIGHT,
+  LOADING_DELAY,
 } from '../Voicemail/config';
 
 type Props = WithTranslation & AllCallsViewProps;
@@ -29,7 +30,7 @@ type Props = WithTranslation & AllCallsViewProps;
 class AllCallsViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={100} />,
+    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
     loadingMoreRenderer: <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
