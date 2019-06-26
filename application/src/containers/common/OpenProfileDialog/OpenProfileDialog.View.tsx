@@ -7,7 +7,7 @@
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
-
+import portalManager from '@/common/PortalManager';
 import { OpenProfile } from '@/common/OpenProfile';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
@@ -20,6 +20,13 @@ class OpenProfileDialogView extends Component<Props> {
 
   private _onClickOpenProfileDialog = (event: MouseEvent<HTMLElement>) => {
     const { id, beforeClick, afterClick } = this.props;
+    // needed for avoid Blinking when switching dialog
+    const transitionDuration = portalManager.hasShowStatus
+      ? {
+          transitionDuration: 900,
+        }
+      : undefined;
+
     OpenProfile.show(
       id,
       () => {
@@ -28,6 +35,7 @@ class OpenProfileDialogView extends Component<Props> {
       () => {
         afterClick && afterClick(event);
       },
+      transitionDuration,
     );
   }
 

@@ -48,7 +48,7 @@ class PortalManager extends EventEmitter2 {
   }
 
   get hasShouldCloseStatus() {
-    return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.IS_SHOW);
+    return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.SHOULD_CLOSE);
   }
 
   register({ component, dismiss, props }: Portal) {
