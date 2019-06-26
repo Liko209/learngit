@@ -39,12 +39,12 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
     const rawValue = source.find(
       sourceItem => this.extractValue(sourceItem) === newValue,
     );
-    const { beforeSettingSave } = this.settingItem;
-    let beforeSettingSaveReturn = true;
-    if (beforeSettingSave) {
-      beforeSettingSaveReturn = await beforeSettingSave(rawValue);
+    const { beforeSavingAsync } = this.settingItem;
+    let beforeSavingAsyncReturn = true;
+    if (beforeSavingAsync) {
+      beforeSavingAsyncReturn = await beforeSavingAsync(rawValue);
     }
-    return beforeSettingSaveReturn && valueSetter && valueSetter(rawValue);
+    return beforeSavingAsyncReturn && valueSetter && valueSetter(rawValue);
   }
 
   extractValue = (sourceItem: T) => {

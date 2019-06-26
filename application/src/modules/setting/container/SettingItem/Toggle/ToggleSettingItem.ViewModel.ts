@@ -11,11 +11,14 @@ class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
   ToggleSettingItemProps
 > {
   @action
-  saveSetting = (value: boolean) => {
+  saveSetting = async (value: boolean) => {
     const { valueSetter } = this.settingItemEntity;
-    const { beforeSettingSave } = this.settingItem;
-    beforeSettingSave && beforeSettingSave(value);
-    return valueSetter && valueSetter(value);
+    const { beforeSavingAsync } = this.settingItem;
+    let beforeSavingAsyncReturn = true;
+    if (beforeSavingAsync) {
+      beforeSavingAsyncReturn = await beforeSavingAsync(value);
+    }
+    return beforeSavingAsyncReturn && valueSetter && valueSetter(value);
   }
 }
 

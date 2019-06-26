@@ -52,7 +52,7 @@ type SettingItem = {
   /**
    * Will be called before the Setting Save
    */
-  beforeSettingSave?: (settingValue: any) => boolean | Promise<boolean>;
+  beforeSavingAsync?: (settingValue: any) => Promise<boolean>;
 };
 
 export { SettingItem, SETTING_ITEM_TYPE };

@@ -84,7 +84,7 @@ describe('SelectSettingItemViewModel', () => {
         source: [{ id: 'A' }, { id: 'B' }],
       });
       mockSettingItem({
-        beforeSettingSave: () => true,
+        beforeSavingAsync: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await vm.saveSetting('B');
@@ -99,7 +99,7 @@ describe('SelectSettingItemViewModel', () => {
         source: [{ id: 1 }, { id: 2 }],
       });
       mockSettingItem({
-        beforeSettingSave: () => true,
+        beforeSavingAsync: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await vm.saveSetting('2');
@@ -114,7 +114,7 @@ describe('SelectSettingItemViewModel', () => {
         source: [1, 2],
       });
       mockSettingItem({
-        beforeSettingSave: () => true,
+        beforeSavingAsync: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await vm.saveSetting('2');
@@ -127,7 +127,7 @@ describe('SelectSettingItemViewModel', () => {
         source: ['A', 'B'],
       });
       mockSettingItem({
-        beforeSettingSave: () => true,
+        beforeSavingAsync: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await vm.saveSetting('B');
@@ -140,7 +140,7 @@ describe('SelectSettingItemViewModel', () => {
         source: ['A', 'B'],
       });
       mockSettingItem({
-        beforeSettingSave: () => false,
+        beforeSavingAsync: () => false,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await vm.saveSetting('B');
@@ -153,7 +153,7 @@ describe('SelectSettingItemViewModel', () => {
         source: [{ customId: 1 }, { customId: 2 }],
       });
       mockSettingItem({
-        beforeSettingSave: () => true,
+        beforeSavingAsync: () => true,
       });
       const vm = new SelectSettingItemViewModel({ id: 1 });
       await expect(vm.saveSetting('2')).rejects.toThrow();

@@ -9,14 +9,14 @@ jupiter.registerClass(SettingStore);
 
 const URL = 'http://test.com/value';
 const URL2 = 'http://test.com/valueGetter';
-const beforeSettingSave = jest.fn();
+const beforeSavingAsync = jest.fn();
 
 describe('LinkSettingItemViewModel', () => {
   beforeAll(() => {
     const settingStore: SettingStore = jupiter.get(SettingStore);
     jest
       .spyOn<SettingStore, any>(settingStore, 'getItemById')
-      .mockReturnValue({ id: 'PAGE_1', beforeSettingSave });
+      .mockReturnValue({ id: 'PAGE_1', beforeSavingAsync });
   });
   describe('saveSetting()', () => {
     it('should return url from value', async () => {
@@ -35,12 +35,12 @@ describe('LinkSettingItemViewModel', () => {
       expect(await vm.getUrl()).toBe(URL2);
     });
 
-    it('should save setting with beforeSettingSave ', async () => {
+    it('should save setting with beforeSavingAsync ', async () => {
       const valueGetter = jest.fn().mockResolvedValue(URL2);
       getEntity.mockReturnValue({ valueGetter });
       const vm = new LinkSettingItemViewModel({ id: 1 });
       expect(await vm.getUrl()).toBe(URL2);
-      expect(beforeSettingSave).toHaveBeenCalled();
+      expect(beforeSavingAsync).toHaveBeenCalled();
     });
 
     it('should cache url and avoid duplicate request', async () => {

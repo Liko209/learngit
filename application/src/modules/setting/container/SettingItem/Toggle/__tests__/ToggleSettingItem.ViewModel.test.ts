@@ -27,25 +27,25 @@ describe('ToggleSettingItemViewModel', () => {
       .mockReturnValue({ id: 'PAGE_1' });
   });
   describe('saveSetting()', () => {
-    it('should save setting [JPT-2083]', () => {
+    it('should save setting [JPT-2083]', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
       const vm = new ToggleSettingItemViewModel({ id: 1 });
-      vm.saveSetting(false);
+      await vm.saveSetting(false);
       expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(false);
     });
-    it('should save setting with beforeSettingSave ', () => {
+    it('should save setting with beforeSavingAsync ', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
       const vm = new ToggleSettingItemViewModel({ id: 1 });
-      const beforeSettingSave = jest.fn();
+      const beforeSavingAsync = jest.fn();
       mockSettingItem({
-        beforeSettingSave,
+        beforeSavingAsync,
       });
-      vm.saveSetting(false);
-      expect(beforeSettingSave).toHaveBeenCalled();
+      await vm.saveSetting(false);
+      expect(beforeSavingAsync).toHaveBeenCalled();
     });
   });
 });
