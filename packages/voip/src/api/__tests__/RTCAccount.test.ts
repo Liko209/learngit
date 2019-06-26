@@ -187,13 +187,83 @@ function setupAccount() {
   account._onNewProv(mockProvisionData);
 }
 
+describe('Telephony HA', () => {
+  it('Should set postponeSwitchBackProxy to true when timer reached and receive switchBackProxy and has active call. [JPT-2306]', done => {
+    setupAccount();
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(true);
+      done();
+    });
+  });
+
+  it('Should reconnect to main proxy when timer reached and receive switchBackProxy and has no active call. [JPT-2307]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account._regManager.reRegister).toBeCalledWith(true);
+      done();
+    });
+  });
+
+  it('Should refresh SIP provision when receive provisionUpdate. [JPT-2308]', done => {
+    setupAccount();
+    jest.spyOn(account._provManager, 'refreshSipProv');
+    ua.mockSignal(UA_EVENT.PROVISION_UPDATE);
+    setImmediate(() => {
+      expect(account._provManager.refreshSipProv).toBeCalled();
+      done();
+    });
+  });
+
+  it('Should reconnect to main proxy when postponeSwitchBackProxy is true and active call end. [JPT-2309]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(true);
+      account.callList()[0].hangup();
+      setImmediate(() => {
+        expect(account.callCount()).toBe(0);
+        expect(account._regManager.reRegister).toBeCalledWith(true);
+        done();
+      });
+    });
+  });
+
+  it('Should do nothing when postponeSwitchBackProxy is false and active call end. [JPT-2310]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(false);
+      account.callList()[0].hangup();
+      setImmediate(() => {
+        expect(account.callCount()).toBe(0);
+        expect(account._regManager.reRegister).not.toBeCalledWith(true);
+        expect(account._postponeSwitchBackProxy).toBe(false);
+        done();
+      });
+    });
+  });
+});
+
 describe('RTCAccount', () => {
   it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
-      expect(account._regManager._regFailedFirstTime).toBe(true);
+      expect(account._regManager._failedTimes).toBe(0);
       expect(account._state).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
         RTC_ACCOUNT_STATE.REGISTERED,

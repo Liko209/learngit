@@ -45,11 +45,13 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
   UA_TRANSPORT_ERROR = 'uaTransportError',
+  UA_SWITCH_BACK_PROXY = 'uaSwitchBackProxy',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   LOGOUT = 'logout',
   LOGOUT_ACTION = 'logoutAction',
   RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
   REFRESH_PROV = 'refreshProvisioning',
+  SWITCH_BACK_PROXY_ACTION = 'switchBackProxyAction',
 }
 
 enum REGISTRATION_FSM_STATE {

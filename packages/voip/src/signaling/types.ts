@@ -10,6 +10,7 @@ enum UA_EVENT {
   RECEIVE_INVITE = 'uaReceiveInvite',
   TRANSPORT_ERROR = 'uaTransportError',
   SWITCH_BACK_PROXY = 'uaSwitchBackProxy',
+  PROVISION_UPDATE = 'uaProvisionUpdate',
 }
 
 enum WEBPHONE_SESSION_STATE {

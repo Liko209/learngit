@@ -114,13 +114,13 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
-  public reRegister() {
+  public reRegister(forceToMain: boolean) {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
     this._clearConnectionTimer();
     if (!this._webphone) {
       return;
     }
-    this._webphone.userAgent.transport.reconnect();
+    this._webphone.userAgent.transport.reconnect(forceToMain);
   }
 
   public unregister() {
@@ -191,29 +191,34 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._webphone.userAgent.transport.on(
       WEBPHONE_REGISTER_EVENT.SWITCH_BACK_PROXY,
       () => {
-        if (this._switchBackTimer) {
-          clearTimeout(this._switchBackTimer);
-          this._switchBackTimer = null;
-        }
-        const timeout = randomBetween(
-          kSwitchBackProxyMinInterval,
-          kSwitchBackProxyMaxInterval,
-        );
-        this._switchBackTimer = setTimeout(() => {
-          this.emit(UA_EVENT.SWITCH_BACK_PROXY);
-        },                                 timeout);
-        rtcLogger.debug(
-          LOG_TAG,
-          `Switch back to main proxy signal from web phone. Schedule switch back in ${timeout /
-            1000} sec`,
-        );
+        this._onSwitchBackProxy();
       },
     );
     this._webphone.userAgent.transport.on(
       WEBPHONE_REGISTER_EVENT.PROVISION_UPDATE,
       () => {
         rtcLogger.debug(LOG_TAG, 'Provision update signal from web phone');
+        this.emit(UA_EVENT.PROVISION_UPDATE);
       },
+    );
+  }
+
+  private _onSwitchBackProxy() {
+    if (this._switchBackTimer) {
+      clearTimeout(this._switchBackTimer);
+      this._switchBackTimer = null;
+    }
+    const timeout = randomBetween(
+      kSwitchBackProxyMinInterval,
+      kSwitchBackProxyMaxInterval,
+    );
+    this._switchBackTimer = setTimeout(() => {
+      this.emit(UA_EVENT.SWITCH_BACK_PROXY);
+    },                                 timeout);
+    rtcLogger.debug(
+      LOG_TAG,
+      `Switch back to main proxy signal from web phone. Schedule switch back in ${timeout /
+        1000} sec`,
     );
   }
 

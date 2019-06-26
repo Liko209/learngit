@@ -121,21 +121,36 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should set retry interval to 5 sec when reg failed at first time [JPT-2257]', () => {
+    it('Should follow back off algorithm for register retry interval[JPT-2304]', () => {
       setup();
-      regManager._regFailedFirstTime = true;
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBeLessThanOrEqual(5);
-    });
-
-    it("Should set retry interval to 30 to 60 sec when reg failed and it's not the first time [JPT-2256]", () => {
-      setup();
-      regManager._regFailedFirstTime = false;
-      regManager._calculateNextRetryInterval();
-      const minExpected = 30;
-      const maxExpected = 60;
-      expect(regManager._retryInterval).toBeLessThanOrEqual(maxExpected);
-      expect(regManager._retryInterval).toBeGreaterThanOrEqual(minExpected);
+      const expectedInterval = [
+        { min: 2, max: 6 },
+        { min: 10, max: 20 },
+        { min: 20, max: 40 },
+        { min: 40, max: 80 },
+        { min: 80, max: 120 },
+        { min: 80, max: 120 },
+        { min: 80, max: 120 },
+        { min: 80, max: 120 },
+        { min: 80, max: 120 },
+        { min: 120, max: 240 },
+        { min: 240, max: 480 },
+        { min: 480, max: 960 },
+        { min: 960, max: 1920 },
+        { min: 1920, max: 3840 },
+      ];
+      let interval = 0;
+      for (let i = 0; i < 20; i++) {
+        interval = regManager._calculateNextRetryInterval();
+        if (i < expectedInterval.length) {
+          expect(interval).toBeGreaterThanOrEqual(expectedInterval[i].min);
+          expect(interval).toBeLessThanOrEqual(expectedInterval[i].max);
+        } else {
+          expect(interval).toBeGreaterThanOrEqual(1920);
+          expect(interval).toBeLessThanOrEqual(3840);
+        }
+        regManager._failedTimes++;
+      }
     });
   });
 
