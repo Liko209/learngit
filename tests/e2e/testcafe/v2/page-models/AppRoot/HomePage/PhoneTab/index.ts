@@ -1,7 +1,6 @@
 import { BaseWebComponent, Umi } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
 import { VoicemailPage } from "./Voicemail";
-import { CallHistoryPage } from "./CallHistory";
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -57,8 +56,5 @@ export class PhoneTab extends BaseWebComponent {
 
   get voicemailPage() {
     return this.getComponent(VoicemailPage);
-  }
-  get callHistoryPage() {
-    return this.getComponent(CallHistoryPage);
   }
 }
