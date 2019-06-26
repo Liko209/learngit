@@ -138,15 +138,27 @@ class CallLogBadgeController {
   }
 
   private _updateUnreadCount(data: CallLog): boolean {
-    if (data.result === CALL_RESULT.MISSED && !data.__deactivated) {
-      if (!this._lastReadMissed || this._lastReadMissed < data.__timestamp) {
-        this._unreadMap.set(data.id, data.__timestamp);
-      } else {
-        this._unreadMap.delete(data.id);
-      }
-      return true;
+    if (
+      data.result !== CALL_RESULT.MISSED &&
+      data.result !== CALL_RESULT.VOICEMAIL
+    ) {
+      return false;
     }
-    return false;
+
+    let unreadChanged = false;
+    if (
+      data.__deactivated ||
+      (this._lastReadMissed && this._lastReadMissed >= data.__timestamp)
+    ) {
+      if (this._unreadMap.has(data.id)) {
+        this._unreadMap.delete(data.id);
+        unreadChanged = true;
+      }
+    } else {
+      this._unreadMap.set(data.id, data.__timestamp);
+      unreadChanged = true;
+    }
+    return unreadChanged;
   }
 
   private _updateBadge(): void {
