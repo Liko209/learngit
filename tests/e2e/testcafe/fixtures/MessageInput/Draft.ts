@@ -578,7 +578,7 @@ test.meta(<ITestMeta>{
       await conversation1.enter();
     });
 
-    await h(t).withLog(`Then I no message on the input field`, async () => {
+    await h(t).withLog(`Then no message on the input field`, async () => {
       await t.expect(conversation1.hasDraftMessage).notOk();
       await t.expect(inputField.textContent).eql("");
     });
