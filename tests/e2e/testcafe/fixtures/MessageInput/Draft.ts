@@ -421,18 +421,21 @@ test.meta(<ITestMeta>{
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfileAndState();
 
-    let teamId1, teamId2, conversation1, conversation2;
-    await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `1 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId]
-      });
-      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `2 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId]
-      });
+    let conversation1, conversation2;
+    let team1 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+    let team2 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+    await h(t).withLog('Given I have an extension with 2 teams', async () => {
+      await h(t).scenarioHelper.createTeams([team1,team2]);
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -449,8 +452,8 @@ test.meta(<ITestMeta>{
     const teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I can check conversation A and B exist', async () => {
       await teamSection.expand();
-      conversation1 = teamSection.conversationEntryById(teamId1);
-      conversation2 = teamSection.conversationEntryById(teamId2);
+      conversation1 = teamSection.conversationEntryById(team1.glipId);
+      conversation2 = teamSection.conversationEntryById(team2.glipId);
       await t.expect(conversation1.exists).ok({ timeout: 10e3 });
       await t.expect(conversation2.exists).ok({ timeout: 10e3 });
     });
@@ -458,7 +461,7 @@ test.meta(<ITestMeta>{
     const msg = uuid();
     const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
     const url = new URL(SITE_URL)
-    const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${teamId1}`;
+    const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${team1.glipId}`;
     await h(t).withLog(`When I enter conversation A to type message "${msg}"`, async () => {
       await conversation1.enter();
       await t.typeText(inputField, msg)
@@ -490,12 +493,7 @@ test.meta(<ITestMeta>{
       await t.navigateTo(Conversation1_URL);
     });
 
-    await h(t).withLog(`Then I can find input field still is ${msg}`, async () => {
-      await t.expect(conversation1.hasDraftMessage).notOk();
-      await t.expect(inputField.textContent).eql(msg);
-    });
-
-    await h(t).withLog('When I enter conversation B', async () => {
+    await h(t).withLog('And I enter conversation B', async () => {
       await conversation2.enter();
     });
 
@@ -518,18 +516,23 @@ test.meta(<ITestMeta>{
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfileAndState();
 
-    let teamId1, teamId2, conversation1, conversation2;
-    await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `1 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId]
-      });
-      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `2 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId]
-      });
+    let conversation1, conversation2;
+    let team1 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+    let team2 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+
+   
+    await h(t).withLog('Given I have 2 teams', async () => {
+      await h(t).scenarioHelper.createTeams([team1,team2]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -542,8 +545,8 @@ test.meta(<ITestMeta>{
     const teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I can check conversation A and B exist', async () => {
       await teamSection.expand();
-      conversation1 = teamSection.conversationEntryById(teamId1);
-      conversation2 = teamSection.conversationEntryById(teamId2);
+      conversation1 = teamSection.conversationEntryById(team1.glipId);
+      conversation2 = teamSection.conversationEntryById(team2.glipId);
       await t.expect(conversation1.exists).ok({ timeout: 10e3 });
       await t.expect(conversation2.exists).ok({ timeout: 10e3 });
     });
@@ -595,18 +598,22 @@ test.meta(<ITestMeta>{
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfileAndState();
 
-    let teamId1, teamId2, conversation1, conversation2;
-    await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
-      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `1 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId]
-      });
-      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `2 ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId]
-      });
+    let conversation1, conversation2;
+    let team1 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+    let team2 = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+
+    await h(t).withLog('Given I have 2 teams', async () => {
+      await h(t).scenarioHelper.createTeams([team1,team2]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -619,8 +626,8 @@ test.meta(<ITestMeta>{
     const teamSection = app.homePage.messageTab.teamsSection;
     await h(t).withLog('Then I can check conversation A and B exist', async () => {
       await teamSection.expand();
-      conversation1 = teamSection.conversationEntryById(teamId1);
-      conversation2 = teamSection.conversationEntryById(teamId2);
+      conversation1 = teamSection.conversationEntryById(team1.glipId);
+      conversation2 = teamSection.conversationEntryById(team2.glipId);
       await t.expect(conversation1.exists).ok({ timeout: 10e3 });
       await t.expect(conversation2.exists).ok({ timeout: 10e3 });
     });
