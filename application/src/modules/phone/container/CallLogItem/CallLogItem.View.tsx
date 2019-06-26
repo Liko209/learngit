@@ -56,12 +56,14 @@ class CallLogItemViewComponent extends Component<Props, State> {
       isMissedCall,
       direction,
     } = this.props;
-    const {
-      isHover,
-    } = this.state;
+    const { isHover } = this.state;
 
     return (
-      <StyleVoicemailItem expanded={false}>
+      <StyleVoicemailItem
+        data-id={id}
+        data-test-automation-class="callHistory-item"
+        expanded={false}
+      >
         <VoicemailSummary
           isUnread={isUnread}
           expanded={false}

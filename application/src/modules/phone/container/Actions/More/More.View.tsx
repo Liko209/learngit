@@ -26,7 +26,7 @@ class MoreViewComponent extends Component<Props, State> {
   };
 
   private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
-    const { t } = this.props;
+    const { t, automationId } = this.props;
     return (
       <JuiIconButton
         color="grey.500"
@@ -34,7 +34,7 @@ class MoreViewComponent extends Component<Props, State> {
         autoFocus={false}
         size="small"
         key="voicemail-more"
-        data-test-automation-id="voicemail-more-button"
+        data-test-automation-id={automationId}
         ariaLabel={t('common.more')}
         tooltipTitle={t('common.more')}
         tooltipForceHide={tooltipForceHide}
