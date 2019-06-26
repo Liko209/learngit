@@ -6,6 +6,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c6 {
@@ -512,6 +513,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c3 {
