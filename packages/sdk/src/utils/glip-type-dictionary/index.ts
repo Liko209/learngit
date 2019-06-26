@@ -7,6 +7,7 @@
 import TypeDictionary from './types';
 import GlipTypeUtil from './util';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 interface IMessage<V> {
   [key: number]: V;
@@ -34,6 +35,14 @@ const socketMessageMap: IMessage<string> = {
   [TypeDictionary.TYPE_ID_PAGE]: 'item',
   [TypeDictionary.TYPE_ID_CODE]: 'item',
   [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: 'item',
+};
+
+const socketMessageParser = {
+  presence_unified: parsePresence,
+  message: parseSocketMessage,
+  partial: parseSocketMessage,
+  typing: parseTyping,
+  system_message: parseSocketMessage,
 };
 
 function getSocketMessageKey(id: number) {
@@ -92,9 +101,28 @@ function parseSocketMessage(message: string | ISystemMessage) {
   return result;
 }
 
+function parsePresence(message: string) {
+  return {
+    presence: message,
+  };
+}
+function parseTyping(message: string) {
+  return {
+    typing: message,
+  };
+}
+
+function parseSocketData(channel: string, message: string | ISystemMessage) {
+  if (socketMessageParser[channel]) {
+    return socketMessageParser[channel](message);
+  }
+  mainLogger.log(`Jupiter has not support ${channel} channel yet`);
+}
+
 export {
   TypeDictionary,
   GlipTypeUtil,
   parseSocketMessage,
   getSocketMessageKey,
+  parseSocketData,
 };

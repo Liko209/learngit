@@ -28,6 +28,7 @@ const postService = {
 };
 const groupService = {
   updateGroupDraft: jest.fn(),
+  sendTypingEvent: jest.fn(),
 };
 const groupConfigService = {
   updateDraft: jest.fn(),
@@ -44,7 +45,7 @@ function mockUpload() {
       firstItem.id = -firstItem.id;
       _uploadedItems.push(firstItem);
       _uploadingItems.splice(0, 1);
-    },         3);
+    }, 3);
   }
 }
 
