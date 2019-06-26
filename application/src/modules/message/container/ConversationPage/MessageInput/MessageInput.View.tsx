@@ -14,12 +14,15 @@ import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventD
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { InputFooter } from './InputFooter';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { IImageDownloadedListener } from 'sdk/pal';
 import { PRELOAD_ITEM } from './ColonEmoji/constants';
+import moize from 'moize';
+
 type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
 @observer
 class MessageInputViewComponent extends Component<
@@ -139,11 +142,8 @@ class MessageInputViewComponent extends Component<
     };
   }
 
-  render() {
-    const { draft, contentChange, error, id, t, insertEmoji } = this.props;
-    const { modules } = this.state;
-
-    const toolbarNode = (
+  private _getToolbarNode = moize(
+    (t: Props['t'], insertEmoji: Props['insertEmoji']) => (
       <MessageActionBar>
         <AttachmentView
           menus={this._getMenus()}
@@ -155,10 +155,29 @@ class MessageInputViewComponent extends Component<
         />
         <Emoji handleEmojiClick={insertEmoji} sheetSize={64} set="emojione" />
       </MessageActionBar>
-    );
-    const attachmentsNode = (
-      <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
-    );
+    ),
+  );
+
+  private _getAttachmentsNode = moize((id: number) => (
+    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+  ));
+
+  private _getFooterNode = moize((hasInput: boolean) => (
+    <InputFooter hasInput={hasInput} />
+  ));
+
+  render() {
+    const {
+      draft,
+      contentChange,
+      error,
+      id,
+      t,
+      insertEmoji,
+      hasInput,
+    } = this.props;
+    const { modules } = this.state;
+
     return (
       <JuiMessageInput
         value={draft}
@@ -166,8 +185,9 @@ class MessageInputViewComponent extends Component<
         error={error ? t(error) : error}
         modules={modules}
         id={id}
-        toolbarNode={toolbarNode}
-        attachmentsNode={attachmentsNode}
+        toolbarNode={this._getToolbarNode(t, insertEmoji)}
+        footerNode={this._getFooterNode(hasInput)}
+        attachmentsNode={this._getAttachmentsNode(id)}
         didDropFile={this.handleCopyPasteFile}
         placeholder={t('message.action.typeNewMessage')}
       >

@@ -413,6 +413,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get markupTips() {
+    return this.getSelectorByAutomationId('markupTips');
+  }
+
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
   }
