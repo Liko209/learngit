@@ -16,10 +16,10 @@ fixture('RightRail/Layout')
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-726', 'JPT-748', 'JPT-744'],
+  caseIds: ['JPT-726', 'JPT-748', 'JPT-744', 'JPT-745'],
   keywords: ['RightRail', 'Layout'],
   maintainers: ['henry.xu'],
-})('The UI of right shelf / open/hidden right panel / check tooltip', async t => {
+})('The UI of right shelf / open and hidden right panel / check tooltip / resize window', async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   await h(t).withLog(`Given I login Jupiter with an extension`, async (step) => {
@@ -67,6 +67,17 @@ test.meta(<ITestMeta>{
     await t.expect(rightRail.self.clientWidth).eql(0);
   }, true);
 
+  const resolutions = [[500, 300], [600, 400], [700, 500], [800, 600]];
+  for (const resolution of resolutions) {
+    await h(t).withLog(`When I resize window to ${resolution.join('x')}`, async () => {
+      await t.resizeWindow(resolution[0], resolution[1]);
+    });
+
+    await h(t).withLog('Then right shelf should still be folded', async () => {
+      await t.expect(rightRail.self.clientWidth).eql(0);
+    });
+  }
+
   await h(t).withLog('When I hover on expand button', async () => {
     await t.hover(rightRail.expandStatusButton);
   });
@@ -87,7 +98,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When I hover on fold button', async () => {
     await t.hover(rightRail.expandStatusButton);
   });
-
   const foldButtonTooltip = 'Hide details';
   await h(t).withLog(`Then I should find a tooltip with content: "${foldButtonTooltip}"`, async () => {
     await t.expect(app.tooltip.textContent).eql(foldButtonTooltip);
