@@ -56,7 +56,7 @@ function image(item: FileItemModel) {
   isImage = FileItemUtils.isSupportPreview({ type: t }) || t.includes('image/');
   if (isImage) {
     image.isImage = true;
-    image.previewUrl = versionUrl || '';
+    image.previewUrl = versionUrl;
   }
   return image;
 }
@@ -67,7 +67,7 @@ function documentType(item: FileItemModel) {
     isDocument: false,
     previewUrl: '',
   };
-  if (pages && pages.length > 0) {
+  if (pages.length > 0) {
     doc.isDocument = true;
     doc.previewUrl = pages[0].url;
   }

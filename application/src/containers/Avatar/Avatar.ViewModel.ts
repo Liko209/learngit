@@ -10,6 +10,8 @@ import { getEntity } from '@/store/utils';
 import { AvatarProps, AvatarViewProps } from './types';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -42,7 +44,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
   @computed
   private get _person() {
     if (!this.props.uid) return null;
-    return getEntity(ENTITY_NAME.PERSON, this.props.uid);
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.props.uid);
   }
   @computed
   get bgColor() {
@@ -52,7 +54,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get shortName() {
-    return this._person && this._person.shortName;
+    return (this._person && this._person.shortName) || '';
   }
 
   @computed
@@ -74,7 +76,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
     if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }
-    const { headshotVersion, headshot } = this._person;
+    const { headshotVersion = '', headshot = '' } = this._person;
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );

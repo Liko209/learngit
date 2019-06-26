@@ -71,7 +71,7 @@ async function getThumbnailURLWithType(
     // 2. tif has thumbnail field.
     // 3. gif use original url.
     if (FileItemUtils.isGifItem({ type: item.type })) {
-      url = item.versionUrl || '';
+      url = item.versionUrl;
       return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
     }
 
