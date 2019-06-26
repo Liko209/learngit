@@ -5,16 +5,13 @@
  */
 
 import React from 'react';
-import { MemoryRouter } from 'react-router';
+import { mount } from 'enzyme';
 import { mountWithTheme, asyncTest } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
 import { LeftRail } from '../../message/container/LeftRail';
 import { JuiListNavItem } from 'jui/components';
 import { ConversationListItemText } from 'jui/pattern/ConversationList/ConversationListItemText';
-import * as router from '../../router/module.config';
-import * as app from '../../app/module.config';
-import * as message from '../../message/module.config';
 
 import { App } from '../../app/container';
 import history from '@/history';
@@ -30,10 +27,30 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
   describe('test', () => {
     beforeAll(async () => {
       await sdk.setup();
+
+      const leaveBlocker = require('@/modules/leave-blocker/module.config');
+      const router = require('../../router/module.config');
+      const app = require('../../app/module.config');
+      const message = require('../../message/module.config');
+      const GlobalSearch = require('@/modules/GlobalSearch/module.config');
+      const home = require('@/modules/home/module.config');
+      const featuresFlag = require('@/modules/featuresFlags/module.config');
+      const notification = require('@/modules/notification/module.config');
+      const setting = require('@/modules/setting/module.config');
+
       const jupiter = container.get(Jupiter);
+
+      jupiter.registerModule(leaveBlocker.config);
+      jupiter.registerModule(featuresFlag.config);
       jupiter.registerModule(router.config);
+      jupiter.registerModule(home.config);
       jupiter.registerModule(app.config);
       jupiter.registerModule(message.config);
+      jupiter.registerModule(GlobalSearch.config);
+      jupiter.registerModule(notification.config);
+      jupiter.registerModule(setting.config);
+
+      await jupiter.bootstrap();
     });
 
     afterAll(async () => {
@@ -42,7 +59,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     it('should send post', async () => {
       const url = `/message/${team1._id}`;
       history.push(url);
-      const wrapper = mountWithTheme(<App />);
+      const wrapper = mount(<App />);
       await asyncTest(() => {
         wrapper.update();
         console.log(wrapper.debug());

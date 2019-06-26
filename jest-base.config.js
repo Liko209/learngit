@@ -26,6 +26,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
+    '^@/modules/common/util/lazyComponent$': '<rootDir>/tests/shield/src/mocks/lazyComponent.tsx',
     '^@/store/base/visibilityChangeEvent$': '<rootDir>/tests/shield/src/mocks/visibilityChangeEvent.ts',
     '^@/containers/ThemeProvider$': '<rootDir>/tests/shield/src/mocks/ThemeProvider.tsx',
     '^@/(.*)$': '<rootDir>/application/src/$1',

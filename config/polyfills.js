@@ -87,6 +87,11 @@ if (process.env.NODE_ENV === 'test') {
   // };`
 
   global.fetch = require('jest-fetch-mock');
+
+  global.Notification = {
+    requestPermission: jest.fn(),
+    permission: 'default',
+  };
 }
 
 if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {

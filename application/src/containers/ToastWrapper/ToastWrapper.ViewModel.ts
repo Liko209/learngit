@@ -14,7 +14,7 @@ import { Notification } from '../Notification';
 class ToastWrapperViewModel extends AbstractViewModel {
   @computed
   get toasts(): ToastProps[] {
-    return Notification.data;
+    return Notification.data || [];
   }
 }
 
