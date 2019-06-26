@@ -164,6 +164,7 @@ class StreamController {
   replacePostList(posts: Post[]) {
     this._orderListHandler.replaceAll(posts);
   }
+
   hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }

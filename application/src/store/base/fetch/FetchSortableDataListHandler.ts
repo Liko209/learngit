@@ -26,6 +26,12 @@ import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
 
 type CountChangeCallback = (count: number) => void;
+type HasMore =
+  | boolean
+  | {
+      up: boolean;
+      down: boolean;
+    };
 
 export interface IFetchSortableDataListHandlerOptions<
   Model,
@@ -153,7 +159,10 @@ export class FetchSortableDataListHandler<
 
   async fetchDataBy(
     direction: QUERY_DIRECTION,
-    dataLoader: () => Promise<{ data: Model[]; hasMore: boolean }>,
+    dataLoader: () => Promise<{
+      data: Model[];
+      hasMore: HasMore;
+    }>,
   ) {
     const { data = [], hasMore } = await dataLoader();
     const sortableResult: SortableModel[] = [];
@@ -487,12 +496,23 @@ export class FetchSortableDataListHandler<
     return isPosChanged;
   }
 
-  protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {
-    let inFront = false;
-    if (direction === QUERY_DIRECTION.OLDER) {
-      inFront = true;
+  @action
+  protected handleHasMore(hasMore: HasMore, direction: QUERY_DIRECTION) {
+    switch (typeof direction) {
+      case 'boolean': {
+        this.sortableListStore.setHasMore(
+          hasMore as boolean,
+          direction === QUERY_DIRECTION.OLDER,
+        );
+        break;
+      }
+      case 'object': {
+        const { up, down } = hasMore as { up: boolean; down: boolean };
+        this.sortableListStore.setHasMore(up, true);
+        this.sortableListStore.setHasMore(down, false);
+        break;
+      }
     }
-    this.sortableListStore.setHasMore(hasMore, inFront);
   }
 
   protected handlePageData(result: SortableModel[]) {
