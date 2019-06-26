@@ -36,6 +36,8 @@ export type IBaseQuery = {
   HAPriority?: HA_PRIORITY;
   timeout?: number;
   pathPrefix?: string;
+  channel?: string;
+  method?: NETWORK_METHOD;
 };
 
 export type IQuery = IBaseQuery & {
@@ -167,7 +169,6 @@ export default class NetworkClient {
 
       if (!isDuplicated) {
         this.networkManager.addApiRequest(request);
-
         if (requestHolder) {
           requestHolder.request = request;
         }
@@ -196,6 +197,7 @@ export default class NetworkClient {
       HAPriority,
       timeout,
       pathPrefix,
+      channel,
     } = query;
 
     const finalPathPrefix =
@@ -218,7 +220,8 @@ export default class NetworkClient {
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .setPriority(priority)
-      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
+      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC)
+      .setChannel(channel || '');
   }
 
   http<T>(query: IQuery, requestHolder?: RequestHolder) {
@@ -277,6 +280,14 @@ export default class NetworkClient {
   delete<T>(baseQuery: IBaseQuery) {
     const query = _.extend(baseQuery, { method: NETWORK_METHOD.DELETE });
     return this.http<T>(query);
+  }
+
+  send<T>(baseQuery: IBaseQuery) {
+    return this.http<T>({
+      method: NETWORK_METHOD.GET, // this value is useless if channel is not request
+      ...baseQuery, // if baseQuery has method value it will override the former value
+      data: omitLocalProperties(baseQuery.data || {}),
+    });
   }
 
   private _needCheckDuplicated(method: NETWORK_METHOD) {

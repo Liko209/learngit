@@ -9,28 +9,43 @@ import { SocketClient } from './SocketIOClient';
 import { IRequest, INetworkRequestExecutorListener } from '../../network';
 import SocketRequest from './SocketRequest';
 import { networkLogger } from '../../../log';
+import { SocketResponseBuilder } from './SocketResponseBuilder';
+
+const SOCKET_CHANNEL = {
+  REQUEST: 'request',
+};
+
 class Socket extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener) {
-    super.request(request, listener);
-    const socketRequest = request as SocketRequest;
     const socket = SocketClient.get();
     if (socket) {
-      socket.request(socketRequest).then(
-        (response: SocketResponse) => {
-          this.tasks.delete(request.id);
-          response.request && (response.request.startTime = request.startTime);
-          listener.onSuccess(response);
-        },
-        (response: SocketResponse) => {
-          networkLogger.info('Socket request failed', {
-            status: response.status,
-            statusText: response.statusText,
-          });
-          this.tasks.delete(request.id);
-          response.request && (response.request.startTime = request.startTime);
-          listener.onFailure(response);
-        },
-      );
+      if (request.channel && request.channel !== SOCKET_CHANNEL.REQUEST) {
+        // there is not response for channel 'xxx' except 'request', so resolve it directly
+        socket.send(request.channel, request.data);
+        listener.onSuccess(new SocketResponse(new SocketResponseBuilder()));
+      } else {
+        delete request.channel;
+        super.request(request, listener);
+        const socketRequest = request as SocketRequest;
+        socket.request(socketRequest).then(
+          (response: SocketResponse) => {
+            this.tasks.delete(request.id);
+            response.request &&
+              (response.request.startTime = request.startTime);
+            listener.onSuccess(response);
+          },
+          (response: SocketResponse) => {
+            networkLogger.info('Socket request failed', {
+              status: response.status,
+              statusText: response.statusText,
+            });
+            this.tasks.delete(request.id);
+            response.request &&
+              (response.request.startTime = request.startTime);
+            listener.onFailure(response);
+          },
+        );
+      }
     }
   }
   isNetworkReachable(): boolean {
