@@ -1,9 +1,10 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/SendNewMessage/SendNewMessage.ts","./fixtures/AtMention/AtMention.ts"],
+    "fixtures": ["./fixtures/SendNewMessage/SendNewMessage.ts","./fixtures/AtMention/AtMention.ts","./fixtures/TeamSetting/PostMessage.ts"],
     "include_tags": [
       "JPT-238",
-      "JPT-324"
+      "JPT-324",
+      "JPT-1102"
     ],
     "browsers": [
       "selenium:chrome"
