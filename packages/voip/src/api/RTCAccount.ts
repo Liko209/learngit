@@ -173,7 +173,7 @@ class RTCAccount implements IRTCAccount {
 
   removeCallFromCallManager(uuid: string): void {
     this._callManager.removeCall(uuid);
-    if (this._callManager.callCount() === 0) {
+    if (!this._callManager.callCount()) {
       if (this._postponeProvisioning) {
         rtcLogger.debug(
           LOG_TAG,
@@ -324,7 +324,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _switchBackProxy() {
-    if (this.callCount() > 0) {
+    if (this.callCount()) {
       rtcLogger.debug(
         LOG_TAG,
         "There're active calls. Postpone switch back to main proxy",

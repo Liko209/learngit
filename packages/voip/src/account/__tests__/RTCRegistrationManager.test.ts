@@ -6,6 +6,7 @@
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
+import { kRetryIntervalList } from '../constants';
 
 class MockUserAgent extends EventEmitter2 {
   constructor() {
@@ -123,28 +124,12 @@ describe('RTCRegistrationManager', () => {
 
     it('Should follow back off algorithm for register retry interval[JPT-2304]', () => {
       setup();
-      const expectedInterval = [
-        { min: 2, max: 6 },
-        { min: 10, max: 20 },
-        { min: 20, max: 40 },
-        { min: 40, max: 80 },
-        { min: 80, max: 120 },
-        { min: 80, max: 120 },
-        { min: 80, max: 120 },
-        { min: 80, max: 120 },
-        { min: 80, max: 120 },
-        { min: 120, max: 240 },
-        { min: 240, max: 480 },
-        { min: 480, max: 960 },
-        { min: 960, max: 1920 },
-        { min: 1920, max: 3840 },
-      ];
       let interval = 0;
       for (let i = 0; i < 20; i++) {
         interval = regManager._calculateNextRetryInterval();
-        if (i < expectedInterval.length) {
-          expect(interval).toBeGreaterThanOrEqual(expectedInterval[i].min);
-          expect(interval).toBeLessThanOrEqual(expectedInterval[i].max);
+        if (i < kRetryIntervalList.length) {
+          expect(interval).toBeGreaterThanOrEqual(kRetryIntervalList[i].min);
+          expect(interval).toBeLessThanOrEqual(kRetryIntervalList[i].max);
         } else {
           expect(interval).toBeGreaterThanOrEqual(1920);
           expect(interval).toBeLessThanOrEqual(3840);
