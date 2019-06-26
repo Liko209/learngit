@@ -51,6 +51,7 @@ class BlockViewComponent extends Component<Props> {
           {t('phone.numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt')}
         </JuiDialogContentText>
       ),
+      size: 'small',
       okText: t('phone.block'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
