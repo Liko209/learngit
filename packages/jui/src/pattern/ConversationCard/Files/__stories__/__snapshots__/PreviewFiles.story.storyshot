@@ -1189,6 +1189,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <button
               aria-describedby={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
+              data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
@@ -1334,6 +1335,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <button
               aria-describedby={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
+              data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
@@ -1479,6 +1481,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <button
               aria-describedby={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
+              data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}
@@ -1624,6 +1627,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <button
               aria-describedby={null}
               className="MuiButtonBase-root MuiIconButton-root c13"
+              data-test-automation-id="expand-button"
               disabled={false}
               onBlur={[Function]}
               onClick={[Function]}

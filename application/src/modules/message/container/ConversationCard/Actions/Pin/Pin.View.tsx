@@ -57,6 +57,7 @@ class PinViewComponent extends Component<Props> {
           disableToolTip={shouldDisablePinOption}
           variant="plain"
           data-name="actionBarPin"
+          data-test-automation-id="actionBarPin"
         >
           {isPin ? 'pin' : 'unpin'}
         </JuiIconButton>

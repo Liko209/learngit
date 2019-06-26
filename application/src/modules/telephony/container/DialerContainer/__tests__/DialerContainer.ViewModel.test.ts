@@ -34,6 +34,7 @@ beforeAll(() => {
   dialerContainerViewModel = new DialerContainerViewModel();
   dialerContainerViewModel._telephonyService.setCallerPhoneNumber = jest.fn();
   dialerContainerViewModel._telephonyService.dtmf = jest.fn();
+  dialerContainerViewModel._telephonyService.playBeep = jest.fn();
   dialerContainerViewModel._telephonyService.concatInputString = jest.fn();
   dialerContainerViewModel._telephonyStore.enterFirstLetterThroughKeypad = jest.fn();
 });

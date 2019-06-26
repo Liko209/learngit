@@ -26,7 +26,7 @@ class SearchPhoneGatherer extends BaseGatherer {
     let dialerPage = new DialerPage(passContext);
 
     // pre loaded
-    await this.search(dialerPage);
+    await this.search(dialerPage,  Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -67,8 +67,12 @@ class SearchPhoneGatherer extends BaseGatherer {
     let keyword,
       index = 0;
     while (index < searchCount) {
+      this.clearTmpGatherer(this.metricKeys);
+
       keyword = this.keywords[index++ % this.keywords.length];
       await page.searchByPhone(keyword);
+
+      this.pushGatherer(this.metricKeys);
     }
 
     await page.closeDialer();

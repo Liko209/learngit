@@ -61,13 +61,7 @@ class EntitySourceController<
   }
 
   async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
-    const idsSet = new Set<IdType>();
-    ids.forEach(
-      (id: IdType) => id !== undefined && id !== null && idsSet.add(id),
-    );
-    if (!idsSet.size) {
-      return [];
-    }
+    const idsSet = new Set<IdType>(ids);
     const validIds = [...idsSet];
     const existsEntities = await this.entityPersistentController.batchGet(
       validIds,

@@ -27,7 +27,12 @@ class EditViewComponent extends Component<Props> {
         onClick: this._handleClick,
       };
     return (
-      <JuiMenuItem {...menuItemOnClickProp} icon="edit" disabled={disabled}>
+      <JuiMenuItem
+        {...menuItemOnClickProp}
+        icon="edit"
+        disabled={disabled}
+        data-test-automation-id="message-action-edit"
+      >
         {t('message.action.editPost')}
       </JuiMenuItem>
     );

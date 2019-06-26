@@ -183,9 +183,21 @@ describe('VoicemailFetchController', () => {
     it('should update alive vm and delete invalid vm', async () => {
       const data = {
         records: [
-          { id: 1, availability: 'Alive' },
-          { id: 2, availability: 'Deleted' },
-          { id: 3, availability: 'Purged' },
+          {
+            id: 1,
+            availability: 'Alive',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
+          {
+            id: 2,
+            availability: 'Deleted',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
+          {
+            id: 3,
+            availability: 'Purged',
+            creationTime: '2018-01-19T07:51:50.000Z',
+          },
         ],
         syncInfo: {
           syncType: SYNC_TYPE.FSYNC,
@@ -194,7 +206,12 @@ describe('VoicemailFetchController', () => {
 
       await voicemailFetchController['handleDataAndSave'](data as any);
       expect(entitySourceController.bulkUpdate).toBeCalledWith([
-        { id: 1, availability: 'Alive' },
+        {
+          id: 1,
+          availability: 'Alive',
+          creationTime: '2018-01-19T07:51:50.000Z',
+          __timestamp: 1516348310000,
+        },
       ]);
       expect(entitySourceController.bulkDelete).toBeCalledWith([2, 3]);
     });

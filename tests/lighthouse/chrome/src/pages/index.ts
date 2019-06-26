@@ -8,6 +8,7 @@ import { HomePage } from './homePage';
 import { Page } from './page';
 import { SearchPage } from './searchPage';
 import { DialerPage } from './dialerPage';
+import { PhonePage } from './phonePage';
 
 export {
   ConversationPage,
@@ -15,5 +16,6 @@ export {
   HomePage,
   Page,
   SearchPage,
-  DialerPage
+  DialerPage,
+  PhonePage
 }
