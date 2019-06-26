@@ -343,7 +343,7 @@ test.meta(<ITestMeta>{
     owner: loginUser
   }
 
-  await h(t).withLog(`Given I create meChat`, async () => {
+  await h(t).withLog(`Given I create a Chat`, async () => {
     await h(t).scenarioHelper.resetProfileAndState(loginUser);
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
@@ -367,7 +367,7 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I open the myself chat`, async () => {
+  await h(t).withLog(`When I open the chat`, async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
   });
@@ -382,4 +382,126 @@ test.meta(<ITestMeta>{
     await conversationPage.postItemById(unlikePostId).likeShouldBe(1);
   });
 
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1383'],
+  keywords: ['Like and Unlike'],
+  maintainers: ['potar.he']
+})('Check the member list in tooltip can be synced immediately', async (t) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const anotherUser = users[6];
+  const app = new AppRoot(t);
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    members: [loginUser, anotherUser],
+    owner: loginUser
+  }
+
+
+  let antherUsername;
+  await h(t).withLog(`Given I create a Chat with : {antherUsername}`, async (step) => {
+    step.setMetadata('antherUsername', anotherUser.extension);
+    await h(t).glip(loginUser).init();
+    antherUsername = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    step.updateMetadata({ 'antherUsername': antherUsername });
+  });
+
+  let likedPostId;
+  await h(t).withLog(`And I prepare a post with I and {antherUsername} have liked`, async (step) => {
+    step.setMetadata('antherUsername', antherUsername);
+    likedPostId = await h(t).scenarioHelper.sentAndGetTextPostId('you have already liked', chat, loginUser);
+    await h(t).scenarioHelper.likePost(likedPostId, loginUser);
+    await h(t).scenarioHelper.likePost(likedPostId, anotherUser);
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I open the chat`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+  });
+
+  const postItem = conversationPage.postItemById(likedPostId);
+  await h(t).withLog(`When I hover like button icon on post footer`, async () => {
+    await t.hover(postItem.likeButtonOnFooter);
+  });
+
+  let tooltipText = `You and ${antherUsername} like this`;
+  await h(t).withLog('Then tooltip display "{tooltipText}"', async (step) => {
+    step.setMetadata('tooltipText', tooltipText);
+    await postItem.showTooltip(tooltipText);
+  });
+
+  await h(t).withLog(`When {antherUsername} unlike this post`, async (step) => {
+    step.setMetadata('antherUsername', antherUsername);
+    await h(t).scenarioHelper.unlikePost(likedPostId, anotherUser);
+  });
+
+  await h(t).withLog(`And I hover like button icon on post footer`, async () => {
+    await t.hover(postItem.likeButtonOnFooter);
+  });
+
+  tooltipText = `You like this`;
+  await h(t).withLog('Then tooltip display "{tooltipText}"', async (step) => {
+    step.setMetadata('tooltipText', tooltipText);
+    await postItem.showTooltip(tooltipText);
+  })
+
+  await h(t).withLog(`When {antherUsername} like this post`, async (step) => {
+    step.setMetadata('antherUsername', antherUsername);
+    await h(t).scenarioHelper.likePost(likedPostId, anotherUser);
+  });
+
+  await h(t).withLog(`And I hover like button icon on post footer`, async () => {
+    await t.hover(postItem.likeButtonOnFooter);
+  });
+
+  tooltipText = `You and ${antherUsername} like this`;
+  await h(t).withLog('Then tooltip display "{tooltipText}"', async (step) => {
+    step.setMetadata('tooltipText', tooltipText);
+    await postItem.showTooltip(tooltipText);
+  });
+
+  await h(t).withLog(`When I click like button to unlike this post`, async (step) => {
+    await postItem.clickLikeButtonOnFooter();
+  });
+
+  await h(t).withLog(`And I hover like button icon on post footer`, async () => {
+    await t.hover(postItem.likeButtonOnFooter);
+  });
+
+  tooltipText = `${antherUsername} likes this`;
+  await h(t).withLog('Then tooltip display "{tooltipText}"', async (step) => {
+    step.setMetadata('tooltipText', tooltipText);
+    await postItem.showTooltip(tooltipText);
+  });
+
+  await h(t).withLog(`When I click like button to like this post`, async (step) => {
+    await postItem.clickLikeButtonOnFooter();
+  });
+
+  await h(t).withLog(`And I hover like button icon on post footer`, async () => {
+    await t.hover(postItem.likeButtonOnFooter);
+  });
+
+  tooltipText = `You and ${antherUsername} like this`;
+  await h(t).withLog('Then tooltip display "{tooltipText}"', async (step) => {
+    step.setMetadata('tooltipText', tooltipText);
+    await postItem.showTooltip(tooltipText);
+  });
 });
