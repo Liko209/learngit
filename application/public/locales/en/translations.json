@@ -670,7 +670,8 @@
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
     "recordings": "Recordings",
-    "noVoicemailAvailable": "No voicemail available",
+    "noCallLogAvailable": "No call log",
+    "noVoicemailAvailable": "No voicemail records",
     "prompt": {
       "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
       "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
