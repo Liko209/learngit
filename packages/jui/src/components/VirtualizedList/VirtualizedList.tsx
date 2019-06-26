@@ -28,6 +28,7 @@ import {
   useScroll,
   PartialScrollPosition,
   useForceUpdate,
+  useIsFirstRenderRef,
 } from './hooks';
 import {
   createKeyMapper,
@@ -276,6 +277,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollEffectTriggerRef = useRef(0);
   const prevAtBottomRef = useRef(false);
+  const isFirstRenderRef = useIsFirstRenderRef();
 
   //
   // State
@@ -430,20 +432,31 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Emit visible range change
   //
-  useEffect(() => {
-    if (!isRangeEqual(visibleRange, initialVisibleRange)) {
+  useLayoutEffect(() => {
+    if (isFirstRenderRef.current) {
+      // [THE RANGE PROBLEM]
+      // The first time list rendered, initial visible range was computed
+      // from height/minRowHeight, which is not really represent what
+      // the user can see. Sot, we need to recompute visible range before
+      // Emit visible range change event.
+      onVisibleRangeChange(computeVisibleRange());
+    } else {
       onVisibleRangeChange(visibleRange);
     }
-  },        [
-    visibleRange.startIndex,
-    visibleRange.stopIndex,
-    initialVisibleRange.startIndex,
-    initialVisibleRange.stopIndex,
-  ]);
+  },              [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
 
-  useEffect(() => {
-    onRenderedRangeChange(renderedRange);
-  },        [renderedRange.startIndex, renderedRange.stopIndex]);
+  //
+  // Emit rendered range change
+  //
+  useLayoutEffect(() => {
+    if (isFirstRenderRef.current) {
+      // The first time list rendered, initial rendered range has same problem
+      // as initial visible range. See [THE RANGE PROBLEM] for more.
+      onRenderedRangeChange(computeRenderedRange(computeVisibleRange()));
+    } else {
+      onRenderedRangeChange(renderedRange);
+    }
+  },              [keyMapper(renderedRange.startIndex), keyMapper(renderedRange.stopIndex)]);
 
   //
   // Update prevAtBottom
@@ -453,16 +466,17 @@ const JuiVirtualizedList: RefForwardingComponent<
     const current = (prevAtBottomRef.current = computeAtBottom());
     if (original !== current) onBottomStatusChange(current);
   });
+
   //
   // Ensure no blank area
   //
   useEffect(() => {
     ensureNoBlankArea();
   });
+
   //
   // Scrolling
   //
-
   const handleScroll = (event: React.UIEvent<HTMLElement>) => {
     if (ref.current) {
       if (event.target !== ref.current || ref.current.offsetTop < 0) {

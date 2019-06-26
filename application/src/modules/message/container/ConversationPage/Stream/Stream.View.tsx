@@ -8,7 +8,7 @@ import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger, PerformanceTracer } from 'sdk';
+import { mainLogger } from 'sdk';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
