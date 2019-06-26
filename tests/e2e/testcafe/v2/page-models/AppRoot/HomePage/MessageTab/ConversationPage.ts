@@ -414,7 +414,7 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   get markupTips() {
-    return this.getSelectorByAutomationId('markup-tips');
+    return this.getSelectorByAutomationId('markupTips');
   }
 
   get currentGroupId() {

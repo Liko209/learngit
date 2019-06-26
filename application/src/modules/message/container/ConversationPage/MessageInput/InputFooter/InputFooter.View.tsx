@@ -5,21 +5,38 @@
  */
 
 import React from 'react';
-import { JuiInputFooterContainer } from 'jui/pattern/MessageInput/InputFooter';
+import {
+  JuiInputFooterContainer,
+  JuiInputFooterItem,
+} from 'jui/pattern/MessageInput/InputFooter';
 import { observer } from 'mobx-react';
 import { InputFooterViewProps } from './types';
-import { MarkupTips } from './FooterItems';
+import moize from 'moize';
+import { withTranslation } from 'react-i18next';
 
 @observer
-class InputFooterView extends React.Component<InputFooterViewProps> {
+class InputFooterViewComponent extends React.Component<InputFooterViewProps> {
+  private _getMarkupTips = moize((t, show) => {
+    const content = t('message.markupTips');
+    return (
+      <JuiInputFooterItem
+        show={show}
+        align={'right'}
+        content={content}
+        data-test-automation-id="markupTips"
+      />
+    );
+  });
+
   render() {
-    const { showMarkupTips } = this.props;
+    const { t, showMarkupTips } = this.props;
     return (
       <JuiInputFooterContainer>
-        <MarkupTips show={showMarkupTips} />
+        {this._getMarkupTips(t, showMarkupTips)}
       </JuiInputFooterContainer>
     );
   }
 }
 
+const InputFooterView = withTranslation()(InputFooterViewComponent);
 export { InputFooterView };
