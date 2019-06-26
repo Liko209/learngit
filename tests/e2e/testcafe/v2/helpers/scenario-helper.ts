@@ -22,6 +22,7 @@ class ScenarioHelper {
 
   public async createTeam(team: IGroup): Promise<void> {
     assert(team.owner && team.members, "require owner, members");
+    assert(team.type == 'Team', 'require type: Team');
     const platform = await this.sdkHelper.sdkManager.getPlatform(team.owner);
     const res = await platform.createTeam({
       name: team.name,
@@ -100,6 +101,7 @@ class ScenarioHelper {
   }
 
   public async createOrOpenChat(chat: IGroup) {
+    assert(chat.type == 'DirectMessage' || chat.type == 'Group', "require type: DirectMessage or Group");
     assert(chat.members && chat.owner, "require members and owner");
     const platform = await this.sdkHelper.sdkManager.getPlatform(chat.owner);
     const res = await platform.createOrOpenChat({
@@ -146,7 +148,7 @@ class ScenarioHelper {
   async uploadFile(data: { filePath: string, name?: string, group?: IGroup, operator: IUser }) {
     assert(data.operator && data.filePath, "require operator and filePath");
     const platform = await this.sdkHelper.sdkManager.getPlatform(data.operator);
-    return await platform.uploadFile(data.filePath, data.name, data.group ? data.group.glipId: undefined);
+    return await platform.uploadFile(data.filePath, data.name, data.group ? data.group.glipId : undefined);
   }
 
   async createPostWithTextAndFilesThenGetPostId(data: { filePaths: string | string[], group: IGroup, text?: string, operator: IUser, fileNames?: string | string[] }): Promise<string> {

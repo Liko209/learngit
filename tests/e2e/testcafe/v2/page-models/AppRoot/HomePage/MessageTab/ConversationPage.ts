@@ -681,7 +681,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get editTextArea() {
-    return this.self.find('[data-placeholder="Type new message"]');
+    return this.self.find('.ql-editor');
   }
 
   async editMessage(message: string, options?: TypeActionOptions) {
