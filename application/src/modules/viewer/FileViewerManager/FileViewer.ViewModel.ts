@@ -64,7 +64,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     const { newestCreatorId } = this._item;
     return newestCreatorId
       ? getEntity(ENTITY_NAME.PERSON, newestCreatorId)
-      : null;
+      : undefined;
   }
 
   viewerDestroyer() {
