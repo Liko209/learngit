@@ -19,7 +19,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-726', 'JPT-748', 'JPT-744', 'JPT-745', 'JPT-700'],
   keywords: ['RightRail', 'Layout'],
   maintainers: ['henry.xu'],
-})('The UI of right shelf / open and hidden right panel / check tooltip / resize window / keep status', async t => {
+})('UI of right shelf layout / open and hidden  / tooltip / resize window / keep status', async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
   await h(t).withLog(`Given I login Jupiter with an extension`, async (step) => {
