@@ -8,7 +8,7 @@ export class AddTeamMembers extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('DialogTitle').withText('Add Team Members');
+    return this.getSelectorByAutomationId('DialogTitle').withText('Add team members');
   }
 
   get memberInput() {
