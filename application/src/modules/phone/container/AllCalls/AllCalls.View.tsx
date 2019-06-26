@@ -89,7 +89,11 @@ class AllCallsViewComponent extends Component<Props> {
     const { listHandler, isError, onErrorReload } = this.props;
 
     return (
+<<<<<<< HEAD
       <PhoneWrapper height={this._height}>
+=======
+      <PhoneWrapper>
+>>>>>>> feature/FIJI-4686
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (
