@@ -13,6 +13,12 @@ export class GlipPostDao extends GlipBaseDao<GlipPost> {
       .toArray();
   }
 
+  async getPostsByPostIds(ids: number[]) {
+    return await this.createQuery()
+      .anyOf(this.unique, ids)
+      .toArray();
+  }
+
   getPosts() {
     return this.lokiCollection.find();
   }

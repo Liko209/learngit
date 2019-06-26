@@ -31,7 +31,18 @@ export class MockSocketServer {
     });
   }
 
-  emitPartial(partial: object) {
-    this.emit('partial', partial);
+  emitPartial(partial: object, hint?: object) {
+    this.socket.emit(
+      'partial',
+      JSON.stringify({
+        body: {
+          partial: true,
+          timestamp: Date.now(),
+          objects: [[{ ...partial }]],
+          ...{ hint },
+        },
+      }),
+    );
+    setTimeout(() => {});
   }
 }

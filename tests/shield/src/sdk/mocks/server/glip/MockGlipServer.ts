@@ -37,10 +37,16 @@ import {
   GlipGroupState,
   GlipState,
   GlipGroup,
+  GlipProfile,
+  GlipModel,
 } from './types';
 import { genPostId, parseState } from './utils';
 import { GlipDataHelper } from './data/data';
 import { STATE_KEYS } from './constants';
+import pathToRegexp from 'path-to-regexp';
+import { createDebug } from 'sdk/__tests__/utils';
+import { GlipBaseDao } from './GlipBaseDao';
+const debug = createDebug('MockGlipServer');
 
 interface IGlipApi extends IApi {
   '/api/login': {
@@ -61,13 +67,24 @@ interface IGlipApi extends IApi {
   '/api/post': {
     post: Handler;
   };
-  '/api/group': {
+  '/api/group/:id?': {
     post: Handler;
-  };
-  '/api/save_state_partial': {
     put: Handler;
   };
-  '*': VerbHandler;
+  '/api/team/:id?': {
+    post: Handler;
+    put: Handler;
+  };
+  '/api/profile/:id?': {
+    get: Handler;
+    put: Handler;
+  };
+  // '/api/group/:id': {
+  // };
+  '/api/save_state_partial/:id?': {
+    put: Handler;
+  };
+  '/(.*)': VerbHandler;
 }
 
 export class MockGlipServer implements IMockServer {
@@ -87,22 +104,33 @@ export class MockGlipServer implements IMockServer {
 
   api: IGlipApi = {
     '/api/login': { put: request => this.login(request) },
+    '/api/profile/:id?': {
+      get: async (...args) => await this.getProfile(...args),
+      put: async (...args) => await this.updateProfile(...args),
+    },
     '/api/posts': { get: async request => await this.getPosts(request) },
     '/api/posts_items_by_ids': {
       get: async request => await this.getPostsItemsByIds(request),
     },
     '/api/post': { post: async request => await this.createPost(request) },
-    '/api/group': { post: async request => await this.createGroup(request) },
-    '/api/save_state_partial': {
+    '/api/group/:id?': {
+      post: async request => await this.createGroup(request),
+      put: async (...args) => await this.updateGroup(...args),
+    },
+    '/api/team/:id?': {
+      post: async request => await this.createTeam(request),
+      put: async (...args) => await this.updateTeam(...args),
+    },
+    '/api/save_state_partial/:id?': {
       put: async request => await this.saveStatePartial(request),
     },
     '/v1.0/desktop/initial': {
       get: async request => await this.getInitialData(request),
     },
     '/v1.0/desktop/remaining': {
-      get: request => createResponse({ status: 500, statusText: 'Mock error' }),
+      get: request => createResponse({ status: 400, statusText: 'Mock error' }),
     },
-    '*': {
+    '/(.*)': {
       get: request => this.commonHandler(request),
       put: request => this.commonHandler(request),
       post: request => this.commonHandler(request),
@@ -112,12 +140,30 @@ export class MockGlipServer implements IMockServer {
 
   constructor() {
     const adapter: IResponseAdapter = new ResponseAdapter();
-    this._router = new Router((routePath, path) => {
-      return routePath === path || routePath === '*';
-    },                        adapter);
+    this._router = new Router(adapter);
     this._router.applyApi(this.api);
     this.socketServer = new MockSocketServer();
+    this.socketServer.on('connection', () => {
+      console.log(
+        'TCL: =-=-=-=-=-=-MockGlipServer -> constructor -> connection',
+      );
+    });
     this.init();
+  }
+
+  private _doPartialUpdate<T extends GlipModel>(
+    dao: GlipBaseDao<T>,
+    model: T,
+    cb?: (result: T) => void,
+  ) {
+    const id = Number(model['_id'] || model['id']);
+    const updateTarget = dao.getById(id);
+    if (updateTarget) {
+      const result = dao.put(_.merge({}, updateTarget, model, { _id: id }));
+      cb && cb(result);
+      return result;
+    }
+    throw 'do partial update fail';
   }
 
   setDataHelper(dataHelper: GlipDataHelper) {
@@ -208,11 +254,15 @@ export class MockGlipServer implements IMockServer {
   }
 
   getPostsItemsByIds = async (request: IRequest) => {
+    const post_ids = request.params['post_ids']
+      .split(',')
+      .map((it: string) => Number(it));
+    debug('getPostsItemsByIds %O', { post_ids });
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
       request,
       data: {
-        posts: await this.postDao.getPostsByGroupId(group_id),
+        posts: await this.postDao.getPostsByPostIds(post_ids),
         items: await this.itemDao.getItemsByGroupId(group_id),
       },
     });
@@ -235,44 +285,18 @@ export class MockGlipServer implements IMockServer {
     groupState.post_cursor += 1;
     groupState.read_through = serverPost._id;
     this.groupStateDao.put(groupState);
-    // emit partial serverGroup
     this.socketServer.emitEntityCreate(serverPost);
-    this.socketServer.emit(
-      'partial',
-      JSON.stringify({
-        body: {
-          timestamp: Date.now(),
-          partial: true,
-          hint: {
-            post_creator_ids: {
-              [String(serverGroup._id)]: serverPost.creator_id,
-            },
-          },
-          objects: [[{ ...serverGroup }]],
-        },
-      }),
-    );
-    this.socketServer.emit(
-      'partial',
-      JSON.stringify({
-        body: {
-          timestamp: Date.now(),
-          partial: true,
-          hint: {
-            post_creator_ids: {
-              [String(serverGroup._id)]: serverPost.creator_id,
-            },
-          },
-          objects: [[{ ...groupState }]],
-        },
-      }),
-    );
+    this.socketServer.emitPartial(serverGroup, {
+      post_creator_ids: {
+        [String(serverGroup._id)]: serverPost.creator_id,
+      },
+    });
+    this.socketServer.emitPartial(groupState, {
+      post_creator_ids: {
+        [String(serverGroup._id)]: serverPost.creator_id,
+      },
+    });
 
-    // create post
-    // message post
-    // update group cursor
-    // update person state
-    // mockServer.emit('partial')
     return createResponse({
       request,
       data: updateResult,
@@ -280,16 +304,17 @@ export class MockGlipServer implements IMockServer {
   }
 
   saveStatePartial = async (request: IRequest<GlipState>) => {
-    console.log('TCL: MockGlipServer -> saveStatePartial -> request', request);
+    debug('handle saveStatePartial -> request');
     const groupStates = parseState(request.data);
     if (groupStates && groupStates[0]) {
-      console.log(
-        'TCL: MockGlipServer -> saveStatePartial -> groupStates[0]',
-        groupStates[0],
-      );
+      debug('saveStatePartial -> groupStates[0] %O', groupStates[0]);
       return createResponse({
         request,
-        data: this.groupStateDao.put(groupStates[0]),
+        data: this._doPartialUpdate(
+          this.groupStateDao,
+          groupStates[0],
+          result => this.socketServer.emitPartial(result),
+        ),
       });
     }
     return createResponse({
@@ -305,6 +330,63 @@ export class MockGlipServer implements IMockServer {
     return createResponse({
       request,
       data: serverGroup,
+    });
+  }
+
+  updateGroup = async (request: IRequest<GlipGroup>, routeParams: object) => {
+    assert(routeParams['id'], 'update group lack ok id');
+    return createResponse({
+      request,
+      data: this._doPartialUpdate(
+        this.groupDao,
+        { ...request.data, _id: routeParams['id'] },
+        result => this.socketServer.emitPartial(result),
+      ),
+    });
+  }
+
+  createTeam = async (request: IRequest<GlipGroup>) => {
+    const serverTeam = this.dataHelper.team.factory.build(request.data);
+    this.groupDao.put(serverTeam);
+    this.socketServer.emitEntityCreate(serverTeam);
+    return createResponse({
+      request,
+      data: serverTeam,
+    });
+  }
+
+  updateTeam = async (request: IRequest<GlipGroup>, routeParams: object) => {
+    assert(routeParams['id'], 'update team lack ok id');
+    return createResponse({
+      request,
+      data: this._doPartialUpdate(
+        this.groupDao,
+        { ...request.data, _id: routeParams['id'] },
+        result => this.socketServer.emitPartial(result),
+      ),
+    });
+  }
+
+  getProfile = async (request: IRequest<GlipProfile>, routeParams: object) => {
+    assert(routeParams['id'], 'get profile lack ok id');
+    return createResponse({
+      request,
+      data: this.profileDao.getById(Number(routeParams['id'])),
+    });
+  }
+
+  updateProfile = async (
+    request: IRequest<GlipProfile>,
+    routeParams: object,
+  ) => {
+    assert(routeParams['id'], 'update profile lack ok id');
+    return createResponse({
+      request,
+      data: this._doPartialUpdate(
+        this.profileDao,
+        { ...request.data, _id: routeParams['id'] },
+        result => this.socketServer.emitPartial(result),
+      ),
     });
   }
 

@@ -2,15 +2,21 @@ import _ from 'lodash';
 import { INetworkRequestExecutorListener, IRequest } from '../types';
 import { createResponse, isPromise } from '../utils';
 import { Handler, IResponseAdapter } from './types';
+import { createDebug } from 'sdk/__tests__/utils';
+const debug = createDebug('ResponseAdapter');
 
 export class ResponseAdapter implements IResponseAdapter {
   adapt = (handler: Handler) => {
-    return (request: IRequest, cb: INetworkRequestExecutorListener) => {
+    return (
+      request: IRequest,
+      cb: INetworkRequestExecutorListener,
+      routeParams: object,
+    ) => {
       let handlerResp;
       try {
-        handlerResp = handler(request);
+        handlerResp = handler(request, routeParams);
       } catch (error) {
-        console.log('TCL: ResponseAdapter -> adapt -> error', error);
+        debug('handle error', error);
         cb.onFailure(
           createResponse({
             request,
@@ -28,8 +34,7 @@ export class ResponseAdapter implements IResponseAdapter {
             cb.onSuccess(response);
           })
           .catch(error => {
-            console.log('TCL: ResponseAdapter -> adapt -> error', error);
-
+            debug('handle error', error);
             cb.onFailure(
               createResponse({
                 request,

@@ -8,7 +8,8 @@ export { IRequest, IResponse, INetworkRequestExecutorListener };
 export type RouterHandler = (
   request: IRequest,
   cb: INetworkRequestExecutorListener,
-) => void;
+  routeParams: object,
+) => void | Promise<void>;
 export interface IRouter {
   dispatch: RouterHandler;
   use(method: string, path: string, handler: RouterHandler): this;
@@ -17,7 +18,7 @@ export interface IRouter {
 export type PathMatcher = (routePath: string, path: string) => boolean;
 
 export interface IMockServer {
-  handle: (request: IRequest, cb: INetworkRequestExecutorListener) => void;
+  handle: RouterHandler;
 }
 
 export interface IStore<T extends object, Id extends number | string = number> {

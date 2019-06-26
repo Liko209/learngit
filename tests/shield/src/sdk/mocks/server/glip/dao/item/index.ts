@@ -1,6 +1,7 @@
 import { IDatabase } from 'foundation/db';
 import { GlipBaseDao } from '../../GlipBaseDao';
 import { GlipGroup, GlipItem } from '../../types';
+import _ from 'lodash';
 
 export class GlipItemDao extends GlipBaseDao<GlipItem> {
   constructor(db: IDatabase) {
@@ -13,20 +14,9 @@ export class GlipItemDao extends GlipBaseDao<GlipItem> {
       .toArray();
   }
 
-  getItemsByPostId(id: number) {
-    return this.createQuery()
-      .contain('post_ids', id)
-      .toArray();
+  getItemsByPostId(ids: number[]) {
+    return this.lokiCollection.where(
+      item => _.intersection(item.post_ids, ids).length > 0,
+    );
   }
-  // getItemsByGroupId(id: number) {
-  //   return this.collection.where(value => {
-  //     return value.group_ids.includes(id);
-  //   });
-  // }
-
-  // getItemsByPostId(id: number) {
-  //   return this.collection.where(value => {
-  //     return value.post_ids.includes(id);
-  //   });
-  // }
 }
