@@ -80,6 +80,7 @@ const FileInfo = styled(MuiListItemText)`
 `;
 
 const FileActionsWrapper = styled.span`
+  margin-left: ${spacing(2)};
   display: flex;
   & > * {
     margin: 0 ${spacing(2)} 0 0;
@@ -146,18 +147,25 @@ const CardFileActions = styled(MuiCardActions)`
 type ImageCardProps = {
   width: number;
   height: number;
+  transparent?: boolean;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const WrapperImageCard = ({ width, height, ...rest }: ImageCardProps) => (
-  <JuiCard {...rest} />
-);
+const WrapperImageCard = ({
+  width,
+  height,
+  transparent,
+  ...rest
+}: ImageCardProps) => <JuiCard {...rest} />;
 
 type ImageFileInfoProps = ImageCardProps & JuiTypographyProps;
 
-const WrapperImageFileInfo = ({ width, height, ...rest }: ImageCardProps) => (
-  <CardFileInfo {...rest} />
-);
+const WrapperImageFileInfo = ({
+  width,
+  height,
+  transparent,
+  ...rest
+}: ImageCardProps) => <CardFileInfo {...rest} />;
 
 const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   position: absolute;
@@ -190,7 +198,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
     border-radius: 0;
     align-items: center;
     justify-content: center;
-    background-color: ${palette('grey', '100')};
+    background-color: ${props =>
+      props.transparent ? null : palette('grey', '100')};
     box-shadow: none;
   }
   &:hover ${ImageFileInfo} {

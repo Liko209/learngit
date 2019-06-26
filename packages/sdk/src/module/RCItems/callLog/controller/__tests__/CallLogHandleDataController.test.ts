@@ -9,6 +9,8 @@ import { CALL_RESULT } from '../../constants';
 import { notificationCenter } from 'sdk/service';
 import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
 import { TELEPHONY_STATUS } from 'sdk/module/rcEventSubscription/constants';
+import { CallLog } from '../../entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 describe('CallLogHandleDataController', () => {
   let controller: CallLogHandleDataController;
@@ -22,12 +24,30 @@ describe('CallLogHandleDataController', () => {
     bulkUpdate: jest.fn(),
     getEntityNotificationKey: jest.fn(),
   } as any;
+  const mockAccountService = {
+    userConfig: {
+      getGlipUserId: jest.fn(),
+    },
+  } as any;
+  const mockPersonService = {
+    getById: jest.fn(),
+    getPhoneNumbers: jest.fn(),
+  } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
 
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.ACCOUNT_SERVICE) {
+        return mockAccountService;
+      }
+      if (data === ServiceConfig.PERSON_SERVICE) {
+        return mockPersonService;
+      }
+      return;
+    });
     controller = new CallLogHandleDataController(
       mockConfig,
       mockSourceController,
@@ -150,6 +170,7 @@ describe('CallLogHandleDataController', () => {
 
   describe('handleRCPresenceEvent', () => {
     it('should do nothing when can not get sync token', async () => {
+      controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue(undefined);
       const mockData = {
         activeCalls: [],
@@ -160,6 +181,7 @@ describe('CallLogHandleDataController', () => {
     });
 
     it('should parse and save/notify pseudo data', async () => {
+      controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue('token');
       const mockData = {
         activeCalls: [
@@ -173,6 +195,14 @@ describe('CallLogHandleDataController', () => {
             terminationType: 'final',
             startTime: '12356',
           },
+          {
+            sessionId: 'sessionId3',
+            direction: CALL_DIRECTION.INBOUND,
+            telephonyStatus: TELEPHONY_STATUS.NoCall,
+            terminationType: 'final',
+            startTime: '123567',
+            from: 'anonymous',
+          },
         ],
       } as any;
       mockConfig.getPseudoCallLogInfo.mockReturnValue({
@@ -181,6 +211,11 @@ describe('CallLogHandleDataController', () => {
       controller['_getCallLogBySessionId'] = jest
         .fn()
         .mockReturnValue(undefined);
+      mockSourceController.bulkUpdate = jest
+        .fn()
+        .mockImplementation((data: CallLog[]) => {
+          expect(data[1].from).toBeUndefined();
+        });
 
       await controller.handleRCPresenceEvent(mockData);
       expect(mockConfig.getPseudoCallLogInfo).toBeCalled();
@@ -190,7 +225,62 @@ describe('CallLogHandleDataController', () => {
           id: 'sessionId2Outbound',
           result: 'Unknown',
         },
+        sessionId3: {
+          id: 'sessionId3Inbound',
+          result: 'Unknown',
+        },
       });
+    });
+  });
+
+  describe('_isSelfCall', () => {
+    it('should return true when call from my self', async () => {
+      const mockNumber = '12345679';
+      mockPersonService.getById.mockReturnValue('data');
+      mockPersonService.getPhoneNumbers.mockImplementation(
+        (person: any, func: any) => {
+          func({ id: mockNumber });
+        },
+      );
+      expect(
+        await controller['_isSelfCall']({
+          direction: CALL_DIRECTION.INBOUND,
+          from: mockNumber,
+        } as any),
+      ).toBeTruthy();
+    });
+
+    it('should return true when call to my self', async () => {
+      const mockNumber = '12345679';
+      mockPersonService.getById.mockReturnValue('data');
+      mockPersonService.getPhoneNumbers.mockImplementation(
+        (person: any, func: any) => {
+          func({ id: mockNumber });
+        },
+      );
+      expect(
+        await controller['_isSelfCall']({
+          direction: CALL_DIRECTION.OUTBOUND,
+          to: mockNumber,
+        } as any),
+      ).toBeTruthy();
+    });
+
+    it('should return false when is call from/to my self', async () => {
+      const mockNumber = '12345679';
+      mockPersonService.getById.mockReturnValue('data');
+      mockPersonService.getPhoneNumbers.mockImplementation(
+        (person: any, func: any) => {
+          func({ id: '' });
+        },
+      );
+      expect(
+        await controller['_isSelfCall']({
+          direction: CALL_DIRECTION.INBOUND,
+          from: mockNumber,
+          to: mockNumber,
+        } as any),
+      ).toBeFalsy();
     });
   });
 });

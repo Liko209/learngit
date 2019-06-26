@@ -9,13 +9,14 @@ import { IEntitySourceController } from 'sdk/framework/controller/interface/IEnt
 import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
 import { mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE } from '../constants';
+import { CALL_RESULT, LOCAL_INFO_TYPE } from '../constants';
 import _ from 'lodash';
 import { SYNC_TYPE } from '../../sync';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
 import { notificationCenter } from 'sdk/service';
+import { CALL_DIRECTION } from '../../constants';
 
 const SYNC_NAME = 'AllCallLogFetchController';
 
@@ -34,16 +35,24 @@ class AllCallLogFetchController extends AbstractFetchController {
     const updateResult: CallLog[] = [];
     const deleteResult: string[] = [];
     const replaceResult: Map<string, CallLog> = new Map();
-    let pseudos = {};
-
-    if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-      await this.sourceController.clear();
-    } else {
-      pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
-    }
+    const pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
 
     data.records.forEach((callLog: CallLog) => {
-      callLog.__source = CALL_LOG_SOURCE.ALL;
+      callLog.__localInfo = 0;
+      if (
+        callLog.result === CALL_RESULT.MISSED ||
+        callLog.result === CALL_RESULT.VOICEMAIL
+      ) {
+        callLog.__localInfo =
+          callLog.__localInfo |
+          LOCAL_INFO_TYPE.IS_MISSED |
+          LOCAL_INFO_TYPE.IS_INBOUND;
+      } else {
+        callLog.direction === CALL_DIRECTION.INBOUND &&
+          (callLog.__localInfo =
+            callLog.__localInfo | LOCAL_INFO_TYPE.IS_INBOUND);
+      }
+
       callLog.__timestamp = Date.parse(callLog.startTime);
       callLog.__deactivated = false;
       const pseudoInfo = pseudos[callLog.sessionId];

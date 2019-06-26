@@ -10,16 +10,13 @@ import { IEntitySourceController } from 'sdk/framework/controller/interface/IEnt
 import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
 import { mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE } from '../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../constants';
 import _ from 'lodash';
 import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
 import { SYNC_TYPE } from '../../sync';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { CallLogService } from '../service';
-import { Nullable } from 'sdk/types';
 
 const SYNC_NAME = 'MissedCallLogFetchController';
 
@@ -36,22 +33,16 @@ class MissedCallLogFetchController extends AbstractFetchController {
     data: RCItemSyncResponse<CallLog>,
   ): Promise<CallLog[]> {
     const dao = daoManager.getDao(CallLogDao);
-    let oldestTime: Nullable<number> = null;
+    const oldestTime = await dao.queryOldestTimestamp();
     const result: CallLog[] = [];
-
-    if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-      await this.sourceController.clear();
-      await ServiceLoader.getInstance<CallLogService>(
-        ServiceConfig.CALL_LOG_SERVICE,
-      ).userConfig.setPseudoCallLogInfo({});
-    } else {
-      oldestTime = await dao.queryOldestTimestamp();
-    }
 
     data.records.forEach((callLog: CallLog) => {
       const timestamp = Date.parse(callLog.startTime);
       if (!oldestTime || oldestTime > timestamp) {
-        callLog.__source = CALL_LOG_SOURCE.MISSED;
+        callLog.__localInfo =
+          LOCAL_INFO_TYPE.IS_INBOUND |
+          LOCAL_INFO_TYPE.IS_MISSED |
+          LOCAL_INFO_TYPE.IS_MISSED_SOURCE;
         callLog.__timestamp = timestamp;
         callLog.__deactivated = false;
         result.push(_.cloneDeep(callLog));

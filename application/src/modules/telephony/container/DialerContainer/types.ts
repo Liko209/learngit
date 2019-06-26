@@ -33,6 +33,7 @@ type DialerContainerViewProps = {
   dialerFocused: boolean;
   shouldEnterContactSearch: boolean;
   shouldCloseToolTip: boolean;
+  enteredDialer: boolean;
 };
 
 type DialerContainerViewState = {

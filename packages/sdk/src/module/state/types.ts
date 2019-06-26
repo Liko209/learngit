@@ -41,6 +41,12 @@ type GroupBadge = Badge & {
   isTeam?: boolean;
 };
 
+enum INIT_STATUS {
+  IDLE,
+  INITIALIZING,
+  INITIALIZED,
+}
+
 export {
   StateHandleTask,
   GroupStateHandleTask,
@@ -48,4 +54,5 @@ export {
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
   GroupBadge,
+  INIT_STATUS,
 };

@@ -5,7 +5,7 @@
  */
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import JuiSlider from '@material-ui/lab/Slider';
+import { RuiSlider } from 'rcui/components/Forms';
 import styled from '../../foundation/styled-components';
 import { width, spacing, palette, typography } from '../../foundation/utils';
 import { JuiAudioMode, JuiAudioProgressProps } from './types';
@@ -15,10 +15,14 @@ const StyledClock = styled.span`
   color: ${palette('grey', '500')};
 `;
 
-const StyledSlider = styled(JuiSlider)`
+const StyledSlider = styled(RuiSlider)`
   && {
     margin: ${spacing(0, 4)};
     width: ${width(30)};
+  }
+
+  > div > div {
+    transition: none;
   }
 `;
 

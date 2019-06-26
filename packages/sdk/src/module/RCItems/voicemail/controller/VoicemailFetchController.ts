@@ -18,12 +18,12 @@ import {
 } from '../../constants';
 import { SYNC_TYPE } from '../../sync';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { FetchResult } from '../../types';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
 import { VoicemailBadgeController } from './VoicemailBadgeController';
+import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const MODULE_NAME = 'VoicemailFetchController';
 
@@ -45,7 +45,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     direction = QUERY_DIRECTION.OLDER,
     anchorId?: number,
   ): Promise<FetchResult<Voicemail>> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     let hasMore = true;
     mainLogger
       .tags(this.syncName)
@@ -60,13 +60,16 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     );
 
     performanceTracer.trace({
-      key: PERFORMANCE_KEYS.FETCH_VOICEMAILS_FROM_DB,
+      key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS_FROM_DB,
       count: results.length,
     });
 
     // only request from server when has no data in local
     if (results.length < limit) {
       hasMore = await this.syncConfig.getHasMore();
+      mainLogger
+        .tags(this.syncName)
+        .info('fetch size not enough, need fetch from server: ', { hasMore });
       if (hasMore) {
         results = results.concat(
           await this.doSync(
@@ -74,6 +77,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
             direction === QUERY_DIRECTION.OLDER
               ? SYNC_DIRECTION.OLDER
               : SYNC_DIRECTION.NEWER,
+            false,
           ),
         );
         this._badgeController.handleVoicemails(results);
@@ -90,7 +94,7 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
       );
 
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.FETCH_VOICEMAILS,
+      key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS,
       count: results.length,
     });
     return {
@@ -110,16 +114,20 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
   }
 
   protected async requestClearAllAndRemoveLocalData(): Promise<void> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     mainLogger.tags(MODULE_NAME).log('clearMessages');
     await RCItemApi.deleteAllMessages({ type: RC_MESSAGE_TYPE.VOICEMAIL });
     performanceTracer.trace({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS_FROM_SERVER,
+      key: VOICEMAIL_PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS_FROM_SERVER,
     });
-    await this._entitySourceController.clear();
+    await this.removeLocalData();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS,
+      key: VOICEMAIL_PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS,
     });
+  }
+
+  protected async removeLocalData(): Promise<void> {
+    await this._entitySourceController.clear();
   }
 
   protected async handleDataAndSave(
@@ -133,11 +141,8 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
       const deactivatedVmIds: number[] = [];
       const normalVms: Voicemail[] = [];
 
-      if (data.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-        await this._entitySourceController.clear();
-      }
-
       data.records.forEach(vm => {
+        vm.__timestamp = Date.parse(vm.creationTime);
         if (vm.availability === MESSAGE_AVAILABILITY.ALIVE) {
           normalVms.push(vm);
         } else {

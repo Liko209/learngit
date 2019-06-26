@@ -14,8 +14,7 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
-  TOP_BAR_HEIGHT,
-  VOICEMAIL_HEADER,
+  CALL_HISTORY_USED_HEIGHT,
 } from '../Voicemail/config';
 
 type Props = WithTranslation & AllCallsViewProps;
@@ -68,7 +67,7 @@ class AllCallsViewComponent extends Component<Props> {
           listHandler={listHandler}
           reverse={true}
           InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: height - TOP_BAR_HEIGHT - VOICEMAIL_HEADER,
+            height: height - CALL_HISTORY_USED_HEIGHT,
             noRowsRenderer: <div>{t('telephony.nocalllogs')}</div>, // TODO add empty page
           })}
         >

@@ -8,6 +8,7 @@ import { IconButtonSize } from '../../components/Buttons';
 
 type JuiConversationPageMemberProps = {
   onClick(event: React.MouseEvent): void;
+  automationId?: string;
   ariaLabel: string;
   title: string;
   children: ReactElement;

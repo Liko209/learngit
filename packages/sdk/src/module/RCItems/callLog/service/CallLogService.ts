@@ -27,7 +27,7 @@ class CallLogService extends EntityBaseService<CallLog, string> {
   private _missedCallUserConfig: RCItemUserConfig;
 
   constructor() {
-    super(false, daoManager.getDao(CallLogDao));
+    super({ isSupportedCache: false }, daoManager.getDao(CallLogDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL]: this
@@ -35,6 +35,11 @@ class CallLogService extends EntityBaseService<CallLog, string> {
         [SUBSCRIPTION.MISSED_CALLS]: this._handleMissedCallEvent,
       }),
     );
+  }
+
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
   }
 
   onStarted() {
@@ -118,6 +123,11 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     return await this.callLogController.allCallLogFetchController.clearAll();
   }
 
+  async resetFetchControllers() {
+    await this.callLogController.allCallLogFetchController.internalReset();
+    await this.callLogController.missedCallLogFetchController.internalReset();
+  }
+
   private _handleMissedCallEvent = async (payload: MissedCallEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
       payload,
@@ -128,6 +138,10 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
       payload,
     );
+  }
+
+  private _initBadge = async () => {
+    await this.callLogController.callLogBadgeController.initializeUnreadCount();
   }
 }
 

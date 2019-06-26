@@ -4,6 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export {
-  default as ThemeProvider,
-} from 'rcui/foundation/styles/ThemeProvider';
+export { default as ThemeProvider } from 'rcui/foundation/styles/ThemeProvider';

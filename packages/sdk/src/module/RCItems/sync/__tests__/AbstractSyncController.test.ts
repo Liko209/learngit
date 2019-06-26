@@ -11,6 +11,7 @@ import { IdModel } from 'sdk/framework/model';
 import { SYNC_DIRECTION } from '../../constants';
 import { RCItemUserConfig } from '../../config';
 import { ERROR_CODES_SDK } from 'sdk/error';
+import { notificationCenter } from 'sdk/service';
 
 jest.mock('../../config');
 
@@ -25,6 +26,7 @@ class TestSyncController extends AbstractSyncController<IdModel> {
   isTokenInvalidError = jest.fn();
   canUpdateSyncToken = jest.fn();
   requestClearAllAndRemoveLocalData = jest.fn();
+  removeLocalData = jest.fn();
   handleDataAndSave = jest.fn();
   sendSyncRequest = jest.fn();
 }
@@ -66,7 +68,7 @@ describe('AbstractSyncController', () => {
       syncController['_doFSync'] = jest.fn().mockReturnValueOnce([mockData]);
 
       expect(
-        await syncController.doSync(true, SYNC_DIRECTION.NEWER, 12),
+        await syncController.doSync(true, SYNC_DIRECTION.NEWER, false, 12),
       ).toEqual([mockData]);
       expect(syncController.hasPermission).toBeCalledTimes(1);
       expect(syncController.getSyncToken).toBeCalledTimes(1);
@@ -83,7 +85,7 @@ describe('AbstractSyncController', () => {
         .mockResolvedValueOnce([mockData]);
 
       expect(
-        await syncController.doSync(false, SYNC_DIRECTION.NEWER, 12),
+        await syncController.doSync(false, SYNC_DIRECTION.NEWER, false, 12),
       ).toEqual([mockData]);
       expect(syncController.hasPermission).toBeCalledTimes(1);
       expect(syncController.getSyncToken).toBeCalledTimes(1);
@@ -93,6 +95,7 @@ describe('AbstractSyncController', () => {
         SYNC_TYPE.ISYNC,
         SYNC_DIRECTION.NEWER,
         12,
+        false,
       );
       expect(syncController['_lastSyncNewerTime']).toBeGreaterThan(0);
     });
@@ -114,6 +117,34 @@ describe('AbstractSyncController', () => {
       expect(syncController.canDoSilentSync).toBeCalledTimes(1);
       expect(syncController['_lastSyncNewerTime']).toBeGreaterThan(0);
       expect(silentSyncProcessorHandler.addProcessor).toBeCalledTimes(1);
+    });
+  });
+
+  describe('_handleSuccessResponse', () => {
+    const data = [{ id: 1 }, { id: 2 }];
+    beforeEach(() => {
+      notificationCenter.emitEntityUpdate = jest.fn();
+      syncController.handleDataAndSave = jest.fn().mockResolvedValue(data);
+    });
+    it('should notify entity update when need notify', async () => {
+      await syncController['_handleSuccessResponse'](
+        {
+          records: data,
+          syncInfo: {
+            syncTime: '2019-06-12T02:32:24.003Z',
+            syncToken: 'w',
+            syncType: 'ISync' as any,
+          },
+        },
+        true,
+        100,
+        true,
+      );
+
+      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
+        'entity',
+        data,
+      );
     });
   });
 

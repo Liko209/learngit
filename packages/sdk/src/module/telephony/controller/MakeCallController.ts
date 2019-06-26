@@ -9,16 +9,9 @@ import {
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
 } from '../types';
-import { PhoneParserUtility } from '../../../utils/phoneParser';
-import { PersonService } from '../../person';
-import { ContactType } from '../../person/types';
 import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-
-enum RCN11Reason {
-  N11_101 = 'N11-101',
-  N11_102 = 'N11-102',
-}
+import { PhoneNumberService } from 'sdk/module/phoneNumber';
 
 class MakeCallController {
   constructor() {}
@@ -69,79 +62,29 @@ class MakeCallController {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    const phoneNumService = ServiceLoader.getInstance<PhoneNumberService>(
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+    );
     const specialNumber = await rcInfoService.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
+        // We have no emergency address for now, all N11 numbers
+        // are not allowed to dial out
         const record = specialNumber.records[index];
-        if (record.phoneNumber !== phoneNumber) {
-          continue;
-        }
-        if (record.features.voip.enabled) {
+        if (record.phoneNumber === phoneNumber) {
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
-        if (record.features.voip.reason.id === RCN11Reason.N11_101) {
-          result = MAKE_CALL_ERROR_CODE.N11_101;
+        const e164N11Num = await phoneNumService.getE164PhoneNumber(
+          record.phoneNumber,
+        );
+        if (e164N11Num === phoneNumber) {
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
-        if (record.features.voip.reason.id === RCN11Reason.N11_102) {
-          result = MAKE_CALL_ERROR_CODE.N11_102;
-          break;
-        }
-        result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
       }
     }
     return result;
-  }
-
-  private _isLoggedInRCOnlyMode() {
-    // It's not implemented right now
-    // TODO FIJI-3967
-    return false;
-  }
-
-  private async _checkShortPhoneNumber(phoneNumber: string) {
-    let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      false,
-    );
-    if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
-      do {
-        const personService = ServiceLoader.getInstance<PersonService>(
-          ServiceConfig.PERSON_SERVICE,
-        );
-        const result = await personService.matchContactByPhoneNumber(
-          phoneNumber,
-          ContactType.GLIP_CONTACT,
-        );
-        if (result || this._isLoggedInRCOnlyMode()) {
-          break;
-        }
-        res = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
-      } while (0);
-    }
-    return res;
-  }
-
-  private async _checkInternationalCallsPermission(phoneNumber: string) {
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      false,
-    );
-
-    if (
-      phoneParserUtility &&
-      (await phoneParserUtility.isInternationalDialing())
-    ) {
-      if (
-        !(await this._isRCFeaturePermissionEnabled(
-          FEATURE_PERMISSIONS.INTERNATIONAL_CALLING,
-        ))
-      ) {
-        return MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION;
-      }
-    }
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
   async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
@@ -156,14 +99,6 @@ class MakeCallController {
         break;
       }
       result = await this._checkVoipN11Number(e164PhoneNumber);
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = await this._checkShortPhoneNumber(e164PhoneNumber);
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = await this._checkInternationalCallsPermission(e164PhoneNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }

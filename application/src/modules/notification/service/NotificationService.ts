@@ -11,7 +11,7 @@ import {
   INotificationPermission,
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
-import { SWNotification } from '../agent/SWNotification';
+// import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
@@ -24,6 +24,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+
 class NotificationService implements INotificationService {
   @INotificationPermission
   private _permission: INotificationPermission;
@@ -33,7 +34,8 @@ class NotificationService implements INotificationService {
   private _maximumTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
-    this._notificationDistributors.set('sw', new SWNotification());
+    // temp solution for solving crash problem
+    // this._notificationDistributors.set('sw', new SWNotification());
     this._notificationDistributors.set('desktop', new DeskTopNotification());
   }
 
@@ -69,13 +71,13 @@ class NotificationService implements INotificationService {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
 
-  async show(title: string, opts: NotificationOpts) {
-    if (!this.shouldShowNotification) {
+  async show(title: string, opts: NotificationOpts, force?: boolean) {
+    if (!this.shouldShowNotification && !force) {
       return;
     }
     const { id, scope } = opts.data;
     const tag = `${scope}.${id}`;
-    const customOps = { ...opts, tag, silent: true };
+    const customOps = { silent: true, ...opts, tag };
     logger.info(`prepare notification for ${tag}`);
     let titleFormatted = title;
 

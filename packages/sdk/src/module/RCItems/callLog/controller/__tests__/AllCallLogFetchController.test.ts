@@ -6,10 +6,11 @@
 
 import { AllCallLogFetchController } from '../AllCallLogFetchController';
 import { mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_RESULT, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 import { notificationCenter } from 'sdk/service';
+import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -49,8 +50,13 @@ describe('AllLogFetchController', () => {
       const mockTime = '2011-10-05T14:48:00.000Z';
       const mockData = {
         records: [
-          { id: '1', startTime: mockTime, sessionId: 'sessionId1' },
-          { id: '2', startTime: mockTime },
+          {
+            id: '1',
+            startTime: mockTime,
+            sessionId: 'sessionId1',
+            result: CALL_RESULT.MISSED,
+          },
+          { id: '2', startTime: mockTime, direction: CALL_DIRECTION.OUTBOUND },
         ],
         syncInfo: {
           syncType: SYNC_TYPE.ISYNC,
@@ -66,53 +72,21 @@ describe('AllLogFetchController', () => {
           id: '1',
           startTime: mockTime,
           sessionId: 'sessionId1',
-          __source: CALL_LOG_SOURCE.ALL,
+          result: CALL_RESULT.MISSED,
+          __localInfo: LOCAL_INFO_TYPE.IS_INBOUND | LOCAL_INFO_TYPE.IS_MISSED,
           __timestamp: Date.parse(mockTime),
           __deactivated: false,
         },
         {
           id: '2',
           startTime: mockTime,
-          __source: CALL_LOG_SOURCE.ALL,
+          direction: CALL_DIRECTION.OUTBOUND,
+          __localInfo: 0,
           __timestamp: Date.parse(mockTime),
           __deactivated: false,
         },
       ]);
       expect(mockSourceController.bulkDelete).toBeCalledWith(['pseudo1']);
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
-    });
-
-    it('should clear data when sync type is FSYNC', async () => {
-      const mockTime = '2011-10-05T14:48:00.000Z';
-      const mockData = {
-        records: [
-          { id: '1', startTime: mockTime, sessionId: 'sessionId1' },
-          { id: '2', startTime: mockTime },
-        ],
-        syncInfo: {
-          syncType: SYNC_TYPE.FSYNC,
-        },
-      } as any;
-      notificationCenter.emitEntityReplace = jest.fn();
-
-      expect(await controller['handleDataAndSave'](mockData)).toEqual([
-        {
-          id: '1',
-          startTime: mockTime,
-          sessionId: 'sessionId1',
-          __source: CALL_LOG_SOURCE.ALL,
-          __timestamp: Date.parse(mockTime),
-          __deactivated: false,
-        },
-        {
-          id: '2',
-          startTime: mockTime,
-          __source: CALL_LOG_SOURCE.ALL,
-          __timestamp: Date.parse(mockTime),
-          __deactivated: false,
-        },
-      ]);
-      expect(mockSourceController.clear).toBeCalled();
       expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
     });
   });

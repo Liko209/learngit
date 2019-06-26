@@ -19,9 +19,7 @@ describe('LeftNav.View', () => {
     const props = {
       history: { listen: jest.fn(), push: history.push },
       location: { pathname: '/message/123' },
-      icons: {
-        get: () => [],
-      },
+      iconGroups: [[], []],
     } as any;
     let view: any;
     beforeEach(() => {

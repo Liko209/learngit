@@ -27,7 +27,7 @@ class StateService extends EntityBaseService<GroupState>
   private _stateController: StateController;
   private _myStateConfig: MyStateConfig;
   constructor(private _groupService: IGroupService) {
-    super(true, daoManager.getDao(GroupStateDao));
+    super({ isSupportedCache: true }, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
@@ -46,6 +46,17 @@ class StateService extends EntityBaseService<GroupState>
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
       );
     });
+  }
+
+  onLogin() {
+    super.onLogin();
+    this._initBadge();
+  }
+
+  private _initBadge = async () => {
+    await this.getStateController()
+      .getTotalUnreadController()
+      .initializeTotalUnread();
   }
 
   protected getStateController(): StateController {

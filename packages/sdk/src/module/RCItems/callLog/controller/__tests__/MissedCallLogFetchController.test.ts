@@ -7,7 +7,7 @@
 import { MissedCallLogFetchController } from '../MissedCallLogFetchController';
 import { mainLogger } from 'foundation';
 import { daoManager } from 'sdk/dao';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -69,45 +69,14 @@ describe('MissedCallLogFetchController', () => {
         {
           id: '1',
           startTime: mockTime1,
-          __source: CALL_LOG_SOURCE.MISSED,
+          __localInfo:
+            LOCAL_INFO_TYPE.IS_INBOUND |
+            LOCAL_INFO_TYPE.IS_MISSED |
+            LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
           __timestamp: Date.parse(mockTime1),
           __deactivated: false,
         },
       ]);
-    });
-
-    it('should clear data when sync type is FSYNC', async () => {
-      const mockTime1 = '2011-10-05T14:48:00.000Z';
-      const mockTime2 = '2011-10-05T15:48:00.000Z';
-      const mockData = {
-        records: [
-          { id: '1', startTime: mockTime1 },
-          { id: '2', startTime: mockTime2 },
-        ],
-        syncInfo: {
-          syncType: SYNC_TYPE.FSYNC,
-        },
-      } as any;
-      daoManager.getDao = jest.fn();
-
-      expect(await controller['handleDataAndSave'](mockData)).toEqual([
-        {
-          id: '1',
-          startTime: mockTime1,
-          __source: CALL_LOG_SOURCE.MISSED,
-          __timestamp: Date.parse(mockTime1),
-          __deactivated: false,
-        },
-        {
-          id: '2',
-          startTime: mockTime2,
-          __source: CALL_LOG_SOURCE.MISSED,
-          __timestamp: Date.parse(mockTime2),
-          __deactivated: false,
-        },
-      ]);
-      expect(mockSourceController.clear).toBeCalled();
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
     });
   });
 

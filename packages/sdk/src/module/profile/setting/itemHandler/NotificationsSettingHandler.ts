@@ -21,6 +21,7 @@ import { ENTITY, APPLICATION } from 'sdk/service';
 import { Pal } from 'sdk/pal';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import { mainLogger } from 'foundation';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   DesktopNotificationsSettingModel
@@ -112,8 +113,11 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     }
   }
   private async _getWantNotifications() {
-    const profile = await this._profileService.getProfile();
-    let wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    const profile = await this._profileService.getProfile().catch(error => {
+      mainLogger.warn('_getWantNotifications failed');
+    });
+    let wantNotifications =
+      profile && profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
     if (wantNotifications === undefined) {
       wantNotifications = true;
     }

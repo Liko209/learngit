@@ -32,13 +32,16 @@ class DiscontinuousPostController {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
-    const localPosts = await this._getPostFromLocal(ids);
+    const validIds = ids.filter(
+      (id: number) => id !== null && id !== undefined,
+    );
+    const localPosts = await this._getPostFromLocal(validIds);
     const result = {
       posts: localPosts.filter((post: Post) => !post.deactivated),
       items: await itemService.getByPosts(localPosts),
     };
 
-    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    const restIds = _.difference(validIds, localPosts.map(({ id }) => id));
     if (restIds.length) {
       const remoteData = await PostAPI.requestByIds(restIds);
       let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) =>

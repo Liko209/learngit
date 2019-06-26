@@ -5,7 +5,6 @@
  */
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiViewerDocument } from '../ViewerDocument';
 
 type ScaleType = number;
@@ -107,6 +106,6 @@ const ViewerDocument = () => {
   );
 };
 
-storiesOf('Pattern/Viewer', module)
-  .addDecorator(withInfoDecorator(JuiViewerDocument, { inline: true }))
-  .add('ViewerDocument', () => <ViewerDocument />);
+storiesOf('Pattern/Viewer', module).add('ViewerDocument', () => (
+  <ViewerDocument />
+));

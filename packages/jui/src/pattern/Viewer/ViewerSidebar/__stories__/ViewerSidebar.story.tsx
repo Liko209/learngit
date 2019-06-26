@@ -6,7 +6,6 @@
 
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiViewerSidebar } from '../ViewerSidebar';
 
 const ViewerSidebar = () => {
@@ -52,6 +51,6 @@ const ViewerSidebar = () => {
   );
 };
 
-storiesOf('Pattern/Viewer', module)
-  .addDecorator(withInfoDecorator(JuiViewerSidebar, { inline: true }))
-  .add('ViewerSidebar', () => <ViewerSidebar />);
+storiesOf('Pattern/Viewer', module).add('ViewerSidebar', () => (
+  <ViewerSidebar />
+));

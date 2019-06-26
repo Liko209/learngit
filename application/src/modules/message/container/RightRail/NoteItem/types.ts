@@ -15,6 +15,7 @@ type NoteItemProps = {
   title: string;
   subTitle: string;
   disabled?: boolean;
+  id: number;
 };
 
 export { NoteItemProps, NoteProps };

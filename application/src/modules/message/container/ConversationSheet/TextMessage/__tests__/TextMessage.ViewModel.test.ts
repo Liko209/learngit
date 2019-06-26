@@ -48,10 +48,15 @@ const mockPersonData = {
   userDisplayName: 'Person name',
 };
 
+const mockCallData = {
+  callId: '1',
+};
+
 const mockMap = {
   [ENTITY_NAME.POST]: mockPostData,
   [ENTITY_NAME.GROUP]: mockGroupData,
   [ENTITY_NAME.PERSON]: mockPersonData,
+  [ENTITY_NAME.CALL]: mockCallData,
 };
 
 let vm: TextMessageViewModel;

@@ -17,6 +17,10 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-title-left');
   }
 
+  get titleLabel() {
+    return this.getSelectorByAutomationId('telephony-dialer-title-left');
+  }
+
   get header() {
     return this.getSelectorByAutomationId('telephony-dialer-header');
   }
@@ -191,6 +195,23 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-park-menu-item');
   }
 
+  // forward
+  get forwardActionMenuItem() {
+    return this.getSelectorByAutomationId('telephony-forward-menu-item');
+  }
+
+  get forwardListFirstItem() {
+    return this.getSelectorByAutomationId('forward-list-0-item');
+  }
+
+  get customForwardItem() {
+    return this.getSelectorByAutomationId('custom-forward');
+  }
+
+  get forwardActionButton() {
+    return this.getSelectorByAutomationId('telephony-forward-btn');
+  }
+
   // inbound call
   get sendToVoiceMailButton() {
     return this.getSelectorByAutomationId('telephony-voice-mail-btn');
@@ -205,7 +226,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get dialButton() {
-    return this.getSelectorByAutomationId('telephony-end-btn');
+    return this.getSelectorByAutomationId('telephony-dial-btn');
   }
 
   async keysRecordShouldBe(text: string) {
@@ -312,6 +333,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickReplyWithWillCallBackEntryButton() {
+    await this.t.hover(this.replyWithWillCallBackEntry);
     await this.t.click(this.replyWithWillCallBackEntry);
   }
 
@@ -332,7 +354,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get callerIdSelector() {
-    return this.getSelectorByAutomationId('callerIdSelector', this.self);
+    return this.getSelectorByAutomationId('caller-id-selector', this.self);
   }
 
   async currentCallerIdShoulebe(text: string) {
@@ -359,6 +381,31 @@ export class TelephonyDialog extends BaseWebComponent {
   async clickParkActionButton() {
     await this.t.click(this.parkActionMenuItem);
   }
+
+  // Forward
+  async hoverForwardButton() {
+    await this.t.hover(this.forwardActionMenuItem);
+  }
+
+  async clickForwardListFirstButton() {
+    await this.t.click(this.forwardListFirstItem);
+  }
+
+  async clickCustomForwardButton() {
+    await this.t.click(this.customForwardItem);
+  }
+
+  async hoverForwardActionButton() {
+    await this.t.hover(this.forwardActionButton);
+  }
+
+  async clickForwardActionButton() {
+    await this.t.click(this.forwardActionButton);
+  }
+
+  async existForwardTitle(text: string) {
+    await this.t.expect(this.titleLabel.withText(text).exists).ok();
+  }
 }
 
 class CallerIdList extends BaseWebComponent {
@@ -367,11 +414,11 @@ class CallerIdList extends BaseWebComponent {
   }
 
   get callerIds() {
-    return this.self.find('li').filter('[data-value]');
+    return this.self.find('li');
   }
 
   async selectByValue(value: string) {
-    await this.t.click(this.callerIds.filter(`[data-value="${value}"]`));
+    await this.t.click(this.callerIds.filter(`[value="${value}"]`));
   }
 
   async selectNth(n: number) {
@@ -401,7 +448,7 @@ class ContactSearchList extends BaseWebComponent {
     await this.t.click(this.searchResults.nth(n))
   }
 
-  get hasDirectDial(){
+  get hasDirectDial() {
     return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
   }
 }
@@ -426,6 +473,10 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get unMuteButton() {
     return this.buttonOfIcon('mic_off');
+  }
+
+  async hoverUnMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 
   async clickUnMuteButton() {

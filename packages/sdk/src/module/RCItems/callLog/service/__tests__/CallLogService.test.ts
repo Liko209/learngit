@@ -22,14 +22,19 @@ jest.mock('../../controller/CallLogController', () => {
       clearAll: jest.fn(),
       requestSync: jest.fn(),
       fetchCallLogs: jest.fn(),
+      internalReset: jest.fn(),
     },
     missedCallLogFetchController: {
       requestSync: jest.fn(),
       fetchCallLogs: jest.fn(),
+      internalReset: jest.fn(),
     },
     callLogHandleDataController: {
       handleMissedCallEvent: jest.fn(),
       handleRCPresenceEvent: jest.fn(),
+    },
+    callLogBadgeController: {
+      initializeUnreadCount: jest.fn(),
     },
   };
   return {
@@ -132,6 +137,18 @@ describe('CallLogService', () => {
     });
   });
 
+  describe('resetFetchControllers', () => {
+    it('resetFetchControllers', async () => {
+      await callLogService.resetFetchControllers();
+      expect(
+        callLogController.allCallLogFetchController.internalReset,
+      ).toBeCalled();
+      expect(
+        callLogController.missedCallLogFetchController.internalReset,
+      ).toBeCalled();
+    });
+  });
+
   describe('_handleMissedCallEvent', () => {
     it('_handleMissedCallEvent', async () => {
       const mockData = 'mockData' as any;
@@ -148,6 +165,15 @@ describe('CallLogService', () => {
       await callLogService['_handleRCPresenceEvent'](mockData);
       expect(
         callLogController.callLogHandleDataController.handleRCPresenceEvent,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_initBadge', () => {
+    it('_initBadge', async () => {
+      await callLogService['_initBadge']();
+      expect(
+        callLogController.callLogBadgeController.initializeUnreadCount,
       ).toBeCalled();
     });
   });

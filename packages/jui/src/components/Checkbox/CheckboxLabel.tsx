@@ -29,6 +29,7 @@ const styles = {
 };
 
 type CheckboxLabelProps = {
+  automationId?: string;
   checked: boolean;
   label: string;
   handleChange(event: React.ChangeEvent<{}>, checked: boolean): void;
@@ -60,9 +61,17 @@ class CheckboxWithLabel extends React.Component<CheckboxLabelProps> {
   }
 
   render() {
+    const { automationId } = this.props;
+
     return (
       <FormControlLabel
-        control={<Checkbox checked={this._checked} onChange={this.onChange} />}
+        control={(
+          <Checkbox
+            data-test-automation-id={automationId}
+            checked={this._checked}
+            onChange={this.onChange}
+          />
+        )}
         label={this._label}
       />
     );

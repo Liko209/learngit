@@ -12,11 +12,6 @@ import { Markdown } from 'glipdown';
 
 class URLParser extends PostParser implements IPostParser {
   type = ParserType.URL;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.EMOJI,
-    ParserType.FILE_NAME,
-  ];
   content: ParseContent;
 
   constructor(public options: URLParserOption) {
@@ -25,7 +20,7 @@ class URLParser extends PostParser implements IPostParser {
 
   getReplaceElement(strValue: string) {
     const execResult = this.getRegexp().exec(strValue);
-    if (!execResult) {
+    if (!execResult || !execResult[0]) {
       return strValue;
     }
     const maybeEmail = execResult[2];

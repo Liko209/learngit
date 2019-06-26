@@ -16,21 +16,17 @@ import {
   SearchedResultData,
   SearchRequestInfo,
 } from './types';
-import { SearchAPI, ContentSearchParams } from 'sdk/api/glip/search';
-import { transformAll } from 'sdk/service/utils';
-import {
-  GlipTypeUtil,
-  TypeDictionary,
-  PERFORMANCE_KEYS,
-  PerformanceTracer,
-} from 'sdk/utils';
-import { mainLogger } from 'foundation';
+import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
+import { transformAll } from '../../../../service/utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import {
   ERROR_TYPES,
   ErrorParserHolder,
   JNetworkError,
   ERROR_CODES_NETWORK,
 } from 'sdk/error';
+import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 const LOG_TAG = 'PostSearchController';
 const SEARCH_TIMEOUT = 60 * 1000;
@@ -72,7 +68,7 @@ class PostSearchController {
   private async _searchPosts(
     options: ContentSearchParams,
   ): Promise<SearchedResultData> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     let results = await this._requestSearchPosts(options);
     if (
@@ -91,7 +87,7 @@ class PostSearchController {
         );
       results = await this._searchUntilMeetSize(results, options.scroll_size);
     }
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_POST });
+    performanceTracer.end({ key: POST_PERFORMANCE_KEYS.SEARCH_POST });
     mainLogger.tags(LOG_TAG).log('searchPosts, return result = ', {
       options,
       postLen: results.posts.length,
@@ -172,7 +168,7 @@ class PostSearchController {
   private async _scrollSearchPosts(
     requestId: number,
   ): Promise<SearchedResultData> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     let result = await this._requestScrollSearchPosts(requestId);
     const info = this._queryInfos.get(requestId);
@@ -189,7 +185,9 @@ class PostSearchController {
         );
       result = await this._searchUntilMeetSize(result, info.scrollSize);
     }
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SCROLL_SEARCH_POST });
+    performanceTracer.end({
+      key: POST_PERFORMANCE_KEYS.SCROLL_SEARCH_POST,
+    });
 
     mainLogger.tags(LOG_TAG).log('scrollSearchPosts, return result = ', {
       postLen: result.posts.length,

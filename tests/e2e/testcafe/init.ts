@@ -156,15 +156,17 @@ function writeTestLog(testLogFile: string, t: TestController) {
 }
 
 // inject external service into test case
-export function setupCase(accountType: string) {
+export function setupCase(accountType: string, needDeleted: boolean = false) {
   return async (t: TestController) => {
     h(t).turnOnNetwork();
+    t['testRun']['startTime'] = new Date();
     t.ctx.runnerOpts = RUNNER_OPTS;
 
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
-      accountType
+      accountType,
+      needDeleted
     );
 
     await h(t).sdkHelper.setup(

@@ -34,13 +34,13 @@ type JuiIconographyProps = {
   iconColor?: IconColor;
   iconSize?: IconSize;
   children?: string;
-  symbol?: svgSymbol;
+  symbol?: SvgSymbol;
   useLoading?: boolean;
   loadingSize?: number;
   desc?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
-type svgSymbol = {
+type SvgSymbol = {
   id: string;
   url: string;
   viewBox: string;
@@ -105,4 +105,4 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
 JuiIconographyComponent.displayName = 'JuiIconography';
 
 const JuiIconography = React.memo(JuiIconographyComponent);
-export { JuiIconographyProps, JuiIconography };
+export { JuiIconographyProps, JuiIconography, SvgSymbol };

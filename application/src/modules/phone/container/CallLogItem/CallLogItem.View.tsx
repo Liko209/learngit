@@ -44,7 +44,7 @@ class CallLogItemViewComponent extends Component<Props> {
           <StyledContactWrapper>
             <ContactInfo
               caller={caller}
-              readStatus={READ_STATUS.READ}
+              readStatus={isUnread ? READ_STATUS.UNREAD : READ_STATUS.READ}
               didOpenMiniProfile={didOpenMiniProfile}
               isMissedCall={isMissedCall}
               direction={direction}
@@ -52,7 +52,6 @@ class CallLogItemViewComponent extends Component<Props> {
           </StyledContactWrapper>
           <StyledCallLogStatusWrapper>
             <CallLogStatus
-              isUnread={isUnread}
               icon={icon}
               callType={t(callType)}
               duration={duration}

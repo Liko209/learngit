@@ -24,7 +24,7 @@ import { postTimestamp } from '@/utils/date';
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioMode } from '../types';
+import { JuiAudioMode, JuiAudioStatus } from '../types';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
@@ -117,21 +117,19 @@ describe('VoicemailItemViewModel', () => {
     @mockEntity({
       attachments: [
         {
+          id: 1,
           type: ATTACHMENT_TYPE.AUDIO_RECORDING,
         },
       ],
     })
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      expect(vm.audio).toBeUndefined();
-      when(
-        () => !!vm.audio,
-        () => {
-          expect(vm.audio).toEqual({
-            type: ATTACHMENT_TYPE.AUDIO_RECORDING,
-          });
-        },
-      );
+      expect(vm.audio).toEqual({
+        type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+        downloadUrl: '',
+        startTime: 0,
+        id: 1,
+      });
     }
   }
 
@@ -170,11 +168,13 @@ describe('VoicemailItemViewModel', () => {
       expect(vm.mode).toBeUndefined();
     }
 
-    @test('should be FULL mode if selected')
+    @test('should be FULL mode if selected and startTime > 0')
     @mockEntity({
       attachments: [
         {
-          type: ATTACHMENT_TYPE.TEXT,
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
       ],
     })
@@ -182,33 +182,44 @@ describe('VoicemailItemViewModel', () => {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
       phoneStore.setVoicemailId(1);
-      expect(vm.mode).toBeUndefined();
-      when(
-        () => !!vm.mode,
-        () => {
-          expect(vm.mode).toEqual(JuiAudioMode.FULL);
-        },
-      );
+      phoneStore.updateAudio(1, {
+        startTime: 1,
+      });
+      expect(vm.mode).toEqual(JuiAudioMode.FULL);
     }
 
-    @test('should be MINI mode if not selected')
+    @test('should be MINI mode if startTime === 0')
     @mockEntity({
       attachments: [
         {
-          type: ATTACHMENT_TYPE.TEXT,
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
       ],
     })
     t3() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(2);
-      when(
-        () => !!vm.mode,
-        () => {
-          expect(vm.mode).toEqual(JuiAudioMode.MINI);
+      phoneStore.setVoicemailId(1);
+      expect(vm.mode).toEqual(JuiAudioMode.MINI);
+    }
+
+    @test('should be MINI mode if not selected')
+    @mockEntity({
+      attachments: [
+        {
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          startTime: 0,
         },
-      );
+      ],
+    })
+    t4() {
+      const vm = new VoicemailItemViewModel({ id: 1 });
+      const phoneStore = container.get(PhoneStore);
+      phoneStore.setVoicemailId(2);
+      expect(vm.mode).toEqual(JuiAudioMode.MINI);
     }
   }
 
@@ -237,6 +248,45 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
+  class onBeforeAction {
+    @test('should be buildDownloadUrl if before start')
+    @mockEntity({
+      attachments: [
+        {
+          id: 1,
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+          uri: 'www.google.com',
+        },
+      ],
+    })
+    @mockService(
+      voicemailService,
+      'buildDownloadUrl',
+      'www.google.com?token=token',
+    )
+    async t1() {
+      const vm = new VoicemailItemViewModel({ id: 1 });
+      await vm.onBeforeAction(JuiAudioStatus.PLAY);
+      when(
+        () => !!vm.audio,
+        () => {
+          expect(voicemailService.buildDownloadUrl).toHaveBeenCalledWith(
+            'www.google.com',
+          );
+          const phoneStore = container.get(PhoneStore);
+          expect(phoneStore.audioCache.get(1)).toEqual({
+            id: 1,
+            type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+            uri: 'www.google.com',
+            startTime: 0,
+            downloadUrl: 'www.google.com?token=token',
+          });
+        },
+      );
+    }
+  }
+
+  @testable
   class onBeforePlay {
     @test(
       'should be set voicemailId and read if voicemail not selected and to play audio [JPT-2218]',
@@ -255,7 +305,7 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class updateAudioUri {
+  class onError {
     @test('should call flash toast if load error [JPT-2225]')
     @mockEntity({
       attachments: [],
@@ -263,7 +313,7 @@ describe('VoicemailItemViewModel', () => {
     async t1() {
       jest.spyOn(Notification, 'flashToast').mockImplementation();
       const vm = new VoicemailItemViewModel({ id: 1 });
-      await vm.updateAudioUri();
+      await vm.onError();
       expect(Notification.flashToast).toHaveBeenCalledWith({
         message: 'phone.prompt.playVoicemailLoadError',
         autoHideDuration: 3000,
@@ -272,36 +322,6 @@ describe('VoicemailItemViewModel', () => {
         dismissible: false,
         messageAlign: ToastMessageAlign.LEFT,
       });
-    }
-
-    @test('should return undefined if audio')
-    @mockEntity({
-      attachments: [],
-    })
-    async t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const ret = await vm.updateAudioUri();
-      expect(ret).toBeUndefined();
-    }
-
-    @test('should return undefined if audio')
-    @mockEntity({
-      attachments: [
-        {
-          type: ATTACHMENT_TYPE.TEXT,
-        },
-      ],
-    })
-    @mockService(voicemailService, 'buildDownloadUrl')
-    async t3() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      await vm.updateAudioUri();
-      when(
-        () => !!vm.audio,
-        () => {
-          expect(voicemailService.buildDownloadUrl).toHaveBeenCalled();
-        },
-      );
     }
   }
 
@@ -321,17 +341,13 @@ describe('VoicemailItemViewModel', () => {
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
-      when(
-        () => !!vm.audio,
-        () => {
-          vm.updateStartTime(123);
-          const audio = phoneStore.audioCache.get(1);
-          expect(audio).toEqual({
-            type: ATTACHMENT_TYPE.TEXT,
-            startTime: 123,
-          });
-        },
-      );
+      vm.updateStartTime(123);
+      const audio = phoneStore.audioCache.get(1);
+      expect(audio).toEqual({
+        type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+        startTime: 123,
+        downloadUrl: '',
+      });
     }
   }
 
