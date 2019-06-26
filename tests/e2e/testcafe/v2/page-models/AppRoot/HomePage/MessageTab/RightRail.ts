@@ -20,6 +20,14 @@ export class RightRail extends BaseWebComponent {
     return this.self.find('#right-rail-header').child().nth(0);
   }
 
+  async shouldBeFolded() {
+    await this.t.expect(this.self.clientWidth).eql(0);
+  }
+
+  async shouldBeExpanded() {
+    await this.t.expect(this.self.clientWidth).gt(0);
+  }
+
   async expand() {
     await this.t.click(this.foldStatusButton);
   }

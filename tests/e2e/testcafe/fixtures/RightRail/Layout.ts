@@ -16,7 +16,7 @@ fixture('RightRail/Layout')
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-726', 'JPT-748', 'JPT-744', 'JPT-745'],
+  caseIds: ['JPT-726', 'JPT-748', 'JPT-744', 'JPT-745', 'JPT-700'],
   keywords: ['RightRail', 'Layout'],
   maintainers: ['henry.xu'],
 })('The UI of right shelf / open and hidden right panel / check tooltip / resize window', async t => {
@@ -67,16 +67,40 @@ test.meta(<ITestMeta>{
     await t.expect(rightRail.self.clientWidth).eql(0);
   }, true);
 
-  const resolutions = [[500, 300], [600, 400], [700, 500], [800, 600]];
+  const resolutions = [[500, 300], [600, 400], [700, 500], [800, 600], [1280, 720]];
   for (const resolution of resolutions) {
     await h(t).withLog(`When I resize window to ${resolution.join('x')}`, async () => {
       await t.resizeWindow(resolution[0], resolution[1]);
     });
-
     await h(t).withLog('Then right shelf should still be folded', async () => {
-      await t.expect(rightRail.self.clientWidth).eql(0);
+      await rightRail.shouldBeFolded();
     });
   }
+
+  await h(t).withLog('When I switch to another conversation', async () => {
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+  });
+
+  await h(t).withLog('Then right shelf should still be folded', async () => {
+    await rightRail.shouldBeFolded();
+  });
+
+  await h(t).withLog('When I switch to another tab and back again', async () => {
+    await app.homePage.leftPanel.dashboardEntry.enter();
+    await app.homePage.leftPanel.messagesEntry.enter();
+  });
+
+  await h(t).withLog('Then right shelf should still be folded', async () => {
+    await rightRail.shouldBeFolded();
+  });
+
+  await h(t).withLog('When I refresh the web page', async () => {
+    await app.reload();
+  });
+
+  await h(t).withLog('Then right shelf should still be folded', async () => {
+    await rightRail.shouldBeFolded();
+  });
 
   await h(t).withLog('When I hover on expand button', async () => {
     await t.hover(rightRail.expandStatusButton);
@@ -84,7 +108,7 @@ test.meta(<ITestMeta>{
 
   const expandButtonTooltip = 'Show details';
   await h(t).withLog(`Then I should find a tooltip with content: "${expandButtonTooltip}"`, async () => {
-    await t.expect(app.tooltip.textContent).eql(expandButtonTooltip);
+    await rightRail.shouldBeFolded();
   }, true);
 
   await h(t).withLog('When I click expand button', async () => {
@@ -92,8 +116,33 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then right shelf should be expanded', async () => {
-    await t.expect(rightRail.self.clientWidth).gt(0);
+    await rightRail.shouldBeExpanded();
   }, true);
+
+  await h(t).withLog('When I switch to another conversation', async () => {
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).enter();
+  });
+
+  await h(t).withLog('Then right shelf should still be expanded', async () => {
+    await rightRail.shouldBeExpanded();
+  });
+
+  await h(t).withLog('When I switch to another tab and back again', async () => {
+    await app.homePage.leftPanel.dashboardEntry.enter();
+    await app.homePage.leftPanel.messagesEntry.enter();
+  });
+
+  await h(t).withLog('Then right shelf should still be expanded', async () => {
+    await rightRail.shouldBeExpanded();
+  });
+
+  await h(t).withLog('When I refresh the web page', async () => {
+    await app.reload();
+  });
+
+  await h(t).withLog('Then right shelf should still be expanded', async () => {
+    await rightRail.shouldBeExpanded();
+  });
 
   await h(t).withLog('When I hover on fold button', async () => {
     await t.hover(rightRail.expandStatusButton);
