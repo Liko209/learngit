@@ -4,24 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import {
-  CallerIdSelectorProps,
-  CallerIdSelector,
-  JuiContainer,
-  DialPad,
-} from 'jui/pattern/Dialer';
-import { RuiTooltipProps, RuiTooltip } from 'rcui/components/Tooltip';
+import { JuiContainer, DialPad } from 'jui/pattern/Dialer';
+import { RuiTooltipProps } from 'rcui/components/Tooltip';
 import { DialBtn } from '../../DialBtn';
 import { ForwardBtn } from '../../Forward/ForwardBtn';
 import { DialerContainerViewProps } from '../types';
 import { isEqual } from 'lodash';
+import {
+  CallerIdSelectorProps,
+  CallerIdSelector,
+} from '../../CallerIdSelector';
 
 type Props = {
-  callerIdProps: CallerIdSelectorProps;
-  tooltipProps: Pick<
-    RuiTooltipProps,
-    Exclude<keyof RuiTooltipProps, 'children'>
-  >;
+  callerIdProps: {
+    tooltipProps: Pick<
+      RuiTooltipProps,
+      Exclude<keyof RuiTooltipProps, 'children' | 'title'>
+    >;
+    callerIdProps: CallerIdSelectorProps;
+  };
 } & Partial<DialerContainerViewProps>;
 
 const emptyFunc = () => {};
@@ -38,9 +39,7 @@ export const DialerPanel = React.memo((props: Props) => {
 
   const keypadActions = (
     <>
-      <RuiTooltip placement="bottom" {...props.tooltipProps}>
-        <CallerIdSelector {...props.callerIdProps} />
-      </RuiTooltip>
+      <CallerIdSelector {...props.callerIdProps} />
       <DialPad
         makeMouseEffect={clickToInput}
         makeKeyboardEffect={playAudio}

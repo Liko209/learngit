@@ -3,24 +3,9 @@
  * @Date: 2019-05-27 18:07:46
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
-import { PhoneFormatter } from '@/modules/common/container/PhoneFormatter';
-import JuiText from 'jui/components/Text/Text';
+import { PhoneNumberRecord, PhoneNumberRecordProps } from './PhoneNumberRecord';
 
-type CallerIdSelectItemProps = {
-  value: IPhoneNumberRecord;
-};
-
-const CallerIdSelectSourceItem = ({ value }: CallerIdSelectItemProps) => {
-  const { usageType, phoneNumber } = value;
-  const formattedPhoneNumber =
-    usageType !== 'Blocked' ? (
-      <PhoneFormatter>{phoneNumber}</PhoneFormatter>
-    ) : (
-      phoneNumber
-    );
-  return <JuiText>{formattedPhoneNumber}</JuiText>;
-};
+type CallerIdSelectItemProps = PhoneNumberRecordProps;
+const CallerIdSelectSourceItem = PhoneNumberRecord;
 
 export { CallerIdSelectSourceItem, CallerIdSelectItemProps };

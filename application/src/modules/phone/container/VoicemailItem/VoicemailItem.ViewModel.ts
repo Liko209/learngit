@@ -136,7 +136,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     if (!this.audio) {
       return;
     }
-    return this.selected ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+    return this.selected && this.audio.startTime > 0
+      ? JuiAudioMode.FULL
+      : JuiAudioMode.MINI;
   }
 
   @action

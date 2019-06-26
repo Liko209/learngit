@@ -295,6 +295,7 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _scheduleRegisterRetryTimer() {
     const interval = this._calculateNextRetryInterval();
+    this._failedTimes++;
     rtcLogger.debug(
       LOG_TAG,
       `Schedule retry registration in ${interval} seconds`,
@@ -320,7 +321,6 @@ class RTCRegistrationManager extends EventEmitter2
       this._failedTimes < kRetryIntervalList.length
         ? this._failedTimes
         : kRetryIntervalList.length - 1;
-    this._failedTimes++;
     return randomBetween(
       kRetryIntervalList[index].min,
       kRetryIntervalList[index].max,

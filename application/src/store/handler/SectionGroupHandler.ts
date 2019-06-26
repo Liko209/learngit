@@ -26,7 +26,7 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
 import { autorun, computed, observable, reaction } from 'mobx';
-import { mainLogger } from 'sdk';
+import { mainLogger, PerformanceTracer } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
@@ -37,11 +37,11 @@ import {
   NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
 } from 'sdk/service/notificationCenter';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 import { Notification } from '@/containers/Notification';
 import { defaultNotificationOptions } from '@/common/catchError';
+import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -280,11 +280,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             ids = [currentGroupId];
             Notification.flashToast({
               ...defaultNotificationOptions,
-              message: 'people.prompt.conversationPrivate',
+              message: 'people.prompt.noLongerAMemberOfThisTeam',
             });
             mainLogger
               .tags(LOG_TAG)
-              .info('subscribe notification|user was removed from current conversation');
+              .info(
+                'subscribe notification|user was removed from current conversation',
+              );
           }
         }
         // update url
@@ -566,7 +568,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      const performanceTracer = PerformanceTracer.initial();
+      const performanceTracer = PerformanceTracer.start();
       const groups =
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
@@ -605,13 +607,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {
     switch (sectionType) {
       case SECTION_TYPE.FAVORITE:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_FAVORITES;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_FAVORITES;
 
       case SECTION_TYPE.DIRECT_MESSAGE:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
 
       case SECTION_TYPE.TEAM:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_TEAMS;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_TEAMS;
     }
   }
 

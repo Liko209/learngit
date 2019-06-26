@@ -16,12 +16,15 @@ import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import { ITEM_HEIGHT, EMPTY_HEIGHT } from '../constants';
+import { PerformanceTracer } from 'sdk';
+import { GROUP_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
 const EmptyView = withDelay(JuiMemberListEmptyView);
 @observer
 class MemberList extends React.Component<
   WithTranslation & MemberListProps & MemberListViewProps
 > {
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
@@ -36,6 +39,12 @@ class MemberList extends React.Component<
     this.props.onScrollEvent(event);
   }
 
+  componentDidUpdate() {
+    this._performanceTracer.end({
+      key: GROUP_PERFORMANCE_KEYS.UI_PROFILE_RENDER,
+      count: this.props.filteredMemberIds.length,
+    });
+  }
   render() {
     const {
       height,

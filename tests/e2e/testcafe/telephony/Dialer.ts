@@ -8,7 +8,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
-import { WebphoneSession } from '../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -166,6 +166,9 @@ test.meta(<ITestMeta>{
   const { company: { number } } = callee;
   const app = new AppRoot(t);
 
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -217,7 +220,11 @@ test.meta(<ITestMeta>{
 })('Can initiate a call when caller ID is blocked via the dialer', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
+
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
+
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
   const app = new AppRoot(t);
@@ -274,6 +281,8 @@ test.meta(<ITestMeta>{
 })('Can save the last call number', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).platform(callee).init();
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)

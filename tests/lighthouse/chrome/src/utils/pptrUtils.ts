@@ -261,6 +261,16 @@ class PptrUtils {
     return true;
   }
 
+  static async hover(page: Page, selector: string, options = {}): Promise<boolean> {
+    if (!(await PptrUtils.waitForSelector(page, selector, options))) {
+      return false;
+    }
+
+    await page.hover(selector);
+
+    return true;
+  }
+
   /**
    * @description: get element text
    */
@@ -300,7 +310,7 @@ class PptrUtils {
 
     const context = browser.defaultBrowserContext();
 
-    await context.overridePermissions(Config.jupiterHost, ['notifications']);
+    await context.overridePermissions(Config.jupiterHost, ['notifications', 'microphone']);
 
     await PptrUtils.injectMockServer(browser);
 
@@ -327,7 +337,6 @@ class PptrUtils {
       }
 
       browser = await puppeteer.connect({
-        headless: false,
         defaultViewport: null,
         browserWSEndpoint: wsEndpoint,
         ignoreHTTPSErrors: true

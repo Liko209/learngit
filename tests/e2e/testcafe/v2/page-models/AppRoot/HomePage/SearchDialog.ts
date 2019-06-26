@@ -536,7 +536,7 @@ export class JoinTeamDialog extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelector('h2', this.self).withText('Join team?')
+    return this.getSelectorByAutomationId('DialogTitle').withText('Join team?')
   }
 
   get exists() {

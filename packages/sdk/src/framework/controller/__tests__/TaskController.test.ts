@@ -60,11 +60,11 @@ describe('TaskController', () => {
       strategy = new MockStrategy();
       taskController = new TaskController(strategy, executeFunc);
       const resetSpy = jest.spyOn(strategy, 'reset');
-      taskController.start();
+      taskController.start(() => {});
       const isExecuting = taskController['_isExecuting'];
       expect(isExecuting).toEqual(true);
       expect(resetSpy).toBeCalled();
-      taskController.start();
+      taskController.start(() => {});
       expect(resetSpy).toBeCalledTimes(1);
     });
 
@@ -77,7 +77,7 @@ describe('TaskController', () => {
       taskController = new TaskController(strategy, executeFunc);
       const retrySpy = jest.spyOn(taskController, '_retry');
       const createTaskFunSpy = jest.spyOn(taskController, '_createTaskFunc');
-      await taskController.start();
+      await taskController.start(() => {});
       const isExecuting = taskController['_isExecuting'];
       expect(isExecuting).toEqual(false);
       expect(retrySpy).toBeCalled();
@@ -94,7 +94,7 @@ describe('TaskController', () => {
       taskController = new TaskController(strategy, executeFunc);
       const retrySpy = jest.spyOn(taskController, '_retry');
       const createTaskFunSpy = jest.spyOn(taskController, '_createTaskFunc');
-      await taskController.start();
+      await taskController.start(() => {});
       expect(retrySpy).not.toBeCalled();
       expect(createTaskFunSpy).not.toBeCalled();
     });
@@ -108,7 +108,7 @@ describe('TaskController', () => {
       taskController = new TaskController(strategy, executeFunc);
       const createTaskFunSpy = jest.spyOn(taskController, '_createTaskFunc');
       const doExecutingFunSpy = jest.spyOn(taskController, '_doExecuting');
-      taskController.start();
+      taskController.start(() => {});
       setTimeout(() => {
         expect(createTaskFunSpy).toBeCalledTimes(1);
         expect(doExecutingFunSpy).toBeCalledTimes(6);
@@ -126,14 +126,14 @@ describe('TaskController', () => {
         jobScheduler,
         'scheduleAndIgnoreFirstTime',
       );
-      taskController.start();
+      taskController.start(() => {});
       setTimeout(() => {
         expect(scheduleAndIgnoreFirstTimeSpy).toBeCalledTimes(5);
         const retryStrategy = strategy['_strategy'];
         const interval = strategy.getNext();
         expect(interval).toEqual(retryStrategy[retryStrategy.length - 1]);
         done();
-      }, 200);
+      }, 400);
     });
   });
 });

@@ -8,7 +8,6 @@ import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
-
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 
 jest.mock('@/utils/date');
@@ -43,18 +42,47 @@ describe('CallLogItemViewModel', () => {
 
   @testable
   class isUnread {
-    @test('should be true if call log id > lastReadMissed')
-    @mockEntity({ id: 2 })
+    @test('should be true if missedcall call log timestamp > lastReadMissed [JPT-2174]')
+    @mockEntity({
+      timestamp: 2,
+      result: CALL_RESULT.MISSED,
+    })
     @mockSingleEntity(1)
     t1() {
       const vm = new CallLogItemViewModel({ id: 'id' });
       expect(vm.isUnread).toBeTruthy();
     }
 
-    @test('should be false if call log id < lastReadMissed')
-    @mockEntity({ id: 1 })
+    @test('should be false if missedcall call log timestamp < lastReadMissed [JPT-2174]')
+    @mockEntity({
+      timestamp: 1,
+      result: CALL_RESULT.MISSED,
+    })
     @mockSingleEntity(2)
     t2() {
+      const vm = new CallLogItemViewModel({ id: 'id' });
+      expect(vm.isUnread).toBeFalsy();
+    }
+    @test('should be false if outbound call log timestamp > lastReadMissed')
+    @mockEntity({
+      to: {},
+      timestamp: 2,
+      direction: CALL_DIRECTION.OUTBOUND,
+    })
+    @mockSingleEntity(1)
+    t3() {
+      const vm = new CallLogItemViewModel({ id: 'id' });
+      expect(vm.isUnread).toBeFalsy();
+    }
+
+    @test('should be false if inbound call log timestamp < lastReadMissed')
+    @mockEntity({
+      from: {},
+      timestamp: 1,
+      direction: CALL_DIRECTION.INBOUND,
+    })
+    @mockSingleEntity(2)
+    t4() {
       const vm = new CallLogItemViewModel({ id: 'id' });
       expect(vm.isUnread).toBeFalsy();
     }

@@ -6,25 +6,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiListItemSecondaryText } from '../ListItemSecondaryText';
 import { JuiListItemSecondarySpan } from '../ListItemSecondarySpan';
 
-storiesOf('Components/Lists', module)
-  .addDecorator(withInfoDecorator(JuiListItemSecondaryText, { inline: true }))
-  .add('JuiListItemSecondaryText', () => {
-    const tLeft = text('leftText', 'Secondary text');
-    const tRight = text('tRight', 'XX/XX/XXXX');
+storiesOf('Components/Lists', module).add('JuiListItemSecondaryText', () => {
+  const tLeft = text('leftText', 'Secondary text');
+  const tRight = text('tRight', 'XX/XX/XXXX');
 
-    const LeftText = <JuiListItemSecondarySpan text={tLeft} isEllipsis={true} />;
-    const RightText = <span>{tRight}</span>;
-    return (
-      <div style={{ maxWidth: '200px' }}>
-        <JuiListItemSecondaryText>
-          {LeftText}
-          &nbsp;·&nbsp;
-          {RightText}
-        </JuiListItemSecondaryText>
-      </div>
-    );
-  });
+  const LeftText = <JuiListItemSecondarySpan text={tLeft} isEllipsis={true} />;
+  const RightText = <span>{tRight}</span>;
+  return (
+    <div style={{ maxWidth: '200px' }}>
+      <JuiListItemSecondaryText>
+        {LeftText}
+        &nbsp;·&nbsp;
+        {RightText}
+      </JuiListItemSecondaryText>
+    </div>
+  );
+});

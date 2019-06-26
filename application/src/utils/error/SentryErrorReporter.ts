@@ -26,10 +26,13 @@ export class SentryErrorReporter implements IErrorReporter {
       window.jupiterElectron &&
       window.jupiterElectron.getElectronVersionInfo
     ) {
-      const electronAppVersionNumber = window.jupiterElectron.getElectronVersionInfo();
-      electronAppVersionNumber &&
+      const electronVersionInfo = window.jupiterElectron.getElectronVersionInfo();
+      electronVersionInfo &&
         Sentry.configureScope(scope => {
-          scope.setTag('desktopRelease', electronAppVersionNumber);
+          scope.setTag(
+            'desktopRelease',
+            electronVersionInfo.electronAppVersionNumber,
+          );
         });
     }
   }

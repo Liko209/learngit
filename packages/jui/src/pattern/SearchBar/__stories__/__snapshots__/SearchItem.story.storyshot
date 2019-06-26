@@ -1,0 +1,195 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearchItem 1`] = `
+.c2.c2 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c4 {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c4 span {
+  font-weight: bold;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0.c0 {
+  height: 32px;
+  padding: 4px 16px;
+}
+
+.c0.c0:hover {
+  background: none;
+}
+
+.c0.c0.hover {
+  background: rgba(158,158,158,0.12);
+}
+
+.c0.c0.hover .c5 {
+  display: block;
+}
+
+.c0.c0:active {
+  background: rgba(6,132,189,0.12);
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-right: 8px;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  min-width: 0;
+  padding: 0px 4px 0px 0px;
+}
+
+<div>
+  <li
+    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters search-items c0"
+    onBlur={[Function]}
+    onClick={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    role="menuitem"
+    tabIndex={-1}
+  >
+    <div
+      className="c1"
+      data-test-automation-id="search-item-avatar"
+    >
+      <div
+        className="MuiAvatar-root c2"
+        size="small"
+      >
+        <img
+          className="MuiAvatar-img"
+          src="test-file-stub"
+        />
+      </div>
+    </div>
+    <div
+      className="c3"
+    >
+      <div
+        className="c4"
+        dangerouslySetInnerHTML={
+          Object {
+            "__html": "<span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span>",
+          }
+        }
+        data-test-automation-id="search-item-text"
+      />
+    </div>
+  </li>
+  <li
+    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters search-items c0"
+    onBlur={[Function]}
+    onClick={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    role="menuitem"
+    tabIndex={-1}
+  >
+    <div
+      className="c1"
+      data-test-automation-id="search-item-avatar"
+    >
+      <div
+        className="MuiAvatar-root c2"
+        size="small"
+      >
+        <img
+          className="MuiAvatar-img"
+          src="test-file-stub"
+        />
+      </div>
+    </div>
+    <div
+      className="c3"
+    >
+      <div
+        className="c4"
+        dangerouslySetInnerHTML={
+          Object {
+            "__html": "<span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span><span>a</span>b<span>c</span>de<span>fg</span>",
+          }
+        }
+        data-test-automation-id="search-item-text"
+      />
+    </div>
+  </li>
+</div>
+`;

@@ -3,7 +3,7 @@ function uniqueArray<T>(array: T[]) {
 }
 
 function getCurrentTime() {
-  return new Date().getTime();
+  return Date.now(); // a little bit faster
 }
 
 export { uniqueArray, getCurrentTime };

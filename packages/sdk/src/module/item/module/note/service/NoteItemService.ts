@@ -27,6 +27,10 @@ class NoteItemService extends BaseSubItemService<NoteItem, SanitizedNoteItem> {
     }
     return this._noteItemController;
   }
+
+  async getNoteBody(id: number) {
+    return await this.noteItemController.getNoteBody(id);
+  }
 }
 
 export { NoteItemService };

@@ -70,7 +70,6 @@ class ContactSearchItemViewComponent extends Component<Props> {
               variant="plain"
               color="primary.600"
               size="medium"
-              onClick={onClick}
               disableToolTip={true}
               data-test-automation-id="telephony-contact-search-list_item-dial_button"
             >

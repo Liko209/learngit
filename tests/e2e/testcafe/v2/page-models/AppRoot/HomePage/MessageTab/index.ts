@@ -268,6 +268,10 @@ class CloseConversationModal extends BaseWebComponent {
     return this.getSelector('*[role="dialog"]');
   }
 
+  get title() {
+    return this.getSelectorByAutomationId('DialogTitle');
+  }
+
   get dontAskAgainCheckbox() {
     this.warnFlakySelector();
     return this.self.find('label');
@@ -396,5 +400,4 @@ export class MessageTab extends BaseWebComponent {
   get emojiMatchList() {
     return this.getComponent(EmojiMatchList);
   }
-
 }

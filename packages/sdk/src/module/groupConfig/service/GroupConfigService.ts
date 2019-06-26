@@ -14,7 +14,7 @@ import { Post } from 'sdk/module/post/entity';
 class GroupConfigService extends EntityBaseService<GroupConfig> {
   private _groupConfigController: GroupConfigController;
   constructor() {
-    super(true, daoManager.getDao(GroupConfigDao));
+    super({ isSupportedCache: true }, daoManager.getDao(GroupConfigDao));
   }
 
   // update partial groupConfig data

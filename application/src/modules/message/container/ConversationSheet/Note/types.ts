@@ -11,6 +11,7 @@ type NoteProps = {
 type NoteViewProps = {
   title: string;
   summary: string;
+  id: number;
 };
 
 export { NoteProps, NoteViewProps };
