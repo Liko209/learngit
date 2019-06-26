@@ -8,13 +8,11 @@ export class RightRail extends BaseWebComponent {
   }
 
   get expandStatusButton() {
-    this.warnFlakySelector();
-    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
   get foldStatusButton() {
-    this.warnFlakySelector();
-    return this.getSelector('button[aria-label="Show details"]');
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
   get title() {
@@ -208,7 +206,6 @@ class BaseTab extends BaseWebComponent {
 }
 
 class FilesTab extends BaseTab {
-
 
   get subTitle() {
     return this.getSubTitle('Files');
