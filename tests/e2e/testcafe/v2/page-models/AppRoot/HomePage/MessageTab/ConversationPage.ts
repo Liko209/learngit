@@ -691,6 +691,24 @@ export class PostItem extends BaseWebComponent {
       .pressKey('enter');
   }
 
+  async deleteMessage() {
+    await this.t
+      .selectText(this.editTextArea)
+      .pressKey('delete')
+      .wait(1e3)
+      .pressKey('enter');
+  }
+
+  async enterEditTextArea() {
+    await this.t
+      .selectText(this.editTextArea)
+      .pressKey('enter');
+  }
+
+  async editTextAreaFocused() {
+    return await this.editTextArea.focused;
+  }
+
   get mentions() {
     return this.text.find('.at_mention_compose');
   }

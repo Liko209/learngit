@@ -1,7 +1,7 @@
 {
   "on_merge": {
       "fixtures": [
-          "./fixtures/MessageInput/*.ts"
+          "./fixtures/MessageInput/DeletePost.ts"
       ],
       "browsers": [
           "selenium:chrome"
