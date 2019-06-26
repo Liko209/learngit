@@ -4,9 +4,11 @@ import {
   Path,
   LocationState,
   createBrowserHistory,
+  createMemoryHistory,
 } from 'history';
 
-const history = createBrowserHistory();
+const isTestENV = process && process.env.NODE_ENV === 'test';
+const history = isTestENV ? createMemoryHistory() : createBrowserHistory();
 const historyPush = history.push;
 const historyReplace = history.replace;
 

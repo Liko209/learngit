@@ -14,7 +14,7 @@
     "prebuild:storybook": "npm run test:generate-output",
     "start": "npm run storybook",
     "storybook": "start-storybook -p 6006",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "test-watch": "jest --watchAll",
     "build:storybook": "build-storybook -c .storybook -o public",
     "build:lib": "rollup -c",
