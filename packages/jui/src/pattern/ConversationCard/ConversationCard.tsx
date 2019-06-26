@@ -81,6 +81,9 @@ const HighlightStyle = createGlobalStyle<{}>`
       }
     }
   }
+  .emoji-mart-emoji {
+    vertical-align: middle;
+  }
 `;
 
 const ANIMATION_DURATION = 3000;

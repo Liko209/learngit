@@ -204,6 +204,12 @@ const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 
+const EMOJI_SKIN_TONE_CODES = ['1F3FB', '1F3FC', '1F3FD', '1F3FE', '1F3FF'];
+const EMOJI_SIZE_MAP = {
+  large: 30,
+  small: 20,
+};
+
 // modified from Markdown.global_url_regex
 // tslint:disable-next-line:max-line-length
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
@@ -274,4 +280,6 @@ export {
   URL_REGEX,
   VALID_PHONE_REG,
   EMOJI_ONE_REGEX_SIMPLE,
+  EMOJI_SKIN_TONE_CODES,
+  EMOJI_SIZE_MAP,
 };
