@@ -35,17 +35,17 @@ describe('ToggleSettingItemViewModel', () => {
       await vm.saveSetting(false);
       expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(false);
     });
-    it('should save setting with beforeSavingAsync ', async () => {
+    it('should save setting with beforeSaving ', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
       const vm = new ToggleSettingItemViewModel({ id: 1 });
-      const beforeSavingAsync = jest.fn();
+      const beforeSaving = jest.fn();
       mockSettingItem({
-        beforeSavingAsync,
+        beforeSaving,
       });
       await vm.saveSetting(false);
-      expect(beforeSavingAsync).toHaveBeenCalled();
+      expect(beforeSaving).toHaveBeenCalled();
     });
   });
 });

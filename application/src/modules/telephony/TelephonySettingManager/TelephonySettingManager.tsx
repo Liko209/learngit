@@ -57,7 +57,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
-              beforeSavingAsync: beforeDefaultPhoneAppSettingSave,
+              beforeSaving: beforeDefaultPhoneAppSettingSave,
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
