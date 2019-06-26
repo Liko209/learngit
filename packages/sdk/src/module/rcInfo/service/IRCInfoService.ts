@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERCWebSettingUri, ForwardingFlipNumberModel } from '../types';
+import { ERCWebUris, ForwardingFlipNumberModel } from '../types';
 import { DialingCountryInfo } from 'sdk/api/ringcentral/types';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 
 interface IRCInfoService {
-  generateWebSettingUri: (type: ERCWebSettingUri) => Promise<string>;
+  generateWebSettingUri: (type: ERCWebUris) => Promise<string>;
 
   getCurrentCountry(): Promise<DialingCountryInfo>;
 
