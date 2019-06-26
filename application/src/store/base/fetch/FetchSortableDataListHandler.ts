@@ -383,8 +383,14 @@ export class FetchSortableDataListHandler<
   @action
   handleDataReload = (payload: NotificationEntityReloadPayload<IdType>) => {
     mainLogger.tags(LOG_TAG).info('reload foc: ', this._entityName);
-    this.sortableListStore.setHasMore(this._defaultHasMoreUp, true);
-    this.sortableListStore.setHasMore(this._defaultHasMoreDown, false);
+    this.sortableListStore.setHasMore(
+      this._defaultHasMoreUp,
+      QUERY_DIRECTION.OLDER,
+    );
+    this.sortableListStore.setHasMore(
+      this._defaultHasMoreDown,
+      QUERY_DIRECTION.NEWER,
+    );
     this.handleDataDeleted({
       type: EVENT_TYPES.DELETE,
       body: {
@@ -501,22 +507,7 @@ export class FetchSortableDataListHandler<
     hasMore: HasMore | boolean,
     direction: QUERY_DIRECTION,
   ) {
-    switch (typeof hasMore) {
-      case 'boolean': {
-        this.sortableListStore.setHasMore(
-          hasMore as boolean,
-          direction === QUERY_DIRECTION.OLDER,
-        );
-        break;
-      }
-      case 'object': {
-        console.log('andy hu', hasMore);
-        const { older = false, newer = false } = hasMore as HasMore;
-        this.sortableListStore.setHasMore(older, true);
-        this.sortableListStore.setHasMore(newer, false);
-        break;
-      }
-    }
+    this.sortableListStore.setHasMore(hasMore, direction);
   }
 
   protected handlePageData(result: SortableModel[]) {
