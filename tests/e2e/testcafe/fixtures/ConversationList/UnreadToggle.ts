@@ -220,7 +220,7 @@ test.meta(<ITestMeta>{
 });
 
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-203'],
   keywords: ['ConversationList', 'UnreadToggle'],

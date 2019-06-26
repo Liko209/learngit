@@ -408,7 +408,7 @@ test(formalName(`Check shouldn't mark draft icon in the conversation list when r
 });
 
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1380'],
   keywords: ['Draft'],
@@ -505,7 +505,7 @@ test.only.meta(<ITestMeta>{
 
 });
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-140'],
   keywords: ['Draft'],
@@ -582,7 +582,7 @@ test.only.meta(<ITestMeta>{
 
 });
 
-test.only.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-149'],
   keywords: ['Draft'],
