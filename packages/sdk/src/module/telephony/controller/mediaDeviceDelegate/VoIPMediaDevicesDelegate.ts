@@ -16,65 +16,14 @@ import { notificationCenter } from 'sdk/service';
 
 const LOG_TAG = '[MediaDevicesDelegate]';
 const DEFAULT_VOLUME = 0.5;
-const ringerStorage: IStorage = {
-  get: () => TelephonyGlobalConfig.getCurrentRinger(),
-  set: (deviceId: string) => TelephonyGlobalConfig.setCurrentRinger(deviceId),
-  on: handleChanged => {
-    const finalCallback = (type: number, value: string) => handleChanged(value);
-    TelephonyGlobalConfig.on(
-      TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
-      finalCallback,
-    );
-    return () =>
-      TelephonyGlobalConfig.off(
-        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
-        finalCallback,
-      );
-  },
-};
+let ringerStorage: IStorage;
 export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneSyncManager: DeviceSyncManger;
   private _speakerSyncManager: DeviceSyncManger;
   private _ringerSyncManager: DeviceSyncManger;
   constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
-    const speakerStorage: IStorage = {
-      get: () => TelephonyGlobalConfig.getCurrentSpeaker(),
-      set: (deviceId: string) =>
-        TelephonyGlobalConfig.setCurrentSpeaker(deviceId),
-      on: handleChanged => {
-        const finalCallback = (type: number, value: string) =>
-          handleChanged(value);
-        TelephonyGlobalConfig.on(
-          TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
-          finalCallback,
-        );
-        return () =>
-          TelephonyGlobalConfig.off(
-            TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
-            finalCallback,
-          );
-      },
-    };
-    const microphoneStorage: IStorage = {
-      get: () => TelephonyGlobalConfig.getCurrentMicrophone(),
-      set: (deviceId: string) =>
-        TelephonyGlobalConfig.setCurrentMicrophone(deviceId),
-      on: handleChanged => {
-        const finalCallback = (type: number, value: string) =>
-          handleChanged(value);
-        TelephonyGlobalConfig.on(
-          TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
-          finalCallback,
-        );
-        return () =>
-          TelephonyGlobalConfig.off(
-            TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
-            finalCallback,
-          );
-      },
-    };
     this._microphoneSyncManager = new DeviceSyncManger(
-      microphoneStorage,
+      this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE),
       {
         getDevices: (): MediaDeviceInfo[] => this._rtcEngine.getAudioInputs(),
         setDeviceId: (id: string): void =>
@@ -94,14 +43,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
             );
         },
       },
-      new LastUsedDeviceManager({
-        get: () => TelephonyGlobalConfig.getUsedMicrophoneHistory(),
-        set: (value: string) =>
-          TelephonyGlobalConfig.setUsedMicrophoneHistory(value),
-      }),
+      this._buildLastUsedDeviceManager(
+        TELEPHONY_GLOBAL_KEYS.USED_MICROPHONE_HISTORY,
+      ),
     );
     this._speakerSyncManager = new DeviceSyncManger(
-      speakerStorage,
+      this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER),
       {
         getDevices: (): MediaDeviceInfo[] => this._rtcEngine.getAudioOutputs(),
         setDeviceId: (id: string): void =>
@@ -110,14 +57,14 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         getDefaultDeviceId: (devices: MediaDeviceInfo[]): string =>
           this._rtcEngine.getDefaultDeviceId(devices),
       },
-      new LastUsedDeviceManager({
-        get: () => TelephonyGlobalConfig.getUsedSpeakerHistory(),
-        set: (value: string) =>
-          TelephonyGlobalConfig.setUsedSpeakerHistory(value),
-      }),
+      this._buildLastUsedDeviceManager(
+        TELEPHONY_GLOBAL_KEYS.USED_SPEAKER_HISTORY,
+      ),
     );
     this._ringerSyncManager = new DeviceSyncManger(
-      ringerStorage,
+      (ringerStorage = this._buildDeviceStorage(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+      )),
       {
         getDevices: (): MediaDeviceInfo[] => {
           return this.getRingerDevicesList();
@@ -128,14 +75,40 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         getDefaultDeviceId: (devices: MediaDeviceInfo[]): string =>
           this._rtcEngine.getDefaultDeviceId(devices),
       },
-      new LastUsedDeviceManager({
-        get: () => TelephonyGlobalConfig.getUsedRingerHistory(),
-        set: (value: string) =>
-          TelephonyGlobalConfig.setUsedRingerHistory(value),
-      }),
+      this._buildLastUsedDeviceManager(
+        TELEPHONY_GLOBAL_KEYS.USED_RINGER_HISTORY,
+      ),
     );
     this._initDevicesState();
     this._subscribe();
+  }
+  private _buildDeviceStorage(key: string) {
+    const storage: IStorage = {
+      get: () => {
+        return TelephonyGlobalConfig.get(key);
+      },
+      set: (value: string) => {
+        TelephonyGlobalConfig.put(key, value);
+      },
+      on: (handleChanged: Function) => {
+        const finalCallback = (type: number, value: string) =>
+          handleChanged(value);
+        TelephonyGlobalConfig.on(key, finalCallback);
+        return () => TelephonyGlobalConfig.off(key, finalCallback);
+      },
+    };
+    return storage;
+  }
+
+  private _buildLastUsedDeviceManager(key: string) {
+    return new LastUsedDeviceManager({
+      get: () => {
+        return TelephonyGlobalConfig.get(key);
+      },
+      set: (value: string) => {
+        TelephonyGlobalConfig.put(key, value);
+      },
+    });
   }
 
   private _initDevicesState() {

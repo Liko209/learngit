@@ -239,14 +239,30 @@ describe('VoIPMediaDevicesDelegate', () => {
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
-      expect(TelephonyGlobalConfig.setCurrentSpeaker).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
+        'a',
+      );
     });
     it('should create DeviceSyncManager correctly', () => {
       deviceDelegate['_microphoneSyncManager'].setDevice({
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioInput).toBeCalledWith('a');
-      expect(TelephonyGlobalConfig.setCurrentMicrophone).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
+        'a',
+      );
+    });
+    it('should create DeviceSyncManager correctly', () => {
+      deviceDelegate['_ringerSyncManager'].setDevice({
+        deviceId: 'a',
+      } as any);
+      expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+        'a',
+      );
     });
   });
 
