@@ -220,7 +220,7 @@ test.meta(<ITestMeta>{
 });
 
 
-test.meta(<ITestMeta>{
+test.only.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-203'],
   keywords: ['ConversationList', 'UnreadToggle'],
@@ -247,7 +247,7 @@ test.meta(<ITestMeta>{
     await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
   });
 
-  await h(t).withLog('Then I see the unread toggle to ON', async () => {
+  await h(t).withLog('Then I see the unread toggle to OFF', async () => {
     await unreadToggler.shouldBeOff();
   }, true);
 });

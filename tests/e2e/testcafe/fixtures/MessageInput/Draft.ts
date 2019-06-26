@@ -408,7 +408,7 @@ test(formalName(`Check shouldn't mark draft icon in the conversation list when r
 });
 
 
-test.meta(<ITestMeta>{
+test.only.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1380'],
   keywords: ['Draft'],
@@ -459,12 +459,12 @@ test.meta(<ITestMeta>{
     const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
     const url = new URL(SITE_URL)
     const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${teamId1}`;
-    await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
+    await h(t).withLog(`When I enter conversation A to type message "${msg}"`, async () => {
       await conversation1.enter();
       await t.typeText(inputField, msg)
     }, true);
 
-    await h(t).withLog('When I enter conversation B', async () => {
+    await h(t).withLog('And I enter conversation B', async () => {
       await conversation2.enter();
     });
 
@@ -505,7 +505,7 @@ test.meta(<ITestMeta>{
 
 });
 
-test.meta(<ITestMeta>{
+test.only.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-140'],
   keywords: ['Draft'],
@@ -567,7 +567,7 @@ test.meta(<ITestMeta>{
       await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
     });
 
-    await h(t).withLog('And no "Draft" icon on right of Conversation A name', async () => {
+    await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
       await t.expect(conversation1.hasDraftMessage).notOk();
     });
 
@@ -582,7 +582,7 @@ test.meta(<ITestMeta>{
 
 });
 
-test.meta(<ITestMeta>{
+test.only.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-149'],
   keywords: ['Draft'],
@@ -628,12 +628,12 @@ test.meta(<ITestMeta>{
     // Entry1: with text messages
     const msg = uuid();
     const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
-    await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
+    await h(t).withLog(`When I enter conversation A to type message "${msg}"`, async () => {
       await conversation1.enter();
       await t.typeText(inputField, msg)
     }, true);
 
-    await h(t).withLog('When I enter conversation B', async () => {
+    await h(t).withLog('And I enter conversation B', async () => {
       await conversation2.enter();
     });
 
@@ -649,23 +649,23 @@ test.meta(<ITestMeta>{
       await t.selectText(inputField).pressKey('delete');
     });
 
-    await h(t).withLog('When I enter conversation B', async () => {
+    await h(t).withLog('And I enter conversation B', async () => {
       await conversation2.enter();
     });
 
-    await h(t).withLog('And no "Draft" icon on right of Conversation A name', async () => {
+    await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
       await t.expect(conversation1.hasDraftMessage).notOk();
     });
 
       // Entry2: with files
       const file = ['../../sources/1.txt'];
       const conversationPage = app.homePage.messageTab.conversationPage;
-      await h(t).withLog(`And I enter conversation A to select file in the attachment area`, async () => {
+      await h(t).withLog(`When I enter conversation A to select file in the attachment area`, async () => {
         await conversation1.enter();
         await conversationPage.uploadFilesToMessageAttachment(file);
       }, true);
   
-      await h(t).withLog('When I enter conversation B', async () => {
+      await h(t).withLog('And I enter conversation B', async () => {
         await conversation2.enter();
       });
   
@@ -677,15 +677,15 @@ test.meta(<ITestMeta>{
         await conversation1.enter();
       });
   
-      await h(t).withLog('When I remove the file from the conversation', async () => {
+      await h(t).withLog('And I remove the file from the conversation', async () => {
         await conversationPage.removeFileOnMessageArea();
       });
   
-      await h(t).withLog('When I enter conversation B', async () => {
+      await h(t).withLog('And I enter conversation B', async () => {
         await conversation2.enter();
       });
   
-      await h(t).withLog('And no "Draft" icon on right of Conversation A name', async () => {
+      await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
         await t.expect(conversation1.hasDraftMessage).notOk();
       });
 
