@@ -272,4 +272,30 @@ describe('Telephony store', () => {
     const store = createStore();
     expect(store.hasActiveInBoundCall).toBeFalsy();
   });
+
+  it('`onDialerFocus()` should change `dialerFocused` to true', () => {
+    const store = createStore();
+    store.onDialerFocus();
+    expect(store.dialerFocused).toBeTruthy();
+  });
+
+  it('`onDialerBlur()` should change `dialerFocused` to false', () => {
+    const store = createStore();
+    store.onDialerBlur();
+    expect(store.dialerFocused).toBeFalsy();
+  });
+
+  it('`detachedWindow()` should change `isDetached` to true', () => {
+    const store = createStore();
+    store.openDialer();
+    store.detachedWindow();
+    expect(store.isDetached).toBeTruthy();
+  });
+
+  it('`attachedWindow()` should change `isDetached` to false', () => {
+    const store = createStore();
+    store.openDialer();
+    store.attachedWindow();
+    expect(store.isDetached).toBeFalsy();
+  });
 });

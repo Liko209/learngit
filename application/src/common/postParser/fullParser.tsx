@@ -25,7 +25,6 @@ import { HTMLParser } from './parsers/HTMLParser';
 import { EmojiParser } from './parsers/EmojiParser';
 import {
   AT_MENTION_GROUPED_REGEXP,
-  b64EncodeUnicode,
   EMOJI_UNICODE_REGEX_RANGE,
   EMOJI_ASCII_REGEX_SIMPLE,
   MIN_EMOJI_PATTERN_LEN,
@@ -34,11 +33,13 @@ import {
   MIN_PHONE_NUMBER_LENGTH,
   EMOJI_ONE_REGEX_SIMPLE,
   MIN_ATMENTION_PATTERN_LENGTH,
+  MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH,
 } from './utils';
 import { URLParser } from './parsers/URLParser';
 import _ from 'lodash';
 import moize from 'moize';
 import { mainLogger } from 'sdk';
+import { AtMentionTransformer } from './parsers/AtMentionTransformer';
 
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
@@ -48,14 +49,13 @@ const parsersConfig = [
       !html &&
       atMentions &&
       fullText.length >= MIN_ATMENTION_PATTERN_LENGTH &&
-      fullText.includes(`<a class='at_mention_compose' rel='{"id":`),
+      fullText.includes(' <at_mention id='),
     getParserOption: ({
       keyword,
       html,
       atMentions = {},
     }: PostParserOptions): AtMentionParserOption => {
       const opts: AtMentionParserOption = atMentions;
-      opts.textEncoded = html === undefined ? false : !html;
       opts.innerContentParser = (text: string) =>
         keyword ? _postParser(text, { keyword }) : text;
       return opts;
@@ -183,6 +183,7 @@ const _parseMarkdown = (markdownText: string, options: PostParserOptions) => {
     // No need to parse html since the inner content is surely plain text (no tags)
     innerOptions.html = false;
     innerOptions.emojiTransformed = true;
+    innerOptions.atMentionTransformed = true;
     // No need to parse PhoneLink/URL/AtMention if content is already in a tag
     const isInLink = containerTag && containerTag.toLowerCase() === 'a';
     innerOptions.phoneNumber = options.phoneNumber && !isInLink;
@@ -210,7 +211,13 @@ const _postParser: FullParser = (
   }
   // In case the parser throw error and crash the whole page, we need to prevent the crashing and log error.
   try {
-    const { html, emoji, emojiTransformed } = options;
+    const {
+      html,
+      emoji,
+      emojiTransformed,
+      atMentions,
+      atMentionTransformed,
+    } = options;
     const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
     let transformedText = fullText;
     // transform all kinds of emojis to one certain pattern at the very beginning for better performance
@@ -218,13 +225,17 @@ const _postParser: FullParser = (
       transformedText = _transformEmoji(transformedText, emoji);
       options.emojiTransformed = true;
     }
+    if (
+      atMentions &&
+      !atMentionTransformed &&
+      transformedText.length >= MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH &&
+      transformedText.includes(`<a class='at_mention_compose' rel='{"id":`) &&
+      atMentionRegex.test(transformedText)
+    ) {
+      transformedText = AtMentionTransformer.replace(transformedText);
+      options.atMentionTransformed = true;
+    }
     if (html) {
-      transformedText = atMentionRegex.test(transformedText)
-        ? transformedText.replace(
-            AT_MENTION_GROUPED_REGEXP, // we need to encode the text inside atmention so it won't get parsed first, for example when some crazy user name is a url
-            (full, g1, g2, g3) => `${g1}${b64EncodeUnicode(g2)}${g3}`,
-          )
-        : transformedText;
       return _parseMarkdown(transformedText, options);
     }
     const content = new ParseContent(transformedText);
