@@ -12,6 +12,7 @@ import {
 } from './types';
 import { notificationCenter } from 'sdk/service';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -71,6 +72,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
+  private _groupService: GroupService;
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
@@ -95,6 +97,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
+    );
+
+    this._groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
     );
 
     this._itemService = ServiceLoader.getInstance<ItemService>(
@@ -183,6 +189,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   contentChange = (draft: string) => {
     this.error = '';
     this.draft = draft;
+    // be sure the clear value is correct
+    this._groupService.sendTypingEvent(this._oldId, false);
   }
 
   @action

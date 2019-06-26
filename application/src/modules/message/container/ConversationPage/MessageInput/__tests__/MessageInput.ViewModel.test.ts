@@ -13,6 +13,7 @@ import {
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
+import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
 
@@ -21,6 +22,7 @@ jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
+jest.mock('sdk/module/group');
 
 const postService = new PostService();
 const userId = 1232222;
@@ -31,6 +33,10 @@ const groupConfigService = {
 
 const itemService = {
   getUploadItems: jest.fn(),
+};
+
+const groupService = {
+  sendTypingEvent: jest.fn(),
 };
 
 ServiceLoader.getInstance = jest
@@ -46,6 +52,10 @@ ServiceLoader.getInstance = jest
 
     if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
       return groupConfigService;
+    }
+
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
     }
 
     return { userConfig: { getGlipUserId: () => userId } };
