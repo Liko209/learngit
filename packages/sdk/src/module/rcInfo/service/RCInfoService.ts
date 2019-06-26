@@ -198,8 +198,6 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getRCWebUriByType(type);
   }
 
-  getAppDownloadUri() {}
-
   private get regionInfoController() {
     return this.getRCInfoController().getRegionInfoController();
   }

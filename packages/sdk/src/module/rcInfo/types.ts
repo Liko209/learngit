@@ -132,7 +132,7 @@ export {
   RCBrandType,
   SpecialNumberRuleModel,
   StationLocationSetting,
-  ERCWebUris as ERCWebUris,
+  ERCWebUris,
   GlobalStationLocationSetting,
   RegionInfo,
   EForwardingFlipNumberType,
