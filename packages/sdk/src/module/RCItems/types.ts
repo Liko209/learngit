@@ -32,6 +32,12 @@ type Caller = {
   faxErrorCode?: FAX_ERROR_CODE; // Fax
 };
 
+type CallerView = {
+  phoneNumber?: string;
+  extensionNumber?: string;
+  name?: string;
+};
+
 type Attachment = UriModel<number> & {
   type: ATTACHMENT_TYPE;
   contentType: string;
@@ -69,4 +75,4 @@ type FetchResult<T> = {
   hasMore: boolean;
 };
 
-export { UriModel, Caller, RCMessage, FetchResult, Attachment };
+export { UriModel, Caller, CallerView, RCMessage, FetchResult, Attachment };

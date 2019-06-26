@@ -6,9 +6,14 @@
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { isValidPhoneNumber } from '@/common/postParser/utils';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import PhoneNumberModel from '@/store/models/PhoneNumber';
 
 function formatPhoneNumberWithStore(phoneNumber: string) {
-  return getEntity(ENTITY_NAME.PHONE_NUMBER, phoneNumber).formattedPhoneNumber;
+  return getEntity<PhoneNumber, PhoneNumberModel, string>(
+    ENTITY_NAME.PHONE_NUMBER,
+    phoneNumber,
+  ).formattedPhoneNumber;
 }
 
 function formatPhoneNumber(phoneNumber: string, shouldValidate = true) {

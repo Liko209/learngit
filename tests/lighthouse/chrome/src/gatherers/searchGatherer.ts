@@ -11,7 +11,9 @@ class SearchGatherer extends BaseGatherer {
   private metricKeys: Array<string> = [
     'search_group',
     'search_people',
-    'search_team'
+    'search_team',
+    'search_post',
+    'ui_globalsearch_tab_render'
   ];
 
   constructor(keywords: Array<string>) {
@@ -48,7 +50,7 @@ class SearchGatherer extends BaseGatherer {
         ui: []
       };
     }
-
+    
     return result;
   }
 
@@ -69,6 +71,12 @@ class SearchGatherer extends BaseGatherer {
 
       keyword = this.keywords[index++ % this.keywords.length];
       await page.searchByKeyword(keyword);
+
+      await page.enterSearchResult();
+
+      await page.switchAllSeachTab();
+
+      await page.closeSearch();
 
       this.pushGatherer(this.metricKeys);
     }

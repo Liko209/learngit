@@ -602,6 +602,18 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it("should not parse ascii emoji when it's part of words", () => {
+        expect(
+          postParser(`ID: 123`, { emoji: { hostName }, html: true }),
+        ).toEqual('ID: 123');
+        expect(
+          postParser(`app:///webpack:/src/main/main.ts`, {
+            emoji: { hostName },
+            html: true,
+          }),
+        ).toEqual('app:///webpack:/src/main/main.ts');
+      });
+
       it('should return array with image emoji and other text', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
@@ -1001,6 +1013,33 @@ Veniam anim velit amet aliqua proident.`}
           />,
         ]);
       });
+
+      it('should parse atmention correctly when there is no space between atmention and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790${atmention(
+              '123233',
+              'Aaliyah Lind',
+            )}`,
+            { atMentions: { map }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <JuiAtMention
+            id='123233'
+            isCurrent={false}
+            name='@Aaliyah Lind'
+            key={1}
+          />,
+        ]);
+      });
     });
 
     describe('html and emoji', () => {
@@ -1044,6 +1083,31 @@ Veniam anim velit amet aliqua proident.`}
           <a key={2} href='http://google.com' rel='noreferrer' target='_blank'>
             google.com
           </a>,
+        ]);
+      });
+
+      it('should parse emoji correctly when there is no space between emoji and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790:joy:`,
+            { emoji: { hostName }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <img
+            alt='😂'
+            className='emoji'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            title=':joy:'
+            key={1}
+          />,
         ]);
       });
     });

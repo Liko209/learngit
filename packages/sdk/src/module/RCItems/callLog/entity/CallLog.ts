@@ -14,7 +14,7 @@ import {
   CALL_TRANSPORT,
   LEG_TYPE,
 } from '../constants';
-import { Caller, UriModel } from '../../types';
+import { Caller, CallerView, UriModel } from '../../types';
 import { CALL_DIRECTION } from '../../constants';
 
 type CallRecording = UriModel<string> & {
@@ -71,7 +71,7 @@ type CallLog = IdModel<string> & {
 };
 
 type CallLogView = IdModel<string> & {
-  caller: Caller;
+  caller?: CallerView;
   __localInfo: number;
   __timestamp: number;
 };

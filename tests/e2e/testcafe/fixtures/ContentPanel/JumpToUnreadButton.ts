@@ -148,7 +148,7 @@ test.meta(<ITestMeta>{
     await conversationPage.postByIdExpectVisible(postIdOfFirstUnreadInChat, true);
   });
 
-  await h(t).withLog('And should see New Messages indicator on the top', async () => {
+  await h(t).withLog('And should see New messages indicator on the top', async () => {
     await t.expect(conversationPage.newMessageDeadLine.exists).ok();
     await conversationPage.newMessageDeadLineExpectVisible(true);
     await conversationPage.newMessageDeadLineShouldBeOnTheTop();
@@ -522,7 +522,7 @@ test.meta(<ITestMeta>{
       await conversationPage.postByIdExpectVisible(firstUnreadPostIds[i], true);
     });
 
-    await h(t).withLog('And should see New Messages indicator on the top', async () => {
+    await h(t).withLog('And should see New messages indicator on the top', async () => {
       await t.expect(conversationPage.newMessageDeadLine.exists).ok();
       await conversationPage.newMessageDeadLineExpectVisible(true);
       await conversationPage.newMessageDeadLineShouldBeOnTheTop();
