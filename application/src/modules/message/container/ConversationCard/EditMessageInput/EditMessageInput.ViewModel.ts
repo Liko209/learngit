@@ -175,7 +175,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       cancelText: await i18nT('common.dialog.cancel'),
       onOK: () => {
         this._deletePost().catch((e: Error) => {
-          mainLogger.error(e);
+          mainLogger.error(`delete post error: ${e}`);
         });
       },
     });
