@@ -9,6 +9,8 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { MemberListItemProps } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { Group } from 'sdk/module/group';
+import GroupModel from '@/store/models/Group';
 
 class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   @computed
@@ -38,7 +40,7 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
 
   @computed
   private get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.cid);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.cid);
   }
 
   @computed
@@ -49,7 +51,7 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   @computed
   get adminNumber() {
     const { permissions } = this._group;
-    return permissions && permissions.admin.uids.length;
+    return permissions && permissions.admin && permissions.admin.uids.length;
   }
 
   @computed

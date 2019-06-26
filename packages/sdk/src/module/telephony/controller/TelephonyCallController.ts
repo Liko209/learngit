@@ -249,7 +249,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._recordToggle.onFailure();
   }
 
-  onCallActionFailed(callAction: RTC_CALL_ACTION) {
+  onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
     switch (callAction) {
       case RTC_CALL_ACTION.HOLD:
         this._handleHoldActionFailed();

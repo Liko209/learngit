@@ -161,7 +161,7 @@ export class ContactSearchListViewModel
   private _makeCall = async (val: string) => {
     // make sure line 30 run before end()
     if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
       this._telephonyStore.end();
@@ -175,15 +175,17 @@ export class ContactSearchListViewModel
 
   private _searchReaction = debounce(
     async () => {
+      let trimmedInputString;
       runInAction(() => {
-        if (!this.trimmedInputString.length) {
+        trimmedInputString = this.trimmedInputString;
+        if (!trimmedInputString.length) {
           this.searchResult = [];
           return;
         }
       });
       const [currentSearchResult, parsedPhone] = await Promise.all([
         this._searchContacts(),
-        this._telephonyService.isValidNumber(this.trimmedInputString),
+        this._telephonyService.isValidNumber(trimmedInputString),
       ]);
 
       runInAction(() => {

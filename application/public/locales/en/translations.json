@@ -2,7 +2,8 @@
   "common": {
     "button": {
       "ariaToggleOn": "On, click to turn off",
-      "ariaToggleOff": "Off, click to turn on"
+      "ariaToggleOff": "Off, click to turn on",
+      "tryAgain": "Try again"
     },
     "dialog": {
       "OK": "OK",
@@ -20,7 +21,8 @@
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
-      "thenTryAgain": "then try again."
+      "thenTryAgain": "then try again.",
+      "loadError": "Oops! Something went wrong, please try again."
     },
     "preposition": {
       "in": "in"
@@ -106,8 +108,8 @@
     "team": "team",
     "postedBy": "Posted by",
     "postedIn": "Posted in",
-    "postedByPlaceholder": "Enter name or email",
-    "postedInPlaceholder": "Enter a team or conversation",
+    "postedByPlaceholder": "Name or email",
+    "postedInPlaceholder": "Team or Conversation",
     "filters": "Filters",
     "People": "People",
     "Groups": "Groups",
@@ -137,7 +139,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
-    "showUnreads": "Show Unreads",
+    "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
     "bookmarkPosts": "Bookmarks",
@@ -219,11 +221,12 @@
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
-      "newMessages": "new messages"
+      "newMessages": "new messages",
+      "newMessagesDivider": "New messages"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
-    "conversationDetails": "Conversation Details",
+    "conversationDetails": "Conversation details",
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
@@ -465,7 +468,7 @@
       "revokeTeamAdmin": "Revoke team admin",
       "addTeamMemberSubmit": "Add",
       "AddTeamMembers": "Add team members",
-      "AddTeamMembersTitle": "Add Team Members",
+      "AddTeamMembersTitle": "Add team members",
       "removeFromTeam": "Remove from team",
       "joinButtonTitle": "Join",
       "joinTeam": "Join team",
@@ -486,7 +489,7 @@
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
-      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
+      "convertToTeamPreviousMessageHandle": "By converting this conversation to a team, all messages and files previously posted will be visible to anyone new invited to the team.",
       "noMatchesFound": "No matches found",
       "archivedSuffix": " - Archived",
       "adminActions": "Admin actions"
@@ -668,7 +671,8 @@
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
     "recordings": "Recordings",
-    "noVoicemailAvailable": "No voicemail available",
+    "noCallLogAvailable": "No call log",
+    "noVoicemailAvailable": "No voicemail records",
     "prompt": {
       "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
       "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
@@ -738,13 +742,13 @@
         }
       },
       "desktopNotifications": {
-        "title": "Desktop Notifications",
+        "title": "Desktop notifications",
         "notificationsForBrowser": {
           "label": "Desktop notifications for browser",
           "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
         },
         "newMessages": {
-          "label": "New Messages",
+          "label": "New messages",
           "description": "Choose your preference for desktop notifications for new messages",
           "options": {
             "always": "All new messages",
@@ -753,16 +757,16 @@
           }
         },
         "incomingCalls": {
-          "label": "Incoming Calls",
+          "label": "Incoming calls",
           "description": "Choose your preference for desktop notifications for incoming calls"
         },
         "callsAndVoicemails": {
-          "label": "Missed Calls and New Voicemails",
+          "label": "Missed calls and new voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
-        "title": "Email Notifications",
+        "title": "Email notifications",
         "directMessages": {
           "label": "Direct messages",
           "description": "Receive email notifications for direct messages"
@@ -776,7 +780,7 @@
           "description": "Choose your preferences for email notifications for team messages"
         },
         "dailyDigest": {
-          "label": "Daily Digest",
+          "label": "Daily digest",
           "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
         },
         "options": {
@@ -791,6 +795,7 @@
     "meetings": "Meetings",
     "calendar": "Calendar",
     "update": "Update",
+    "edit": "Edit",
     "phone": {
       "title": "Phone",
       "general": {

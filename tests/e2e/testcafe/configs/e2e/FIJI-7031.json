@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "fixtures/ActionBar/Edit.ts",
+      "fixtures/ActionBar/Quote.ts"
+    ],
+    "include_tags": [
+      "P2"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

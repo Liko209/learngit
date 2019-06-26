@@ -333,6 +333,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickReplyWithWillCallBackEntryButton() {
+    await this.t.hover(this.replyWithWillCallBackEntry);
     await this.t.click(this.replyWithWillCallBackEntry);
   }
 
@@ -413,11 +414,11 @@ class CallerIdList extends BaseWebComponent {
   }
 
   get callerIds() {
-    return this.self.find('li').filter('[data-value]');
+    return this.self.find('li');
   }
 
   async selectByValue(value: string) {
-    await this.t.click(this.callerIds.filter(`[data-value="${value}"]`));
+    await this.t.click(this.callerIds.filter(`[value="${value}"]`));
   }
 
   async selectNth(n: number) {
@@ -447,7 +448,7 @@ class ContactSearchList extends BaseWebComponent {
     await this.t.click(this.searchResults.nth(n))
   }
 
-  get hasDirectDial(){
+  get hasDirectDial() {
     return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
   }
 }
@@ -472,6 +473,10 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get unMuteButton() {
     return this.buttonOfIcon('mic_off');
+  }
+
+  async hoverUnMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 
   async clickUnMuteButton() {
