@@ -30,13 +30,7 @@ import {
   useForceUpdate,
   useIsFirstRenderRef,
 } from './hooks';
-import {
-  createKeyMapper,
-  createRange,
-  getChildren,
-  isRangeIn,
-  isRangeEqual,
-} from './utils';
+import { createKeyMapper, createRange, getChildren, isRangeIn } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
