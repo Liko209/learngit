@@ -66,7 +66,8 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
       this.userSettingEntityCache &&
-      this.getCacheValue('deviceId') !== value
+      this.userSettingEntityCache.value &&
+      this.userSettingEntityCache.value.deviceId !== value
     ) {
       this.getUserSettingEntity();
     }
