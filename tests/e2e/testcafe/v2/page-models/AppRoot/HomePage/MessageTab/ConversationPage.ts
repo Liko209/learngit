@@ -350,6 +350,14 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.t.click(this.moreButtonOnHeader);
   }
 
+  get memberButton() {
+    return this.getSelectorByAutomationId('memberButton');
+  }
+
+  async clickMemberButton() {
+    return this.t.click(this.memberButton);
+  }
+
   get headerMoreMenu() {
     return this.getComponent(HeaderMoreMenu);
   }
