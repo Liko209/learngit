@@ -16,7 +16,13 @@ import {
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
-import { ISortableModel, IMatchFunc, ITransformFunc, ISortFunc } from './types';
+import {
+  ISortableModel,
+  IMatchFunc,
+  ITransformFunc,
+  ISortFunc,
+  HasMore,
+} from './types';
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
@@ -26,12 +32,6 @@ import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
 
 type CountChangeCallback = (count: number) => void;
-type HasMore =
-  | boolean
-  | {
-      up: boolean;
-      down: boolean;
-    };
 
 export interface IFetchSortableDataListHandlerOptions<
   Model,
@@ -53,7 +53,7 @@ export interface IFetchSortableDataProvider<
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: SortableModel,
-  ): Promise<{ data: Model[]; hasMore: boolean }>;
+  ): Promise<{ data: Model[]; hasMore: HasMore | boolean }>;
 
   totalCount?(): number;
   fetchTotalCount?(): Promise<number>;
@@ -161,7 +161,7 @@ export class FetchSortableDataListHandler<
     direction: QUERY_DIRECTION,
     dataLoader: () => Promise<{
       data: Model[];
-      hasMore: HasMore;
+      hasMore: HasMore | boolean;
     }>,
   ) {
     const { data = [], hasMore } = await dataLoader();
@@ -202,7 +202,7 @@ export class FetchSortableDataListHandler<
         this.listStore.items.length - this._pageSize,
         this.listStore.items.length,
       );
-      this.handleHasMore(true, QUERY_DIRECTION.OLDER);
+      this.handleHasMore({ older: true }, QUERY_DIRECTION.OLDER);
       this.sortableListStore.replaceAll(sortableResult);
     } else {
       sortableResult = this.listStore.items;
@@ -497,8 +497,11 @@ export class FetchSortableDataListHandler<
   }
 
   @action
-  protected handleHasMore(hasMore: HasMore, direction: QUERY_DIRECTION) {
-    switch (typeof direction) {
+  protected handleHasMore(
+    hasMore: HasMore | boolean,
+    direction: QUERY_DIRECTION,
+  ) {
+    switch (typeof hasMore) {
       case 'boolean': {
         this.sortableListStore.setHasMore(
           hasMore as boolean,
@@ -507,9 +510,10 @@ export class FetchSortableDataListHandler<
         break;
       }
       case 'object': {
-        const { up, down } = hasMore as { up: boolean; down: boolean };
-        this.sortableListStore.setHasMore(up, true);
-        this.sortableListStore.setHasMore(down, false);
+        console.log('andy hu', hasMore);
+        const { older = false, newer = false } = hasMore as HasMore;
+        this.sortableListStore.setHasMore(older, true);
+        this.sortableListStore.setHasMore(newer, false);
         break;
       }
     }
