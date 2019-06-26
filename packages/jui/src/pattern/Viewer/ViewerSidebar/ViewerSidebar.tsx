@@ -5,7 +5,7 @@
  */
 import React, { memo, ReactNode, createRef } from 'react';
 import styled from '../../../foundation/styled-components';
-import { palette, spacing } from '../../../foundation/utils/styles';
+import { spacing } from '../../../foundation/utils/styles';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import { JuiViewerThumbnail, ThumbnailInfoType } from '../ViewerThumbnail';
 import { getVisibleElements, scrollIntoViewWithContainer } from '../ui_utils';
