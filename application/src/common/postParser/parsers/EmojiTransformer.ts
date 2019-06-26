@@ -125,7 +125,6 @@ class EmojiTransformer {
   }
 
   private static _transferNativeEmojiToUnicode(unicode: string) {
-    console.log('unicode asdf is ', unicode);
     const emojiData = getEmojiDataFromUnicode(unicode, data);
     const skinToneIndex = this._hasSkinTone(unicode);
     if (skinToneIndex > -1) {
