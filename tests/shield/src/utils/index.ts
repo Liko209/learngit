@@ -6,3 +6,4 @@
 export * from './electron';
 export * from './registerModule';
 export * from './mountWithTheme';
+export * from './asyncTest';
