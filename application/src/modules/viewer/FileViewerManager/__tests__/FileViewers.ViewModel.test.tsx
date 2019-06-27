@@ -40,7 +40,7 @@ describe('FileViewerViewModel', () => {
     it('should dismiss be call when call viewerDestroyer function', () => {
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: [] }],
+        latestVersion: { pages: [] },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm.viewerDestroyer();
@@ -51,7 +51,7 @@ describe('FileViewerViewModel', () => {
     it('should be return undefined when pages undefined', () => {
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       const vm = new FileViewerViewModel(1, dismiss);
 
@@ -60,7 +60,7 @@ describe('FileViewerViewModel', () => {
     it('should be return not undefined when pages not undefined', () => {
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: [1, 2] }],
+        latestVersion: { pages: [1, 2] },
       });
       const vm = new FileViewerViewModel(1, dismiss);
 
@@ -73,7 +73,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 1, pageIdx: 1 };
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm['_currentPageIdx '] = 1;
@@ -84,7 +84,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 1, pageIdx: 2 };
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm['_currentPageIdx '] = 1;
@@ -96,7 +96,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 0.5, pageIdx: 1 };
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm['_currentScale '] = 0.5;
@@ -107,7 +107,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 1, pageIdx: 1 };
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm['_currentScale '] = 0.5;
@@ -120,7 +120,7 @@ describe('FileViewerViewModel', () => {
       const dismiss = jest.fn();
       const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: undefined }],
+        latestVersion: { pages: undefined },
       });
       expect(vm.title).not.toEqual(undefined);
     });
@@ -129,7 +129,7 @@ describe('FileViewerViewModel', () => {
     it('should be return 2  when call input 2 length 2', () => {
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: [1, 2] }],
+        latestVersion: { pages: [1, 2] },
       });
       const vm = new FileViewerViewModel(1, dismiss);
       vm.handleTextFieldChange({ target: { value: '2' } });
@@ -139,7 +139,7 @@ describe('FileViewerViewModel', () => {
       const dismiss = jest.fn();
       const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: [1, 2] }],
+        latestVersion: { pages: [1, 2] },
       });
       vm.handleTextFieldChange({ target: { value: '3' } });
       expect(vm['_textFieldValue']).toEqual(2);
@@ -149,7 +149,7 @@ describe('FileViewerViewModel', () => {
       const dismiss = jest.fn();
       const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
-        versions: [{ pages: [1, 2] }],
+        latestVersion: { pages: [1, 2] },
       });
       vm.handleTextFieldChange({ target: { value: '-1' } });
       expect(vm['_textFieldValue']).toEqual(1);
