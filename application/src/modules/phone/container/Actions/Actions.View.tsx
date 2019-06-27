@@ -55,9 +55,11 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
   renderButtons = () => {
     const { buttons, dropdownItems } = this.getButtonsConfig();
+    const { entity } = this.props;
+
     if (dropdownItems) {
       buttons.push(
-        <More key="more" automationId="voicemail-more-button">
+        <More key="more" automationId={`${entity}-more-button`}>
           {dropdownItems}
         </More>,
       );
