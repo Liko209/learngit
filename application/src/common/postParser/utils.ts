@@ -177,27 +177,30 @@ const getStylesObject = moize(
 
 const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
-const AT_MENTION_REGEX = /<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>(.*?)<\/a>/gi;
-const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":[-?\d]*?}'>)(.*?)(<\/a>)/gi;
-const MIN_ATMENTION_PATTERN_LENGTH = 48;
+const AT_MENTION_REGEX = /\s<at_mention id=([-?\d]*?) \/>/gi;
+const MIN_ATMENTION_PATTERN_LENGTH = 20;
+const MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH = 20;
+const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
-const EMOJI_REGEX = /<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
+const EMOJI_REGEX = /\s<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
-const EMOJI_UNICODE_REGEX = `${Object.keys(convertMapUnicode).join('|')}`;
+const EMOJI_UNICODE_REGEX = `(^|\\s)?(${Object.keys(convertMapUnicode).join(
+  '|',
+)})`;
 
 const EMOJI_ASCII_REGEX = `(^|\\s)${Object.keys(convertMapAscii).join(
   '(?=\\s|$|[!,.?])|(^|\\s)',
 )}(?=\\s|$|[!,.?])`;
 const EMOJI_ASCII_REGEX_SIMPLE =
-  "[<3\\/:'\\)-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,}";
+  "(^|\\s)([<3\\/:'\\)\\-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,})(?=\\s|$)";
 
 const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
-const EMOJI_ONE_REGEX_SIMPLE = ':[a-z0-9\\+\\-\\_]+:';
+const EMOJI_ONE_REGEX_SIMPLE = '(^|\\s)?(:[a-z0-9\\+\\-\\_]+:)';
 
 const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
-  `:${Object.keys(customEmojiMap).join(':|:')}:`;
+  `(^|\\s)?(:${Object.keys(customEmojiMap).join(':|:')}:)`;
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
 
@@ -252,6 +255,7 @@ export {
   MIN_PHONE_NUMBER_LENGTH,
   MAX_PHONE_NUMBER_LENGTH,
   MIN_ATMENTION_PATTERN_LENGTH,
+  MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH,
 };
 
 // regex

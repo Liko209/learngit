@@ -58,7 +58,7 @@ describe('DeleteViewModel', () => {
 
   @testable
   class deleteCallLog {
-    @test('should toast error when delete call log fail for network issue')
+    @test('should toast error when delete call log fail for network issue [JPT-2355]')
     @mockService(CallLogService, 'deleteCallLogs', networkErrorFunc)
     async t1() {
       const vm = new DeleteViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM });
@@ -68,7 +68,7 @@ describe('DeleteViewModel', () => {
       );
     }
 
-    @test('should toast error when delete call log fail for server issue')
+    @test('should toast error when delete call log fail for server issue [JPT-2356]')
     @mockService(CallLogService, 'deleteCallLogs', serverErrorFunc)
     async t2() {
       const vm = new DeleteViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM });

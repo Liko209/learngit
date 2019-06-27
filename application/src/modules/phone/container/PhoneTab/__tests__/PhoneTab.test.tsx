@@ -6,14 +6,13 @@
 import React from 'react';
 import { registerModule } from 'shield/utils';
 import { PhoneTabRouter } from '../PhoneTabRouter';
-import { mount } from 'shield/utils';
 import { test, testable } from 'shield';
-import { Router } from 'react-router';
-import { createMemoryHistory } from 'history';
 import { config } from '@/modules/phone/module.config';
 import { config as telephonyConfig } from '@/modules/telephony/module.config';
 import { config as common } from '@/modules/common/module.config';
 import * as featuresFlags from '@/modules/featuresFlags/module.config';
+import { shallow } from 'enzyme';
+import { PhoneTabRouterView } from '../PhoneTabRouter.View';
 
 jest.mock('sdk/module/config/service/UserConfigService');
 jest.mock('sdk/dao');
@@ -26,18 +25,14 @@ registerModule(featuresFlags);
 registerModule(common);
 
 describe('PhoneTab', () => {
-  const history = createMemoryHistory();
-
   @testable
   class init {
     @test('should create a PhoneTab instance when mount')
     t1() {
-      const wrapper = mount(
-        <Router history={history}>
-          <PhoneTabRouter />
-        </Router>,
-      );
+      const wrapper = shallow(<PhoneTabRouter />);
+      const viewWrapper = shallow(<PhoneTabRouterView />);
       expect(wrapper).toBeTruthy();
+      expect(viewWrapper).toBeTruthy();
     }
   }
 });

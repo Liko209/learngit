@@ -54,6 +54,11 @@ enum RTC_CALL_ACTION {
   CALL_TIME_OUT = 'callTimeOut',
 }
 
+enum RTC_CALL_ACTION_ERROR_CODE {
+  INVALID = -1,
+  OTHER_ACTION_IN_PROGRESS = -6,
+}
+
 type RTCSipFlags = {
   voipFeatureEnabled: boolean;
   voipCountryBlocked: boolean;
@@ -107,6 +112,7 @@ export {
   RTCUserInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
+  RTC_CALL_ACTION_ERROR_CODE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTCCallOptions,

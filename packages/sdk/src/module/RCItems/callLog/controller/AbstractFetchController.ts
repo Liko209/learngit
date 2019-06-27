@@ -12,16 +12,16 @@ import { CALL_LOG_SOURCE } from '../constants';
 import { DEFAULT_FETCH_SIZE, SYNC_DIRECTION } from '../../constants';
 import { QUERY_DIRECTION, daoManager } from 'sdk/dao';
 import { FetchResult } from '../../types';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { CallLogDao } from '../dao';
 import { JError, ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CallLogService } from '../service';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 abstract class AbstractFetchController extends RCItemSyncController<
   CallLog,
@@ -42,7 +42,7 @@ abstract class AbstractFetchController extends RCItemSyncController<
     limit = DEFAULT_FETCH_SIZE,
     direction = QUERY_DIRECTION.OLDER,
   ): Promise<FetchResult<CallLog>> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     let hasMore = true;
     mainLogger
@@ -60,7 +60,7 @@ abstract class AbstractFetchController extends RCItemSyncController<
     );
 
     performanceTracer.trace({
-      key: PERFORMANCE_KEYS.FETCH_CALL_LOG_FROM_DB,
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.FETCH_CALL_LOG_FROM_DB,
       count: results.length,
     });
 
@@ -89,7 +89,7 @@ abstract class AbstractFetchController extends RCItemSyncController<
       );
 
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.FETCH_CALL_LOG,
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.FETCH_CALL_LOG,
       count: results.length,
     });
     return {
@@ -110,15 +110,15 @@ abstract class AbstractFetchController extends RCItemSyncController<
   }
 
   protected async requestClearAllAndRemoveLocalData(): Promise<void> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     mainLogger.tags(this.syncName).info('clear call logs');
     await RCItemApi.deleteAllCallLogs();
     performanceTracer.trace({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG_FROM_SERVER,
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG_FROM_SERVER,
     });
     await this.removeLocalData();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG,
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.CLEAR_ALL_CALL_LOG,
     });
   }
 

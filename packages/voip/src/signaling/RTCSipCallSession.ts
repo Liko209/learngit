@@ -9,6 +9,7 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTC_CALL_ACTION,
+  RTC_CALL_ACTION_ERROR_CODE,
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
@@ -338,10 +339,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.START_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code =
+          data && data.code ? data.code : RTC_CALL_ACTION_ERROR_CODE.INVALID;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.START_RECORD,
+          code,
         );
       },
     );
@@ -355,10 +359,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.STOP_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code =
+          data && data.code ? data.code : RTC_CALL_ACTION_ERROR_CODE.INVALID;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.STOP_RECORD,
+          code,
         );
       },
     );

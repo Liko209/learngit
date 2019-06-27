@@ -187,7 +187,7 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2057','JPT-2074','JPT-2060','JPT-2080'],
+  caseIds: ['JPT-2057','JPT-2074','JPT-2060','JPT-2080', 'JPT-2365'],
   maintainers: ['Mia.cai'],
   keywords: ['ContentPanel/RenameFileName']
 })(`Unsupported characters should be replaced by_ when saving the file name;Show 'More' tooltip for the more icon;Rename file option is disabled to guests;Save button should be disabled on filename dialog if filename input is blank`, async (t) => {
@@ -227,66 +227,96 @@ test.meta(<ITestMeta>{
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
-  await h(t).withLog(`When I am on hover more icon`, async () => {
-    await t.hover(moreActionOnFile.more);
-  });
 
-  await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
-    await moreActionOnFile.showTooltip(moreTooltip);
-  });
+  const entryPoint = ['keyBoardEntryAndNameNoChange', 'clickMenu', 'keyBoardEntry']
 
-  await h(t).withLog(`When I click the more button of the file`, async() => {
-    await moreActionOnFile.clickMore();
-  });
 
-  await h(t).withLog(`Then show ${renameFileMenu} menu at the top`, async() => {
-    await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
-  });
+  for(let i = 0 ; i < entryPoint.length; i++ ){
+    const isIndexTwo = i === 2
+    const isIndexOne = i === 1
+    const isIndexZero = i === 0
 
-  await h(t).withLog(`And the menu should be enabled`, async() => {
-    await moreActionOnFile.renameFileMenuDisabledOrNot(false);
-  });
+    await h(t).withLog(`When I am on hover more icon`, async () => {
+      await t.hover(moreActionOnFile.more);
+    });
 
-  await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
-    await moreActionOnFile.clickRenameFileMenu();
-  });
+    isIndexOne && await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {
+      await moreActionOnFile.showTooltip(moreTooltip);
+    });
 
-  await h(t).withLog(`Then will show the rename file dialog`, async() => {
-    await moreActionOnFile.ensureLoaded();
-  });
+    await h(t).withLog(`When I click the more button of the file`, async() => {
+      await moreActionOnFile.clickMore();
+    });
 
-  await h(t).withLog(`When I clear the file name`, async() => {
-    await renameFileDialog.clearFileNameInput();
-  });
+    isIndexOne && await h(t).withLog(`Then show ${renameFileMenu} menu at the top`, async() => {
+      await moreActionOnFile.renameFileMenuAtTop(renameFileMenu);
+    });
 
-  await h(t).withLog(`The Save button should be disabled`, async() => {
-    await renameFileDialog.saveButtonShouldDisabled();
-  });
+    isIndexOne && await h(t).withLog(`And the menu should be enabled`, async() => {
+      await moreActionOnFile.renameFileMenuDisabledOrNot(false);
+    });
 
-  const blankFileName = ' ';
-  await h(t).withLog(`When I update the file name to a blank`, async() => {
-    await renameFileDialog.updateFileName(blankFileName);
-  });
+    await h(t).withLog(`When I click the ${renameFileMenu} menu of the file`, async() => {
+      await moreActionOnFile.clickRenameFileMenu();
+    });
 
-  await h(t).withLog(`The Save button should be disabled`, async() => {
-    await renameFileDialog.saveButtonShouldDisabled();
-  });
+    await h(t).withLog(`Then will show the rename file dialog`, async() => {
+      await moreActionOnFile.ensureLoaded();
+    });
 
-  await h(t).withLog(`When I update the file name`, async() => {
-    await renameFileDialog.updateFileName(nameWithUnSupportChar);
-  });
+    !isIndexZero && await h(t).withLog(`When I clear the file name`, async() => {
+      await renameFileDialog.clearFileNameInput();
+    });
 
-  await h(t).withLog(`And I click the Save button`, async() => {
-    await renameFileDialog.clickSaveButton();
-  });
+    if(isIndexOne) {
+      await h(t).withLog(`The Save button should be disabled`, async() => {
+        await renameFileDialog.saveButtonShouldDisabled();
+      });
+      const blankFileName = ' ';
+      await h(t).withLog(`When I update the file name to a blank`, async() => {
+        await renameFileDialog.updateFileName(blankFileName);
+      });
 
-  await h(t).withLog(`Then the dialog should be closed`, async() => {
-    await renameFileDialog.ensureDismiss();
-  });
+      await h(t).withLog(`The Save button should be disabled`, async() => {
+        await renameFileDialog.saveButtonShouldDisabled();
+      });
+    } else if(isIndexTwo) {
+      await h(t).withLog(`Then force on file input`, async() => {
+        await t.click(renameFileDialog.fileNameInput);
+      });
+      await h(t).withLog(`Then keyboard on entry`, async() => {
+        await t.pressKey('enter')
+      });
+      await h(t).withLog(`Then will show the rename file dialog`, async() => {
+        await moreActionOnFile.ensureLoaded();
+      });
+    }
 
-  await h(t).withLog(`And show the new file name`, async() => {
-    await postItem.nameShouldBe(newFileName);
-  });
+    !isIndexZero && await h(t).withLog(`When I update the file name`, async() => {
+      await renameFileDialog.updateFileName(nameWithUnSupportChar);
+    });
+
+    if(isIndexOne) {
+      await h(t).withLog(`And I click the Save button`, async() => {
+        await renameFileDialog.clickSaveButton();
+      });
+    } else {
+      await h(t).withLog(`Then force on file input`, async() => {
+        await t.click(renameFileDialog.fileNameInput);
+      });
+      await h(t).withLog(`Then keyboard on entry`, async() => {
+        await t.pressKey('enter')
+      });
+    }
+
+    await h(t).withLog(`Then the dialog should be closed`, async() => {
+      await renameFileDialog.ensureDismiss();
+    });
+
+    await h(t).withLog(`And show the file name`, async() => {
+      await postItem.nameShouldBe(isIndexZero ? '1' : newFileName);
+    });
+  }
 
   await h(t).withLog(`Given I logout and login Jupiter with guest ${guest.company.number}#${guest.extension}`, async () => {
     await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);

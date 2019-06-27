@@ -131,11 +131,11 @@ describe('ItemUtils', () => {
       expect(ItemUtils.eventFilter(11)(item2)).toBeFalsy();
     });
     // skip the warning case until @thomas to fixed it
-    it.skip('should return true when is not over due event', () => {
+    it('should return true when is not over due event', () => {
       expect(ItemUtils.eventFilter(11)(item4)).toBeTruthy();
     });
 
-    it.skip('should return false when is over due event', () => {
+    it('should return false when is over due event', () => {
       expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
     });
 
