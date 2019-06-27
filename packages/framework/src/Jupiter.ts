@@ -14,6 +14,7 @@ import {
 } from './ioc';
 import { ModuleConfig, Provide } from './types';
 import { IS_DECORATOR } from './constants';
+import firebase from 'firebase';
 
 /**
  * Jupiter Framework
@@ -162,6 +163,8 @@ class Jupiter {
   }
 
   async bootstrap() {
+    const trace = firebase.performance().trace('bootstrap');
+    trace.start();
     if (this._running) {
       throw new Error('Jupiter already running.');
     }
@@ -179,6 +182,7 @@ class Jupiter {
     );
 
     this._running = true;
+    trace.stop();
   }
 
   get initializedListener() {

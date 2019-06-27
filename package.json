@@ -106,5 +106,8 @@
       "commit-msg": "node scripts/validate-commit-msg.js",
       "post-merge": "node scripts/update-dependencies.js"
     }
+  },
+  "dependencies": {
+    "firebase": "6.2.3"
   }
 }

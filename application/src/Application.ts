@@ -21,6 +21,11 @@ import * as setting from '@/modules/setting/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
+// Firebase App (the core Firebase SDK) is always required and must be listed first
+import * as firebase from 'firebase/app';
+
+// Add the Performance Monitoring library
+import 'firebase/performance';
 
 @injectable()
 class Application {
@@ -52,6 +57,21 @@ class Application {
         '@/modules/electron/module.config'),
       );
     }
+
+    // TODO: Replace the following with your app's Firebase project configuration
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDN2BlRd-uSO_LM-63F7SC6003zI3S4Y70',
+      authDomain: 'friendlychat-80e3c.firebaseapp.com',
+      databaseURL: 'https://friendlychat-80e3c.firebaseio.com',
+      projectId: 'friendlychat-80e3c',
+      storageBucket: 'friendlychat-80e3c.appspot.com',
+      messagingSenderId: '639743626766',
+      appId: '1:639743626766:web:d8e3c266aea271dd',
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.performance();
     return this._jupiter.bootstrap();
   }
 }
