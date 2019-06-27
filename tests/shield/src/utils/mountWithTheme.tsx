@@ -351,7 +351,7 @@ const theme = {
     val3: '0 3px 1px -2px rgba(0, 0, 0, 0.14)',
   },
   maxHeight: { dialog: '72vh' },
-  opacity: [0.1, 0.2],
+  opacity: [0.1, 0.2, 0.5, 0.6, 0.8],
 };
 
 const mountWithTheme = (content: React.ReactNode) =>

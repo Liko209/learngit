@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { mount } from 'enzyme';
-import { mountWithTheme, asyncTest } from 'shield/utils';
+import { act } from 'react-dom/test-utils';
+import { mount, ReactWrapper } from 'enzyme';
+import { asyncTest } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
 import { LeftRail } from '../../message/container/LeftRail';
@@ -59,11 +60,16 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     it('should send post', async () => {
       const url = `/message/${team1._id}`;
       history.push(url);
-      const wrapper = mount(<App />);
-      await asyncTest(() => {
-        wrapper.update();
-        console.log(wrapper.debug());
-      },              10);
+      let wrapper: ReactWrapper;
+      await act(async () => {
+        wrapper = mount(<App />);
+        await asyncTest(() => {
+          act(() => {
+            // wrapper.update();
+            console.log(wrapper.debug());
+          });
+        },              10);
+      });
     });
   });
 });
