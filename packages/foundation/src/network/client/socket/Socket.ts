@@ -22,7 +22,12 @@ class Socket extends BaseClient {
       if (request.channel && request.channel !== SOCKET_CHANNEL.REQUEST) {
         // there is not response for channel 'xxx' except 'request', so resolve it directly
         socket.send(request.channel, request.data);
-        listener.onSuccess(new SocketResponse(new SocketResponseBuilder()));
+        const socketResponse = new SocketResponseBuilder()
+          .options({
+            request: { status_code: 200 },
+          })
+          .build();
+        listener.onSuccess(socketResponse);
       } else {
         delete request.channel;
         super.request(request, listener);

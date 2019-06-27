@@ -133,6 +133,7 @@ export default class NetworkClient {
         );
       return await this.request(query, requestHolder);
     }
+    networkLogger.tags(LOG_TAG).info('request fail:', request);
     throw responseParser.parse(response);
   }
 
