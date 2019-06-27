@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { JuiContainer, ContactSearchContainer } from 'jui/pattern/Dialer';
-import { RuiTooltipProps, RuiTooltip } from 'rcui/components/Tooltip';
+import { RuiTooltipProps } from 'rcui/components/Tooltip';
 import { ContactSearchList } from '../../ContactSearchList';
 import { isEqual } from 'lodash';
 import {
@@ -14,19 +14,19 @@ import {
 } from '../../CallerIdSelector';
 
 type Props = {
-  callerIdProps: CallerIdSelectorProps;
-  tooltipProps: Pick<
-    RuiTooltipProps,
-    Exclude<keyof RuiTooltipProps, 'children'>
-  >;
+  callerIdProps: {
+    tooltipProps: Pick<
+      RuiTooltipProps,
+      Exclude<keyof RuiTooltipProps, 'children' | 'title'>
+    >;
+    callerIdProps: CallerIdSelectorProps;
+  };
 };
 
 export const ContactSearchPanel = React.memo((props: Props) => {
   const keypadActions = (
     <ContactSearchContainer>
-      <RuiTooltip placement="bottom" {...props.tooltipProps}>
-        <CallerIdSelector {...props.callerIdProps} />
-      </RuiTooltip>
+      <CallerIdSelector {...props.callerIdProps} />
       <ContactSearchList />
     </ContactSearchContainer>
   );

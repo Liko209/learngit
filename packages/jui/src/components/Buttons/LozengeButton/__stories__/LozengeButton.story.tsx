@@ -10,7 +10,7 @@ import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiLozengeButton, JuiLozengeButtonProps } from '../';
 
 function getKnobs() {
-  const content = text('content', '2 New Messages');
+  const content = text('content', '2 new messages');
   const loading = boolean('loading', false);
   const arrowDirection = select<JuiLozengeButtonProps['arrowDirection']>(
     'arrowDirection',

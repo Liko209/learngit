@@ -12,7 +12,7 @@ import { ITestMeta } from '../../v2/models';
 import { clickOnMainMenuItem, setElectronDialogHandler } from 'testcafe-browser-provider-electron';
 import { ClientFunction, RequestMock } from 'testcafe';
 import axios from 'axios';
-import { WebphoneSession } from '../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Electron/Upgrade')
   .beforeEach(setupCase(BrandTire.RCOFFICE))

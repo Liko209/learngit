@@ -13,6 +13,7 @@ import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
+import { ok } from 'assert';
 
 fixture('AtMention/AtMention')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -302,6 +303,87 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
     await chatEntry.umi.shouldBeNumber(0);
   });
 
+});
+
+test(formalName('Function on post card of mentions/bookmarks page should the same as conversation page.', ['P2', 'JPT-324', 'zack']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let newPostId;
+  let currentNumber;
+  await h(t).withLog('Given I have an AtMention message from the conversation', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    newPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`First AtMention, ![:Person](${loginUser.rcId})`, chat, otherUser);
+  });
+
+  const app = new AppRoot(t);
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const bookmarkEntry =app.homePage.messageTab.bookmarksEntry;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const postMentionPage = app.homePage.messageTab.mentionPage;
+  const postBookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const atMentionPostCard = postMentionPage.postItemById(newPostId);
+  const bookmarkPostCard = postBookmarkPage.postItemById(newPostId);
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter AtMentions page', async () => {
+    await mentionsEntry.enter();
+  });
+
+  await h(t).withLog('Then the at mention post should be visible', async () => {
+    await t.expect(postMentionPage.postItemById(newPostId).exists).ok()
+  });
+
+  await h(t).withLog('When I like the post in AtMention page', async () => {
+    await atMentionPostCard.clickLikeOnActionBar();
+    currentNumber = 1;
+  });
+
+  await h(t).withLog('Then like the post in AtMention page', async () => {
+    await t.expect(atMentionPostCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(atMentionPostCard.unlikeIconOnFooter.exists).ok();
+    await atMentionPostCard.likeShouldBe(currentNumber);
+  });
+
+  await h(t).withLog('When I bookmark the post in AtMention page', async () => {
+    await atMentionPostCard.clickBookmarkToggle();
+  });
+
+  await h(t).withLog('Then the post should be bookmarked', async () => {
+    await bookmarkEntry.enter();
+    await t.expect(postBookmarkPage.postItemById(newPostId).exists).ok();
+  });
+
+  await h(t).withLog('When I unlike the post in bookmark page', async () => {
+    await bookmarkPostCard.clickLikeOnActionBar();
+    currentNumber = 0;
+  });
+    await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
+      await t.hover(bookmarkPostCard.self);
+      await t.expect(bookmarkPostCard.likeIconOnActionBar.exists).ok();
+      await t.expect(bookmarkPostCard.likeButtonOnFooter.exists).notOk();
+      await bookmarkPostCard.likeShouldBe(currentNumber);
+    });
+
+    await h(t).withLog('When I unbookmark the post in bookmark page', async () => {
+      await postBookmarkPage.postItemById(newPostId).clickBookmarkToggle();
+    });
+
+    await h(t).withLog('Then the post should not in bookmark page', async () => {
+      await t.expect(postBookmarkPage.postItemById(newPostId).exists).notOk();
+    });
 });
 
 test(formalName('Jump to post position when click jump to conversation button.[AtMention]', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {

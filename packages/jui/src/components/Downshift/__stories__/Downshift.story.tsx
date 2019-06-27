@@ -3,11 +3,10 @@
  * @Date: 2019-04-01 10:42:57
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
+import _, { differenceBy } from 'lodash';
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import { differenceBy } from 'lodash';
 import { JuiDownshift } from '..';
 import { JuiSearchItem } from '../../../pattern/ContactSearch';
 import { JuiChip } from '../../Chip';

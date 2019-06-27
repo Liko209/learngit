@@ -9,6 +9,7 @@ interface IPreInsertIdController {
   insert(uniqueId: string, preInsertId: number): Promise<void>;
   delete(uniqueId: string): Promise<void>;
   bulkDelete(uniqueId: string[]): Promise<void>;
+  getPreInsertId(uniqueId: string): number;
   getAll(): { uniqueIds: string[]; ids: number[] };
 }
 export { IPreInsertIdController };

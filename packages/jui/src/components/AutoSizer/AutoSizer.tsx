@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
 import styled from '../../foundation/styled-components';
 import { JuiSizeMeasurer } from '../SizeMeasurer';
 
@@ -13,25 +12,34 @@ type Size = {
   height: number;
 };
 type JuiAutoSizerProps = {
+  defaultWidth?: number;
+  defaultHeight?: number;
   children: (size: Partial<Size>) => React.ReactNode;
 };
 
 const Wrapper = styled.div`
   height: inherit;
+  min-height: inherit;
   max-height: inherit;
 `;
 
-const DEFAULT_WIDTH = 200;
-const DEFAULT_HEIGHT = 200;
-
-const JuiAutoSizer = ({ children }: JuiAutoSizerProps) => {
+const JuiAutoSizer = ({
+  defaultWidth,
+  defaultHeight,
+  children,
+}: JuiAutoSizerProps) => {
   return (
     <JuiSizeMeasurer>
-      {({ width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT, ref }) => (
+      {({ width = defaultWidth, height = defaultHeight, ref }) => (
         <Wrapper ref={ref as any}>{children({ width, height })}</Wrapper>
       )}
     </JuiSizeMeasurer>
   );
+};
+
+JuiAutoSizer.defaultProps = {
+  defaultWidth: 200,
+  defaultHeight: 200,
 };
 
 export { JuiAutoSizer, JuiAutoSizerProps, Size };

@@ -17,7 +17,7 @@ class SyncService extends EntityBaseService<IdModel> {
   private _userConfig: SyncUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketConnectionStateChanged.bind(

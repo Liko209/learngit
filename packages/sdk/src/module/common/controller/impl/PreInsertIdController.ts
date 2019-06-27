@@ -58,6 +58,10 @@ class PreInsertIdController implements IPreInsertIdController {
     return this._preInsertIds.hasOwnProperty(uniqueId);
   }
 
+  getPreInsertId(uniqueId: string): number {
+    return this._preInsertIds[uniqueId];
+  }
+
   async insert(uniqueId: string, preInsertId: number): Promise<void> {
     this._preInsertIds[uniqueId] = preInsertId;
     this._syncDataDB();

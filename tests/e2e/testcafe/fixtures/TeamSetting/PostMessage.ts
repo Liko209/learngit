@@ -17,7 +17,7 @@ fixture('TeamSetting/PostMessage')
   .afterEach(teardownCase());
 
 
-test(formalName(`Turn on/off Post message toggle should/shouldn't be able to post the message`, ['P2', 'JPT-1102', 'PostMessage', 'Potar.He']), async t => {
+test(formalName(`Turn on/off Post message toggle should/shouldn't be able to post the message`, ['P2', 'JPT-1102','JPT-173','PostMessage', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];

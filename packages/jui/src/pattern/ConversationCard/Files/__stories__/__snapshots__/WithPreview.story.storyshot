@@ -247,7 +247,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c24.c24 .c13,
 .c24.c24 .c13 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c24.c24:hover .c13 {
@@ -259,23 +259,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 }
 
 .c24.c24.c24.c24.disabled .c13 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c13,
-.c25.c25 .c13 svg {
-  font-size: 20px;
-}
-
-.c25.c25:hover .c13 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c25.c25:active .c13 {
-  color: #fff;
-}
-
-.c25.c25.c25.c25.disabled .c13 {
   color: rgba(0,0,0,0.12);
 }
 

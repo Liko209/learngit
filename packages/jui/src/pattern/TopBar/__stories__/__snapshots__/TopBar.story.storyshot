@@ -85,7 +85,7 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   background-color: #fff;
   width: 32px;
   height: 32px;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 2px 2px 0 rgba(0,0,0,0.12),0 0 2px 0 rgba(0,0,0,0.14);
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -309,23 +309,6 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   color: rgba(0,0,0,0.12);
 }
 
-.c37.c37 .c5,
-.c37.c37 .c5 svg {
-  font-size: 24px;
-}
-
-.c37.c37:hover .c5 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c37.c37:active .c5 {
-  color: #fff;
-}
-
-.c37.c37.c37.c37.disabled .c5 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c13.c13 {
   padding: 0;
   width: 40px;
@@ -367,20 +350,20 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   animation-name: cBKRfH;
 }
 
-.c38.c38 .c5,
-.c38.c38 .c5 svg {
+.c37.c37 .c5,
+.c37.c37 .c5 svg {
   font-size: 20px;
 }
 
-.c38.c38:hover .c5 {
+.c37.c37:hover .c5 {
   color: rgba(255,255,255,0.88);
 }
 
-.c38.c38:active .c5 {
+.c37.c37:active .c5 {
   color: #fff;
 }
 
-.c38.c38.c38.c38.disabled .c5 {
+.c37.c37.c37.c37.disabled .c5 {
   color: rgba(0,0,0,0.12);
 }
 

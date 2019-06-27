@@ -32,7 +32,7 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   max-height: ${height(37)};
   overflow-y: auto;
-  margin: ${spacing(2, 0, 0)};
+  margin: ${spacing(5, 0, 0)};
   padding: ${spacing(0.25, 0, 0, 0.25)};
 `;
 

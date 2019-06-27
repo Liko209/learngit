@@ -7,7 +7,7 @@ import _ from 'lodash';
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
-import { JuiAutoSizer } from '../AutoSizer';
+import { JuiAutoSizer, Size } from '../AutoSizer';
 import { JuiVirtualizedList } from '../../VirtualizedList';
 
 const ROW_HEIGHT = 20;
@@ -20,8 +20,8 @@ const Row = styled.div`
 
 storiesOf('Components/AutoSizer', module).add('AutoSizer', () => {
   return (
-    <JuiAutoSizer maxHeight={200} maxWidth={100} handleHeight={true}>
-      {({ height }) => (
+    <JuiAutoSizer>
+      {({ height }: Size) => (
         <ListWrapper>
           <JuiVirtualizedList minRowHeight={ROW_HEIGHT} height={height}>
             {_.range(1, 2).map(n => (

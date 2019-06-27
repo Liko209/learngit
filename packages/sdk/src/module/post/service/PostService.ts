@@ -28,7 +28,7 @@ import { PostNotificationController } from '../controller/PostNotificationContro
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
   constructor(private _groupService: IGroupService) {
-    super(false, daoManager.getDao(PostDao), {
+    super({ isSupportedCache: false }, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });

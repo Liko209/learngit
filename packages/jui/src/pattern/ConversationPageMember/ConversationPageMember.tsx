@@ -14,6 +14,7 @@ import { IconButtonSize, iconSizes } from '../../components/Buttons';
 
 type MemberProps = {
   size?: IconButtonSize;
+  automationId?: string;
 };
 
 const StyledConversationPageMember = styled.button<MemberProps>`
@@ -55,11 +56,12 @@ class JuiConversationPageMember extends React.Component<
   JuiConversationPageMemberProps
 > {
   render() {
-    const { onClick, ariaLabel, title, children, size } = this.props;
+    const { onClick, ariaLabel, title, children, size, automationId } = this.props;
 
     return (
       <RuiTooltip title={title}>
         <StyledConversationPageMember
+          data-test-automation-id={automationId}
           aria-label={ariaLabel}
           onClick={onClick}
           size={size}

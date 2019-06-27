@@ -8,7 +8,7 @@ import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger } from 'sdk';
+import { mainLogger, PerformanceTracer } from 'sdk';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -25,7 +25,6 @@ import {
   StreamProps,
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
-import { toTitleCase } from '@/utils/string';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
@@ -39,8 +38,8 @@ import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
-import { JuiAutoSizer } from 'jui/components/AutoSizer';
+import { JuiAutoSizer } from 'jui/components/AutoSizer/AutoSizer';
+import { MESSAGE_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -72,7 +71,7 @@ class StreamViewComponent extends Component<Props> {
 
   @observable private _jumpToFirstUnreadLoading = false;
 
-  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -125,7 +124,7 @@ class StreamViewComponent extends Component<Props> {
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
     this._performanceTracer.end({
-      key: PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+      key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
       count: postIds.length,
     });
   }
@@ -171,10 +170,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
     const { t } = this.props;
+    const dividerText: string = t('message.stream.newMessagesDivider');
     return (
       <TimeNodeDivider
         key="TimeNodeDividerNewMessagesDivider"
-        value={toTitleCase(t('message.stream.newMessages'))}
+        value={dividerText}
       />
     );
   }
@@ -240,7 +240,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {countText} {toTitleCase(t('message.stream.newMessages'))}
+          {countText} {t('message.stream.newMessages')}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
