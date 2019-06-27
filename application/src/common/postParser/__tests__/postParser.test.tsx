@@ -477,7 +477,7 @@ describe('glipdown text', () => {
         ).toEqual('😂');
       });
 
-      it('should return array with only image emoji only', () => {
+      it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: { hostName } })).toEqual([
           <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
             😁
@@ -537,7 +537,7 @@ describe('glipdown text', () => {
         ]);
       });
 
-      it('should parse multiple ascii emojis', () => {
+      it('should parse multiple ascii emojis[JPT-2396, JPT-2387]', () => {
         expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
           <Emoji emoji='confused' skin={1} set={'emojione'} size={20} key={0}>
             😕
@@ -603,7 +603,7 @@ describe('glipdown text', () => {
         ).toEqual('app:///webpack:/src/main/main.ts');
       });
 
-      it('should return array with image emoji and other text', () => {
+      it('should return array with image emoji and other text[JPT-2392, JPT-2396]', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
             emoji: { hostName },
