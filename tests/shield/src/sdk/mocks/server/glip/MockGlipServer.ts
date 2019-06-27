@@ -102,6 +102,7 @@ export class MockGlipServer implements IMockServer {
   socketServer: MockSocketServer;
   dataHelper: GlipDataHelper;
 
+  // TODO optimize structure
   api: IGlipApi = {
     '/api/login': { put: request => this.login(request) },
     '/api/profile/:id?': {
@@ -193,7 +194,7 @@ export class MockGlipServer implements IMockServer {
     this.stateDao.bulkPut(glipData.state);
     glipData.groupState && this.groupStateDao.bulkPut(glipData.groupState);
     // this.personDao.insert(glipDataTemplate.user);
-    glipData.posts && this.postDao.bulkPut(glipData.posts);
+    glipData.posts.length && this.postDao.bulkPut(glipData.posts);
     this.personDao.bulkPut(glipData.people);
     this.groupDao.bulkPut(glipData.groups);
     this.groupDao.bulkPut(glipData.teams);
@@ -287,13 +288,17 @@ export class MockGlipServer implements IMockServer {
     this.groupStateDao.put(groupState);
     this.socketServer.emitEntityCreate(serverPost);
     this.socketServer.emitPartial(serverGroup, {
-      post_creator_ids: {
-        [String(serverGroup._id)]: serverPost.creator_id,
+      hint: {
+        post_creator_ids: {
+          [String(serverGroup._id)]: serverPost.creator_id,
+        },
       },
     });
     this.socketServer.emitPartial(groupState, {
-      post_creator_ids: {
-        [String(serverGroup._id)]: serverPost.creator_id,
+      hint: {
+        post_creator_ids: {
+          [String(serverGroup._id)]: serverPost.creator_id,
+        },
       },
     });
 
@@ -385,7 +390,7 @@ export class MockGlipServer implements IMockServer {
       data: this._doPartialUpdate(
         this.profileDao,
         { ...request.data, _id: routeParams['id'] },
-        result => this.socketServer.emitPartial(result),
+        result => this.socketServer.emitMessage(result),
       ),
     });
   }

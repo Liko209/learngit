@@ -58,6 +58,7 @@ function parseInitialData(initialData: InitialData): GlipData {
     teams: initialData.teams,
     clientConfig: initialData.client_config,
     state: initialData.state,
+    posts: initialData.posts || [],
     // todo parse to groupState
     groupState: userGroupStates,
     profile: initialData.profile,

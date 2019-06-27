@@ -1,6 +1,8 @@
 const fixtureSocket = require('can-fixture-socket');
 // const io = require('socket.io-client');
 import io from 'socket.io-client';
+import { createDebug } from 'sdk/__tests__/utils';
+const debug = createDebug('MockSocketServer', true);
 
 export class MockSocketServer {
   socket: any;
@@ -19,6 +21,7 @@ export class MockSocketServer {
 
   emitEntityCreate(entity: object) {
     setTimeout(() => {
+      debug('-> emitEntityCreate');
       this.socket.emit(
         'message',
         JSON.stringify({
@@ -31,18 +34,35 @@ export class MockSocketServer {
     });
   }
 
-  emitPartial(partial: object, hint?: object) {
-    this.socket.emit(
-      'partial',
-      JSON.stringify({
-        body: {
-          partial: true,
-          timestamp: Date.now(),
-          objects: [[{ ...partial }]],
-          ...{ hint },
-        },
-      }),
-    );
-    setTimeout(() => {});
+  emitMessage(entity: object) {
+    setTimeout(() => {
+      debug('-> emitMessage');
+      this.socket.emit(
+        'message',
+        JSON.stringify({
+          body: {
+            timestamp: Date.now(),
+            objects: [[{ ...entity }]],
+          },
+        }),
+      );
+    });
+  }
+
+  emitPartial(partial: object, partialBody?: object) {
+    setTimeout(() => {
+      debug('-> emitPartial');
+      this.socket.emit(
+        'partial',
+        JSON.stringify({
+          body: {
+            partial: true,
+            timestamp: Date.now(),
+            objects: [[{ ...partial }]],
+            ...partialBody,
+          },
+        }),
+      );
+    });
   }
 }
