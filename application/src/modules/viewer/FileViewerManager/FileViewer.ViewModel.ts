@@ -104,7 +104,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   get title() {
     let userDisplayName;
     let uid;
-    if (this._person) {
+    if (this._person !== undefined) {
       userDisplayName = this._person.userDisplayName;
       uid = this._person.id;
     }
