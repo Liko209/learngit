@@ -55,7 +55,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
       },
     );
     this.reaction(
-      () => this._item.versions[0],
+      () => this._item.latestVersion,
       async (item: ItemVersions, reaction: Reaction) => {
         this._currentVersion = { ...item };
         reaction.dispose();
