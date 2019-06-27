@@ -5,6 +5,7 @@
  */
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { StoreViewModel } from '@/store/ViewModel';
 import { catchError } from '@/common/catchError';
 import { action } from 'mobx';
@@ -16,11 +17,25 @@ class DeleteViewModel extends StoreViewModel<DeleteProps> {
     server: 'voicemail.prompt.notAbleToDeleteVoicemailForServerIssue',
   })
   @action
-  delete = async () => {
+  deleteVoicemail = async () => {
     const voicemailService = ServiceLoader.getInstance<VoicemailService>(
       ServiceConfig.VOICEMAIL_SERVICE,
     );
-    return voicemailService.deleteVoicemails([this.props.id]);
+    await voicemailService.deleteVoicemails([this.props.id as number]);
+    return true;
+  }
+
+  @catchError.flash({
+    network: 'calllog.prompt.notAbleToDeleteCallLogForNetworkIssue',
+    server: 'calllog.prompt.notAbleToDeleteCallLogForServerIssue',
+  })
+  @action
+  deleteCallLog = async () => {
+    const callLogService = ServiceLoader.getInstance<CallLogService>(
+      ServiceConfig.CALL_LOG_SERVICE,
+    );
+    await callLogService.deleteCallLogs([this.props.id as string]);
+    return true;
   }
 }
 

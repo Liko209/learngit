@@ -157,6 +157,12 @@ class ScenarioHelper {
     return await platform.createPostWithTextAndFilesThenGetPostId(data.group.glipId, data.filePaths, data.text, data.fileNames);
   }
 
+  async createPostWithTextAndFiles(data: { filePaths: string | string[], group: IGroup, text?: string, operator: IUser, fileNames?: string | string[] }): Promise<any> {
+    assert(data.operator && data.filePaths && data.group, "require operator and filePaths");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(data.operator);
+    return await platform.createPostWithTextAndFiles(data.group.glipId, data.filePaths, data.text, data.fileNames);
+  }
+
   // glip
   public async clearAllUmi(me: IUser) {
     assert(me, "require me");
