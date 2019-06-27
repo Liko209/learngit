@@ -7,28 +7,40 @@
 
 import { formalName } from '../../libs/filter';
 import * as _ from 'lodash';
+import * as assert from 'assert';
+import * as moment from 'moment';
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
 import { v4 as uuid } from 'uuid';
 import { IGroup, ITestMeta } from '../../v2/models';
+import { ClientFunction } from 'testcafe';
 
-fixture('ContentPanel/FileAndImagePreviewer')
+
+
+fixture('ImageViewer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 
 test.meta(<ITestMeta>{
-  priority: ['p1'],
-  caseIds: ['JPT-1356'],
+  priority: ['p2'],
+  caseIds: ['JPT-1345'],
   maintainers: ['potar.he'],
-  keywords: ['FileAndImagePriviewer']
-})('Can close a full-screen image previewer by clicking close button/ESC', async (t) => {
-  const filePaths = ['./sources/1.png', './sources/2.png'];
+  keywords: ['Image viewer dialog']
+})('The display of a full-screen image previewer', async (t) => {
+  const filePaths = ['./sources/1.png', './sources/2.png', './sources/3.png'];
+  const filename = '2.png'
+  const currentIndexReg = /\(2\/3\)$/;
+  const timeFormat = "M/D/YYYY h:mm A";
+
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
+
   await h(t).glip(loginUser).init();
+  const senderName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+
 
   let team = <IGroup>{
     type: "Team",
@@ -38,23 +50,26 @@ test.meta(<ITestMeta>{
   }
 
   let postId: string;
-  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+  await h(t).withLog(`Given I have a team named {teamName} before login`, async (step) => {
+    step.setMetadata('teamName', team.name)
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And I have a mention post (also bookmark it) with two image files in the team`, async () => {
+  await h(t).withLog(`And I have a post with 3 images in the team`, async () => {
     postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
       filePaths,
       group: team,
       operator: anotherUser,
-      text: `Hi, ![:Person](${loginUser.rcId})`
-    });
-    await h(t).glip(loginUser).bookmarkPosts(postId);
+    })
   });
 
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -63,116 +78,74 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
-  // conversation entry point
-  await h(t).withLog('When I scroll to the image post and click the first image on the post', async () => {
+  await h(t).withLog('When I scroll to the image post and click the second image on the post', async () => {
     await t.wait(1e3); // wait conversation stream stage.
-    await conversationPage.postItemById(postId).scrollIntoView();
-    await t.click(conversationPage.postItemById(postId).img);
+    await conversationPage.postItemById(postId).waitImageVisible();
+    await t.click(conversationPage.postItemById(postId).img.nth(1));
   });
 
-  const previewer = app.homePage.fileAndImagePreviewer;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
+    await viewerDialog.ensureLoaded();
+    await viewerDialog.shouldBeFullScreen();
+  }, true);
+
+  // header
+  await h(t).withLog("And display sender's avatar", async () => {
+    await t.expect(viewerDialog.avatar.exists).ok();
   });
 
-  await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+  await h(t).withLog("And display sender's name: {senderName}", async (step) => {
+    step.setMetadata('senderName', senderName);
+    await t.expect(viewerDialog.senderName.textContent).eql(senderName);
   });
 
-  await h(t).withLog('When I click the close button', async () => {
-    await previewer.clickCloseButton();
+  await h(t).withLog("And display send date & time (follow browser locale and date/time format)", async () => {
+    const sendTime = await viewerDialog.sendTime.textContent;
+    assert.ok(moment(sendTime, timeFormat).format(timeFormat) == sendTime, `${sendTime} should be formated to: ${timeFormat}`)
   });
 
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
+  await h(t).withLog('And display image file name should be {filename}', async (step) => {
+    step.setMetadata('filename', filename);
+    await t.expect(viewerDialog.fileName.textContent).eql(filename);
   });
 
-  // bookmark page enter point
-  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-  await h(t).withLog('When I enter bookmark and click the second image on the post', async () => {
-    await app.homePage.messageTab.bookmarksEntry.enter();
-    await bookmarkPage.postItemById(postId).scrollIntoView();
-    await t.click(bookmarkPage.postItemById(postId).img.nth(1));
+  await h(t).withLog('And display the index of image should be {index}', async (step) => {
+    step.setMetadata('index', '(2/3)');
+    await t.expect(viewerDialog.positionIndex.textContent).match(currentIndexReg);
   });
 
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
+  await h(t).withLog('And display Action menu: download button', async () => {
+    await t.expect(viewerDialog.downloadButton.exists).ok();
   });
 
-  await h(t).withLog('And the index of image should be (2/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(2\/2)/);
+  await h(t).withLog('And display close button', async () => {
+    await t.expect(viewerDialog.closeButton.exists).ok();
   });
 
-  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
-    await previewer.quitByPressEsc();
+  // container
+  await h(t).withLog('And display image', async () => {
+    await t.expect(viewerDialog.imageCanvas.exists).ok();
   });
 
-  await h(t).withLog('Then the previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
+  // other interactive
+  await h(t).withLog('When I hover the image', async () => {
+    await viewerDialog.hoverPreviewer();
   });
 
-  // at mention enter point
-  const atMentionPage = app.homePage.messageTab.mentionPage;
-  await h(t).withLog('When I enter atMentionPage and click the image on the post', async () => {
-    await app.homePage.messageTab.mentionsEntry.enter();
-    await atMentionPage.postItemById(postId).scrollIntoView();
-    await t.click(atMentionPage.postItemById(postId).img);
+  await h(t).withLog('Then display previous button and next button', async () => {
+    await t.expect(viewerDialog.previousButton.visible).ok();
+    await t.expect(viewerDialog.forwardButton.visible).ok();
   });
 
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
+  await h(t).withLog('And display zoom in/out button', async () => {
+    await t.expect(viewerDialog.zoomInButton.visible).ok();
+    await t.expect(viewerDialog.zoomOutButton.visible).ok();
   });
 
-  await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+  await h(t).withLog('And display current zoom percentage: 100%', async () => {
+    await t.expect(viewerDialog.zoomPercentageText).eql('100%');
   });
-
-  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
-    await previewer.quitByPressEsc();
-  });
-
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
-  });
-
-  // search content
-  const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog('When I open the team and search file name 1.png in this conversation', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword('1.png');
-    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
-  });
-
-  await h(t).withLog('Then I should found the post with the images in message tab', async () => {
-    await searchDialog.fullSearchPage.messagesTab.postItemById(postId).ensureLoaded();
-  });
-
-  await h(t).withLog('When I click the first image', async () => {
-    await searchDialog.fullSearchPage.messagesTab.postItemById(postId).scrollIntoView();
-    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).img.nth(0));
-  });
-
-  await h(t).withLog('Then the image previewer should be showed', async () => {
-    await previewer.ensureLoaded();
-    await previewer.shouldBeFullScreen();
-  });
-
-  await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
-  });
-
-  await h(t).withLog('When I click the close button', async () => {
-    await previewer.clickCloseButton();
-  });
-
-  await h(t).withLog('Then The previewer dismissed ', async () => {
-    await t.expect(previewer.exists).notOk();
-  });
-
 });
 
 
@@ -237,7 +210,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+    await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
@@ -287,7 +260,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('And the index of image should be (2/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(2\/2)/);
+    await t.expect(previewer.positionIndex.textContent).match(/(2\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
@@ -336,7 +309,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+    await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
   });
 
   await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
@@ -397,7 +370,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('And the index of image should be (1/2)', async () => {
-    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+    await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
@@ -573,4 +546,101 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
   await h(t).withLog('Reset user name', async () => {
     await h(t).glip(loginUser).updatePerson({ first_name: 'John' }); // reset first_name
   });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['p2'],
+  caseIds: ['JPT-1365'],
+  maintainers: ['potar.he'],
+  keywords: ['Image viewer dialog']
+})('Dialog responsive behavior when resize the window', async (t) => {
+  if (await H.isElectron() || await H.isEdge()) {
+    await h(t).log('This case (resize) is not working on Electron or Edge!');
+    return;
+  }
+
+  const filePaths = './sources/1.png';
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const anotherUser = h(t).rcData.mainCompany.users[5];
+  await h(t).glip(loginUser).init();
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  let postId: string;
+  await h(t).withLog(`Given I have a team named {teanName} before login`, async (step) => {
+    step.setMetadata('teamName', team.name);
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I have a post with a image in the team`, async () => {
+    postId = await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths,
+      group: team,
+      operator: anotherUser,
+    });
+  });
+
+
+  const app = new AppRoot(t);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+
+  // conversation entry point
+  await h(t).withLog('And I open this team', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+
+  await h(t).withLog('When I click the image of post', async () => {
+    await t.click(conversationPage.postItemById(postId).img);
+  });
+
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await viewerDialog.ensureLoaded();
+  });
+
+  await h(t).withLog("And display sender's avatar", async () => {
+    await t.expect(viewerDialog.avatar.exists).ok();
+  });
+
+  await h(t).withLog("And display sender's name", async (step) => {
+    await t.expect(viewerDialog.senderName.exists).ok();
+  });
+
+  await h(t).withLog("And display send time", async () => {
+    await t.expect(viewerDialog.sendTime.exists).ok();
+  });
+
+  await h(t).withLog('When I resize browser window width < 640px', async () => {
+    const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
+    await t.resizeWindow(639, windowHeight);
+  });
+
+  await h(t).withLog("Then display sender's avatar", async () => {
+    await t.expect(viewerDialog.avatar.exists).ok();
+  });
+
+  await h(t).withLog("And hide sender's name", async (step) => {
+    await t.expect(viewerDialog.senderName.visible).notOk();
+  });
+
+  await h(t).withLog("And hide send time", async () => {
+    await t.expect(viewerDialog.sendTime.visible).notOk();
+  });
+
 });
