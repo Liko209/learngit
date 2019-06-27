@@ -7,8 +7,7 @@ import {
   createMemoryHistory,
 } from 'history';
 
-const isTestENV = process && process.env.NODE_ENV === 'test';
-const history = isTestENV ? createMemoryHistory() : createBrowserHistory();
+const history = createBrowserHistory();
 const historyPush = history.push;
 const historyReplace = history.replace;
 

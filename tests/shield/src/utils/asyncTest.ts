@@ -4,11 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-function asyncTest(func: Function, timeout = 0): Promise<void> {
+type TestFunc = Function | (() => Promise<void>);
+
+function asyncTest(func: TestFunc, timeout = 0): Promise<void> {
   return new Promise(resolve => {
     setTimeout(() => {
-      func && func();
-      resolve();
+      if (func) {
+        const result = func();
+        if (result instanceof Promise) {
+          result.then(resolve);
+        } else {
+          resolve();
+        }
+      } else {
+        resolve();
+      }
     },         timeout);
   });
 }

@@ -5,11 +5,15 @@
  */
 
 import React from 'react';
+import fs from 'fs';
 import { act } from 'react-dom/test-utils';
-import { mount, ReactWrapper } from 'enzyme';
+import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
+import { service } from 'sdk';
 import { asyncTest } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { LeftRail } from '@/modules/message/container/LeftRail';
 
 import { App } from '@/modules/app/container';
 import history from '@/history';
@@ -55,15 +59,27 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       // await sdk.cleanUp();
     });
     it('should send post', async () => {
-      const url = `/message/${team1._id}`;
+      const url = `/message/${team1._id}?code=123`;
       history.push(url);
       let wrapper: ReactWrapper;
+      console.warn(9999, history, window.location.href);
       await act(async () => {
         wrapper = mount(<App />);
-        await asyncTest(() => {
-          act(() => {
-            // wrapper.update();
-            console.log(wrapper.debug());
+        notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
+        await asyncTest(async () => {
+          await act(async () => {
+            wrapper.update();
+            const stream = wrapper.find({
+              'data-test-automation-id': 'jui-stream-wrapper',
+            });
+
+            await asyncTest(() => {
+              console.log(stream.debug());
+              const leftRail = wrapper.find(LeftRail);
+              console.log(leftRail.debug());
+              const str = wrapper.debug();
+              fs.writeFileSync('./out.txt', str);
+            });
           });
         },              10);
       });
