@@ -6,7 +6,6 @@
 import { BaseDao } from '../../../framework/dao';
 import { GroupConfig } from '../entity';
 import { IDatabase } from 'foundation';
-import { QUERY_DIRECTION } from '../../../dao/constants';
 
 class GroupConfigDao extends BaseDao<GroupConfig> {
   static COLLECTION_NAME = 'groupConfig';
