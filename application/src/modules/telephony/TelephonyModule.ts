@@ -6,7 +6,7 @@
 
 import { AbstractModule, inject, Jupiter } from 'framework';
 import { HomeService } from '@/modules/home/service/HomeService';
-import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
+import { GlobalSearchService } from '@/modules/GlobalSearch/service';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';

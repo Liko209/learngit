@@ -7,21 +7,7 @@ import { AbstractModule, ModuleConfig } from 'framework';
 
 type IDummyService = {};
 
-class DummyModule extends AbstractModule {
-  async bootstrap() {
-    // TODO
-  }
-
-  async dispose() {
-    // TODO
-  }
-}
-
-function createDummyModule(forceNew = false) {
-  if (!forceNew) {
-    return DummyModule;
-  }
-
+function createDummyModule() {
   return class extends AbstractModule {
     async bootstrap() {
       // TODO
@@ -33,10 +19,10 @@ function createDummyModule(forceNew = false) {
   };
 }
 
-function createDummyConfig(provide: any, forceNew = false): ModuleConfig {
+function createDummyConfig(provide: any): ModuleConfig {
   return {
-    entry: createDummyModule(forceNew),
-    provides: [provide],
+    entry: createDummyModule(),
+    provides: Array.isArray(provide) ? provide : [provide],
   };
 }
 
