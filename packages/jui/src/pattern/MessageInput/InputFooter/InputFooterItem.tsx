@@ -19,7 +19,9 @@ type InputFooterItemProps = {
 const InputFooterItemWrapper = styled(JuiFade)<{
   align: InputFooterItemProps['align'];
 }>`
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: ${({ align }) => align};
 `;
 

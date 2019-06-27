@@ -1,5 +1,5 @@
-import { notificationCenter, SERVICE } from 'sdk/src/service';
-import { GroupTyping } from 'sdk/src/module/group/entity';
+import { notificationCenter, SERVICE } from 'sdk/service';
+import { GroupTyping } from 'sdk/module/group/entity';
 import { observable, computed, reaction } from 'mobx';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
@@ -14,10 +14,15 @@ class TypingListHandler {
   @observable typingListStore = {};
 
   @computed
+  get typingUserIds() {
+    return Object.keys(this.typingListStore);
+  }
+
+  @computed
   get typingList() {
-    return Object.keys(this.typingListStore).map(userId => {
-      const { displayName } = getEntity(ENTITY_NAME.PERSON, userId);
-      return displayName;
+    return this.typingUserIds.map(userId => {
+      const { userDisplayName } = getEntity(ENTITY_NAME.PERSON, userId);
+      return userDisplayName;
     });
   }
 
@@ -40,7 +45,7 @@ class TypingListHandler {
   }
 
   isStillTyping(timestamp: number) {
-    return new Date().getTime() - timestamp > TYPING_INTERVAL;
+    return new Date().getTime() - timestamp < TYPING_INTERVAL;
   }
 
   constructor() {
@@ -69,7 +74,7 @@ class TypingListHandler {
         },
       ),
     );
-    // notificationCenter.on(SERVICE.GROUP_TYPING, this._handleGroupTyping);
+    notificationCenter.on(SERVICE.GROUP_TYPING, this._handleGroupTyping);
   }
 
   dispose() {
