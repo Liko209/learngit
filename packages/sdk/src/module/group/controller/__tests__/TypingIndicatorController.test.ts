@@ -169,7 +169,7 @@ describe('TypingIndicatorController', () => {
       });
     });
     describe('sendTypingEvent', () => {
-      it('should return false when it is not long enough to send typing event', () => {
+      it('should return false when it is not long enough to send typing event', async() => {
         const controller = new TypingIndicatorController();
         controller['timeFlagMap'] = new Map([
           [10, { lastTypingTime: LAST_TIME, lastClearTime: LAST_TIME }],
@@ -177,9 +177,9 @@ describe('TypingIndicatorController', () => {
         getCurrentTime.mockReturnValue(
           LAST_TIME + MINI_TYPING_INTERVAL_MINUS_1,
         );
-        expect(controller.sendTypingEvent(10, false)).toBeFalsy();
+        expect(await controller.sendTypingEvent(10, false)).toBeFalsy();
       });
-      it('should return false when it is not long enough to send clear event', () => {
+      it('should return false when it is not long enough to send clear event', async() => {
         const controller = new TypingIndicatorController();
         controller['timeFlagMap'] = new Map([
           [10, { lastTypingTime: LAST_TIME, lastClearTime: LAST_TIME }],
@@ -187,23 +187,23 @@ describe('TypingIndicatorController', () => {
         getCurrentTime.mockReturnValue(
           LAST_TIME + MINI_TYPING_INTERVAL_MINUS_1,
         );
-        expect(controller.sendTypingEvent(10, true)).toBeFalsy();
+        expect(await controller.sendTypingEvent(10, true)).toBeFalsy();
       });
-      it('should return true when it is long enough to send typing event', () => {
+      it('should return true when it is long enough to send typing event',async () => {
         const controller = new TypingIndicatorController();
         controller['timeFlagMap'] = new Map([
           [10, { lastTypingTime: LAST_TIME, lastClearTime: LAST_TIME }],
         ]);
         getCurrentTime.mockReturnValue(LAST_TIME + MINI_TYPING_INTERVAL_ADD_1);
-        expect(controller.sendTypingEvent(10, false)).toBeTruthy();
+        expect(await controller.sendTypingEvent(10, false)).toBeTruthy();
       });
-      it('should return true when it is long enough to send clear event', () => {
+      it('should return true when it is long enough to send clear event', async() => {
         const controller = new TypingIndicatorController();
         controller['timeFlagMap'] = new Map([
           [10, { lastTypingTime: LAST_TIME, lastClearTime: LAST_TIME }],
         ]);
         getCurrentTime.mockReturnValue(LAST_TIME + MINI_TYPING_INTERVAL_ADD_1);
-        expect(controller.sendTypingEvent(10, true)).toBeTruthy();
+        expect(await controller.sendTypingEvent(10, true)).toBeTruthy();
       });
     });
   });
