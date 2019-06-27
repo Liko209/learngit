@@ -117,7 +117,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim()) {
+      if (content.trim() || vm._post.itemIds.length) {
         vm._editPost(content, mentionIds);
       } else {
         vm._handleDelete();

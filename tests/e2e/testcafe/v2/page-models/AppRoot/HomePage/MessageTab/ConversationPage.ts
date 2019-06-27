@@ -684,6 +684,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-placeholder="Type new message"]');
   }
 
+  get postImg() {
+    return this.self.find('img');
+  }
+
   async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
@@ -701,7 +705,8 @@ export class PostItem extends BaseWebComponent {
 
   async enterEditTextArea() {
     await this.t
-      .selectText(this.editTextArea)
+      .wait(1e3)
+      .typeText(this.editTextArea, '  ')
       .pressKey('enter');
   }
 
