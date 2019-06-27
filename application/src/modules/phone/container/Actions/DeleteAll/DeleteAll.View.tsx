@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 import { DeleteViewProps } from './types';
 
@@ -33,6 +34,7 @@ class DeleteViewComponent extends Component<Props, State> {
 
   _handleClick = () => {
     const { t } = this.props;
+    analyticsCollector.clearAllCallHistory();
     const dialog = Dialog.confirm({
       size: 'small',
       modalProps: {
