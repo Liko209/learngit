@@ -11,6 +11,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { AccountService } from '../../../module/account';
+import { mainLogger } from 'foundation';
 
 type GroupTypingParams = {
   group_id: number;
@@ -29,7 +30,7 @@ class TypingIndicatorController {
   private timeFlagMap: Map<number, TimeFlagMapValue> = new Map();
   constructor() {}
 
-  sendTypingEvent(groupId: number, isClear: boolean) {
+  async sendTypingEvent(groupId: number, isClear: boolean) {
     if (this._longEnoughToSend(groupId, isClear)) {
       // send data
       const options: GroupTypingParams = {
@@ -38,7 +39,12 @@ class TypingIndicatorController {
       if (isClear) {
         options.clear = isClear;
       }
-      GroupAPI.sendTypingEvent(options);
+      try {
+        await GroupAPI.sendTypingEvent(options);
+      } catch (e) {
+        mainLogger.log('send typing error:', e);
+      }
+
       // update time flag
       this._updateTimeFlag(groupId, isClear);
       return true;
