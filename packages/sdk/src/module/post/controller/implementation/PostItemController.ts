@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { PostItemData } from '../../entity/PostItemData';
 import { ItemFile } from '../../../item/entity';
 
-import { Post } from '../../entity/Post';
+import { Post, PostView } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -241,10 +241,10 @@ class PostItemController implements IPostItemController {
     }
     return [];
   }
-  private _getLatestPostId(groupId: number, posts: Post[]) {
+  private _getLatestPostId(groupId: number, posts: Post[] | PostView[]) {
     if (posts.length) {
       const postsInCurrentGroup = posts.filter(
-        post => post.group_id === groupId && !post.deactivated,
+        (post: Post) => post.group_id === groupId && !post.deactivated,
       );
       if (postsInCurrentGroup.length) {
         postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
@@ -263,7 +263,9 @@ class PostItemController implements IPostItemController {
     const item = await itemService.getById(itemId);
     if (item) {
       const ids = item.post_ids;
-      const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
+      const localPosts = await daoManager
+        .getDao(PostDao)
+        .queryPostViewByIds(ids);
       const localPostId = this._getLatestPostId(groupId, localPosts);
       if (localPostId) {
         return localPostId;

@@ -310,7 +310,7 @@ describe('PostItemController', () => {
       itemService.getById = jest
         .fn()
         .mockResolvedValue({ post_ids: [4, 5, 6, 7] });
-      postDao.batchGet = jest.fn().mockResolvedValue(localPosts);
+      postDao.queryPostViewByIds = jest.fn().mockResolvedValue(localPosts);
       PostAPI.requestByIds = jest.fn().mockResolvedValue(remoteData);
     });
     it('should return latest post id is 7 when get post in local', async () => {
@@ -319,7 +319,7 @@ describe('PostItemController', () => {
       expect(result).toBe(7);
     });
     it('should return latest post id is 5 when can not get post in local', async () => {
-      postDao.batchGet = jest.fn().mockResolvedValue([
+      postDao.queryPostViewByIds = jest.fn().mockResolvedValue([
         {
           id: 7,
           group_id: 2,
@@ -331,7 +331,7 @@ describe('PostItemController', () => {
       expect(result).toBe(4);
     });
     it('should return null when post_ids is not in local and remote', async () => {
-      postDao.batchGet = jest.fn().mockResolvedValue([]);
+      postDao.queryPostViewByIds = jest.fn().mockResolvedValue([]);
       PostAPI.requestByIds = jest.fn().mockResolvedValue({ posts: [] });
       const result = await postItemController.getLatestPostIdByItem(1, 1);
       expect(result).toBeNull();
