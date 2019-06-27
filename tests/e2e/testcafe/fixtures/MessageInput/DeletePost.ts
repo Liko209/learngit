@@ -153,11 +153,11 @@ test.meta(<ITestMeta>{
     await post.deleteMessage();
   });
 
-  await h(t).withLog('Then Prompted with "Delete post" confirmation dialog', async () => {
+  await h(t).withLog('Then Don\'t Prompted with "Delete post" confirmation dialog', async () => {
     await t.expect(messageTab.deleteConfirmDialog.exists).notOk();
   });
 
-  await h(t).withLog('Then The text content should be removed and other items should remain unchanged.', async () => {
+  await h(t).withLog('And The text content should be removed and other items should remain unchanged.', async () => {
     await t.expect(post.exists).ok();
     await t.expect(post.editTextArea.exists).notOk();
     await t.expect(post.postImg).ok();
