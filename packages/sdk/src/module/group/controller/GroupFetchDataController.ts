@@ -48,7 +48,7 @@ import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 const kTeamIncludeMe: number = 1000;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-const MAX_LEFT_RAIL_GROUP: number = 100;
+const MAX_LEFT_RAIL_GROUP: number = 80;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
