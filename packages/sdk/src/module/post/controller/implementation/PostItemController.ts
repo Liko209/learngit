@@ -22,7 +22,7 @@ import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
-import { UndefinedAble } from 'sdk/types';
+import { Nullable } from 'sdk/types';
 import { daoManager } from 'sdk/dao';
 import { PostDao } from '../../dao';
 import PostAPI from 'sdk/api/glip/post';
@@ -234,32 +234,14 @@ class PostItemController implements IPostItemController {
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
-  private async _getPostsByItem(itemId: number) {
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    const item = await itemService.getById(itemId);
-    let result: Post[] = [];
-    if (item) {
-      const ids = item.post_ids;
-      const posts: Post[] = await daoManager.getDao(PostDao).batchGet(ids);
-      let remotePosts: Post[] = [];
-      if (posts.length < ids.length) {
-        const restIds = _.difference(ids, posts.map(({ id }) => id));
-        const remoteData = await PostAPI.requestByIds(restIds);
-        remotePosts = remoteData.posts.map((item: Raw<Post>) =>
-          transform<Post>(item),
-        );
-      }
-      result = [...posts, ...remotePosts];
+  private async _getPostsFromRemote(ids: number[]) {
+    if (ids.length) {
+      const remoteData = await PostAPI.requestByIds(ids);
+      return remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
     }
-    return result;
+    return [];
   }
-  async getLatestPostIdByItem(
-    groupId: number,
-    itemId: number,
-  ): Promise<UndefinedAble<number>> {
-    const posts = await this._getPostsByItem(itemId);
+  private _getLatestPostId(groupId: number, posts: Post[]) {
     if (posts.length) {
       const postsInCurrentGroup = posts.filter(
         post => post.group_id === groupId && !post.deactivated,
@@ -269,7 +251,30 @@ class PostItemController implements IPostItemController {
         return postsInCurrentGroup[0].id;
       }
     }
-    return undefined;
+    return null;
+  }
+  async getLatestPostIdByItem(
+    groupId: number,
+    itemId: number,
+  ): Promise<Nullable<number>> {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const item = await itemService.getById(itemId);
+    if (item) {
+      const ids = item.post_ids;
+      const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
+      const localPostId = this._getLatestPostId(groupId, localPosts);
+      if (localPostId) {
+        return localPostId;
+      }
+      const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+      if (restIds.length) {
+        const remotePosts = await this._getPostsFromRemote(restIds);
+        return this._getLatestPostId(groupId, remotePosts);
+      }
+    }
+    return null;
   }
 }
 
