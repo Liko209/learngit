@@ -25,7 +25,7 @@ import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
-  status?: string | null;
+  status?: string | React.ReactNode;
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &

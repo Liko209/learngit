@@ -3,10 +3,10 @@
  * @Date: 2019-05-24 07:20:20
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { StoreViewModel } from '@/store/ViewModel';
-import { VoicemailActionsProps } from './types';
+import { ActionsProps } from './types';
 
-class VoicemailActionsViewModel extends StoreViewModel<VoicemailActionsProps> {}
+class ActionsViewModel extends StoreViewModel<ActionsProps> {
+}
 
-export { VoicemailActionsViewModel };
+export { ActionsViewModel };

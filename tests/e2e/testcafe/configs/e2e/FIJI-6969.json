@@ -1,0 +1,7 @@
+{
+  "on_push": {
+    "fixtures": ["./fixtures/PhoneTab/CallHistory/ContentPanel/DeleteCallLog.ts"],
+    "include_tags": ["P1"],
+    "browsers": ["selenium:chrome"]
+  }
+}

@@ -27,6 +27,8 @@ import { LogoutDialog } from './LogoutDialog';
 import { MoreActionOnFile } from './MoreActionOnFile';
 import { PhoneTab } from './PhoneTab';
 import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
+import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
+import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -192,4 +194,11 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(DeleteVoicemailDialog);
   }
 
+  get deleteAllCalllDialog() {
+    return this.getComponent(DeleteAllCalllDialog);
+  }
+
+  get deleteCallHistoryDialog() {
+    return this.getComponent(DeleteCallHistoryDialog);
+  }
 }
