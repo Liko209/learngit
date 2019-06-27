@@ -21,7 +21,7 @@ class OpenProfileDialogView extends Component<Props> {
   private _onClickOpenProfileDialog = (event: MouseEvent<HTMLElement>) => {
     const { id, beforeClick, afterClick } = this.props;
     // needed for avoid Blinking when switching dialog
-    const transitionDuration = portalManager.hasShowStatus
+    const transitionDuration = portalManager.profilePortalIsShow
       ? {
           transitionDuration: 900,
         }

@@ -25,7 +25,7 @@ const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
       !_ref.current.contains(event.target as HTMLElement) &&
       _ref.current !== event.target;
 
-    if (isClickOutSide || portalManager.hasShouldCloseStatus) {
+    if (isClickOutSide || portalManager.profilePortalShouldClose) {
       dismiss();
     }
   };

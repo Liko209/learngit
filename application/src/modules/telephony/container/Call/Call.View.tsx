@@ -20,7 +20,7 @@ class CallViewComponent extends Component<Props> {
     const { call, onClick, trackCall } = this.props;
     if (onClick) {
       onClick();
-    } else if (!portalManager.hasShowStatus) {
+    } else if (!portalManager.profilePortalIsShow) {
       portalManager.dismissLast();
     }
     portalManager.addShouldCloseStatus();

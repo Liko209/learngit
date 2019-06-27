@@ -34,7 +34,7 @@ class PortalManager extends EventEmitter2 {
   }
 
   addShouldCloseStatus() {
-    if (this.hasShowStatus) {
+    if (this.profilePortalIsShow) {
       this.profilePortalStatus.add(PROFILE_PORTAL_STATUS.SHOULD_CLOSE);
     }
   }
@@ -43,11 +43,11 @@ class PortalManager extends EventEmitter2 {
     this.profilePortalStatus.clear();
   }
 
-  get hasShowStatus() {
+  get profilePortalIsShow() {
     return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.IS_SHOW);
   }
 
-  get hasShouldCloseStatus() {
+  get profilePortalShouldClose() {
     return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.SHOULD_CLOSE);
   }
 
