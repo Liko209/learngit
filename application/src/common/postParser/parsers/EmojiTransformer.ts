@@ -87,7 +87,7 @@ class EmojiTransformer {
       if (unicodeOnly || !hostName) {
         return pre + code;
       }
-      const emojiName = this._transferNativeEmojiToUnicode(unicode);
+      const emojiName = this._transferUnicodeToEmojiData(unicode);
 
       const data = {
         className: this._getClassName(enlarge),
@@ -124,7 +124,7 @@ class EmojiTransformer {
     return new RegExp(regexpMap[convertType], 'gi');
   }
 
-  private static _transferNativeEmojiToUnicode(unicode: string) {
+  private static _transferUnicodeToEmojiData(unicode: string) {
     const emojiData = getEmojiDataFromUnicode(unicode, data);
     const skinToneIndex = this._hasSkinTone(unicode);
     if (skinToneIndex > -1) {

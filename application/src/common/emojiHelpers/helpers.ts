@@ -1,7 +1,11 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
+ * @Author: Devin Lin (devin.lin@ringcen
+
+  '/Users/ken.li/work/projects/Fiji/node_modules/@types/emoji-mart/dist-es/utils/data.d.ts';
  * @Date: 2018-11-07 10:27:20
- * Copyright © RingCentral. All rights reserved.
+ * Copyright © RingCentral. All rights r
+ *
+ * '/Users/ken.li/work/projects/Fiji/node_modules/@types/emoji-mart/dist-es/utils/data.d.ts';
  */
 
 import {
@@ -13,6 +17,8 @@ import {
   mapEmojiOne,
 } from './map';
 
+import { uncompress } from 'emoji-mart/dist-es/utils/data';
+
 type EmojiOne = {
   unicode: string[];
   fname: string;
@@ -22,24 +28,6 @@ type EmojiOne = {
 
 type MapData = {
   [index: string]: string | EmojiOne;
-};
-
-const mapping = {
-  name: 'a',
-  unified: 'b',
-  non_qualified: 'c',
-  has_img_apple: 'd',
-  has_img_google: 'e',
-  has_img_twitter: 'f',
-  has_img_emojione: 'g',
-  has_img_facebook: 'h',
-  has_img_messenger: 'i',
-  keywords: 'j',
-  sheet: 'k',
-  emoticons: 'l',
-  text: 'm',
-  short_names: 'n',
-  added_in: 'o',
 };
 
 const regExpEscape = new RegExp(Object.keys(mapEscape).join('|'), 'g');
@@ -179,78 +167,6 @@ const sanitize = (emoji: any, data: any) => {
   return emojiData;
 };
 
-const unifiedToNative = (unified: string) => {
-  const unicodes = unified.split('-');
-  const codePoints = unicodes.map(u => `0x${u}`);
-
-  return stringFromCodePoint.apply(null, codePoints);
-};
-
-const stringFromCodePoint = function () {
-  const MAX_SIZE = 0x4000;
-  const codeUnits = [];
-  let highSurrogate;
-  let lowSurrogate;
-  let index = -1;
-  const length = arguments.length;
-  if (!length) {
-    return '';
-  }
-  let result = '';
-  while (++index < length) {
-    let codePoint = Number(arguments[index]);
-    if (
-      !isFinite(codePoint) || // `NaN`, `+Infinity`, or `-Infinity`
-      codePoint < 0 || // not a valid Unicode code point
-      codePoint > 0x10ffff || // not a valid Unicode code point
-      Math.floor(codePoint) !== codePoint // not an integer
-    ) {
-      throw RangeError(`Invalid code point: ${codePoint}`);
-    }
-    if (codePoint <= 0xffff) {
-      // BMP code point
-      codeUnits.push(codePoint);
-    } else {
-      // Astral code point; split in surrogate halves
-      // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-      codePoint -= 0x10000;
-      highSurrogate = (codePoint >> 10) + 0xd800;
-      lowSurrogate = (codePoint % 0x400) + 0xdc00;
-      codeUnits.push(highSurrogate, lowSurrogate);
-    }
-    if (index + 1 === length || codeUnits.length > MAX_SIZE) {
-      result += String.fromCharCode.apply(null, codeUnits);
-      codeUnits.length = 0;
-    }
-  }
-  return result;
-};
-
-const uncompress = (data: any) => {
-  data.compressed = false;
-
-  for (const id in data.emojis) {
-    const emoji = data.emojis[id];
-
-    for (const key in mapping) {
-      emoji[key] = emoji[mapping[key]];
-      delete emoji[mapping[key]];
-    }
-
-    if (!emoji.short_names) emoji.short_names = [];
-    emoji.short_names.unshift(id);
-
-    emoji.sheet_x = emoji.sheet[0];
-    emoji.sheet_y = emoji.sheet[1];
-    delete emoji.sheet;
-
-    if (!emoji.text) emoji.text = '';
-
-    if (!emoji.added_in) emoji.added_in = 6;
-    emoji.added_in = emoji.added_in.toFixed(1);
-  }
-};
-
 export {
   MapData,
   EmojiOne,
@@ -264,7 +180,5 @@ export {
   regExpUnicode,
   regExpEmojiOne,
   mapUnicodeToShort,
-  stringFromCodePoint,
   getEmojiDataFromUnicode,
-  unifiedToNative,
 };
