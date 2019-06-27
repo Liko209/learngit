@@ -6,9 +6,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { TopBannerView } from '../TopBanner.View';
-import { TopBannerViewModel } from '@/modules/app/container/TopBanner/TopBanner.ViewModel';
 import { ElectronUpgradeBanner } from '../Banners/ElectronUpgradeBanner/ElectronUpgradeBanner';
 import { NetworkBanner } from '../Banners/NetworkBanner';
+import { container } from 'framework';
+
+jest.spyOn(container, 'get').mockReturnValue({
+  topBanners: [],
+});
 
 describe('TopBannerView', () => {
   describe('render', () => {
@@ -18,27 +22,31 @@ describe('TopBannerView', () => {
     });
 
     it('should render banners defined in data', () => {
-      TopBannerViewModel.data = [
-        {
-          priority: 200,
-          Component: ElectronUpgradeBanner,
-          props: {},
-          isShow: true,
-        },
-      ];
+      jest.spyOn(container, 'get').mockReturnValue({
+        topBanners: [
+          {
+            priority: 200,
+            Component: ElectronUpgradeBanner,
+            props: {},
+            isShow: true,
+          },
+        ],
+      });
       const wrapper = shallow(<TopBannerView />);
       expect(wrapper.find(ElectronUpgradeBanner).length).toBe(1);
     });
 
     it('should not render banners defined in data if isShow is false', () => {
-      TopBannerViewModel.data = [
-        {
-          priority: 200,
-          Component: ElectronUpgradeBanner,
-          props: {},
-          isShow: false,
-        },
-      ];
+      jest.spyOn(container, 'get').mockReturnValue({
+        topBanners: [
+          {
+            priority: 200,
+            Component: ElectronUpgradeBanner,
+            props: {},
+            isShow: false,
+          },
+        ],
+      });
       const wrapper = shallow(<TopBannerView />);
       expect(wrapper.find(ElectronUpgradeBanner).length).toBe(0);
     });

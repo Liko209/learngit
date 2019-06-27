@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import * as assert from 'assert'
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import { h, H } from '../../../../helpers';
-import { ClientFunction } from 'testcafe';
 
 
 export class EmojiLibrary extends BaseWebComponent {
@@ -45,6 +44,19 @@ export class EmojiLibrary extends BaseWebComponent {
   }
 
   /* tab */
+  private indexMap = {
+    'Search Results': 0, // no data-index
+    'Frequently Used': 1,
+    'Smileys & People': 2,
+    'Animals & Nature': 3,
+    'Food & Drink': 4,
+    'Activity': 5,
+    'Travel & Places': 6,
+    'Objects': 7,
+    'Symbols': 8,
+    'Flags': 9,
+  }
+
   get tabBar() {
     return this.self.find('.emoji-mart-anchors');
   }
@@ -54,11 +66,13 @@ export class EmojiLibrary extends BaseWebComponent {
   }
 
   async selectedTabShouldBeCategory(category: string) {
-    await this.t.expect(this.tabs.filter('.emoji-mart-anchor-selected').getAttribute('aria-label')).eql(category);
+    const dataIndex: number = this.indexMap[category];
+    await this.t.expect(this.tabs.filter('.emoji-mart-anchor-selected').getAttribute('data-index')).eql(dataIndex.toString());
   }
 
   tabByCategory(category: string) {
-    return this.tabs.withAttribute('aria-label', category);
+    const dataIndex: number = this.indexMap[category];
+    return this.tabs.filter(`[data-index="${dataIndex}"]`);
   }
 
   async clickTabByCategory(category: string) {
@@ -107,7 +121,8 @@ export class EmojiLibrary extends BaseWebComponent {
 
   /* section */
   getSection(category: string) {
-    return this.getComponent(EmojiSection, this.self.find(`.emoji-mart-category[aria-label="${category}"]`));
+    const dataIndex = this.indexMap[category];
+    return this.getComponent(EmojiSection, this.self.find('section.emoji-mart-category').nth(dataIndex));
   }
 
   get searchResultSection() {

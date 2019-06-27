@@ -28,14 +28,14 @@ describe('VoicemailViewDao', () => {
     it('toVoicemailView', () => {
       const expectedData = {
         id: 123,
-        from: { phone: '123' },
-        to: { phone: '123' },
-        creationTime: '123123',
-        lastModifiedTime: '123123',
+        from: { phoneNumber: '123' },
+        __timestamp: 123,
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: { phoneNumber: '123', location: 'loc' },
       };
       const result = voicemailViewDao.toVoicemailView(data);
       expect(result).toEqual(expectedData);
@@ -46,14 +46,22 @@ describe('VoicemailViewDao', () => {
     it('toVoicemailView', () => {
       const expectedData = {
         id: 123,
-        from: { phone: '123' },
-        to: { phone: '123' },
-        creationTime: '123123',
-        lastModifiedTime: '123123',
+        from: { phoneNumber: '123', extensionNumber: '333' },
+        __timestamp: 123,
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: {
+          phone: '123',
+        },
+        from: {
+          phoneNumber: '123',
+          extensionNumber: '333',
+          location: 'location',
+        },
+        __timestamp: 123,
       };
       const result = voicemailViewDao.toPartialVoicemailView(data);
       expect(result).toEqual(expectedData);

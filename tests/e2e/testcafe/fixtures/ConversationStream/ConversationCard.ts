@@ -10,6 +10,7 @@ import { setupCase, teardownCase } from '../../init';
 import { h, H } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 fixture('ConversationCard')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -153,3 +154,56 @@ test(formalName('When update custom status, can sync dynamically in message meta
     });
   },
 );
+
+
+test.meta(<ITestMeta>{
+  priority: ['p2'],
+  caseIds: ['JPT-90'],
+  keywords: ['Message Metadata', 'Content Panel']
+})('Default item for each message metadata', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const anotherUser = users[6];
+
+  const app = new AppRoot(t);
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+  await h(t).withLog(`Given I have extension with a chat`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter a conversation in directMessage section`, async () => {
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const lastPostItem = conversationPage.lastPostItem
+  await h(t).withLog(`When I send one post to current conversation`, async () => {
+    await conversationPage.sendMessage(uuid());
+    await conversationPage.lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog(`Then there is a avatar in the last post.`, async () => {
+    await t.expect(lastPostItem.avatar.exists).ok();
+  });
+
+  await h(t).withLog(`And there is user name in the last post.`, async () => {
+    await t.expect(lastPostItem.name.exists).ok();
+  });
+
+  await h(t).withLog(`And there is send time in the last post.`, async () => {
+    await t.expect(lastPostItem.time.exists).ok();
+  });
+});

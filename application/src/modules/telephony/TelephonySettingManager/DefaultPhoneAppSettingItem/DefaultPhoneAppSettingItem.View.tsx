@@ -73,7 +73,7 @@ const DefaultPhoneAppSelectItem: SFC<
   },                                 []);
   useEffect(() => {
     const divEl = optionRef.current;
-    const selectItemList = divEl ? divEl.parentElement : null;
+    const selectItemList = divEl ? divEl.closest('li') : null;
     if (selectItemList) {
       selectItemList.addEventListener('click', onClickHandler);
       return () => selectItemList.removeEventListener('click', onClickHandler);

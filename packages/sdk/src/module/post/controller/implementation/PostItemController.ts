@@ -73,7 +73,7 @@ class PostItemController implements IPostItemController {
         uploadFiles,
         itemIds,
         (itemFile: ItemFile, id: number) => {
-          return id === itemFile.id && !itemFile.is_new;
+          return id === itemFile.id;
         },
       );
       if (needCheckItemFiles.length > 0) {

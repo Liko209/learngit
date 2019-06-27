@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiDivider } from '../../Divider';
 import { JuiIconButton } from '../../Buttons/IconButton';
@@ -16,21 +15,22 @@ import {
   JuiListItemText,
   JuiListItemSecondaryAction,
 } from '../index';
+import inbox from '../../../assets/jupiter-icon/icon-inbox.svg';
+import draft from '../../../assets/jupiter-icon/icon-draft.svg';
 
 storiesOf('Components/Lists', module)
-  .addDecorator(withInfoDecorator(JuiList, { inline: true }))
   .add('Simple List', () => (
     <div>
       <JuiList>
         <JuiListItem button={true}>
           <JuiListItemIcon>
-            <JuiIconography>inbox</JuiIconography>
+            <JuiIconography symbol={inbox} />
           </JuiListItemIcon>
           <JuiListItemText primary="Inbox" />
         </JuiListItem>
         <JuiListItem button={true}>
           <JuiListItemIcon>
-            <JuiIconography>drafts</JuiIconography>
+            <JuiIconography symbol={draft} />
           </JuiListItemIcon>
           <JuiListItemText primary="Drafts" />
         </JuiListItem>
@@ -53,9 +53,11 @@ storiesOf('Components/Lists', module)
           <JuiListItem key={value} button={true}>
             <JuiListItemText primary={`Line item ${value + 1}`} />
             <JuiListItemSecondaryAction>
-              <JuiIconButton size="small" aria-label="Comments">
-                inbox
-              </JuiIconButton>
+              <JuiIconButton
+                size="small"
+                aria-label="Comments"
+                symbol={inbox}
+              />
             </JuiListItemSecondaryAction>
           </JuiListItem>
         ))}

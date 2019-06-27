@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
-import { WebphoneSession } from '../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/EndCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -28,6 +28,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const title = "Log out?";
   const content = "Your call will be disconnected if you log out. Do you want to log out and end the call?";
@@ -116,6 +117,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -352,6 +354,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   await h(t).glip(me).init();
   await h(t).scenarioHelper.resetProfile(me);
+  await h(t).glip(me).resetProfileAndState();
 
   let chat = <IGroup>{
     type: 'DirectMessage',

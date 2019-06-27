@@ -12,7 +12,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup, ITestMeta } from '../../v2/models';
 
-fixture('Link')
+fixture('AtMention')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
@@ -154,4 +154,60 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then the post with quote should be sent`, async () => {
     await t.expect(conversationPage.lastPostItem.quote.textContent).contains('@Team');
   });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-2280'],
+  maintainers: ['chris.zhan'],
+  keywords: ['message', 'url', 'AtMentions'],
+})('@people whose name contain unicode emoji', async (t) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog(`And I have a team named:${team.name} `, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I change otherUser's name to be with emoji`, async () => {
+    await h(t).glip(otherUser).init();
+    await h(t).glip(otherUser).updatePerson({ 'first_name': 'John⭐⭐⭐', 'last_name': 'Snow⛄⛄⛄' }, otherUser.rcId);
+  });
+
+  let postId
+  await h(t).withLog(`And the team has a post with mention John⭐⭐⭐ Snow⛄⛄⛄`, async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${otherUser.rcId})`, team, loginUser);
+  });
+
+  const app = new AppRoot(t)
+
+  await h(t).withLog(`And I login with the extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the team`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`Then display the post`, async () => {
+    await conversationPage.postItemById(postId).ensureLoaded();
+  });
+
+  await h(t).withLog(`And the post should be rendered correctly`, async () => {
+    await t.expect(conversationPage.postItemById(postId).mentions.exists).ok();
+    await t.expect(conversationPage.postItemById(postId).mentions.textContent).eql('John⭐⭐⭐ Snow⛄⛄⛄');
+  });
+
 });

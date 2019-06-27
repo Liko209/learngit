@@ -14,7 +14,6 @@ class ProcessGatherer2 extends BaseGatherer {
   private processIntervalId;
   private resolve;
   private timeoutId;
-  private browser;
   private indexReceived;
   private metrics: Array<PerformanceMetric> = new Array();
 
@@ -71,7 +70,7 @@ class ProcessGatherer2 extends BaseGatherer {
           }
 
           memoryArr.push(process["privateMemory"]);
-          
+
           if (memoryArr.length < 5) {
             return;
           }

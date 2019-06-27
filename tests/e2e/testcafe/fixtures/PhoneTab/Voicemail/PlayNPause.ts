@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-06-06 09:53:59 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-06-06 13:57:38
+ * @Author: Potar.He
+ * @Date: 2019-06-06 09:53:59
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-06-12 11:02:20
  */
 
 import { BrandTire, SITE_URL } from '../../../config';
@@ -10,7 +10,8 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta, IUser } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from '../../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
+
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
@@ -96,7 +97,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton();
   }
 
   let hasVoicemail = await voicemailPage.items.count;
@@ -159,7 +160,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton()
   }
 
   let voicemailCount = await voicemailPage.items.count;
@@ -227,7 +228,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton()
   }
 
   let voicemailCount = await voicemailPage.items.count;

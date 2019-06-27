@@ -112,5 +112,12 @@ describe('QuoteVM', () => {
       ViewModel.quote();
       expect(ViewModel.getQuoteText()).toBe('> eee<br/><br/><br/><br/>');
     });
+
+    it('should format without end with \r\n', () => {
+      mockOriginalText('eee\r\n');
+
+      ViewModel.quote();
+      expect(ViewModel.getQuoteText()).toBe('> eee<br/><br/><br/><br/>');
+    });
   });
 });

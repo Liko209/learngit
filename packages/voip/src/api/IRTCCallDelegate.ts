@@ -14,7 +14,7 @@ interface IRTCCallDelegate {
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ): void;
-  onCallActionFailed(callAction: RTC_CALL_ACTION): void;
+  onCallActionFailed(callAction: RTC_CALL_ACTION, code: number): void;
 }
 
 export { IRTCCallDelegate };

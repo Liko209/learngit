@@ -32,6 +32,14 @@ class SyncUserConfig extends UserConfig {
     return this.get(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
   }
 
+  getLastCanReconnectTime() {
+    return this.get(SYNC_CONFIG_KEYS.LAST_CAN_RECONNECT_TIME);
+  }
+
+  setLastCanReconnectTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.LAST_CAN_RECONNECT_TIME, time);
+  }
+
   removeReconnectSocketServerHost() {
     this.remove(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
   }

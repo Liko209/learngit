@@ -11,6 +11,8 @@ import { Presence } from 'sdk/module/presence/entity';
 import PresenceModel from '@/store/models/Presence';
 import { PresenceProps, PresenceViewProps } from './types';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {
@@ -25,7 +27,10 @@ class PresenceViewModel extends StoreViewModel<PresenceProps>
   @computed
   get presence() {
     if (this.props.uid !== 0) {
-      const person = getEntity(ENTITY_NAME.PERSON, this.props.uid);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        this.props.uid,
+      );
       if (person.deactivated) {
         return PRESENCE.NOTREADY;
       }

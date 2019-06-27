@@ -84,6 +84,10 @@ class ProfileDataController {
   ): Promise<Profile | null> {
     try {
       if (profile) {
+        const local = await this.getProfile();
+        if (local && local.modified_at >= profile.modified_at) {
+          return local;
+        }
         const transformedData: Profile = transform(profile);
         if (transformedData) {
           await this.entitySourceController.put(transformedData);

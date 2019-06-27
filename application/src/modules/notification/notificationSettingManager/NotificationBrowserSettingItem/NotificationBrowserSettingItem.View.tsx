@@ -19,6 +19,7 @@ import {
 import { jupiter } from 'framework';
 import i18nT from '@/utils/i18nT';
 import { dataAnalysis } from 'sdk';
+import { catchError } from '@/common/catchError';
 
 const NOTIFICATION_BROWSER = 'NotificationBrowserSettingItem';
 type Props = WithTranslation & NotificationBrowserSettingItemViewProps;
@@ -86,13 +87,19 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
   private _showEnabledNotification = async () => {
     const title = await i18nT('notification.notificationEnabled');
-    this._notificationService.show(title, {
-      data: {
-        id: NOTIFICATION_BROWSER,
-        scope: NOTIFICATION_BROWSER,
-        priority: NOTIFICATION_PRIORITY.INFORMATION,
+    this._notificationService.show(
+      title,
+      {
+        data: {
+          id: new Date().toISOString(),
+          scope: NOTIFICATION_BROWSER,
+          priority: NOTIFICATION_PRIORITY.INFORMATION,
+        },
+        silent: false,
+        renotify: true,
       },
-    });
+      true,
+    );
   }
 
   private _requestPermission = async () => {
@@ -103,27 +110,34 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     return permission;
   }
 
+  @catchError.flash({
+    network: 'setting.errorText.network',
+    server: 'setting.errorText.server',
+  })
   handleToggleChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => {
-    const browserPermission =
-      this.props.settingItemEntity.value &&
-      this.props.settingItemEntity.value.browserPermission;
+    const browserPermission = this._permission.current;
     if (checked) {
       switch (browserPermission) {
         case PERMISSION.DEFAULT:
           const permission = await this._requestPermission();
-          if (permission === PERMISSION.DENIED) {
-            this._handleDialog(true);
+          try {
+            if (permission === PERMISSION.DENIED) {
+              this._handleDialog(true);
+            }
+            if (permission === PERMISSION.GRANTED) {
+              await this.props.setToggleState(checked);
+              this._showEnabledNotification();
+            }
+          } catch (error) {
+            throw error;
+          } finally {
+            this.setState({
+              waitForPermission: false,
+            });
           }
-          if (permission === PERMISSION.GRANTED) {
-            await this.props.setToggleState(checked);
-            this._showEnabledNotification();
-          }
-          this.setState({
-            waitForPermission: false,
-          });
           break;
         case PERMISSION.GRANTED:
           await this.props.setToggleState(checked);
@@ -136,7 +150,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
           break;
       }
     } else {
-      this.props.setToggleState(checked);
+      await this.props.setToggleState(checked);
     }
   }
 
@@ -155,6 +169,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
 
     const checked =
       this.state.waitForPermission || desktopNotifications || false;
+    const hidden = desktopNotifications === undefined;
     return (
       <JuiSettingSectionItem
         id="notificationBrowserSetting"
@@ -162,16 +177,18 @@ class NotificationBrowserSettingItemViewComponent extends Component<
         label={label}
         description={description}
       >
-        <JuiToggleButton
-          data-test-automation-id="settingItemToggleButton-notificationBrowser"
-          checked={checked}
-          onChange={this.handleToggleChange}
-          aria-label={
-            checked
-              ? t('common.button.ariaToggleOn')
-              : t('common.button.ariaToggleOff')
-          }
-        />
+        {!hidden && (
+          <JuiToggleButton
+            data-test-automation-id="settingItemToggleButton-notificationBrowser"
+            checked={checked}
+            onChange={this.handleToggleChange}
+            aria-label={
+              checked
+                ? t('common.button.ariaToggleOn')
+                : t('common.button.ariaToggleOff')
+            }
+          />
+        )}
         {this._renderDialog()}
       </JuiSettingSectionItem>
     );

@@ -47,6 +47,7 @@ const StyledKeypadActionsContainer = styled('div')`
     flex-direction: column;
     justify-content: center;
     position: relative;
+    cursor: default;
   }
 `;
 
@@ -95,6 +96,7 @@ class JuiContainer extends PureComponent<Props> {
   _stopPropagation = (e: any) => {
     // prevent drag & drop
     e.stopPropagation();
+    e.preventDefault();
   }
 
   componentDidMount() {
@@ -133,7 +135,7 @@ class JuiContainer extends PureComponent<Props> {
 
     return (
       <StyledContainer ref={this._containerRef} removePadding={removePadding}>
-        <StyledKeypadActionsContainer>
+        <StyledKeypadActionsContainer onMouseDown={this._stopPropagation}>
           {keypadFullSize ? (
             keypadActions
           ) : (
@@ -198,10 +200,50 @@ const ContactSearchItemContent = styled.div<{}>`
   }
 `;
 
+// prettier-ignore
+const CallerIdContainer = (elm: React.FunctionComponent<any>) => styled(elm)<{}>`
+  && {
+    position: absolute;
+    top: ${spacing(1.5)};
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    flex-direction: horizontal;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    font-size: ${({ theme }) => theme.typography.body1.fontSize};
+    padding-bottom: 0;
+
+    div:nth-of-type(1) {
+      padding-bottom: 0;
+    }
+    div:nth-of-type(2) {
+      background: transparent;
+      border: none;
+      width: auto;
+      font-size: ${({ theme }) => theme.typography.caption2.fontSize};
+      margin-right: ${spacing(-3)};
+
+      & > div > div[role='button'] {
+        padding: ${spacing(1.5, 4.5, 1.5, 1.5)};
+        overflow: hidden;
+        display: block;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        white-space: nowrap;
+        max-width: ${spacing(36)};
+      }
+    }
+  }
+`;
+
 export {
   JuiContainer,
   JuiKeypadAction,
   KeypadHeaderContainer,
   ContactSearchContainer,
   ContactSearchItemContent,
+  CallerIdContainer,
 };

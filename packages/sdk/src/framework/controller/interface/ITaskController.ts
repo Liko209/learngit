@@ -6,6 +6,8 @@
 
 interface ITaskController {
   start(executeFunc: () => any): void;
+  isExecuting(): boolean;
+  clear(): void;
 }
 
 export { ITaskController };

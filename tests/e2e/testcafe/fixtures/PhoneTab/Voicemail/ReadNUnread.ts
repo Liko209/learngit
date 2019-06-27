@@ -9,7 +9,7 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta, IUser } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from '../../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -97,7 +97,7 @@ test.meta(<ITestMeta>{
 
   const telephoneDialog = app.homePage.telephonyDialog;
   if (await telephoneDialog.exists) {
-    telephoneDialog.clickMinimizeButton()
+    await telephoneDialog.clickMinimizeButton();
   }
 
   await ensuredOneVoicemail(t, caller, callee, app);
@@ -177,5 +177,3 @@ test.meta(<ITestMeta>{
     });
   }
 });
-
-

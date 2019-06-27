@@ -105,7 +105,7 @@ class MenuItem extends Entry {
 
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
-    return this.self.find('.icon.more_vert');
+    return this.getSelectorByAutomationId('conversationListItemMoreButton', this.self);
   }
 
   get name() {
@@ -156,7 +156,7 @@ class ConversationEntry extends BaseWebComponent {
     });
   }
 
-  async openMoreMenu() {
+  async ensureMoreButton() {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
     const displayMoreButton = ClientFunction(
@@ -164,7 +164,17 @@ class ConversationEntry extends BaseWebComponent {
       { dependencies: { moreButton } }
     );
     await displayMoreButton();
+    return moreButton;
+  }
+
+  async openMoreMenu() {
+    await this.ensureMoreButton();
     await this.t.click(this.moreMenuEntry);
+  }
+
+  async hoverMoreButton() {
+    const moreButton = await this.ensureMoreButton();
+    await this.t.hover(moreButton);
   }
 
   get hasDraftMessage() {
@@ -256,6 +266,10 @@ class CloseConversationModal extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId('DialogTitle');
   }
 
   get dontAskAgainCheckbox() {
@@ -386,5 +400,4 @@ export class MessageTab extends BaseWebComponent {
   get emojiMatchList() {
     return this.getComponent(EmojiMatchList);
   }
-
 }

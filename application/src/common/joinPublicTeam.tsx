@@ -35,6 +35,7 @@ const joinHander = async (conversationId: number) => {
 
 const joinPublicTeam = async (item: GroupModel) => {
   Dialog.confirm({
+    modalProps: { 'data-test-automation-id': 'join-team-dialog' },
     title: await i18nT('people.team.joinTeamTitle'),
     content: (
       <JuiDialogContentText>

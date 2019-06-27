@@ -8,6 +8,7 @@ import {
   IToken,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
+  ERROR_CODES_NETWORK,
 } from 'foundation';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
@@ -55,8 +56,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
         } else {
           reject();
         }
-      } catch (errorCode) {
-        reject(errorCode);
+      } catch (reason) {
+        reject(
+          reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
+            reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED,
+        );
       }
     });
   }

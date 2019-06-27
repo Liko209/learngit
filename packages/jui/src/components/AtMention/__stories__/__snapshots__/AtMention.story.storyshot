@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/AtMention AtMention: Components/AtMention AtMention 1`] = `
+.c0.at_mention_compose {
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  font-weight: 500;
+  color: #0684bd;
+  cursor: pointer;
+}
+
+.c0.at_mention_compose:active {
+  outline: none;
+}
+
+.c0.at_mention_compose:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c0.current {
+  color: #212121;
+  background-color: #ffdfb1;
+}
+
+<button
+  className="at_mention_compose c0"
+  data-name="dddd"
+  id="123"
+>
+  Josh Smith
+</button>
+`;

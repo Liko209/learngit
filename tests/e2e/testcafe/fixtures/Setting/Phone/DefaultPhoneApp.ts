@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
  * @Date: 2019-05-28 15:24:53
- * @Last Modified by: Andy.Hu
- * @Last Modified time: 2019-05-28 15:56:35
+ * @Last Modified by: Paynter Chen
+ * @Last Modified time: 2019-06-17 15:50:10
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -24,6 +24,7 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];
+  const yetAnotherUser = users[6];
 
   const app = new AppRoot(t);
   const { company: { number } } = anotherUser;
@@ -34,7 +35,7 @@ test.meta(<ITestMeta>{
     owner: loginUser,
     members: [loginUser, anotherUser]
   }
-  
+
   await h(t).withLog('When I set default phone app to RC phone', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('ringcentral');
   });
@@ -64,7 +65,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
-     await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+    await h(t).glip(loginUser).setDefaultPhoneApp('glip');
   });
 
   await h(t).withLog('When I click the call button', async () => {
@@ -97,7 +98,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I end the call', async () => {
-   await app.homePage.telephonyDialog.clickHangupButton()
+    await app.homePage.telephonyDialog.clickHangupButton()
   });
 
   await h(t).withLog(`Then I should be return to the dialer`, async () => {
@@ -106,7 +107,7 @@ test.meta(<ITestMeta>{
 
   /* from dialer stop */
   await h(t).withLog('When I receive a call', async () => {
-    const callerWebPhone = await h(t).newWebphoneSession(anotherUser);
+    const callerWebPhone = await h(t).newWebphoneSession(yetAnotherUser);
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
@@ -169,6 +170,7 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const phoneSettingPage = settingTab.phoneSettingPage;
@@ -213,8 +215,8 @@ test.meta(<ITestMeta>{
     await changeRCPhoneDialog.cancelButtonShouldBeText(cancelButton);
   });
 
-    await h(t).withLog(`Click "Cancel" button`, async () => {
-      await changeRCPhoneDialog.clickCancelButton();
+  await h(t).withLog(`Click "Cancel" button`, async () => {
+    await changeRCPhoneDialog.clickCancelButton();
   });
 
   await h(t).withLog(`Then the dialog is closed`, async () => {
@@ -252,10 +254,10 @@ test.meta(<ITestMeta>{
 
 
 test.meta(<ITestMeta>{
-     priority: ['P1'],
-     caseIds: ['JPT-2053'],
-     maintainers: ['William.Ye'],
-     keywords: ['GeneralSettings']
+  priority: ['P1'],
+  caseIds: ['JPT-2053'],
+  maintainers: ['William.Ye'],
+  keywords: ['GeneralSettings']
 })('Check the settings changes when the user switch between "Use RingCentral Phone" and "Use RingCentral App"', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]

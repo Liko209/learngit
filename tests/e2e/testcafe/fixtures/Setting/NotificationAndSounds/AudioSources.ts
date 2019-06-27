@@ -11,7 +11,7 @@ import { setupCase, teardownCase } from '../../../init';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../../config';
 import { ITestMeta } from "../../../v2/models";
-import { WebphoneSession } from '../../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 import { ClientFunction } from 'testcafe';
 import * as _ from 'lodash';
@@ -65,7 +65,7 @@ test.meta(<ITestMeta>{
   });
 
   const defaultDeviceId = 'default';
-  const defaultDeviceLabel = 'Default';
+  const defaultDeviceLabel = 'Use system default';
   const deviceInfos: deviceInfo[] = await getDeviceInfos();
   const audioInputs = _.filter(deviceInfos, { kind: "audioinput" });
   const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
@@ -331,7 +331,7 @@ test.meta(<ITestMeta>{
     });
 
     const defaultDeviceId = 'default';
-    const defaultDeviceLabel = 'Default';
+    const defaultDeviceLabel = 'Use system default';
 
     const deviceInfos: deviceInfo[] = await getDeviceInfos();
     const audioInputs = _.filter(deviceInfos, { kind: "audioinput" });

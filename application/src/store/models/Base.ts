@@ -24,6 +24,7 @@ export default class Base<
     const descriptors = Object.getOwnPropertyDescriptors(this);
     const props: any = {};
     Object.keys(descriptors).forEach((key: string) => {
+      // todo: should we ignore undefined key?
       props[key] = this[key];
     });
     return props;

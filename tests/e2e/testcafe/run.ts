@@ -43,8 +43,11 @@ async function runTests(runnerOpts) {
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
     });
   } finally {
+    logger.info(`runner exit with ${failed} failed cases`);
     await finishRun().catch(error => logger.error(error));
+    logger.info(`start to close testcafe`);
     await testCafe.close();
+    logger.info(`testcafe stop`);
   }
   return failed;
 }
@@ -52,6 +55,8 @@ async function runTests(runnerOpts) {
 (async function cli() {
   try {
     const failed = await runTests(RUNNER_OPTS);
+    logger.info(`test exit normally`);
+    await finishRun().catch(error => logger.error(error));
     process.exitCode = failed > 0 ? 3 : 0;
   } catch (err) {
     logger.error(err);
