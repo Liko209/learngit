@@ -66,6 +66,7 @@ test(formalName(`The Add team members dialog display correctly after clicking 'A
     await t.expect(addTeamMemberDialog.memberInput.exists).ok();
     await t.expect(addTeamMemberDialog.cancelButton.exists).ok();
     await t.expect(addTeamMemberDialog.addButton.exists).ok();
+    await t.expect(addTeamMemberDialog.input.focused).ok()
   });
 });
 
