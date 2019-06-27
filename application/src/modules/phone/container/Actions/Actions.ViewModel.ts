@@ -23,7 +23,7 @@ class ActionsViewModel extends StoreViewModel<ActionsProps> {
   constructor(props: ActionsProps) {
     super(props);
     this.reaction(
-      () => this._caller,
+      () => this.props.caller,
       async (caller: Caller) => {
         await this.matchPerson(caller);
       },
@@ -35,26 +35,21 @@ class ActionsViewModel extends StoreViewModel<ActionsProps> {
     this.reaction(
       () => this._phoneNumberModel,
       async () => {
-        await this.matchPerson(this._caller);
+        await this.matchPerson(this.props.caller);
       },
     );
 
     this.reaction(
       () => this.person && this.person.rcPhoneNumbers,
       async () => {
-        await this.matchPerson(this._caller);
+        await this.matchPerson(this.props.caller);
       },
     );
   }
 
   @computed
-  private get _caller() {
-    return this.props.caller;
-  }
-
-  @computed
   get _phoneNumberModel() {
-    const caller = this._caller;
+    const caller = this.props.caller;
     if (!caller || this.isBlock) {
       return;
     }
@@ -85,7 +80,7 @@ class ActionsViewModel extends StoreViewModel<ActionsProps> {
 
   @computed
   get isBlock() {
-    const caller = this._caller;
+    const caller = this.props.caller;
     if (!caller) {
       return true;
     }

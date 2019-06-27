@@ -5,7 +5,7 @@
  */
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Caller } from 'sdk/module/RCItems/types';
@@ -20,7 +20,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   constructor(props: BlockProps) {
     super(props);
     this.reaction(
-      () => this._caller,
+      () => this.props.caller,
       async (caller: Caller) => {
         await this.fetchNumberStatus(caller);
       },
@@ -28,11 +28,6 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
         fireImmediately: true,
       },
     );
-  }
-
-  @computed
-  private get _caller() {
-    return this.props.caller;
   }
 
   @action
@@ -46,8 +41,8 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   })
   @action
   block = async () => {
-    await this._rcInfoService.addBlockedNumber(this._caller.phoneNumber as string);
-    this.fetchNumberStatus(this._caller);
+    await this._rcInfoService.addBlockedNumber(this.props.caller.phoneNumber as string);
+    this.fetchNumberStatus(this.props.caller);
     return true;
   }
 
@@ -57,8 +52,8 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   })
   @action
   unblock = async () => {
-    await this._rcInfoService.deleteBlockedNumbers([this._caller.phoneNumber as string]);
-    this.fetchNumberStatus(this._caller);
+    await this._rcInfoService.deleteBlockedNumbers([this.props.caller.phoneNumber as string]);
+    this.fetchNumberStatus(this.props.caller);
     return true;
   }
 }

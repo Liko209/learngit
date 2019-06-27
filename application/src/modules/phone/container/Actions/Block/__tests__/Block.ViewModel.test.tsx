@@ -84,7 +84,6 @@ describe('BlockViewModel', () => {
   @testable
   class block {
 
-    beforeEach() { }
     @test('should toast error when block number fail for network issue [JPT-2410]')
     @mockService(rcInfoService, [{
       method: 'isNumberBlocked',
@@ -125,7 +124,6 @@ describe('BlockViewModel', () => {
   @testable
   class unblock {
 
-    beforeEach() { }
     @test('should toast error when unblock number fail for network issue [JPT-2412]')
     @mockService(rcInfoService, [{
       method: 'isNumberBlocked',
