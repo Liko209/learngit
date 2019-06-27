@@ -8,6 +8,8 @@ import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { ANALYTICS_KEY } from '../constants';
 
 import {
   JuiProfileDialogContentMemberListItem,
@@ -63,6 +65,8 @@ class MemberListItem extends React.Component<
       anchor,
       id: pid,
     });
+
+    analyticsCollector.openMiniProfile(ANALYTICS_KEY);
   }
 
   render() {
