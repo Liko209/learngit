@@ -1,6 +1,6 @@
 {
   "on_merge": {
-  "fixtures": ["./fixtures/MessageInput/*.ts", "./fixtures/ConversationStream/*.ts","./fixtures/ContentPanel/*.ts"],
+  "fixtures": ["./fixtures/MessageInput/Emoji.ts"],
   "include_tags": ["P0","P1","P2"],
   "browsers": ["selenium:chrome"]
   }
