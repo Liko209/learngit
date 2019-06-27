@@ -1,4 +1,5 @@
 const name2icon = {
+  filter: 'filter',
   voicemail: 'voicemail',
   transcription: 'transcription',
   answer: 'answer',

@@ -279,7 +279,8 @@
     },
     "Messages": "Messages",
     "message": "Message",
-    "atMentionAllTeam": "Team"
+    "atMentionAllTeam": "Team",
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
   },
   "item": {
     "activity": {

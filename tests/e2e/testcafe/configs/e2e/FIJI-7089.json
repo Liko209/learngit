@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ImageViewer/ScaleImage.ts",
+      "fixtures/ImageViewer/NextPrevious.ts"
+    ],
+    "include_tags": [
+      "P2"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
