@@ -1,11 +1,7 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcen
-
-  '/Users/ken.li/work/projects/Fiji/node_modules/@types/emoji-mart/dist-es/utils/data.d.ts';
+ * @Author: Devin Lin (devin.lin@ringcentral.com)
  * @Date: 2018-11-07 10:27:20
- * Copyright © RingCentral. All rights r
- *
- * '/Users/ken.li/work/projects/Fiji/node_modules/@types/emoji-mart/dist-es/utils/data.d.ts';
+ * Copyright © RingCentral. All rights reserved.
  */
 
 import {
