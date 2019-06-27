@@ -10,11 +10,8 @@ import { mount, ReactWrapper } from 'enzyme';
 import { asyncTest } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { container, Jupiter } from 'framework';
-import { LeftRail } from '../../message/container/LeftRail';
-import { JuiListNavItem } from 'jui/components';
-import { ConversationListItemText } from 'jui/pattern/ConversationList/ConversationListItemText';
 
-import { App } from '../../app/container';
+import { App } from '@/modules/app/container';
 import history from '@/history';
 
 itForSdk('Service Integration test', ({ server, data, sdk }) => {

@@ -5,3 +5,6 @@
  */
 
 import 'jest-styled-components';
+
+jest.mock('@/modules/common/util/lazyComponent');
+jest.mock('@/containers/ThemeProvider');
