@@ -31,6 +31,10 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationClass('call-history-item');
   }
 
+  callHistoryItemByNth(n: number) {
+    return this.getComponent(CallHistoryItem, this.items.nth(n));
+  }
+
   get moreIcon() {
     return this.getSelectorByAutomationId('callHistory-header-more',this.self);
   }
@@ -45,10 +49,6 @@ export class CallHistoryPage extends BaseWebComponent {
 
   async clickDeleteAllCallButton() {
     await this.t.click(this.deleteAllCallButton);
-  }
-
-  callHistoryItemByNth(n: number) {
-    return this.getComponent(CallHistoryItem, this.items.nth(n));
   }
 
   callHistoryItemById(id: string) {
@@ -76,6 +76,22 @@ class CallHistoryItem extends BaseWebComponent {
 
   get callerNumber() {
     return this.self.find('.list-item-secondary');
+  }
+
+  get moreMenuButton() {
+    return this.getSelectorByAutomationId('calllog-more-button', this.self);
+  }
+
+  get deleteButton() {
+    return this.getSelectorByAutomationId('calllog-delete-button');
+  }
+
+  async openMoreMenu() {
+    await this.t.hover(this.self).click(this.moreMenuButton);
+  }
+
+  async clickDeleteButton() {
+    await this.t.click(this.deleteButton);
   }
 }
 
@@ -109,3 +125,35 @@ export class DeleteAllCalllDialog extends BaseWebComponent {
   }
 
 }
+
+export class DeleteCallHistoryDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId("deleteCallLogConfirmDialog");
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId("DialogTitle", this.self)
+  }
+
+  get content() {
+    return this.getSelectorByAutomationId("DialogContent", this.self)
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId("deleteCallLogCancelButton", this.self)
+  }
+
+  get deleteButton() {
+    return this.getSelectorByAutomationId("deleteCallLogOkButton", this.self)
+  }
+
+  async clickCancelButton() {
+    return this.t.click(this.cancelButton);
+  }
+
+  async clickDeleteButton() {
+    return this.t.click(this.deleteButton);
+  }
+
+}
+
