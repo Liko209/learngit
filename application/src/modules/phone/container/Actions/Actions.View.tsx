@@ -1,12 +1,10 @@
 import React, { ComponentType, Component } from 'react';
-import {
-  JuiButtonBar,
-} from 'jui/components/Buttons';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import {
   ActionsProps,
   ActionsViewProps,
 } from './types';
+import { JuiButtonBar } from 'jui/components/Buttons';
 import { More } from './More';
 import { Read } from './Read';
 import { Block } from './Block';
@@ -26,10 +24,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
     ].filter(item => !!item);
   }
 
-  getButtons = (
-    buttons: (false | ComponentType<any>)[],
-    type: BUTTON_TYPE,
-  ) => {
+  getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
     const { id, hookAfterClick, entity, caller } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
@@ -66,17 +61,17 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   renderButtons = () => {
     const { buttons, dropdownItems } = this.getButtonsConfig();
     if (dropdownItems) {
-      buttons.push(<More key="more">{dropdownItems}</More>);
+      buttons.push(
+        <More key="more" automationId="voicemail-more-button">
+          {dropdownItems}
+        </More>,
+      );
     }
     return buttons;
   }
 
   render() {
-    return (
-      <JuiButtonBar overlapSize={0}>
-        {this.renderButtons()}
-      </JuiButtonBar>
-    );
+    return <JuiButtonBar overlapSize={0}>{this.renderButtons()}</JuiButtonBar>;
   }
 }
 

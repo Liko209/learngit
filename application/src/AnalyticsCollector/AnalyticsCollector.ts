@@ -142,6 +142,10 @@ class AnalyticsCollector {
       source: 'activeCall_flipNumberList',
     });
   }
+
+  clearAllCallHistory() {
+    dataAnalysis.track('Jup_Web/DT_phone_callHistory_deleteAll');
+  }
 }
 
 export { AnalyticsCollector };

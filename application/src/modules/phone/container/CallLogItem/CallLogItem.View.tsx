@@ -61,6 +61,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
 
     return (
       <StyleVoicemailItem
+        data-id={id}
         data-test-automation-class="call-history-item"
         expanded={false}
       >

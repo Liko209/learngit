@@ -4,8 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type MoreProps = {};
+type MoreProps = {
+  automationId: string;
+};
 
-type MoreViewProps = {};
+type MoreViewProps = {
+  automationId: string;
+};
 
 export { MoreProps, MoreViewProps };
