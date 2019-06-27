@@ -48,7 +48,7 @@ const JuiAudioProgress = ({
   const currentTime = Math.min(value, duration);
 
   const elProgressClock = (
-    <StyledClock data-test-automation-id="audio-end-time">
+    <StyledClock data-test-automation-id="audio-current-time">
       {formatTime(currentTime)}
     </StyledClock>
   );

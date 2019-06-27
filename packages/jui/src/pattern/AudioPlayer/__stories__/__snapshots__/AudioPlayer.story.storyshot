@@ -394,7 +394,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-end-time"
+        data-test-automation-id="audio-current-time"
       >
         00:30
       </span>
@@ -521,7 +521,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-end-time"
+        data-test-automation-id="audio-current-time"
       >
         01:00
       </span>
@@ -648,7 +648,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-end-time"
+        data-test-automation-id="audio-current-time"
       >
         01:30
       </span>
