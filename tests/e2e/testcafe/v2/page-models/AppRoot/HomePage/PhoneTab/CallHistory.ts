@@ -31,6 +31,22 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationClass('call-history-item');
   }
 
+  get moreIcon() {
+    return this.getSelectorByAutomationId('callHistory-header-more',this.self);
+  }
+
+  get deleteAllCallButton() {
+    return this.getSelectorByAutomationId('delete-all-button');
+  }
+
+  async clickMoreIcon() {
+    await this.t.click(this.moreIcon);
+  }
+
+  async clickDeleteAllCallButton() {
+    await this.t.click(this.deleteAllCallButton);
+  }
+
   callHistoryItemByNth(n: number) {
     return this.getComponent(CallHistoryItem, this.items.nth(n));
   }
@@ -61,4 +77,35 @@ class CallHistoryItem extends BaseWebComponent {
   get callerNumber() {
     return this.self.find('.list-item-secondary');
   }
+}
+
+export class DeleteAllCalllDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId("deleteAllCallLogConfirmDialog");
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId("DialogTitle", this.self)
+  }
+
+  get content() {
+    return this.getSelectorByAutomationId("DialogContent", this.self)
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId("deleteAllCallLogCancelButton", this.self)
+  }
+
+  get deleteButton() {
+    return this.getSelectorByAutomationId("deleteAllCallLogOkButton", this.self)
+  }
+
+  async clickCancelButton() {
+    return this.t.click(this.cancelButton);
+  }
+
+  async clickDeleteButton() {
+    return this.t.click(this.deleteButton);
+  }
+
 }

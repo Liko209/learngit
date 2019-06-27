@@ -1,12 +1,6 @@
 import React, { ComponentType, Component } from 'react';
-import {
-  JuiButtonBar,
-} from 'jui/components/Buttons';
-import {
-  BUTTON_TYPE,
-  ActionsProps,
-  ActionsViewProps,
-} from './types';
+import { JuiButtonBar } from 'jui/components/Buttons';
+import { BUTTON_TYPE, ActionsProps, ActionsViewProps } from './types';
 import { More } from './More';
 import { Read } from './Read';
 import { Delete } from './Delete';
@@ -25,10 +19,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
     ].filter(item => !!item);
   }
 
-  getButtons = (
-    buttons: (false | ComponentType<any>)[],
-    type: BUTTON_TYPE,
-  ) => {
+  getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
     const { id, hookAfterClick, entity } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
@@ -46,7 +37,10 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   getButtonsConfig = () => {
     if (MAX_BUTTON_COUNT < this._actions.length) {
       const buttons = this._actions.slice(0, MAX_BUTTON_COUNT);
-      const dropdownItems = this._actions.slice(MAX_BUTTON_COUNT, this._actions.length);
+      const dropdownItems = this._actions.slice(
+        MAX_BUTTON_COUNT,
+        this._actions.length,
+      );
       return {
         buttons: this.getButtons(buttons, BUTTON_TYPE.ICON),
         dropdownItems: this.getButtons(dropdownItems, BUTTON_TYPE.MENU_ITEM),
@@ -62,17 +56,17 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   renderButtons = () => {
     const { buttons, dropdownItems } = this.getButtonsConfig();
     if (dropdownItems) {
-      buttons.push(<More key="more">{dropdownItems}</More>);
+      buttons.push(
+        <More key="more" automationId="voicemail-more-button">
+          {dropdownItems}
+        </More>,
+      );
     }
     return buttons;
   }
 
   render() {
-    return (
-      <JuiButtonBar overlapSize={0}>
-        {this.renderButtons()}
-      </JuiButtonBar>
-    );
+    return <JuiButtonBar overlapSize={0}>{this.renderButtons()}</JuiButtonBar>;
   }
 }
 
