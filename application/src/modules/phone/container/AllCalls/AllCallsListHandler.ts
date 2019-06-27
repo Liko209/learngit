@@ -3,23 +3,20 @@
  * @Date: 2019-05-30 16:35:54
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { SortUtils } from 'sdk/framework/utils';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
+import { ENTITY } from 'sdk/service/eventKey';
+import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import {
   FetchSortableDataListHandler,
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { SortUtils } from 'sdk/framework/utils';
-import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
-
-import { AllCallsDataProvider } from './AllCallsDataProvider';
-import { ENTITY } from 'sdk/service/eventKey';
-import { CallLogType } from './types';
-import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
+import { CallLogType, FetchAllCallsData } from './types';
 
 class AllCallsListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<CallLog, string>;
-  constructor(type: CallLogType) {
+  constructor(type: CallLogType, fetchData: FetchAllCallsData) {
     const isMatchFunc = (model: CallLog) => {
       const isMissedCall =
         model.result === CALL_RESULT.MISSED ||
@@ -50,10 +47,8 @@ class AllCallsListHandler {
       );
     };
 
-    const dataProvider = new AllCallsDataProvider(type);
-
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
-      dataProvider,
+      { fetchData },
       {
         isMatchFunc,
         transformFunc,

@@ -15,7 +15,6 @@ import {
   Radius,
   Spacing,
   ZIndex,
-  boxShadow,
   size,
 } from 'rcui/foundation/styles/theme';
 
@@ -25,9 +24,16 @@ export {
   Radius,
   Spacing,
   ZIndex,
-  boxShadow,
   size,
 } from 'rcui/foundation/styles/theme';
+
+export type Shape = {
+  borderRadius: number;
+  border1: string;
+  border2: string;
+  border3: string;
+  border4: string;
+};
 
 export type Palette = RcuiPalette & {
   semantic: {
@@ -67,5 +73,6 @@ export type Palette = RcuiPalette & {
 };
 export type Theme = RcuiTheme & {
   palette: Palette;
+  shape: Shape;
 };
 export type ThemeProps = StyledThemeProps<Theme>;

@@ -188,6 +188,11 @@ class ScenarioHelper {
     await glip.likePost(postId);
   }
 
+  public async unlikePost(postId: string, me: IUser) {
+    assert(postId && me, "require postId and me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.unlikePost(postId);
+  }
 }
 
 
