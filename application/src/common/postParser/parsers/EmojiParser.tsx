@@ -24,23 +24,24 @@ class EmojiParser extends PostParser implements IPostParser {
     if (!result || !result[0] || !result[1]) {
       return strValue;
     }
+    const EMOJI_SET = 'emojione';
+    const DEFAULT_TONE_INDEX = 1;
     const id = result[1];
     const emojiData = EmojiTransformer.emojiDataMap[id];
-    if (!emojiData.isCustomEmoji && emojiData.name) {
+    const { isCustomEmoji, name, tone, isEnlarged, ...others } = emojiData;
+    if (!isCustomEmoji && name) {
       elem = (
         <Emoji
-          emoji={emojiData.name}
-          skin={emojiData.tone + 1 || 1}
-          set={'emojione'}
-          size={
-            emojiData.isEnlarged ? EMOJI_SIZE_MAP.large : EMOJI_SIZE_MAP.small
-          }
+          emoji={name}
+          skin={tone + DEFAULT_TONE_INDEX || DEFAULT_TONE_INDEX}
+          set={EMOJI_SET}
+          size={isEnlarged ? EMOJI_SIZE_MAP.large : EMOJI_SIZE_MAP.small}
         >
-          {emojiData.alt ? emojiData.alt : `:${emojiData.name}:`}
+          {emojiData.alt ? emojiData.alt : `:${name}:`}
         </Emoji>
       );
     } else {
-      elem = <img {...emojiData} />;
+      elem = <img {...others} />;
     }
 
     return elem;
