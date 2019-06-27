@@ -35,7 +35,7 @@ test.meta(<ITestMeta>{
 
   const title = 'Conversation Details';
   await h(t).withLog(`Then I should find the title of right shelf to be "${title}"`, async () => {
-    await t.expect(rightRail.title.textContent).eql('Conversation Details');
+    await t.expect(rightRail.title.textContent).eql(title);
   });
 
   await h(t).withLog('And hide shelf button should be visible', async () => {
