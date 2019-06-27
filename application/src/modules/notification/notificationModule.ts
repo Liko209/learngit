@@ -5,7 +5,7 @@
  */
 import { AbstractModule } from 'framework';
 import { INotificationService, INotificationSettingManager } from './interface';
-import { ILeaveBlockerService } from '../leave-blocker/interface';
+import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 
 class NotificationModule extends AbstractModule {
   @INotificationService

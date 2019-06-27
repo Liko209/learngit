@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { ILeaveBlockerService } from '../leave-blocker/interface';
+import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
 
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';

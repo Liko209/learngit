@@ -26,6 +26,8 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
+    '^@/modules/leave-blocker/interface$': '<rootDir>/tests/shield/src/mocks/modules/leave-blocker/interface.ts',
+    '^@/modules/leave-blocker/module.config$': '<rootDir>/tests/shield/src/mocks/modules/leave-blocker/module.config.ts',
     '^@/modules/common/util/lazyComponent$': '<rootDir>/tests/shield/src/mocks/lazyComponent.tsx',
     '^@/store/base/visibilityChangeEvent$': '<rootDir>/tests/shield/src/mocks/visibilityChangeEvent.ts',
     '^@/containers/ThemeProvider$': '<rootDir>/tests/shield/src/mocks/ThemeProvider.tsx',

@@ -12,7 +12,6 @@ function lazyComponent({
   loader: () => Promise<{ default: ComponentType<any> }>;
   Loading?: ComponentType<any>;
 }) {
-  const a = loader();
   type State = { Comp: ComponentType<any> | null };
   return class extends PureComponent<any, State> {
     constructor(props: any) {

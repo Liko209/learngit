@@ -29,9 +29,9 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       await sdk.setup();
 
       const leaveBlocker = require('@/modules/leave-blocker/module.config');
-      const router = require('../../router/module.config');
-      const app = require('../../app/module.config');
-      const message = require('../../message/module.config');
+      const router = require('@/modules/router/module.config');
+      const app = require('@/modules/app/module.config');
+      const message = require('@/modules/message/module.config');
       const GlobalSearch = require('@/modules/GlobalSearch/module.config');
       const home = require('@/modules/home/module.config');
       const featuresFlag = require('@/modules/featuresFlags/module.config');
