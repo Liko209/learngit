@@ -221,6 +221,62 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
 
 <dl>
   <dt>
+    mode tiny
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </dd>
+  <dt>
     mode mini
   </dt>
   <dd>
@@ -338,7 +394,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-current-time"
+        data-test-automation-id="audio-end-time"
       >
         00:30
       </span>
@@ -465,7 +521,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-current-time"
+        data-test-automation-id="audio-end-time"
       >
         01:00
       </span>
@@ -592,7 +648,7 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
       </button>
       <span
         className="c6"
-        data-test-automation-id="audio-current-time"
+        data-test-automation-id="audio-end-time"
       >
         01:30
       </span>
