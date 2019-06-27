@@ -3,6 +3,7 @@
 exports[`Storyshots Components/AutoSizer AutoSizer: Components/AutoSizer AutoSizer 1`] = `
 .c0 {
   height: inherit;
+  min-height: inherit;
   max-height: inherit;
 }
 

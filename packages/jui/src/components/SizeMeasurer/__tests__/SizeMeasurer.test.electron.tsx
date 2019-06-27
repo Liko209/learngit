@@ -7,6 +7,9 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { JuiSizeMeasurer } from '../SizeMeasurer';
 
+const attachTo = document.createElement('div');
+document.body.appendChild(attachTo);
+
 describe('SizeMeasurer', () => {
   it("should compute ref's width and height", () => {
     const wrapper = mount(
@@ -21,9 +24,7 @@ describe('SizeMeasurer', () => {
           </div>
         )}
       </JuiSizeMeasurer>,
-      {
-        attachTo: document.body,
-      },
+      { attachTo },
     );
     expect(wrapper.find('.target').text()).toBe('2333x6666');
     wrapper.unmount();
