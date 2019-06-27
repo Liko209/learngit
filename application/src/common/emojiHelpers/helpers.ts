@@ -17,8 +17,6 @@ import {
   mapEmojiOne,
 } from './map';
 
-import { uncompress } from 'emoji-mart/dist-es/utils/data';
-
 type EmojiOne = {
   unicode: string[];
   fname: string;
@@ -102,10 +100,6 @@ for (const key in mapEmojiOne) {
 }
 
 const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
-  if (data.compressed) {
-    uncompress(data);
-  }
-
   const skinTones = ['🏻', '🏼', '🏽', '🏾', '🏿'];
   const skinCodes = ['1F3FB', '1F3FC', '1F3FD', '1F3FE', '1F3FF'];
 
