@@ -10,6 +10,8 @@ type InputFooterProps = {
 };
 
 type InputFooterViewProps = WithTranslation & {
+  typingList: string[];
+  showTypingIndicator: boolean;
   showMarkupTips: boolean;
 };
 

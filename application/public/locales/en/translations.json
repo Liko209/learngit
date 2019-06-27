@@ -279,7 +279,12 @@
     "Messages": "Messages",
     "message": "Message",
     "atMentionAllTeam": "Team",
-    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> is typing...",
+      "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    }
   },
   "item": {
     "activity": {

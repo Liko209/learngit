@@ -9,6 +9,7 @@ import {
   JuiInputFooterContainer,
   JuiInputFooterItem,
 } from 'jui/pattern/MessageInput/InputFooter';
+import { TypingIndicator } from './TypingIndicator';
 import { observer } from 'mobx-react';
 import { InputFooterViewProps } from './types';
 import moize from 'moize';
@@ -28,11 +29,16 @@ class InputFooterViewComponent extends React.Component<InputFooterViewProps> {
     );
   });
 
+  private _getTypingIndicator = moize((show, typingList) => {
+    return <TypingIndicator show={show} typingList={typingList} />;
+  });
+
   render() {
-    const { t, showMarkupTips } = this.props;
+    const { t, showMarkupTips, typingList, showTypingIndicator } = this.props;
     return (
       <JuiInputFooterContainer>
         {this._getMarkupTips(t, showMarkupTips)}
+        {this._getTypingIndicator(showTypingIndicator, typingList)}
       </JuiInputFooterContainer>
     );
   }

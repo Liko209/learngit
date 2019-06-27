@@ -278,14 +278,16 @@ describe('MessageInputViewModel', () => {
       });
     });
     describe('hasInput', () => {
-      beforeEach(() => {
-        jest.clearAllMocks();
-        messageInputViewModel = new MessageInputViewModel({ id: 123 });
-      });
       it('should be true when there is draft in current conversation input', () => {
         messageInputViewModel._memoryDraftMap = new Map();
         messageInputViewModel._memoryDraftMap.set(123, 'test');
         expect(messageInputViewModel.hasInput).toBeTruthy();
+      });
+    });
+    describe('contentChange()', () => {
+      it('should call sendTypingEvent when being called', () => {
+        messageInputViewModel.contentChange('');
+        expect(groupService.sendTypingEvent).toBeCalledWith(123, true);
       });
     });
   });

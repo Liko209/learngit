@@ -184,8 +184,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   contentChange = (draft: string) => {
     this.error = '';
     this.draft = draft;
-    // be sure the clear value is correct
-    this._groupService.sendTypingEvent(this._oldId, false);
+    this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
   }
 
   @action
