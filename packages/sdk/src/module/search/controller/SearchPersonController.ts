@@ -11,10 +11,7 @@ import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { Group } from 'sdk/module/group';
 import { SortableModel } from '../../../framework/model';
-import {
-  PerformanceTracer,
-  PERFORMANCE_KEYS,
-} from '../../../utils/performance';
+import { PerformanceTracer } from 'foundation';
 import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,
@@ -33,6 +30,7 @@ import { MY_LAST_POST_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
+import { SEARCH_PERFORMANCE_KEYS } from '../config';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -50,7 +48,7 @@ class SearchPersonController {
     terms: string[];
     phoneContacts: PhoneContactEntity[];
   }> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     const persons = await this._doFuzzySearchPersons(options);
 
@@ -83,7 +81,7 @@ class SearchPersonController {
       results.phoneContacts.length,
     );
 
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PHONE_NUMBER });
+    performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PHONE_NUMBER });
     return results;
   }
 
@@ -93,9 +91,9 @@ class SearchPersonController {
     terms: string[];
     sortableModels: SortableModel<Person>[];
   }> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const result = await this._doFuzzySearchPersons(options);
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_PERSON });
+    performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PERSON });
     return {
       terms: result.terms.searchKeyTerms,
       sortableModels: result.sortableModels,

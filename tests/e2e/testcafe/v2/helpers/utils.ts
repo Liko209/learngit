@@ -75,10 +75,10 @@ export class H {
   }
 
   static convertPostTimeToTimestamp(text: string): number {
-    const formats = ['h:mm a', 'ddd, h:mm a', 'ddd, M/D/YYYY h:mm a'];
+    const formats = ['h:mm A', 'ddd, h:mm A', 'ddd, M/D/YYYY h:mm A'];
     let timestamp: number
     for (const format of formats) {
-      if (moment(text, format).isValid()) {
+      if (moment(text, format).format(format) == text) {
         timestamp = +moment(text, format).format('X');
         return timestamp;
       }

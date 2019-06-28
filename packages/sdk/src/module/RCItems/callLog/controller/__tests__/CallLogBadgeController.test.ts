@@ -241,6 +241,19 @@ describe('CallLogBadgeController', () => {
     });
   });
 
+  describe('_updateUnreadCount', () => {
+    it('should remove unread when call log is deactivated', () => {
+      const mockData = {
+        result: CALL_RESULT.MISSED,
+        __deactivated: true,
+        id: '456',
+      } as any;
+      controller['_unreadMap'].set('456', 123);
+      expect(controller['_updateUnreadCount'](mockData)).toBeTruthy();
+      expect(controller['_unreadMap'].size).toEqual(0);
+    });
+  });
+
   describe('_updateBadge()', () => {
     it('should call badgeService', () => {
       controller['_unreadMap'].set('1', 1);

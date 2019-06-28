@@ -307,7 +307,7 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get newMessageDeadLine() {
     this.warnFlakySelector();
-    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
+    return this.stream.find('span').withText('New messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -338,7 +338,7 @@ export class BaseConversationPage extends BaseWebComponent {
   async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 
@@ -411,6 +411,10 @@ export class ConversationPage extends BaseConversationPage {
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
+  }
+
+  get markupTips() {
+    return this.getSelectorByAutomationId('markupTips');
   }
 
   get currentGroupId() {
@@ -681,7 +685,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get editTextArea() {
-    return this.self.find('[data-placeholder="Type new message"]');
+    return this.self.find('.ql-editor');
   }
 
   async editMessage(message: string, options?: TypeActionOptions) {
@@ -743,7 +747,7 @@ export class PostItem extends BaseWebComponent {
   }
 
 
-  get likeCount() {
+  get likeCountSpan() {
     return this.likeButtonOnFooter.nextSibling('span');
   }
 
@@ -815,7 +819,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    return await this.getNumber(this.likeCount);
+    return await this.getNumber(this.likeCountSpan);
   }
 
   async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {

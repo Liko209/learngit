@@ -52,6 +52,10 @@ export abstract class BaseWebComponent {
     return this.self.visible;
   }
 
+  get focused() {
+    return this.self.focused
+  }
+
   get textContent() {
     return this.self.textContent;
   }

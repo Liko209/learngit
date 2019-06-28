@@ -59,6 +59,14 @@ class StreamViewComponent extends Component<Props> {
     return this.props.hasMoreDown;
   }
 
+  private _defaultLoading() {
+    return <DefaultLoadingWithDelay delay={100} />;
+  }
+
+  private _defaultLoadingMore() {
+    return <DefaultLoadingMore />;
+  }
+
   render() {
     const { ids, isShow = true } = this.props;
     // if conversation post include video and play video
@@ -66,8 +74,7 @@ class StreamViewComponent extends Component<Props> {
     // so we need to unmount conversation post
 
     const { height } = this.context;
-    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
-    const defaultLoadingMore = <DefaultLoadingMore />;
+
     return (
       <StreamContext.Provider value={{ isShow }}>
         <JuiStream style={this._wrapperStyleGen(height)}>
@@ -78,9 +85,9 @@ class StreamViewComponent extends Component<Props> {
             minRowHeight={50} // extract to const
             loadInitialData={this.props.fetchInitialPosts}
             loadMore={this.props.fetchNextPagePosts}
-            loadingRenderer={defaultLoading}
+            loadingRenderer={this._defaultLoading}
             hasMore={this._hasMore}
-            loadingMoreRenderer={defaultLoadingMore}
+            loadingMoreRenderer={this._defaultLoadingMore}
             stickToLastPosition={false}
           >
             {ids.map(id => (

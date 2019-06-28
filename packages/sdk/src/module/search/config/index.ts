@@ -6,3 +6,4 @@
 
 export { SearchUserConfig } from './SearchUserConfig';
 export { SEARCH_CONFIG_KEYS, SEARCH_MODULE_NAME } from './constants';
+export { SEARCH_PERFORMANCE_KEYS } from './performanceKeys';

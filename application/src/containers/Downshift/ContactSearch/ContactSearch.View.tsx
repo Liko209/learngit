@@ -40,6 +40,7 @@ class ContactSearchView extends React.Component<ViewProps> {
       maxLength,
       inputValue,
       selectedItems,
+      autoFocus,
     } = this.props;
 
     return (
@@ -63,6 +64,7 @@ class ContactSearchView extends React.Component<ViewProps> {
         autoSwitchEmail={autoSwitchEmail}
         maxLength={maxLength}
         onKeyDown={this.onKeyDown}
+        autoFocus={autoFocus}
       />
     );
   }

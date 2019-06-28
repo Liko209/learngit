@@ -77,9 +77,9 @@ class PinnedListComponent extends React.Component<Props> {
             loadMoreStrategy={this._loadMoreStrategy}
             loadInitialData={this.props.loadInitialData}
             loadMore={this.props.loadMore}
-            loadingRenderer={this.defaultLoading()}
+            loadingRenderer={this.defaultLoading}
             hasMore={this.hasMore}
-            loadingMoreRenderer={this.defaultLoadingMore()}
+            loadingMoreRenderer={this.defaultLoadingMore}
             noRowsRenderer={this.renderEmptyContent()}
             stickToLastPosition={false}
           >

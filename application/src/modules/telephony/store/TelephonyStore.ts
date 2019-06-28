@@ -8,7 +8,6 @@ import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed, action, reaction } from 'mobx';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { mainLogger } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
@@ -23,7 +22,13 @@ import {
   CallWindowFSM,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
-import { ANONYMOUS } from '../interface/constant';
+import {
+  ANONYMOUS,
+  INCOMING_STATE,
+  DIALING,
+  INITIAL_REPLY_COUNTDOWN_TIME,
+  CALL_TYPE,
+} from '../interface/constant';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
@@ -37,23 +42,6 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
-enum CALL_TYPE {
-  NULL,
-  INBOUND,
-  OUTBOUND,
-}
-
-const DIALING = 'dialing';
-
-enum INCOMING_STATE {
-  IDLE,
-  REPLY,
-  FORWARD,
-}
-
-const logTag = '[TelephonyStore_View]';
-const INITIAL_REPLY_COUNTDOWN_TIME = 55;
-
 class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _intervalReplyId?: NodeJS.Timeout;
@@ -66,13 +54,15 @@ class TelephonyStore {
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
-  @observable
-  isStopRecording: boolean = false;
+
+  isStopRecording: boolean = false; // whether the stop recording request is on the flight
 
   @observable
   uid?: number;
+
   @observable
   phoneNumber?: string;
+
   @observable
   isContactMatched: boolean = false;
 
@@ -82,23 +72,34 @@ class TelephonyStore {
   @observable
   callerName?: string;
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   replyCountdownTime?: number = INITIAL_REPLY_COUNTDOWN_TIME;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   keypadEntered: boolean = false;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   enteredKeys: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   customReplyMessage: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   shiftKeyDown = false;
 
   @observable
   shouldKeepDialog: boolean;
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   inputString: string = '';
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   forwardString: string = '';
 
@@ -141,6 +142,7 @@ class TelephonyStore {
   @observable
   dialerFocused: boolean;
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   firstLetterEnteredThroughKeypad: boolean;
 
@@ -174,6 +176,7 @@ class TelephonyStore {
       { fireImmediately: true },
     );
 
+    // TODO: move out of telephony store when minization won't destroy the telephony dialog
     reaction(
       () => this.inputString.length,
       length => {
@@ -223,6 +226,7 @@ class TelephonyStore {
     return false;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @computed
   get shouldEnterContactSearch() {
     return (
@@ -256,6 +260,7 @@ class TelephonyStore {
     localStorage.setItem(LOCAL_CALL_WINDOW_STATUS_KEY, status);
   }
 
+  @action
   private _closeCallWindow = () => {
     if (this.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED) {
       this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.CLOSE_DIALER]();
@@ -279,18 +284,16 @@ class TelephonyStore {
   }
 
   @action
-  private _restoreButtonStates() {
-    this.stopRecording();
-  }
-
   private _clearEnteredKeys = () => {
     this.enteredKeys = '';
   }
 
+  @action
   private _clearForwardString = () => {
     this.forwardString = '';
   }
 
+  @action
   updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
     if (defaultCallerPhoneNumber !== undefined) {
       this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
@@ -374,7 +377,6 @@ class TelephonyStore {
 
     this.resetReply();
     this.quitKeypad();
-    this._restoreButtonStates();
     this._clearEnteredKeys();
     this._clearForwardString();
     this.callerName = undefined;
@@ -393,41 +395,6 @@ class TelephonyStore {
   incomingCall = () => {
     this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
-  }
-
-  hold = () => {
-    if (this.held) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to hold from held`,
-      );
-    }
-  }
-
-  @action
-  unhold = () => {
-    if (!this.held) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to unhold from idle`,
-      );
-    }
-  }
-
-  @action
-  startRecording = () => {
-    if (this.isRecording) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to record from recording`,
-      );
-    }
-  }
-
-  @action
-  stopRecording = () => {
-    if (!this.isRecording) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to stop recording from idle`,
-      );
-    }
   }
 
   onDialerInputFocus = () => {
@@ -466,32 +433,37 @@ class TelephonyStore {
 
   @computed
   get isDetached() {
-    if (this.callWindowState === CALL_WINDOW_STATUS.FLOATING) {
-      return false;
+    if (this.callWindowState === CALL_WINDOW_STATUS.DETACHED) {
+      return true;
     }
-    return true;
+    return false;
   }
 
+  // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
   @computed
   get holdDisabled() {
     return this.holdState === HOLD_STATE.DISABLE;
   }
 
+  // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
   @computed
   get held() {
     return this.holdState === HOLD_STATE.HELD;
   }
 
+  // TODO: move to Record.ViewModel.ts when implementing the multi-call feature
   @computed
   get isRecording() {
     return this.recordState === RECORD_STATE.RECORDING;
   }
 
+  // TODO: move to Record.ViewModel.ts when implementing the multi-call feature
   @computed
   get recordDisabled() {
     return this.recordState === RECORD_STATE.DISABLE;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   directReply = () => {
     this.incomingState = INCOMING_STATE.REPLY;
@@ -500,16 +472,19 @@ class TelephonyStore {
     }
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   directForward = () => {
     this.incomingState = INCOMING_STATE.FORWARD;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   backIncoming = () => {
     this.incomingState = INCOMING_STATE.IDLE;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   resetReply = () => {
     this.replyCountdownTime = undefined;
@@ -518,6 +493,7 @@ class TelephonyStore {
     this._intervalReplyId = undefined;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action.bound
   private _createReplyInterval() {
     this.replyCountdownTime = INITIAL_REPLY_COUNTDOWN_TIME;
@@ -593,7 +569,7 @@ class TelephonyStore {
     return this.call.callId;
   }
 
-  // TODO: should change the prop's name use CALL_DIRECTION
+  // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
   @computed
   get callType() {
     switch (true) {
