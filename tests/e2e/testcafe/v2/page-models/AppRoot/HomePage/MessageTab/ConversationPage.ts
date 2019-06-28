@@ -688,11 +688,34 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.ql-editor');
   }
 
+  get postImg() {
+    return this.self.find('img');
+  }
+
   async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
       .pressKey('enter');
+  }
+
+  async deleteMessage() {
+    await this.t
+      .selectText(this.editTextArea)
+      .pressKey('delete')
+      .wait(1e3)
+      .pressKey('enter');
+  }
+
+  async enterEditTextAreaWithSpace() {
+    await this.t
+      .wait(1e3)
+      .typeText(this.editTextArea, '  ')
+      .pressKey('enter');
+  }
+
+  async editTextAreaFocused() {
+    return await this.editTextArea.focused;
   }
 
   get mentions() {

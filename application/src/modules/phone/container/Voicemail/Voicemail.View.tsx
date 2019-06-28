@@ -22,8 +22,8 @@ import { VoicemailItem } from '../VoicemailItem';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
-  LOADING_DELAY,
   VOICEMAIL_HEADER,
+  LOADING_DELAY,
 } from './config';
 import noVoicemailImage from '../images/no-voicemail.svg';
 
@@ -33,8 +33,8 @@ type Props = VoicemailViewProps & WithTranslation;
 class VoicemailWrapper extends Component<Props & { height: number }> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY * 0} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 

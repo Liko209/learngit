@@ -27,6 +27,7 @@ import { ENTITY } from '../../../service/eventKey';
 import { PostSearchController } from './implementation/PostSearchController';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { PostItemController } from './implementation/PostItemController';
 
 class PostController {
   private _actionController: PostActionController;
@@ -36,6 +37,7 @@ class PostController {
   private _discontinuousPostController: DiscontinuousPostController;
   private _postDataController: PostDataController;
   private _postSearchController: PostSearchController;
+  private _postItemController: PostItemController;
   constructor(private _groupService: IGroupService) {}
 
   getPostActionController(): PostActionController {
@@ -135,6 +137,15 @@ class PostController {
     }
 
     return this._postSearchController;
+  }
+
+  getPostItemController() {
+    if (!this._postItemController) {
+      this._postItemController = new PostItemController(
+        this.getPostActionController(),
+      );
+    }
+    return this._postItemController;
   }
 
   private _getPreInsertController() {

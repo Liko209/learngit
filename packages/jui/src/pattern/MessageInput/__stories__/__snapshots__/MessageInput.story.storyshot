@@ -1322,6 +1322,8 @@ exports[`Storyshots Pattern/MessageInput JuiInputFooter: Pattern/MessageInput Ju
     <p
       aria-describedby={null}
       className="MuiTypography-root MuiTypography-body2 c3 c4"
+      onBlur={[Function]}
+      onFocus={[Function]}
       onMouseLeave={[Function]}
       onMouseOver={[Function]}
       onTouchEnd={[Function]}
