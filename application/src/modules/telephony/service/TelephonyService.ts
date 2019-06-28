@@ -364,11 +364,22 @@ class TelephonyService {
           const service: RCInfoService = ServiceLoader.getInstance(
             ServiceConfig.RC_INFO_SERVICE,
           );
-          const downloadUrl = await service.generateWebSettingUri(
-            ERCWebUris.RC_APP_DOWNLOAD_URL,
-          );
-          stopLoading();
-          window.open(downloadUrl);
+          try {
+            const downloadUrl = await service.generateWebSettingUri(
+              ERCWebUris.RC_APP_DOWNLOAD_URL,
+            );
+            this._clientService.open(downloadUrl);
+          } catch {
+            Notification.flashToast({
+              message: await i18nT('telephony.prompt.RCPhoneGetDownloadError'),
+              type: ToastType.ERROR,
+              messageAlign: ToastMessageAlign.LEFT,
+              fullWidth: false,
+              dismissible: false,
+            });
+          } finally {
+            stopLoading();
+          }
         },
       });
     };

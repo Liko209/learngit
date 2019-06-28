@@ -597,6 +597,7 @@
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
+      "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
       "RCPhoneIsNotInstalledOK": "Download RingCentral Phone",

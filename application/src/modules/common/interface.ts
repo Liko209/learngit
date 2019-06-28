@@ -7,6 +7,7 @@ const CLIENT_SERVICE = 'window_service';
 interface IClientService {
   focus: () => void;
   invokeApp: (url: string, options: InvokeAppOpts) => void;
+  open: (url: string) => void;
 }
 interface InvokeAppOpts {
   fallback: Function;

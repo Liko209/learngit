@@ -18,6 +18,9 @@ class ClientService implements IClientService {
     }
     window.focus();
   }
+  open(url: string) {
+    window.open(url);
+  }
   invokeApp(urlScheme: string, options: InvokeAppOpts) {
     let appPortal = document.getElementById(
       'app-portal',
