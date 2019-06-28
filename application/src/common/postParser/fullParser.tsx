@@ -52,12 +52,11 @@ const parsersConfig = [
       fullText.includes(' <at_mention id='),
     getParserOption: ({
       keyword,
-      html,
       atMentions = {},
     }: PostParserOptions): AtMentionParserOption => {
       const opts: AtMentionParserOption = atMentions;
       opts.innerContentParser = (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text;
+        keyword ? postParser(text, { keyword }) : text;
       return opts;
     },
   },
@@ -80,7 +79,7 @@ const parsersConfig = [
       const opts: FileNameParserOption =
         fileName instanceof Object ? fileName : {};
       opts.innerContentParser = (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text;
+        keyword ? postParser(text, { keyword }) : text;
       return opts;
     },
   },
@@ -90,7 +89,7 @@ const parsersConfig = [
       options.url && fullText.includes('.'),
     getParserOption: ({ keyword }: PostParserOptions): URLParserOption => ({
       innerContentParser: (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text,
+        keyword ? postParser(text, { keyword }) : text,
     }),
   },
   {
@@ -104,7 +103,7 @@ const parsersConfig = [
       keyword,
       innerContentParser: (text: string) =>
         phoneNumber && /\d/g.test(text)
-          ? _postParser(text, { phoneNumber: true })
+          ? postParser(text, { phoneNumber: true })
           : text,
     }),
   },
@@ -129,7 +128,7 @@ const parsersConfig = [
       keyword,
     }: PostParserOptions): PhoneNumberParserOption => ({
       innerContentParser: (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text,
+        keyword ? postParser(text, { keyword }) : text,
     }),
   },
 ];
@@ -193,7 +192,7 @@ const _parseMarkdown = (markdownText: string, options: PostParserOptions) => {
     innerOptions.keyword = options.keyword;
     innerOptions.emoji = options.emoji;
 
-    return _postParser(text, innerOptions);
+    return postParser(text, innerOptions);
   };
   opts.withGlipdown = !(
     typeof html === 'object' && html.withGlipdown === false
@@ -202,7 +201,7 @@ const _parseMarkdown = (markdownText: string, options: PostParserOptions) => {
   return htmlParser.setContent(markdownText).parse();
 };
 
-const _postParser: FullParser = (
+const postParser: FullParser = (
   fullText: string,
   options: PostParserOptions = {},
 ) => {
@@ -256,14 +255,11 @@ const _postParser: FullParser = (
   }
 };
 
-const postParser = moize(_postParser, {
+const moizePostParser = moize(postParser, {
   maxSize: 1000,
   transformArgs: ([text, options]) => {
     return [text, JSON.stringify(options)];
   },
-  // onCacheHit: cache => {
-  //   console.log('use cache', cache.keys);
-  // },
 });
 
-export { postParser };
+export { moizePostParser, postParser };

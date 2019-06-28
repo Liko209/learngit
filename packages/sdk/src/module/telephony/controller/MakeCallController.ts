@@ -72,14 +72,14 @@ class MakeCallController {
         // are not allowed to dial out
         const record = specialNumber.records[index];
         if (record.phoneNumber === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
         const e164N11Num = await phoneNumService.getE164PhoneNumber(
           record.phoneNumber,
         );
         if (e164N11Num === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
       }

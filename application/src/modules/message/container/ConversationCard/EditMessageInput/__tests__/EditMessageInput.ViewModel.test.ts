@@ -30,6 +30,7 @@ const mockPostEntityData = {
   id: 1,
   groupId: 1,
   text: 'text',
+  itemIds: [],
 };
 
 const mockGroupEntityData = {
@@ -113,7 +114,7 @@ describe('EditMessageInputViewModel', () => {
       handler();
       expect(postService.editPost).toBeCalled();
     });
-    it('should edit post failure when content is empty', () => {
+    it('should edit post failure when content and itemIds is empty', () => {
       const markdownFromDeltaRes = {
         content: '',
         mentionsIds: [],
@@ -162,11 +163,9 @@ describe('EditMessageInputViewModel', () => {
       expect(result).toBeUndefined();
     });
     it('Failed to edit post due to network disconnection. [JPT-1824]', async () => {
-      postService.editPost = jest
-        .fn()
-        .mockImplementationOnce(() => {
-          throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
-        });
+      postService.editPost = jest.fn().mockImplementationOnce(() => {
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+      });
 
       const markdownFromDeltaRes = {
         content: 'text',
@@ -185,11 +184,9 @@ describe('EditMessageInputViewModel', () => {
       );
     });
     it('Failed to edit post due to unexpected backend issue. [JPT-1823]', async () => {
-      postService.editPost = jest
-        .fn()
-        .mockImplementationOnce(() => {
-          throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
-        });
+      postService.editPost = jest.fn().mockImplementationOnce(() => {
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+      });
 
       const markdownFromDeltaRes = {
         content: 'text',

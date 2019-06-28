@@ -12,6 +12,7 @@ import tryAgainImage from './images/try-again.svg';
 
 const ErrorPageComponent: IErrorPage = ({ t, onReload, height }) => (
   <JuiEmptyPage
+    data-test-automation-id="errorPage"
     message={t('common.prompt.loadError')}
     image={tryAgainImage}
     height={height}

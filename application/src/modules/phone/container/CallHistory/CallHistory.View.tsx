@@ -12,6 +12,8 @@ import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { CallHistoryTypes, CallHistoryViewProps } from './types';
 import { TabConfig, TAB_CONFIG } from './config';
 import ReactResizeDetector from 'react-resize-detector';
+import { More } from '../Actions/More';
+import { DeleteAll } from '../Actions/DeleteAll';
 
 const CallHistoryWrapper = (
   props: { height: number; clearUMI: () => void } & WithTranslation,
@@ -27,6 +29,11 @@ const CallHistoryWrapper = (
       <PhoneHeader
         title={props.t('phone.callhistory')}
         data-test-automation-id="CallHistoryPageHeader"
+        SubTitle={
+          <More automationId="callHistory-header-more">
+            <DeleteAll />
+          </More>
+        }
       />
       <PhoneWrapper>
         <JuiTabs

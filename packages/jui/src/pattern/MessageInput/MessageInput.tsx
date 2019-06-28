@@ -103,6 +103,7 @@ type Props = {
   children: React.ReactNode;
   modules: object;
   toolbarNode?: React.ReactNode;
+  footerNode?: React.ReactNode;
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
   didDropFile?: (file: File[]) => void;
@@ -199,6 +200,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
     const {
       value,
       toolbarNode,
+      footerNode,
       attachmentsNode,
       defaultValue,
       error,
@@ -239,6 +241,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {footerNode}
         {attachmentsNode}
       </Wrapper>
     );

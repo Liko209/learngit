@@ -27,6 +27,7 @@ import { RegionSettingItem } from './RegionSettingItem';
 import {
   DefaultPhoneAppSelectItem,
   DefaultPhoneAppSelectValue,
+  beforeDefaultPhoneAppSettingSave,
 } from './DefaultPhoneAppSettingItem';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
@@ -57,6 +58,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
+              beforeSaving: beforeDefaultPhoneAppSettingSave,
               automationId: 'defaultPhoneApp',
               valueRenderer: DefaultPhoneAppSelectValue,
             } as SelectSettingItem<CALLING_OPTIONS>,

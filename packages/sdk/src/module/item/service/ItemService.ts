@@ -7,12 +7,7 @@
 import { Item, ItemFile } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ItemServiceController } from '../controller/ItemServiceController';
-import {
-  GlipTypeUtil,
-  TypeDictionary,
-  PerformanceTracer,
-  PERFORMANCE_KEYS,
-} from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { Progress } from '../../progress';
 import { Post } from '../../post/entity';
 import { daoManager } from '../../../dao';
@@ -25,10 +20,12 @@ import { IItemService } from './IItemService';
 import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
 import { NoteItemService } from '../module/note/service';
+import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
+
 const INVALID_ITEM_ID = [-1, -2, null];
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
@@ -93,10 +90,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getItems(options: ItemQueryOptions) {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const result = await this.itemServiceController.getItems(options);
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      key: ITEM_PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
       infos: { typeId: options.typeId },
     });
     return result;
@@ -206,7 +203,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getByPosts(posts: Post[]): Promise<Item[]> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     let itemIds: number[] = [];
     posts.forEach((post: Post) => {
       if (post.item_ids && post.item_ids[0]) {
@@ -226,12 +223,12 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     }
 
     mainLogger.info(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      ITEM_PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
       ': item count:',
       String(itemIds.length),
     );
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      key: ITEM_PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
       count: itemIds.length,
     });
     return items;
