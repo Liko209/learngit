@@ -22,9 +22,7 @@ import {
 } from '../../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
-import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
-import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
-import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { ToggleController } from '../ToggleController';
 
 jest.mock('voip');
 jest.mock('sdk/service/notificationCenter');
@@ -55,6 +53,8 @@ describe('TelephonyCallController', () => {
   let mockEntitySource: MockEntitySource;
   let mockEntityCache: MockEntityCache;
   const callId = '123';
+  let holdToggle: ToggleController;
+  let recordToggle: ToggleController;
 
   function setup() {
     mockDelegate = new MockDelegate();
@@ -68,8 +68,13 @@ describe('TelephonyCallController', () => {
     );
 
     rtcCall = new RTCCall(false, '', null, null, null);
+    holdToggle = new ToggleController();
+    recordToggle = new ToggleController();
+
     Object.assign(callController, {
       _rtcCall: rtcCall,
+      _holdToggle: holdToggle,
+      _recordToggle: recordToggle,
     });
     jest.spyOn(mockDelegate, 'onCallStateChange');
   }
@@ -118,20 +123,22 @@ describe('TelephonyCallController', () => {
   describe('hold', () => {
     it('should resolve when call is held successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(3);
+      expect.assertions(4);
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      holdToggle.onSuccess = jest.fn();
       callController.hold().then(result => {
         expect(result).toEqual(options);
         done();
       });
+      callController.onCallActionSuccess(RTC_CALL_ACTION.HOLD, options);
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.HELD,
       );
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.DISABLE,
       );
-      callController.onCallActionSuccess(RTC_CALL_ACTION.HOLD, options);
+      expect(holdToggle.onSuccess).toBeCalled();
     });
 
     it('should reject when call hold is failed', (done: jest.DoneCallback) => {
@@ -151,7 +158,7 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.HELD,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.HOLD);
+      callController.onCallActionFailed(RTC_CALL_ACTION.HOLD, -1);
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.IDLE,
       );
@@ -184,7 +191,8 @@ describe('TelephonyCallController', () => {
     it('should reject when call unhold is failed', (done: jest.DoneCallback) => {
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
-      expect.assertions(4);
+      holdToggle.onFailure = jest.fn();
+      expect.assertions(5);
       callController
         .unhold()
         .then(result => {
@@ -197,21 +205,23 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.IDLE,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.UNHOLD);
+      callController.onCallActionFailed(RTC_CALL_ACTION.UNHOLD, -1);
       expect(callController._updateCallHoldState).toBeCalledWith(
         HOLD_STATE.HELD,
       );
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.DISABLE,
       );
+      expect(holdToggle.onFailure).toBeCalled();
     });
   });
 
   describe('startRecord', () => {
     it('should resolve when startRecord is successfully', (done: jest.DoneCallback) => {
       const options = '';
-      expect.assertions(2);
+      expect.assertions(3);
       callController._updateCallRecordState = jest.fn();
+      recordToggle.onSuccess = jest.fn();
       callController.startRecord().then(result => {
         expect(result).toEqual(options);
         done();
@@ -220,6 +230,7 @@ describe('TelephonyCallController', () => {
         RECORD_STATE.RECORDING,
       );
       callController.onCallActionSuccess(RTC_CALL_ACTION.START_RECORD, options);
+      expect(recordToggle.onSuccess).toBeCalled();
     });
 
     it('should reject when startRecord is failed', (done: jest.DoneCallback) => {
@@ -237,10 +248,34 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.RECORDING,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.START_RECORD);
+      callController.onCallActionFailed(RTC_CALL_ACTION.START_RECORD, -1);
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.IDLE,
       );
+    });
+
+    it('should reject with startRecord is failed with code -8 [JPT-2428]', (done: jest.DoneCallback) => {
+      callController._updateCallRecordState = jest.fn();
+      recordToggle.onFailure = jest.fn();
+      expect.assertions(4);
+      callController
+        .startRecord()
+        .then(result => {
+          done();
+        })
+        .catch(result => {
+          expect(result).toEqual('-8');
+          done();
+        });
+
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.RECORDING,
+      );
+      callController.onCallActionFailed(RTC_CALL_ACTION.START_RECORD, -8);
+      expect(callController._updateCallRecordState).toBeCalledWith(
+        RECORD_STATE.IDLE,
+      );
+      expect(recordToggle.onFailure).toBeCalled();
     });
   });
 
@@ -274,7 +309,7 @@ describe('TelephonyCallController', () => {
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.IDLE,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
+      callController.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD, -1);
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.RECORDING,
       );
@@ -471,7 +506,7 @@ describe('TelephonyCallController', () => {
           expect(result).toEqual('');
           done();
         });
-      callController.onCallActionFailed(RTC_CALL_ACTION.PARK);
+      callController.onCallActionFailed(RTC_CALL_ACTION.PARK, -1);
     });
   });
 
@@ -500,9 +535,10 @@ describe('TelephonyCallController', () => {
           expect(result).toEqual('');
           done();
         });
-      callController.onCallActionFailed(RTC_CALL_ACTION.FLIP);
+      callController.onCallActionFailed(RTC_CALL_ACTION.FLIP, -1);
     });
   });
+
   describe('forward', () => {
     beforeEach(() => {
       clearMocks();
@@ -528,7 +564,29 @@ describe('TelephonyCallController', () => {
           expect(result).toEqual('');
           done();
         });
-      callController.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      callController.onCallActionFailed(RTC_CALL_ACTION.FORWARD, -1);
+    });
+  });
+
+  describe('_handleToggleState', () => {
+    it('should call onSuccess when call hold is completed successfully', () => {
+      holdToggle.onSuccess = jest.fn();
+      callController._handleToggleState(RTC_CALL_ACTION.HOLD, true);
+      expect(holdToggle.onSuccess).toBeCalled();
+    });
+
+    it('should call onFailure when start record is failed', () => {
+      recordToggle.onFailure = jest.fn();
+      callController._handleToggleState(RTC_CALL_ACTION.START_RECORD, false);
+      expect(recordToggle.onFailure).toBeCalled();
+    });
+
+    it('should do nothing when mute is completed successfully', () => {
+      holdToggle.onSuccess = jest.fn();
+      recordToggle.onSuccess = jest.fn();
+      callController._handleToggleState(RTC_CALL_ACTION.MUTE, false);
+      expect(holdToggle.onSuccess).not.toBeCalled();
+      expect(recordToggle.onSuccess).not.toBeCalled();
     });
   });
 });
