@@ -10,7 +10,6 @@ import { dataAnalysis } from 'sdk';
 const dataTrackingForSetting = (config: DataTracking, value?: any) => {
   const { optionTransform, eventName, ...rest } = config;
   const option = optionTransform ? optionTransform(value) : value;
-  console.log('looper', option, rest, eventName);
   const parameters = option
     ? {
         option,
