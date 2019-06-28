@@ -28,7 +28,7 @@ import { PostNotificationController } from '../controller/PostNotificationContro
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
   constructor(private _groupService: IGroupService) {
-    super(false, daoManager.getDao(PostDao), {
+    super({ isSupportedCache: false }, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
@@ -197,6 +197,12 @@ class PostService extends EntityBaseService<Post> {
     return await this.getPostController()
       .getPostSearchController()
       .getContentsCount(params);
+  }
+
+  async getLatestPostIdByItem(groupId: number, itemId: number) {
+    return await this.getPostController()
+      .getPostItemController()
+      .getLatestPostIdByItem(groupId, itemId);
   }
 
   private get _postDataController() {

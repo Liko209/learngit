@@ -8,6 +8,10 @@ import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import config from '@/config';
+import PersonModel from '@/store/models/Person';
+import { Person } from 'sdk/module/person/entity';
+import { Company } from 'sdk/module/company/entity';
+import CompanyModel from '@/store/models/Company';
 class AnalyticsCollector {
   constructor() {
     dataAnalysis.setProduction(config.isProductionAccount());
@@ -17,11 +21,14 @@ class AnalyticsCollector {
     if (!userId) {
       return { userId };
     }
-    const user = getEntity(ENTITY_NAME.PERSON, userId);
+    const user = getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, userId);
     if (!user.companyId) {
       return { userId, user };
     }
-    const company = getEntity(ENTITY_NAME.COMPANY, user.companyId);
+    const company = getEntity<Company, CompanyModel>(
+      ENTITY_NAME.COMPANY,
+      user.companyId,
+    );
     if (!user.email || !company.name) {
       return;
     }
@@ -121,6 +128,10 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_call_flipCall', {
       source: 'activeCall_flipNumberList',
     });
+  }
+
+  clearAllCallHistory() {
+    dataAnalysis.track('Jup_Web/DT_phone_callHistory_deleteAll');
   }
 }
 

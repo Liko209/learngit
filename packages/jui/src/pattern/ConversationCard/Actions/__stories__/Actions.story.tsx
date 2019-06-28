@@ -1,18 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiActions } from '../Actions';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
+import refresh from '../../../../assets/jupiter-icon/icon-refresh.svg';
+import deleteIcon from '../../../../assets/jupiter-icon/icon-delete.svg';
 
-storiesOf('Pattern/ConversationCard', module)
-  .addDecorator(withInfoDecorator(JuiActions, { inline: true }))
-  .add('Actions', () => (
-    <JuiActions>
-      <JuiIconButton variant="plain" tooltipTitle="refresh">
-        refresh
-      </JuiIconButton>
-      <JuiIconButton variant="plain" tooltipTitle="delete">
-        delete
-      </JuiIconButton>
-    </JuiActions>
-  ));
+storiesOf('Pattern/ConversationCard', module).add('Actions', () => (
+  <JuiActions>
+    <JuiIconButton variant="plain" tooltipTitle="refresh" symbol={refresh} />
+    <JuiIconButton variant="plain" tooltipTitle="delete" symbol={deleteIcon} />
+  </JuiActions>
+));

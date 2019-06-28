@@ -5,8 +5,6 @@
  */
 
 import FileItemModel from '../FileItem';
-import { AccountService } from 'sdk/module/account';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
 describe('FileItemModel', () => {
   describe('new FileItem', () => {
     const fileItemModel = FileItemModel.fromJS({
@@ -45,16 +43,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.thumbs).toEqual({});
     });
 
-    it('should return null if thumbs not exist', () => {
+    it('should return undefined if thumbs not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [{}],
       } as any);
-      expect(fileItemModel.thumbs).toBeNull();
+      expect(fileItemModel.thumbs).toBeUndefined();
     });
 
-    it('should return null if versions not exist', () => {
+    it('should return undefined if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.thumbs).toBeNull();
+      expect(fileItemModel.thumbs).toBeUndefined();
     });
   });
 
@@ -70,15 +68,15 @@ describe('FileItemModel', () => {
       expect(fileItemModel.pages).toEqual([{}]);
     });
 
-    it('should return null if pages not exist', () => {
+    it('should return [] if pages not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         versions: [{}],
       } as any);
-      expect(fileItemModel.pages).toBeNull();
+      expect(fileItemModel.pages).toEqual([]);
     });
-    it('should return null if versions not exist', () => {
+    it('should return [] if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.pages).toBeNull();
+      expect(fileItemModel.pages).toEqual([]);
     });
   });
 
@@ -94,16 +92,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.versionUrl).toBe('123');
     });
 
-    it('should return null if latestVersion.url not exist', () => {
+    it('should return empty string if latestVersion.url not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
       } as any);
-      expect(fileItemModel.versionUrl).toBeNull();
+      expect(fileItemModel.versionUrl).toEqual('');
     });
-    it('should return null if versions not exist', () => {
+    it('should return empty string if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.versionUrl).toBeNull();
+      expect(fileItemModel.versionUrl).toEqual('');
     });
   });
 
@@ -119,16 +117,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.size).toBe('123');
     });
 
-    it('should return null if latestVersion.size not exist', () => {
+    it('should return 0 if latestVersion.size not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
       } as any);
-      expect(fileItemModel.size).toBeNull();
+      expect(fileItemModel.size).toEqual(0);
     });
-    it('should return null if versions not exist', () => {
+    it('should return 0 if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.size).toBeNull();
+      expect(fileItemModel.size).toEqual(0);
     });
   });
 
@@ -144,16 +142,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.downloadUrl).toBe('123');
     });
 
-    it('should return null if latestVersion.downloadUrl not exist', () => {
+    it('should return empty string if latestVersion.downloadUrl not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
       } as any);
-      expect(fileItemModel.downloadUrl).toBeNull();
+      expect(fileItemModel.downloadUrl).toEqual('');
     });
-    it('should return null if versions not exist', () => {
+    it('should return empty string if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.downloadUrl).toBeNull();
+      expect(fileItemModel.downloadUrl).toEqual('');
     });
   });
 
@@ -169,16 +167,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.origHeight).toBe(123);
     });
 
-    it('should return null if latestVersion.origHeight not exist', () => {
+    it('should return 0 if latestVersion.origHeight not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
       } as any);
-      expect(fileItemModel.origHeight).toBeNull();
+      expect(fileItemModel.origHeight).toEqual(0);
     });
-    it('should return null if versions not exist', () => {
+    it('should return 0 if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.origHeight).toBeNull();
+      expect(fileItemModel.origHeight).toEqual(0);
     });
   });
 
@@ -194,16 +192,16 @@ describe('FileItemModel', () => {
       expect(fileItemModel.origWidth).toBe(123);
     });
 
-    it('should return null if latestVersion.origWidth not exist', () => {
+    it('should return 0 if latestVersion.origWidth not exist', () => {
       const fileItemModel = FileItemModel.fromJS({
         id: 1,
         versions: [{}],
       } as any);
-      expect(fileItemModel.origWidth).toBeNull();
+      expect(fileItemModel.origWidth).toEqual(0);
     });
-    it('should return null if versions not exist', () => {
+    it('should return 0 if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
-      expect(fileItemModel.origWidth).toBeNull();
+      expect(fileItemModel.origWidth).toEqual(0);
     });
   });
 

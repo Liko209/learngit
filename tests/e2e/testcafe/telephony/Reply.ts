@@ -317,3 +317,60 @@ test.meta(<ITestMeta>{
     await callerWebPhone.waitForStatus('terminated');
   });
 })
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1710'],
+  maintainers: ['zack'],
+  keywords: ['Reply']
+})('Back to the previous call window when caller ends the call', async(t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the to diapad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type a character in the input field`, async () => {
+    await telephonyDialog.typeTextInDialer('123');
+  });
+
+  // Inbound call
+  await h(t).withLog('And I receive an incoming call', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+
+  await h(t).withLog('Then my telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click more options button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+
+  await h(t).withLog('Click the reply option into reply page', async () => {
+    await telephonyDialog.clickReplyActionButton();
+  });
+
+  await h(t).withLog('When the other user hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+
+  await h(t).withLog('Then telephony dialog should back to previous dialer page', async () => {
+    await telephonyDialog.ensureLoaded();
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql('123');
+  });
+})

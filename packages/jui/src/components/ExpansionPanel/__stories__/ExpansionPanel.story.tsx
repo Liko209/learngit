@@ -6,41 +6,38 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiExpansionPanel } from '../ExpansionPanel';
 import { JuiExpansionPanelSummary } from '../ExpansionPanelSummary';
 import { JuiExpansionPanelDetails } from '../ExpansionPanelDetails';
 import { JuiIconButton } from '../../Buttons/IconButton';
 
-storiesOf('Components/ExpansionPanel', module)
-  .addDecorator(withInfoDecorator(JuiExpansionPanel, { inline: true }))
-  .add('JuiExpansionPanel', () => {
-    const square = boolean('square', true);
+storiesOf('Components/ExpansionPanel', module).add('JuiExpansionPanel', () => {
+  const square = boolean('square', true);
 
-    return (
-      <div>
-        <JuiExpansionPanel square={square}>
-          <JuiExpansionPanelSummary
-            expandIcon={<JuiIconButton>arrow_up</JuiIconButton>}
-          >
-            Expansion Panel 1
-          </JuiExpansionPanelSummary>
-          <JuiExpansionPanelDetails>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </JuiExpansionPanelDetails>
-        </JuiExpansionPanel>
-        <JuiExpansionPanel square={square}>
-          <JuiExpansionPanelSummary
-            expandIcon={<JuiIconButton>arrow_up</JuiIconButton>}
-          >
-            Expansion Panel 1
-          </JuiExpansionPanelSummary>
-          <JuiExpansionPanelDetails>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget.
-          </JuiExpansionPanelDetails>
-        </JuiExpansionPanel>
-      </div>
-    );
-  });
+  return (
+    <div>
+      <JuiExpansionPanel square={square}>
+        <JuiExpansionPanelSummary
+          expandIcon={<JuiIconButton>arrow_up</JuiIconButton>}
+        >
+          Expansion Panel 1
+        </JuiExpansionPanelSummary>
+        <JuiExpansionPanelDetails>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+          malesuada lacus ex, sit amet blandit leo lobortis eget.
+        </JuiExpansionPanelDetails>
+      </JuiExpansionPanel>
+      <JuiExpansionPanel square={square}>
+        <JuiExpansionPanelSummary
+          expandIcon={<JuiIconButton>arrow_up</JuiIconButton>}
+        >
+          Expansion Panel 1
+        </JuiExpansionPanelSummary>
+        <JuiExpansionPanelDetails>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+          malesuada lacus ex, sit amet blandit leo lobortis eget.
+        </JuiExpansionPanelDetails>
+      </JuiExpansionPanel>
+    </div>
+  );
+});

@@ -28,6 +28,7 @@ class Member extends React.Component<MemberViewProps & WithTranslation> {
         ariaLabel={t('people.team.Members')}
         title={t('people.team.Members')}
         onClick={this.openProfile}
+        automationId="memberButton"
       >
         <span>{membersCount || ''}</span>
       </JuiConversationPageMember>

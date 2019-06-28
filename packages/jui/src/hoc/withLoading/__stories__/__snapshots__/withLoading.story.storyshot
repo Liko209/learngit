@@ -1,0 +1,243 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots HoC/withLoading demo: HoC/withLoading demo 1`] = `
+.c6.lozengeButtonLoading .c3 {
+  margin-left: 4px;
+}
+
+.c6.lozengeButtonLoading .c7,
+.c6.lozengeButtonWithArrow .c7,
+.c6.lozengeButtonLoading .c3,
+.c6.lozengeButtonWithArrow .c3,
+.c6.lozengeButtonLoading span,
+.c6.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+.c2 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  top: 0px;
+  left: 0px;
+  opacity: 1;
+  background: #fff;
+  z-index: 1000;
+}
+
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+  padding: 60px 0px;
+}
+
+.c0 {
+  width: 100%;
+  height: 140px;
+  overflow: auto;
+  border: 1px solid #d1d1d1;
+  margin-bottom: 24px;
+}
+
+.c1 {
+  margin: 0;
+  padding: 0;
+  background: #f1f1f1;
+  min-height: 100%;
+  list-style: none;
+}
+
+.c5 {
+  padding: 8px 16px;
+}
+
+.c5:hover {
+  opacity: 0.36;
+  background: #ffffff;
+}
+
+<div>
+  default:
+  <div
+    className="c0"
+  >
+    <ul
+      className="c1"
+    />
+  </div>
+  without delay:
+  <div
+    className="c0"
+  >
+    <div
+      className="c2"
+    >
+      <div
+        className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate c3 "
+        role="progressbar"
+        style={
+          Object {
+            "height": 24,
+            "width": 24,
+          }
+        }
+      >
+        <svg
+          className="MuiCircularProgress-svg"
+          viewBox="22 22 44 44"
+        >
+          <circle
+            className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+            cx={44}
+            cy={44}
+            fill="none"
+            r={20.2}
+            strokeWidth={3.6}
+            style={Object {}}
+          />
+        </svg>
+      </div>
+    </div>
+    <ul
+      className="c1"
+    />
+  </div>
+  always show component:
+  <div
+    className="c0"
+  >
+    <ul
+      className="c1"
+    />
+  </div>
+  customized:
+  <div
+    className="c0"
+  >
+    <ul
+      className="c1"
+    />
+  </div>
+  loading more:
+  <div
+    className="c0"
+  >
+    <div
+      className="c4"
+    >
+      <div
+        className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate c3 "
+        role="progressbar"
+        style={
+          Object {
+            "height": 24,
+            "width": 24,
+          }
+        }
+      >
+        <svg
+          className="MuiCircularProgress-svg"
+          viewBox="22 22 44 44"
+        >
+          <circle
+            className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+            cx={44}
+            cy={44}
+            fill="none"
+            r={20.2}
+            strokeWidth={3.6}
+            style={Object {}}
+          />
+        </svg>
+      </div>
+    </div>
+    <ul
+      className="c1"
+    >
+      <li
+        className="c5"
+      >
+        Item 
+        10
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        9
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        8
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        7
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        6
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        5
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        4
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        3
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        2
+      </li>
+      <li
+        className="c5"
+      >
+        Item 
+        1
+      </li>
+    </ul>
+  </div>
+</div>
+`;

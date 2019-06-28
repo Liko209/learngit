@@ -9,9 +9,6 @@ import {
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
 } from '../types';
-import { PhoneParserUtility } from '../../../utils/phoneParser';
-import { PersonService } from '../../person';
-import { ContactType } from '../../person/types';
 import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
@@ -75,70 +72,19 @@ class MakeCallController {
         // are not allowed to dial out
         const record = specialNumber.records[index];
         if (record.phoneNumber === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
         const e164N11Num = await phoneNumService.getE164PhoneNumber(
           record.phoneNumber,
         );
         if (e164N11Num === phoneNumber) {
-          result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
+          result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
           break;
         }
       }
     }
     return result;
-  }
-
-  private _isLoggedInRCOnlyMode() {
-    // It's not implemented right now
-    // TODO FIJI-3967
-    return false;
-  }
-
-  private async _checkShortPhoneNumber(phoneNumber: string) {
-    let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      false,
-    );
-    if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
-      do {
-        const personService = ServiceLoader.getInstance<PersonService>(
-          ServiceConfig.PERSON_SERVICE,
-        );
-        const result = await personService.matchContactByPhoneNumber(
-          phoneNumber,
-          ContactType.GLIP_CONTACT,
-        );
-        if (result || this._isLoggedInRCOnlyMode()) {
-          break;
-        }
-        res = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
-      } while (0);
-    }
-    return res;
-  }
-
-  private async _checkInternationalCallsPermission(phoneNumber: string) {
-    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
-      phoneNumber,
-      false,
-    );
-
-    if (
-      phoneParserUtility &&
-      (await phoneParserUtility.isInternationalDialing())
-    ) {
-      if (
-        !(await this._isRCFeaturePermissionEnabled(
-          FEATURE_PERMISSIONS.INTERNATIONAL_CALLING,
-        ))
-      ) {
-        return MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION;
-      }
-    }
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
   async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
@@ -153,14 +99,6 @@ class MakeCallController {
         break;
       }
       result = await this._checkVoipN11Number(e164PhoneNumber);
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = await this._checkShortPhoneNumber(e164PhoneNumber);
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = await this._checkInternationalCallsPermission(e164PhoneNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }

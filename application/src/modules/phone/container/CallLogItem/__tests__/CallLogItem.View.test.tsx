@@ -7,7 +7,9 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
-
+import { mountWithTheme } from '@/__tests__/utils';
+import { JuiListItemText } from 'jui/components';
+import { CallLogStatus } from 'jui/pattern/Phone/CallLog';
 import { CallLogItemView } from '../CallLogItem.View';
 import { ContactInfo } from '../../ContactInfo';
 
@@ -34,6 +36,29 @@ describe('CallLogItemView', () => {
       expect(wrapper.find(ContactInfo).props().readStatus).toBe(
         READ_STATUS.READ,
       );
+    }
+  }
+
+  @testable
+  class duration {
+    @test('should not show duration if is missed call')
+    t1() {
+      const props = {
+        isMissedCall: true,
+        duration: 'duration',
+      } as any;
+      const wrapper = mountWithTheme(<CallLogItemView {...props} />);
+      expect(wrapper.find(CallLogStatus).find(JuiListItemText).props().secondary).toBe(null);
+    }
+
+    @test('should show duration if not missed call')
+    t2() {
+      const props = {
+        isMissedCall: false,
+        duration: 'duration',
+      } as any;
+      const wrapper = mountWithTheme(<CallLogItemView {...props} />);
+      expect(wrapper.find(CallLogStatus).find(JuiListItemText).props().secondary).toBe('duration');
     }
   }
 });

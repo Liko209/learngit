@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots HoC/withUploadFile demo: HoC/withUploadFile demo 1`] = `
+.c1 {
+  display: none;
+}
+
+.c0 {
+  width: 200px;
+  height: 200px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border: 1px dashed black;
+}
+
+.c2 {
+  width: 200px;
+  height: 200px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  border: 1px dashed black;
+}
+
+<div>
+  <div
+    className="c0"
+    onClick={[Function]}
+  >
+    Click me to upload file
+  </div>
+  <input
+    accept="image"
+    className="c1"
+    data-test-automation-id="upload-file-input"
+    multiple={true}
+    onChange={[Function]}
+    type="file"
+  />
+  <div>
+    Selected file: 
+    <br />
+    name: 
+     
+    <br />
+    size: 
+     
+    <br />
+    lastModified: 
+     
+    <br />
+    type: 
+     
+    <br />
+    <img
+      className="c2"
+      src=""
+    />
+  </div>
+</div>
+`;

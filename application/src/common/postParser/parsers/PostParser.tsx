@@ -46,6 +46,15 @@ abstract class PostParser implements IPostParser {
 
   parseToReplacers() {
     const str = this.content.getOriginalStr();
+    if (
+      this.content
+        .getReplacers()
+        .some(
+          ({ startIndex, length }) => startIndex === 0 && length === str.length,
+        )
+    ) {
+      return [];
+    }
     const regexp = this.getRegexp();
     if (!regexp) {
       return [
@@ -59,7 +68,7 @@ abstract class PostParser implements IPostParser {
     }
     const replacers: Replacer[] = [];
     let result = regexp.exec(str);
-    while (result !== null) {
+    while (result && result[0]) {
       const matchedStr = result[0];
       const range = {
         startIndex: result.index,
@@ -69,7 +78,7 @@ abstract class PostParser implements IPostParser {
       if (this.isValidMatch(matchedStr, result) && this.isValidRange(range)) {
         replacers.push({
           ...range,
-          element: this.getReplaceElement(matchedStr),
+          element: this.getReplaceElement(matchedStr, result),
         });
         this.removeReplacersInsideRange(range);
       }
@@ -84,6 +93,10 @@ abstract class PostParser implements IPostParser {
     this.content.removeReplacersBy(({ element, ...rg }) =>
       containsRange(range, rg),
     );
+  }
+
+  checkPreCondition(str: string) {
+    return true;
   }
 
   isValidMatch(value: string, execResult?: RegExpExecArray) {
@@ -105,7 +118,10 @@ abstract class PostParser implements IPostParser {
     return null;
   }
 
-  abstract getReplaceElement(value: string): ChildrenType;
+  abstract getReplaceElement(
+    value: string,
+    execResult?: RegExpExecArray,
+  ): ChildrenType;
 }
 
 export { PostParser };

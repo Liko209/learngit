@@ -38,6 +38,7 @@ const mockPostEntityData = {
   id: 1,
   groupId: 1,
   text: 'text',
+  itemIds: [],
 };
 
 const mockGroupEntityData = {
@@ -119,7 +120,7 @@ describe('EditMessageInputViewModel', () => {
       handler();
       expect(postService.editPost).toBeCalled();
     });
-    it('should edit post failure when content is empty', () => {
+    it('should edit post failure when content and itemIds is empty', () => {
       const markdownFromDeltaRes = {
         content: '',
         mentionsIds: [],

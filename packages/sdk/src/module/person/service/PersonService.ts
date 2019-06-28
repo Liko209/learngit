@@ -11,12 +11,7 @@ import { Raw } from '../../../framework/model';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ChangeModel, SYNC_SOURCE } from '../../../module/sync/types';
 import { SOCKET } from '../../../service/eventKey';
-import {
-  GlipTypeUtil,
-  TypeDictionary,
-  PerformanceTracer,
-  PERFORMANCE_KEYS,
-} from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { FEATURE_STATUS, FEATURE_TYPE } from '../../group/entity';
 import { PersonController } from '../controller/PersonController';
@@ -30,12 +25,14 @@ import {
 } from '../entity';
 import { ContactType } from '../types';
 import { IPersonService } from './IPersonService';
+import { PerformanceTracer } from 'foundation';
+import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
   private _personController: PersonController;
   constructor() {
-    super(true, daoManager.getDao(PersonDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(PersonDao), {
       basePath: '/person',
       networkClient: Api.glipNetworkClient,
     });
@@ -67,10 +64,10 @@ class PersonService extends EntityBaseService<Person>
   }
 
   protected async initialEntitiesCache() {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const persons = await super.initialEntitiesCache();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.PREPARE_PERSON_CACHE,
+      key: PERSON_PERFORMANCE_KEYS.PREPARE_PERSON_CACHE,
       count: persons && persons.length,
     });
     return persons;

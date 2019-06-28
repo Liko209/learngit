@@ -11,7 +11,9 @@ import { MuteViewModel } from '../Mute.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import * as telephony from '@/modules/telephony/module.config';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { getEntity } from '@/store/utils';
 
+jest.mock('@/store/utils');
 jest.mock('../../../service/TelephonyService');
 
 const jupiter = container.get(Jupiter);
@@ -23,6 +25,7 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
   });
+  (getEntity as jest.Mock).mockReturnValue({});
   muteViewModel = new MuteViewModel();
   muteViewModel._telephonyService.muteOrUnmute = jest.fn();
 });

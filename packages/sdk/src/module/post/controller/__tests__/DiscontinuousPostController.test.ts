@@ -65,6 +65,22 @@ describe('DiscontinuousPostController', () => {
       setup();
     });
 
+    it('should filter null and undefined for getPostByIds', async () => {
+      itemService.getByPosts.mockResolvedValueOnce([]);
+      discontinuousPostController.entitySourceController.getEntitiesLocally.mockResolvedValueOnce(
+        [{ id: 1 }, { id: 2 }],
+      );
+      const result = await discontinuousPostController.getPostsByIds([
+        1,
+        null,
+        2,
+        undefined,
+      ]);
+      expect(
+        discontinuousPostController.entitySourceController.getEntitiesLocally,
+      ).toBeCalledWith([1, 2], true);
+    });
+
     it('should return all posts if there are all exist in discontinuous post table', async () => {
       itemService.getByPosts.mockResolvedValueOnce([]);
       discontinuousPostController.entitySourceController.getEntitiesLocally.mockResolvedValueOnce(

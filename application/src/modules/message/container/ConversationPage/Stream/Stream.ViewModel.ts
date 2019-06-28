@@ -95,11 +95,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  private get _group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId);
+  }
+
+  @computed
   get mostRecentPostId() {
-    let result: number | undefined;
-    result = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
-      .mostRecentPostId;
-    return result || 0;
+    return this._group.mostRecentPostId || 0;
   }
 
   @computed
@@ -153,12 +155,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
+  private get _lastPostId() {
+    return _.last(this.postIds);
+  }
+
+  @computed
   get lastPost() {
-    const lastPostId = _.last(this.postIds);
-    if (!lastPostId) {
+    if (!this._lastPostId) {
       return;
     }
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._lastPostId);
   }
 
   hasNewMessageSeparator = () => {
@@ -208,9 +214,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     server: 'message.prompt.notAbleToLoadOlderMessagesForServerIssue',
   })
   @action
-  async loadPrevPosts(count: number) {
-    const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
-    return posts;
+  loadPrevPosts(count: number) {
+    return this._loadPosts(QUERY_DIRECTION.OLDER, count);
   }
 
   @catchError.flash({

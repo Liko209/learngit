@@ -1,0 +1,214 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/Voicemail VoicemailItem: Pattern/Voicemail VoicemailItem 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #9e9e9e;
+}
+
+.c0 {
+  border-bottom: 1px solid #eee;
+}
+
+.c0.root {
+  box-shadow: none;
+}
+
+.c0:before {
+  display: none;
+}
+
+.c0.expanded {
+  margin: 0;
+}
+
+.c1.c1.root {
+  box-sizing: border-box;
+  padding: 0px 16px;
+}
+
+.c1 .content {
+  margin: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  width: 100%;
+}
+
+.c1 .content > :last-child {
+  padding: 0;
+}
+
+.c1 .content.expanded {
+  margin: 0;
+}
+
+.c6.c6 {
+  padding: 16px;
+}
+
+.c2 {
+  height: 100%;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c7 {
+  height: 100%;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  margin-left: 12px;
+}
+
+.c5 {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  line-height: 16px;
+  max-width: 176px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-height: 40px;
+  word-break: break-word;
+  margin-left: 16px;
+}
+
+.c8 {
+  color: #757575;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  margin-left: 24px;
+}
+
+<div
+  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiExpansionPanel-root root MuiExpansionPanel-rounded c0"
+>
+  <div
+    aria-expanded={false}
+    className="MuiButtonBase-root MuiExpansionPanelSummary-root root c1"
+    onBlur={[Function]}
+    onClick={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    role="button"
+    tabIndex="0"
+  >
+    <div
+      className="MuiExpansionPanelSummary-content content"
+    >
+      <div
+        className="c2"
+      >
+        <span
+          className=" transcription icon c3"
+        >
+          <svg
+            className="c4"
+            role="img"
+            size="medium"
+          >
+            <use
+              href="#icon-transcription"
+              xlinkHref="#icon-transcription"
+            />
+          </svg>
+        </span>
+        <div
+          className="c5"
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+  malesuada lacus ex, sit amet blandit leo lobortis eget.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    aria-hidden="true"
+    className="MuiCollapse-container"
+    style={
+      Object {
+        "minHeight": "0px",
+      }
+    }
+  >
+    <div
+      className="MuiCollapse-wrapper"
+    >
+      <div
+        className="MuiCollapse-wrapperInner"
+      >
+        <div
+          className="MuiExpansionPanelDetails-root c6"
+        >
+          <div
+            className="c7"
+          >
+            <span
+              className=" transcription icon c3"
+            >
+              <svg
+                className="c4"
+                role="img"
+                size="medium"
+              >
+                <use
+                  href="#icon-transcription"
+                  xlinkHref="#icon-transcription"
+                />
+              </svg>
+            </span>
+            <div
+              className="c8"
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+  malesuada lacus ex, sit amet blandit leo lobortis eget.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

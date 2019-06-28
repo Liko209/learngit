@@ -10,7 +10,7 @@ import {
   JuiInfiniteList,
 } from 'jui/components/VirtualizedList';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 type DataListProps = {
@@ -44,16 +44,11 @@ class DataList extends React.Component<DataListProps> {
   }
 
   @action
-  private _loadMore = async (direction: 'up' | 'down', count: number) => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     await this.props.listHandler.fetchData(
       this._transformDirection(direction),
       count,
     );
-  }
-
-  @action
-  private _hasMore = (direction: 'up' | 'down') => {
-    return this.props.listHandler.hasMore(this._transformDirection(direction));
   }
 
   private _transformDirection(direction: 'up' | 'down') {
@@ -69,13 +64,26 @@ class DataList extends React.Component<DataListProps> {
     }
   }
 
+  @computed
+  get hasMore() {
+    const hasMoreUp = this.props.listHandler.hasMore(
+      this._transformDirection('up'),
+    );
+    const hasMoreDown = this.props.listHandler.hasMore(
+      this._transformDirection('down'),
+    );
+    return (direction: 'up' | 'down') =>
+      direction === 'up' ? hasMoreUp : hasMoreDown;
+  }
+
   render() {
     const { children, InfiniteListProps } = this.props;
+
     return (
       <JuiInfiniteList
         loadInitialData={this._loadInitialData}
-        loadMore={this._loadMore}
-        hasMore={this._hasMore}
+        loadMore={this.loadMore}
+        hasMore={this.hasMore}
         {...InfiniteListProps}
       >
         {children}

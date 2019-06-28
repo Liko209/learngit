@@ -8,6 +8,7 @@ import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -110,6 +111,20 @@ describe('non-glipdown text', () => {
           <JuiTextWithHighlight key={3}>test</JuiTextWithHighlight>,
           <JuiTextWithHighlight key={4}>test</JuiTextWithHighlight>,
           't est',
+        ]);
+      });
+
+      it('Different language can be highlighted [JPT-2298]', () => {
+        expect(postParser('abc我们', { keyword: '我们' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+        ]);
+        expect(postParser('abc我们 привет', { keyword: '我们 при' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+          ' ',
+          <JuiTextWithHighlight key={1}>при</JuiTextWithHighlight>,
+          'вет',
         ]);
       });
     });
@@ -425,6 +440,14 @@ describe('glipdown text', () => {
       });
     });
     describe('emojis', () => {
+      it('should parse emoji one with special character', () => {
+        expect(
+          postParser(':+1: :-1:', {
+            emoji: { hostName, unicodeOnly: true },
+          }),
+        ).toEqual('👍 👎');
+      });
+
       it('should return array with only unicode emoji', () => {
         expect(
           postParser('😁', {
@@ -525,6 +548,72 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it('should parse multiple ascii emojis', () => {
+        expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
+          <img
+            className='emoji'
+            alt='😕'
+            title=':-/'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f615.png?v=2.2.7'
+            key={0}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={1}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='❤'
+            title='<3'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
+            key={2}
+          />,
+        ]);
+
+        expect(postParser('-_- -_- -_-', { emoji: { hostName } })).toEqual([
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={0}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={1}
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😑'
+            title='-_-'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+            key={2}
+          />,
+        ]);
+      });
+
+      it("should not parse ascii emoji when it's part of words", () => {
+        expect(
+          postParser(`ID: 123`, { emoji: { hostName }, html: true }),
+        ).toEqual('ID: 123');
+        expect(
+          postParser(`app:///webpack:/src/main/main.ts`, {
+            emoji: { hostName },
+            html: true,
+          }),
+        ).toEqual('app:///webpack:/src/main/main.ts');
+      });
+
       it('should return array with image emoji and other text', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
@@ -547,7 +636,7 @@ describe('glipdown text', () => {
             title='🏳️‍🌈'
             key={1}
           />,
-          '++',
+          '++ ',
           <img
             className='emoji'
             alt='😓'
@@ -580,6 +669,7 @@ describe('glipdown text', () => {
             src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
             key={0}
           />,
+          ' ',
           <img
             className='emoji'
             alt='😅'
@@ -640,6 +730,39 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it('should parse quote when there is line break character in quote', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":12332}'>@Steve</a> wrote:
+> Est laborum sit nulla sint deserunt cillum et cillum.
+> Veniam anim velit amet aliqua proident.
+
+Anim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.`,
+            { html: true, atMentions: { map } },
+          ),
+        ).toEqual([
+          <JuiAtMention id='12332' isCurrent={false} name='@Steve' key={0} />,
+          ' wrote:',
+          <q key={1}>
+            {`Est laborum sit nulla sint deserunt cillum et cillum.
+Veniam anim velit amet aliqua proident.`}
+          </q>,
+          '\nAnim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.',
+        ]);
+      });
+
+      it('should parse markdown table correctly', () => {
+        expect(
+          renderToStaticMarkup(postParser(
+            `| **Account**| dan@close.com |
+| **From** | Dave Varenos |`,
+            { html: true },
+          ) as React.ReactElement),
+        ).toEqual(
+          `<table><tr valign="top"><td width="50%"> <b>Account</b></td><td width="50%"> <a href="mailto:dan@close.com" target="_blank" rel="noreferrer">dan@close.com</a> </td></tr><tr valign="top"><td width="50%"> <b>From</b> </td><td width="50%"> Dave Varenos </td></tr></table>`,
+        );
+      });
+
       it('should not encode or decode html entity', () => {
         expect(postParser(`aww<.*//`, { html: true })).toEqual(`aww<.*//`);
         expect(postParser(`<a>dsfdsf</a>`, { html: true })).toEqual(
@@ -654,10 +777,70 @@ describe('glipdown text', () => {
 
   describe('conflict cases', () => {
     describe('at mention and emoji', () => {
+      it('should render both atmention and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> :joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            key={0}
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+          />,
+          ' ',
+          <img
+            className='emoji'
+            alt='😂'
+            title=':joy:'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            key={1}
+          />,
+        ]);
+      });
+
+      it('should render both quote and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> wrote:
+> sdfsadf
+:joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+            key={0}
+          />,
+          ' wrote:',
+          <q key={1}>sdfsadf</q>,
+          <img
+            alt='😂'
+            className='emoji'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            title=':joy:'
+            key={2}
+          />,
+        ]);
+      });
+
       it('should only render at mention when there is emoji in at mention', () => {
         expect(
           postParser(`sdds${atmention('122', ':joy:')}123  ss`, {
             atMentions: { map },
+            emoji: { hostName },
           }),
         ).toEqual([
           'sdds',
@@ -830,6 +1013,33 @@ describe('glipdown text', () => {
           />,
         ]);
       });
+
+      it('should parse atmention correctly when there is no space between atmention and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790${atmention(
+              '123233',
+              'Aaliyah Lind',
+            )}`,
+            { atMentions: { map }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <JuiAtMention
+            id='123233'
+            isCurrent={false}
+            name='@Aaliyah Lind'
+            key={1}
+          />,
+        ]);
+      });
     });
 
     describe('html and emoji', () => {
@@ -875,6 +1085,31 @@ describe('glipdown text', () => {
           </a>,
         ]);
       });
+
+      it('should parse emoji correctly when there is no space between emoji and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790:joy:`,
+            { emoji: { hostName }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <img
+            alt='😂'
+            className='emoji'
+            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
+            title=':joy:'
+            key={1}
+          />,
+        ]);
+      });
     });
 
     describe('html and highlight', () => {
@@ -918,6 +1153,26 @@ describe('glipdown text', () => {
               `</a>`,
             ]}
           </pre>,
+        ]);
+      });
+    });
+
+    describe('html and phone', () => {
+      it('should not parse to phone number link when phone number in url', () => {
+        expect(
+          postParser(`www.sina.com/6503990009`, {
+            html: true,
+            phoneNumber: true,
+          }),
+        ).toEqual([
+          <a
+            href='http://www.sina.com/6503990009'
+            target='_blank'
+            rel='noreferrer'
+            key={0}
+          >
+            www.sina.com/6503990009
+          </a>,
         ]);
       });
     });

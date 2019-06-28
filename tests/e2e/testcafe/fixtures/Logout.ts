@@ -26,7 +26,7 @@ for (const accountType of [BrandTire.RCOFFICE, BrandTire.RC_PROFESSIONAL_TIER, B
       step.initMetadata({
         number: loginUser.company.number,
         extension: loginUser.extension,
-      })
+      });
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });

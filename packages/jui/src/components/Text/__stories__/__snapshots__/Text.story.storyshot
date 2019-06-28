@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Text Text: Components/Text Text 1`] = `
+.c0.c0 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.c0.c0::before,
+.c0.c0::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+<p
+  aria-describedby={null}
+  className="MuiTypography-root MuiTypography-body2 c0"
+  onBlur={[Function]}
+  onFocus={[Function]}
+  onMouseLeave={[Function]}
+  onMouseOver={[Function]}
+  onTouchEnd={[Function]}
+  onTouchStart={[Function]}
+  title={null}
+>
+  It will show tooltip when text truncated. 
+</p>
+`;
