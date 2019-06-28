@@ -34,6 +34,8 @@ const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US 
 const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
 
 import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
+import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
+import { Nullable } from 'sdk/types';
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
@@ -90,6 +92,11 @@ class RCInfoFetchController {
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST,
         this.requestExtensionPhoneNumberList,
+        false,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_EXTENSION_CALLER_ID,
+        this.requestExtensionCallerId,
         false,
       );
       this.scheduleRCInfoJob(
@@ -203,6 +210,12 @@ class RCInfoFetchController {
       extensionPhoneNumberList,
     );
   }
+
+  requestExtensionCallerId = async (): Promise<void> => {
+    const extensionCallerId = await RCInfoApi.getExtensionCallerId();
+    await this.rcInfoUserConfig.setExtensionCallerId(extensionCallerId);
+    notificationCenter.emit(RC_INFO.EXTENSION_CALLER_ID, extensionCallerId);
+  }
   requestDialingPlan = async (): Promise<void> => {
     const dialingPlan = await RCInfoApi.getDialingPlan();
     await this.rcInfoUserConfig.setDialingPlan(dialingPlan);
@@ -301,6 +314,15 @@ class RCInfoFetchController {
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
     );
   }
+
+  async getExtensionCallerId(): Promise<Nullable<IExtensionCallerId>> {
+    return (await this.rcInfoUserConfig.getExtensionCallerId()) || null;
+  }
+
+  async setExtensionCallerId(item: IExtensionCallerId): Promise<void> {
+    await this.rcInfoUserConfig.setExtensionCallerId(item);
+  }
+
   async getDialingPlan() {
     return (await this.rcInfoUserConfig.getDialingPlan()) || undefined;
   }

@@ -24,9 +24,7 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
 import { reaction, IReactionDisposer, runInAction, action, when } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
-import { Profile } from 'sdk/module/profile/entity';
-import ProfileModel from '@/store/models/Profile';
-import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { AccountService } from 'sdk/module/account';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
@@ -39,9 +37,12 @@ import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import storeManager from '@/store';
-import { SettingEntityIds } from 'sdk/module/setting';
+import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
+import SettingModel from '@/store/models/UserSetting';
+import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
+import { IPhoneNumberRecord } from 'sdk/src/api';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -266,40 +267,28 @@ class TelephonyService {
 
     this._callerPhoneNumberDisposer = reaction(
       () => {
-        const defaultNumberId = getSingleEntity<Profile, ProfileModel>(
-          ENTITY_NAME.PROFILE,
-          'defaultNumberId',
-        );
+        // prettier-ignore
+        const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
+          ENTITY_NAME.USER_SETTING,
+          SETTING_ITEM__PHONE_CALLER_ID,
+        ).value;
         return {
-          defaultNumberId,
+          defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,
           callerPhoneNumberList: this._telephonyStore.callerPhoneNumberList,
         };
       },
       async ({
-        defaultNumberId,
+        defaultPhoneNumber,
         callerPhoneNumberList,
       }: {
-        defaultNumberId: number;
+        defaultPhoneNumber: string;
         callerPhoneNumberList: PhoneNumberModel[];
       }) => {
         if (!callerPhoneNumberList) {
           return;
         }
-        if (
-          typeof defaultNumberId !== 'number' &&
-          callerPhoneNumberList &&
-          callerPhoneNumberList.length
-        ) {
-          this._telephonyStore.updateDefaultChosenNumber();
-          return;
-        }
-        const defaultPhoneNumber = callerPhoneNumberList.find(
-          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
-        );
         if (defaultPhoneNumber) {
-          this._telephonyStore.updateDefaultChosenNumber(
-            defaultPhoneNumber.phoneNumber,
-          );
+          this._telephonyStore.updateDefaultChosenNumber(defaultPhoneNumber);
         }
       },
       { fireImmediately: true },

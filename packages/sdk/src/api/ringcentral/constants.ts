@@ -17,6 +17,7 @@ const RINGCENTRAL_API = {
   API_EXTENSION_INFO: `/${API_VERSION}/account/~/extension/~`,
   API_ROLE_PERMISSIONS: `/${API_VERSION}/account/~/extension/~/authz-profile`,
   API_EXTENSION_PHONE_NUMBER: `/${API_VERSION}/account/~/extension/~/phone-number`,
+  API_EXTENSION_CALLER_ID: `/${API_VERSION}/account/~/extension/~/caller-id`,
   API_SERVICE_INFO: `/${API_VERSION}/account/~/service-info`,
   API_DIALING_PLAN: `/${API_VERSION}/account/~/dialing-plan`,
   API_FORWARDING_NUMBERS: `/${API_VERSION}/account/~/extension/~/forwarding-number`,

@@ -160,4 +160,31 @@ describe('RCInfoApi', () => {
       });
     });
   });
+
+  describe('getExtensionCallerId()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.getExtensionCallerId();
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/extension/~/caller-id',
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('setExtensionCallerId()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.setExtensionCallerId('mockRequest' as any);
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/extension/~/caller-id',
+        method: 'put',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        params: 'mockRequest',
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
 });

@@ -192,6 +192,18 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getCallerIdList();
   }
 
+  async setDefaultCallerId(callerId: number) {
+    await this.getRCInfoController()
+      .getRCCallerIdController()
+      .setDefaultCallerId(callerId);
+  }
+
+  async getDefaultCallerId() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .getDefaultCallerId();
+  }
+
   async generateWebSettingUri(type: ERCWebSettingUri) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()

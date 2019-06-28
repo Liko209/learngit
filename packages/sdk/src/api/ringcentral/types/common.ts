@@ -169,6 +169,38 @@ type IExtensionPhoneNumberList = {
   navigation: INavigationInfo;
 };
 
+type IExtensionCallerFeature = {
+  feature: string;
+  callerId: {
+    type: string;
+    phoneInfo: {
+      id: string;
+      uri: string;
+      phoneNumber?: string;
+    };
+  };
+};
+type IExtensionCallerId = {
+  id: string;
+  uri: string;
+  byDevice: [];
+  byFeature: IExtensionCallerFeature[];
+  extensionNameForOutboundCalls?: boolean;
+  extensionNumberForInternalCalls?: boolean;
+};
+type IExtensionCallerFeatureRequest = {
+  feature: string;
+  callerId: {
+    type?: string;
+    phoneInfo?: {
+      id: string;
+    };
+  };
+};
+type IExtensionCallerIdRequest = {
+  byFeature: IExtensionCallerFeatureRequest[];
+};
+
 type RCVersionInfo = {
   uri: string;
   versionString: string;
@@ -242,6 +274,10 @@ export {
   IPhoneNumberRequest,
   IPhoneNumberRecord,
   IExtensionPhoneNumberList,
+  IExtensionCallerIdRequest,
+  IExtensionCallerFeatureRequest,
+  IExtensionCallerFeature,
+  IExtensionCallerId,
   RCAPIVersion,
   ITokenModel,
   RCServicePlanInfo,

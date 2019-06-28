@@ -59,9 +59,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
 
   getHandlerMap() {
     return {
-      [SettingEntityIds.Phone_CallerId]: new CallerIdSettingHandler(
-        this._profileService,
-      ),
+      [SettingEntityIds.Phone_CallerId]: new CallerIdSettingHandler(),
       [SettingEntityIds.Phone_DefaultApp]: new DefaultAppSettingHandler(
         this._accountService,
         this._profileService,
