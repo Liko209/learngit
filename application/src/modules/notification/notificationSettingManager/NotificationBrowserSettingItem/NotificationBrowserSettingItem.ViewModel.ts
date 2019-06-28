@@ -33,7 +33,7 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
 
   setToggleState = async (checked: boolean) => {
     const { valueSetter } = this.settingItemEntity;
-    dataTrackingForSetting(DATA_REACTING_CONFIG, checked);
+    dataTrackingForSetting(DATA_REACTING_CONFIG, checked ? 'on' : 'off');
     await (valueSetter && valueSetter({ desktopNotifications: checked }));
   }
 }

@@ -30,6 +30,23 @@ import { buildTitleAndDesc } from '@/modules/setting/utils';
 import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 
+const NewMessageSelectDataTrackingOption = {
+  always: 'All new messages',
+  mentions_or_dms: 'Direct messages and mentions',
+  never: 'Off',
+};
+
+const EmailNotificationSelectDataTrackingOption = {
+  900000: 'Every 15 minutes',
+  3600000: 'Every hour',
+  0: 'Off',
+};
+
+const BadgeCountSelectDataTrackingOption = {
+  groups_and_mentions: 'Direct messages and mentions only',
+  all: 'All new messages',
+};
+
 class MessageSettingManager implements IMessageSettingManager {
   @ISettingService private _settingService: ISettingService;
 
@@ -49,6 +66,7 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'newMessage',
           type: 'desktopNotificationSettings',
+          optionTransform: value => NewMessageSelectDataTrackingOption[value],
         },
         weight: 200,
       } as SelectSettingItem<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>,
@@ -67,6 +85,8 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailDirectMessage',
           type: 'emailNotificationSettings',
+          optionTransform: value =>
+            EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('directMessages'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -90,6 +110,8 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailTeams',
           type: 'emailNotificationSettings',
+          optionTransform: value =>
+            EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('teams'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -124,6 +146,7 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'newMessageBadgeCount',
           type: 'otherNotificationSettings',
+          optionTransform: value => BadgeCountSelectDataTrackingOption[value],
         },
         sourceRenderer: BadgeCountSourceItem,
         ...buildTitleAndDesc(
