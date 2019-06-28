@@ -25,7 +25,7 @@ import { postTimestamp } from '@/utils/date';
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioMode, JuiAudioStatus } from '../types';
+import { JuiAudioStatus } from '../types';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
@@ -167,18 +167,18 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class mode {
-    @test('should be undefined if not has audio')
+  class isAudioActive {
+    @test('should be false if not has audio')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [],
     })
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      expect(vm.mode).toBeUndefined();
+      expect(vm.isAudioActive).toBeFalsy();
     }
 
-    @test('should be FULL mode if selected and startTime > 0')
+    @test('should be true if selected and startTime > 0')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
@@ -196,10 +196,10 @@ describe('VoicemailItemViewModel', () => {
       phoneStore.updateAudio(1, {
         startTime: 1,
       });
-      expect(vm.mode).toEqual(JuiAudioMode.FULL);
+      expect(vm.isAudioActive).toBeTruthy();
     }
 
-    @test('should be MINI mode if startTime === 0')
+    @test('should be false if startTime === 0')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
@@ -214,10 +214,10 @@ describe('VoicemailItemViewModel', () => {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
       phoneStore.setVoicemailId(1);
-      expect(vm.mode).toEqual(JuiAudioMode.MINI);
+      expect(vm.isAudioActive).toBeFalsy();
     }
 
-    @test('should be MINI mode if not selected')
+    @test('should be false if not selected')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
@@ -232,7 +232,7 @@ describe('VoicemailItemViewModel', () => {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
       phoneStore.setVoicemailId(2);
-      expect(vm.mode).toEqual(JuiAudioMode.MINI);
+      expect(vm.isAudioActive).toBeFalsy();
     }
   }
 

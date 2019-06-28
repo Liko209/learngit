@@ -45,6 +45,7 @@ class MemberList extends React.Component<
       count: this.props.filteredMemberIds.length,
     });
   }
+
   render() {
     const {
       height,
@@ -75,8 +76,6 @@ class MemberList extends React.Component<
           minRowHeight={ITEM_HEIGHT}
           onScroll={this.onScroll}
           data-test-automation-id="profileDialogMemberList"
-          loadingMoreRenderer={<></>}
-          loadingRenderer={<></>}
         >
           {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
         </JuiInfiniteList>

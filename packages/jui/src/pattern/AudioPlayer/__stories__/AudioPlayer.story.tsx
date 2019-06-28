@@ -23,6 +23,17 @@ const actionLabels = {
 storiesOf('Pattern', module).add('AudioPlayer', () => {
   return (
     <dl>
+      <dt>mode tiny</dt>
+      <dd>
+        <JuiAudioPlayer
+          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
+          mode={JuiAudioMode.TINY}
+          duration={188}
+          startTime={0}
+          actionTips={actionTips}
+          actionLabels={actionLabels}
+        />
+      </dd>
       <dt>mode mini</dt>
       <dd>
         <JuiAudioPlayer

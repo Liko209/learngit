@@ -7,7 +7,6 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { StoreViewModel } from '@/store/ViewModel';
 import { catchError } from '@/common/catchError';
-import { analyticsCollector } from '@/AnalyticsCollector';
 
 import { DeleteProps } from './types';
 
@@ -21,7 +20,6 @@ class DeleteAllViewModel extends StoreViewModel<DeleteProps> {
       ServiceConfig.CALL_LOG_SERVICE,
     );
     await callLogService.clearAllCallLogs();
-    analyticsCollector.clearAllCallHistory();
     return true;
   }
 

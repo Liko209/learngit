@@ -280,6 +280,7 @@
     "Messages": "Messages",
     "message": "Message",
     "atMentionAllTeam": "Team",
+    "atMentionAllAdmin": "admin",
     "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
   },
   "item": {

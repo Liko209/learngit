@@ -188,4 +188,12 @@ describe('Post Dao', () => {
       expect(result).toEqual(0);
     });
   });
+
+  describe('queryPostIdsByGroupId', () => {
+    it('should call post view batchGet', async () => {
+      postViewDao.batchGet = jest.fn().mockReturnValue([]);
+      await postDao.queryPostViewByIds([1]);
+      expect(postViewDao.batchGet).toBeCalledWith([1]);
+    });
+  });
 });

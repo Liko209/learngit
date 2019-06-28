@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { RCWebSettingInfoController } from '../RCWebSettingInfoController';
 import { RCInfoFetchController } from '../RCInfoFetchController';
 import { RCAuthApi } from '../../../../api';
-import { ERCWebSettingUri } from '../../types';
+import { ERCWebUris } from '../../types';
 import { JobSchedulerConfig } from '../../../../framework/utils/jobSchedule/JobSchedulerConfig';
 
 jest.mock('../../../../framework/utils/jobSchedule/JobSchedulerConfig', () => {
@@ -47,6 +47,8 @@ const validClientData = {
       analyticsPortal: 'YCzy6r9qTyCpyMPN1rUgVA',
     },
     webUris: {
+      mobileAppDownload:
+        'https://www.ringcentral.com/apps/?apps=ringcentral-glip,ringcentral-phone',
       analyticsPortal:
         'https://analytics-glpdevxmn.ponylab.ringcentral.com?code={authCode}',
       privacyPolicy:
@@ -86,7 +88,7 @@ describe('RCWebSettingInfoController', () => {
     clearMocks();
   });
 
-  describe('generateRCAuthCodeUri', () => {
+  describe('getRCWebUriByType', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -98,8 +100,8 @@ describe('RCWebSettingInfoController', () => {
         .fn()
         .mockResolvedValue(validClientData);
       RCAuthApi.generateRCCode = jest.fn().mockRejectedValueOnce(error);
-      const res = webSettingInfoController.generateRCAuthCodeUri(
-        ERCWebSettingUri.EXTENSION_URI,
+      const res = webSettingInfoController.getRCWebUriByType(
+        ERCWebUris.EXTENSION_URI,
       );
 
       expect(res).rejects.toThrowError(error);
@@ -110,11 +112,11 @@ describe('RCWebSettingInfoController', () => {
         .fn()
         .mockResolvedValue(undefined);
 
-      const res = webSettingInfoController.generateRCAuthCodeUri(
-        ERCWebSettingUri.EXTENSION_URI,
+      const res = await webSettingInfoController.getRCWebUriByType(
+        ERCWebUris.EXTENSION_URI,
       );
 
-      expect(res).resolves.toEqual('');
+      expect(res).toEqual('');
     });
 
     it('should return empty string when no client id', async () => {
@@ -122,11 +124,11 @@ describe('RCWebSettingInfoController', () => {
       data.provisioning['interopClientIds'] = {} as any;
       rcInfoFetchController.getRCClientInfo = jest.fn().mockResolvedValue(data);
 
-      const res = webSettingInfoController.generateRCAuthCodeUri(
-        ERCWebSettingUri.EXTENSION_URI,
+      const res = await webSettingInfoController.getRCWebUriByType(
+        ERCWebUris.EXTENSION_URI,
       );
 
-      expect(res).resolves.toEqual('');
+      expect(res).toEqual('');
     });
 
     it('should return empty string when no redirect uri', async () => {
@@ -134,8 +136,8 @@ describe('RCWebSettingInfoController', () => {
       data.provisioning['webUris'] = {} as any;
       rcInfoFetchController.getRCClientInfo = jest.fn().mockResolvedValue(data);
 
-      const res = await webSettingInfoController.generateRCAuthCodeUri(
-        ERCWebSettingUri.EXTENSION_URI,
+      const res = await webSettingInfoController.getRCWebUriByType(
+        ERCWebUris.EXTENSION_URI,
       );
 
       expect(res).toEqual('');
@@ -154,8 +156,8 @@ describe('RCWebSettingInfoController', () => {
         .fn()
         .mockResolvedValue({ code: 'codeeee' });
 
-      const res = await webSettingInfoController.generateRCAuthCodeUri(
-        ERCWebSettingUri.EXTENSION_URI,
+      const res = await webSettingInfoController.getRCWebUriByType(
+        ERCWebUris.EXTENSION_URI,
       );
 
       expect(rcInfoFetchController.requestRCClientInfo).toBeCalled();
@@ -169,6 +171,7 @@ describe('RCWebSettingInfoController', () => {
       makeUri(validClientData.provisioning.webUris.serviceWebBilling),
       makeUri(validClientData.provisioning.webUris.serviceWebUserSettings),
       makeUri(validClientData.provisioning.webUris.serviceWebPhoneSystem),
+      validClientData.provisioning.webUris.mobileAppDownload,
     ];
 
     const clientIds = [
@@ -176,18 +179,20 @@ describe('RCWebSettingInfoController', () => {
       validClientData.provisioning.interopClientIds.serviceWeb,
     ];
     it.each`
-      data               | type                                    | result    | clientId        | comments
-      ${validClientData} | ${ERCWebSettingUri.ANALYTIC_PORTAL_URI} | ${res[0]} | ${clientIds[0]} | ${'ANALYTIC_PORTAL_URI'}
-      ${validClientData} | ${ERCWebSettingUri.BILLING_URI}         | ${res[1]} | ${clientIds[1]} | ${'BILLING_URI'}
-      ${validClientData} | ${ERCWebSettingUri.EXTENSION_URI}       | ${res[2]} | ${clientIds[1]} | ${'EXTENSION_URI'}
-      ${validClientData} | ${ERCWebSettingUri.PHONE_SYSTEM_URI}    | ${res[3]} | ${clientIds[1]} | ${'PHONE_SYSTEM_URI'}
-    `('$comments', async ({ data, type, clientId, result }) => {
+      data               | type                              | result    | clientId        | needAuth | comments
+      ${validClientData} | ${ERCWebUris.ANALYTIC_PORTAL_URI} | ${res[0]} | ${clientIds[0]} | ${true}  | ${'ANALYTIC_PORTAL_URI'}
+      ${validClientData} | ${ERCWebUris.BILLING_URI}         | ${res[1]} | ${clientIds[1]} | ${true}  | ${'BILLING_URI'}
+      ${validClientData} | ${ERCWebUris.EXTENSION_URI}       | ${res[2]} | ${clientIds[1]} | ${true}  | ${'EXTENSION_URI'}
+      ${validClientData} | ${ERCWebUris.PHONE_SYSTEM_URI}    | ${res[3]} | ${clientIds[1]} | ${true}  | ${'PHONE_SYSTEM_URI'}
+      ${validClientData} | ${ERCWebUris.RC_APP_DOWNLOAD_URL} | ${res[4]} | ${''}           | ${false} | ${'RC_APP_DOWNLOAD_URL'}
+    `('$comments', async ({ data, type, clientId, result, needAuth }) => {
       rcInfoFetchController.getRCClientInfo = jest.fn().mockResolvedValue(data);
       RCAuthApi.generateRCCode = jest
         .fn()
         .mockResolvedValue({ code: 'codeeee' });
-      const res = await webSettingInfoController.generateRCAuthCodeUri(type);
-      expect(RCAuthApi.generateRCCode).toBeCalledWith(clientId, 300);
+      const res = await webSettingInfoController.getRCWebUriByType(type);
+      needAuth &&
+        expect(RCAuthApi.generateRCCode).toBeCalledWith(clientId, 300);
       expect(res).toEqual(result);
     });
   });
