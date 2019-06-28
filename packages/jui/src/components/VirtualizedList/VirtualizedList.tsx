@@ -37,23 +37,7 @@ import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
-type Props = {
-  height: number;
-  minRowHeight: number;
-  overscan: number;
-  initialScrollToIndex: number;
-  stickToBottom?: boolean;
-  onScroll: (event: React.UIEvent<HTMLElement>) => void;
-  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange: (range: IndexRange) => void;
-  onRenderedRangeChange: (range: IndexRange) => void;
-  before?: React.ReactNode;
-  after?: React.ReactNode;
-  children: JSX.Element[];
-  contentStyle: React.CSSProperties;
-  stickToLastPosition?: boolean;
-  onBottomStatusChange?: (atBottom: boolean) => void;
-};
+
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
@@ -82,7 +66,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     contentStyle,
     onBottomStatusChange = noop,
     stickToLastPosition = true,
-  }: Props,
+  }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
   const shouldUseNativeImplementation = true;
@@ -380,12 +364,19 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
 
     rowElements.forEach(handleRowSizeChange);
-    const observers = rowElements.map(observeDynamicRow);
+
+    type Observers = {
+      observer: ResizeObserver;
+      cb: (entries: ResizeObserverEntry[]) => void;
+    }[];
+
+    let observers: Observers | undefined = rowElements.map(observeDynamicRow);
     return () => {
-      observers.forEach(observer => {
+      (observers as Observers).forEach(observer => {
         observer.observer.disconnect();
         delete observer.cb;
       });
+      observers = undefined;
     };
   },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
@@ -466,7 +457,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
+  const wrappedBefore = before ? <div ref={beforeRef}>{before()}</div> : null;
   const heightBeforeStartRow = rowManager.getRowsHeight(
     minIndex,
     startIndex - 1,
@@ -522,7 +513,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         {childrenToRender}
       </div>
       <div style={{ height: heightAfterStopRow }} />
-      {after}
+      {after && after()}
     </div>
   );
 };
