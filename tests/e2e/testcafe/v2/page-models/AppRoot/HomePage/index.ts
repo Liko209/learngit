@@ -7,6 +7,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
+import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
@@ -58,6 +59,10 @@ export class HomePage extends BaseWebComponent {
 
   get messageTab() {
     return this.getComponent(MessageTab);
+  }
+
+  get postDeleteConfirmDialog() {
+    return this.getComponent(PostDeleteConfirmDialog);
   }
 
   get phoneTab() {

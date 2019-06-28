@@ -53,6 +53,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(textPostId);
   const messageTab = app.homePage.messageTab;
+  const postDeleteConfirmDialog = app.homePage.postDeleteConfirmDialog;
 
   await h(t).withLog('When I open a team', async () => {
     await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
@@ -67,29 +68,29 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then Prompted with "Delete post" confirmation dialog', async () => {
     await t.wait(2e3);
-    await t.expect(messageTab.deleteConfirmDialog.exists).ok();
+    await t.expect(postDeleteConfirmDialog.self.exists).ok();
   });
 
   await h(t).withLog('When clicks cancel button, ', async () => {
-    await t.click(messageTab.deleteCancelButton);
+    await t.click(postDeleteConfirmDialog.cancelButton);
   });
 
   await h(t).withLog('Then dialog is dismissed and the edit input box is re-focused.', async () => {
-    await t.expect(messageTab.deleteConfirmDialog.exists).notOk();
+    await t.expect(postDeleteConfirmDialog.self.exists).notOk();
     await t.expect(await post.editTextAreaFocused).ok();
   });
 
   await h(t).withLog('When Hit Enter key again with space', async () => {
-    await post.enterEditTextArea();
+    await post.enterEditTextAreaWithSpace();
   });
 
   await h(t).withLog('Then Prompted with "Delete post" confirmation dialog', async () => {
     await t.wait(1e3);
-    await t.expect(messageTab.deleteConfirmDialog.exists).ok();
+    await t.expect(postDeleteConfirmDialog.self.exists).ok();
   });
 
   await h(t).withLog('When clicks Delete', async () => {
-    await t.click(messageTab.deleteOkButton);
+    await t.click(postDeleteConfirmDialog.okButton);
   });
 
   await h(t).withLog('Then The post is deleted', async () => {
@@ -141,6 +142,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(postId);
   const messageTab = app.homePage.messageTab;
+  const postDeleteConfirmDialog = app.homePage.postDeleteConfirmDialog;
 
   await h(t).withLog('When I open a team', async () => {
     await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
@@ -154,7 +156,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then Don\'t Prompted with "Delete post" confirmation dialog', async () => {
-    await t.expect(messageTab.deleteConfirmDialog.exists).notOk();
+    await t.expect(postDeleteConfirmDialog.self.exists).notOk();
   });
 
   await h(t).withLog('And The text content should be removed and other items should remain unchanged.', async () => {

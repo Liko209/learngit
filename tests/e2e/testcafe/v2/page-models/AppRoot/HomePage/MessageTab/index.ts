@@ -349,18 +349,6 @@ export class MessageTab extends BaseWebComponent {
     return this.getSelectorByAutomationId('post-list-page');
   }
 
-  get deleteConfirmDialog() {
-    return this.getSelectorByAutomationId('deleteConfirmDialog');
-  }
-
-  get deleteCancelButton() {
-    return this.getSelectorByAutomationId('deleteCancelButton');
-  }
-
-  get deleteOkButton() {
-    return this.getSelectorByAutomationId('deleteOkButton');
-  }
-
   get bookmarksEntry() {
     return this.getComponent(Entry, this.getSelectorByAutomationId('entry-bookmarks'));
   }

@@ -703,7 +703,7 @@ export class PostItem extends BaseWebComponent {
       .pressKey('enter');
   }
 
-  async enterEditTextArea() {
+  async enterEditTextAreaWithSpace() {
     await this.t
       .wait(1e3)
       .typeText(this.editTextArea, '  ')
