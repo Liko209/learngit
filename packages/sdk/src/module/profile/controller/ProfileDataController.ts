@@ -109,21 +109,6 @@ class ProfileDataController {
       return null;
     }
   }
-
-  async getDefaultCaller() {
-    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-      ServiceConfig.RC_INFO_SERVICE,
-    );
-
-    const profile = await this.getProfile();
-    const defaultCallerNumberId = profile[SETTING_KEYS.DEFAULT_NUMBER];
-    return (
-      (defaultCallerNumberId !== undefined &&
-        (await rcInfoService.getCallerById(defaultCallerNumberId))) ||
-      ((await rcInfoService.getFirstDidCaller()) ||
-        (await rcInfoService.getCompanyMainCaller()))
-    );
-  }
 }
 
 export { ProfileDataController };

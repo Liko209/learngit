@@ -9,7 +9,6 @@ import { SettingOption } from '../types';
 import { Profile } from '../entity';
 
 interface IProfileService {
-  getDefaultCaller(): Promise<PhoneNumberModel | undefined>;
   updateSettingOptions(options: SettingOption[]): Promise<void>;
   getProfile(): Promise<Profile>;
 }

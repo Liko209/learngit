@@ -130,37 +130,4 @@ describe('ProfileDataController', () => {
       });
     });
   });
-
-  describe('getDefaultCaller', () => {
-    const profile = {
-      id: 111,
-      default_number: 1,
-    };
-    let rcInfoService: any;
-    beforeEach(() => {
-      clearMocks();
-      rcInfoService = {
-        getCallerById: jest.fn().mockResolvedValue({ id: 1, phoneNumber: '1' }),
-        getFirstDidCaller: jest
-          .fn()
-          .mockResolvedValue({ id: 2, phoneNumber: '2' }),
-      };
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(rcInfoService);
-      profileDataController.getProfile = jest.fn().mockResolvedValue(profile);
-    });
-
-    it('should return default caller id when has set in profile', async () => {
-      const res = await profileDataController.getDefaultCaller();
-      expect(rcInfoService.getCallerById).toBeCalledWith(
-        profile.default_number,
-      );
-      expect(res).toEqual({ id: 1, phoneNumber: '1' });
-    });
-
-    it('should return first did when has not set in profile', async () => {
-      rcInfoService.getCallerById = jest.fn().mockResolvedValue(undefined);
-      const res = await profileDataController.getDefaultCaller();
-      expect(res).toEqual({ id: 2, phoneNumber: '2' });
-    });
-  });
 });

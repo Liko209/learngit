@@ -64,16 +64,14 @@ describe('CallerIdSettingHandler ', () => {
         return settingService;
       }
     });
-    iProfileService = new ProfileService();
     rcInfoService.getCallerIdList = jest
       .fn()
       .mockResolvedValue([{ id: 1 }, { id: 2 }]);
-    iProfileService.getDefaultCaller = jest.fn().mockResolvedValue({ id: 2 });
+    rcInfoService.getDefaultCallerId = jest.fn().mockResolvedValue({ id: 2 });
     iProfileService.updateSettingOptions = jest.fn();
     AccountUserConfig.prototype.getCurrentUserProfileId.mockReturnValue(
       profileId,
     );
-    callerIdSettingHandler = new CallerIdSettingHandler(iProfileService);
     callerIdSettingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
