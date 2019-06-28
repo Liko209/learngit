@@ -96,11 +96,12 @@ type RegionInfo = {
   areaCode: string;
 };
 
-enum ERCWebSettingUri {
-  BILLING_URI,
-  PHONE_SYSTEM_URI,
-  EXTENSION_URI,
-  ANALYTIC_PORTAL_URI,
+enum ERCWebUris {
+  BILLING_URI = 'serviceWebBilling',
+  PHONE_SYSTEM_URI = 'serviceWebPhoneSystem',
+  EXTENSION_URI = 'serviceWebUserSettings',
+  ANALYTIC_PORTAL_URI = 'analyticsPortal',
+  RC_APP_DOWNLOAD_URL = 'mobileAppDownload',
 }
 
 enum EForwardingFlipNumberType {
@@ -131,7 +132,7 @@ export {
   RCBrandType,
   SpecialNumberRuleModel,
   StationLocationSetting,
-  ERCWebSettingUri,
+  ERCWebUris,
   GlobalStationLocationSetting,
   RegionInfo,
   EForwardingFlipNumberType,
