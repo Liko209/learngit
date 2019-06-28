@@ -52,7 +52,13 @@ class PostController {
       );
       const entitySourceController = buildEntitySourceController<Post>(
         persistentController,
-        requestController,
+        {
+          requestController,
+          canSaveRemoteData: false,
+          canRequest: () => {
+            return true;
+          },
+        },
       );
 
       const partialModifyController = buildPartialModifyController<Post>(
