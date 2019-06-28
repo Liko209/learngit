@@ -37,11 +37,16 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
-import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import {
+  ERCServiceFeaturePermission,
+  ERCWebUris,
+} from 'sdk/module/rcInfo/types';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
+import { Dialog } from '@/containers/Dialog';
+import i18nT from '@/utils/i18nT';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -336,7 +341,7 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
   }
 
-  makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -349,7 +354,26 @@ class TelephonyService {
         RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
-    this._clientService.invokeApp(url);
+    const fallback = async () => {
+      const { startLoading, stopLoading } = Dialog.confirm({
+        title: await i18nT('telephony.prompt.RCPhoneIsNotInstalledTitle'),
+        content: await i18nT('telephony.prompt.RCPhoneIsNotInstalledBody'),
+        okText: await i18nT('telephony.prompt.RCPhoneIsNotInstalledOK'),
+        onOK: async () => {
+          startLoading();
+          const service: RCInfoService = ServiceLoader.getInstance(
+            ServiceConfig.RC_INFO_SERVICE,
+          );
+          const downloadUrl = await service.generateWebSettingUri(
+            ERCWebUris.RC_APP_DOWNLOAD_URL,
+          );
+          stopLoading();
+          window.open(downloadUrl);
+        },
+      });
+    };
+
+    this._clientService.invokeApp(url, { fallback });
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
