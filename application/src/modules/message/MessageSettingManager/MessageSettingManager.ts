@@ -46,6 +46,10 @@ class MessageSettingManager implements IMessageSettingManager {
           'setting.notificationAndSounds.desktopNotifications.newMessages.description',
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: NewMessageSelectSourceItem,
+        dataTracking: {
+          name: 'newMessage',
+          type: 'desktopNotificationSettings',
+        },
         weight: 200,
       } as SelectSettingItem<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>,
     );
@@ -60,14 +64,21 @@ class MessageSettingManager implements IMessageSettingManager {
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: EmailNotificationTimeSourceItem,
+        dataTracking: {
+          name: 'emailDirectMessage',
+          type: 'emailNotificationSettings',
+        },
         ...emailNotificationTitleAndDescBuilder('directMessages'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
         id: MESSAGE_SETTING_ITEM.NOTIFICATION_MENTIONS,
         automationId: 'notificationMentions',
         weight: 200,
-
         type: SETTING_ITEM_TYPE.TOGGLE,
+        dataTracking: {
+          name: 'emailMentions',
+          type: 'emailNotificationSettings',
+        },
         ...emailNotificationTitleAndDescBuilder('mentions'),
       },
       {
@@ -76,6 +87,10 @@ class MessageSettingManager implements IMessageSettingManager {
         type: SETTING_ITEM_TYPE.SELECT,
         weight: 300,
         sourceRenderer: EmailNotificationTimeSourceItem,
+        dataTracking: {
+          name: 'emailTeams',
+          type: 'emailNotificationSettings',
+        },
         ...emailNotificationTitleAndDescBuilder('teams'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
       {
@@ -83,11 +98,15 @@ class MessageSettingManager implements IMessageSettingManager {
         automationId: 'notificationDailyDigest',
         weight: 400,
         type: SETTING_ITEM_TYPE.TOGGLE,
+        dataTracking: {
+          name: 'emailDailyDigest',
+          type: 'emailNotificationSettings',
+        },
         ...emailNotificationTitleAndDescBuilder('dailyDigest'),
       },
     ];
 
-    emailNotificationSettingItems.forEach((i) =>
+    emailNotificationSettingItems.forEach(i =>
       this._settingService.registerItem(
         MESSAGE_SETTING_SCOPE,
         SETTING_SECTION__EMAIL_NOTIFICATIONS,
@@ -102,6 +121,10 @@ class MessageSettingManager implements IMessageSettingManager {
         automationId: 'newMessageBadgeCount',
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
+        dataTracking: {
+          name: 'newMessageBadgeCount',
+          type: 'otherNotificationSettings',
+        },
         sourceRenderer: BadgeCountSourceItem,
         ...buildTitleAndDesc(
           'notificationAndSounds',

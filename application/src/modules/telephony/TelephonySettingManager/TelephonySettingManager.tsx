@@ -31,6 +31,19 @@ import {
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
+const DefaultPhoneAppDataTrackingOption = {
+  glip: 'Use RingCentral App (this app)',
+  ringcentral: 'Use RingCentral Phone',
+};
+
+const CallerIDDataTrackingOption = {
+  DirectNumber: '"DID", personal direct number',
+  MainCompanyNumber: '"companyMain", company main number',
+  Blocked: 'blocked',
+  CompanyOther:
+    '"companyOther", company number with nick name or company fax number',
+};
+
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
   @ISettingService private _settingService: ISettingService;
@@ -58,6 +71,12 @@ class TelephonySettingManager {
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
               beforeSaving: beforeDefaultPhoneAppSettingSave,
+              dataTracking: {
+                name: 'defaultPhoneApp',
+                type: 'phoneGeneral',
+                optionTransform: value =>
+                  DefaultPhoneAppDataTrackingOption[value],
+              },
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
@@ -69,6 +88,13 @@ class TelephonySettingManager {
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
               valueRenderer: CallerIdSelectValue,
+              dataTracking: {
+                name: 'callerID',
+                type: 'phoneGeneral',
+                optionTransform: value =>
+                  CallerIDDataTrackingOption[value.usageType] ||
+                  CallerIDDataTrackingOption.CompanyOther,
+              },
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
@@ -83,6 +109,10 @@ class TelephonySettingManager {
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
               weight: 400,
+              dataTracking: {
+                name: 'extensionSettings',
+                type: 'phoneGeneral',
+              },
             },
           ],
         },
@@ -100,6 +130,10 @@ class TelephonySettingManager {
           'setting.notificationAndSounds.desktopNotifications.incomingCalls.description',
         type: SETTING_ITEM_TYPE.TOGGLE,
         weight: 300,
+        dataTracking: {
+          name: 'incomingCall',
+          type: 'desktopNotificationSettings',
+        },
       },
     );
     this._settingService.registerItem(
@@ -114,6 +148,10 @@ class TelephonySettingManager {
           'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.description',
         type: SETTING_ITEM_TYPE.TOGGLE,
         weight: 400,
+        dataTracking: {
+          name: 'missedCall',
+          type: 'desktopNotificationSettings',
+        },
       },
     );
   }

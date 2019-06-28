@@ -10,9 +10,16 @@ import { UserSettingEntity } from 'sdk/module/setting';
 import { getEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
+import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
 import { NotificationBrowserSettingItemViewProps } from './types';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../constant';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
+
+const DATA_REACTING_CONFIG = {
+  eventName: 'Jup_Web_settings_updateSetting',
+  name: 'browser',
+  type: 'desktopNotificationSettings',
+};
 
 class NotificationBrowserSettingItemViewModel extends StoreViewModel
   implements NotificationBrowserSettingItemViewProps {
@@ -26,6 +33,7 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
 
   setToggleState = async (checked: boolean) => {
     const { valueSetter } = this.settingItemEntity;
+    dataTrackingForSetting(DATA_REACTING_CONFIG, checked);
     await (valueSetter && valueSetter({ desktopNotifications: checked }));
   }
 }

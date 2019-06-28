@@ -5,6 +5,7 @@
  */
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
+import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
 import { ToggleSettingItemProps } from './types';
 
 class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
@@ -13,14 +14,15 @@ class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
   @action
   saveSetting = async (value: boolean) => {
     const { valueSetter } = this.settingItemEntity;
-    const { beforeSaving } = this.settingItem;
+    const { beforeSaving, dataTracking } = this.settingItem;
     if (beforeSaving) {
       const beforeSavingReturn = await beforeSaving(value);
       if (beforeSavingReturn === false) {
         return;
       }
     }
-    return valueSetter && valueSetter(value);
+    valueSetter && valueSetter(value);
+    dataTracking && dataTrackingForSetting(dataTracking, value);
   }
 }
 

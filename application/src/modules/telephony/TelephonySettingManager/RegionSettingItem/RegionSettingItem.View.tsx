@@ -15,6 +15,13 @@ import { JuiRegionSelect } from 'jui/components/Selects';
 import { JuiTextField } from 'jui/components/Forms';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { ESettingItemState } from 'sdk/framework/model/setting';
+import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
+
+const DATA_REACTING_CONFIG = {
+  eventName: 'Jup_Web_settings_updateSetting',
+  name: 'regionSettings',
+  type: 'phoneGeneral',
+};
 
 type Props = WithTranslation & RegionSettingItemViewProps;
 type State = {
@@ -34,6 +41,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     this.setState({
       dialogOpen: true,
     });
+    dataTrackingForSetting(DATA_REACTING_CONFIG);
   }
 
   render() {

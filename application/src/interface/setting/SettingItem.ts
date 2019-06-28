@@ -12,6 +12,14 @@ enum SETTING_ITEM_TYPE {
   SLIDER,
 }
 
+type DataTracking = {
+  eventName?: string;
+  type: string;
+  name: string;
+  endPoint?: string;
+  optionTransform?: (value: any) => string;
+};
+
 type SettingItem = {
   /**
    * The unique id
@@ -53,6 +61,11 @@ type SettingItem = {
    * Will be called before the Setting Save
    */
   beforeSaving?: (settingValue: any) => Promise<boolean> | boolean | void;
+
+  /**
+   * Data Tracking parameters
+   */
+  dataTracking?: DataTracking;
 };
 
-export { SettingItem, SETTING_ITEM_TYPE };
+export { SettingItem, SETTING_ITEM_TYPE, DataTracking };
