@@ -731,7 +731,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get emojis() {
-    return this.self.find('.emoji');
+    return this.self.find('.emoji-mart-emoji');
   }
 
   async shouldHasEmojiByValue(value: string) {
