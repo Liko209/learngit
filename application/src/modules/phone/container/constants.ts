@@ -9,3 +9,8 @@ export const ANALYTICS_KEY = {
   VOICEMAIL_ACTION_PLAY: 'Play',
   VOICEMAIL_ACTION_PAUSE: 'Pause',
 };
+
+export enum ENTITY_TYPE {
+  CALL_LOG = 'calllog',
+  VOICEMAIL = 'voicemail',
+}

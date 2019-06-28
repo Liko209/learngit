@@ -6,7 +6,7 @@
 import { VoIPMediaDevicesDelegate } from '../VoIPMediaDevicesDelegate';
 import RTCEngine, { RTC_MEDIA_ACTION } from 'voip';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
-import { SOURCE_TYPE } from '../types';
+import { SOURCE_TYPE, RINGER_ADDITIONAL_TYPE } from '../types';
 import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import notificationCenter from 'sdk/service/notificationCenter';
 
@@ -97,6 +97,11 @@ describe('VoIPMediaDevicesDelegate', () => {
       );
       expect(TelephonyGlobalConfig.on).toHaveBeenNthCalledWith(
         3,
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+        expect.any(Function),
+      );
+      expect(TelephonyGlobalConfig.on).toHaveBeenNthCalledWith(
+        4,
         TELEPHONY_GLOBAL_KEYS.CURRENT_VOLUME,
         expect.any(Function),
       );
@@ -157,10 +162,11 @@ describe('VoIPMediaDevicesDelegate', () => {
       );
     });
 
-    it('should re ensure device', () => {
+    it('should call ensureDevice when add/delete a device', () => {
       const deviceIds = ['a', 'b', 'c'];
       jest.spyOn(deviceDelegate['_speakerSyncManager'], 'ensureDevice');
       jest.spyOn(deviceDelegate['_microphoneSyncManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_ringerSyncManager'], 'ensureDevice');
       deviceDelegate.onMediaDevicesChanged(
         createDevicesChangeInfo(deviceIds, { deleted: ['d'] }),
         createDevicesChangeInfo(deviceIds, { deleted: ['e'] }),
@@ -169,6 +175,7 @@ describe('VoIPMediaDevicesDelegate', () => {
       expect(
         deviceDelegate['_microphoneSyncManager'].ensureDevice,
       ).toBeCalled();
+      expect(deviceDelegate['_ringerSyncManager'].ensureDevice).toBeCalled();
     });
     it('should emit device change notification', () => {
       const deviceIds = ['a', 'b', 'c'];
@@ -185,6 +192,19 @@ describe('VoIPMediaDevicesDelegate', () => {
         createDevicesChangeInfo(deviceIds, { added: [] }),
       );
       expect(notificationCenter.emit).not.toBeCalled();
+    });
+    it('should not change when device change and current ringer is all/off', () => {
+      const deviceIds = ['a', 'b', 'c'];
+      jest.spyOn(deviceDelegate['_ringerSyncManager'], 'ensureDevice');
+      TelephonyGlobalConfig.getCurrentRinger.mockReturnValue('all');
+      deviceDelegate.onMediaDevicesChanged(
+        createDevicesChangeInfo(deviceIds, { added: ['c'] }),
+        createDevicesChangeInfo(deviceIds, { added: ['a'] }),
+      );
+      expect(notificationCenter.emit).toBeCalled();
+      expect(
+        deviceDelegate['_ringerSyncManager'].ensureDevice,
+      ).not.toBeCalled();
     });
   });
 
@@ -219,14 +239,62 @@ describe('VoIPMediaDevicesDelegate', () => {
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
-      expect(TelephonyGlobalConfig.setCurrentSpeaker).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_SPEAKER,
+        'a',
+      );
     });
     it('should create DeviceSyncManager correctly', () => {
       deviceDelegate['_microphoneSyncManager'].setDevice({
         deviceId: 'a',
       } as any);
       expect(mockRtcEngine.setCurrentAudioInput).toBeCalledWith('a');
-      expect(TelephonyGlobalConfig.setCurrentMicrophone).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE,
+        'a',
+      );
+    });
+    it('should create DeviceSyncManager correctly', () => {
+      deviceDelegate['_ringerSyncManager'].setDevice({
+        deviceId: 'a',
+      } as any);
+      expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
+      expect(TelephonyGlobalConfig.put).toBeCalledWith(
+        TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
+        'a',
+      );
+    });
+  });
+
+  describe('getRingerDevicesList', () => {
+    const devices = [
+      {
+        deviceId: 'default',
+      },
+      {
+        deviceId: '1',
+      },
+    ];
+    it('should return empty array when devices are empty array', () => {
+      mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue([]);
+      const result = deviceDelegate.getRingerDevicesList();
+      expect(result).toEqual([]);
+    });
+    it('should return device list when devices have value [JPT-2432]', () => {
+      mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue(devices);
+      const result = deviceDelegate.getRingerDevicesList();
+      expect(result.length).toEqual(devices.length + 2);
+    });
+
+    it('should return last value is off and second to last is all when devices have value [JPT-2434]', () => {
+      mockRtcEngine.getAudioOutputs = jest.fn().mockReturnValue(devices);
+      const result = deviceDelegate.getRingerDevicesList();
+      expect(result[result.length - 1].deviceId).toEqual(
+        RINGER_ADDITIONAL_TYPE.OFF,
+      );
+      expect(result[result.length - 2].deviceId).toEqual(
+        RINGER_ADDITIONAL_TYPE.ALL,
+      );
     });
   });
 });

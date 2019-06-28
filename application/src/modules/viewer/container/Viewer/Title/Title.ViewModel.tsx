@@ -9,13 +9,18 @@ import _ from 'lodash';
 import { computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { Item } from 'sdk/module/item/entity';
+import FileItemModel from '@/store/models/FileItem';
 
 class ViewerTitleViewModel extends AbstractViewModel<
   ViewerTitleViewModelProps
 > {
   @computed
   get item() {
-    return getEntity(ENTITY_NAME.ITEM, this.props.currentItemId);
+    return getEntity<Item, FileItemModel>(
+      ENTITY_NAME.ITEM,
+      this.props.currentItemId,
+    );
   }
 
   @computed

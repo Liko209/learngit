@@ -14,6 +14,13 @@ type IconColor = [keyof Palette, any];
 
 type IconSize = 's' | 'm' | 'l' | 'inherit' | 'xl';
 
+const sizeMap = {
+  s: 4,
+  m: 5,
+  l: 6,
+  xl: 8,
+};
+
 type RuiIconographyProps = {
   iconColor?: IconColor;
   iconSize?: IconSize;
@@ -24,7 +31,7 @@ const StyledSpan = styled('span')`
   display: inline-flex;
 `;
 
-const StyledSvg = styled('svg') <{ iconColor?: IconColor; size?: IconSize }>`
+const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -33,7 +40,7 @@ const StyledSvg = styled('svg') <{ iconColor?: IconColor; size?: IconSize }>`
   fill: currentColor;
   pointer-events: none;
   font-size: ${({ size = 'l' }) =>
-    size !== 'inherit' ? spacing(size) : 'inherit'};
+    size !== 'inherit' ? spacing(sizeMap[size]) : 'inherit'};
   ${({ theme, iconColor }) => {
     if (!iconColor) {
       return;
@@ -88,4 +95,4 @@ RuiIconographyComponent.displayName = 'RuiIconography';
 
 injectSvgFile();
 const RuiIconography = React.memo(RuiIconographyComponent);
-export { RuiIconographyProps, RuiIconography };
+export { RuiIconographyProps, RuiIconography, IconSize };

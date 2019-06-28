@@ -1,0 +1,767 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Forms/Slider Base slider: Forms/Slider Base slider 1`] = `
+.c0 {
+  overflow: visible;
+  padding: 10px 0;
+  background-color: #fff;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      aria-orientation="horizontal"
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={10}
+      className="MuiSlider-root"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onTouchMove={[Function]}
+      onTouchStartCapture={[Function]}
+      role="slider"
+    >
+      <div
+        className="MuiSlider-container"
+      >
+        <div
+          className="MuiSlider-track MuiSlider-trackBefore"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.1)",
+            }
+          }
+        />
+        <div
+          className="MuiSlider-thumbWrapper"
+          style={
+            Object {
+              "transform": "translateX(10%)",
+            }
+          }
+        >
+          <button
+            className="MuiButtonBase-root MuiSlider-thumb"
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            onTouchStartCapture={[Function]}
+            tabIndex="0"
+            type="button"
+          />
+        </div>
+        <div
+          className="MuiSlider-track MuiSlider-trackAfter"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.9)",
+            }
+          }
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Forms/Slider Continuous slider: Forms/Slider Continuous slider 1`] = `
+.c0 {
+  overflow: visible;
+  padding: 10px 0;
+  background-color: #fff;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c0"
+    >
+      <div
+        aria-orientation="horizontal"
+        aria-valuemax={100}
+        aria-valuemin={0}
+        aria-valuenow={10}
+        className="MuiSlider-root"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onTouchMove={[Function]}
+        onTouchStartCapture={[Function]}
+        role="slider"
+      >
+        <div
+          className="MuiSlider-container"
+        >
+          <div
+            className="MuiSlider-track MuiSlider-trackBefore"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.1)",
+              }
+            }
+          />
+          <div
+            className="MuiSlider-thumbWrapper"
+            style={
+              Object {
+                "transform": "translateX(10%)",
+              }
+            }
+          >
+            <button
+              className="MuiButtonBase-root MuiSlider-thumb"
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              onTouchStartCapture={[Function]}
+              tabIndex="0"
+              type="button"
+            />
+          </div>
+          <div
+            className="MuiSlider-track MuiSlider-trackAfter"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.9)",
+              }
+            }
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Forms/Slider Discrete slider: Forms/Slider Discrete slider 1`] = `
+.c1 {
+  width: 12px;
+  height: 12px;
+  background-color: #0684DB;
+  border-radius: 50%;
+}
+
+.c0 {
+  overflow: visible;
+  padding: 10px 0;
+  background-color: #fff;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      aria-orientation="horizontal"
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={10}
+      className="MuiSlider-root"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onTouchMove={[Function]}
+      onTouchStartCapture={[Function]}
+      role="slider"
+    >
+      <div
+        className="MuiSlider-container"
+      >
+        <div
+          className="MuiSlider-track MuiSlider-trackBefore"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.1)",
+            }
+          }
+        />
+        <div
+          className="MuiSlider-thumbWrapper"
+          style={
+            Object {
+              "transform": "translateX(10%)",
+            }
+          }
+        >
+          <button
+            className="MuiButtonBase-root MuiSlider-thumb MuiSlider-thumbIconWrapper"
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            onTouchStartCapture={[Function]}
+            tabIndex="0"
+            type="button"
+          >
+            <div
+              aria-describedby={null}
+              className="c1"
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onTouchEnd={[Function]}
+              onTouchStart={[Function]}
+              title={null}
+            />
+          </button>
+        </div>
+        <div
+          className="MuiSlider-track MuiSlider-trackAfter"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.9)",
+            }
+          }
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Forms/Slider Volume slider: Forms/Slider Volume slider 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: rgba(0,0,0,0.54);
+}
+
+.c4 {
+  width: 12px;
+  height: 12px;
+  background-color: #0684DB;
+  border-radius: 50%;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c0 .c1:first-child {
+  margin-right: 16px;
+}
+
+.c0 .c1:last-child {
+  margin-left: 16px;
+}
+
+.c0 .c1:first-child > span,
+.c0 .c1:last-child > span {
+  vertical-align: middle;
+}
+
+.c0 .c1:first-child input,
+.c0 .c1:last-child input {
+  text-align: center;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c1 "
+    >
+      <span
+        className=" speaker-mute icon c2"
+      >
+        <svg
+          className="c3"
+          size="m"
+        >
+          <use
+            href="#icon-speaker-mute"
+            xlinkHref="#icon-speaker-mute"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      aria-orientation="horizontal"
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={10}
+      className="MuiSlider-root"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onTouchMove={[Function]}
+      onTouchStartCapture={[Function]}
+      role="slider"
+      tipRenderer={[Function]}
+    >
+      <div
+        className="MuiSlider-container"
+      >
+        <div
+          className="MuiSlider-track MuiSlider-trackBefore"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.1)",
+            }
+          }
+        />
+        <div
+          className="MuiSlider-thumbWrapper"
+          style={
+            Object {
+              "transform": "translateX(10%)",
+            }
+          }
+        >
+          <button
+            className="MuiButtonBase-root MuiSlider-thumb MuiSlider-thumbIconWrapper"
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            onTouchStartCapture={[Function]}
+            tabIndex="0"
+            type="button"
+          >
+            <div
+              aria-describedby={null}
+              className="c4"
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onTouchEnd={[Function]}
+              onTouchStart={[Function]}
+              title={null}
+            />
+          </button>
+        </div>
+        <div
+          className="MuiSlider-track MuiSlider-trackAfter"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.9)",
+            }
+          }
+        />
+      </div>
+    </div>
+    <div
+      className="c1 "
+    >
+      <span
+        className=" speaker icon c2"
+      >
+        <svg
+          className="c3"
+          size="m"
+        >
+          <use
+            href="#icon-speaker"
+            xlinkHref="#icon-speaker"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Forms/Slider With field: Forms/Slider With field 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: rgba(0,0,0,0.54);
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c0 .c1:first-child {
+  margin-right: 16px;
+}
+
+.c0 .c1:last-child {
+  margin-left: 16px;
+}
+
+.c0 .c1:first-child > span,
+.c0 .c1:last-child > span {
+  vertical-align: middle;
+}
+
+.c0 .c1:first-child input,
+.c0 .c1:last-child input {
+  text-align: center;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c1 "
+    >
+      <span
+        className=" star icon c2"
+      >
+        <svg
+          className="c3"
+          size="m"
+        >
+          <use
+            href="#icon-star"
+            xlinkHref="#icon-star"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      aria-orientation="horizontal"
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={10}
+      className="MuiSlider-root"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onTouchMove={[Function]}
+      onTouchStartCapture={[Function]}
+      role="slider"
+    >
+      <div
+        className="MuiSlider-container"
+      >
+        <div
+          className="MuiSlider-track MuiSlider-trackBefore"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.1)",
+            }
+          }
+        />
+        <div
+          className="MuiSlider-thumbWrapper"
+          style={
+            Object {
+              "transform": "translateX(10%)",
+            }
+          }
+        >
+          <button
+            className="MuiButtonBase-root MuiSlider-thumb"
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            onTouchStartCapture={[Function]}
+            tabIndex="0"
+            type="button"
+          />
+        </div>
+        <div
+          className="MuiSlider-track MuiSlider-trackAfter"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.9)",
+            }
+          }
+        />
+      </div>
+    </div>
+    <div
+      className="c1 "
+    >
+      <div
+        className="MuiFormControl-root"
+        style={
+          Object {
+            "width": "2em",
+          }
+        }
+      >
+        <div
+          className="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
+          onClick={[Function]}
+        >
+          <input
+            aria-invalid={false}
+            className="MuiInputBase-input MuiInput-input"
+            disabled={false}
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            readOnly={true}
+            required={false}
+            type="text"
+            value={10}
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Forms/Slider With icon: Forms/Slider With icon 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: rgba(0,0,0,0.54);
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c0 .c1:first-child {
+  margin-right: 16px;
+}
+
+.c0 .c1:last-child {
+  margin-left: 16px;
+}
+
+.c0 .c1:first-child > span,
+.c0 .c1:last-child > span {
+  vertical-align: middle;
+}
+
+.c0 .c1:first-child input,
+.c0 .c1:last-child input {
+  text-align: center;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c1 "
+    >
+      <span
+        className=" star icon c2"
+      >
+        <svg
+          className="c3"
+          size="m"
+        >
+          <use
+            href="#icon-star"
+            xlinkHref="#icon-star"
+          />
+        </svg>
+      </span>
+    </div>
+    <div
+      aria-orientation="horizontal"
+      aria-valuemax={100}
+      aria-valuemin={0}
+      aria-valuenow={10}
+      className="MuiSlider-root"
+      onClick={[Function]}
+      onMouseDown={[Function]}
+      onTouchMove={[Function]}
+      onTouchStartCapture={[Function]}
+      role="slider"
+    >
+      <div
+        className="MuiSlider-container"
+      >
+        <div
+          className="MuiSlider-track MuiSlider-trackBefore"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.1)",
+            }
+          }
+        />
+        <div
+          className="MuiSlider-thumbWrapper"
+          style={
+            Object {
+              "transform": "translateX(10%)",
+            }
+          }
+        >
+          <button
+            className="MuiButtonBase-root MuiSlider-thumb"
+            onBlur={[Function]}
+            onContextMenu={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            onMouseDown={[Function]}
+            onMouseLeave={[Function]}
+            onMouseUp={[Function]}
+            onTouchEnd={[Function]}
+            onTouchMove={[Function]}
+            onTouchStart={[Function]}
+            onTouchStartCapture={[Function]}
+            tabIndex="0"
+            type="button"
+          />
+        </div>
+        <div
+          className="MuiSlider-track MuiSlider-trackAfter"
+          style={
+            Object {
+              "transform": "translateY(-50%) scaleX(0.9)",
+            }
+          }
+        />
+      </div>
+    </div>
+    <div
+      className="c1 "
+    >
+      <span
+        className=" star icon c2"
+      >
+        <svg
+          className="c3"
+          size="m"
+        >
+          <use
+            href="#icon-star"
+            xlinkHref="#icon-star"
+          />
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+`;

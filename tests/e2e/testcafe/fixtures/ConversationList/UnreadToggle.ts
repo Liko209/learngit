@@ -218,3 +218,36 @@ test.meta(<ITestMeta>{
     await directMessagesSection.conversationEntryById(chat.glipId).shouldBeVisible();
   }, true);
 });
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-203'],
+  keywords: ['ConversationList', 'UnreadToggle'],
+  maintainers: ['Mia.Cai']
+})('The unread toggle should be reset to default status-OFF When user logs out the app', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+
+  const app = new AppRoot(t);
+  const unreadToggler = app.homePage.messageTab.unReadToggler;
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I change the unread toggle to ON', async () => {
+    await unreadToggler.turnOn();
+    await unreadToggler.shouldBeOn();
+  }, true);
+
+  await h(t).withLog(`And I re-login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+  });
+
+  await h(t).withLog('Then I see the unread toggle to OFF', async () => {
+    await unreadToggler.shouldBeOff();
+  }, true);
+});

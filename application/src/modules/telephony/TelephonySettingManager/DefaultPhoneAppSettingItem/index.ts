@@ -5,3 +5,4 @@
  */
 
 export * from './DefaultPhoneAppSettingItem.View';
+export * from './BeforeDefaultPhoneAppSettingSave';
