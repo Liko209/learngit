@@ -58,6 +58,7 @@ enum PermissionId {
 enum RCServiceFeatureName {
   VOIP_CALLING = 'VoipCalling',
   INTERNATIONAL_CALLING = 'InternationalCalling',
+  ON_DEMAND_CALL_RECORDING = 'OnDemandCallRecording',
   CALL_PARK = 'CallPark',
   SINGLE_EXTENSION_UI = 'SingleExtensionUI',
   CALL_SWITCH = 'CallSwitch',
