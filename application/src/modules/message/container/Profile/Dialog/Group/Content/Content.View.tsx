@@ -95,7 +95,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
             <Buttons>
               {showMessage &&
                 renderButton(
-                  'chat_bubble',
+                  'chat',
                   'message.message',
                   ['people.team.ariaGoToTeam', 'people.team.ariaGoToGroup'],
                   this.props,

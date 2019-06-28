@@ -146,6 +146,12 @@ class AnalyticsCollector {
   clearAllCallHistory() {
     dataAnalysis.track('Jup_Web/DT_phone_callHistory_deleteAll');
   }
+
+  phoneGoToConversation(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
+      source,
+    });
+  }
 }
 
 export { AnalyticsCollector };

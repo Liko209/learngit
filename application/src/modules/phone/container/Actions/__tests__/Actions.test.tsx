@@ -10,13 +10,14 @@ import React from 'react';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { ENTITY_NAME } from '@/store';
-import { mountWithTheme } from 'shield/utils';
+import { mountWithTheme, asyncMountWithTheme } from 'shield/utils';
 import { testable, test } from 'shield';
 import { Caller } from 'sdk/module/RCItems/types';
 import { PersonService } from 'sdk/module/person';
 import { Actions } from '../Actions';
 import { ENTITY_TYPE } from '../../constants';
 import { Block } from '../Block';
+import { Message } from '../Message';
 
 const mockPhoneAndPerson = ({ phone, person }: any) => (name: any) => {
   if (name === ENTITY_NAME.PHONE_NUMBER) {
@@ -30,13 +31,13 @@ const mockPhoneAndPerson = ({ phone, person }: any) => (name: any) => {
 
 const mockCaller = {
   phoneNumber: '+1234567890',
-} as Caller
+} as Caller;
 
 describe('Action', () => {
   @testable
   class init {
     @test(
-      'should show block/unblock button when user has block/unblock permission and phone number is correct [JPT-2408-Step1/JPT-2409-Step1]'
+      'should show block/unblock button when user has block/unblock permission and phone number is correct [JPT-2408-Step1/JPT-2409-Step1]',
     )
     @mockService(PersonService, 'matchContactByPhoneNumber')
     @mockService(RCInfoService, 'isNumberBlocked', false)
@@ -53,17 +54,17 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          hookAfterClick={() => { }}
+          hookAfterClick={() => {}}
           canEditBlockNumbers={true}
           entity={ENTITY_TYPE.CALL_LOG}
-        />
-      )
+        />,
+      );
       wrapper.update();
       expect(wrapper.find(Block).exists()).toBeTruthy();
     }
 
     @test(
-      'should hide block/unblock button when user does not have block/unblock permission [JPT-2414]'
+      'should hide block/unblock button when user does not have block/unblock permission [JPT-2414]',
     )
     @mockService(PersonService, 'matchContactByPhoneNumber')
     @mockEntity(
@@ -79,15 +80,17 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          hookAfterClick={() => { }}
+          hookAfterClick={() => {}}
           canEditBlockNumbers={false}
           entity={ENTITY_TYPE.CALL_LOG}
-        />
-      )
+        />,
+      );
       expect(wrapper.find(Block).exists()).toBeFalsy();
     }
 
-    @test('should hide block/unblock button when number is Extension number [JPT-2415]')
+    @test(
+      'should hide block/unblock button when number is Extension number [JPT-2415]',
+    )
     @mockEntity(
       mockPhoneAndPerson({
         person: {
@@ -112,18 +115,18 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          hookAfterClick={() => { }}
+          hookAfterClick={() => {}}
           canEditBlockNumbers={true}
           entity={ENTITY_TYPE.CALL_LOG}
-        />
-      )
+        />,
+      );
       expect(wrapper.find(Block).exists()).toBeTruthy();
 
       setTimeout(() => {
         wrapper.update();
         expect(wrapper.find(Block).exists()).toBeFalsy();
         done();
-      }, 0)
+      }, 0);
     }
 
     @test('should hide block/unblock button when isBlock [JPT-2416]')
@@ -133,12 +136,64 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={{} as Caller}
-          hookAfterClick={() => { }}
+          hookAfterClick={() => {}}
           canEditBlockNumbers={true}
           entity={ENTITY_TYPE.CALL_LOG}
-        />
-      )
+        />,
+      );
       expect(wrapper.find(Block).exists()).toBeFalsy();
     }
   }
-})
+
+  @testable
+  class JPT2406 {
+    @test('should not show message button if no permission')
+    t1() {
+      const wrapper = mountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={7}
+          caller={{} as Caller}
+          hookAfterClick={() => {}}
+          canEditBlockNumbers={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      expect(wrapper.find(Message).exists()).toBeFalsy();
+    }
+
+    @test('should show message button if has permission')
+    @mockEntity(
+      mockPhoneAndPerson({
+        person: {
+          userDisplayName: 'displayName',
+          phoneNumbers: [
+            {
+              type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+              phoneNumber: '+1234567890',
+            },
+          ],
+        },
+        phone: {
+          formattedPhoneNumber: '+1234567890',
+        },
+      }),
+    )
+    @mockService(RCInfoService, 'isNumberBlocked', false)
+    @mockService(PersonService, 'matchContactByPhoneNumber', { id: 1 })
+    async t2() {
+      const wrapper = await asyncMountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={7}
+          caller={mockCaller}
+          hookAfterClick={() => {}}
+          canEditBlockNumbers={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      wrapper.update();
+      expect(wrapper.find(Message).exists()).toBeTruthy();
+    }
+  }
+});
