@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Tooltip Tooltip: Tooltip Tooltip 1`] = `
+<div>
+  <button
+    aria-describedby={null}
+    className=""
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onTouchEnd={[Function]}
+    onTouchStart={[Function]}
+    style={
+      Object {
+        "marginLeft": 120,
+      }
+    }
+    title={null}
+  >
+    Arrow tool tip and some test
+  </button>
+</div>
+`;

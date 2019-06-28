@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Progress CircularProgress: Progress CircularProgress 1`] = `
+.c2.lozengeButtonLoading .c1 {
+  margin-left: 4px;
+}
+
+.c2.lozengeButtonLoading .c3,
+.c2.lozengeButtonWithArrow .c3,
+.c2.lozengeButtonLoading .c1,
+.c2.lozengeButtonWithArrow .c1,
+.c2.lozengeButtonLoading span,
+.c2.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+.c0 {
+  text-align: center;
+}
+
+.c0 .c1 {
+  margin: 0 30px;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate c1 "
+    role="progressbar"
+    style={
+      Object {
+        "height": 24,
+        "width": 24,
+      }
+    }
+  >
+    <svg
+      className="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx={44}
+        cy={44}
+        fill="none"
+        r={20.2}
+        strokeWidth={3.6}
+        style={Object {}}
+      />
+    </svg>
+  </div>
+  <div
+    className="MuiCircularProgress-root MuiCircularProgress-colorSecondary MuiCircularProgress-indeterminate c1 "
+    role="progressbar"
+    style={
+      Object {
+        "height": 32,
+        "width": 32,
+      }
+    }
+  >
+    <svg
+      className="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx={44}
+        cy={44}
+        fill="none"
+        r={20.2}
+        strokeWidth={3.6}
+        style={Object {}}
+      />
+    </svg>
+  </div>
+</div>
+`;
