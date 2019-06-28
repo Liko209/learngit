@@ -20,30 +20,30 @@ describe('InputFooterViewModel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  describe('showTypingIndicator', () => {
-    it('should be false when typingList.length is 0', () => {
+  describe('shouldShowTypingIndicator', () => {
+    it('should be false when typingList.length is 0 [JPT-2391] 4', () => {
       const inputFooterViewModel = new InputFooterViewModel({ hasInput: true });
-      expect(inputFooterViewModel.showTypingIndicator).toBe(false);
+      expect(inputFooterViewModel.shouldShowTypingIndicator).toBe(false);
     });
-    it('should be true when typingList.length is 2', () => {
+    it('should be true when typingList.length is 2 [JPT-2391] 5', () => {
       mockedTypingList = ['1', '2'];
       const inputFooterViewModel = new InputFooterViewModel({ hasInput: true });
-      expect(inputFooterViewModel.showTypingIndicator).toBe(true);
+      expect(inputFooterViewModel.shouldShowTypingIndicator).toBe(true);
     });
   });
-  describe('showMarkupTips', () => {
+  describe('shouldShowMarkupTips', () => {
     it.each`
-      hasInput | showTypingIndicator | expected
-      ${true}  | ${true}             | ${false}
-      ${true}  | ${false}            | ${true}
-      ${false} | ${true}             | ${false}
-      ${false} | ${false}            | ${false}
+      hasInput | shouldShowTypingIndicator | expected
+      ${true}  | ${true}                   | ${false}
+      ${true}  | ${false}                  | ${true}
+      ${false} | ${true}                   | ${false}
+      ${false} | ${false}                  | ${false}
     `(
-      'should be $expected when hasInput is $hasInput and showTypingIndicator is $showTypingIndicator ',
-      ({ hasInput, showTypingIndicator, expected }) => {
-        mockedTypingList = showTypingIndicator ? ['1', '2'] : [];
+      'should be $expected when hasInput is $hasInput and shouldShowTypingIndicator is $shouldShowTypingIndicator [JPT-2388]',
+      ({ hasInput, shouldShowTypingIndicator, expected }) => {
+        mockedTypingList = shouldShowTypingIndicator ? ['1', '2'] : [];
         const inputFooterViewModel = new InputFooterViewModel({ hasInput });
-        expect(inputFooterViewModel.showMarkupTips).toBe(expected);
+        expect(inputFooterViewModel.shouldShowMarkupTips).toBe(expected);
       },
     );
   });

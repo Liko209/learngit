@@ -34,11 +34,16 @@ class InputFooterViewComponent extends React.Component<InputFooterViewProps> {
   });
 
   render() {
-    const { t, showMarkupTips, typingList, showTypingIndicator } = this.props;
+    const {
+      t,
+      shouldShowMarkupTips,
+      typingList,
+      shouldShowTypingIndicator,
+    } = this.props;
     return (
       <JuiInputFooterContainer>
-        {this._getMarkupTips(t, showMarkupTips)}
-        {this._getTypingIndicator(showTypingIndicator, typingList)}
+        {this._getMarkupTips(t, shouldShowMarkupTips)}
+        {this._getTypingIndicator(shouldShowTypingIndicator, typingList)}
       </JuiInputFooterContainer>
     );
   }

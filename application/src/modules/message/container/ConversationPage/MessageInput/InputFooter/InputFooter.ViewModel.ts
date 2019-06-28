@@ -18,13 +18,13 @@ class InputFooterViewModel extends AbstractViewModel<InputFooterProps> {
   }
 
   @computed
-  get showTypingIndicator(): boolean {
+  get shouldShowTypingIndicator(): boolean {
     return this.typingList.length > 0;
   }
 
   @computed
-  get showMarkupTips(): boolean {
-    return !this.showTypingIndicator && this.props.hasInput;
+  get shouldShowMarkupTips(): boolean {
+    return !this.shouldShowTypingIndicator && this.props.hasInput;
   }
 
   dispose() {

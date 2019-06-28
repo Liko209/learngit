@@ -7,7 +7,7 @@ describe('TypingIndicator', () => {
       ${['alex', 'ben']}        | ${'twoTyping'}  | ${{ personA: 'alex', personB: 'ben' }}
       ${['alex', 'ben', 'cat']} | ${'moreTyping'} | ${{ personA: 'alex', personB: 'ben' }}
     `(
-      'should return $key and $values when call getTranslations($typingList)',
+      'should return $key and $values when call getTranslations($typingList) [JPT-2391] 1/2/3',
       ({ typingList, key, values }) => {
         const typingIndicator = new TypingIndicator({
           show: true,

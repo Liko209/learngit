@@ -285,9 +285,13 @@ describe('MessageInputViewModel', () => {
       });
     });
     describe('contentChange()', () => {
-      it('should call sendTypingEvent when being called', () => {
+      it('should not call sendTypingEvent when being called and both new and old draft has no content', () => {
         messageInputViewModel.contentChange('');
-        expect(groupService.sendTypingEvent).toBeCalledWith(123, true);
+        expect(groupService.sendTypingEvent).not.toBeCalled();
+      });
+      it('should call sendTypingEvent when being called and new draft has content', () => {
+        messageInputViewModel.contentChange('xx');
+        expect(groupService.sendTypingEvent).toBeCalledWith(123, false);
       });
     });
   });

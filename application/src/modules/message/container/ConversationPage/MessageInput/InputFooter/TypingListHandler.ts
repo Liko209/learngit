@@ -4,11 +4,43 @@ import { observable, computed, reaction } from 'mobx';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { Disposer } from 'mobx-react';
+import PersonModel from '@/store/models/Person';
+import { Person } from 'sdk/module/person/entity';
 
 const CHECKING_INTERVAL = 2000;
 const TYPING_INTERVAL = 5000;
 
 class TypingListHandler {
+  constructor() {
+    this._disposers.push(
+      reaction(
+        () => this.currentGroupId,
+        () => {
+          this.typingListStore = {};
+        },
+      ),
+    );
+    this._disposers.push(
+      reaction(
+        () => this.typingList.length > 0,
+        hasTypingList => {
+          if (hasTypingList) {
+            this._interval = setInterval(() => {
+              for (const user_id in this.typingListStore) {
+                if (!this.isStillTyping(this.typingListStore[user_id])) {
+                  delete this.typingListStore[user_id];
+                }
+              }
+            },                           CHECKING_INTERVAL);
+          } else {
+            clearInterval(this._interval);
+          }
+        },
+      ),
+    );
+    notificationCenter.on(SERVICE.GROUP_TYPING, this._handleGroupTyping);
+  }
+
   private _interval: NodeJS.Timeout;
 
   @observable typingListStore = {};
@@ -21,7 +53,10 @@ class TypingListHandler {
   @computed
   get typingList() {
     return this.typingUserIds.map(userId => {
-      const { userDisplayName } = getEntity(ENTITY_NAME.PERSON, userId);
+      const { userDisplayName } = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        parseInt(userId, 10),
+      );
       return userDisplayName;
     });
   }
@@ -46,35 +81,6 @@ class TypingListHandler {
 
   isStillTyping(timestamp: number) {
     return new Date().getTime() - timestamp < TYPING_INTERVAL;
-  }
-
-  constructor() {
-    this._disposers.push(
-      reaction(
-        () => this.currentGroupId,
-        () => {
-          this.typingListStore = {};
-        },
-      ),
-    );
-    this._disposers.push(
-      reaction(
-        () => this.typingList.length > 0,
-        hasTypingList => {
-          if (hasTypingList) {
-            this._interval = setInterval(() => {
-              for (const user_id in this.typingListStore) {
-                !this.isStillTyping(this.typingListStore[user_id]) &&
-                  delete this.typingListStore[user_id];
-              }
-            },                           CHECKING_INTERVAL);
-          } else {
-            clearInterval(this._interval);
-          }
-        },
-      ),
-    );
-    notificationCenter.on(SERVICE.GROUP_TYPING, this._handleGroupTyping);
   }
 
   dispose() {
