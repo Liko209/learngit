@@ -77,6 +77,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
         options.enableMidLinesInSDP = false;
       }
     }
+    options.enableQos = !isFireFox();
     options.connector = (
       level: any,
       category: any,

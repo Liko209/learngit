@@ -24,7 +24,6 @@ export const kRTCProvisioningOptions = {
   maxReconnectionAttempts: '0',
   reconnectionTimeout: '5',
   connectionTimeout: '5',
-  enableQos: true,
 };
 
 export const defaultAudioID = 'default';
