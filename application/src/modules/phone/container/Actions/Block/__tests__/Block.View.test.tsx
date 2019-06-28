@@ -24,39 +24,41 @@ const dialogConfig = {
   modalProps: { 'data-test-automation-id': 'blockNumberConfirmDialog' },
   okBtnProps: { 'data-test-automation-id': 'blockNumberOkButton' },
   cancelBtnProps: { 'data-test-automation-id': 'blockNumberCancelButton' },
-  cancelText: "common.dialog.cancel",
+  cancelText: 'common.dialog.cancel',
   content: (
     <JuiDialogContentText>
       phone.numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt
     </JuiDialogContentText>
   ),
-  okText: "phone.block",
-  okType: "negative",
-  title: "phone.blockThisNumber"
-}
+  okText: 'phone.block',
+  okType: 'negative',
+  title: 'phone.blockThisNumber',
+};
 
 const checkNotification = (message: string) => ({
   message,
   dismissible: false,
   fullWidth: false,
-  messageAlign: "left",
-  type: "success",
-})
+  messageAlign: 'left',
+  type: 'success',
+});
 
 const mockProps = {
   id: 1234,
   block: () => jest.fn().mockReturnValue(true),
   unblock: () => jest.fn().mockReturnValue(true),
   caller: {} as Caller,
-}
+};
 
 describe('Block', () => {
   @testable
   class init {
-    @test('should render correct when button is icon type under block status [JPT-2408-Step1]')
+    @test(
+      'should render correct when button is icon type under block status [JPT-2408-Step1]',
+    )
     t1() {
       const wrapper = mountWithTheme(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />,
       );
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('unblocked');
@@ -64,10 +66,12 @@ describe('Block', () => {
       expect(buttonProps.ariaLabel).toBe('phone.unblockNumber');
     }
 
-    @test('should render correct when button is icon type under unblock status [JPT-2409-Step1]')
+    @test(
+      'should render correct when button is icon type under unblock status [JPT-2409-Step1]',
+    )
     t2() {
       const wrapper = mountWithTheme(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />,
       );
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('blocked');
@@ -75,10 +79,16 @@ describe('Block', () => {
       expect(buttonProps.ariaLabel).toBe('phone.blockNumber');
     }
 
-    @test('should render correct when button is menu item type under block status [JPT-2408-Step1]')
+    @test(
+      'should render correct when button is menu item type under block status [JPT-2408-Step1]',
+    )
     t3() {
       const wrapper = mountWithTheme(
-        <BlockView {...mockProps} type={BUTTON_TYPE.MENU_ITEM} isBlocked={true} />
+        <BlockView
+          {...mockProps}
+          type={BUTTON_TYPE.MENU_ITEM}
+          isBlocked={true}
+        />,
       );
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
@@ -87,10 +97,16 @@ describe('Block', () => {
       expect(buttonProps['aria-label']).toBe('phone.unblockNumber');
     }
 
-    @test('should render correct when button is menu item type under unblock status [JPT-2409-Step1]')
+    @test(
+      'should render correct when button is menu item type under unblock status [JPT-2409-Step1]',
+    )
     t4() {
       const wrapper = mountWithTheme(
-        <BlockView {...mockProps} type={BUTTON_TYPE.MENU_ITEM} isBlocked={false} />
+        <BlockView
+          {...mockProps}
+          type={BUTTON_TYPE.MENU_ITEM}
+          isBlocked={false}
+        />,
       );
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
@@ -102,36 +118,46 @@ describe('Block', () => {
 
   @testable
   class block {
-    @test('should show block confirm dialog when when button is icon item type [JPT-2410/JPT-2411]')
+    @test(
+      'should show block confirm dialog when when button is icon item type [JPT-2410/JPT-2411]',
+    )
     async t1() {
       const wrapper = shallow(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />,
       );
       await wrapper.simulate('click');
       expect(Dialog.confirm).toHaveBeenCalledWith(
-        expect.objectContaining(dialogConfig)
+        expect.objectContaining(dialogConfig),
       );
     }
 
-    @test('should show block confirm dialog when when button is menu item type [JPT-2410/JPT-2411]')
+    @test(
+      'should show block confirm dialog when when button is menu item type [JPT-2410/JPT-2411]',
+    )
     async t2() {
       const wrapper = shallow(
-        <BlockView {...mockProps} type={BUTTON_TYPE.MENU_ITEM} isBlocked={false} />
+        <BlockView
+          {...mockProps}
+          type={BUTTON_TYPE.MENU_ITEM}
+          isBlocked={false}
+        />,
       );
       await wrapper.simulate('click');
       expect(Dialog.confirm).toHaveBeenCalledWith(
-        expect.objectContaining(dialogConfig)
+        expect.objectContaining(dialogConfig),
       );
     }
 
-    @test('should the user be prompted with a flash success toast when the number is blocked successfully [JPT-2408-Step4]')
+    @test(
+      'should the user be prompted with a flash success toast when the number is blocked successfully [JPT-2408-Step4]',
+    )
     async t3() {
       const wrapper = shallow(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />,
       );
       await wrapper.instance().onBlockConfirm({
-        startLoading() { },
-        stopLoading() { },
+        startLoading() {},
+        stopLoading() {},
       });
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.numberHasBeenBlocked'),
@@ -141,15 +167,27 @@ describe('Block', () => {
 
   @testable
   class unblock {
-    @test('should the user be prompted with a flash success toast when the number is unblocked successfully  [JPT-2409-Step2]')
+    @test(
+      'should the user be prompted with a flash success toast when the number is unblocked successfully  [JPT-2409-Step2]',
+    )
     async t1() {
       const wrapper = shallow(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />,
       );
       await wrapper.simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.numberHasBeenUnblocked'),
       );
     }
+
+    @test('should not show flash toast when unblock fail')
+    async t2() {
+      const fn = () => false;
+      const wrapper = shallow(
+        <BlockView unblock={fn} type={BUTTON_TYPE.ICON} isBlocked={true} />,
+      );
+      await wrapper.simulate('click');
+      expect(Notification.flashToast).not.toHaveBeenCalled();
+    }
   }
-})
+});

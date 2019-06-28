@@ -16,7 +16,7 @@ type BlockViewProps = {
   type: BUTTON_TYPE;
   block: () => Promise<boolean>;
   isBlocked: boolean;
-  unblock: () => void;
+  unblock: () => Promise<boolean>;
   entity: ENTITY_TYPE;
   hookAfterClick: () => void;
 };
