@@ -33,7 +33,7 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.favoritesSection.nthConversationEntry(0).enter();
   });
 
-  const title = 'Conversation Details';
+  const title = 'Conversation details';
   await h(t).withLog(`Then I should find the title of right shelf to be "${title}"`, async () => {
     await t.expect(rightRail.title.textContent).eql(title);
   });
