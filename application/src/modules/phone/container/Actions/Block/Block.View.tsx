@@ -35,7 +35,10 @@ class BlockViewComponent extends Component<Props> {
 
   private _handleUnblock = async () => {
     analyticsCollector.unblockNumber(this._source);
-    await this.props.unblock();
+    const result = await this.props.unblock();
+    if (!result) {
+      return;
+    }
     this.notifyActionSuccess('phone.prompt.numberHasBeenUnblocked');
   }
 
