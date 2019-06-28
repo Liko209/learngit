@@ -47,6 +47,7 @@ type JuiDownshiftProps = {
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftKeyDownEvent) => void;
+  autoFocus?: boolean;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -117,6 +118,7 @@ class JuiDownshift extends React.PureComponent<
       selectedItems,
       inputValue,
       onKeyDown,
+      autoFocus,
     } = this.props;
 
     return (
@@ -151,6 +153,7 @@ class JuiDownshift extends React.PureComponent<
               messageRef={messageRef}
               maxLength={maxLength}
               onKeyDown={onKeyDown}
+              autoFocus={autoFocus}
               onComposition={this.handleComposition}
               openMenu={openMenu}
             />
