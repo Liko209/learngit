@@ -32,6 +32,7 @@ const groupService = {
 };
 const groupConfigService = {
   updateDraft: jest.fn(),
+  getDraft: jest.fn(),
 };
 
 let fileIDs: number = -1001;
