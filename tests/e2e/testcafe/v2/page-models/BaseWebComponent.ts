@@ -130,6 +130,10 @@ export abstract class BaseWebComponent {
     return this.getSelector('div[role="progressbar"]');
   }
 
+  get tooltip() {
+    return this.getSelector('[role="tooltip"]');
+  }
+
   async waitForAllSpinnersToDisappear(timeout: number = 30e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.spinners.count > 0), 4);

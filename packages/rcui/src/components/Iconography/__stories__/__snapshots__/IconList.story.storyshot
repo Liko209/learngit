@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Icon IconList: Icon IconList 1`] = `
+.c0 {
+  display: grid;
+  grid-template-columns: repeat(5,1fr);
+}
+
+<div>
+  <h2>
+     
+    loading icons
+  </h2>
+  <h3>
+    current icon number: 
+    0
+  </h3>
+  <h3>
+    latest icon number: 
+    0
+  </h3>
+  <p>
+    green shadow means this icon is not in current version of icon yet, you can update icon by running 'npm run update-icon'
+  </p>
+  <p>
+    red shadow means this icon is deleted, they will not be available in next version of icon
+  </p>
+  <div
+    className="c0"
+  />
+  <script
+    defer={true}
+    src="https://i.icomoon.io/public/6483cc0f53/Jupiter/svgxuse-s3.js?0.7757798744649531"
+  />
+</div>
+`;

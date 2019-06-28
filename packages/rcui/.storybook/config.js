@@ -1,9 +1,8 @@
-// @ts-nocheck
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2019-01-10 14:55:06
- * @Last Modified by: Jeffery Huang
- * @Last Modified time: 2019-01-29 12:27:03
+ * @Last Modified by:
+ * @Last Modified time: 2019-06-24 15:20:07
  */
 
 import { configure, addDecorator } from '@storybook/react';
@@ -15,13 +14,11 @@ import { withThemeProvider } from '../src/storybook/decorators';
 import results from '../.jest-test-results.json';
 import '../src/storybook/index.css';
 
-window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
-
 addDecorator(
   withTests({
     results,
-    filesExt: '((\\.test))?(\\.tsx?)?$'
-  })
+    filesExt: '((\\.test))?(\\.tsx?)?$',
+  }),
 );
 
 addDecorator(
@@ -31,27 +28,27 @@ addDecorator(
         h1: {
           marginRight: '20px',
           fontSize: '25px',
-          display: 'inline'
+          display: 'inline',
         },
         body: {
           paddingTop: 0,
           paddingBottom: 0,
-          marginBottom: 0
+          marginBottom: 0,
         },
         h2: {
           display: 'inline',
-          color: '#999'
-        }
+          color: '#999',
+        },
       },
       infoBody: {
         backgroundColor: '#eee',
         padding: '0px 5px',
-        lineHeight: '2'
-      }
+        lineHeight: '2',
+      },
     },
     inline: true,
-    source: true
-  })
+    source: true,
+  }),
 );
 
 addDecorator(withKnobs);

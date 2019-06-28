@@ -12,6 +12,7 @@ import { ProfileService } from '../../../profile';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupService } from '../../../group';
 import { AccountService } from '../../../account/service';
+import { PostItemController } from '../../controller/implementation/PostItemController';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -30,6 +31,7 @@ jest.mock('../../../group');
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
+jest.mock('../../controller/implementation/PostItemController');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
 jest.mock('../../../profile');
@@ -174,6 +176,26 @@ describe('PostService', () => {
     it('bookmarkPost', async () => {
       await postService.bookmarkPost(1, true);
       expect(profileService.putFavoritePost).toBeCalledWith(1, true);
+    });
+  });
+  describe('PostItemController', () => {
+    let postItemController: PostItemController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      postItemController = new PostItemController(null);
+      postController.getPostItemController = jest
+        .fn()
+        .mockImplementation(() => {
+          return postItemController;
+        });
+
+      postService.postController = postController;
+    });
+
+    it('getLatestPostIdByItem', async () => {
+      await postService.getLatestPostIdByItem(1, 1);
+      expect(postItemController.getLatestPostIdByItem).toBeCalledWith(1, 1);
     });
   });
   describe('getById', () => {

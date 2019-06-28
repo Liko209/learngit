@@ -17,7 +17,7 @@ import {
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
-import { VoicemailViewProps } from './types';
+import { VoicemailViewProps, JuiAudioMode } from './types';
 import { ENTITY_TYPE } from '../constants';
 
 type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
@@ -32,6 +32,13 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   state = {
     isHover: false,
   };
+
+  get playerMode() {
+    const { isHover } = this.state;
+    const { isAudioActive } = this.props;
+
+    return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+  }
 
   componentDidUpdate() {
     const { selected, shouldPause } = this.props;
@@ -83,7 +90,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       onBeforePlay,
       onBeforeAction,
       updateStartTime,
-      mode,
       createTime,
       direction,
       // onChange,
@@ -119,7 +125,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
                 onBeforeAction={onBeforeAction}
                 onTimeUpdate={updateStartTime}
                 onError={onError}
-                mode={mode}
+                mode={this.playerMode}
                 isHighlight={isUnread}
                 src={audio.downloadUrl}
                 duration={audio.vmDuration}
