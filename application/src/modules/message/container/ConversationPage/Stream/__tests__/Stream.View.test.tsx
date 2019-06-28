@@ -108,7 +108,7 @@ function mountStream(otherProps: Partial<StreamViewProps>) {
 describe('StreamView', () => {
   describe('render()', () => {
     // TODO This case should be moved to electron environment
-    it('should render <ConversationPost>', () => {
+    it.skip('should render <ConversationPost>', () => {
       PostService.getInstance.mockReturnValue(new PostService());
       const props = {
         ...baseProps,
