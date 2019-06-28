@@ -16,7 +16,6 @@ import {
   InteractiveMessageItem,
   InteractiveMessageItemAttachment,
 } from 'sdk/module/item/entity';
-// import {  } from 'sdk/module/item/module/interactiveMessage/entity/InteractiveMessageItem';
 import {
   postParser,
   SearchHighlightContext,
