@@ -20,4 +20,4 @@ export const SOURCE = {
   [ENTITY_TYPE.VOICEMAIL]: 'voicemailList',
 };
 
-export const MAX_BUTTON_COUNT = 0;
+export const MAX_BUTTON_COUNT = 1;

@@ -54,7 +54,7 @@ const name2icon = {
   team: 'team',
   work: 'work',
   email: 'email',
-  chat_bubble: 'chat',
+  chat_bubble: 'chat_bubble',
   download: 'download',
   unfold_more: 'unfold_more',
   unfold_less: 'unfold_less',

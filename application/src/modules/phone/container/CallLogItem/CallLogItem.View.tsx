@@ -88,8 +88,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
               isMissedCall={isMissedCall}
             />
           </StyledCallLogStatusWrapper>
-          <StyledTime>{startTime}</StyledTime>
-          {isHover && (
+          {isHover ? (
             <Actions
               id={id}
               caller={caller}
@@ -98,6 +97,8 @@ class CallLogItemViewComponent extends Component<Props, State> {
               hookAfterClick={this.handleMouseLeave}
               canEditBlockNumbers={canEditBlockNumbers}
             />
+          ) : (
+            <StyledTime>{startTime}</StyledTime>
           )}
         </VoicemailSummary>
       </StyleVoicemailItem>

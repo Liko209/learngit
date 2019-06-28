@@ -69,7 +69,8 @@
     "team": "team",
     "play": "Play",
     "pause": "Pause",
-    "reload": "Reload"
+    "reload": "Reload",
+    "goToConversation": "Go to conversation"
   },
   "auth": {
     "signIn": "Sign in",

@@ -64,7 +64,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
         tabIndex={0}
         aria-label={t(this.getAriaLabelKey(), { name: person.userDisplayName })}
       >
-        {this.renderIcon('chat_bubble')}
+        {this.renderIcon('chat')}
         {t('message.message')}
       </JuiProfileDialogContentSummaryButton>
     );
