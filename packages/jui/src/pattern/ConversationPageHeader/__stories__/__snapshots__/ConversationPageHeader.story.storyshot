@@ -374,6 +374,8 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
           aria-describedby={null}
           className="MuiTypography-root MuiTypography-h6 c2 c3"
           data-test-automation-id="conversation-page-header-title"
+          onBlur={[Function]}
+          onFocus={[Function]}
           onMouseLeave={[Function]}
           onMouseOver={[Function]}
           onTouchEnd={[Function]}
