@@ -15,10 +15,10 @@ import {
   // StyledVoicemailDetail,
 } from 'jui/pattern/Phone/VoicemailItem';
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
-
-import { VoicemailActions } from '../VoicemailActions';
+import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
 import { VoicemailViewProps } from './types';
+import { ENTITY_TYPE } from '../constants';
 
 type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
 type State = {
@@ -137,7 +137,11 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
             </StyledTime>
           )}
           {isHover && (
-            <VoicemailActions id={id} hookAfterClick={this.handleMouseLeave} />
+            <Actions
+              id={id}
+              entity={ENTITY_TYPE.VOICEMAIL}
+              hookAfterClick={this.handleMouseLeave}
+            />
           )}
         </VoicemailSummary>
         {/* <StyledVoicemailDetail> */}

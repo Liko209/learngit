@@ -196,7 +196,7 @@ class FilesView extends React.Component<FilesViewProps> {
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
             const { size, type, id, name, downloadUrl } = item;
-            const { status } = item.latestVersion;
+            const status = item.latestVersion && item.latestVersion.status;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);

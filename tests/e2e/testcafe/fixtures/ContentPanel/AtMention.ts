@@ -91,7 +91,12 @@ test.meta(<ITestMeta>{
 
   let postId
   await h(t).withLog(`And the team has a post with @Team`, async () => {
-    postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi all, <a class='at_mention_compose' rel='{"id":-1}'>@Team</a>`, team, loginUser);
+    const text = `Hi all, <a class='at_mention_compose' rel='{"id":-1}'>@Team</a>`;
+    const response = await h(t).platform(loginUser).createPost({
+      text,
+      is_team_mention: true,
+    }, team.glipId);
+    postId = response.data.id;
   });
 
   const app = new AppRoot(t)

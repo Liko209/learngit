@@ -5,4 +5,5 @@
  */
 export * from './MicrophoneSourceSettingHandler';
 export * from './SpeakerSourceSettingHandler';
+export * from './RingerSourceSettingHandler';
 export * from './VolumeSettingHandler';

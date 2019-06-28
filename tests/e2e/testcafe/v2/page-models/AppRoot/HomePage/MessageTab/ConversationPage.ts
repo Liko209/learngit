@@ -747,7 +747,7 @@ export class PostItem extends BaseWebComponent {
   }
 
 
-  get likeCount() {
+  get likeCountSpan() {
     return this.likeButtonOnFooter.nextSibling('span');
   }
 
@@ -819,7 +819,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    return await this.getNumber(this.likeCount);
+    return await this.getNumber(this.likeCountSpan);
   }
 
   async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {

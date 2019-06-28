@@ -130,9 +130,12 @@ export default class PersonModel extends Base<Person> {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
-        const linkedUser = getEntity(ENTITY_NAME.PERSON, this.glipUserId);
+        const linkedUser = getEntity<Person, PersonModel>(
+          ENTITY_NAME.PERSON,
+          this.glipUserId,
+        );
         if (linkedUser) {
-          pseudoUserDisplayName = linkedUser.displayName;
+          pseudoUserDisplayName = linkedUser.displayName || '';
         }
       }
       if (!pseudoUserDisplayName) {
