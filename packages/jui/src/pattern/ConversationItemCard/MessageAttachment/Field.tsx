@@ -11,7 +11,7 @@ interface IFieldProps {
   title: React.ReactChild | null | (React.ReactChild | null)[];
   value: React.ReactChild | null | (React.ReactChild | null)[];
   short?: boolean;
-};
+}
 
 const FieldWrapper = styled.div`
   float: left;
