@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { computed, action, observable } from 'mobx';
+import { computed, action, observable, Reaction } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import {
   IViewerView,
@@ -16,7 +16,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { ItemVersionPage, Item } from 'sdk/module/item/entity';
+import { ItemVersionPage, Item, ItemVersions } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -32,6 +32,8 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   @observable
   private _currentScale: number = 1;
   @observable
+  private _currentVersion: ItemVersions;
+  @observable
   private _currentPageIdx: number = 0;
 
   @observable
@@ -45,8 +47,18 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
       () => this._item.deactivated,
       async (deactivated: boolean) => {
         if (deactivated) {
-          this._onExceptions('viewer.ImageDeleted');
+          this._onExceptions('viewer.FileDeleted');
         }
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+    this.reaction(
+      () => this._item.latestVersion,
+      async (item: ItemVersions, reaction: Reaction) => {
+        this._currentVersion = { ...item };
+        reaction.dispose();
       },
       {
         fireImmediately: true,
@@ -73,8 +85,8 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @computed
   get pages() {
-    const { versions, origHeight, origWidth } = this._item;
-    const { pages } = versions[0];
+    const { origHeight, origWidth } = this._item;
+    const { pages } = this._currentVersion;
     return pages
       ? pages.map(({ url }: ItemVersionPage) => {
           return {
@@ -90,8 +102,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @action
   handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { versions } = this._item;
-    const { pages = [] } = versions[0];
+    const { pages = [] } = this._currentVersion;
     let value = parseInt(e.target.value, 10);
     if (isNaN(value)) return;
     value = value > pages.length ? pages.length : value;
@@ -110,8 +121,8 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     }
     const { createdAt } = this._item;
 
-    const { versions, name, downloadUrl, id } = this._item;
-    const { pages = [] } = versions[0];
+    const { name, downloadUrl, id } = this._item;
+    const { pages = [] } = this._currentVersion;
     return {
       uid,
       userDisplayName,

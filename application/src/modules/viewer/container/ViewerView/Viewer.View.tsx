@@ -246,7 +246,7 @@ class ViewerViewComponent extends Component<
         />
       );
     }
-    return null;
+    return <></>;
   }
 
   private _getScaleDisplayString = () => {
