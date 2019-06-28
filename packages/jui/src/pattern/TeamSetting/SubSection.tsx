@@ -58,6 +58,7 @@ type JuiTeamSettingSubSectionListItemProps = ListItemProps & {
 };
 const JuiTeamSettingSubSectionListItem = React.memo(
   ({ label, children, ...rest }: JuiTeamSettingSubSectionListItemProps) => (
+    // @ts-ignore
     <StyledListItem dense={true} {...rest}>
       <StyledListItemText>{label}</StyledListItemText>
       <StyledListItemSecondaryAction>{children}</StyledListItemSecondaryAction>

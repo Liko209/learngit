@@ -41,7 +41,10 @@ type JuiIconButtonProps = {
   icon?: SvgSymbol;
   stretchIcon?: boolean;
   tooltipPlacement?: TooltipProps['placement'];
-} & Omit<MuiIconButtonProps, 'color' | 'children'> &
+  component?: React.ElementType;
+  download?: boolean;
+  href?: string;
+} & Omit<MuiIconButtonProps, 'color' | 'children' | 'size'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
@@ -88,6 +91,7 @@ const WrappedMuiIconButton = ({
   tooltipPlacement,
   stretchIcon,
   shouldPersistBg,
+  size,
   ...rest
 }: StyledIconButtonProps) => (
   <MuiIconButton
@@ -260,7 +264,9 @@ JuiIconButtonComponent.defaultProps = {
   stretchIcon: false,
 };
 
-const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
+const JuiIconButton = styled<JuiIconButtonProps>(
+  memo(JuiIconButtonComponent),
+)``;
 export {
   JuiIconButton,
   JuiIconButtonProps,

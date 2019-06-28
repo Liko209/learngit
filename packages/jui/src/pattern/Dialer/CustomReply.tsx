@@ -38,7 +38,7 @@ const JuiCustomReply = React.memo((props: JuiCustomReplyProps) => {
   return (
     <StyledCustomReply
       InputLabelProps={{
-        FormLabelClasses: {
+        classes: {
           root: 'form-label-root',
         },
       }}

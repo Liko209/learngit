@@ -124,7 +124,7 @@ const StyledCheckboxButton = styled<
 `;
 
 // Tooltip does not work on disabled CheckboxButton without this: https://github.com/mui-org/material-ui/issues/8416
-const WrapperForTooltip = styled<CheckboxButtonProps, 'div'>('div')`
+const WrapperForTooltip = styled('div')<{ size: CheckboxButtonProps['size'] }>`
   display: inline-block;
   width: ${({ size = 'medium', theme }) =>
     width(iconSizes[size] * 2)({ theme })};
@@ -166,6 +166,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
       color,
       checkedIcon,
       icon,
+      size,
       ...rest
     } = this.props;
 
@@ -184,7 +185,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
 
     return (
       <RuiTooltip title={tooltipTitle}>
-        <WrapperForTooltip className={className} {...rest}>
+        <WrapperForTooltip className={className} size={size}>
           <StyledCheckboxButton
             onChange={this.changeHandler}
             checked={this.state.checked}
@@ -193,6 +194,7 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
             colorName={colorName}
             checkedIcon={
               <StyledIcon symbol={checkedIcon}>{checkedIconName}</StyledIcon>}
+            size={size}
             {...rest}
           />
         </WrapperForTooltip>

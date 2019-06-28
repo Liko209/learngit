@@ -11,7 +11,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/check-pm.js",
-    "postinstall": "npm run bt",
+    "postinstall": "npm run bt && npm run reactTypeWorkAround",
     "start:ui": "cd packages/jui && npm run storybook",
     "start:app": "cd application && npm run start",
     "clean:build": "rm -rf ./packages/*/build ./packages/*/build-es ./application/build",
@@ -38,13 +38,14 @@
     "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
-    "tsc": "tsc -v && concurrently \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
+    "tsc": "tsc -v && concurrently -r \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
     "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
     "fixed:version": "ts-node fixedVersion.ts",
     "update-icon": "node application/scripts/update-icon.js",
     "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts",
-    "make-pseudo": "node ./scripts/make-pseudo.js"
+    "make-pseudo": "node ./scripts/make-pseudo.js",
+    "reactTypeWorkAround": "cp ./scripts/react-type/index.d.ts ./node_modules/@types/react"
   },
   "devDependencies": {
     "@jest-runner/electron": "1.1.1",
@@ -52,7 +53,7 @@
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.11",
     "@types/node": "11.11.3",
-    "@types/react": "16.8.12",
+    "@types/react": "16.8.22",
     "@types/react-dom": "16.8.3",
     "@types/react-transition-group": "2.0.15",
     "@types/webpack-env": "1.13.6",
@@ -107,5 +108,6 @@
       "commit-msg": "node scripts/validate-commit-msg.js",
       "post-merge": "node scripts/update-dependencies.js"
     }
-  }
+  },
+  "dependencies": {}
 }

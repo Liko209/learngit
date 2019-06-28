@@ -31,7 +31,7 @@ class GroupSettingsComponent extends Component<Props> {
     this._handleClose();
   }
 
-  private _openConvertToTeam = (e: React.MouseEvent<HTMLInputElement>) => {
+  private _openConvertToTeam = (e: React.MouseEvent<any>) => {
     const { id } = this.props;
     this._handleClose();
     ConvertToTeam.show({ id });
@@ -69,6 +69,8 @@ class GroupSettingsComponent extends Component<Props> {
   }
 }
 
-const GroupSettingsView = withTranslation('translations')(GroupSettingsComponent);
+const GroupSettingsView = withTranslation('translations')(
+  GroupSettingsComponent,
+);
 
 export { GroupSettingsView };

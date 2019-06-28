@@ -19,7 +19,7 @@ type Props = WithTranslation & ContactSearchItemViewProps;
 
 @observer
 class ContactSearchItemViewComponent extends Component<Props> {
-  private _ref: RefObject<JuiMenuItem> = createRef();
+  private _ref: RefObject<any> = createRef();
   private _frameId: number;
 
   componentWillUnmount() {

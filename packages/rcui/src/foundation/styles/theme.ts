@@ -14,7 +14,7 @@ import {
 import { Transitions } from '@material-ui/core/styles/transitions';
 import { Shadows } from '@material-ui/core/styles/shadows';
 import { ZIndex as MuiZIndex } from '@material-ui/core/styles/zIndex';
-import { Spacing as MuiSpacing } from '@material-ui/core/styles/spacing';
+import { Spacing as MuiSpacing } from '@material-ui/core/styles/createSpacing';
 import { Typography as MuiTypography } from '@material-ui/core/styles/createTypography';
 import {
   Palette as MuiPalette,
@@ -26,7 +26,7 @@ export type Palette = { [P in keyof typeof palette]: PaletteColor } &
 export type Typography = typeof typography & MuiTypography;
 export type Opacity = typeof opacity;
 export type Radius = typeof radius;
-export type Spacing = typeof spacing & MuiSpacing;
+export type Spacing = { unit: typeof spacing } & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
 export type boxShadow = typeof boxShadow;
 export type size = {

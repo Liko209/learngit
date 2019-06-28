@@ -64,12 +64,12 @@ const STYLE: CSSProperties = {
 class JuiTabs extends PureComponent<Props, States> {
   // not include more tab
   private _tabTitles: (string | JSX.Element)[] = [];
-  private _tabRefs: RefObject<HTMLElement>[] = [];
+  private _tabRefs: RefObject<HTMLDivElement>[] = [];
   private _tabWidths: number[] = [];
   private _tabWidthsTotal: number = 0;
   private _automationIds: string[] = []; // automation ids, not include more tab
   // more tab
-  private _moreRef: RefObject<HTMLElement>;
+  private _moreRef: RefObject<HTMLDivElement>;
   private _moreWidth: number = 0;
   // right rail container
   private _containerRef: RefObject<any>;

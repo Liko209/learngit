@@ -9,7 +9,7 @@ import MuiButton, {
 } from '@material-ui/core/Button';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { Palette, Theme } from '../../../foundation/theme/theme';
-import styled, { css } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
@@ -22,7 +22,7 @@ import {
 } from '../../../foundation/utils/styles';
 import { Omit } from '../../../foundation/utils/typeHelper';
 
-type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
+type Variant = 'text' | 'contained' | 'outlined';
 
 type JuiButtonColor = 'primary' | 'secondary' | 'negative';
 
@@ -48,18 +48,12 @@ const touchRippleClasses = {
 
 const WrappedMuiButton = (props: JuiButtonProps) => {
   const { variant, color, children, loading, ...restProps } = props;
-  let _variant = variant;
-  if (_variant === 'round') {
-    _variant = 'fab';
-    restProps.disableRipple = true;
-    restProps.size = 'small';
-  }
+  const _variant = variant;
   return (
     <MuiButton
       classes={{
         disabled: 'disabled',
         contained: 'containedButtonStyle',
-        fab: 'roundButtonStyle',
         text: 'textButtonStyle',
         outlined: 'outlineButtonStyle',
       }}
@@ -70,13 +64,6 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       {loading ? <RuiCircularProgress size={20} color="inherit" /> : children}
     </MuiButton>
   );
-};
-
-const shadow = (n: number) => {
-  return css<JuiButtonProps>`
-    box-shadow: ${({ theme, variant }) =>
-      variant === 'round' ? theme.shadows[n] : 'unset'};
-  `;
 };
 
 const ButtonColor = ({
@@ -99,19 +86,15 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     text-align: center;
     &.containedButtonStyle {
       color: ${ButtonColor};
-      ${shadow(3)}
       background-color: ${({ color = 'primary' }) =>
         palette(ColorMap[color][0], ColorMap[color][1])};
       &:hover {
-        opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
+        opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       }
       &.disabled {
         background-color: ${({ theme, loading }) =>
           loading ? '' : palette('accent', 'ash')({ theme })};
         color: ${ButtonColor};
-      }
-      &:active {
-        ${shadow(1)}
       }
     }
 
@@ -135,23 +118,23 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
       background-color: ${({ theme }) =>
         theme.palette.getContrastText(primary('700')({ theme }))};
-      color:${primary('700')};
+      color: ${primary('700')};
       ${typography('caption1')};
-      min-height:unset;
-      width:inherit;
+      min-height: unset;
+      width: inherit;
       &:hover {
         background-color: ${grey('50')};
-      &:active {
-        background-color: ${grey('100')};
+        &:active {
+          background-color: ${grey('100')};
+        }
+      }
+
+      .rippleVisible {
+        opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+        transform: scale(1);
+        animation-name: ${({ theme }) => rippleEnter(theme)};
       }
     }
-
-    .rippleVisible {
-      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
-      transform: scale(1);
-      animation-name: ${({ theme }) => rippleEnter(theme)};
-    }
-  }
   }
 `;
 

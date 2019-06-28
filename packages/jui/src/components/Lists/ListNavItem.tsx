@@ -22,6 +22,12 @@ import tinycolor from 'tinycolor2';
 import { Theme } from '../../foundation/theme/theme';
 import MuiTypography from '@material-ui/core/Typography';
 
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiListItemProps & {
+  button?: any;
+  TouchRippleProps?: any;
+};
+
 const rippleEnter = (theme: Theme) => keyframes`
   from {
     transform: scale(0);
@@ -33,7 +39,7 @@ const rippleEnter = (theme: Theme) => keyframes`
   }
 `;
 
-type JuiListNavItemProps = MuiListItemProps & {
+type JuiListNavItemProps = MuiListItemPropsFixed & {
   type?: string;
 };
 
@@ -53,7 +59,7 @@ const JuiListNavItemText = styled(MuiTypography)`
   }
 `;
 
-const StyledNavListItem = styled(MuiListItem)`
+const StyledNavListItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     padding: ${spacing(2, 4, 2, 3)};
     color: ${grey('900')};

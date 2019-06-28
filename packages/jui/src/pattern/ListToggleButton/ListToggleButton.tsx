@@ -24,7 +24,8 @@ const List = styled(MuiList)`
   }
 `;
 
-const ListItem = styled(MuiListItem)`
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+const ListItem = styled<ListItemProps & { button?: any }>(MuiListItem)`
   && {
     padding: 0;
     margin: ${spacing(0, 0, 4, 0)};

@@ -51,7 +51,7 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     options,
   );
 
-  return createMuiTheme(theme) as Theme;
+  return createMuiTheme(theme as any) as Theme;
 }
 
 export default createTheme;

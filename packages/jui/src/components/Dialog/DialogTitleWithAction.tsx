@@ -9,7 +9,7 @@ import styled from '../../foundation/styled-components';
 import { grey, spacing, typography } from '../../foundation/utils/styles';
 import { DialogTitleProps as MuiDialogTitleProps } from '@material-ui/core/DialogTitle';
 
-type JuiDialogTitleWithActionProps = MuiDialogTitleProps;
+type JuiDialogTitleWithActionProps = MuiDialogTitleProps & { ref: any };
 
 const StyledDialogTitle = styled('div')`
   padding: 0;

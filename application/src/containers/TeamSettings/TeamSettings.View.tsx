@@ -123,7 +123,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
-  handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
+  handleLeaveTeamClick = (e: React.MouseEvent<any>) => {
     const { t, groupName } = this.props;
     portalManager.dismissLast();
     Dialog.confirm({

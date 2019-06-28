@@ -12,9 +12,9 @@ import { css } from '../styled-components';
  * spacing
  * @param values
  */
-function spacing<T extends keyof Spacing>(name: T) {
+function spacing<T extends keyof Spacing['unit']>(name: T) {
   return ({ theme }: any) => {
-    return theme.spacing[name];
+    return theme.spacing.unit[name];
   };
 }
 

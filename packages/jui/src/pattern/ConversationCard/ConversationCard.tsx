@@ -9,9 +9,9 @@ import { JuiConversationCardAvatarArea } from './ConversationCardAvatarArea';
 import { grey, palette, spacing } from '../../foundation/utils';
 import tinycolor from 'tinycolor2';
 import {
-  JuiButtonProps,
-  JuiButton,
-} from '../../components/Buttons/Button/Button';
+  JuiLozengeButton,
+  JuiLozengeButtonProps,
+} from '../../components/Buttons';
 import { createGlobalStyle } from 'styled-components';
 
 type ConversationCardProps = {
@@ -23,7 +23,7 @@ type ConversationCardProps = {
   navigationTip?: JSX.Element;
 } & React.DOMAttributes<{}>;
 
-const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
+const StyledNavigationButton = styled<JuiLozengeButtonProps>(JuiLozengeButton)`
   && {
     opacity: 0;
     top: ${spacing(1.5)};
@@ -119,7 +119,6 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
     }
     return (
       <StyledNavigationButton
-        variant="round"
         onClick={navigate}
         data-test-automation-id={'jumpToConversation'}
       >

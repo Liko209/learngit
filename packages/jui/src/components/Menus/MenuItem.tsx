@@ -19,12 +19,15 @@ import {
   palette,
 } from '../../foundation/utils';
 
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiMenuItemProps & { button?: any };
+
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
-} & MuiMenuItemProps;
+} & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {

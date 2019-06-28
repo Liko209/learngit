@@ -18,6 +18,13 @@ import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton, JuiIconButtonProps } from '../../components/Buttons';
 
+// can't get component and touchRippleClasses from MenuItemProps
+type MuiMenuItemPropsExtend = MuiMenuItemProps & {
+  component?: React.ElementType;
+  TouchRippleProps?: any;
+  isItemHover?: boolean;
+};
+
 const StyledRightWrapper = styled.div`
   width: ${width(5)};
   height: ${height(5)};
@@ -40,11 +47,6 @@ const rippleEnter = (theme: Theme) => keyframes`
 
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
-const WrapperListItem = ({
-  isItemHover,
-  ...rest
-}: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
-
 const hoverStyle = css`
   background-color: ${({ theme }) =>
     fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
@@ -62,7 +64,12 @@ const JuiMenuContain = styled(JuiMenu)`
     }
   }
 `;
-const StyledListItem = styled(WrapperListItem)`
+
+const FilteredComponent = ({ isItemHover, ...rest }) => (
+  <MuiMenuItem {...rest} />
+);
+
+const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
   && {
     white-space: nowrap;
     padding: ${spacing(0, 4, 0, 3)};
@@ -126,7 +133,7 @@ const StyledListItem = styled(WrapperListItem)`
     animation-name: ${({ theme }) => rippleEnter(theme)};
     z-index: ${({ theme }) => theme.zIndex.ripple};
   }
-`;
+` as React.ComponentType<MuiMenuItemPropsExtend & { isItemHover?: boolean }>;
 
 const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
@@ -145,9 +152,8 @@ type JuiConversationListItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
   hidden?: boolean;
-  isItemHover?: boolean;
   moreTooltipTitle: string;
-} & MuiMenuItemProps;
+} & MuiMenuItemPropsExtend;
 
 type IConversationListItem = {
   dependencies?: React.ComponentType[];

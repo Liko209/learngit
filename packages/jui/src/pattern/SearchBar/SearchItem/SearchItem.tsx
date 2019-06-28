@@ -17,6 +17,11 @@ import {
   primary,
 } from '../../../foundation/utils/styles';
 
+type MuiMenuItemPropsFixed = MenuItemProps & {
+  button?: boolean | undefined;
+  disableRipple?: boolean;
+};
+
 const SearchItemActions = styled.div`
   display: flex;
   display: none;
@@ -25,7 +30,7 @@ const SearchItemActions = styled.div`
   }
 `;
 
-const SearchItemWrapper = styled(MenuItem)`
+const SearchItemWrapper = styled<MuiMenuItemPropsFixed>(MenuItem)`
   && {
     height: ${height(8)};
     padding: ${spacing(1, 4)};
@@ -87,7 +92,7 @@ type JuiSearchItemProps = {
   beforeValue?: string;
   afterValue?: string;
   joinedStatusText?: string;
-} & MenuItemProps;
+} & MuiMenuItemPropsFixed;
 
 const JuiSearchItem = memo((props: JuiSearchItemProps) => {
   const {
@@ -122,7 +127,9 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           <PrivateIcon data-test-automation-id="search-item-private" />
         )}
         {isJoined && (
-          <Joined data-test-automation-id="search-item-joined">{joinedStatusText}</Joined>
+          <Joined data-test-automation-id="search-item-joined">
+            {joinedStatusText}
+          </Joined>
         )}
       </SearchItemValueWrapper>
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}

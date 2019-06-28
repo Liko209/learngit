@@ -24,7 +24,7 @@ type JuiTeamSettingButtonListItemProps = ListItemProps & {
 };
 const JuiTeamSettingButtonListItem = styled(
   ({ hide, ...rest }: JuiTeamSettingButtonListItemProps) => (
-    <MuiListItem button={true} {...rest} />
+    <MuiListItem button={true as any} {...rest} />
   ),
 )`
   && {

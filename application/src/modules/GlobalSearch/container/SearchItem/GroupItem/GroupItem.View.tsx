@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
-import { JuiButton, JuiIconButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiLozengeButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
 
@@ -64,14 +64,12 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       return null;
     }
     const joinTeamBtn = (
-      <JuiButton
+      <JuiLozengeButton
         data-test-automation-id="joinButton"
-        variant="round"
-        size="small"
         onClick={this.handleJoinTeam}
       >
         {t('people.team.joinButtonTitle')}
-      </JuiButton>
+      </JuiLozengeButton>
     );
     const goToConversationIcon = (
       <JuiIconButton

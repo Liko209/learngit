@@ -210,7 +210,7 @@ class JuiHeader extends PureComponent<Props, State> {
     );
   }
 
-  private _handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
+  private _handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     this._mouseDownTime = +new Date();
@@ -225,7 +225,7 @@ class JuiHeader extends PureComponent<Props, State> {
     },                                  1000);
   }
 
-  private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
+  private _handleMounseUp = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (!this.props.deleteLastInputString) {

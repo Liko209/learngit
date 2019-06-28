@@ -69,8 +69,8 @@ class JuiTextField extends React.PureComponent<Props> {
       inputPropsRest = InputPropsRest;
     }
     if (InputLabelProps) {
-      const { FormLabelClasses, ...InputLabelPropsRest } = InputLabelProps;
-      formLabelClasses = FormLabelClasses;
+      const { classes, ...InputLabelPropsRest } = InputLabelProps;
+      formLabelClasses = classes;
       inputLabelRest = InputLabelPropsRest;
     }
     return (
@@ -78,7 +78,7 @@ class JuiTextField extends React.PureComponent<Props> {
         {...rest}
         onKeyDown={this.onKeyDown}
         InputLabelProps={{
-          FormLabelClasses: {
+          classes: {
             error: 'form-label-error',
             focused: 'form-label-focused',
             ...formLabelClasses,

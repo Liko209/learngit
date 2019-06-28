@@ -8,7 +8,7 @@ import { JuiTextField } from '../../../components/Forms';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { grey, typography } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
-import { MenuProps } from '@material-ui/core/Menu';
+import { MenuProps } from '@material-ui/core/Menu/index';
 import { SelectProps } from '@material-ui/core/Select';
 
 type JuiLineSelectProps = TextFieldProps & {

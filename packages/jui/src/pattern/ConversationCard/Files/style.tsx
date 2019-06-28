@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiListItem from '@material-ui/core/ListItem';
+import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
@@ -38,7 +38,10 @@ type FileIconProps = {
   size?: 'small';
 } & JuiIconographyProps;
 
-const FileItem = styled(MuiListItem)`
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = ListItemProps & { button?: any };
+
+const FileItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(4)};
@@ -206,15 +209,13 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   }
 `;
 
-const ImageMedia = styled(FileCardMedia)``;
-
 const FileExpandItemWrapper = styled.div`
   &:not(:last-child) {
     margin: ${spacing(0, 0, 2, 0)};
   }
 `;
 
-const FileExpandItem = styled(MuiListItem)`
+const FileExpandItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     height: ${height(13)};
     padding: ${spacing(4)};
@@ -238,7 +239,6 @@ export {
   CardFileInfo,
   ImageCard,
   ImageFileInfo,
-  ImageMedia,
   FileExpandItem,
   FileExpandItemWrapper,
 };

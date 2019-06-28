@@ -13,7 +13,7 @@ import { keyframes } from 'styled-components';
  */
 function spacing(...values: number[]) {
   return ({ theme }: { theme: Theme }): string => {
-    const unit = theme.spacing.unit;
+    const unit = theme.spacing.unit.unit;
     return cssValue(...values.map(n => n * unit));
   };
 }

@@ -5,7 +5,6 @@ import styled from '../../../foundation/styled-components';
 import { palette, radius, spacing } from '../../../foundation/shared/theme';
 import { noop } from '../../../foundation/shared/tools';
 import { Palette } from '../../../foundation/styles';
-import { Omit } from '../../../foundation/utils/typeHelper';
 import { RuiTooltip } from '../../../components/Tooltip';
 
 type RuiSliderChildProps = {
@@ -30,7 +29,8 @@ type RuiSliderProps = {
   Left?: SliderChildComponent;
   Right?: SliderChildComponent;
   tipRenderer?: ({ value }: { value: number }) => React.ReactNode;
-} & Omit<React.HTMLAttributes<HTMLElement>, 'onChange'>;
+  className?: string;
+};
 
 const Thumb = styled.div`
   width: 12px;
@@ -101,12 +101,12 @@ class RuiSliderNoStyled extends PureComponent<RuiSliderProps> {
       <MuiSlider
         className={!this._hasWrapper() ? className : ''}
         {...rest}
-        thumb={
-          rest.step || rest.tipRenderer ? (
-            <TipThumb value={rest.value} tipRenderer={rest.tipRenderer} />
-          ) : (
-            undefined
-          )
+        ThumbComponent={
+          rest.step || rest.tipRenderer
+            ? () => (
+                <TipThumb value={rest.value} tipRenderer={rest.tipRenderer} />
+              )
+            : undefined
         }
       />
     );
