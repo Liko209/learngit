@@ -159,6 +159,7 @@ test.meta(<ITestMeta>{
     await t.expect(phoneSettingPage.ringCentralAppItem.withExactText(defaultRingCentralApp)).ok();
     await t.expect(phoneSettingPage.ringCentralPhoneItem.withExactText(defaultRingCentralPhone)).ok();
   });
+
 });
 
 test.meta(<ITestMeta>{
@@ -303,6 +304,50 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the caller id section is displayed`, async () => {
     await t.expect(phoneSettingPage.callIdSetting.exists).ok();
+  });
+
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2443'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['GeneralSettings']
+})(`Check if the background menu list will be picked up when the confirmation box pops up`, async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const app = new AppRoot(t);
+
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneSettingPage = settingTab.phoneSettingPage;
+  const changeRCPhoneDialog = settingTab.phoneSettingPage.changeRCPhoneDialog;
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Phone tab`, async () => {
+    await settingTab.phoneEntry.enter();
+  });
+
+  await h(t).withLog(`When I click default app DropDown`, async () => {
+    await phoneSettingPage.clickDefaultAppSelectBox();
+  });
+
+  await h(t).withLog(`When I click "RingCentral Phone"`, async () => {
+    await phoneSettingPage.clickRingCentralPhone();
+    await changeRCPhoneDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`And the background menu list will be picked up`, async () => {
+    await t.expect(phoneSettingPage.ringCentralAppItem.exists).notOk();
   });
 
 });

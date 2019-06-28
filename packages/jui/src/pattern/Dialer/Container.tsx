@@ -96,6 +96,7 @@ class JuiContainer extends PureComponent<Props> {
   _stopPropagation = (e: any) => {
     // prevent drag & drop
     e.stopPropagation();
+    e.preventDefault();
   }
 
   componentDidMount() {
@@ -134,7 +135,7 @@ class JuiContainer extends PureComponent<Props> {
 
     return (
       <StyledContainer ref={this._containerRef} removePadding={removePadding}>
-        <StyledKeypadActionsContainer>
+        <StyledKeypadActionsContainer onMouseDown={this._stopPropagation}>
           {keypadFullSize ? (
             keypadActions
           ) : (

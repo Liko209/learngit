@@ -400,5 +400,4 @@ export class MessageTab extends BaseWebComponent {
   get emojiMatchList() {
     return this.getComponent(EmojiMatchList);
   }
-
 }

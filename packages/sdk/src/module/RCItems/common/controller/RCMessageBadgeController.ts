@@ -13,10 +13,10 @@ import {
   MESSAGE_AVAILABILITY,
   BADGE_STATUS,
 } from '../../constants';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { RCMessage } from '../../types';
-import { PERFORMANCE_KEYS, PerformanceTracer } from 'sdk/utils';
+import { RC_ITEMS_POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 class RCMessageBadgeController<T extends RCMessage> {
   private _unreadMap: Map<number, boolean>;
@@ -42,7 +42,7 @@ class RCMessageBadgeController<T extends RCMessage> {
   async initializeUnreadCount() {
     try {
       this._badgeStatus = BADGE_STATUS.INITIALIZING;
-      const performanceTracer = PerformanceTracer.initial();
+      const performanceTracer = PerformanceTracer.start();
       const data = await this.sourceController.getEntities();
       data.forEach((item: T) => {
         if (
@@ -59,7 +59,7 @@ class RCMessageBadgeController<T extends RCMessage> {
       this._registerBadge();
       this._updateBadge();
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_RC_MESSAGE_BADGE,
+        key: RC_ITEMS_POST_PERFORMANCE_KEYS.INIT_RC_MESSAGE_BADGE,
         infos: { id: this.badgeId, count: this._unreadCount },
       });
       this._badgeStatus = BADGE_STATUS.INITIALIZED;

@@ -124,8 +124,6 @@ class ContactSearchListViewComponent extends Component<
                 minRowHeight={ROW_HEIGHT}
                 loadMore={loadMore}
                 loadInitialData={loadInitialData}
-                loadingMoreRenderer={<></>}
-                loadingRenderer={<></>}
                 hasMore={hasMore}
                 initialScrollToIndex={focusIndex === -1 ? 0 : focusIndex}
                 ref={this._listRef}
