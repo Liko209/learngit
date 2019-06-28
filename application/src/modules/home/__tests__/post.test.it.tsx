@@ -11,12 +11,15 @@ import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
 import { service } from 'sdk';
 import { asyncTest } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
+import { h } from 'shield/application';
 import { container, Jupiter } from 'framework';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { LeftRail } from '@/modules/message/container/LeftRail';
 
 import { App } from '@/modules/app/container';
 import history from '@/history';
+
+jest.setTimeout(30 * 1000);
 
 itForSdk('Service Integration test', ({ server, data, sdk }) => {
   const glipData = data.useInitialData(data.template.BASIC);
@@ -61,25 +64,23 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     it('should send post', async () => {
       const url = `/message/${team1._id}?code=123`;
       history.push(url);
-      let wrapper: ReactWrapper;
+      let wrapper: any;
       console.warn(9999, history, window.location.href);
       await act(async () => {
-        wrapper = mount(<App />);
+        wrapper = h(mount(<App />));
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         await asyncTest(async () => {
           await act(async () => {
             wrapper.update();
-            const stream = wrapper.find({
-              'data-test-automation-id': 'jui-stream-wrapper',
-            });
+            const leftNav = wrapper.leftRail;
 
             await asyncTest(() => {
-              console.log(stream.debug());
-              const leftRail = wrapper.find(LeftRail);
-              console.log(leftRail.debug());
-              const str = wrapper.debug();
+              console.log(leftNav);
+
+              // const str = wrapper.debug();
+              const str = leftNav.debug();
               fs.writeFileSync('./out.txt', str);
-              console.warn(str);
+              // console.warn(str);
 
               wrapper.unmount();
             });
