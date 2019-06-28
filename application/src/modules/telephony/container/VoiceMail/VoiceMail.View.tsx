@@ -9,6 +9,11 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { VoiceMailViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = VoiceMailViewProps & WithTranslation;
 
@@ -17,6 +22,17 @@ class VoiceMailViewComponent extends Component<Props> {
   private _handleVoiceMail = async () => {
     const { sendToVoiceMail } = this.props;
     sendToVoiceMail();
+    this._onActionSuccess('telephony.prompt.ReplyVoiceMessageSuccess');
+  }
+
+  private _onActionSuccess = (message: string) => {
+    Notification.flashToast({
+      message,
+      type: ToastType.SUCCESS,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   render() {
