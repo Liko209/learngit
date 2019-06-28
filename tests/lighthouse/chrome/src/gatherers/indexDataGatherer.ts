@@ -63,7 +63,9 @@ class IndexDataGatherer extends BaseGatherer {
       try {
         cnt = 20;
 
-        length = this.consoleMetrics['handle_index_data'].length
+        this.clearTmpGatherer(this.metricKeys);
+
+        length = this.tmpConsoleMetrics['handle_index_data'].length;
 
         authUrl = await JupiterUtils.getAuthUrl(url, browser);
 
@@ -76,13 +78,15 @@ class IndexDataGatherer extends BaseGatherer {
         await bluebird.delay(5000);
 
         while (cnt-- > 0) {
-          if (length >= this.consoleMetrics['handle_index_data'].length) {
+          if (length >= this.tmpConsoleMetrics['handle_index_data'].length) {
             await bluebird.delay(2000);
             continue;
           }
 
           break;
         }
+
+        this.pushGatherer(this.metricKeys);
 
         await groupPage.close();
         page = undefined;

@@ -6,27 +6,23 @@
 import _ from 'lodash';
 import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
+import styled from '../../../foundation/styled-components';
+import { JuiAutoSizer, Size } from '../../AutoSizer/AutoSizer';
 import { JuiVirtualizedList } from '../VirtualizedList';
 type TestItemModel = { id: number };
 
 const attachTo = document.createElement('div');
 document.body.appendChild(attachTo);
 
+const ListWrapper = styled.div`
+  height: 100px;
+`;
+
 const TestItem = ({ id }: TestItemModel) => {
   return (
     <div key={`KEY_${id}`} style={{ height: 20 }}>
       Item-{id}
     </div>
-  );
-};
-
-const TestComponent = ({ items }: { items: TestItemModel[] }) => {
-  return (
-    <JuiVirtualizedList height={100} minRowHeight={20}>
-      {items.map(({ id }: TestItemModel) => (
-        <TestItem key={`KEY_${id}`} id={id} />
-      ))}
-    </JuiVirtualizedList>
   );
 };
 
@@ -54,22 +50,27 @@ const getScrollTop = (wrapper: ReactWrapper) => {
 
 const buildScrollTo = (wrapper: ReactWrapper) => {
   return (scrollTop: number) => {
-    wrapper.getDOMNode().scrollTop = scrollTop;
-    wrapper.simulate('scroll');
+    const virtualizedList = wrapper.find(JuiVirtualizedList);
+    virtualizedList.getDOMNode().scrollTop = scrollTop;
+    virtualizedList.simulate('scroll');
   };
 };
 
-const buildExpectRangeToBe = (
+const buildExpect = (
   wrapper: ReactWrapper,
   handleVisibleRangeChange: jest.Mock,
   handleRenderedRangeChange: jest.Mock,
 ) => {
-  return (startIndex: number, stopIndex: number, changed = true) => {
-    expect(getRenderedItemIds(wrapper)).toEqual(
-      _.range(startIndex, stopIndex + 1),
-    );
-
-    if (changed) {
+  return {
+    expectItemsToBeRendered: (startIndex: number, stopIndex: number) => {
+      expect(getRenderedItemIds(wrapper)).toEqual(
+        _.range(startIndex, stopIndex + 1),
+      );
+    },
+    expectRangeChangeEventCalledWith: (
+      startIndex: number,
+      stopIndex: number,
+    ) => {
       expect(handleVisibleRangeChange).toBeCalledWith({
         startIndex,
         stopIndex,
@@ -78,13 +79,15 @@ const buildExpectRangeToBe = (
         startIndex,
         stopIndex,
       });
-    } else {
+      handleVisibleRangeChange.mockClear();
+      handleRenderedRangeChange.mockClear();
+    },
+    expectRangeChangeEventNotToBeCalled: () => {
       expect(handleVisibleRangeChange).not.toBeCalled();
       expect(handleRenderedRangeChange).not.toBeCalled();
-    }
-
-    handleVisibleRangeChange.mockClear();
-    handleRenderedRangeChange.mockClear();
+      handleVisibleRangeChange.mockClear();
+      handleRenderedRangeChange.mockClear();
+    },
   };
 };
 
@@ -101,21 +104,24 @@ describe('JuiVirtualizedList', () => {
     beforeEach(() => {
       const items = buildItems(0, 9);
       wrapper = mount(
-        <JuiVirtualizedList
-          height={100}
-          minRowHeight={20}
-          overscan={0}
-          onVisibleRangeChange={handleVisibleRangeChange}
-          onRenderedRangeChange={handleRenderedRangeChange}
-        >
-          {renderItems(items)}
-        </JuiVirtualizedList>,
+        <ListWrapper>
+          <JuiVirtualizedList
+            height={100}
+            minRowHeight={20}
+            overscan={0}
+            onVisibleRangeChange={handleVisibleRangeChange}
+            onRenderedRangeChange={handleRenderedRangeChange}
+          >
+            {renderItems(items)}
+          </JuiVirtualizedList>
+        </ListWrapper>,
         { attachTo },
       );
     });
 
     afterEach(() => {
       handleVisibleRangeChange.mockClear();
+      handleRenderedRangeChange.mockClear();
       wrapper.unmount();
     });
 
@@ -124,59 +130,73 @@ describe('JuiVirtualizedList', () => {
     });
 
     it('should handle scroll and update list', () => {
-      //
-      // Simulate scroll and check it's rendered items
-      //
-      const scrollTo = buildScrollTo(wrapper);
-      const expectRangeToBe = buildExpectRangeToBe(
+      const {
+        expectItemsToBeRendered,
+        expectRangeChangeEventCalledWith,
+        expectRangeChangeEventNotToBeCalled,
+      } = buildExpect(
         wrapper,
         handleVisibleRangeChange,
         handleRenderedRangeChange,
       );
 
-      expect.assertions(6 * 3);
+      //
+      // Simulate scroll and check it's rendered items
+      //
+      const scrollTo = buildScrollTo(wrapper);
+
+      expectRangeChangeEventCalledWith(0, 4);
 
       // Scroll to top
       scrollTo(0);
-      expectRangeToBe(0, 4, false);
+      expectItemsToBeRendered(0, 4);
+      expectRangeChangeEventNotToBeCalled();
 
       // Item 5 1px visible
       scrollTo(1);
-      expectRangeToBe(0, 5);
+      expectItemsToBeRendered(0, 5);
+      expectRangeChangeEventCalledWith(0, 5);
 
-      // Item 0 has 1px visible
+      // // Item 0 has 1px visible
       scrollTo(19);
-      expectRangeToBe(0, 5, false);
+      expectItemsToBeRendered(0, 5);
+      expectRangeChangeEventNotToBeCalled();
 
-      // Item 0 invisible
-      // Item 6 invisible
+      // // Item 0 invisible
+      // // Item 6 invisible
       scrollTo(20);
-      expectRangeToBe(1, 5);
+      expectItemsToBeRendered(1, 5);
+      expectRangeChangeEventCalledWith(1, 5);
 
-      // Item 0 invisible
-      // Item 6 has 1px visible
+      // // Item 0 invisible
+      // // Item 6 has 1px visible
       scrollTo(21);
-      expectRangeToBe(1, 6);
+      expectItemsToBeRendered(1, 6);
+      expectRangeChangeEventCalledWith(1, 6);
 
-      // Scroll to bottom
+      // // Scroll to bottom
       scrollTo(99999);
-      expectRangeToBe(5, 9);
+      expectItemsToBeRendered(5, 9);
+      expectRangeChangeEventCalledWith(5, 9);
     });
   });
 
-  describe('initial scroll to index', () => {
+  describe('initialScrollToIndex', () => {
     let wrapper: ReactWrapper;
 
     beforeEach(() => {
       const items = buildItems(0, 9);
       wrapper = mount(
-        <JuiVirtualizedList
-          height={100}
-          minRowHeight={20}
-          initialScrollToIndex={9}
-        >
-          {renderItems(items)}
-        </JuiVirtualizedList>,
+        <ListWrapper>
+          <JuiVirtualizedList
+            height={100}
+            minRowHeight={20}
+            overscan={0}
+            initialScrollToIndex={9}
+          >
+            {renderItems(items)}
+          </JuiVirtualizedList>
+        </ListWrapper>,
         { attachTo },
       );
     });
@@ -194,7 +214,56 @@ describe('JuiVirtualizedList', () => {
     });
   });
 
+  describe('overscan', () => {
+    it.each`
+      initialScrollToIndex | overscan | renderedItems
+      ${0}                 | ${1}     | ${[0, 1, 2, 3, 4, 5]}
+      ${0}                 | ${2}     | ${[0, 1, 2, 3, 4, 5, 6]}
+      ${0}                 | ${3}     | ${[0, 1, 2, 3, 4, 5, 6, 7]}
+      ${0}                 | ${4}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8]}
+      ${0}                 | ${5}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+      ${0}                 | ${999}   | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+      ${3}                 | ${0}     | ${[3, 4, 5, 6, 7]}
+      ${3}                 | ${1}     | ${[2, 3, 4, 5, 6, 7, 8]}
+      ${3}                 | ${2}     | ${[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+      ${3}                 | ${3}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+    `(
+      `should render more items than visible
+        props: { initialScrollToIndex: $initialScrollToIndex, overscan: $overscan }`,
+      ({ initialScrollToIndex, overscan, renderedItems }) => {
+        const wrapper = mount(
+          <ListWrapper>
+            <JuiVirtualizedList
+              height={100}
+              minRowHeight={20}
+              initialScrollToIndex={initialScrollToIndex}
+              overscan={overscan}
+            >
+              {renderItems(buildItems(0, 9))}
+            </JuiVirtualizedList>
+          </ListWrapper>,
+          { attachTo },
+        );
+
+        expect(getRenderedItemIds(wrapper)).toEqual(renderedItems);
+        wrapper.unmount();
+      },
+    );
+  });
+
   describe('children change', () => {
+    const TestComponent = ({ items }: { items: TestItemModel[] }) => {
+      return (
+        <ListWrapper>
+          <JuiVirtualizedList height={100} minRowHeight={20}>
+            {items.map(({ id }: TestItemModel) => (
+              <TestItem key={`KEY_${id}`} id={id} />
+            ))}
+          </JuiVirtualizedList>
+        </ListWrapper>
+      );
+    };
+
     it('should fix scroll position when prepend items', () => {
       const items: TestItemModel[] = buildItems(10, 19);
       const wrapper = mount(<TestComponent items={items} />, { attachTo });
@@ -210,5 +279,117 @@ describe('JuiVirtualizedList', () => {
       expect(getScrollTop(wrapper)).toBe(0);
       wrapper.unmount();
     });
+  });
+
+  describe('using with JuiAutoSizer', () => {
+    it('should work with auto sizer', () => {
+      const wrapper = mount(
+        <ListWrapper>
+          <JuiAutoSizer>
+            {({ height }: Size) => (
+              <JuiVirtualizedList
+                height={height}
+                minRowHeight={20}
+                initialScrollToIndex={0}
+                overscan={0}
+              >
+                {renderItems(buildItems(0, 999))}
+              </JuiVirtualizedList>
+            )}
+          </JuiAutoSizer>
+        </ListWrapper>,
+        { attachTo },
+      );
+
+      expect(getRenderedItemIds(wrapper)).toEqual([
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+      ]);
+
+      wrapper.unmount();
+    });
+
+    it.each`
+      parentMinHeight | itemCount | renderedItems         | expectedHeight
+      ${100}          | ${0}      | ${[]}                 | ${100}
+      ${100}          | ${1}      | ${[0]}                | ${100}
+      ${100}          | ${2}      | ${[0, 1]}             | ${100}
+      ${100}          | ${3}      | ${[0, 1, 2]}          | ${100}
+      ${100}          | ${5}      | ${[0, 1, 2, 3, 4]}    | ${100}
+      ${100}          | ${6}      | ${[0, 1, 2, 3, 4, 5]} | ${120}
+    `(
+      'should work when parent has minHeight. itemCount: $itemCount',
+      ({ parentMinHeight, itemCount, expectedHeight, renderedItems }) => {
+        const wrapper = mount(
+          <div style={{ minHeight: parentMinHeight }}>
+            <JuiAutoSizer>
+              {({ height }: Size) => (
+                <JuiVirtualizedList
+                  height={height}
+                  minRowHeight={20}
+                  initialScrollToIndex={0}
+                  overscan={0}
+                >
+                  {renderItems(buildItems(0, itemCount - 1))}
+                </JuiVirtualizedList>
+              )}
+            </JuiAutoSizer>
+          </div>,
+          { attachTo },
+        );
+
+        expect(getComputedStyle(wrapper.getDOMNode()).height).toBe(
+          `${expectedHeight}px`,
+        );
+        expect(getRenderedItemIds(wrapper)).toEqual(renderedItems);
+        wrapper.unmount();
+      },
+    );
+
+    it.each`
+      parentMaxHeight | itemCount | renderedItems                     | expectedHeight
+      ${100}          | ${0}      | ${[]}                             | ${0}
+      ${100}          | ${1}      | ${[0]}                            | ${20}
+      ${100}          | ${2}      | ${[0, 1]}                         | ${40}
+      ${100}          | ${3}      | ${[0, 1, 2]}                      | ${60}
+      ${100}          | ${10}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${100}
+      ${100}          | ${99}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${100}
+    `(
+      'should work when parent has maxHeight. itemCount: $itemCount',
+      ({ parentMaxHeight, itemCount, expectedHeight, renderedItems }) => {
+        const wrapper = mount(
+          <div style={{ maxHeight: parentMaxHeight }}>
+            <JuiAutoSizer>
+              {({ height }: Size) => (
+                <JuiVirtualizedList
+                  height={height}
+                  minRowHeight={20}
+                  initialScrollToIndex={0}
+                  overscan={0}
+                >
+                  {renderItems(buildItems(0, itemCount - 1))}
+                </JuiVirtualizedList>
+              )}
+            </JuiAutoSizer>
+          </div>,
+          { attachTo },
+        );
+
+        expect(
+          getComputedStyle(wrapper.find(JuiVirtualizedList).getDOMNode())
+            .height,
+        ).toBe(`${expectedHeight}px`);
+        expect(getRenderedItemIds(wrapper)).toEqual(renderedItems);
+        wrapper.unmount();
+      },
+    );
   });
 });

@@ -6,19 +6,6 @@
 'use strict';
 
 if (process.env.NODE_ENV === 'test') {
-  // Mobx UT setup
-  const mobx = require('mobx');
-  const _configure = mobx.configure;
-  mobx.configure = options =>
-    _configure(
-      Object.assign({}, options, {
-        computedRequiresReaction: false,
-      }),
-    );
-  mobx.configure();
-
-  const moment = require('moment-timezone');
-  moment.tz.setDefault('Asia/Shanghai');
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
   // We don't polyfill it in the browser--this is user's responsibility.
   require('raf').polyfill(global);
@@ -60,32 +47,6 @@ if (process.env.NODE_ENV === 'test') {
     value: new FakeStorage(),
   });
 
-  // // mock console for jest
-  // global.console = {
-  //   assert: jest.fn(),
-  //   clear: jest.fn(),
-  //   context: jest.fn(),
-  //   count: jest.fn(),
-  //   countReset: jest.fn(),
-  //   debug: jest.fn(),
-  //   error: message => {
-  //     throw message instanceof Error ? message : new Error(message);
-  //   },
-  //   group: jest.fn(),
-  //   groupCollapsed: jest.fn(),
-  //   groupEnd: jest.fn(),
-  //   info: jest.fn(),
-  //   log: jest.fn(),
-  //   time: jest.fn(),
-  //   timeEnd: jest.fn(),
-  //   timeLog: jest.fn(),
-  //   timeStamp: jest.fn(),
-  //   trace: jest.fn(),
-  //   warn: message => {
-  //     throw message;
-  //   },
-  // };`
-
   global.fetch = require('jest-fetch-mock');
 
   global.Notification = {
@@ -101,3 +62,7 @@ if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
   // // Avoid memory leak by adding too many listeners
   // process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
 }
+
+// polyfill require.context
+import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
+registerRequireContextHook();

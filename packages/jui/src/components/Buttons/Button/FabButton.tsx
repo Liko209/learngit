@@ -25,13 +25,16 @@ import {
   JuiIconography,
   IconSize,
   IconColor,
+  SvgSymbol,
 } from '../../../foundation/Iconography';
 
 type IconButtonSize = 'small' | 'medium' | 'large' | 'midLarge' | 'moreLarge';
 
+// TODO: remove iconname prop
 type ButtonProps = {
   size?: IconButtonSize;
-  iconName: ICON_NAME;
+  iconName?: ICON_NAME;
+  icon?: SvgSymbol;
   tooltipTitle?: string;
   disableToolTip?: boolean;
   disabled?: boolean;
@@ -64,11 +67,11 @@ const buttonSizes: { [k in ButtonSize]: number } = {
   small: 5,
 };
 
-const buttonShadows: { [k in Size]: string } = {
-  moreLarge: 'val16',
-  large: 'val16',
-  medium: 'val1',
-  small: 'val1',
+const buttonShadows: { [k in Size]: number } = {
+  moreLarge: 16,
+  large: 16,
+  medium: 1,
+  small: 1,
 };
 
 const iconSizesMap: { [k in Size]: IconSize } = {
@@ -119,7 +122,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
     height: ${({ size = 'large', theme }) =>
       height(buttonSizes[size])({ theme })};
     box-shadow: ${({ showShadow, theme, size = 'large' }) =>
-      showShadow ? theme.boxShadow[buttonShadows[size]] : 'none'};
+      showShadow ? theme.shadows[buttonShadows[size]] : 'none'};
     ${typography('caption1')};
     color: ${({ theme, colorScope, colorName }) =>
       theme.palette.getContrastText(palette(colorScope, colorName)({ theme }))};
@@ -143,7 +146,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
           palette(colorScope, colorName)({ theme }),
         )};
       box-shadow: ${({ showShadow, theme }) =>
-        showShadow ? theme.boxShadow.val16 : 'none'};
+        showShadow ? theme.shadows[16] : 'none'};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity};
     }
   }
@@ -161,6 +164,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     iconName,
     iconColor,
     size = 'large',
+    icon,
     ...rest
   } = props;
   let colorScope: keyof Palette = 'primary';
@@ -186,7 +190,11 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
             size={size}
             {...rest}
           >
-            <JuiIconography iconColor={iconColor} iconSize={iconSizesMap[size]}>
+            <JuiIconography
+              symbol={icon}
+              iconColor={iconColor}
+              iconSize={iconSizesMap[size]}
+            >
               {iconName}
             </JuiIconography>
           </StyledFabButton>
@@ -202,7 +210,11 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
       size={size}
       {...rest}
     >
-      <JuiIconography iconColor={iconColor} iconSize={iconSizesMap[size]}>
+      <JuiIconography
+        symbol={icon}
+        iconColor={iconColor}
+        iconSize={iconSizesMap[size]}
+      >
         {iconName}
       </JuiIconography>
     </StyledFabButton>

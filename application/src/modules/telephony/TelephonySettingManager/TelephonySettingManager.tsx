@@ -3,13 +3,11 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-// import React from 'react';
 import {
   ISettingService,
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import {
   SETTING_PAGE__PHONE,
@@ -21,8 +19,15 @@ import {
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
   SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
+import {
+  CallerIdSelectSourceItem,
+  CallerIdSelectValue,
+} from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
-import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import {
+  DefaultPhoneAppSelectItem,
+  beforeDefaultPhoneAppSettingSave,
+} from './DefaultPhoneAppSettingItem';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
@@ -52,6 +57,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
+              beforeSaving: beforeDefaultPhoneAppSettingSave,
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
@@ -62,6 +68,7 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
+              valueRenderer: CallerIdSelectValue,
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,

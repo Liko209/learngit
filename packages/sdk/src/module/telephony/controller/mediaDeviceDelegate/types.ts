@@ -13,6 +13,11 @@ enum SOURCE_TYPE {
   DEFAULT,
 }
 
+enum RINGER_ADDITIONAL_TYPE {
+  ALL = 'all',
+  OFF = 'off',
+}
+
 type Disposer = () => void;
 
 type Subscriber = (handleChanged: (newValue: string) => void) => Disposer;
@@ -38,6 +43,7 @@ interface ILastUsedDeviceManager {
 
 export {
   SOURCE_TYPE,
+  RINGER_ADDITIONAL_TYPE,
   IStorage,
   IDeviceManager,
   ILastUsedDeviceManager,

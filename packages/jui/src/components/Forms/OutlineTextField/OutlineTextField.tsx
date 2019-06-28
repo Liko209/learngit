@@ -227,6 +227,7 @@ const JuiOutlineTextField: React.RefForwardingComponent<
 });
 
 export {
+  StyledIconRight,
   JuiOutlineTextField,
   JuiOutlineTextFieldProps,
   JuiOutlineTextFieldRef,

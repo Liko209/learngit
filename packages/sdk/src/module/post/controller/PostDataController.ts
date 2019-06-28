@@ -3,7 +3,7 @@
  * @Date: 2019-01-22 09:41:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import _ from 'lodash';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
@@ -21,12 +21,13 @@ import {
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
+
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
 import GroupService from '../../group';
 import { AccountService } from 'sdk/module/account';
+import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 class PostDataController {
   constructor(
@@ -37,7 +38,7 @@ class PostDataController {
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
     mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       this._deletePreInsertPosts(transformedData);
@@ -49,7 +50,7 @@ class PostDataController {
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      key: POST_PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
       count: posts.length,
     });
     return {
@@ -113,8 +114,8 @@ class PostDataController {
         data.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const posts = await this.handleSexioModifiedPosts(data);
-      this._deletePreInsertPosts(posts);
       const result = await this.filterAndSavePosts(posts, true);
+      this._deletePreInsertPosts(posts);
       return result;
     }
     return [];

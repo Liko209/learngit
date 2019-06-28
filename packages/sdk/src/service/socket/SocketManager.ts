@@ -326,10 +326,16 @@ export class SocketManager {
 
     if (!this._canReconnectController) {
       this._currentId = getCurrentTime();
+      const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
+      const lastTime = socketUserConfig.getLastCanReconnectTime() || 0;
+      socketUserConfig.setLastCanReconnectTime(this._currentId);
       this._canReconnectController = new SocketCanConnectController(
         this._currentId,
       );
       this._canReconnectController.doCanConnectApi({
+        interval: this._currentId - lastTime,
         callback: this._canConnectCallback.bind(this),
         forceOnline: this._isFirstInit,
         nthCount: this._reconnectRetryCount,
@@ -374,6 +380,11 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
+      this._stateHandler({
+        name: this.activeFSM.name,
+        state: 'disconnected',
+        isManualStopped: true,
+      });
       this._clearReconnectSocketHost();
       this.activeFSM.stopFSM();
       this.activeFSM = null;

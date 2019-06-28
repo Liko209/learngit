@@ -422,7 +422,7 @@ class RCSubscriptionController {
   }
 
   private async _dispatchMessages(message: PubNubEventPayloadMessage) {
-    const { event = undefined, body = undefined } = message;
+    const { event = undefined, body = undefined } = message || {};
     if (!event || !body) {
       return;
     }

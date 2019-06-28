@@ -3,8 +3,10 @@
  * @Date: 2018-09-03 17:10:17
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React, { forwardRef, RefObject } from 'react';
 import styled from '../../foundation/styled-components';
+
+type RefType = RefObject<any>;
 
 type JuiConversationPageProps = {
   className?: string;
@@ -19,9 +21,11 @@ const StyledDiv = styled<JuiConversationPageProps, 'div'>('div')`
   position: relative;
 `;
 
-const JuiConversationPage = React.memo((props: JuiConversationPageProps) => (
-  <StyledDiv {...props} />
-));
+const JuiConversationPage = React.memo(
+  forwardRef((props: JuiConversationPageProps, ref: RefType) => (
+    <StyledDiv {...props} ref={ref} />
+  )),
+);
 
 export { JuiConversationPage, JuiConversationPageProps };
 export default JuiConversationPage;

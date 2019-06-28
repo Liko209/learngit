@@ -25,8 +25,6 @@ const JuiProfileDialogContentMembers = styled('div')<{ height?: number }>`
   flex: 1;
   height: ${props => (props.height ? height(props.height / 4) : '100%')};
   min-height: ${props => (props.height ? height(props.height / 4) : '100%')};
-  /* box-shadow: ${props => props.theme.shadows[2]}; */
-  /* box-shadow: ${({ theme }) => theme.boxShadow.val2}; */
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
@@ -39,7 +37,7 @@ const JuiProfileDialogContentMemberHeader = styled('div')`
   flex-direction: column;
   justify-content: space-between;
   &.shadow {
-    box-shadow: ${({ theme }) => theme.boxShadow.val3};
+    box-shadow: ${({ theme }) => theme.shadows[3]};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
   }
 `;
@@ -104,8 +102,7 @@ const JuiProfileDialogContentMemberListItemName = styled('p')`
 `;
 
 const JuiProfileDialogContentMemberListItemAdmin = styled.span`
-  color: ${({ theme }) =>
-    theme.palette.getContrastText(palette('secondary', 'main')({ theme }))};
+  color: ${palette('common', 'white')};
   border-radius: ${spacing(2)};
   text-align: center;
   background-color: ${palette('secondary', 'main')};

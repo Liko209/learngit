@@ -18,7 +18,8 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import { ENTITY_NAME } from '@/store/constants';
 import { NOTIFICATION_OPTIONS } from 'sdk/module/profile';
-import { CALL_STATE } from '../FSM';
+import { CALL_STATE, CALL_DIRECTION } from 'sdk/module/telephony/entity';
+import { observable } from 'mobx';
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
@@ -41,7 +42,14 @@ jupiter.registerModule(common.config);
 let telephonyNotificationManager: TelephonyNotificationManager;
 let telephonyStore: TelephonyStore;
 const title = 'Incoming Call';
+let call: any;
+
 function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
+  call = observable({
+    callId: '1',
+    callState: CALL_STATE.IDLE,
+    direction: null,
+  });
   (getEntity as jest.Mock).mockImplementation(entityName => {
     if (entityName === ENTITY_NAME.USER_SETTING) {
       return {
@@ -53,13 +61,14 @@ function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
         userDisplayName: 'belle',
       };
     }
+    if (entityName === ENTITY_NAME.CALL) {
+      return call;
+    }
   });
   telephonyNotificationManager = jupiter.get(TelephonyNotificationManager);
   telephonyNotificationManager._disposer = jest.fn();
   telephonyStore = jupiter.get(TelephonyStore);
   Object.assign(telephonyStore, {
-    callState: 0,
-    callId: '1',
     phoneNumber: '+44(650)-234-560',
     callerName: 'alex',
     uid: 1,
@@ -111,8 +120,9 @@ describe('TelephonyNotificationManager', () => {
         .spyOn(telephonyNotificationManager, '_showNotification')
         .mockImplementation();
       telephonyNotificationManager.init();
+      call.callState = CALL_STATE.IDLE;
+      call.direction = CALL_DIRECTION.INBOUND;
       Object.assign(telephonyStore, {
-        callState: CALL_STATE.INCOMING,
         isContactMatched: true,
       });
       expect(telephonyNotificationManager._showNotification).toBeCalled();
@@ -121,20 +131,22 @@ describe('TelephonyNotificationManager', () => {
       jest
         .spyOn(telephonyNotificationManager, '_showNotification')
         .mockImplementation();
+      call.callState = CALL_STATE.IDLE;
+      call.direction = CALL_DIRECTION.INBOUND;
       Object.assign(telephonyStore, {
-        callState: CALL_STATE.INCOMING,
         isContactMatched: true,
       });
       setUpMock(NOTIFICATION_OPTIONS.OFF);
       telephonyNotificationManager.init();
       expect(telephonyNotificationManager._showNotification).not.toBeCalled();
     });
+
     it.each`
       CALL_STATE
-      ${CALL_STATE.IDLE}
-      ${CALL_STATE.DIALING}
+      ${CALL_STATE.DISCONNECTED}
       ${CALL_STATE.CONNECTING}
       ${CALL_STATE.CONNECTED}
+      ${CALL_STATE.IDLE}
     `(
       'should call _closeNotification() when CALL_STATE value is $CALL_STATE',
       ({ CALL_STATE }) => {
@@ -142,9 +154,9 @@ describe('TelephonyNotificationManager', () => {
           .spyOn(telephonyNotificationManager, '_closeNotification')
           .mockImplementation();
         telephonyNotificationManager.init();
+        call.callState = CALL_STATE;
         Object.assign(telephonyStore, {
-          callState: CALL_STATE,
-          isContactMatched: true,
+          isContactMatched: false,
         });
         expect(telephonyNotificationManager._closeNotification).toBeCalled();
       },

@@ -1,0 +1,710 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/ConversationCard FileWithoutPreview 1`] = `
+.c1 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c9 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c2 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 36px;
+}
+
+.c6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.c6.c6 > *:nth-child(n + 2) {
+  margin-left: 8px;
+}
+
+.c7.c7 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c7.c7 .c8,
+.c7.c7 .c8 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover {
+  background-color: transparent;
+}
+
+.c7.c7:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c7.c7:active .c8 {
+  color: #9e9e9e;
+}
+
+.c7.c7.c7.c7.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c10.c10 .c8,
+.c10.c10 .c8 svg {
+  font-size: 20px;
+}
+
+.c10.c10:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c10.c10:active .c8 {
+  color: #9e9e9e;
+}
+
+.c10.c10.c10.c10.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c11.c11 .c8,
+.c11.c11 .c8 svg {
+  font-size: 20px;
+}
+
+.c11.c11:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c11.c11:active .c8 {
+  color: #0684bd;
+}
+
+.c11.c11.c11.c11.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c12.c12 .c8,
+.c12.c12 .c8 svg {
+  font-size: 20px;
+}
+
+.c12.c12:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c12.c12:active .c8 {
+  color: #0684bd;
+}
+
+.c12.c12.c12.c12.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c13.c13 .c8,
+.c13.c13 .c8 svg {
+  font-size: 20px;
+}
+
+.c13.c13:hover .c8 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c13.c13:active .c8 {
+  color: #edb63c;
+}
+
+.c13.c13.c13.c13.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .c8,
+.c14.c14 .c8 svg {
+  font-size: 16px;
+}
+
+.c14.c14:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c14.c14:active .c8 {
+  color: #9e9e9e;
+}
+
+.c14.c14.c14.c14.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c15.c15 .c8,
+.c15.c15 .c8 svg {
+  font-size: 20px;
+}
+
+.c15.c15:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c15.c15:active .c8 {
+  color: #0684bd;
+}
+
+.c15.c15.c15.c15.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c16.c16 .c8,
+.c16.c16 .c8 svg {
+  font-size: 16px;
+}
+
+.c16.c16:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c16.c16:active .c8 {
+  color: #0684bd;
+}
+
+.c16.c16.c16.c16.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c17.c17 .c8,
+.c17.c17 .c8 svg {
+  font-size: 16px;
+}
+
+.c17.c17:hover .c8 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c17.c17:active .c8 {
+  color: #fff;
+}
+
+.c17.c17.c17.c17.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c18.c18 .c8,
+.c18.c18 .c8 svg {
+  font-size: 32px;
+}
+
+.c18.c18:hover .c8 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c18.c18:active .c8 {
+  color: #212121;
+}
+
+.c18.c18.c18.c18.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c8,
+.c19.c19 .c8 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c8 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c19.c19:active .c8 {
+  color: #fff;
+}
+
+.c19.c19.c19.c19.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  margin: 0px 0px 12px 0px;
+  padding: 16px;
+  width: 336px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
+}
+
+.c3.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding: 0px 0px 0px 12px;
+}
+
+.c3.c3 .file-item-primary {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  width: 100%;
+  color: #212121;
+}
+
+.c3.c3 .file-item-secondary {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #bfbfbf;
+}
+
+.c5 {
+  margin-left: 8px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c5 > * {
+  margin: 0 8px 0 0;
+}
+
+.c5 > *:last-child {
+  margin: 0;
+}
+
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-weight: 400;
+  color: #616161;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  font-size: 0;
+}
+
+.c4 > span {
+  font-size: 14px;
+}
+
+<div>
+  <li
+    className="MuiListItem-root MuiListItem-default c0"
+    disabled={false}
+  >
+    <span
+      className="pdf icon c1"
+    >
+      <svg
+        className="c2"
+        role="img"
+        size="extraLarge"
+      >
+        <use
+          href="#icon-pdf"
+          xlinkHref="#icon-pdf"
+        />
+      </svg>
+    </span>
+    <div
+      className="MuiListItemText-root c3"
+    >
+      <span
+        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          Conversation Card VxD.pdf
+        </div>
+      </span>
+      <div
+        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+      >
+        <span
+          data-test-automation-id="file-no-preview-size"
+        >
+          3.5MB
+        </span>
+      </div>
+    </div>
+    <span
+      className="c5"
+    >
+      <div
+        className="c6"
+        direction="horizontal"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c1"
+              size="medium"
+            >
+              <svg
+                className="c9"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </span>
+  </li>
+  <li
+    className="MuiListItem-root MuiListItem-default c0"
+    disabled={false}
+  >
+    <span
+      className="pdf icon c1"
+    >
+      <svg
+        className="c2"
+        role="img"
+        size="extraLarge"
+      >
+        <use
+          href="#icon-pdf"
+          xlinkHref="#icon-pdf"
+        />
+      </svg>
+    </span>
+    <div
+      className="MuiListItemText-root c3"
+    >
+      <span
+        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          Conversation Card VxD.pdf
+        </div>
+      </span>
+      <div
+        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+      >
+        <span
+          data-test-automation-id="file-no-preview-size"
+        >
+          3.5MB
+        </span>
+      </div>
+    </div>
+    <span
+      className="c5"
+    >
+      <div
+        className="c6"
+        direction="horizontal"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c1"
+              size="medium"
+            >
+              <svg
+                className="c9"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </span>
+  </li>
+  <li
+    className="MuiListItem-root MuiListItem-default c0"
+    disabled={false}
+  >
+    <span
+      className="pdf icon c1"
+    >
+      <svg
+        className="c2"
+        role="img"
+        size="extraLarge"
+      >
+        <use
+          href="#icon-pdf"
+          xlinkHref="#icon-pdf"
+        />
+      </svg>
+    </span>
+    <div
+      className="MuiListItemText-root c3"
+    >
+      <span
+        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          Conversation Card VxD.pdf
+        </div>
+      </span>
+      <div
+        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+      >
+        <span
+          data-test-automation-id="file-no-preview-size"
+        >
+          3.5MB
+        </span>
+      </div>
+    </div>
+    <span
+      className="c5"
+    >
+      <div
+        className="c6"
+        direction="horizontal"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c1"
+              size="medium"
+            >
+              <svg
+                className="c9"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </span>
+  </li>
+  <li
+    className="MuiListItem-root MuiListItem-default c0"
+    disabled={false}
+  >
+    <span
+      className="pdf icon c1"
+    >
+      <svg
+        className="c2"
+        role="img"
+        size="extraLarge"
+      >
+        <use
+          href="#icon-pdf"
+          xlinkHref="#icon-pdf"
+        />
+      </svg>
+    </span>
+    <div
+      className="MuiListItemText-root c3"
+    >
+      <span
+        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          Conversation Card VxD.pdf
+        </div>
+      </span>
+      <div
+        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+      >
+        <span
+          data-test-automation-id="file-no-preview-size"
+        >
+          3.5MB
+        </span>
+      </div>
+    </div>
+    <span
+      className="c5"
+    >
+      <div
+        className="c6"
+        direction="horizontal"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c7"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c8  icon c1"
+              size="medium"
+            >
+              <svg
+                className="c9"
+                role="img"
+              >
+                <use />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </span>
+  </li>
+</div>
+`;

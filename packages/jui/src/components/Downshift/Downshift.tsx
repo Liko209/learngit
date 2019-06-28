@@ -14,12 +14,15 @@ import {
 } from './TextField';
 import { spacing, height } from '../../foundation/utils/styles';
 import { ChipProps } from '@material-ui/core/Chip';
-import { JuiVirtualizedList } from '../../components/VirtualizedList';
+import {
+  JuiVirtualizedList,
+  IndexRange,
+} from '../../components/VirtualizedList';
 import { JuiAutoSizer, Size } from '../../components/AutoSizer';
 
-type JuiDownshiftStates = {
-  selectedItems: SelectedItem[];
-  inputValue: string;
+type JuiDownshiftState = {
+  isComposition: boolean;
+  renderedRange: IndexRange;
 };
 
 type JuiDownshiftKeyDownEvent = JuiDownshiftTextFieldKeyDownEvent;
@@ -44,6 +47,7 @@ type JuiDownshiftProps = {
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftKeyDownEvent) => void;
+  autoFocus?: boolean;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -52,25 +56,32 @@ const StyledDownshiftMultipleWrapper = styled.div`
 
 const StyledPaper = styled(JuiPaper)`
   && {
-    padding: ${spacing(2)} 0;
     position: absolute;
     left: 0;
     bottom: 0;
     transform: translateY(100%);
+    padding: ${spacing(2, 0)};
     width: 100%;
-    max-height: ${height(50)};
-    overflow: auto;
+    max-height: ${height(45)};
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
+    overflow: hidden;
   }
 `;
 
 class JuiDownshift extends React.PureComponent<
   JuiDownshiftProps,
-  JuiDownshiftStates
+  JuiDownshiftState
 > {
+  state: JuiDownshiftState = {
+    isComposition: false,
+    renderedRange: { startIndex: 0, stopIndex: 0 },
+  };
   handleChange = (item: SelectedItem) => {
     const { multiple } = this.props;
     let { selectedItems } = this.props;
+    if (this.state.isComposition) {
+      return;
+    }
 
     if (selectedItems.indexOf(item) === -1) {
       if (multiple) {
@@ -86,6 +97,9 @@ class JuiDownshift extends React.PureComponent<
   }
   handleSelectChange = (items: SelectedItem[]) => {
     this.props.onSelectChange(items);
+  }
+  handleComposition = (isComposition: boolean) => {
+    this.setState({ isComposition });
   }
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
   render() {
@@ -104,6 +118,7 @@ class JuiDownshift extends React.PureComponent<
       selectedItems,
       inputValue,
       onKeyDown,
+      autoFocus,
     } = this.props;
 
     return (
@@ -116,11 +131,12 @@ class JuiDownshift extends React.PureComponent<
         id="downshift-multiple"
       >
         {({
+          isOpen,
           getInputProps,
           getItemProps,
           getRootProps,
-          isOpen,
           highlightedIndex,
+          openMenu,
         }) => (
           <StyledDownshiftMultipleWrapper {...getRootProps()}>
             <JuiDownshiftTextField
@@ -137,18 +153,18 @@ class JuiDownshift extends React.PureComponent<
               messageRef={messageRef}
               maxLength={maxLength}
               onKeyDown={onKeyDown}
+              autoFocus={autoFocus}
+              onComposition={this.handleComposition}
+              openMenu={openMenu}
             />
-            {isOpen && suggestionItems.length ? (
-              <JuiAutoSizer>
-                {({ height }: Partial<Size>) => (
-                  <StyledPaper
-                    square={true}
-                    data-test-automation-id={automationId}
-                  >
-                    {/* {height ? ( */}
+            {isOpen && suggestionItems.length > 0 ? (
+              <StyledPaper square={true} data-test-automation-id={automationId}>
+                <JuiAutoSizer>
+                  {({ height }: Size) => (
                     <JuiVirtualizedList
-                      height={height as any} // need supported by new virtualized list update
+                      height={height}
                       minRowHeight={minRowHeight}
+                      onRenderedRangeChange={this._handleRenderedRangeChange}
                     >
                       {suggestionItems.map(
                         (suggestionItem: SelectedItem, index) => {
@@ -164,15 +180,18 @@ class JuiDownshift extends React.PureComponent<
                         },
                       )}
                     </JuiVirtualizedList>
-                    {/* ) : null} */}
-                  </StyledPaper>
-                )}
-              </JuiAutoSizer>
+                  )}
+                </JuiAutoSizer>
+              </StyledPaper>
             ) : null}
           </StyledDownshiftMultipleWrapper>
         )}
       </Downshift>
     );
+  }
+
+  private _handleRenderedRangeChange = (range: IndexRange) => {
+    this.setState({ renderedRange: range });
   }
 }
 

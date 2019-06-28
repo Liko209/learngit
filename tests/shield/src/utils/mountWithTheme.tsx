@@ -368,4 +368,7 @@ const theme = {
 const mountWithTheme = (content: React.ReactNode) =>
   mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
-export { mountWithTheme, theme as defaultTheme };
+const asyncMountWithTheme = async (content: React.ReactNode) =>
+  await mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
+
+export { mountWithTheme, theme as defaultTheme, asyncMountWithTheme };

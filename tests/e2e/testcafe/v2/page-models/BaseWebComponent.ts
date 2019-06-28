@@ -52,6 +52,10 @@ export abstract class BaseWebComponent {
     return this.self.visible;
   }
 
+  get focused() {
+    return this.self.focused
+  }
+
   get textContent() {
     return this.self.textContent;
   }
@@ -96,6 +100,10 @@ export abstract class BaseWebComponent {
 
   getSelectorByAutomationId(automationId: string, root: Selector = null): Selector {
     return this.getSelector(`*[data-test-automation-id="${automationId}"]`, root);
+  }
+
+  getSelectorByAutomationIdUnderSelf(automationId: string): Selector {
+    return this.getSelectorByAutomationId(automationId, this.self);
   }
 
   getSelectorByAutomationClass(automationId: string, root: Selector = null): Selector {

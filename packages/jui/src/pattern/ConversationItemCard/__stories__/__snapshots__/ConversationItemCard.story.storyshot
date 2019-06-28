@@ -1,0 +1,1935 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationItemCard Integration Item: Pattern/ConversationItemCard Integration Item 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0 a {
+  color: #0684bd;
+  cursor: pointer;
+}
+
+.c0 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c2 {
+  margin-top: 10px;
+}
+
+.c1 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: pre-wrap;
+}
+
+<div
+  style={
+    Object {
+      "border": "1px solid grey",
+      "minHeight": 400,
+    }
+  }
+>
+  <div
+    className="c0"
+  >
+    <div
+      className="c1"
+      data-test-automation-id="title"
+    >
+      [Test5](https://app.asana.com/0/1120812751569696/1120812751569718)
+    </div>
+    <div
+      className="c2"
+    >
+      <div
+        className="c1"
+        data-test-automation-id="body"
+      >
+        **Project**
+[Test](https://app.asana.com/0/1120812751569696)
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Pattern/ConversationItemCard JuiConversationItemCard 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #0684bd;
+}
+
+.c0 {
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.c4 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  margin: 0px 0px 0px 4px;
+}
+
+.c1 {
+  position: relative;
+  padding: 16px;
+  padding-right: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: rgba(0,0,0,0.87);
+  word-break: break-word;
+}
+
+.c1 svg {
+  font-size: 20px;
+}
+
+.c5.c5.c5 {
+  padding: 0px 16px 20px 40px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c7 {
+  margin-top: -8px;
+  padding: 16px 40px 16px 40px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  background-color: #f5f6fb;
+}
+
+.c7 .task-avatar-name {
+  margin-top: 0;
+}
+
+.c6.c6 {
+  padding: 0;
+  font-size: 20px;
+}
+
+<div
+  className=""
+>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+  >
+    <div
+      className="c1"
+      onClick={[Function]}
+    >
+      <span
+        className=" event icon c2"
+      >
+        <svg
+          className="c3"
+          role="img"
+          size="medium"
+        >
+          <use
+            href="#icon-event"
+            xlinkHref="#icon-event"
+          />
+        </svg>
+      </span>
+      <span
+        className="c4"
+        data-test-automation-id="conversation-item-cards-title"
+      >
+        Event Name
+      </span>
+    </div>
+    <div
+      className="MuiCardContent-root c5 "
+    >
+      content
+    </div>
+  </div>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+    titleClick={[Function]}
+  >
+    <div
+      className="c1"
+      onClick={[Function]}
+    >
+      <span
+        className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorSecondary c6"
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        tabIndex={null}
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <svg
+            aria-hidden="true"
+            className="MuiSvgIcon-root"
+            focusable="false"
+            role="presentation"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+            />
+          </svg>
+          <input
+            checked={false}
+            className="MuiPrivateSwitchBase-input"
+            data-indeterminate={false}
+            onChange={[Function]}
+            type="checkbox"
+          />
+        </span>
+      </span>
+      <span
+        className="c4"
+        data-test-automation-id="conversation-item-cards-title"
+      >
+        Event Name
+      </span>
+    </div>
+    <div
+      className="MuiCardContent-root c5 "
+    >
+      content
+    </div>
+    <footer
+      className="c7"
+    >
+      <div>
+        footer
+      </div>
+    </footer>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard Message Attachment: Pattern/ConversationItemCard Message Attachment 1`] = `
+.c4 {
+  margin-bottom: 20px;
+  color: #2f2f2f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c5 {
+  border-radius: 50%;
+  top: 14px;
+  left: 20px;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+}
+
+.c6 {
+  margin-left: 44px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c15 {
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c2 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c7 {
+  margin-bottom: 4px;
+}
+
+.c9 {
+  float: left;
+}
+
+.c10 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c11 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c12 {
+  max-height: 216px;
+  border-radius: 6px;
+}
+
+.c13 {
+  margin-top: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  color: #9f9f9f;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+}
+
+.c14 {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  border-radius: 0px 4px 4px 0px;
+}
+
+.c8 {
+  margin-bottom: 20px;
+}
+
+.c1 {
+  min-height: 100px;
+  position: relative;
+  background: #fcfcfc;
+  border: 1px solid #eff0ef;
+  margin: 10px 0px 10px 0px;
+  padding: 20px 20px 4px 20px;
+  border-left: 2px solid #F35A00;
+  padding-right: 20px;
+}
+
+.c1 a {
+  color: #0684bd;
+  cursor: pointer;
+}
+
+.c1 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+<div
+  style={
+    Object {
+      "border": "1px solid grey",
+      "minHeight": 400,
+    }
+  }
+>
+  <div
+    className="c0"
+  >
+    <div
+      className=""
+    >
+      <div
+        className="c1"
+      >
+        <div
+          className="c2"
+        >
+          New ticket from Andrea Lee
+        </div>
+        <div
+          className="c3"
+        >
+          <a
+            className="c4"
+            href="https://glip.com"
+          >
+            <img
+              className="c5"
+              src="https://glip-vault-1.s3.amazonaws.com/web/customer_files/181022089228/modified.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJROPQDFTIHBTLJJQ&Signature=w7n54QiHZ5jNgQmIkbJz7Bobjk8="
+            />
+            <span
+              className="c6"
+            >
+              Stanford S. Strickland
+            </span>
+          </a>
+          <a
+            className="c7"
+          >
+            <div
+              className="c2"
+            >
+              The Further Adventures of Slackbot
+            </div>
+          </a>
+          <div
+            className="c8"
+          >
+            <div
+              className="c2"
+            >
+              This is some sample Text
+            </div>
+          </div>
+          <div
+            className=""
+          >
+            <div
+              className="c9"
+              style={
+                Object {
+                  "marginBottom": "10px",
+                  "width": "50%",
+                }
+              }
+            >
+              <div
+                className="c10"
+              >
+                Volume
+              </div>
+              <div
+                className="c11"
+              >
+                1
+              </div>
+            </div>
+            <div
+              className="c9"
+              style={
+                Object {
+                  "marginBottom": "10px",
+                  "width": "50%",
+                }
+              }
+            >
+              <div
+                className="c10"
+              >
+                Issue
+              </div>
+              <div
+                className="c11"
+              >
+                3
+              </div>
+            </div>
+          </div>
+          <div>
+            <img
+              className="c12"
+              src="https://i.imgur.com/OJkaVOI.jpg?1"
+            />
+          </div>
+          <div
+            className="c13"
+          >
+            <img
+              className="c14"
+              src="https://glip-vault-1.s3.amazonaws.com/web/customer_files/181022089228/modified.jpg?Expires=2075494478&AWSAccessKeyId=AKIAJROPQDFTIHBTLJJQ&Signature=w7n54QiHZ5jNgQmIkbJz7Bobjk8="
+            />
+            <span
+              className="c15"
+            >
+              Glip Api
+            </span>
+            <span
+              className="c15"
+            >
+              2017-06-08 08:20:04
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/ConversationItemCard code snippet 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c10 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #0684bd;
+}
+
+.c7 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.c7.c7 > *:nth-child(n + 2) {
+  margin-left: -8px;
+}
+
+.c18.c18 .c9,
+.c18.c18 .c9 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c9 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c18.c18:active .c9 {
+  color: #9e9e9e;
+}
+
+.c18.c18.c18.c18.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c8.c8 .c9,
+.c8.c8 .c9 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover {
+  background-color: rgba(158,158,158,0.12);
+}
+
+.c8.c8:hover .c9 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c8.c8:active .c9 {
+  color: #9e9e9e;
+}
+
+.c8.c8.c8.c8.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c19.c19 .c9,
+.c19.c19 .c9 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c9 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c19.c19:active .c9 {
+  color: #0684bd;
+}
+
+.c19.c19.c19.c19.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c9,
+.c20.c20 .c9 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c9 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c9 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c9,
+.c21.c21 .c9 svg {
+  font-size: 20px;
+}
+
+.c21.c21:hover .c9 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c21.c21:active .c9 {
+  color: #edb63c;
+}
+
+.c21.c21.c21.c21.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c9,
+.c22.c22 .c9 svg {
+  font-size: 16px;
+}
+
+.c22.c22:hover .c9 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c22.c22:active .c9 {
+  color: #9e9e9e;
+}
+
+.c22.c22.c22.c22.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c9,
+.c23.c23 .c9 svg {
+  font-size: 20px;
+}
+
+.c23.c23:hover .c9 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c23.c23:active .c9 {
+  color: #0684bd;
+}
+
+.c23.c23.c23.c23.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c9,
+.c24.c24 .c9 svg {
+  font-size: 16px;
+}
+
+.c24.c24:hover .c9 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c9 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c9,
+.c25.c25 .c9 svg {
+  font-size: 16px;
+}
+
+.c25.c25:hover .c9 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c25.c25:active .c9 {
+  color: #fff;
+}
+
+.c25.c25.c25.c25.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c9,
+.c26.c26 .c9 svg {
+  font-size: 32px;
+}
+
+.c26.c26:hover .c9 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c26.c26:active .c9 {
+  color: #212121;
+}
+
+.c26.c26.c26.c26.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c9,
+.c27.c27 .c9 svg {
+  font-size: 20px;
+}
+
+.c27.c27:hover .c9 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c27.c27:active .c9 {
+  color: #fff;
+}
+
+.c27.c27.c27.c27.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c17 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  padding: 8px 20px;
+  height: 32px;
+  line-height: 0;
+  border-radius: 32px;
+  border: none;
+  background-color: #616161;
+  color: white;
+  box-shadow: 0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12);
+  cursor: pointer;
+  outline: none;
+}
+
+.c17:hover {
+  background-color: #212121;
+}
+
+.c17.lozengeButtonLoading {
+  pointer-events: none;
+}
+
+.c17.lozengeButtonLoading .c28 {
+  margin-left: 4px;
+}
+
+.c17.lozengeButtonLoading .c29,
+.c17.lozengeButtonWithArrow .c29,
+.c17.lozengeButtonLoading .c28,
+.c17.lozengeButtonWithArrow .c28,
+.c17.lozengeButtonLoading span,
+.c17.lozengeButtonWithArrow span {
+  vertical-align: middle;
+}
+
+.c12 {
+  position: relative;
+}
+
+.c15 {
+  position: absolute;
+  bottom: 8px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 100%;
+  z-index: 1;
+}
+
+.c13 {
+  position: relative;
+  z-index: 0;
+}
+
+.c16.c16 {
+  margin: 0px 6px;
+}
+
+.c1 {
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.c5 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  margin: 0px 0px 0px 4px;
+}
+
+.c6 {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+
+.c2 {
+  position: relative;
+  padding: 16px;
+  padding-right: 84px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: rgba(0,0,0,0.87);
+  word-break: break-word;
+}
+
+.c2 svg {
+  font-size: 20px;
+}
+
+.c11.c11.c11 {
+  padding: 0px 0px 0px 0px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c14 {
+  padding: 12px;
+  white-space: pre-wrap;
+  background: silver;
+}
+
+.c0 {
+  padding: 12px;
+}
+
+<div
+  className="c0"
+>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c1"
+  >
+    <div
+      className="c2"
+      onClick={[Function]}
+    >
+      <span
+        className=" remove icon c3"
+      >
+        <svg
+          className="c4"
+          role="img"
+          size="medium"
+        >
+          <use
+            href="#icon-delete_circle"
+            xlinkHref="#icon-delete_circle"
+          />
+        </svg>
+      </span>
+      <span
+        className="c5"
+        data-test-automation-id="conversation-item-cards-title"
+      >
+        haah
+      </span>
+      <div
+        className="c6 c7"
+        direction="horizontal"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c8"
+          date-test-automation-id="copy"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="round"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c9 copy icon c3"
+              size="medium"
+            >
+              <svg
+                className="c10"
+                role="img"
+              >
+                <use
+                  href="#icon-copy"
+                  xlinkHref="#icon-copy"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            className="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c8"
+          date-test-automation-id="download"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="medium"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="round"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c9 download icon c3"
+              size="medium"
+            >
+              <svg
+                className="c10"
+                role="img"
+              >
+                <use
+                  href="#icon-download"
+                  xlinkHref="#icon-download"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            className="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+    <div
+      className="MuiCardContent-root c11 "
+    >
+      <div
+        className="c12"
+      >
+        <div
+          className="c13"
+        >
+          <div
+            className="c14"
+          >
+            Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32. The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham. function () function () function () function ()
+          </div>
+        </div>
+        <div
+          className="c15"
+        >
+          <button
+            className="c16 c17"
+            onClick={[Function]}
+          >
+            <span>
+              collapse
+            </span>
+          </button>
+          <button
+            className="c16 c17"
+            onClick={[Function]}
+          >
+            <span>
+              download to see more
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard eventItemCard: Pattern/ConversationItemCard eventItemCard 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #18a4de;
+}
+
+.c9 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c9 a {
+  color: #18a4de;
+}
+
+.c9 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c7 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #9e9e9e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c10 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #9e9e9e;
+}
+
+.c10 a {
+  color: #18a4de;
+}
+
+.c10 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c8 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c6.c6 > *:nth-last-child(n + 2) {
+  margin-bottom: 8px;
+}
+
+.c0 {
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.c4 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  margin: 0px 0px 0px 4px;
+}
+
+.c1 {
+  position: relative;
+  padding: 16px;
+  padding-right: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: rgba(0,0,0,0.87);
+  word-break: break-word;
+}
+
+.c1 svg {
+  font-size: 20px;
+}
+
+.c5.c5.c5 {
+  padding: 0px 16px 20px 40px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+<div
+  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+>
+  <div
+    className="c1"
+    onClick={[Function]}
+  >
+    <span
+      className=" event icon c2"
+    >
+      <svg
+        className="c3"
+        role="img"
+        size="medium"
+      >
+        <use
+          href="#icon-event"
+          xlinkHref="#icon-event"
+        />
+      </svg>
+    </span>
+    <span
+      className="c4"
+      data-test-automation-id="conversation-item-cards-title"
+    >
+      event
+    </span>
+  </div>
+  <div
+    className="MuiCardContent-root c5 "
+  >
+    <div
+      className="c6"
+    >
+      <div
+        className=""
+      >
+        <div
+          className="c7"
+        >
+          new event
+        </div>
+        <div
+          className="c8"
+        >
+          10/10/2018
+        </div>
+      </div>
+      <div
+        className=""
+      >
+        <div
+          className="c7"
+        >
+          hahaha
+        </div>
+        <div
+          className="c9"
+        >
+          no local
+        </div>
+      </div>
+      <div
+        className="c10"
+      >
+         this is a test event
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/ConversationItemCard taskItemCard 1`] = `
+.c15 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c22 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c16 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.c20.c20 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c20.c20 .c21,
+.c20.c20 .c21 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover {
+  background-color: transparent;
+}
+
+.c20.c20:hover .c21 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c20.c20:active .c21 {
+  color: #9e9e9e;
+}
+
+.c20.c20.c20.c20.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c23.c23 .c21,
+.c23.c23 .c21 svg {
+  font-size: 20px;
+}
+
+.c23.c23:hover .c21 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c21 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c21,
+.c24.c24 .c21 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c21 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c21 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c25.c25 .c21,
+.c25.c25 .c21 svg {
+  font-size: 20px;
+}
+
+.c25.c25:hover .c21 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c25.c25:active .c21 {
+  color: #0684bd;
+}
+
+.c25.c25.c25.c25.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c26.c26 .c21,
+.c26.c26 .c21 svg {
+  font-size: 20px;
+}
+
+.c26.c26:hover .c21 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c26.c26:active .c21 {
+  color: #edb63c;
+}
+
+.c26.c26.c26.c26.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c27.c27 .c21,
+.c27.c27 .c21 svg {
+  font-size: 16px;
+}
+
+.c27.c27:hover .c21 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c27.c27:active .c21 {
+  color: #9e9e9e;
+}
+
+.c27.c27.c27.c27.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c28.c28 .c21,
+.c28.c28 .c21 svg {
+  font-size: 20px;
+}
+
+.c28.c28:hover .c21 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c28.c28:active .c21 {
+  color: #0684bd;
+}
+
+.c28.c28.c28.c28.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c29.c29 .c21,
+.c29.c29 .c21 svg {
+  font-size: 16px;
+}
+
+.c29.c29:hover .c21 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c29.c29:active .c21 {
+  color: #0684bd;
+}
+
+.c29.c29.c29.c29.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c30.c30 .c21,
+.c30.c30 .c21 svg {
+  font-size: 16px;
+}
+
+.c30.c30:hover .c21 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c30.c30:active .c21 {
+  color: #fff;
+}
+
+.c30.c30.c30.c30.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c31.c31 .c21,
+.c31.c31 .c21 svg {
+  font-size: 32px;
+}
+
+.c31.c31:hover .c21 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c31.c31:active .c21 {
+  color: #212121;
+}
+
+.c31.c31.c31.c31.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c32.c32 .c21,
+.c32.c32 .c21 svg {
+  font-size: 20px;
+}
+
+.c32.c32:hover .c21 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c32.c32:active .c21 {
+  color: #fff;
+}
+
+.c32.c32.c32.c32.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 {
+  margin: 0px 8px 0px 0px;
+}
+
+.c12:not(:last-child) {
+  margin: 0px 0px 8px 0px;
+}
+
+.c13.c13 {
+  height: 52px;
+  padding: 16px;
+  width: 336px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
+}
+
+.c18 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-weight: 400;
+  color: #616161;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  font-size: 0;
+}
+
+.c18 > span {
+  font-size: 14px;
+}
+
+.c17 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.c19 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 0px 0px 0px 8px;
+}
+
+.c11 {
+  margin-top: 4px;
+}
+
+.c6 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #9e9e9e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c10 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #9e9e9e;
+}
+
+.c10 a {
+  color: #18a4de;
+}
+
+.c10 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.c8 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c9 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 24px;
+}
+
+.c7 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c5.c5 > *:nth-last-child(n + 2) {
+  margin-bottom: 8px;
+}
+
+.c0 {
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.c3 {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  margin: 0px 0px 0px 4px;
+}
+
+.c1 {
+  position: relative;
+  padding: 16px;
+  padding-right: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: rgba(0,0,0,0.87);
+  word-break: break-word;
+}
+
+.c1 svg {
+  font-size: 20px;
+}
+
+.c4.c4.c4 {
+  padding: 0px 16px 20px 40px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c2.c2 {
+  padding: 0;
+}
+
+.c2.c2.checked {
+  color: #0684bd;
+}
+
+.c2.c2 svg {
+  margin-top: 0;
+}
+
+<div
+  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+>
+  <div
+    className="c1"
+    onClick={[Function]}
+  >
+    <span
+      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorSecondary c2"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={null}
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <svg
+          aria-hidden="true"
+          className="MuiSvgIcon-root"
+          focusable="false"
+          role="presentation"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+          />
+        </svg>
+        <input
+          checked={false}
+          className="MuiPrivateSwitchBase-input"
+          data-indeterminate={false}
+          onChange={[Function]}
+          type="checkbox"
+        />
+      </span>
+    </span>
+    <span
+      className="c3"
+      data-test-automation-id="conversation-item-cards-title"
+    >
+      a task
+    </span>
+  </div>
+  <div
+    className="MuiCardContent-root c4 "
+  >
+    <div
+      className="c5"
+    >
+      <div
+        className=""
+      >
+        <div
+          className="c6"
+        >
+          due
+        </div>
+        <div
+          className="c7"
+        >
+          6/26/2019 
+        </div>
+      </div>
+      <div
+        className=""
+      >
+        <div
+          className="c6"
+        >
+          assignee
+        </div>
+        <div
+          className="task-avatar-name c8"
+        >
+          avatar name
+          <div
+            className="c9"
+          >
+            3 others
+          </div>
+        </div>
+      </div>
+      <div
+        className=""
+      >
+        <div
+          className="c6"
+        >
+          section
+        </div>
+        <div
+          className="c10"
+        >
+          sdfoasdfmasdf asdfaosdf asdfasdf
+        </div>
+      </div>
+      <div
+        className=""
+      >
+        <div
+          className="c6"
+        >
+          descriptionNotes
+        </div>
+        <div
+          className="c10"
+        >
+          sdfoasdfmasdf asdfaosdf asdfasdf
+        </div>
+      </div>
+      <div
+        className=""
+      >
+        <div
+          className="c6"
+        >
+          files
+        </div>
+        <div
+          className="c11"
+        >
+          <div
+            className="c12"
+          >
+            <li
+              className="MuiListItem-root MuiListItem-default MuiListItem-gutters c13"
+              disabled={false}
+            >
+              <span
+                className="c14 doc icon c15"
+              >
+                <svg
+                  className="c16"
+                  role="img"
+                  size="medium"
+                >
+                  <use
+                    href="#icon-doc"
+                    xlinkHref="#icon-doc"
+                  />
+                </svg>
+              </span>
+              <div
+                className="c17"
+              >
+                <div
+                  className="c18"
+                  data-test-automation-id="file-name"
+                >
+                  filename
+                </div>
+                <div
+                  className="c19"
+                >
+                  <div />
+                  <button
+                    aria-describedby={null}
+                    className="MuiButtonBase-root MuiIconButton-root c20"
+                    data-test-automation-id="expand-button"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onClick={[Function]}
+                    onContextMenu={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    size="medium"
+                    tabIndex="0"
+                    title={null}
+                    type="button"
+                    variant="plain"
+                  >
+                    <span
+                      className="MuiIconButton-label"
+                    >
+                      <span
+                        className="c21 unfold_more icon c15"
+                        size="medium"
+                      >
+                        <svg
+                          className="c22"
+                          role="img"
+                        >
+                          <use
+                            href="#icon-unfold_more"
+                            xlinkHref="#icon-unfold_more"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </li>
+            <div
+              className="MuiCollapse-container"
+              style={
+                Object {
+                  "minHeight": "0px",
+                }
+              }
+            >
+              <div
+                className="MuiCollapse-wrapper"
+              >
+                <div
+                  className="MuiCollapse-wrapperInner"
+                >
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

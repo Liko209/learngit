@@ -1,0 +1,739 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/ConversationCard FileWithPreview 1`] = `
+.c8 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c14 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c9 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.c11 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.c11.c11 > *:nth-child(n + 2) {
+  margin-left: 8px;
+}
+
+.c12.c12 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c12.c12 .c13,
+.c12.c12 .c13 svg {
+  font-size: 20px;
+}
+
+.c12.c12:hover {
+  background-color: transparent;
+}
+
+.c12.c12:hover .c13 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c12.c12:active .c13 {
+  color: #9e9e9e;
+}
+
+.c12.c12.c12.c12.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c12.c12 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c15.c15 .c13,
+.c15.c15 .c13 svg {
+  font-size: 20px;
+}
+
+.c15.c15:hover .c13 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c15.c15:active .c13 {
+  color: #9e9e9e;
+}
+
+.c15.c15.c15.c15.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c16.c16 .c13,
+.c16.c16 .c13 svg {
+  font-size: 20px;
+}
+
+.c16.c16:hover .c13 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c16.c16:active .c13 {
+  color: #0684bd;
+}
+
+.c16.c16.c16.c16.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c17.c17 .c13,
+.c17.c17 .c13 svg {
+  font-size: 20px;
+}
+
+.c17.c17:hover .c13 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c17.c17:active .c13 {
+  color: #0684bd;
+}
+
+.c17.c17.c17.c17.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c18.c18 .c13,
+.c18.c18 .c13 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c13 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c18.c18:active .c13 {
+  color: #edb63c;
+}
+
+.c18.c18.c18.c18.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c13,
+.c19.c19 .c13 svg {
+  font-size: 16px;
+}
+
+.c19.c19:hover .c13 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c19.c19:active .c13 {
+  color: #9e9e9e;
+}
+
+.c19.c19.c19.c19.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c20.c20 .c13,
+.c20.c20 .c13 svg {
+  font-size: 20px;
+}
+
+.c20.c20:hover .c13 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c20.c20:active .c13 {
+  color: #0684bd;
+}
+
+.c20.c20.c20.c20.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c21.c21 .c13,
+.c21.c21 .c13 svg {
+  font-size: 16px;
+}
+
+.c21.c21:hover .c13 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c21.c21:active .c13 {
+  color: #0684bd;
+}
+
+.c21.c21.c21.c21.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c22.c22 .c13,
+.c22.c22 .c13 svg {
+  font-size: 16px;
+}
+
+.c22.c22:hover .c13 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c22.c22:active .c13 {
+  color: #fff;
+}
+
+.c22.c22.c22.c22.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c23.c23 .c13,
+.c23.c23 .c13 svg {
+  font-size: 32px;
+}
+
+.c23.c23:hover .c13 {
+  color: rgba(33,33,33,0.88);
+}
+
+.c23.c23:active .c13 {
+  color: #212121;
+}
+
+.c23.c23.c23.c23.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c13,
+.c24.c24 .c13 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c13 {
+  color: rgba(255,255,255,0.88);
+}
+
+.c24.c24:active .c13 {
+  color: #fff;
+}
+
+.c24.c24.c24.c24.disabled .c13 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 {
+  margin: 0px 8px 0px 0px;
+}
+
+.c0 {
+  display: inline-block;
+  width: 336px;
+  height: 272px;
+  margin: 0px 12px 12px 0px;
+}
+
+.c1 {
+  height: 200px;
+  background-color: #bfbfbf;
+  opacity: 0.36;
+}
+
+.c2.c2 {
+  padding: 16px !important;
+}
+
+.c3.c3 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c5.c5 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #9e9e9e;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.c6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  color: #bfbfbf;
+}
+
+.c10 {
+  padding: 0 !important;
+}
+
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  min-width: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-weight: 400;
+  color: #616161;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  font-size: 0;
+}
+
+.c4 > span {
+  font-size: 14px;
+}
+
+<div>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  >
+    <div
+      className="MuiCardMedia-root c1 "
+      style={
+        Object {
+          "backgroundImage": "url(\\"test-file-stub\\")",
+        }
+      }
+    />
+    <div
+      className="MuiCardContent-root c2"
+    >
+      <div
+        className="c3"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          fileName
+        </div>
+      </div>
+      <div
+        className="MuiTypography-root MuiTypography-body2 c5"
+      >
+        <div
+          className="c6"
+          data-test-automation-id="file-size"
+        >
+          <span
+            className="c7 pdf icon c8"
+          >
+            <svg
+              className="c9"
+              role="img"
+              size="medium"
+            >
+              <use
+                href="#icon-pdf"
+                xlinkHref="#icon-pdf"
+              />
+            </svg>
+          </span>
+          2.3Mb
+        </div>
+        <div
+          className="MuiCardActions-root c10"
+        >
+          <div
+            className="MuiCardActions-action c11"
+            direction="horizontal"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c13  icon c8"
+                  size="medium"
+                >
+                  <svg
+                    className="c14"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  >
+    <div
+      className="MuiCardMedia-root c1 "
+      style={
+        Object {
+          "backgroundImage": "url(\\"test-file-stub\\")",
+        }
+      }
+    />
+    <div
+      className="MuiCardContent-root c2"
+    >
+      <div
+        className="c3"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          fileName
+        </div>
+      </div>
+      <div
+        className="MuiTypography-root MuiTypography-body2 c5"
+      >
+        <div
+          className="c6"
+          data-test-automation-id="file-size"
+        >
+          <span
+            className="c7 pdf icon c8"
+          >
+            <svg
+              className="c9"
+              role="img"
+              size="medium"
+            >
+              <use
+                href="#icon-pdf"
+                xlinkHref="#icon-pdf"
+              />
+            </svg>
+          </span>
+          2.3Mb
+        </div>
+        <div
+          className="MuiCardActions-root c10"
+        >
+          <div
+            className="MuiCardActions-action c11"
+            direction="horizontal"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c13  icon c8"
+                  size="medium"
+                >
+                  <svg
+                    className="c14"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  >
+    <div
+      className="MuiCardMedia-root c1 "
+      style={
+        Object {
+          "backgroundImage": "url(\\"test-file-stub\\")",
+        }
+      }
+    />
+    <div
+      className="MuiCardContent-root c2"
+    >
+      <div
+        className="c3"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          fileName
+        </div>
+      </div>
+      <div
+        className="MuiTypography-root MuiTypography-body2 c5"
+      >
+        <div
+          className="c6"
+          data-test-automation-id="file-size"
+        >
+          <span
+            className="c7 pdf icon c8"
+          >
+            <svg
+              className="c9"
+              role="img"
+              size="medium"
+            >
+              <use
+                href="#icon-pdf"
+                xlinkHref="#icon-pdf"
+              />
+            </svg>
+          </span>
+          2.3Mb
+        </div>
+        <div
+          className="MuiCardActions-root c10"
+        >
+          <div
+            className="MuiCardActions-action c11"
+            direction="horizontal"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c13  icon c8"
+                  size="medium"
+                >
+                  <svg
+                    className="c14"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  >
+    <div
+      className="MuiCardMedia-root c1 "
+      style={
+        Object {
+          "backgroundImage": "url(\\"test-file-stub\\")",
+        }
+      }
+    />
+    <div
+      className="MuiCardContent-root c2"
+    >
+      <div
+        className="c3"
+      >
+        <div
+          className="c4"
+          data-test-automation-id="file-name"
+        >
+          fileName
+        </div>
+      </div>
+      <div
+        className="MuiTypography-root MuiTypography-body2 c5"
+      >
+        <div
+          className="c6"
+          data-test-automation-id="file-size"
+        >
+          <span
+            className="c7 pdf icon c8"
+          >
+            <svg
+              className="c9"
+              role="img"
+              size="medium"
+            >
+              <use
+                href="#icon-pdf"
+                xlinkHref="#icon-pdf"
+              />
+            </svg>
+          </span>
+          2.3Mb
+        </div>
+        <div
+          className="MuiCardActions-root c10"
+        >
+          <div
+            className="MuiCardActions-action c11"
+            direction="horizontal"
+          >
+            <button
+              aria-describedby={null}
+              className="MuiButtonBase-root MuiIconButton-root c12"
+              disabled={false}
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseOver={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              size="medium"
+              tabIndex="0"
+              title={null}
+              type="button"
+              variant="plain"
+            >
+              <span
+                className="MuiIconButton-label"
+              >
+                <span
+                  className="c13  icon c8"
+                  size="medium"
+                >
+                  <svg
+                    className="c14"
+                    role="img"
+                  >
+                    <use />
+                  </svg>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

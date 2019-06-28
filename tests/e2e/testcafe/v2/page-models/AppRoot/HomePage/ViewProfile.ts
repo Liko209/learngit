@@ -79,7 +79,7 @@ export class MiniProfile extends BaseWebComponent {
 
   get profileButton() {
     this.warnFlakySelector();
-    return this.footer.find('span').withText('Profile').parent('button');
+    return this.footer.find('span').withText('Profile').parent('button'); // TODO: i18n
   }
 
   async openProfile() {
@@ -87,7 +87,6 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get privateButton() {
-    this.warnFlakySelector();
     return this.header.find('.privacy');
   }
 
@@ -96,7 +95,6 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get messageButton() {
-    this.warnFlakySelector();
     return this.getSelectorByIcon('chat_bubble', this.footer).parent('button');
   }
 
@@ -126,8 +124,6 @@ export class MiniProfile extends BaseWebComponent {
 }
 
 export class ProfileDialog extends BaseWebComponent {
-  public id: Promise<string>;
-
   async getId() {
     if (await this.avatar.hasAttribute('cid')) {
       return await this.cid;
@@ -197,7 +193,6 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get closeButton() {
-    this.warnFlakySelector();
     return this.getSelectorByIcon('close');
   }
 
@@ -206,7 +201,8 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   async shouldBeId(id: string) {
-    await this.t.expect(this.id).eql(id, `Profile owner Id, expect: ${id}, but actual: ${this.id}`)
+    const currentId = await this.getId();
+    assert.ok(currentId == id, `Profile owner Id, expect: ${id}, but actual: ${currentId}`);
   }
 
 
@@ -397,6 +393,22 @@ export class ProfileDialog extends BaseWebComponent {
   get profileType() {
     return this.profileTitle.getAttribute('data-profile-type');
   }
+
+  async scrollToY(y) {
+    const scrollDivElement = this.visualList;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async scrollToMiddle() {
+    const scrollHeight = await this.visualList.scrollHeight;
+    const clientHeight = await this.visualList.clientHeight;
+    const middleHeight = (scrollHeight - clientHeight) / 2;
+    await this.scrollToY(middleHeight);
+  }
+
 }
 class Member extends BaseWebComponent {
   get uid() {

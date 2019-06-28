@@ -31,6 +31,7 @@ import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { JuiDivider } from '../../../components/Divider/Divider';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
+import remove from '../../../assets/jupiter-icon/icon-remove.svg';
 
 storiesOf('Pattern/TeamSetting', module)
   .add('Admin', () => {
@@ -110,9 +111,8 @@ storiesOf('Pattern/TeamSetting', module)
             <JuiIconButton
               variant="plain"
               tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
-            >
-              remove
-            </JuiIconButton>
+              symbol={remove}
+            />
           </JuiTeamSettingButtonListItem>
           <JuiDivider />
           <JuiTeamSettingButtonListItem color="semantic.negative">
@@ -122,9 +122,8 @@ storiesOf('Pattern/TeamSetting', module)
             <JuiIconButton
               variant="plain"
               tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
-            >
-              remove
-            </JuiIconButton>
+              symbol={remove}
+            />
           </JuiTeamSettingButtonListItem>
           <JuiDivider />
         </JuiTeamSettingButtonList>

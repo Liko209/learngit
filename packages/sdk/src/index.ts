@@ -36,4 +36,5 @@ export {
   SessionManager,
   DateFormatter,
   networkCollector,
+  PerformanceTracer,
 } from 'foundation';

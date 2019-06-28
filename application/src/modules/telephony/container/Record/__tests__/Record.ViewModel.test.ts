@@ -9,7 +9,10 @@ import { RecordViewModel } from '../Record.ViewModel';
 import * as telephony from '@/modules/telephony/module.config';
 import * as common from '@/modules/common/module.config';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { getEntity } from '@/store/utils';
+import { RECORD_STATE } from 'sdk/module/telephony/entity';
 
+jest.mock('@/store/utils');
 jest.mock('sdk/module/telephony');
 
 const jupiter = container.get(Jupiter);
@@ -21,6 +24,9 @@ let recordViewModel: RecordViewModel;
 beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
+  });
+  (getEntity as jest.Mock).mockReturnValue({
+    recordState: RECORD_STATE.DISABLE,
   });
   recordViewModel = new RecordViewModel();
 });

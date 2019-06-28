@@ -4,29 +4,41 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { FileNameEditDialogViewProps } from './types';
-import { JuiModal } from 'jui/components/Dialog';
+import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
 import { RuiSuffixFollowTextField } from 'rcui/components/Forms';
 import portalManager from '@/common/PortalManager';
-import { observer } from 'mobx-react';
+import { JuiModal } from 'jui/components/Dialog';
+import { FileNameEditDialogViewProps } from './types';
 
 const MAX_INPUT_LENGTH = 260;
+const ENTRY_KEY_CODE = 13;
 
 @observer
 class FileNameEditDialogViewComponent extends Component<
   FileNameEditDialogViewProps
 > {
+  state: {
+    isLoading: false;
+  };
+
   handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     const { updateNewFileName } = this.props;
     updateNewFileName(value);
   }
-  state: {
-    isLoading: false;
-  };
 
   handleClose = () => portalManager.dismissLast();
+
+  private _handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const { newFileName } = this.props;
+    if (event.keyCode === ENTRY_KEY_CODE) {
+      const { handleEditFileName } = this.props;
+      event.preventDefault();
+      if (newFileName !== undefined && !newFileName) return;
+      handleEditFileName();
+    }
+  }
 
   render() {
     const {
@@ -69,6 +81,7 @@ class FileNameEditDialogViewComponent extends Component<
           inputProps={{
             maxLength: MAX_INPUT_LENGTH,
             'data-test-automation-id': 'fileNameEditInput',
+            onKeyDown: this._handleEnter,
           }}
           suffix={`.${type}`}
           onChange={this.handleTextChange}

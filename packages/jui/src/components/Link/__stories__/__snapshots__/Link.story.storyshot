@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components Link: Components Link 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #0684bd;
+}
+
+.c0:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.c0:active {
+  color: rgba(6,132,189,0.76);
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+  <div>
+    <a
+      color="primary"
+      disabled={false}
+    >
+      <span
+        className="c0"
+        color="primary"
+        disabled={false}
+        size="medium"
+      >
+        button
+      </span>
+    </a>
+  </div>
+</div>
+`;

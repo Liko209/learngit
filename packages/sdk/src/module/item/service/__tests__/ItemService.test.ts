@@ -7,6 +7,7 @@
 import { ItemService } from '../ItemService';
 import { ItemServiceController } from '../../controller/ItemServiceController';
 import { FileItemService } from '../../module/file';
+import { NoteItemService } from '../../module/note/service';
 import { daoManager } from '../../../../dao';
 import { ItemFile, Item } from '../../entity';
 import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
@@ -20,6 +21,7 @@ jest.mock('../../../../service/utils', () => ({
   transform: jest.fn(),
 }));
 
+jest.mock('../../module/note/service');
 jest.mock('../../controller/ItemSyncController');
 jest.mock('../../../../service/utils');
 jest.mock('../../controller/ItemActionController');
@@ -33,10 +35,12 @@ describe('ItemService', () => {
   let itemService: ItemService;
   let itemServiceController: ItemServiceController;
   let fileItemService: FileItemService;
+  let noteItemService: NoteItemService;
   let itemActionController: ItemActionController;
   const itemSyncController = new ItemSyncController(null);
 
   function setup() {
+    noteItemService = new NoteItemService();
     itemService = new ItemService();
     itemServiceController = new ItemServiceController(null, null);
     fileItemService = new FileItemService();
@@ -422,6 +426,27 @@ describe('ItemService', () => {
       const ret = await itemService.handleIncomingData([]);
       expect(baseHandleData).not.toHaveBeenCalled();
       expect(ret).toBeUndefined();
+    });
+  });
+
+  describe('NoteItemService', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+
+      Object.assign(itemService, {
+        _itemServiceController: itemServiceController,
+      });
+
+      itemServiceController.getSubItemService = jest
+        .fn()
+        .mockImplementation(() => {
+          return noteItemService;
+        });
+    });
+    it('should call note item service to get note body', async () => {
+      await itemService.getNoteBody(1);
+      expect(noteItemService.getNoteBody).toBeCalledWith(1);
     });
   });
 });

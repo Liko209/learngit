@@ -18,6 +18,9 @@ class DeleteViewComponent extends React.Component<Props> {
   private _handleDelete = () => {
     const { deletePost, t } = this.props;
     Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'deleteConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'deleteOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'deleteCancelButton' },
       title: t('message.prompt.deletePostTitle'),
       content: t('message.prompt.deletePostContent'),
       okText: t('common.dialog.delete'),
@@ -37,6 +40,7 @@ class DeleteViewComponent extends React.Component<Props> {
         onClick={this._handleDelete}
         disabled={disabled}
         icon="delete"
+        data-test-automation-id="message-action-delete"
       >
         {t('message.action.deletePost')}
       </JuiMenuItem>

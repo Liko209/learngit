@@ -7,7 +7,6 @@ module.exports = {
     '<rootDir>/jest-default.config.js',
     '<rootDir>/jest-node.config.js',
     '<rootDir>/jest-integration.config.js',
-    // Skip electron tests since there are some problems in pipeline
-    // '<rootDir>/jest-electron.config.js'
+    '<rootDir>/jest-electron.config.js',
   ],
 };

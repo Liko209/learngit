@@ -65,6 +65,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       console.warn(9999, history, window.location.href);
       await act(async () => {
         wrapper = mount(<App />);
+        const str = wrapper.debug();
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         await asyncTest(async () => {
           await act(async () => {

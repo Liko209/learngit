@@ -18,7 +18,7 @@ jest.mock('../../../module/account/config/AccountUserConfig');
 jest.mock('../../../module/account/config/AuthUserConfig');
 jest.mock('../../../module/sync/config/SyncUserConfig');
 
-let presenceService;
+let presenceService: PresenceService;
 
 describe('SocketCanConnectController', () => {
   function clearAndSetupBasicMock() {
@@ -100,6 +100,7 @@ describe('SocketCanConnectController', () => {
         .mockResolvedValueOnce({});
       const callback = jest.fn();
       await controller.doCanConnectApi({
+        interval: 33333,
         callback,
         forceOnline: true,
         nthCount: 0,
@@ -249,22 +250,27 @@ describe('SocketCanConnectController', () => {
   });
 
   describe('_getStartedTime', () => {
-    it('should return 0 when nthCount is 0', () => {
+    it('should return 0 when nthCount is 0 and interval is larger than 3000', () => {
       const controller = getController();
-      const result = controller._getStartedTime(0);
+      const result = controller['_getStartedTime'](0, 6666);
       expect(result).toEqual(0);
     });
     it('should between 2 and 4', () => {
       const controller = getController();
-      const result = controller._getStartedTime(1);
+      const result = controller['_getStartedTime'](1, 0);
       expect(2000 <= result && result <= 4000).toBeTruthy();
     });
     it('should not over 60 * 60 * 1000', () => {
       const controller = getController();
-      const result = controller._getStartedTime(20);
+      const result = controller['_getStartedTime'](20, 0);
       expect(
         result > Math.pow(2, 11) * 1000 && result < 60 * 60 * 1000,
       ).toBeTruthy();
+    });
+    it('should return 3000 - interval when nthCount is 0 and interval is less than 3000', () => {
+      const controller = getController();
+      const result = controller['_getStartedTime'](0, 2000);
+      expect(result).toEqual(1000);
     });
   });
 });

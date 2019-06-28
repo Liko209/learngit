@@ -4,29 +4,42 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import ReactResizeDetector from 'react-resize-detector';
+import styled from '../../foundation/styled-components';
+import { JuiSizeMeasurer } from '../SizeMeasurer';
 
 type Size = {
   width: number;
   height: number;
 };
-
 type JuiAutoSizerProps = {
-  handleWidth?: boolean;
-  handleHeight?: boolean;
-  style?: React.CSSProperties;
+  defaultWidth?: number;
+  defaultHeight?: number;
   children: (size: Partial<Size>) => React.ReactNode;
 };
 
+const Wrapper = styled.div`
+  height: inherit;
+  min-height: inherit;
+  max-height: inherit;
+`;
+
 const JuiAutoSizer = ({
-  handleWidth,
-  handleHeight,
-  style,
+  defaultWidth,
+  defaultHeight,
   children,
-}: JuiAutoSizerProps) => (
-  <ReactResizeDetector handleWidth={handleWidth} handleHeight={handleHeight}>
-    {(size: Partial<Size>) => <div style={style}>{children(size)}</div>}
-  </ReactResizeDetector>
-);
+}: JuiAutoSizerProps) => {
+  return (
+    <JuiSizeMeasurer>
+      {({ width = defaultWidth, height = defaultHeight, ref }) => (
+        <Wrapper ref={ref as any}>{children({ width, height })}</Wrapper>
+      )}
+    </JuiSizeMeasurer>
+  );
+};
+
+JuiAutoSizer.defaultProps = {
+  defaultWidth: 200,
+  defaultHeight: 200,
+};
 
 export { JuiAutoSizer, JuiAutoSizerProps, Size };

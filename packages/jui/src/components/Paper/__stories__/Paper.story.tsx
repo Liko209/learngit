@@ -6,16 +6,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiPaper } from '..';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
-storiesOf('Components', module)
-  .addDecorator(withInfoDecorator(JuiPaper, { inline: true }))
-  .add('Paper', () => (
-    <JuiPaper elevation={1}>
-      <h3>This is a sheet of paper.</h3>
-      <p>
-        Paper can be used to build surface or other elements for your
-        application.
-      </p>
-    </JuiPaper>
-  ));
+storiesOf('Components', module).add('Paper', () => (
+  <JuiPaper elevation={1}>
+    <h3>This is a sheet of paper.</h3>
+    <p>
+      Paper can be used to build surface or other elements for your application.
+    </p>
+  </JuiPaper>
+));

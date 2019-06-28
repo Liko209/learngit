@@ -1,6 +1,5 @@
 import {
   Palette,
-  Spacing,
   Typography,
   Opacity,
   Radius,
@@ -8,14 +7,25 @@ import {
   ZIndex,
 } from '../styles';
 import { css } from '../styled-components';
+
 /**
  * spacing
  * @param values
  */
-function spacing<T extends keyof Spacing>(name: T) {
-  return ({ theme }: any) => {
-    return theme.spacing[name];
+function spacing(...values: number[]) {
+  return ({ theme }: any): string => {
+    const unit = theme.spacing.unit;
+    return cssValue(...values.map(n => n * unit));
   };
+}
+
+/**
+ * add px for values
+ * cssValue(1, 2, 3, 4); // returns: 1px 2px 3px 4px
+ * @param values
+ */
+function cssValue(...values: number[]): string {
+  return values.map(n => `${n}px`).join(' ');
 }
 
 /**

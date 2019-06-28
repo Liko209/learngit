@@ -49,7 +49,7 @@ test.meta(<ITestMeta>{
   }
 
   let otherChat = <IGroup>{
-    type: "Chat",
+    type: "DirectMessage",
     owner: me,
     members: [me, anotherUser, users[0]]
   }
@@ -303,7 +303,7 @@ test.meta(<ITestMeta>{
   }
 
   let chatWithMe = <IGroup>{
-    type: "Chat",
+    type: "DirectMessage",
     owner: loginUser,
     members: [adminUser, loginUser]
   }
@@ -388,7 +388,7 @@ test.meta(<ITestMeta>{
   }
 
   let chatWithMe = <IGroup>{
-    type: "Chat",
+    type: "DirectMessage",
     owner: loginUser,
     members: [adminUser, loginUser]
   }

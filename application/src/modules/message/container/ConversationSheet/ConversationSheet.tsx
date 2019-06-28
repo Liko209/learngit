@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-// @ts-ignore
-import requireContext from 'require-context';
 import { SheetsType, filterIDsByType } from './helper';
 
 type RegisterOptions = {
@@ -33,7 +31,7 @@ class ConversationSheet {
   dispatch: Function;
 
   constructor() {
-    const ctx = requireContext('./', true, /register.tsx?$/);
+    const ctx = require.context('./', true, /register.tsx?$/);
     const keys = ctx.keys();
     const modules = keys
       .map(ctx)
