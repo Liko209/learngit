@@ -190,17 +190,18 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _RENDERER_MAP = {
+    [StreamItemType.POST]: this._renderPost,
+    [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
+    [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
+    [StreamItemType.INITIAL_POST]: this._renderInitialPost,
+  };
+
   private _renderStreamItem = (
     streamItem: StreamItem,
     index: number,
   ): JSX.Element => {
-    const RENDERER_MAP = {
-      [StreamItemType.POST]: this._renderPost,
-      [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
-      [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
-      [StreamItemType.INITIAL_POST]: this._renderInitialPost,
-    };
-    const streamItemRenderer = RENDERER_MAP[streamItem.type];
+    const streamItemRenderer = this._RENDERER_MAP[streamItem.type];
     return streamItemRenderer.call(this, streamItem, index);
   }
 
@@ -419,15 +420,20 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _defaultLoading() {
+    return <DefaultLoadingWithDelay delay={100} />;
+  }
+
+  private _defaultLoadingMore() {
+    return <DefaultLoadingMore />;
+  }
+
   render() {
     const { loadMore, hasMore, items, loadingStatus } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
-
-    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
-    const defaultLoadingMore = <DefaultLoadingMore />;
 
     return (
       <JuiStream>
@@ -445,7 +451,6 @@ class StreamViewComponent extends Component<Props> {
                   <>
                     {this._renderJumpToFirstUnreadButton()}
                     <JuiInfiniteList
-                      fixedWrapper={true}
                       contentStyle={this._contentStyleGen(height)}
                       ref={this._listRef}
                       height={height}
@@ -455,9 +460,9 @@ class StreamViewComponent extends Component<Props> {
                       minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
                       loadInitialData={this._loadInitialPosts}
                       loadMore={loadMore}
-                      loadingRenderer={defaultLoading}
+                      loadingRenderer={this._defaultLoading}
                       hasMore={hasMore}
-                      loadingMoreRenderer={defaultLoadingMore}
+                      loadingMoreRenderer={this._defaultLoadingMore}
                       onVisibleRangeChange={this._handleVisibilityChanged}
                       onBottomStatusChange={this._bottomStatusChangeHandler}
                     >

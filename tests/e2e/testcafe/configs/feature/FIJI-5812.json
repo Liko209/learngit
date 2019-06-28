@@ -1,0 +1,11 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/Profile/addTeamMember.ts"
+        ],
+        "include_tags":["JPT-912"],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}

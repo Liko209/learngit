@@ -189,6 +189,10 @@ class TelephonyService extends EntityBaseService<Call>
       .replyWithPattern(callId, pattern, time, timeUnit);
   }
 
+  getRingerDevicesList = () => {
+    return this.telephonyController.getRingerDevicesList();
+  }
+
   get phoneSetting() {
     if (!this._phoneSetting) {
       this._phoneSetting = new PhoneSetting(this);
