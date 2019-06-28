@@ -5,7 +5,6 @@
  */
 
 import { ISpecialServiceNumber, DialingCountryInfo } from 'sdk/api';
-import { Download } from '@/containers/common/Download';
 
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
