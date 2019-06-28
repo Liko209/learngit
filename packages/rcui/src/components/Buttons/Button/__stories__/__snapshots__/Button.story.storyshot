@@ -11,7 +11,7 @@ exports[`Storyshots Buttons Contained Button: Buttons Contained Button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -146,7 +146,7 @@ exports[`Storyshots Buttons Outlined Button: Buttons Outlined Button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -281,7 +281,7 @@ exports[`Storyshots Buttons Round Button: Buttons Round Button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
@@ -414,7 +414,7 @@ exports[`Storyshots Buttons Text Button: Buttons Text Button 1`] = `
   height: 36px;
 }
 
-.c0.c0 > span[class*="label"] {
+.c0.c0 > span[class*='label'] {
   min-width: 64px;
 }
 
