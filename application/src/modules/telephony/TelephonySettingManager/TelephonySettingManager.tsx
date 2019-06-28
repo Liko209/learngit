@@ -19,14 +19,10 @@ import {
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
   SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
-import {
-  CallerIdSelectSourceItem,
-  CallerIdSelectValue,
-} from './CallerIdSettingItem';
+import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
 import {
   DefaultPhoneAppSelectItem,
-  DefaultPhoneAppSelectValue,
   beforeDefaultPhoneAppSettingSave,
 } from './DefaultPhoneAppSettingItem';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
@@ -60,7 +56,6 @@ class TelephonySettingManager {
               sourceRenderer: DefaultPhoneAppSelectItem,
               beforeSaving: beforeDefaultPhoneAppSettingSave,
               automationId: 'defaultPhoneApp',
-              valueRenderer: DefaultPhoneAppSelectValue,
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
               id: SETTING_ITEM__PHONE_CALLER_ID,
@@ -70,7 +65,6 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
-              valueRenderer: CallerIdSelectValue,
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,

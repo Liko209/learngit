@@ -3,31 +3,16 @@
  * @Date: 2019-05-31 18:27:28
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiText } from 'jui/components/Text';
 import { DeviceNameHelper } from './DeviceNameHelper';
+import { i18nP } from '@/utils/i18nT';
 
 type MediaDeviceSourceItemProps = {
   value: MediaDeviceInfo;
   source: MediaDeviceInfo[];
 };
-type Props = MediaDeviceSourceItemProps & WithTranslation;
+type Props = MediaDeviceSourceItemProps;
 
-const MediaDeviceSourceItem = withTranslation('translations')(
-  ({ value, source, t }: Props) => (
-    <>{DeviceNameHelper.getDeviceName(value, source, t)}</>
-  ),
-);
+const MediaDeviceSourceItem = ({ value, source }: Props) =>
+  DeviceNameHelper.getDeviceName(value, source, i18nP);
 
-const MediaDeviceSourceValue = withTranslation('translations')(
-  ({ value, source, t }: Props) => (
-    <JuiText>{DeviceNameHelper.getDeviceName(value, source, t)}</JuiText>
-  ),
-);
-
-export {
-  MediaDeviceSourceItem,
-  MediaDeviceSourceValue,
-  MediaDeviceSourceItemProps,
-};
+export { MediaDeviceSourceItem, MediaDeviceSourceItemProps };

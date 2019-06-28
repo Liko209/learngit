@@ -3,7 +3,6 @@
  * @Date: 2019-05-20 11:47:23
  * Copyright © RingCentral. All rights reserved.
  */
-import { ComponentType } from 'react';
 import { SettingItem, SETTING_ITEM_TYPE } from './SettingItem';
 
 type SelectSettingItem<T> = SettingItem & {
@@ -12,12 +11,12 @@ type SelectSettingItem<T> = SettingItem & {
   /**
    * Decide how the select renders value
    */
-  valueRenderer?: ComponentType<{ value: T; source?: T[] }>;
+  valueRenderer?: (args: { value: T; source?: T[] }) => React.ReactNode;
 
   /**
    * Decide how the select renders source
    */
-  sourceRenderer?: ComponentType<{ value: T; source: T[] }>;
+  sourceRenderer?: (args: { value: T; source?: T[] }) => React.ReactNode;
 
   /**
    * Default source when source not given by sdk

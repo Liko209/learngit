@@ -4,47 +4,18 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile';
-import { JuiText } from 'jui/components/Text';
+import { i18nP } from '@/utils/i18nT';
 
 type BadgeCountItemProps = {
   value: NEW_MESSAGE_BADGES_OPTIONS;
 };
 
-class BadgeCountSelectItem extends Component<
-  BadgeCountItemProps & WithTranslation
-> {
-  render() {
-    const { value, t } = this.props;
-    return t(
-      `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
-    );
-  }
-}
+const BadgeCountSourceItem = (props: BadgeCountItemProps) => {
+  const { value } = props;
+  return i18nP(
+    `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
+  );
+};
 
-class BadgeCountSelectValue extends Component<
-  BadgeCountItemProps & WithTranslation
-> {
-  render() {
-    const { value, t } = this.props;
-    return (
-      <JuiText>
-        {t(
-          `setting.notificationAndSounds.otherNotificationSettings.newMessageBadgeCount.options.${value}`,
-        )}
-      </JuiText>
-    );
-  }
-}
-
-const BadgeCountSourceItem = withTranslation('translations')(
-  BadgeCountSelectItem,
-);
-
-const BadgeCountSourceValue = withTranslation('translations')(
-  BadgeCountSelectValue,
-);
-
-export { BadgeCountSourceItem, BadgeCountSourceValue };
+export { BadgeCountSourceItem };

@@ -9,10 +9,7 @@ import {
   SelectSettingItem,
   SliderSettingItem,
 } from '@/interface/setting';
-import {
-  MediaDeviceSourceItem,
-  MediaDeviceSourceValue,
-} from './audioSource/MediaDeviceSourceItem';
+import { MediaDeviceSourceItem } from './audioSource/MediaDeviceSourceItem';
 import { SpeakerMuteIcon, SpeakerIcon } from './audioSource/SpeakerIcon';
 import {
   SETTING_PAGE__NOTIFICATION_SOUND,
@@ -64,7 +61,6 @@ class NotificationSoundSettingManager {
               valueExtractor: deviceIdExtractor,
               defaultSource: DEFAULT_AUDIO_INPUT_DEVICES,
               sourceRenderer: MediaDeviceSourceItem,
-              valueRenderer: MediaDeviceSourceValue,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 0,
             } as SelectSettingItem<MediaDeviceInfo>,
@@ -76,7 +72,6 @@ class NotificationSoundSettingManager {
               valueExtractor: deviceIdExtractor,
               defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
               sourceRenderer: MediaDeviceSourceItem,
-              valueRenderer: MediaDeviceSourceValue,
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
             } as SelectSettingItem<MediaDeviceInfo>,
