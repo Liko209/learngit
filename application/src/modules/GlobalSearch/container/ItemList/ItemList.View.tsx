@@ -45,8 +45,8 @@ type State = {
 class ItemListViewComponent extends Component<Props, State> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
