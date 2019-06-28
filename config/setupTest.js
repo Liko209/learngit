@@ -10,3 +10,4 @@ import './jest/setup/setupStyledTheme';
 
 jest.mock('@/modules/common/util/lazyComponent');
 jest.mock('@/containers/ThemeProvider');
+jest.mock('@/modules/router/container/AuthRoute/AuthRoute');
