@@ -275,7 +275,8 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
-        if (info.index < 0) {
+        const itemDeleted = info.index < 0;
+        if (itemDeleted) {
           const nextToDisplay = getNextItemToDisplay(
             this.historyIds!,
             this.ids,

@@ -24,6 +24,7 @@ test.meta(<ITestMeta>{
   const deleteFileMenuItem = 'Delete file';
   let filename = '1';
   const filesPath = ['../../sources/1.docx'];
+  const imagePath = '../../sources/1.png';
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
 
@@ -54,8 +55,8 @@ test.meta(<ITestMeta>{
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
-  const filesTabItem = rightRail.filesTab.nthItem(0);
-  const postItem = app.homePage.messageTab.conversationPage.nthPostItem(0);
+  let filesTabItem = rightRail.filesTab.nthItem(0);
+  let postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
 
   await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
     await moreActionOnFile.clickMore();
@@ -117,6 +118,34 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then the file should be delete', async() => {
     await t.expect(rightRail.filesTab.nthItem(0).exists).notOk();
+  })
+
+  const messageText = `anotherMessage${message}`
+  await h(t).withLog('When I upload another image', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(imagePath);
+    await conversationPage.sendMessage(messageText);
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  });
+
+  postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
+  const viewerDialog = app.homePage.viewerDialog;
+  await h(t).withLog('When I open image viewer', async () => {
+        await t.click(postItem.img);
+        await viewerDialog.ensureLoaded();
+  })
+
+  const moreActionOnViewer = app.homePage.moreActionOnViewer;
+  await h(t).withLog('And I delete this image', async () => {
+    await moreActionOnViewer.ensureLoaded();
+    await moreActionOnViewer.clickMore();
+    await moreActionOnViewer.clickDeleteFile();
+    await confirmDeleteDialog.ensureLoaded();
+    await confirmDeleteDialog.clickDeleteButton();
+  })
+
+  await h(t).withLog('Then viewer should be closed and the image should be deleted', async () => {
+    await t.expect(viewerDialog.exists).notOk();
+    await t.expect(postItem.img.exists).notOk();
   })
 });
 
