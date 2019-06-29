@@ -94,7 +94,7 @@ describe('dataSourceUtils', () => {
     );
   });
 
-  describe('getNextItemToDisplay()', () => {
+  describe('getNextItemToDisplay() [JPT-2033]', () => {
     it.each`
       historyIds | currentIds | lastItemId | lastItemIndex
       ${[123]}   | ${[]}      | ${123}     | ${0}
