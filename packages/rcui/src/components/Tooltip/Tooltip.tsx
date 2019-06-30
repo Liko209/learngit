@@ -99,6 +99,10 @@ const GlobalToolTipStyle = createGlobalStyle`
   .popper.popper > *{
     background-color: ${({ theme, color }) => theme.palette.tooltip[color]};
   }
+  .popper.popper > div{
+    position: relative;
+  }
+
 
   .popper[x-placement='right'] ${TooltipArrow}{
     margin: ${placementRightMargin};

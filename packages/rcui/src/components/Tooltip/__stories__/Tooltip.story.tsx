@@ -22,7 +22,7 @@ storiesOf('Tooltip', module).add('Tooltip', () => {
   );
   return (
     <div>
-      <RuiTooltip title="I am arrow tip" placement={placement}>
+      <RuiTooltip open={true} title="I am arrow tip" placement={placement}>
         <button style={{ marginLeft: 120 }}>
           Arrow tool tip and some test
         </button>
