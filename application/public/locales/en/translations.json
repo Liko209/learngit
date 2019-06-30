@@ -275,7 +275,8 @@
     },
     "fileAction": {
       "deleteFile": "Delete file",
-      "editFileName": "Edit filename"
+      "editFileName": "Edit filename",
+      "viewInPost": "View in post"
     },
     "Messages": "Messages",
     "message": "Message",

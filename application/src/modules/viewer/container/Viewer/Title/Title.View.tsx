@@ -52,7 +52,7 @@ class ViewerTitleViewComponent extends Component<
   }
 
   render() {
-    const { item, total, currentIndex, person, t } = this.props;
+    const { item, total, currentIndex, person, t, groupId } = this.props;
     const { name, downloadUrl, createdAt } = item;
     const { userDisplayName, id } = person;
     return (
@@ -103,6 +103,8 @@ class ViewerTitleViewComponent extends Component<
                     <Download url={downloadUrl} variant="round" />
                     <FileActionMenu
                       variant="round"
+                      groupId={groupId}
+                      showViewInPostAction={true}
                       fileId={item.id}
                       beforeDelete={() => {
                         viewerContext.setDeleteItem(true);
