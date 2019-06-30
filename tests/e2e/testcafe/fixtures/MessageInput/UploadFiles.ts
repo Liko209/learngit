@@ -35,12 +35,12 @@ fixture('UploadFiles')
   .afterEach(teardownCase());
 
 
-  test.meta(<ITestMeta>{
-    priority: ['P0'],
-    caseIds: ['JPT-448'],
-    maintainers: ['Mia.Cai'],
-    keywords: ['UploadFiles'],
-  })('The post is sent successfully when sending a post with uploaded files', async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-448'],
+  maintainers: ['Mia.Cai'],
+  keywords: ['UploadFiles'],
+})('The post is sent successfully when sending a post with uploaded files', async (t) => {
 
   const users = h(t).rcData.mainCompany.users;
   const user = users[4];
@@ -69,7 +69,7 @@ fixture('UploadFiles')
 
   const file1 = ['../../sources/1.txt'];
   const file2 = ['../../sources/3.txt'];
-  const files = ['../../sources/1.txt','../../sources/3.txt'];
+  const files = ['../../sources/1.txt', '../../sources/3.txt'];
   const fileName1 = '1.txt';
   const fileName2 = '3.txt';
 
@@ -168,7 +168,7 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['JPT-498','JPT-457'],
+  caseIds: ['JPT-498', 'JPT-457'],
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-498 Can cancel files in the duplicate prompt when the same name is sent;JPT-457 Will show the prompt when re-upload an existing file in the conversation', async (t) => {
@@ -245,7 +245,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-499 Can update files when click update the button in the duplicate prompt', async (t) => {
-  
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -516,7 +516,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-533 Can create files when re-select the file and local exists one post with the same name file', async (t) => {
- 
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -615,7 +615,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-593 Should update the oldest file when creating same name file then re-upload and update same name file to the conversation', async (t) => {
- 
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -716,7 +716,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-512 Can remove files when selected files to conversations', async (t) => {
- 
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -777,7 +777,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Mia.Cai'],
   keywords: ['UploadFiles'],
 })('JPT-515 The selected files shouldn\'t be in the other conversation when switch to other conversations', async (t) => {
- 
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const user = users[0];
@@ -839,7 +839,7 @@ test.meta(<ITestMeta>{
   maintainers: ['Skye.Wang'],
   keywords: ['UploadFiles'],
 })('JPT-889 Check focus on input box when remove files', async (t) => {
- 
+
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -878,6 +878,109 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then the mouse is focus on the input area', async () => {
     await conversationPage.shouldFocusOnMessageInputArea();
+  });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-959'],
+  maintainers: ['Potar.He'],
+  keywords: ['UploadFiles'],
+})('Check can focus on input box when create/update files', async (t) => {
+
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+
+  const filePathViaApi = './sources/1.txt';
+  const filePath = '../../sources/1.txt';
+  const fileName = '1.txt';
+
+  let team = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+    name: uuid()
+  }
+
+  await h(t).withLog('Give I create a new team: {name}', async (step) => {
+    step.setMetadata('name', team.name)
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog('And I send 2 files in the team via Api', async () => {
+    await h(t).scenarioHelper.createPostWithTextAndFilesThenGetPostId({
+      filePaths: filePathViaApi,
+      group: team,
+      operator: loginUser,
+    });
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And open the team ', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  await h(t).withLog('When I upload one exist name file to the message attachment', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filePath);
+  });
+
+  const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
+
+  await h(t).withLog('And I click "update" button in the duplicate prompt', async () => {
+    await duplicatePromptPage.ensureLoaded();
+    await duplicatePromptPage.clickUpdateButton();
+  })
+
+  await h(t).withLog('Then the mouse is focus on the input area', async () => {
+    await conversationPage.shouldFocusOnMessageInputArea();
+  });
+
+  await h(t).withLog('And The file display in the attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).ok();
+  });
+
+  await h(t).withLog('When I remove one file from the message attachment', async () => {
+    await conversationPage.removeFileOnMessageArea();
+  });
+
+  await h(t).withLog('Then the file dismiss in the attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).notOk();
+  });
+
+  await h(t).withLog('When I upload one exist name file to the message attachment', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filePath);
+  });
+
+  await h(t).withLog('And I click "create" button in the duplicate prompt', async () => {
+    await duplicatePromptPage.ensureLoaded();
+    await duplicatePromptPage.clickCreateButton();
+  })
+
+  await h(t).withLog('Then the mouse is focus on the input area', async () => {
+    await conversationPage.shouldFocusOnMessageInputArea();
+  });
+
+  await h(t).withLog('And The file display in the attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).ok();
+  });
+
+  await h(t).withLog('When I remove one file from the message attachment', async () => {
+    await conversationPage.removeFileOnMessageArea();
+  });
+
+  await h(t).withLog('Then the file dismiss in the attachment area', async () => {
+    await t.expect(conversationPage.fileNamesOnMessageArea.withText(fileName).exists).notOk();
   });
 });
 

@@ -11,6 +11,8 @@ import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 import { IdModel } from '../../../framework/model';
 import { SyncUserConfig } from '../config/SyncUserConfig';
+import { UndefinedAble } from 'sdk/types';
+import { UserConfig } from 'sdk/module/config';
 
 class SyncService extends EntityBaseService<IdModel> {
   private _syncController: SyncController;
@@ -36,6 +38,10 @@ class SyncService extends EntityBaseService<IdModel> {
       this._userConfig = new SyncUserConfig();
     }
     return this._userConfig;
+  }
+
+  getUserConfig(): UndefinedAble<UserConfig> {
+    return this.userConfig;
   }
 
   updateIndexTimestamp(time: number) {

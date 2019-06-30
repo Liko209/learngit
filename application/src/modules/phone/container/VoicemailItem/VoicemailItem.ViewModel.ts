@@ -21,12 +21,7 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import {
-  VoicemailViewProps,
-  VoicemailProps,
-  JuiAudioMode,
-  JuiAudioStatus,
-} from './types';
+import { VoicemailViewProps, VoicemailProps, JuiAudioStatus } from './types';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
@@ -132,13 +127,8 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @computed
-  get mode() {
-    if (!this.audio) {
-      return;
-    }
-    return this.selected && this.audio.startTime > 0
-      ? JuiAudioMode.FULL
-      : JuiAudioMode.MINI;
+  get isAudioActive() {
+    return this.selected && this.audio && this.audio.startTime > 0;
   }
 
   @action

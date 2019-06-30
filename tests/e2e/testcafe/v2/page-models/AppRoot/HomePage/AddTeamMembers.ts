@@ -15,6 +15,10 @@ export class AddTeamMembers extends BaseWebComponent {
     return this.getComponent(SearchComoBox, this.self.find('*[role="combobox"]'));
   }
 
+  get input() {
+    return this.memberInput.self.find('input')
+  }
+
   get addButton() {
     return this.self.find('button').withText('Add');
   }

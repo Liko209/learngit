@@ -199,6 +199,12 @@ class PostService extends EntityBaseService<Post> {
       .getContentsCount(params);
   }
 
+  async getLatestPostIdByItem(groupId: number, itemId: number) {
+    return await this.getPostController()
+      .getPostItemController()
+      .getLatestPostIdByItem(groupId, itemId);
+  }
+
   private get _postDataController() {
     return this.getPostController().getPostDataController();
   }

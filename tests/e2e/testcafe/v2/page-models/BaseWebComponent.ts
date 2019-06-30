@@ -52,6 +52,10 @@ export abstract class BaseWebComponent {
     return this.self.visible;
   }
 
+  get focused() {
+    return this.self.focused
+  }
+
   get textContent() {
     return this.self.textContent;
   }
@@ -124,6 +128,10 @@ export abstract class BaseWebComponent {
 
   get spinners() {
     return this.getSelector('div[role="progressbar"]');
+  }
+
+  get tooltip() {
+    return this.getSelector('[role="tooltip"]');
   }
 
   async waitForAllSpinnersToDisappear(timeout: number = 30e3) {

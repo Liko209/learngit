@@ -224,8 +224,9 @@ storiesOf('Components/VirtualizedList', module)
         }
       };
 
-      const loadingMoreRenderer = useMemo(() => <LoadingMore />, []);
-      const loadingRenderer = useMemo(() => <div>loading initial</div>, []);
+      const loadingMoreRenderer = () => useMemo(() => <LoadingMore />, []);
+      const loadingRenderer = () =>
+        useMemo(() => <div>loading initial</div>, []);
       const noRowsRenderer = useMemo(() => <div>Empty</div>, []);
 
       return (
@@ -342,8 +343,8 @@ storiesOf('Components/VirtualizedList', module)
             loadInitialData={loadInitialData}
             loadMore={loadMore}
             stickToBottom={true}
-            loadingMoreRenderer={<LoadingMore />}
-            loadingRenderer={<div>loading initial</div>}
+            loadingMoreRenderer={() => <LoadingMore />}
+            loadingRenderer={() => <div>loading initial</div>}
             noRowsRenderer={<div>Empty</div>}
           >
             {children}

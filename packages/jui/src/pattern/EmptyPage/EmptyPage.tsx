@@ -47,6 +47,7 @@ const JuiEmptyPageComponent: IJuiEmptyPage = ({
   image = '',
   message = '',
   children = [],
+  ...rest
 }) => {
   const elImage = image ? <StyledEmptyPageImage src={image} /> : null;
 
@@ -55,7 +56,7 @@ const JuiEmptyPageComponent: IJuiEmptyPage = ({
   ) : null;
 
   return (
-    <StyledEmptyPage pageHeight={height}>
+    <StyledEmptyPage {...rest} pageHeight={height}>
       {elImage}
       {elMessage}
       {children}

@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { PhoneWrapper } from 'jui/pattern/Phone/PhoneWrapper';
-import { JuiEmptyScreen } from 'jui/pattern/Phone/EmptyScreen';
-import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
-import { observer, Observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { DataList } from '@/modules/common/container/DataList';
+import { observer, Observer } from 'mobx-react';
 import ReactResizeDetector from 'react-resize-detector';
+import { PhoneWrapper } from 'jui/pattern/Phone/PhoneWrapper';
+import { JuiEmptyPage } from 'jui/pattern/EmptyPage';
+import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
+import { ErrorPage } from '@/modules/common/container/ErrorPage';
+import { DataList } from '@/modules/common/container/DataList';
 import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
@@ -21,31 +22,39 @@ import { VoicemailItem } from '../VoicemailItem';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
-  LOADING_DELAY,
   VOICEMAIL_HEADER,
+  LOADING_DELAY,
 } from './config';
+import noVoicemailImage from '../images/no-voicemail.svg';
 
 type Props = VoicemailViewProps & WithTranslation;
 
-type State = {
-  height: number;
-};
-
 @observer
-class VoicemailComp extends Component<Props, State> {
+class VoicemailWrapper extends Component<Props & { height: number }> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY * 0} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
-  state = {
-    height: 0,
-  };
+  private get _height() {
+    const { height } = this.props;
 
-  componentDidMount() {
-    analyticsCollector.seeVoicemailListPage();
+    return height - VOICEMAIL_HEADER;
+  }
+
+  private get _noRowsRenderer() {
+    const { t } = this.props;
+
+    return (
+      <JuiEmptyPage
+        data-test-automation-id="voicemailEmptyPage"
+        image={noVoicemailImage}
+        message={t('phone.noVoicemailAvailable')}
+        height={this._height}
+      />
+    );
   }
 
   private _renderItems() {
@@ -56,39 +65,51 @@ class VoicemailComp extends Component<Props, State> {
   }
 
   render() {
-    const { t, listHandler } = this.props;
+    const { t, listHandler, isError, onErrorReload } = this.props;
+
     return (
       <>
         <JuiConversationPageHeader
           title={t('phone.voicemail')}
           data-test-automation-id="VoicemailPageHeader"
         />
-        <ReactResizeDetector handleHeight={true}>
-          {({ height }: { height: number }) => (
-            <Observer>
-              {() => (
-                <PhoneWrapper>
-                  <DataList
-                    initialDataCount={INITIAL_COUNT}
-                    listHandler={listHandler}
-                    reverse={true}
-                    InfiniteListProps={Object.assign(this._infiniteListProps, {
-                      height: height - VOICEMAIL_HEADER,
-                      noRowsRenderer: (
-                        <JuiEmptyScreen
-                          text={t('phone.noVoicemailAvailable')}
-                        />
-                      ),
-                    })}
-                  >
-                    {this._renderItems()}
-                  </DataList>
-                </PhoneWrapper>
-              )}
-            </Observer>
+        <PhoneWrapper>
+          {isError ? (
+            <ErrorPage onReload={onErrorReload} height={this._height} />
+          ) : (
+            <DataList
+              initialDataCount={INITIAL_COUNT}
+              listHandler={listHandler}
+              reverse={true}
+              InfiniteListProps={Object.assign(this._infiniteListProps, {
+                height: this._height,
+                noRowsRenderer: this._noRowsRenderer,
+              })}
+            >
+              {this._renderItems()}
+            </DataList>
           )}
-        </ReactResizeDetector>
+        </PhoneWrapper>
       </>
+    );
+  }
+}
+
+@observer
+class VoicemailComp extends Component<Props> {
+  componentDidMount() {
+    analyticsCollector.seeVoicemailListPage();
+  }
+
+  render() {
+    return (
+      <ReactResizeDetector handleHeight={true}>
+        {({ height }: { height: number }) => (
+          <Observer>
+            {() => <VoicemailWrapper height={height} {...this.props} />}
+          </Observer>
+        )}
+      </ReactResizeDetector>
     );
   }
 }
