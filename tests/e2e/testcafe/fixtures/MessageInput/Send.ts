@@ -185,6 +185,7 @@ test.skip.meta(<ITestMeta>{
 
   // await h(t).withLog(`Then I can see members list`, async () => {
   //   await t.expect(conversationPage.mentionUserList.self.exists).ok();
+  //   await conversationPage.mentionUserList.ensureDismiss();
   // }, true);
 
   // Can't simulate click the outside of the members list. Potar will help to solve this problem
@@ -202,6 +203,7 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog(`Then I can see members list`, async () => {
     await t.expect(conversationPage.mentionUserList.self.exists).ok();
+    await conversationPage.mentionUserList.ensureDismiss();
   }, true);
 
   await h(t).withLog('And I tap ESC on the keyboard ', async () => {

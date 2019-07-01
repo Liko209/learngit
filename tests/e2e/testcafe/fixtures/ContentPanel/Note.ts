@@ -141,7 +141,6 @@ test.meta(<ITestMeta> {
 
   noteBody = noteBody.substring(0,150) + '...';
   await h(t).withLog('Then I can see "..." after No.150 character', async () => {
-    await t.wait(5e3); // wait for info updated 
-    await t.expect(await conversationPage.nthPostItem(0).itemCard.noteBody.textContent).eql(noteBody);
+    await t.expect(conversationPage.nthPostItem(0).itemCard.noteBody.textContent).eql(noteBody);
   });
 });
