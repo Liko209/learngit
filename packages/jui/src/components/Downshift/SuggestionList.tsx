@@ -72,7 +72,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
         />
       );
     }
-    return <React.Fragment key={suggestionItem.id} />;
+    return { key: suggestionItem.id || 0 };
   }
 }
 

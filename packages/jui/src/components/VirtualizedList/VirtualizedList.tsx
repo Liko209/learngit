@@ -510,9 +510,9 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const wrapperStyle: React.CSSProperties = Object.assign(
     {
-      height: 'inherit',
+      height: '100%',
+      maxHeight: '100%',
       minHeight: 'inherit',
-      maxHeight: 'inherit',
       overflow: 'auto',
       // Prevent repaints on scroll
       transform: 'translateZ(0)',

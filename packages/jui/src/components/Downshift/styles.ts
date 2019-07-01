@@ -18,7 +18,8 @@ const StyledPaper = styled(JuiPaper)`
     width: 100%;
     max-height: ${height(45)};
     z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 `;
 
@@ -39,6 +40,10 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
   }
 ` as typeof MuiTextField;
 
-const VL_STYLE = { padding: '8px 0' };
+// TODO
+// There is some problem to deal with the padding of VL,
+// Need to support support it later and restore the 8px
+// padding top and 8px padding bottom here
+const VL_STYLE = { padding: '0' };
 
 export { StyledPaper, StyledTextField, VL_STYLE };

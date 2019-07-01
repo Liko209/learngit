@@ -12,7 +12,21 @@ import { JuiVirtualizedList } from '../VirtualizedList';
 type TestItemModel = { id: number };
 
 const attachTo = document.createElement('div');
+attachTo.className = 'attachTo';
 document.body.appendChild(attachTo);
+const style = document.createElement('style');
+style.innerHTML = `
+  html, body {
+    position: relative;
+    height: 1000px;
+  }
+
+  .attachTo {
+    height: 100%;
+  }
+`;
+document.body.appendChild(style);
+const bodyHeight = document.body.offsetHeight;
 
 const ListWrapper = styled.div`
   height: 100px;
@@ -317,6 +331,11 @@ describe('JuiVirtualizedList', () => {
       wrapper.unmount();
     });
 
+      expect(getComputedStyle(wrapper.getDOMNode()).height).toBe(`${70}px`);
+      expect(getRenderedItemIds(wrapper)).toEqual([0, 1, 2, 3]);
+      wrapper.unmount();
+    });
+
     it.each`
       parentMinHeight | itemCount | renderedItems         | expectedHeight
       ${100}          | ${0}      | ${[]}                 | ${100}
@@ -383,6 +402,52 @@ describe('JuiVirtualizedList', () => {
           { attachTo },
         );
 
+        expect(
+          getComputedStyle(wrapper.find(JuiVirtualizedList).getDOMNode())
+            .height,
+        ).toBe(`${expectedHeight}px`);
+        expect(getRenderedItemIds(wrapper)).toEqual(renderedItems);
+        wrapper.unmount();
+      },
+    );
+
+    it.each`
+      parentMaxHeight | itemCount | renderedItems                     | expectedHeight
+      ${'50%'}        | ${0}      | ${[]}                             | ${0}
+      ${'50%'}        | ${1}      | ${[0]}                            | ${20}
+      ${'50%'}        | ${2}      | ${[0, 1]}                         | ${40}
+      ${'50%'}        | ${3}      | ${[0, 1, 2]}                      | ${60}
+      ${'50%'}        | ${10}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${200}
+      ${'50%'}        | ${24}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${480}
+      ${'50%'}        | ${25}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+      ${'50%'}        | ${26}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+      ${'50%'}        | ${99}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+    `(
+      'should work when parent has percentage maxHeight. itemCount: $itemCount',
+      ({ parentMaxHeight, itemCount, expectedHeight, renderedItems }) => {
+        const wrapper = mount(
+          <div
+            style={{
+              maxHeight: parentMaxHeight,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <JuiAutoSizer>
+              {({ height }: Size) => (
+                <JuiVirtualizedList
+                  height={height}
+                  minRowHeight={20}
+                  initialScrollToIndex={0}
+                  overscan={0}
+                >
+                  {renderItems(buildItems(0, itemCount - 1))}
+                </JuiVirtualizedList>
+              )}
+            </JuiAutoSizer>
+          </div>,
+          { attachTo },
+        );
         expect(
           getComputedStyle(wrapper.find(JuiVirtualizedList).getDOMNode())
             .height,
