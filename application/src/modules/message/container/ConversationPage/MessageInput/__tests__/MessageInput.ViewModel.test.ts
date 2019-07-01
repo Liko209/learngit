@@ -126,6 +126,16 @@ describe('MessageInputViewModel', () => {
         expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
       });
 
+      it('should trim prefix / suffix spaces when send post [JPT-383]', () => {
+        const text = '   abc   ';
+        markdownFromDeltaGen(text)();
+        expect(postService.sendPost).toBeCalledWith({
+          text: text.trim(),
+          groupId: 123,
+          itemIds: [],
+        });
+      });
+
       it('should handle error when post service fails', () => {
         postService.sendPost = jest
           .fn()

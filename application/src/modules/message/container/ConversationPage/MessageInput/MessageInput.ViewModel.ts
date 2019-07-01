@@ -289,11 +289,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       this._trackSendPost();
-      let realContent: string = content;
-
-      if (content.trim().length === 0) {
-        realContent = '';
-      }
+      const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
         groupId: this.props.id,
