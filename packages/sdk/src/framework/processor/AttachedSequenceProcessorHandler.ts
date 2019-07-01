@@ -49,17 +49,19 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
   }
 
   async execute(): Promise<boolean> {
-    const result = true;
     if (this._isExecuting) {
-      return result;
+      return true;
     }
 
     const processor = this._processors.shift();
     if (processor) {
       this._isExecuting = true;
       const waiter = new Promise<boolean>(resolve => {
-        const processor2 = new AttachedSequenceProcessor(processor, resolve);
-        this._sequenceProcessor.addProcessor(processor2);
+        const attachedSequenceProcessor = new AttachedSequenceProcessor(
+          processor,
+          resolve,
+        );
+        this._sequenceProcessor.addProcessor(attachedSequenceProcessor);
       });
       await waiter
         .then(() => {
@@ -69,7 +71,7 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
           this._nextTask();
         });
     }
-    return result;
+    return true;
   }
 
   cancelAll() {
