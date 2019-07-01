@@ -60,13 +60,13 @@ class Application {
 
     // TODO: Replace the following with your app's Firebase project configuration
     const firebaseConfig = {
-      apiKey: 'AIzaSyDN2BlRd-uSO_LM-63F7SC6003zI3S4Y70',
-      authDomain: 'friendlychat-80e3c.firebaseapp.com',
-      databaseURL: 'https://friendlychat-80e3c.firebaseio.com',
-      projectId: 'friendlychat-80e3c',
-      storageBucket: 'friendlychat-80e3c.appspot.com',
-      messagingSenderId: '639743626766',
-      appId: '1:639743626766:web:d8e3c266aea271dd',
+      apiKey: 'AIzaSyAMEhBz7K7CNr1XFkBWh0xx8fzqc7omv6c',
+      authDomain: 'jupiter-ca30a.firebaseapp.com',
+      databaseURL: 'https://jupiter-ca30a.firebaseio.com',
+      projectId: 'jupiter-ca30a',
+      storageBucket: '',
+      messagingSenderId: '939459062083',
+      appId: '1:939459062083:web:3669766199ae04d7',
     };
 
     // Initialize Firebase
