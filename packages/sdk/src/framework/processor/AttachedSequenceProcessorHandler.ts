@@ -63,12 +63,10 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
       });
       await waiter
         .then(() => {
-          this._isExecuting = false;
-          this.execute();
+          this._nextTask();
         })
         .catch(() => {
-          this._isExecuting = false;
-          this.execute();
+          this._nextTask();
         });
     }
     return result;
@@ -81,6 +79,11 @@ class AttachedSequenceProcessorHandler extends SequenceProcessorHandler {
       }
     });
     this.clear();
+  }
+
+  private _nextTask() {
+    this._isExecuting = false;
+    this.execute();
   }
 }
 
