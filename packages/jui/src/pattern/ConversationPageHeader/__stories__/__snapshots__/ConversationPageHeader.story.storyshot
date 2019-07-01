@@ -548,7 +548,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -589,7 +592,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -630,7 +636,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
