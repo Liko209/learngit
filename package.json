@@ -91,6 +91,7 @@
     "rollup-plugin-typescript2": "0.17.2",
     "rollup-plugin-uglify": "6.0.0",
     "rollup-plugin-uglify-es": "0.0.1",
+    "semantic-release": "16.0.0-beta.22",
     "shelljs": "0.8.2",
     "string-length": "2.0.0",
     "terser": "3.16.1",
