@@ -3,7 +3,7 @@
  * @Date: 2019-05-30 16:53:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed, reaction } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
@@ -32,12 +32,10 @@ class VoicemailViewModel extends StoreViewModel<VoicemailProps>
   constructor(props: any) {
     super(props);
 
-    reaction(
+    this.reaction(
       () => this.filterValue,
-      async () => {
-        this._filterFunc = await this._service.buildFilterFunc({
-          filterKey: this.filterValue,
-        });
+      async filterKey => {
+        this._filterFunc = await this._service.buildFilterFunc({ filterKey });
       },
     );
   }
