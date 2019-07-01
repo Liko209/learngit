@@ -7,13 +7,17 @@
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
 
-const JuiViewerTitleWrap = styled.div`
+const JuiViewerTitleWrap = styled.span`
   && {
     display: inline-flex;
     align-items: center;
     > div {
       margin: 0 ${spacing(2)};
       width: ${spacing(12)};
+    }
+    input {
+      height: ${spacing(3)};
+      text-align: center;
     }
   }
 `;
