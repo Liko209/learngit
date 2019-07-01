@@ -868,7 +868,9 @@
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned",
+    "mentionedOne2One": "{{person}} mentioned you",
+    "group": "{{person}} posted in {{conversation}}",
+    "mentioned": "{{person}} mentioned you in {{conversation}}",
     "notificationEnabled": "Notifications are now enabled.",
     "topBanner": {
       "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
