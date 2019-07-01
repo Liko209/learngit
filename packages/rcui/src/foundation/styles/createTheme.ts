@@ -3,7 +3,6 @@ import palette from './theme/palette.json';
 import typography from './theme/typography.json';
 import opacity from './theme/opacity.json';
 import radius from './theme/radius.json';
-import spacing from './theme/spacing.json';
 import zIndex from './theme/zIndex.json';
 import breakpoints from './theme/breakpoints.json';
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -27,7 +26,6 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     typography: typographyInput = {},
     opacity: opacityInput = {},
     radius: radiusInput = {},
-    spacing: spacingInput = {},
     zIndex: zIndexInput = {},
     breakpoints: breakpointsInput = {},
   } = options;
@@ -42,7 +40,7 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
       typography: deepmerge(typography, typographyInput),
       opacity: deepmerge(opacity, opacityInput),
       radius: deepmerge(radius, radiusInput),
-      spacing: deepmerge(spacing, spacingInput),
+      spacing: 4,
       zIndex: deepmerge(zIndex, zIndexInput),
       breakpoints: deepmerge(breakpoints, breakpointsInput),
     },

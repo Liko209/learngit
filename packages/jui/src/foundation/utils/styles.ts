@@ -2,21 +2,11 @@ import tinycolor from 'tinycolor2';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
 import { keyframes } from 'styled-components';
+import { spacing } from 'rcui/foundation/shared/theme';
 
 /********************************************
  *               Dimensions                 *
  ********************************************/
-
-/**
- * spacing
- * @param values
- */
-function spacing(...values: number[]) {
-  return ({ theme }: { theme: Theme }): string => {
-    const unit = theme.spacing.unit.unit;
-    return cssValue(...values.map(n => n * unit));
-  };
-}
 
 /**
  * shape
