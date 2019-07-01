@@ -25,10 +25,17 @@ describe('EntitySourceController', () => {
     deactivatedDao = new DeactivatedDao(new TestDatabase());
     requestController = new RequestController<TestEntity>(undefined);
     entityPersistentController = new EntityPersistentController(dao);
+    const testRequestConfig = {
+      requestController: requestController,
+      canSaveRemoteData: false,
+      canRequest: () => {
+        return true;
+      },
+    };
     entitySourceController = new EntitySourceController<TestEntity>(
       entityPersistentController,
       deactivatedDao,
-      requestController,
+      testRequestConfig,
     );
   }
 
@@ -45,12 +52,18 @@ describe('EntitySourceController', () => {
     });
 
     it('should save entity if it is fetched from remote when enable save', async () => {
-      entitySourceController = new EntitySourceController<TestEntity>(
-        entityPersistentController,
-        deactivatedDao,
-        requestController,
-        true,
-      );
+      const testRequestConfig = {
+          requestController: requestController,
+          canSaveRemoteData: true,
+          canRequest: () => {
+            return true;
+          },
+        },
+        entitySourceController = new EntitySourceController<TestEntity>(
+          entityPersistentController,
+          deactivatedDao,
+          testRequestConfig,
+        );
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);
@@ -63,12 +76,18 @@ describe('EntitySourceController', () => {
       expect(daoPutSpyOn).toBeCalledWith({ id: 1, name: 'jupiter' });
     });
     it('should not save entity if it is fetched from remote when disable save', async () => {
-      entitySourceController = new EntitySourceController<TestEntity>(
-        entityPersistentController,
-        deactivatedDao,
-        requestController,
-        false,
-      );
+      const testRequestConfig = {
+          requestController: requestController,
+          canSaveRemoteData: false,
+          canRequest: () => {
+            return true;
+          },
+        },
+        entitySourceController = new EntitySourceController<TestEntity>(
+          entityPersistentController,
+          deactivatedDao,
+          testRequestConfig,
+        );
       jest
         .spyOn(entitySourceController, 'getEntityLocally')
         .mockResolvedValueOnce(null);

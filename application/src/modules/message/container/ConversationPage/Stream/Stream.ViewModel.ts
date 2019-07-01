@@ -183,7 +183,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
           (item: StreamItem) =>
             item.type === StreamItemType.POST &&
             !!item.value &&
-            item.value.includes(postId),
+            item.value === postId,
         )
       : -1;
   }

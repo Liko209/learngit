@@ -15,6 +15,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import GroupModel from '@/store/models/Group';
+import { isEditable } from '../../utils/index';
 
 class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -34,7 +35,7 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
-        shouldShowAction: !this._isEventOrTask,
+        shouldShowAction: isEditable(this._post),
       },
     };
   }

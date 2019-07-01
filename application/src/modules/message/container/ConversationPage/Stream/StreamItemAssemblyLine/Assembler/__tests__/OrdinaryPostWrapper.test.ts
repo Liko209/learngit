@@ -12,9 +12,17 @@ import {
 import { OrdinaryPostWrapper } from '../OrdinaryPostWrapper';
 import { ISortableModel } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
-import { StreamItem, StreamItemType } from '@/modules/message/container/ConversationPage/Stream/types';
+import {
+  StreamItem,
+  StreamItemType,
+} from '@/modules/message/container/ConversationPage/Stream/types';
 
-function runOnAdd({ added, postList, streamItemList, ...rest } : AssemblerAddFuncArgs) {
+function runOnAdd({
+  added,
+  postList,
+  streamItemList,
+  ...rest
+}: AssemblerAddFuncArgs) {
   const separator = new OrdinaryPostWrapper();
   return separator.onAdd({
     added,
@@ -30,7 +38,6 @@ function runOnDelete(args: AssemblerDelFuncArgs) {
 }
 
 describe('OrdinaryPostWrapper', () => {
-
   describe('onAdd()', () => {
     it('should wrap all the post as StreamItem', () => {
       const separator = runOnAdd(<AssemblerAddFuncArgs>{
@@ -38,7 +45,7 @@ describe('OrdinaryPostWrapper', () => {
           {
             id: 620232708,
             sortValue: 1540461821422,
-            data: { id:620232708, created_at: 1540461821422 },
+            data: { id: 620232708, created_at: 1540461821422 },
           },
         ],
         postList: [] as ISortableModel<Post>[],
@@ -50,7 +57,7 @@ describe('OrdinaryPostWrapper', () => {
         {
           id: 1540461821422,
           type: StreamItemType.POST,
-          value: [620232708],
+          value: 620232708,
           timeStart: 1540461821422,
         },
       ]);
@@ -65,13 +72,13 @@ describe('OrdinaryPostWrapper', () => {
           {
             id: 1540461821422,
             type: StreamItemType.POST,
-            value: [620232708],
+            value: 620232708,
             timeStart: 1540461821422,
           },
           {
             id: 1540461830617,
             type: StreamItemType.POST,
-            value: [620240900],
+            value: 620240900,
             timeStart: 1540461830617,
           },
         ]),
@@ -82,7 +89,7 @@ describe('OrdinaryPostWrapper', () => {
         {
           id: 1540461830617,
           type: StreamItemType.POST,
-          value: [620240900],
+          value: 620240900,
           timeStart: 1540461830617,
         },
       ]);
