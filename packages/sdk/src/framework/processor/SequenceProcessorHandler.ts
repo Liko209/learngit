@@ -9,7 +9,6 @@ import { IProcessor } from './IProcessor';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
-import { UndefinedAble } from 'sdk/types';
 
 type SequenceProcessorOption = {
   name: string;
