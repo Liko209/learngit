@@ -114,9 +114,7 @@ describe('SettingStore', () => {
       });
       scope2.addSection(PAGE__GENERAL, buildSection(SECTION__2));
       expect(store.getNoEmptyPages()).toEqual([PAGE__GENERAL]);
-      expect(store.getPageNonEmptySections(PAGE__GENERAL)).toEqual([
-        SECTION__1,
-      ]);
+      expect(store.getNoEmptyPageSections(PAGE__GENERAL)).toEqual([SECTION__1]);
       expect(store.getSectionVisibleItems(SECTION__1)).toEqual([2]);
     });
   });

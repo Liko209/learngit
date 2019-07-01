@@ -31,7 +31,7 @@
     "dotenv": "^6.0.0",
     "faker": "^4.1.0",
     "flatted": "^2.0.0",
-    "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.2.tgz",
+    "glip-account-pool-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/glip-account-pool-client-1.0.4.tgz",
     "glob": "^7.1.2",
     "jszip": "^3.1.5",
     "lodash": "^4.17.10",
@@ -48,13 +48,12 @@
     "testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-1.1.0.1.tgz",
     "testcafe-browser-provider-electron": "0.0.6",
     "testcafe-browser-provider-selenium": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-browser-provider-selenium-0.3.3.tgz",
-    "testcafe-live": "0.1.3",
     "testcafe-react-selectors": "^3.0.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.4",
     "ua-parser-js": "^0.7.19",
     "uuid": "^3.3.2",
-    "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-0.1.5.tgz",
+    "webphone-client": "http://xmn145.rcoffice.ringcentral.com:9003/packages/webphone-client-10.2.12.tgz",
     "zip-dir": "^1.0.2"
   },
   "devDependencies": {

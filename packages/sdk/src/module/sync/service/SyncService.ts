@@ -13,13 +13,15 @@ import { SyncController } from '../controller/SyncController';
 import { IdModel } from '../../../framework/model';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { MODULE_IDENTIFY, MODULE_NAME } from '../constant';
+import { UndefinedAble } from 'sdk/types';
+import { UserConfig } from 'sdk/module/config';
 
 class SyncService extends EntityBaseService<IdModel> {
   private _syncController: SyncController;
   private _userConfig: SyncUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketConnectionStateChanged.bind(
@@ -43,6 +45,10 @@ class SyncService extends EntityBaseService<IdModel> {
       this._userConfig = new SyncUserConfig();
     }
     return this._userConfig;
+  }
+
+  getUserConfig(): UndefinedAble<UserConfig> {
+    return this.userConfig;
   }
 
   updateIndexTimestamp(time: number) {

@@ -59,6 +59,7 @@ class AddMembers extends React.Component<ViewProps> {
           isExcludeMe={true}
           multiple={true}
           autoSwitchEmail={true}
+          autoFocus={true}
         />
       </JuiModal>
     );

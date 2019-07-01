@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { PostItemData } from '../../entity/PostItemData';
 import { ItemFile } from '../../../item/entity';
 
-import { Post } from '../../entity/Post';
+import { Post, PostView } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -22,6 +22,12 @@ import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
+import { Nullable } from 'sdk/types';
+import { daoManager } from 'sdk/dao';
+import { PostDao } from '../../dao';
+import PostAPI from 'sdk/api/glip/post';
+import { transform } from 'sdk/service/utils';
+import { Raw } from 'sdk/framework/model';
 
 const LOG_TAG = 'PostItemController';
 class PostItemController implements IPostItemController {
@@ -73,7 +79,7 @@ class PostItemController implements IPostItemController {
         uploadFiles,
         itemIds,
         (itemFile: ItemFile, id: number) => {
-          return id === itemFile.id && !itemFile.is_new;
+          return id === itemFile.id;
         },
       );
       if (needCheckItemFiles.length > 0) {
@@ -227,6 +233,50 @@ class PostItemController implements IPostItemController {
   }
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
+  }
+  private async _getPostsFromRemote(ids: number[]) {
+    if (ids.length) {
+      const remoteData = await PostAPI.requestByIds(ids);
+      return remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
+    }
+    return [];
+  }
+  private _getLatestPostId(groupId: number, posts: Post[] | PostView[]) {
+    if (posts.length) {
+      const postsInCurrentGroup = posts.filter(
+        (post: Post) => post.group_id === groupId && !post.deactivated,
+      );
+      if (postsInCurrentGroup.length) {
+        postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
+        return postsInCurrentGroup[0].id;
+      }
+    }
+    return null;
+  }
+  async getLatestPostIdByItem(
+    groupId: number,
+    itemId: number,
+  ): Promise<Nullable<number>> {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const item = await itemService.getById(itemId);
+    if (item) {
+      const ids = item.post_ids;
+      const localPosts = await daoManager
+        .getDao(PostDao)
+        .queryPostViewByIds(ids);
+      const localPostId = this._getLatestPostId(groupId, localPosts);
+      if (localPostId) {
+        return localPostId;
+      }
+      const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+      if (restIds.length) {
+        const remotePosts = await this._getPostsFromRemote(restIds);
+        return this._getLatestPostId(groupId, remotePosts);
+      }
+    }
+    return null;
   }
 }
 

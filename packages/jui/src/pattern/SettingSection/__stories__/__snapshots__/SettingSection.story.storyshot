@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/Setting SettingSection: Pattern/Setting SettingSection 1`] = `
+.c1.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  color: #616161;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  padding: 0px 0px 4px 0px;
+}
+
+.c2.c2 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c3.c3 {
+  padding: 16px;
+}
+
+.c3.c3:last-child {
+  padding-bottom: 16px;
+}
+
+.c0.c0 {
+  margin-bottom: 16px;
+}
+
+<div>
+  <div
+    className="setting-section c0"
+    data-test-automation-class="settingSection"
+    data-test-automation-id="settingSection-undefined"
+  >
+    <div
+      className="MuiListSubheader-root MuiListSubheader-gutters c1"
+    >
+      <span
+        className="setting-section-title c2"
+        data-test-automation-id="settingSectionTitle-undefined"
+      >
+        SettingSection
+      </span>
+    </div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root "
+    >
+      <div
+        className="MuiCardContent-root setting-section-content c3"
+      >
+        Setting Items Here
+      </div>
+    </div>
+  </div>
+  <div
+    className="setting-section c0"
+    data-test-automation-class="settingSection"
+    data-test-automation-id="settingSection-undefined"
+  >
+    <div
+      className="MuiListSubheader-root MuiListSubheader-gutters c1"
+    >
+      <span
+        className="setting-section-title c2"
+        data-test-automation-id="settingSectionTitle-undefined"
+      >
+        SettingSection
+      </span>
+    </div>
+    <div
+      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root "
+    >
+      <div
+        className="MuiCardContent-root setting-section-content c3"
+      >
+        Setting Items Here
+      </div>
+    </div>
+  </div>
+</div>
+`;

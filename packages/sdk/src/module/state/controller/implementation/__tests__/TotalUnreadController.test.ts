@@ -9,6 +9,7 @@ import {
   GroupStateHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
+  INIT_STATUS,
 } from '../../../types';
 import { Group } from '../../../../group/entity';
 import { Profile } from '../../../../profile/entity';
@@ -19,11 +20,7 @@ import { GroupService } from '../../../../group';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { DeactivatedDao } from '../../../../../dao';
 import { NotificationEntityPayload } from '../../../../../service/notificationCenter';
-import {
-  notificationCenter,
-  SERVICE,
-  EVENT_TYPES,
-} from '../../../../../service';
+import { EVENT_TYPES } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
@@ -225,16 +222,14 @@ describe('TotalUnreadController', () => {
   });
 
   describe('_startDataHandleTask', () => {
-    it('should init and stop the queue when _unreadInitialized === false', async () => {
+    it('should do nothing when init failed', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
         data: 'data' as any,
       };
-      totalUnreadController['_changedBadges'].add(
-        GROUP_BADGE_TYPE.DIRECT_MESSAGE,
-      );
-      totalUnreadController['_unreadInitialized'] = false;
-      totalUnreadController['_initializeTotalUnread'] = jest.fn();
+      totalUnreadController[
+        'initializeTotalUnread'
+      ] = jest.fn().mockReturnValue(false);
       totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
@@ -242,9 +237,7 @@ describe('TotalUnreadController', () => {
 
       await totalUnreadController['_startDataHandleTask'](task);
       expect(totalUnreadController['_changedBadges'].size).toEqual(0);
-      expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
-        1,
-      );
+      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(1);
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
       ).toBeCalledTimes(0);
@@ -254,25 +247,24 @@ describe('TotalUnreadController', () => {
       expect(
         totalUnreadController['_updateTotalUnreadByProfileChanges'],
       ).toBeCalledTimes(0);
-      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
+      expect(totalUnreadController['_updateBadge']).toBeCalledTimes(0);
     });
 
-    it('should handle task and stop the queue when _unreadInitialized === true', async () => {
+    it('should handle task and stop the queue', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
         data: 'data' as any,
       };
-      totalUnreadController['_unreadInitialized'] = true;
-      totalUnreadController['_initializeTotalUnread'] = jest.fn();
+      totalUnreadController[
+        'initializeTotalUnread'
+      ] = jest.fn().mockReturnValue(true);
       totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
       totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
-      expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
-        0,
-      );
+      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(1);
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
       ).toBeCalledWith(task.data);
@@ -285,7 +277,7 @@ describe('TotalUnreadController', () => {
       expect(totalUnreadController['_updateBadge']).toBeCalledTimes(1);
     });
 
-    it('should continue handle next task and when crash', async () => {
+    it('should continue handle next task when crash', async () => {
       const task: DataHandleTask = {
         type: TASK_DATA_TYPE.GROUP_STATE,
         data: 'data' as any,
@@ -295,8 +287,9 @@ describe('TotalUnreadController', () => {
         data: 'data2' as any,
       };
       totalUnreadController['_taskArray'] = [task, task2];
-      totalUnreadController['_unreadInitialized'] = true;
-      totalUnreadController['_initializeTotalUnread'] = jest.fn();
+      totalUnreadController[
+        'initializeTotalUnread'
+      ] = jest.fn().mockReturnValue(true);
       // prettier-ignore
       totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn().mockImplementation(() => {
         throw Error('error');
@@ -306,9 +299,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_updateBadge'] = jest.fn();
 
       await totalUnreadController['_startDataHandleTask'](task);
-      expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
-        0,
-      );
+      expect(totalUnreadController.initializeTotalUnread).toBeCalledTimes(2);
       expect(
         totalUnreadController['_updateTotalUnreadByStateChanges'],
       ).toBeCalledWith(task.data);
@@ -692,7 +683,25 @@ describe('TotalUnreadController', () => {
     });
   });
 
-  describe('_initializeTotalUnread()', () => {
+  describe('initializeTotalUnread()', () => {
+    it('should do nothing when _initStatus is idle', async () => {
+      totalUnreadController['_initStatus'] = INIT_STATUS.INITIALIZED;
+      totalUnreadController.reset = jest.fn();
+
+      expect(await totalUnreadController.initializeTotalUnread()).toBeTruthy();
+      expect(totalUnreadController.reset).not.toBeCalled();
+      expect(totalUnreadController['_initQueue'].length).toEqual(0);
+    });
+
+    it('should add promise to queue when _initStatus is initializing', async () => {
+      totalUnreadController['_initStatus'] = INIT_STATUS.INITIALIZING;
+      totalUnreadController.reset = jest.fn();
+
+      totalUnreadController.initializeTotalUnread();
+      expect(totalUnreadController.reset).not.toBeCalled();
+      expect(totalUnreadController['_initQueue'].length).toEqual(1);
+    });
+
     it('should initialize correctly when profile is invalid', async () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
@@ -719,7 +728,7 @@ describe('TotalUnreadController', () => {
         .fn()
         .mockReturnValue([{ id: 2 }]);
 
-      await totalUnreadController['_initializeTotalUnread']();
+      await totalUnreadController.initializeTotalUnread();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
       expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
@@ -733,7 +742,9 @@ describe('TotalUnreadController', () => {
         },
         { id: 2 },
       );
-      expect(totalUnreadController['_unreadInitialized']).toEqual(true);
+      expect(totalUnreadController['_initStatus']).toEqual(
+        INIT_STATUS.INITIALIZED,
+      );
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([]);
       expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
     });
@@ -762,7 +773,7 @@ describe('TotalUnreadController', () => {
       mockEntitySourceController.batchGet = jest
         .fn()
         .mockReturnValueOnce([{ id: 2 }]);
-      await totalUnreadController['_initializeTotalUnread']();
+      await totalUnreadController.initializeTotalUnread();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
       expect(mockProfileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
@@ -778,7 +789,9 @@ describe('TotalUnreadController', () => {
           id: 2,
         },
       );
-      expect(totalUnreadController['_unreadInitialized']).toEqual(true);
+      expect(totalUnreadController['_initStatus']).toEqual(
+        INIT_STATUS.INITIALIZED,
+      );
       expect(totalUnreadController['_favoriteGroupIds']).toEqual([123, 456]);
       expect(totalUnreadController['_registerBadge']).toBeCalledTimes(1);
     });

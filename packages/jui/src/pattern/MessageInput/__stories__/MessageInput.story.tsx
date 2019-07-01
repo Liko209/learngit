@@ -5,8 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { number, text } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { number, text, boolean, select } from '@storybook/addon-knobs';
 
 import { JuiMessageInput } from '..';
 import { AttachmentItem, ITEM_STATUS } from '../AttachmentItem';
@@ -14,37 +13,72 @@ import { AttachmentList, ItemInfo } from '../AttachmentList';
 import { JuiDuplicateAlert } from '../DuplicateAlert';
 import { MessageActionBar } from '../MessageActionBar';
 import { AttachmentView } from '../Attachment';
+import {
+  JuiInputFooterContainer,
+  JuiInputFooterItem,
+  InputFooterItemProps,
+} from '../InputFooter';
+import { noop } from '../../../foundation/utils';
 
-storiesOf('Pattern/MessageInput', module)
-  .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
-  .add('MessageInput', () => {
-    const value = text('value', 'default text');
-    const onChange = () => {};
-    const ref = React.createRef<JuiMessageInput>();
-    return (
-      <>
-        <JuiMessageInput
-          ref={ref}
-          value={value}
-          onChange={onChange}
-          error=""
-          modules={{}}
-        >
-          <div />
-        </JuiMessageInput>
-        <button onClick={() => ref.current!.focusEditor()}>
-          focusEditor()
-        </button>
-      </>
-    );
-  });
+storiesOf('Pattern/MessageInput', module).add('MessageInput', () => {
+  const value = text('value', 'default text');
+  const ref = React.createRef<JuiMessageInput>();
+  return (
+    <>
+      <JuiMessageInput
+        ref={ref}
+        value={value}
+        onChange={noop}
+        error=""
+        modules={{}}
+        placeholder="message.action.typeNewMessage"
+      >
+        <div />
+      </JuiMessageInput>
+      <button onClick={() => ref.current!.focusEditor()}>focusEditor()</button>
+    </>
+  );
+});
 
 storiesOf('Pattern/MessageInput', module).add('Attachment Button', () => {
-  const autoUploadFile = () => {};
+  const menus = [
+    {
+      icon: 'google',
+      label: 'Google Drive',
+    },
+    {
+      icon: 'dropbox',
+      label: 'Dropbox',
+    },
+    {
+      icon: 'box',
+      label: 'Box',
+    },
+    {
+      icon: 'evernote',
+      label: 'Evernote',
+    },
+    {
+      icon: 'onedrive',
+      label: 'OneDrive',
+    },
+  ];
+
+  const fileMenu = {
+    icon: 'computer',
+    label: 'Computer',
+  };
+
   return (
     <div>
       <MessageActionBar>
-        <AttachmentView onFileChanged={autoUploadFile} />
+        <AttachmentView
+          menus={menus}
+          fileMenu={fileMenu}
+          tooltip="Attach file"
+          onFileChanged={noop}
+          title="Upload files from"
+        />
       </MessageActionBar>
     </div>
   );
@@ -94,7 +128,6 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
-  const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =
@@ -105,10 +138,7 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
     .flat();
   return (
     <div>
-      <AttachmentList
-        files={array as ItemInfo[]}
-        removeAttachment={removeAttachment}
-      />
+      <AttachmentList files={array as ItemInfo[]} removeAttachment={noop} />
     </div>
   );
 });
@@ -142,5 +172,24 @@ storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
         createText="Create"
       />
     </div>
+  );
+});
+
+storiesOf('Pattern/MessageInput', module).add('JuiInputFooter', () => {
+  const show = boolean('isShow', true);
+  const align = select<InputFooterItemProps['align']>(
+    'align',
+    {
+      left: 'left',
+      center: 'center',
+      right: 'right',
+    },
+    'left',
+  );
+  const content = text('content', 'This is the content of inputFooterItem');
+  return (
+    <JuiInputFooterContainer>
+      <JuiInputFooterItem show={show} align={align} content={content} />
+    </JuiInputFooterContainer>
   );
 });

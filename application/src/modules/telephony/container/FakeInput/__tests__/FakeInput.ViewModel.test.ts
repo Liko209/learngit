@@ -8,7 +8,9 @@ import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { FakeInputViewModel } from '../FakeInput.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { getEntity } from '@/store/utils';
 
+jest.mock('@/store/utils');
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
@@ -19,26 +21,13 @@ beforeAll(() => {
   jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
     matchContactByPhoneNumber: jest.fn(),
   });
+  (getEntity as jest.Mock).mockReturnValue({});
   fakeInputViewModel = new FakeInputViewModel();
-  fakeInputViewModel._telephonyStore.onDialerFocus = jest.fn();
-  fakeInputViewModel._telephonyStore.onDialerBlur = jest.fn();
 });
 
 describe('KeypadViewModel', () => {
   it('Should return empty string', async () => {
     expect(fakeInputViewModel.enteredKeys).toBe('');
-  });
-
-  it('should call onDialerFocus()', async () => {
-    fakeInputViewModel.onFocus();
-    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-    expect(_telephonyStore.onDialerFocus).toBeCalled();
-  });
-
-  it('should call onDialerBlur()', async () => {
-    fakeInputViewModel.onBlur();
-    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-    expect(_telephonyStore.onDialerBlur).toBeCalled();
   });
 
   it('Should return empty undefined', async () => {

@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/SearchBar SearchTitle: Pattern/SearchBar SearchTitle 1`] = `
+.c0 {
+  padding: 0px 16px;
+  height: 32px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.c1.c1 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #9e9e9e;
+}
+
+.c2 {
+  color: #0684bd;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+<div>
+  <div
+    className="c0"
+  >
+    <p
+      className="MuiTypography-root MuiTypography-body2 c1"
+    >
+      People
+    </p>
+    <span
+      className="c2"
+    >
+      text
+    </span>
+  </div>
+</div>
+`;

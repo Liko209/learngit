@@ -19,12 +19,13 @@ const Wrapper = styled.div<{
   overflow-y: auto;
   border-radius: ${shape('borderRadius')};
   background-color: ${palette('common', 'white')};
-  z-index: ${({ theme }) => theme.zIndex.loading};
+  z-index: ${({ theme }) => theme.zIndex.dragging};
 `;
 
 type Props = {
   children: React.ReactChild;
   isEditMode?: boolean;
+  automationId?: string;
 } & ThemeProps;
 
 class MentionPanel extends PureComponent<Props> {
@@ -42,9 +43,13 @@ class MentionPanel extends PureComponent<Props> {
   }
 
   render() {
-    const { children, isEditMode } = this.props;
+    const { children, isEditMode, automationId } = this.props;
     return (
-      <Wrapper isEditMode={isEditMode} ref={this.wrapperRef}>
+      <Wrapper
+        data-test-automation-id={automationId}
+        isEditMode={isEditMode}
+        ref={this.wrapperRef}
+      >
         {children}
       </Wrapper>
     );

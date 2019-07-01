@@ -13,6 +13,7 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import FileItemModel from '@/store/models/FileItem';
 import LinkItemModel from '@/store/models/LinkItem';
+import { mainLogger } from 'sdk';
 
 export default class PostModel extends Base<Post> {
   createdAt: number;
@@ -43,6 +44,8 @@ export default class PostModel extends Base<Post> {
   @observable
   deactivated?: boolean;
   @observable icon?: string;
+  @observable isTeamMention?: boolean;
+  @observable isAdminMention?: boolean;
 
   constructor(data: Post) {
     super(data);
@@ -62,6 +65,8 @@ export default class PostModel extends Base<Post> {
       parent_id,
       deactivated,
       icon,
+      is_admin_mention,
+      is_team_mention,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
@@ -78,6 +83,8 @@ export default class PostModel extends Base<Post> {
     this.parentId = parent_id;
     this.deactivated = deactivated;
     this.icon = icon;
+    this.isAdminMention = is_admin_mention;
+    this.isTeamMention = is_team_mention;
   }
 
   @computed
@@ -125,11 +132,21 @@ export default class PostModel extends Base<Post> {
   }
 
   public fileItemVersion(fileItem: FileItemModel) {
-    const firstPost = !this.itemData;
-    if (firstPost) {
+    if (!this.itemData) {
       return 1;
     }
-    const version = this.itemData!.version_map[fileItem.id];
+    const isFileItemReady = fileItem.id > 0;
+    if (!isFileItemReady) return 1;
+
+    const version = this.itemData.version_map[fileItem.id];
+    if (!version) {
+      // should not come here, due to exist bug, some data's version_map is incorrect. bug ticket: FIJI-6596
+      mainLogger.error('can not find version info in post itemData', {
+        itemData: this.itemData,
+        fileId: fileItem.id,
+      });
+      return 1;
+    }
     return version;
   }
 

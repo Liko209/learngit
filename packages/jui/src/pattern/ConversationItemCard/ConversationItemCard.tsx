@@ -15,7 +15,6 @@ import {
   JuiButtonBarProps,
 } from '../../components/Buttons/ButtonBar';
 import { Palette } from '../../foundation/theme/theme';
-// import { getAccentColor } from '../../foundation/utils';
 
 const ItemCardWrapper = styled(JuiCard)`
   word-break: break-word;
@@ -155,7 +154,10 @@ class JuiConversationItemCard extends React.PureComponent<
             </ItemTitle>
           ) : null}
           {subTitle ? (
-            <SubTitle data-test-automation-id="conversation-item-cards-subtitle">
+            <SubTitle
+              data-id="subTitle"
+              data-test-automation-id="conversation-item-cards-subtitle"
+            >
               {subTitle}
             </SubTitle>
           ) : null}

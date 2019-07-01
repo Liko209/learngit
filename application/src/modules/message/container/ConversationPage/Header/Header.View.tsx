@@ -80,7 +80,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     return (
       <JuiConversationPageHeaderSubtitle>
         <JuiButtonBar overlapSize={2}>
-          <Favorite id={groupId} size="medium" />
+          <Favorite key={groupId} id={groupId} size="medium" />
           {type === CONVERSATION_TYPES.TEAM ? (
             <Privacy id={groupId} size="medium" />
           ) : null}

@@ -16,7 +16,7 @@ import { generalErrorHandler } from '@/utils/error';
 import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
-import { CALL_STATE } from '../../../FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 class FlipViewModel extends StoreViewModel<FlipProps> implements FlipViewProps {

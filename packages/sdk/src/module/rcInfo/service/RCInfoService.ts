@@ -10,7 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import {
   ERCServiceFeaturePermission,
-  ERCWebSettingUri,
+  ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
 } from '../types';
@@ -32,7 +32,7 @@ class RCInfoService extends EntityBaseService<IdModel>
   private _DBConfig: RCInfoUserConfig;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGIN]: this.requestRCInfo,
@@ -192,10 +192,10 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getCallerIdList();
   }
 
-  async generateWebSettingUri(type: ERCWebSettingUri) {
+  async generateWebSettingUri(type: ERCWebUris) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()
-      .generateRCAuthCodeUri(type);
+      .getRCWebUriByType(type);
   }
 
   private get regionInfoController() {
@@ -253,6 +253,12 @@ class RCInfoService extends EntityBaseService<IdModel>
     return this.getRCInfoController()
       .getRCCallerIdController()
       .getCompanyMainCaller();
+  }
+
+  async getAccountId() {
+    return this.getRCInfoController()
+      .getRCAccountInfoController()
+      .getAccountId();
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

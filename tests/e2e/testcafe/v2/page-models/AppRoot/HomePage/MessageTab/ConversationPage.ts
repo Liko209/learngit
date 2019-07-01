@@ -307,7 +307,7 @@ export class BaseConversationPage extends BaseWebComponent {
 
   get newMessageDeadLine() {
     this.warnFlakySelector();
-    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
+    return this.stream.find('span').withText('New messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -338,7 +338,7 @@ export class BaseConversationPage extends BaseWebComponent {
   async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 
@@ -413,6 +413,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get markupTips() {
+    return this.getSelectorByAutomationId('markupTips');
+  }
+
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
   }
@@ -453,17 +457,17 @@ export class ConversationPage extends BaseConversationPage {
   async typeAtMentionUserNameAndPressEnter(userName: string) {
     await this.typeAtSymbol();
     await this.t.typeText(this.messageInputArea, userName, { paste: true })
-    await this.mentionUser.ensureLoaded();
+    await this.mentionUserList.ensureLoaded();
     await this.t.pressKey('enter');
   }
 
   async addMentionUser(userName: string) {
     await this.t.typeText(this.messageInputArea, `@${userName}`);
-    await this.mentionUser.ensureLoaded();
-    await this.mentionUser.selectMemberByName(userName);
+    await this.mentionUserList.ensureLoaded();
+    await this.mentionUserList.selectMemberByName(userName);
   }
 
-  get mentionUser() {
+  get mentionUserList() {
     return this.getComponent(MentionUsers);
   }
 
@@ -671,8 +675,7 @@ export class PostItem extends BaseWebComponent {
   get quote() {
     return this.self.find(`[data-name="text"]`).find('q');
   }
-
-  get href(){
+  get href() {
     return this.self.find(`[href]`)
   }
 
@@ -682,7 +685,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   get editTextArea() {
-    return this.self.find('[data-placeholder="Type new message"]');
+    return this.self.find('.ql-editor');
+  }
+
+  get postImg() {
+    return this.self.find('img');
   }
 
   async editMessage(message: string, options?: TypeActionOptions) {
@@ -690,6 +697,25 @@ export class PostItem extends BaseWebComponent {
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
       .pressKey('enter');
+  }
+
+  async deleteMessage() {
+    await this.t
+      .selectText(this.editTextArea)
+      .pressKey('delete')
+      .wait(1e3)
+      .pressKey('enter');
+  }
+
+  async enterEditTextAreaWithSpace() {
+    await this.t
+      .wait(1e3)
+      .typeText(this.editTextArea, '  ')
+      .pressKey('enter');
+  }
+
+  async editTextAreaFocused() {
+    return await this.editTextArea.focused;
   }
 
   get mentions() {
@@ -705,11 +731,11 @@ export class PostItem extends BaseWebComponent {
   }
 
   get emojis() {
-    return this.self.find('.emoji');
+    return this.self.find('.emoji-mart-emoji');
   }
 
-  async shouldHasEmojiByValue(text: string) {
-    await this.t.expect(this.emojis.withAttribute('title', `:${text}:`))
+  async shouldHasEmojiByValue(value: string) {
+    await this.t.expect(this.emojis.withAttribute('title', value)).ok()
   }
 
   async emojisShouldBeInOrder(valueList: string[], timeout: number = 5e3) {
@@ -744,7 +770,7 @@ export class PostItem extends BaseWebComponent {
   }
 
 
-  get likeCount() {
+  get likeCountSpan() {
     return this.likeButtonOnFooter.nextSibling('span');
   }
 
@@ -816,7 +842,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    return await this.getNumber(this.likeCount);
+    return await this.getNumber(this.likeCountSpan);
   }
 
   async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {
@@ -834,7 +860,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-Name="cardHeaderNotification"]');
   }
 
-  get fileNotification() {
+  get itemCardActivity() {
     return this.getSelectorByAutomationId('conversation-card-activity', this.headerNotification);
   }
 
@@ -842,7 +868,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[role="progressbar"]')
   }
 
-  async waitForPostToSend(timeout = 5e3) {
+  async waitForPostToSend(timeout = 10e3) {
     try {
       await H.retryUntilPass(async () => assert(await this.progressBar.exists), 5);
     } catch (e) {
@@ -951,7 +977,7 @@ export class PostItem extends BaseWebComponent {
     return this.phoneLink.withAttribute('data-id', dataId);
   }
   // be searched item
-  get keyworkdsByHighLight() {
+  get keywordsByHighLight() {
     return this.self.find('span.highlight-term');
   }
 
@@ -968,51 +994,85 @@ class ConversationCardItem extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('conversation-item-cards-title');
+    return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
   get eventLocation() {
-    return this.getSelectorByAutomationId('event-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
 
   get eventDue() {
-    return this.getSelectorByAutomationId('event-due');
+    return this.getSelectorByAutomationIdUnderSelf('event-due');
   }
 
   get eventDescription() {
-    return this.getSelectorByAutomationId('event-description');
+    return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
   get eventShowOld() {
-    return this.getSelectorByAutomationId('event-show-old');
+    return this.getSelectorByAutomationIdUnderSelf('event-show-old');
   }
 
   get eventOldLocation() {
-    return this.getSelectorByAutomationId('event-old-location');
+    return this.getSelectorByAutomationIdUnderSelf('event-old-location');
   }
 
   get noteBody() {
-    return this.getSelectorByAutomationId('note-body');
+    return this.getSelectorByAutomationIdUnderSelf('note-body');
+  }
+
+  /** task */
+  get taskCheckBox() {
+    this.warnFlakySelector();
+    return this.title.prevSibling('span')
+  }
+
+  async taskShouldBeMarkCompleted() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).ok();
+  }
+
+  async taskShouldBeMarkIncomplete() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).notOk();
   }
 
   get taskAssignee() {
-    return this.getSelectorByAutomationId('avatar-name');
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name');
+  }
+
+  get taskAssigneeAvatar() {
+    return this.taskAssignee.find('[uid]');
+  }
+
+  get taskAssigneeName() {
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name-name');
   }
 
   get taskSection() {
-    return this.getSelectorByAutomationId('task-section');
+    return this.getSelectorByAutomationIdUnderSelf('task-section');
   }
 
   get taskDescription() {
-    return this.getSelectorByAutomationId('task-description');
+    return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
-  get taskShowOld() {
-    return this.getSelectorByAutomationId('task-show-old');
+  get taskShowOrHidOldLink() {
+    return this.getSelectorByAutomationIdUnderSelf('task-show-old');
+  }
+
+  get taskOldAssigneesDiv() {
+    return this.getSelectorByAutomationIdUnderSelf('task-old-assignees');
   }
 
   get taskOldAssignees() {
-    return this.getSelectorByAutomationId('task-old-assignees').find(`[data-test-automation-id='avatar-name']`);
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv);
+  }
+
+  get taskOldAssigneeNames() {
+    return this.getSelectorByAutomationId('avatar-name-name', this.taskOldAssigneesDiv);
+  }
+
+  async hideLinkShouldUnderOldAssignees() {
+    await this.t.expect(this.taskOldAssigneesDiv.nextSibling('div').withAttribute('data-test-automation-id', 'task-show-old').exists).ok();
   }
 
   get codeBody() {

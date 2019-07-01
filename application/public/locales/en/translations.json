@@ -2,7 +2,8 @@
   "common": {
     "button": {
       "ariaToggleOn": "On, click to turn off",
-      "ariaToggleOff": "Off, click to turn on"
+      "ariaToggleOff": "Off, click to turn on",
+      "tryAgain": "Try again"
     },
     "dialog": {
       "OK": "OK",
@@ -20,7 +21,8 @@
       "Network Error": "Network disconnected. Please try again when the network is resumed.",
       "tryAgain": "Try again.",
       "tryAgainLater": "Try again later.",
-      "thenTryAgain": "then try again."
+      "thenTryAgain": "then try again.",
+      "loadError": "Oops! Something went wrong, please try again."
     },
     "preposition": {
       "in": "in"
@@ -48,6 +50,7 @@
     "conj": {
       "and": "and"
     },
+    "delete": "Delete",
     "more": "More",
     "copy": "Copy",
     "remove": "Remove",
@@ -63,7 +66,10 @@
     "You": "You",
     "Connecting": "Connecting",
     "deactivatedUsers": "Deactivated Users",
-    "team": "team"
+    "team": "team",
+    "play": "Play",
+    "pause": "Pause",
+    "reload": "Reload"
   },
   "auth": {
     "signIn": "Sign in",
@@ -102,8 +108,8 @@
     "team": "team",
     "postedBy": "Posted by",
     "postedIn": "Posted in",
-    "postedByPlaceholder": "Enter name or email",
-    "postedInPlaceholder": "Enter a team or conversation",
+    "postedByPlaceholder": "Name or email",
+    "postedInPlaceholder": "Team or Conversation",
     "filters": "Filters",
     "People": "People",
     "Groups": "Groups",
@@ -133,7 +139,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
-    "showUnreads": "Show Unreads",
+    "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
     "bookmarkPosts": "Bookmarks",
@@ -145,8 +151,37 @@
     "messageTypeNameSMS": "text",
     "jumpToConversation": "Jump to conversation",
     "emoji": {
+      "i18n": {
+        "search": "Search",
+        "clear": "Clear",
+        "notfound": "No Emoji Found",
+        "skintext": "Choose your default skin tone",
+        "categories": {
+          "search": "Search Results",
+          "recent": "Frequently Used",
+          "people": "Smileys & People",
+          "nature": "Animals & Nature",
+          "foods": "Food & Drink",
+          "activity": "Activity",
+          "places": "Travel & Places",
+          "objects": "Objects",
+          "symbols": "Symbols",
+          "flags": "Flags",
+          "custom": "Custom"
+        },
+        "categorieslabel": "Emoji categories",
+        "skintones": {
+          "default": "Default Skin Tone",
+          "light": "Light Skin Tone",
+          "mediumLight": "Medium-Light Skin Tone",
+          "medium": "Medium Skin Tone",
+          "mediumDark": "Medium-Dark Skin Tone",
+          "dark": "Dark Skin Tone"
+        }
+      },
       "emojiDefaultTitle": "Pick your emoji",
-      "toggleButtonLabel": "Keep open"
+      "toggleButtonLabel": "Keep open",
+      "emojiMatching": "Emojis matching"
     },
     "sharedItems": "shared items",
     "initialPost": {
@@ -169,18 +204,29 @@
       "editPost": "Edit post",
       "deletePost": "Delete post",
       "resendPost": "Resend post",
+      "attachFile": "Attach file",
       "typeNewMessage": "Type new message",
       "sendNewMessage": "Send new message"
+    },
+    "inputMenus": {
+      "uploadFileMenuTitle": "Upload files from",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Computer"
     },
     "stream": {
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
-      "newMessages": "new messages"
+      "newMessages": "new messages",
+      "newMessagesDivider": "New messages"
     },
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
-    "conversationDetails": "Conversation Details",
+    "conversationDetails": "Conversation details",
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
     "prompt": {
@@ -233,7 +279,9 @@
     },
     "Messages": "Messages",
     "message": "Message",
-    "atMentionAllTeam": "Team"
+    "atMentionAllTeam": "Team",
+    "atMentionAllAdmin": "admin",
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
   },
   "item": {
     "activity": {
@@ -422,7 +470,7 @@
       "revokeTeamAdmin": "Revoke team admin",
       "addTeamMemberSubmit": "Add",
       "AddTeamMembers": "Add team members",
-      "AddTeamMembersTitle": "Add Team Members",
+      "AddTeamMembersTitle": "Add team members",
       "removeFromTeam": "Remove from team",
       "joinButtonTitle": "Join",
       "joinTeam": "Join team",
@@ -443,13 +491,14 @@
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
       "convertToTeamNamePrefix": "Team: ",
-      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content.",
+      "convertToTeamPreviousMessageHandle": "By converting this conversation to a team, all messages and files previously posted will be visible to anyone new invited to the team.",
       "noMatchesFound": "No matches found",
       "archivedSuffix": " - Archived",
       "adminActions": "Admin actions"
     },
     "company": {},
     "prompt": {
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
@@ -582,9 +631,10 @@
       "resume": "Resume the call",
       "record": "Record the call",
       "stopRecord": "Stop recording",
-      "minimize": "Minimize the dialog"
+      "minimize": "Minimize the dialog",
+      "callActions": "Call actions"
     },
-    "dialerPlaceholder": "Enter a number",
+    "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
     "callFrom": "Call from:",
     "phoneNumberType": {
@@ -598,18 +648,75 @@
     "callerIdSelector": {
       "tooltip": "You can change this default Caller ID in settings."
     },
+    "direction": {
+      "inboundcall": "Inbound call",
+      "outboundcall": "Outbound call"
+    },
+    "result": {
+      "missedcall": "Missed call"
+    },
+    "nocalllogs": "No call logs",
+    "dial": "Dial:",
+    "noMatch": "No matched records",
+    "searching": "Searching...",
     "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
-      "callHistory": "Call History"
+      "callHistory": "Call history"
     },
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",
     "voicemail": "Voicemail",
     "faxes": "Faxes",
-    "recordings": "Recordings"
+    "unknownCaller": "Unknown caller",
+    "unknown": "Unknown",
+    "recordings": "Recordings",
+    "noCallLogAvailable": "No call log",
+    "noVoicemailAvailable": "No voicemail records",
+    "prompt": {
+      "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
+      "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
+      "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",
+      "notAbleToLoadCallLogsForServerIssue": "We weren't able to load call logs. Try again later.",
+      "playVoicemailLoadError": "Sorry, we weren't able to play/load the voicemail due to a poor network connection. Try again."
+    }
+  },
+  "calllog": {
+    "deleteCallLog": "Delete call log",
+    "deleteCallHistory": "Delete call history",
+    "deleteAllCallHistory": "Delete all call history",
+    "doYouWanttoDeleteThisCallLog": "Do you want to delete this call log from the list?",
+    "doYouWanttoDeleteAllCallLog": " Are you sure you want to permanently delete all the call logs? Note: Call logs can not be retrieved from anywhere.",
+    "prompt": {
+      "notAbleToDeleteCallLogForNetworkIssue": "Sorry, we weren't able to delete the log. Check your network connection, then try again.",
+      "notAbleToDeleteAllCallLogForNetworkIssue": "Sorry, we weren't able to delete the call history. Check your network connection, then try again.",
+      "notAbleToDeleteCallLogForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the log. Try again later.",
+      "notAbleToDeleteAllCallLogForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the call history. Try again later."
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "Play Voicemail",
+      "pause": "Pause Voicemail",
+      "reload": "Reload Voicemail"
+    },
+    "downloadVoicemail": "Download Voicemail",
+    "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
+    "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
+    "markUnread": "Mark Unread",
+    "markRead": "Mark Read",
+    "deleteVoicemail": "Delete Voicemail",
+    "areYouSureYouWantToDeleteTheVoicemail": "Are you sure you want to delete the voicemail?",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "Sorry, we weren't able to mark the voicemail as unread due to a poor network connection. Try again.",
+      "notAbleToUnreadVoicemalForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as unread. Try again later.",
+      "notAbleToReadVoicemailForNetworkIssue": "Sorry, we weren't able to mark the voicemail as read due to a poor network connection. Try again.",
+      "notAbleToReadVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as read. Try again later.",
+      "notAbleToDeleteVoicemailForNetworkIssue": "Sorry, we weren't able to delete the voicemail due to a poor network connection. Try again.",
+      "notAbleToDeleteVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the voicemail. Try again later."
+    }
   },
   "meeting": {
     "Meetings": "Meetings"
@@ -637,13 +744,13 @@
         }
       },
       "desktopNotifications": {
-        "title": "Desktop Notifications",
+        "title": "Desktop notifications",
         "notificationsForBrowser": {
           "label": "Desktop notifications for browser",
           "description": "Turn on/off desktop notifications on your web browser. Browser permission is needed for desktop notifications."
         },
         "newMessages": {
-          "label": "New Messages",
+          "label": "New messages",
           "description": "Choose your preference for desktop notifications for new messages",
           "options": {
             "always": "All new messages",
@@ -652,16 +759,16 @@
           }
         },
         "incomingCalls": {
-          "label": "Incoming Calls",
+          "label": "Incoming calls",
           "description": "Choose your preference for desktop notifications for incoming calls"
         },
         "callsAndVoicemails": {
-          "label": "Missed Calls and New Voicemails",
+          "label": "Missed calls and new voicemails",
           "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
-        "title": "Email Notifications",
+        "title": "Email notifications",
         "directMessages": {
           "label": "Direct messages",
           "description": "Receive email notifications for direct messages"
@@ -672,10 +779,10 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Receive email notifications for direct messages"
+          "description": "Choose your preferences for email notifications for team messages"
         },
         "dailyDigest": {
-          "label": "Daily Digest",
+          "label": "Daily digest",
           "description": "Receive Glip daily digest emails summarizing daily tasks and team events"
         },
         "options": {
@@ -690,6 +797,7 @@
     "meetings": "Meetings",
     "calendar": "Calendar",
     "update": "Update",
+    "edit": "Edit",
     "phone": {
       "title": "Phone",
       "general": {
@@ -704,6 +812,7 @@
         },
         "callerID": {
           "label": "Caller ID",
+          "Blocked": "Blocked",
           "description": "Choose your default Caller ID for making RingCentral phone calls"
         },
         "extensions": {
@@ -736,7 +845,7 @@
         "description": "Update the volume"
       }
     },
-    "default": "Default",
+    "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
     "microphone": "Microphone",

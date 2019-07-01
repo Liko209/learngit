@@ -36,11 +36,11 @@ class CallActionsViewComponent extends Component<Props> {
         color="grey.900"
         shouldPersistBg={shouldPersistBg}
         tooltipPlacement="top"
-        tooltipTitle={t('telephony.moreOptions')}
-        aria-label={t('telephony.moreOptions')}
+        tooltipTitle={t('telephony.accessibility.callActions')}
+        aria-label={t('telephony.accessibility.callActions')}
         size={shouldPersistBg ? 'xlarge' : 'xxlarge'}
         data-test-automation-id="telephony-call-actions-btn"
-        disableToolTip={isIncomingPage}
+        disableToolTip={!isIncomingPage}
       >
         call_more
       </JuiIconButton>

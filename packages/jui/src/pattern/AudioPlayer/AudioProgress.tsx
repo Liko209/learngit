@@ -5,20 +5,24 @@
  */
 import React, { Fragment } from 'react';
 import moment from 'moment';
-import JuiSlider from '@material-ui/lab/Slider';
-import styled from 'src/foundation/styled-components';
+import { RuiSlider } from 'rcui/components/Forms';
+import styled from '../../foundation/styled-components';
 import { width, spacing, palette, typography } from '../../foundation/utils';
-import { JuiAudioMode, JuiAudioProgressProps } from './types';
+import { JuiAudioMode, JuiAudioStatus, JuiAudioProgressProps } from './types';
 
 const StyledClock = styled.span`
   ${typography('caption1')};
   color: ${palette('grey', '500')};
 `;
 
-const StyledSlider = styled(JuiSlider)`
+const StyledSlider = styled(RuiSlider)`
   && {
     margin: ${spacing(0, 4)};
     width: ${width(30)};
+  }
+
+  > div > div {
+    transition: none;
   }
 `;
 
@@ -32,16 +36,31 @@ const JuiAudioProgress = ({
   mode = JuiAudioMode.FULL,
   value = 0,
   duration = 0,
+  status,
   onChange,
   onDragStart,
   onDragEnd,
 }: JuiAudioProgressProps) => {
-  const isMiniMode = Object.is(mode, JuiAudioMode.MINI);
-  const currentTime = Math.min(value, duration);
-  const elProgressClock = <StyledClock>{formatTime(currentTime)}</StyledClock>;
+  if (Object.is(mode, JuiAudioMode.TINY)) {
+    return null;
+  }
 
-  if (isMiniMode) {
-    return elProgressClock;
+  const currentTime = Math.min(value, duration);
+
+  const elProgressClock = (
+    <StyledClock data-test-automation-id="audio-current-time">
+      {formatTime(currentTime)}
+    </StyledClock>
+  );
+
+  const elDurationsClock = (
+    <StyledClock data-test-automation-id="audio-end-time">
+      {formatTime(duration)}
+    </StyledClock>
+  );
+
+  if (Object.is(mode, JuiAudioMode.MINI)) {
+    return status === JuiAudioStatus.PAUSE ? elProgressClock : elDurationsClock;
   }
 
   return (
@@ -54,7 +73,7 @@ const JuiAudioProgress = ({
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       />
-      <StyledClock>{formatTime(duration)}</StyledClock>
+      {elDurationsClock}
     </Fragment>
   );
 };

@@ -27,8 +27,10 @@ import { IEntityNotificationController } from '../controller/interface/IEntityNo
 import { BaseSettingEntity } from '../model/setting';
 import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
-import { Nullable } from 'sdk/types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 import { ConfigChangeHistory } from '../config/types';
+import { notificationCenter, SERVICE } from 'sdk/service';
+import { UserConfig } from 'sdk/module/config';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
@@ -41,13 +43,20 @@ class EntityBaseService<
   private _entityNotificationController: IEntityNotificationController<T>;
   private _healthModuleController: IHealthModuleController;
   constructor(
-    public isSupportedCache: boolean,
+    public entityOptions: {
+      isSupportedCache: boolean;
+      entityName?: string;
+    },
     public dao?: BaseDao<T, IdType>,
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
     super();
     configMigrator.addHistory(this);
     this._initControllers();
+  }
+
+  getUserConfig(): UndefinedAble<UserConfig> {
+    return undefined;
   }
 
   getHistoryDetail(): Nullable<ConfigChangeHistory> {
@@ -89,12 +98,16 @@ class EntityBaseService<
   }
 
   protected onStarted() {
+    notificationCenter.on(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.on(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.subscribe();
     }
     this._healthModuleController && this._healthModuleController.init();
   }
   protected onStopped() {
+    notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.off(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
@@ -104,6 +117,10 @@ class EntityBaseService<
     delete this._entityCacheController;
     delete this._entityNotificationController;
   }
+
+  protected onLogin() {}
+
+  protected onLogout() {}
 
   async batchGet(ids: IdType[]): Promise<T[]> {
     if (this._entitySourceController) {
@@ -129,19 +146,26 @@ class EntityBaseService<
   }
 
   protected buildEntityCacheController() {
-    return buildEntityCacheController<T, IdType>();
+    return buildEntityCacheController<T, IdType>(this.entityOptions.entityName);
   }
 
   protected canSaveRemoteEntity(): boolean {
     return true;
   }
 
-  private _initControllers() {
-    if (this.isSupportedCache && !this._entityCacheController) {
-      this._entityCacheController = this.buildEntityCacheController();
-      this._initialEntitiesCache();
-    }
+  protected canRequest(): boolean {
+    return true;
+  }
 
+  private _canRequest = () => {
+    return this.canRequest();
+  }
+
+  private _initControllers() {
+    if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
+      this._entityCacheController = this.buildEntityCacheController();
+      this.initialEntitiesCache();
+    }
     if (this.dao || this._entityCacheController) {
       this._entitySourceController = buildEntitySourceController(
         buildEntityPersistentController<T, IdType>(
@@ -149,29 +173,29 @@ class EntityBaseService<
           this._entityCacheController,
         ),
         this.networkConfig
-          ? buildRequestController<T, IdType>(this.networkConfig)
+          ? {
+              requestController: buildRequestController<T, IdType>(
+                this.networkConfig,
+              ),
+              canSaveRemoteData: this.canSaveRemoteEntity(),
+              canRequest: this._canRequest,
+            }
           : undefined,
-        this.canSaveRemoteEntity(),
       );
     }
   }
 
-  private async _initialEntitiesCache() {
+  protected async initialEntitiesCache() {
     mainLogger.debug('_initialEntitiesCache begin');
-    if (
-      this.dao &&
-      this._entityCacheController &&
-      !this._entityCacheController.isStartInitial()
-    ) {
+    if (this.dao && !this._entityCacheController.isStartInitial()) {
       const models = await this.dao.getAll();
       this._entityCacheController.initialize(models);
       mainLogger.debug('_initialEntitiesCache done');
-    } else {
-      mainLogger.debug(
-        'initial cache without permission or already initialized',
-      );
-      this._entityCacheController.initialize([]);
+      return models;
     }
+    mainLogger.debug('initial cache without permission or already initialized');
+    this._entityCacheController.initialize([]);
+    return [];
   }
 
   protected buildNotificationController() {

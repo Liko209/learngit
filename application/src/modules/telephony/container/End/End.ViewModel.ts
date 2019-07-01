@@ -6,6 +6,7 @@
 
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
+import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { EndProps, EndViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -17,25 +18,20 @@ class EndViewModel extends StoreViewModel<EndProps> implements EndViewProps {
     TELEPHONY_SERVICE,
   );
 
-  private _timeoutID: NodeJS.Timeout;
-
-  private _hangUp = () => {};
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   constructor(props: EndProps) {
     super(props);
-    this._timeoutID = setTimeout(() => {
-      this._hangUp = this._telephonyService.hangUp;
-    },                           ACTIVATION_CALL_TIME);
   }
 
   end = () => {
-    this._hangUp();
-  }
-
-  dispose() {
-    if (this._timeoutID) {
-      clearTimeout(this._timeoutID);
+    if (
+      Date.now() - this._telephonyStore.activeCallTime <
+      ACTIVATION_CALL_TIME
+    ) {
+      return;
     }
+    this._telephonyService.hangUp();
   }
 }
 

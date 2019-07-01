@@ -127,10 +127,10 @@ describe('HandleByRingCentral', () => {
   });
 
   describe('refreshToken', () => {
-    it('should reject if refresh fail', async () => {
+    it('should reject true when refresh fail with HTTP_400 code', async () => {
       expect.assertions(1);
       HandleByRingCentral.platformHandleDelegate = {
-        refreshRCToken: jest.fn().mockRejectedValueOnce('502'),
+        refreshRCToken: jest.fn().mockRejectedValueOnce({ code: 'HTTP_400' }),
       };
       const originToken = {
         timestamp: 0,
@@ -138,7 +138,21 @@ describe('HandleByRingCentral', () => {
         refresh_token_expires_in: 6000,
       };
       const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
-      await expect(refreshToken).rejects.toEqual('502');
+      await expect(refreshToken).rejects.toEqual(true);
+    });
+
+    it('should reject false when refresh fail with other code', async () => {
+      expect.assertions(1);
+      HandleByRingCentral.platformHandleDelegate = {
+        refreshRCToken: jest.fn().mockRejectedValueOnce({ code: 'test' }),
+      };
+      const originToken = {
+        timestamp: 0,
+        expires_in: 6000,
+        refresh_token_expires_in: 6000,
+      };
+      const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
+      await expect(refreshToken).rejects.toEqual(false);
     });
 
     it('should resolve if refresh success', async () => {

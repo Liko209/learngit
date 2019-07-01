@@ -32,7 +32,7 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   max-height: ${height(37)};
   overflow-y: auto;
-  margin: ${spacing(2, 0, 0)};
+  margin: ${spacing(5, 0, 0)};
   padding: ${spacing(0.25, 0, 0, 0.25)};
 `;
 
@@ -61,6 +61,9 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
       <Wrapper data-test-automation-id="attachment-list">
         {files.map((looper: ItemInfo, idx: number) => {
           let content;
+          const fileName = fileNames[idx]
+            ? fileNames[idx].fileNameChildren
+            : '';
           if (idx === count - 1) {
             content = (
               <AttachmentItem
@@ -69,7 +72,7 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
                 }
                 ref={this._lastItemRef}
                 status={ITEM_STATUS.NORMAL}
-                name={fileNames[idx] ? fileNames[idx].fileNameChildren : ''}
+                name={fileName}
                 onClickDeleteButton={() => removeAttachment(looper)}
                 key={idx}
               />
@@ -81,7 +84,7 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
                   iconResolver ? iconResolver(looper) : DEFAULT_FILE_ICON
                 }
                 status={ITEM_STATUS.NORMAL}
-                name={looper.name}
+                name={fileName}
                 onClickDeleteButton={() => removeAttachment(looper)}
                 key={idx}
               />

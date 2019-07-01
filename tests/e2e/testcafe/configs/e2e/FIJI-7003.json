@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationStream/UnreadMessageIndicator.ts"
+    ],
+    "include_tags": [
+      "P2"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

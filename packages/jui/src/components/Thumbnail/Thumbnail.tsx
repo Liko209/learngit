@@ -38,6 +38,7 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
       width: size === 'small' ? 5 * width : 9 * width,
       height: size === 'small' ? 5 * height : 9 * height,
       backgroundImage: `url(${url})`,
+      display: 'inline-block',
       borderRadius:
         size === 'small'
           ? 0.5 * theme.shape['borderRadius']

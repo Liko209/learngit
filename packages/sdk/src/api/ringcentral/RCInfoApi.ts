@@ -5,8 +5,14 @@
  */
 
 import Api from '../api';
-import { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE } from './constants';
-import { NETWORK_METHOD, NETWORK_VIA, HA_PRIORITY } from 'foundation';
+import { RINGCENTRAL_API } from './constants';
+import {
+  NETWORK_METHOD,
+  NETWORK_VIA,
+  HA_PRIORITY,
+  REQUEST_HEADER_KEYS,
+  CONTENT_TYPES,
+} from 'foundation';
 import { RCClientInfo } from './types/RCClientInfo';
 import { RCAccountInfo } from './types/RCAccountInfo';
 import { RCExtensionInfo } from './types/RCExtensionInfo';
@@ -81,8 +87,8 @@ class RCInfoApi extends Api {
   static getPhoneParserData(localDataVersion: string) {
     const extraHeaders = {};
     const localDataVersionWithQuote = `\"${localDataVersion}\"`;
-    extraHeaders[HTTP_HEADER_KEY.ACCEPT] = CONTENT_TYPE.XML;
-    extraHeaders[HTTP_HEADER_KEY.IF_NONE_MATCH] = localDataVersionWithQuote;
+    extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
+    extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
     const query = this._requestParameters({
       path: RINGCENTRAL_API.API_PHONE_PARSER_DATA,
       headers: extraHeaders,

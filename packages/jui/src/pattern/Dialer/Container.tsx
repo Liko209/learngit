@@ -16,14 +16,16 @@ import {
 
 type Props = {
   removeMargin: boolean;
-  CallAction: React.ComponentType;
+  removePadding: boolean;
+  CallAction?: React.ComponentType;
   KeypadActions: React.ComponentType[] | JSX.Element;
+  keypadFullSize: boolean;
 };
 
-const StyledContainer = styled('div')`
+const StyledContainer = styled('div')<{ removePadding: boolean }>`
   && {
     background-color: ${palette('common', 'white')};
-    padding: ${spacing(0, 6, 6)};
+    padding: ${({ removePadding }) => (removePadding ? 0 : spacing(0, 6, 6))};
     box-sizing: border-box;
     height: ${height(99)};
     display: flex;
@@ -45,6 +47,7 @@ const StyledKeypadActionsContainer = styled('div')`
     flex-direction: column;
     justify-content: center;
     position: relative;
+    cursor: default;
   }
 `;
 
@@ -82,6 +85,8 @@ class JuiContainer extends PureComponent<Props> {
   _containerRef: RefObject<any> = createRef();
   static defaultProps = {
     removeMargin: true,
+    removePadding: false,
+    keypadFullSize: false,
   };
 
   state = {
@@ -91,6 +96,7 @@ class JuiContainer extends PureComponent<Props> {
   _stopPropagation = (e: any) => {
     // prevent drag & drop
     e.stopPropagation();
+    e.preventDefault();
   }
 
   componentDidMount() {
@@ -113,24 +119,39 @@ class JuiContainer extends PureComponent<Props> {
   }
 
   render() {
-    const { CallAction, KeypadActions, removeMargin } = this.props;
+    const {
+      CallAction,
+      KeypadActions,
+      removeMargin,
+      removePadding,
+      keypadFullSize,
+    } = this.props;
+
+    const keypadActions = Array.isArray(KeypadActions)
+      ? KeypadActions.map((Action: React.ComponentType) => (
+          <Action key={Action.displayName} />
+        ))
+      : KeypadActions;
+
     return (
-      <StyledContainer ref={this._containerRef}>
-        <StyledKeypadActionsContainer>
-          <StyledKeypadActions
-            removeMargin={removeMargin}
-            onMouseDown={this._stopPropagation}
-          >
-            {Array.isArray(KeypadActions)
-              ? KeypadActions.map((Action: React.ComponentType) => (
-                  <Action key={Action.displayName} />
-                ))
-              : KeypadActions}
-          </StyledKeypadActions>
+      <StyledContainer ref={this._containerRef} removePadding={removePadding}>
+        <StyledKeypadActionsContainer onMouseDown={this._stopPropagation}>
+          {keypadFullSize ? (
+            keypadActions
+          ) : (
+            <StyledKeypadActions
+              removeMargin={removeMargin}
+              onMouseDown={this._stopPropagation}
+            >
+              {keypadActions}
+            </StyledKeypadActions>
+          )}
         </StyledKeypadActionsContainer>
-        <StyledCallAction onMouseDown={this._stopPropagation}>
-          <CallAction />
-        </StyledCallAction>
+        {CallAction && (
+          <StyledCallAction onMouseDown={this._stopPropagation}>
+            <CallAction />
+          </StyledCallAction>
+        )}
       </StyledContainer>
     );
   }
@@ -145,4 +166,84 @@ const KeypadHeaderContainer = styled.div`
   padding: ${spacing(0, 9, 1, 5)};
 `;
 
-export { JuiContainer, JuiKeypadAction, KeypadHeaderContainer };
+const ContactSearchContainer = styled.div<{}>`
+  && {
+    position: relative;
+    width: 100%;
+    position: relative;
+    height: 100%;
+    flex: 1;
+    & > div:nth-child(2) {
+      margin-top: ${spacing(11)};
+      height: calc(100% - ${spacing(11)});
+      overflow: hidden;
+    }
+  }
+`;
+
+// https://github.com/styled-components/styled-components/issues/1821
+const ContactSearchItemContent = styled.div<{}>`
+  && {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+
+    & > *:nth-child(1) {
+      flex: 1;
+    }
+    & > *:nth-child(2) {
+      flex-basis: ${spacing(8)};
+    }
+  }
+`;
+
+// prettier-ignore
+const CallerIdContainer = (elm: React.FunctionComponent<any>) => styled(elm)<{}>`
+  && {
+    position: absolute;
+    top: ${spacing(1.5)};
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    flex-direction: horizontal;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    font-size: ${({ theme }) => theme.typography.body1.fontSize};
+    padding-bottom: 0;
+
+    div:nth-of-type(1) {
+      padding-bottom: 0;
+    }
+    div:nth-of-type(2) {
+      background: transparent;
+      border: none;
+      width: auto;
+      font-size: ${({ theme }) => theme.typography.caption2.fontSize};
+      margin-right: ${spacing(-3)};
+
+      & > div > div[role='button'] {
+        padding: ${spacing(1.5, 4.5, 1.5, 1.5)};
+        overflow: hidden;
+        display: block;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+        white-space: nowrap;
+        max-width: ${spacing(36)};
+      }
+    }
+  }
+`;
+
+export {
+  JuiContainer,
+  JuiKeypadAction,
+  KeypadHeaderContainer,
+  ContactSearchContainer,
+  ContactSearchItemContent,
+  CallerIdContainer,
+};

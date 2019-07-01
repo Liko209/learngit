@@ -8,7 +8,6 @@ import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed, action, reaction } from 'mobx';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { mainLogger } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
@@ -19,48 +18,34 @@ import {
 } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
-  HOLD_STATE,
-  HOLD_TRANSITION_NAMES,
-  CALL_STATE,
   CALL_WINDOW_STATUS,
-  RecordFSM,
-  RECORD_TRANSITION_NAMES,
-  RECORD_STATE,
-  RecordDisableFSM,
-  RECORD_DISABLED_STATE,
-  RECORD_DISABLED_STATE_TRANSITION_NAMES,
-  CallFSM,
-  HoldFSM,
   CallWindowFSM,
-  CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
 } from '../FSM';
-import { ANONYMOUS } from '../interface/constant';
+import {
+  ANONYMOUS,
+  INCOMING_STATE,
+  DIALING,
+  INITIAL_REPLY_COUNTDOWN_TIME,
+  CALL_TYPE,
+} from '../interface/constant';
 const some = require('lodash/some');
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
-enum CALL_TYPE {
-  NULL,
-  INBOUND,
-  OUTBOUND,
-}
-
-enum INCOMING_STATE {
-  IDLE,
-  REPLY,
-  FORWARD,
-}
-
-const logTag = '[TelephonyStore_View]';
-const INITIAL_REPLY_COUNTDOWN_TIME = 55;
+import {
+  Call,
+  HOLD_STATE,
+  RECORD_STATE,
+  MUTE_STATE,
+  CALL_STATE,
+  CALL_DIRECTION,
+} from 'sdk/module/telephony/entity';
+import CallModel from '@/store/models/Call';
 
 class TelephonyStore {
-  private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
-  private _holdFSM = new HoldFSM();
-  private _recordFSM = new RecordFSM();
-  private _recordDisableFSM = new RecordDisableFSM();
   private _intervalReplyId?: NodeJS.Timeout;
+  private _history: Set<CALL_DIRECTION | typeof DIALING> = new Set();
 
   maximumInputLength = 30;
 
@@ -69,56 +54,52 @@ class TelephonyStore {
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
-  @observable
-  callState: CALL_STATE = this._callFSM.state;
-  @observable
-  callType: CALL_TYPE = CALL_TYPE.NULL;
-  @observable
-  holdState: HOLD_STATE = this._holdFSM.state;
-  @observable
-  isStopRecording: boolean = false;
 
-  @observable
-  recordState: RECORD_STATE = this._recordFSM.state;
-  @observable
-  recordDisabledState: RECORD_DISABLED_STATE = this._recordDisableFSM.state;
+  isStopRecording: boolean = false; // whether the stop recording request is on the flight
 
   @observable
   uid?: number;
+
   @observable
   phoneNumber?: string;
+
   @observable
   isContactMatched: boolean = false;
+
   @observable
-  callId: string;
+  id: number = 0;
+
   @observable
   callerName?: string;
-  @observable
-  activeCallTime?: number;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   replyCountdownTime?: number = INITIAL_REPLY_COUNTDOWN_TIME;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   keypadEntered: boolean = false;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   enteredKeys: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   customReplyMessage: string = '';
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   shiftKeyDown = false;
-  @observable
-  isMute = false;
 
   @observable
-  pendingForHold: boolean = false;
-  @observable
-  pendingForRecord: boolean = false;
+  shouldKeepDialog: boolean;
 
-  @observable
-  shouldResume: boolean;
-
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   inputString: string = '';
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   forwardString: string = '';
 
@@ -161,69 +142,25 @@ class TelephonyStore {
   @observable
   dialerFocused: boolean;
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @observable
+  firstLetterEnteredThroughKeypad: boolean;
+
+  @observable
+  enteredDialer: boolean = false;
+
   constructor() {
-    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
-    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
+    type FSM = '_callWindowFSM';
+    type FSMProps = 'callWindowState';
 
-    [
-      ['_callWindowFSM', 'callWindowState'],
-      ['_recordFSM', 'recordState'],
-      ['_recordDisableFSM', 'recordDisabledState'],
-    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
-      this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
-        const { to } = lifecycle;
-        this[observableProp] = to as
-          | CALL_WINDOW_STATUS
-          | RECORD_STATE
-          | RECORD_DISABLED_STATE;
-      });
-    });
-
-    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-      this.holdState = to as HOLD_STATE;
-      switch (this.holdState) {
-        case HOLD_STATE.HOLDED:
-          this.disableRecord();
-          break;
-        case HOLD_STATE.IDLE:
-          this.enableRecord();
-          break;
-      }
-    });
-
-    this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to, from } = lifecycle;
-      if (to === from) {
-        return;
-      }
-      this.callState = to as CALL_STATE;
-      switch (this.callState) {
-        case CALL_STATE.CONNECTED:
-          this.activeCallTime = Date.now();
-          this.enableHold();
-          break;
-        case CALL_STATE.DIALING:
-        case CALL_STATE.IDLE:
-          this.resetReply();
-          this.quitKeypad();
-          this._restoreButtonStates();
-          this._clearEnteredKeys();
-          this._clearForwardString();
-          this.callerName = undefined;
-          this.isMute = false;
-          this.phoneNumber = undefined;
-          break;
-        case CALL_STATE.CONNECTING:
-          this.activeCallTime = undefined;
-          break;
-        default:
-          setTimeout(() => {
-            this.activeCallTime = undefined;
-          },         300);
-          break;
-      }
-    });
+    [['_callWindowFSM', 'callWindowState']].forEach(
+      ([fsm, observableProp]: [FSM, FSMProps]) => {
+        this[fsm].observe('onAfterTransition', (lifecycle: LifeCycle) => {
+          const { to } = lifecycle;
+          this[observableProp] = to as CALL_WINDOW_STATUS;
+        });
+      },
+    );
 
     reaction(
       () => this.phoneNumber,
@@ -238,6 +175,25 @@ class TelephonyStore {
       },
       { fireImmediately: true },
     );
+
+    // TODO: move out of telephony store when minization won't destroy the telephony dialog
+    reaction(
+      () => this.inputString.length,
+      length => {
+        if (!length) {
+          this.firstLetterEnteredThroughKeypad = false;
+        }
+      },
+    );
+
+    reaction(
+      () => this.call && this.callState,
+      callState => {
+        if (callState === CALL_STATE.DISCONNECTED) {
+          this.end();
+        }
+      },
+    );
   }
 
   @computed
@@ -248,6 +204,9 @@ class TelephonyStore {
 
   @computed
   get displayName() {
+    if (!this.isContactMatched) {
+      return undefined;
+    }
     if (this.person) {
       return this.person.userDisplayName;
     }
@@ -265,6 +224,16 @@ class TelephonyStore {
       });
     }
     return false;
+  }
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @computed
+  get shouldEnterContactSearch() {
+    return (
+      this.shouldDisplayDialer &&
+      !!this.inputString.trim().length &&
+      !this.firstLetterEnteredThroughKeypad
+    );
   }
 
   private _matchContactByPhoneNumber = async (phone: string) => {
@@ -291,12 +260,14 @@ class TelephonyStore {
     localStorage.setItem(LOCAL_CALL_WINDOW_STATUS_KEY, status);
   }
 
+  @action
   private _closeCallWindow = () => {
     if (this.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED) {
       this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.CLOSE_DIALER]();
     }
   }
 
+  @action
   private _openCallWindow = () => {
     const {
       OPEN_DETACHED_DIALER,
@@ -312,20 +283,17 @@ class TelephonyStore {
     }
   }
 
-  private _restoreButtonStates() {
-    this.disableHold();
-    this.disableRecord();
-    this.stopRecording();
-  }
-
+  @action
   private _clearEnteredKeys = () => {
     this.enteredKeys = '';
   }
 
+  @action
   private _clearForwardString = () => {
     this.forwardString = '';
   }
 
+  @action
   updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
     if (defaultCallerPhoneNumber !== undefined) {
       this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
@@ -337,14 +305,17 @@ class TelephonyStore {
     }
   }
 
+  @action
   openKeypad = () => {
     this.keypadEntered = true;
   }
 
+  @action
   quitKeypad = () => {
     this.keypadEntered = false;
   }
 
+  @action
   inputKey = (key: string) => {
     this.enteredKeys += key;
   }
@@ -353,206 +324,146 @@ class TelephonyStore {
     this.customReplyMessage = msg.trimLeft();
   }
 
+  @action
   setShiftKeyDown = (down: boolean) => {
     this.shiftKeyDown = down;
   }
 
+  @action
   openDialer = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.OPEN_DIALER]();
+    this._history.add(DIALING);
     this._openCallWindow();
+    this.shouldKeepDialog = true;
   }
 
+  @action
   closeDialer = () => {
     this._closeCallWindow();
-    this._callFSM[CALL_TRANSITION_NAMES.CLOSE_DIALER]();
+    this.shouldKeepDialog = false;
+    this._history.delete(DIALING);
   }
 
+  @action
   attachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.FLOATING;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.ATTACHED_WINDOW]();
   }
 
+  @action
   detachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.DETACHED;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
   }
 
+  @action
   end = () => {
-    const history: CALL_STATE[] = this._callFSM.history;
-    const {
-      END_INCOMING_CALL,
-      END_DIRECT_CALL,
-      END_WIDGET_CALL,
-      END_DIALER_CALL,
-      END_INCOMING_CALL_AND_RESUME,
-    } = CALL_TRANSITION_NAMES;
+    const history = this._history;
 
     switch (true) {
-      case history.includes(CALL_STATE.INCOMING) &&
-        history.includes(CALL_STATE.DIALING) &&
-        this.shouldResume:
+      case history.has(CALL_DIRECTION.INBOUND) &&
+        history.has(DIALING) &&
+        this.shouldKeepDialog:
         this.openDialer();
-        this._callFSM[END_INCOMING_CALL_AND_RESUME]();
         break;
-      case history.includes(CALL_STATE.INCOMING):
+
+      case history.has(CALL_DIRECTION.INBOUND) || !history.has(DIALING):
         this._closeCallWindow();
-        this._callFSM[END_INCOMING_CALL]();
-        break;
-      case !history.includes(CALL_STATE.DIALING):
-        this._closeCallWindow();
-        this._callFSM[END_DIRECT_CALL]();
-        break;
-      case this._localCallWindowStatus === CALL_WINDOW_STATUS.MINIMIZED:
-        this._callFSM[END_WIDGET_CALL]();
+        this._history.delete(DIALING);
         break;
       default:
-        this._callFSM[END_DIALER_CALL]();
+        // this._history.delete(DIALING);
         break;
     }
+
+    this.resetReply();
+    this.quitKeypad();
+    this._clearEnteredKeys();
+    this._clearForwardString();
+    this.callerName = undefined;
+    this.phoneNumber = undefined;
+    this.isContactMatched = false;
+    this._history.delete(CALL_DIRECTION.INBOUND);
   }
 
-  dialerCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_DIALER_CALL]();
-    this.shouldResume = false;
-  }
-
+  @action
   directCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
-    this.shouldResume = false;
+    this.firstLetterEnteredThroughKeypad = false;
     this._openCallWindow();
   }
 
+  @action
   incomingCall = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.START_INCOMING_CALL]();
+    this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
-  }
-
-  answer = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.ANSWER_INCOMING_CALL]();
-  }
-
-  connected = () => {
-    this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
-  }
-
-  hold = () => {
-    if (this.held) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to hold from held`,
-      );
-      return;
-    }
-    this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
-  }
-
-  unhold = () => {
-    if (!this.held) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to unhold from idle`,
-      );
-      return;
-    }
-    this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
-  }
-
-  startRecording = () => {
-    if (this.isRecording) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to record from recording`,
-      );
-      return;
-    }
-    this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
-  }
-
-  stopRecording = () => {
-    if (!this.isRecording) {
-      mainLogger.debug(
-        `${logTag} Invalid transition: unable to stop recording from idle`,
-      );
-      return;
-    }
-    this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
-  }
-
-  setPendingForHoldBtn(val: boolean) {
-    this.pendingForHold = val;
-  }
-
-  setPendingForRecordBtn(val: boolean) {
-    this.pendingForRecord = val;
-  }
-
-  enableHold = () => {
-    this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
-  }
-
-  enableRecord = () => {
-    // prettier-ignore
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
-  }
-
-  disableHold = () => {
-    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
-  }
-
-  disableRecord = () => {
-    // prettier-ignore
-    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
   }
 
+  @action
   onDialerInputBlur = () => {
     this.dialerInputFocused = false;
   }
 
+  @action
   onDialerFocus = () => {
     this.dialerFocused = true;
   }
 
+  @action
   onDialerBlur = () => {
     this.dialerFocused = false;
   }
 
+  @action
   startAnimation = () => {
     this.startMinimizeAnimation = true;
   }
 
+  @action
   stopAnimation = () => {
     this.startMinimizeAnimation = false;
   }
 
+  @action
+  enterFirstLetterThroughKeypad = () => {
+    this.firstLetterEnteredThroughKeypad = true;
+  }
+
   @computed
   get isDetached() {
-    if (this.callWindowState === CALL_WINDOW_STATUS.FLOATING) {
-      return false;
+    if (this.callWindowState === CALL_WINDOW_STATUS.DETACHED) {
+      return true;
     }
-    return true;
+    return false;
   }
 
+  // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
   @computed
   get holdDisabled() {
-    return this.holdState === HOLD_STATE.DISABLED;
+    return this.holdState === HOLD_STATE.DISABLE;
   }
 
+  // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
   @computed
   get held() {
-    return this.holdState === HOLD_STATE.HOLDED;
+    return this.holdState === HOLD_STATE.HELD;
   }
 
+  // TODO: move to Record.ViewModel.ts when implementing the multi-call feature
   @computed
   get isRecording() {
     return this.recordState === RECORD_STATE.RECORDING;
   }
 
+  // TODO: move to Record.ViewModel.ts when implementing the multi-call feature
   @computed
   get recordDisabled() {
-    return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
+    return this.recordState === RECORD_STATE.DISABLE;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   directReply = () => {
     this.incomingState = INCOMING_STATE.REPLY;
@@ -561,16 +472,20 @@ class TelephonyStore {
     }
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   directForward = () => {
     this.incomingState = INCOMING_STATE.FORWARD;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   backIncoming = () => {
     this.incomingState = INCOMING_STATE.IDLE;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  @action
   resetReply = () => {
     this.replyCountdownTime = undefined;
     this.customReplyMessage = '';
@@ -578,6 +493,7 @@ class TelephonyStore {
     this._intervalReplyId = undefined;
   }
 
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action.bound
   private _createReplyInterval() {
     this.replyCountdownTime = INITIAL_REPLY_COUNTDOWN_TIME;
@@ -589,23 +505,103 @@ class TelephonyStore {
     },                                  1000);
   }
 
-  @action
-  switchBetweenMuteAndUnmute = () => {
-    this.isMute = !this.isMute;
-  }
-
   @computed
   get shouldDisplayDialer() {
     // TODO: change this when refactoring for multi-call
     return (
-      [CALL_STATE.DIALING, CALL_STATE.IDLE].includes(this.callState) ||
+      [undefined, CALL_STATE.DISCONNECTED].includes(this.callState) ||
       this.incomingState === INCOMING_STATE.FORWARD
     );
   }
 
   @computed
-  get hasIncomingCall() {
-    return this.callState === CALL_STATE.INCOMING;
+  get isIncomingCall() {
+    return this.callState === CALL_STATE.IDLE && this.isInbound;
+  }
+
+  @computed
+  get call(): CallModel {
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
+  }
+
+  @computed
+  get holdState(): HOLD_STATE {
+    return this.call.holdState;
+  }
+
+  @computed
+  get recordState(): RECORD_STATE {
+    return this.call.recordState;
+  }
+
+  @computed
+  get callState(): CALL_STATE {
+    return this.call.callState;
+  }
+
+  @computed
+  get isMute(): boolean {
+    return this.call.muteState === MUTE_STATE.MUTED;
+  }
+
+  @computed
+  get activeCallTime(): number {
+    return this.call.connectTime;
+  }
+
+  @computed
+  get isInbound(): boolean {
+    return this.call.direction === CALL_DIRECTION.INBOUND;
+  }
+
+  @computed
+  get isOutbound(): boolean {
+    return this.call.direction === CALL_DIRECTION.OUTBOUND;
+  }
+
+  @computed
+  get callDisconnected(): boolean {
+    return this.callState === CALL_STATE.DISCONNECTED;
+  }
+
+  @computed
+  get callId(): string {
+    return this.call.callId;
+  }
+
+  // TODO: should change the prop's name since it's isomorphic to `CALL_DIRECTION`
+  @computed
+  get callType() {
+    switch (true) {
+      case this.isInbound:
+        return CALL_TYPE.INBOUND;
+      case this.isOutbound:
+        return CALL_TYPE.OUTBOUND;
+      default:
+        return CALL_TYPE.NULL;
+    }
+  }
+
+  @action
+  syncDialerEntered(entered: boolean) {
+    this.enteredDialer = entered;
+  }
+
+  @computed
+  get hasActiveCall() {
+    return [CALL_STATE.CONNECTED, CALL_STATE.CONNECTING].includes(
+      this.callState,
+    );
+  }
+
+  @computed
+  get hasActiveOutBoundCall() {
+    return this.hasActiveCall && this.isOutbound;
+  }
+
+  @computed
+  get hasActiveInBoundCall() {
+    return this.hasActiveCall && this.isInbound;
   }
 }
 

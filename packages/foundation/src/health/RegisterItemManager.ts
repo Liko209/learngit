@@ -48,7 +48,6 @@ export class RegisterItemManager<T extends UniqueItem>
   }
 
   get(identify: Symbol | string) {
-    console.log('TCL: get -> identify', identify);
     if (typeof identify === 'symbol') {
       return _.find(this._items, it => it.identify === identify);
     }

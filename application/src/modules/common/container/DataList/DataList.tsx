@@ -10,11 +10,11 @@ import {
   JuiInfiniteList,
 } from 'jui/components/VirtualizedList';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 type DataListProps = {
-  listHandler: FetchSortableDataListHandler<any>;
+  listHandler: FetchSortableDataListHandler<any, any>;
   initialDataCount: number;
   InfiniteListProps: Pick<
     JuiInfiniteListProps,
@@ -28,6 +28,7 @@ type DataListProps = {
     | 'stickToLastPosition'
   >;
   children: JSX.Element[];
+  reverse?: boolean;
 };
 
 @observer
@@ -43,22 +44,18 @@ class DataList extends React.Component<DataListProps> {
   }
 
   @action
-  private _loadMore = async (direction: 'up' | 'down', count: number) => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     await this.props.listHandler.fetchData(
       this._transformDirection(direction),
       count,
     );
   }
 
-  @action
-  private _hasMore = (direction: 'up' | 'down') => {
-    return this.props.listHandler.hasMore(this._transformDirection(direction));
-  }
-
   private _transformDirection(direction: 'up' | 'down') {
-    const queryDirection =
-      direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
-    return queryDirection;
+    if (this.props.reverse) {
+      return direction === 'up' ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
+    }
+    return direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
   }
 
   componentDidUpdate(prevProps: DataListProps) {
@@ -67,13 +64,26 @@ class DataList extends React.Component<DataListProps> {
     }
   }
 
+  @computed
+  get hasMore() {
+    const hasMoreUp = this.props.listHandler.hasMore(
+      this._transformDirection('up'),
+    );
+    const hasMoreDown = this.props.listHandler.hasMore(
+      this._transformDirection('down'),
+    );
+    return (direction: 'up' | 'down') =>
+      direction === 'up' ? hasMoreUp : hasMoreDown;
+  }
+
   render() {
     const { children, InfiniteListProps } = this.props;
+
     return (
       <JuiInfiniteList
         loadInitialData={this._loadInitialData}
-        loadMore={this._loadMore}
-        hasMore={this._hasMore}
+        loadMore={this.loadMore}
+        hasMore={this.hasMore}
         {...InfiniteListProps}
       >
         {children}

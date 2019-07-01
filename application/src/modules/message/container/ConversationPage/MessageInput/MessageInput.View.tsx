@@ -9,13 +9,19 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { MessageInputViewProps, MessageInputProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
+import { ColonEmoji } from './ColonEmoji';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { InputFooter } from './InputFooter';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
+import { ImageDownloader } from '@/common/ImageDownloader';
+import { IImageDownloadedListener } from 'sdk/pal';
+import { PRELOAD_ITEM } from './ColonEmoji/constants';
+import moize from 'moize';
 
 type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
 @observer
@@ -28,12 +34,14 @@ class MessageInputViewComponent extends Component<
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
-
+  private _imageDownloader: ImageDownloader;
+  private _listner: IImageDownloadedListener;
   state = {
     modules: {},
   };
 
   componentDidMount() {
+    this._imageDownloader = new ImageDownloader();
     this.updateModules();
     this.props.addOnPostCallback(() => {
       const { current } = this._attachmentsRef;
@@ -41,6 +49,7 @@ class MessageInputViewComponent extends Component<
         current.vm.cleanFiles();
       }
     });
+    this._imageDownloader.download(PRELOAD_ITEM, this._listner);
   }
 
   componentWillUnmount() {
@@ -67,7 +76,7 @@ class MessageInputViewComponent extends Component<
           },
         },
         mention: mention.vm.mentionOptions,
-        emoji: emoji.vm.emojiOptions,
+        emoji: emoji.vm.colonEmojiOptions,
       },
     });
   }
@@ -97,26 +106,78 @@ class MessageInputViewComponent extends Component<
     }
   }
 
-  render() {
-    const { draft, contentChange, error, id, t, insertEmoji } = this.props;
-    const { modules } = this.state;
-    const toolbarNode = (
+  private _getMenus() {
+    const { t } = this.props;
+
+    return [
+      {
+        icon: 'google',
+        label: t('message.inputMenus.google'),
+      },
+      {
+        icon: 'dropbox',
+        label: t('message.inputMenus.dropbox'),
+      },
+      {
+        icon: 'box',
+        label: t('message.inputMenus.box'),
+      },
+      {
+        icon: 'evernote',
+        label: t('message.inputMenus.evernote'),
+      },
+      {
+        icon: 'onedrive',
+        label: t('message.inputMenus.onedrive'),
+      },
+    ];
+  }
+
+  private _getFileMenu() {
+    const { t } = this.props;
+
+    return {
+      icon: 'computer',
+      label: t('message.inputMenus.computer'),
+    };
+  }
+
+  private _getToolbarNode = moize(
+    (t: Props['t'], insertEmoji: Props['insertEmoji']) => (
       <MessageActionBar>
         <AttachmentView
+          menus={this._getMenus()}
+          fileMenu={this._getFileMenu()}
+          tooltip={t('message.action.attachFile')}
+          title={t('message.inputMenus.uploadFileMenuTitle')}
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
-        <Emoji
-          handleEmojiClick={insertEmoji}
-          sheetSize={64}
-          set="emojione"
-          ref={this._emojiRef}
-        />
+        <Emoji handleEmojiClick={insertEmoji} sheetSize={64} set="emojione" />
       </MessageActionBar>
-    );
-    const attachmentsNode = (
-      <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
-    );
+    ),
+  );
+
+  private _getAttachmentsNode = moize((id: number) => (
+    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+  ));
+
+  private _getFooterNode = moize((hasInput: boolean) => (
+    <InputFooter hasInput={hasInput} />
+  ));
+
+  render() {
+    const {
+      draft,
+      contentChange,
+      error,
+      id,
+      t,
+      insertEmoji,
+      hasInput,
+    } = this.props;
+    const { modules } = this.state;
+
     return (
       <JuiMessageInput
         value={draft}
@@ -124,11 +185,14 @@ class MessageInputViewComponent extends Component<
         error={error ? t(error) : error}
         modules={modules}
         id={id}
-        toolbarNode={toolbarNode}
-        attachmentsNode={attachmentsNode}
+        toolbarNode={this._getToolbarNode(t, insertEmoji)}
+        footerNode={this._getFooterNode(hasInput)}
+        attachmentsNode={this._getAttachmentsNode(id)}
         didDropFile={this.handleCopyPasteFile}
+        placeholder={t('message.action.typeNewMessage')}
       >
         <Mention id={id} ref={this._mentionRef} />
+        <ColonEmoji id={id} ref={this._emojiRef} />
       </JuiMessageInput>
     );
   }

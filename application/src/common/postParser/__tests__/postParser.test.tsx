@@ -8,6 +8,8 @@ import { postParser } from '..';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { Emoji } from 'emoji-mart';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -110,6 +112,20 @@ describe('non-glipdown text', () => {
           <JuiTextWithHighlight key={3}>test</JuiTextWithHighlight>,
           <JuiTextWithHighlight key={4}>test</JuiTextWithHighlight>,
           't est',
+        ]);
+      });
+
+      it('Different language can be highlighted [JPT-2298]', () => {
+        expect(postParser('abc我们', { keyword: '我们' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+        ]);
+        expect(postParser('abc我们 привет', { keyword: '我们 при' })).toEqual([
+          'abc',
+          <JuiTextWithHighlight key={0}>我们</JuiTextWithHighlight>,
+          ' ',
+          <JuiTextWithHighlight key={1}>при</JuiTextWithHighlight>,
+          'вет',
         ]);
       });
     });
@@ -425,6 +441,14 @@ describe('glipdown text', () => {
       });
     });
     describe('emojis', () => {
+      it('should parse emoji one with special character', () => {
+        expect(
+          postParser(':+1: :-1:', {
+            emoji: { hostName, unicodeOnly: true },
+          }),
+        ).toEqual('👍 👎');
+      });
+
       it('should return array with only unicode emoji', () => {
         expect(
           postParser('😁', {
@@ -453,24 +477,16 @@ describe('glipdown text', () => {
         ).toEqual('😂');
       });
 
-      it('should return array with only image emoji only', () => {
+      it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: { hostName } })).toEqual([
-          <img
-            alt='😁'
-            className='emoji enlarge-emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f601.png?v=2.2.7'
-            title='😁'
-            key={0}
-          />,
+          <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
+            😁
+          </Emoji>,
         ]);
         expect(postParser(':-/', { emoji: { hostName } })).toEqual([
-          <img
-            className='emoji enlarge-emoji'
-            alt='😕'
-            title=':-/'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f615.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='confused' skin={1} set={'emojione'} size={30} key={0}>
+            😕
+          </Emoji>,
         ]);
         expect(
           postParser(':a_bash:', {
@@ -488,57 +504,115 @@ describe('glipdown text', () => {
             emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji enlarge-emoji'
-            alt='😂'
-            title=':joy:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={30} key={0}>
+            😂
+          </Emoji>,
         ]);
         expect(
           postParser(':thinking_face::purse::shallow_pan_of_food:', {
             emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji'
-            alt='🤔'
+          <Emoji
+            emoji='thinking_face'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={0}
-            title=':thinking_face:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f914.png?v=2.2.7'
-          />,
-          <img
-            className='emoji'
-            alt='👛'
-            key={1}
-            title=':purse:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f45b.png?v=2.2.7'
-          />,
-          <img
-            className='emoji'
-            alt='🥘'
+          >
+            🤔
+          </Emoji>,
+          <Emoji emoji='purse' skin={1} set={'emojione'} size={20} key={1}>
+            👛
+          </Emoji>,
+          <Emoji
+            emoji='shallow_pan_of_food'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={2}
-            title=':shallow_pan_of_food:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f958.png?v=2.2.7'
-          />,
+          >
+            🥘
+          </Emoji>,
         ]);
       });
 
-      it('should return array with image emoji and other text', () => {
+      it('should parse multiple ascii emojis[JPT-2396, JPT-2387]', () => {
+        expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
+          <Emoji emoji='confused' skin={1} set={'emojione'} size={20} key={0}>
+            😕
+          </Emoji>,
+          ' ',
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+          >
+            😑
+          </Emoji>,
+          ' ',
+          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={2}>
+            ❤
+          </Emoji>,
+        ]);
+
+        expect(postParser('-_- -_- -_-', { emoji: { hostName } })).toEqual([
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+          >
+            😑
+          </Emoji>,
+          ' ',
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+          >
+            😑
+          </Emoji>,
+          ' ',
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+          >
+            😑
+          </Emoji>,
+        ]);
+      });
+
+      it("should not parse ascii emoji when it's part of words", () => {
+        expect(
+          postParser(`ID: 123`, { emoji: { hostName }, html: true }),
+        ).toEqual('ID: 123');
+        expect(
+          postParser(`app:///webpack:/src/main/main.ts`, {
+            emoji: { hostName },
+            html: true,
+          }),
+        ).toEqual('app:///webpack:/src/main/main.ts');
+      });
+
+      it('should return array with image emoji and other text[JPT-2392, JPT-2396]', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
             emoji: { hostName },
           }),
         ).toEqual([
           'hahah',
-          <img
-            alt='😁'
-            className='emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f601.png?v=2.2.7'
-            title='😁'
-            key={0}
-          />,
+          <Emoji emoji='grin' skin={1} set={'emojione'} size={20} key={0}>
+            😁
+          </Emoji>,
           '123___',
           <img
             alt='🏳🌈'
@@ -547,45 +621,37 @@ describe('glipdown text', () => {
             title='🏳️‍🌈'
             key={1}
           />,
-          '++',
-          <img
-            className='emoji'
-            alt='😓'
-            title="':("
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f613.png?v=2.2.7'
-            key={2}
-          />,
+          '++ ',
+          <Emoji emoji='sweat' skin={1} set={'emojione'} size={20} key={2}>
+            😓
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😂'
-            title=':joy:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            key={3}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={3}>
+            😂
+          </Emoji>,
         ]);
       });
 
-      it('should return array with emoji when given escaped string', () => {
+      it('should return array with emoji when html parser escape the ascii', () => {
         expect(
-          postParser('&lt;3 &#x27;:)', {
-            emoji: { hostName, isEscaped: true },
+          postParser(`<3 ':)`, {
+            html: true,
+            emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji'
-            alt='❤'
-            title='<3'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
-            key={0}
-          />,
-          <img
-            className='emoji'
-            alt='😅'
-            title="':)"
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f605.png?v=2.2.7'
+          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={0}>
+            ❤
+          </Emoji>,
+          ' ',
+          <Emoji
+            emoji='sweat_smile'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={1}
-          />,
+          >
+            😅
+          </Emoji>,
         ]);
       });
     });
@@ -639,6 +705,39 @@ describe('glipdown text', () => {
         ]);
       });
 
+      it('should parse quote when there is line break character in quote', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":12332}'>@Steve</a> wrote:
+> Est laborum sit nulla sint deserunt cillum et cillum.
+> Veniam anim velit amet aliqua proident.
+
+Anim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.`,
+            { html: true, atMentions: { map } },
+          ),
+        ).toEqual([
+          <JuiAtMention id='12332' isCurrent={false} name='@Steve' key={0} />,
+          ' wrote:',
+          <q key={1}>
+            {`Est laborum sit nulla sint deserunt cillum et cillum.
+Veniam anim velit amet aliqua proident.`}
+          </q>,
+          '\nAnim velit nostrud ea ipsum eu deserunt voluptate non culpa sint minim labore.',
+        ]);
+      });
+
+      it('should parse markdown table correctly', () => {
+        expect(
+          renderToStaticMarkup(postParser(
+            `| **Account**| dan@close.com |
+| **From** | Dave Varenos |`,
+            { html: true },
+          ) as React.ReactElement),
+        ).toEqual(
+          `<table><tr valign="top"><td width="50%"> <b>Account</b></td><td width="50%"> <a href="mailto:dan@close.com" target="_blank" rel="noreferrer">dan@close.com</a> </td></tr><tr valign="top"><td width="50%"> <b>From</b> </td><td width="50%"> Dave Varenos </td></tr></table>`,
+        );
+      });
+
       it('should not encode or decode html entity', () => {
         expect(postParser(`aww<.*//`, { html: true })).toEqual(`aww<.*//`);
         expect(postParser(`<a>dsfdsf</a>`, { html: true })).toEqual(
@@ -653,10 +752,62 @@ describe('glipdown text', () => {
 
   describe('conflict cases', () => {
     describe('at mention and emoji', () => {
+      it('should render both atmention and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> :joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            key={0}
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+          />,
+          ' ',
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+            😂
+          </Emoji>,
+        ]);
+      });
+
+      it('should render both quote and emoji', () => {
+        expect(
+          postParser(
+            `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> wrote:
+> sdfsadf
+:joy:`,
+            {
+              atMentions: { map },
+              emoji: { hostName },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <JuiAtMention
+            id='187817987'
+            isCurrent={false}
+            name='@Jesse'
+            key={0}
+          />,
+          ' wrote:',
+          <q key={1}>sdfsadf</q>,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={2}>
+            😂
+          </Emoji>,
+        ]);
+      });
+
       it('should only render at mention when there is emoji in at mention', () => {
         expect(
           postParser(`sdds${atmention('122', ':joy:')}123  ss`, {
             atMentions: { map },
+            emoji: { hostName },
           }),
         ).toEqual([
           'sdds',
@@ -684,6 +835,42 @@ describe('glipdown text', () => {
           '123  ss',
         ]);
       });
+
+      it('should render at mentions', () => {
+        expect(
+          postParser(
+            `https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs  feat(fiji-6318): [UI] Refactor call store <a class='at_mention_compose' rel='{"id":187629571}'>@Chris Zhan</a> <a class='at_mention_compose' rel='{"id":187678723}'>@Shining Miao</a>   please help review`,
+            {
+              atMentions: { map },
+              html: true,
+            },
+          ),
+        ).toEqual([
+          <a
+            href='https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://git.ringcentral.com/Fiji/Fiji/merge_requests/2838/diffs
+          </a>,
+          '  feat(fiji-6318): [UI] Refactor call store ',
+          <JuiAtMention
+            id='187629571'
+            isCurrent={false}
+            name='@Chris Zhan'
+            key={1}
+          />,
+          ' ',
+          <JuiAtMention
+            id='187678723'
+            isCurrent={false}
+            name='@Shining Miao'
+            key={2}
+          />,
+          '   please help review',
+        ]);
+      });
     });
 
     describe('html and atmention', () => {
@@ -695,7 +882,7 @@ describe('glipdown text', () => {
           }),
         ).toEqual([
           'sdds',
-          <JuiAtMention key={0} id='1200' isCurrent={false} name='@bold' />,
+          <JuiAtMention key={0} id='1200' isCurrent={false} name='@**bold**' />,
           '123  ss',
         ]);
       });
@@ -793,6 +980,33 @@ describe('glipdown text', () => {
           />,
         ]);
       });
+
+      it('should parse atmention correctly when there is no space between atmention and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790${atmention(
+              '123233',
+              'Aaliyah Lind',
+            )}`,
+            { atMentions: { map }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <JuiAtMention
+            id='123233'
+            isCurrent={false}
+            name='@Aaliyah Lind'
+            key={1}
+          />,
+        ]);
+      });
     });
 
     describe('html and emoji', () => {
@@ -809,13 +1023,9 @@ describe('glipdown text', () => {
           <pre className='codesnippet' key={0}>
             &lt;a href='http://heynow.com' target='_blank'
             rel='noreferrer'&gt;some link&lt;/a&gt;
-            <img
-              className='emoji'
-              alt='😂'
-              title=':joy:'
-              src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-              key={0}
-            />
+            <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+              😂
+            </Emoji>
           </pre>,
         ]);
       });
@@ -836,6 +1046,27 @@ describe('glipdown text', () => {
           <a key={2} href='http://google.com' rel='noreferrer' target='_blank'>
             google.com
           </a>,
+        ]);
+      });
+
+      it('should parse emoji correctly when there is no space between emoji and url', () => {
+        expect(
+          postParser(
+            `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790:joy:`,
+            { emoji: { hostName }, html: true },
+          ),
+        ).toEqual([
+          <a
+            href='https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790'
+            rel='noreferrer'
+            target='_blank'
+            key={0}
+          >
+            https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
+          </a>,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+            😂
+          </Emoji>,
         ]);
       });
     });
@@ -881,6 +1112,26 @@ describe('glipdown text', () => {
               `</a>`,
             ]}
           </pre>,
+        ]);
+      });
+    });
+
+    describe('html and phone', () => {
+      it('should not parse to phone number link when phone number in url', () => {
+        expect(
+          postParser(`www.sina.com/6503990009`, {
+            html: true,
+            phoneNumber: true,
+          }),
+        ).toEqual([
+          <a
+            href='http://www.sina.com/6503990009'
+            target='_blank'
+            rel='noreferrer'
+            key={0}
+          >
+            www.sina.com/6503990009
+          </a>,
         ]);
       });
     });

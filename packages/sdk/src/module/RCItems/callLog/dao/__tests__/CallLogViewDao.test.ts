@@ -5,7 +5,7 @@
  */
 
 import { CallLogViewDao } from '../CallLogViewDao';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
 
 jest.mock('sdk/dao');
@@ -25,53 +25,57 @@ describe('CallLogDao', () => {
       viewDao.get = jest.fn().mockReturnValue(undefined);
 
       expect(
-        await viewDao.queryCallLogs(fetchFunc, CALL_LOG_SOURCE.ALL, 'id'),
+        await viewDao.queryCallLogs(fetchFunc, {
+          callLogSource: CALL_LOG_SOURCE.ALL,
+          anchorId: 'id',
+        }),
       ).toEqual([]);
       expect(viewDao.get).toBeCalled();
     });
 
     it('should return [] when can not get views', async () => {
       viewDao.get = jest.fn().mockReturnValue(mockCallLog);
-      viewDao.queryAllViews = jest.fn().mockReturnValue([]);
+      viewDao.getAll = jest.fn().mockReturnValue([]);
 
       expect(
-        await viewDao.queryCallLogs(fetchFunc, CALL_LOG_SOURCE.ALL, 'id'),
+        await viewDao.queryCallLogs(fetchFunc, {
+          callLogSource: CALL_LOG_SOURCE.ALL,
+          anchorId: 'id',
+        }),
       ).toEqual([]);
       expect(viewDao.get).toBeCalled();
-      expect(viewDao.queryAllViews).toBeCalled();
+      expect(viewDao.getAll).toBeCalled();
     });
 
     it('should get correct call logs', async () => {
       viewDao.get = jest.fn().mockReturnValue(mockCallLog);
       const mockViews = [
-        { id: '1', result: 'Missed', __source: CALL_LOG_SOURCE.ALL },
-        { id: '2', result: 'Missed', __source: CALL_LOG_SOURCE.MISSED },
-        { id: '3', result: 'End', __source: CALL_LOG_SOURCE.ALL },
+        {
+          id: '1',
+          __localInfo: LOCAL_INFO_TYPE.IS_INBOUND | LOCAL_INFO_TYPE.IS_MISSED,
+        },
+        {
+          id: '2',
+          __localInfo:
+            LOCAL_INFO_TYPE.IS_INBOUND |
+            LOCAL_INFO_TYPE.IS_MISSED |
+            LOCAL_INFO_TYPE.IS_MISSED_SOURCE,
+        },
+        { id: '3', __localInfo: 0 },
       ];
-      viewDao.queryAllViews = jest.fn().mockReturnValue(mockViews);
+      viewDao.getAll = jest.fn().mockReturnValue(mockViews);
       ArrayUtils.sliceIdArray = jest.fn().mockImplementation(ids => ids);
 
       expect(
-        await viewDao.queryCallLogs(fetchFunc, CALL_LOG_SOURCE.MISSED, 'id'),
-      ).toEqual(['1', '2']);
+        await viewDao.queryCallLogs(fetchFunc, {
+          callLogSource: CALL_LOG_SOURCE.ALL,
+          anchorId: 'id',
+        }),
+      ).toEqual(['1', '3']);
       expect(viewDao.get).toBeCalled();
-      expect(viewDao.queryAllViews).toBeCalled();
+      expect(viewDao.getAll).toBeCalled();
       expect(ArrayUtils.sliceIdArray).toBeCalled();
       expect(fetchFunc).toBeCalled();
-    });
-  });
-
-  describe('queryAllViews', () => {
-    it('should get and sort all views', async () => {
-      const views = [{ __timestamp: 422 }, { __timestamp: 2 }];
-      viewDao.createQuery = jest
-        .fn()
-        .mockReturnValue({ toArray: jest.fn().mockReturnValue(views) });
-
-      const sortedView = await viewDao.queryAllViews();
-      expect(viewDao.createQuery).toBeCalled();
-      expect(sortedView[0]).toEqual(views[1]);
-      expect(sortedView[1]).toEqual(views[0]);
     });
   });
 

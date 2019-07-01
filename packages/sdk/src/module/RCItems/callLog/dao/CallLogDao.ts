@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao, daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { BaseDao, daoManager } from 'sdk/dao';
 import { CallLog } from '../entity';
 import { IDatabase } from 'foundation';
 import { CallLogViewDao } from './CallLogViewDao';
-import { CALL_LOG_SOURCE } from '../constants';
 import { Nullable } from 'sdk/types';
 import _ from 'lodash';
+import { CALL_DIRECTION } from '../../constants';
+import { Caller, FetchDataOptions } from '../../types';
 
 class CallLogDao extends BaseDao<CallLog, string> {
   static COLLECTION_NAME = 'callLog';
@@ -89,18 +90,9 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   async queryCallLogs(
-    source: CALL_LOG_SOURCE,
-    anchorId?: string,
-    direction = QUERY_DIRECTION.OLDER,
-    limit: number = Infinity,
+    options: FetchDataOptions<CallLog, string>,
   ): Promise<CallLog[]> {
-    return this._viewDao.queryCallLogs(
-      this._fetchCallLogsFunc,
-      source,
-      anchorId,
-      direction,
-      limit,
-    );
+    return this._viewDao.queryCallLogs(this._fetchCallLogsFunc, options);
   }
 
   async doInTransaction(func: () => {}): Promise<void> {
@@ -126,9 +118,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
     return query.count();
   }
 
-  async queryCallLogBySessionIdId(
-    sessionId: string,
-  ): Promise<Nullable<CallLog>> {
+  async queryCallLogBySessionId(sessionId: string): Promise<Nullable<CallLog>> {
     const query = this.createQuery();
     return query.equal('sessionId', sessionId).first();
   }
@@ -146,25 +136,14 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   private async _putCallLogView(callLog: CallLog) {
-    await this._viewDao.put({
-      id: callLog.id,
-      result: callLog.result,
-      __source: callLog.__source,
-      __timestamp: callLog.__timestamp,
-    });
+    await this._viewDao.put(this._toCallLogView(callLog));
   }
 
   private async _bulkPutCallLogView(array: CallLog[]) {
-    await this._viewDao.bulkPut(
-      array.map((callLog: CallLog) => {
-        return {
-          id: callLog.id,
-          result: callLog.result,
-          __source: callLog.__source,
-          __timestamp: callLog.__timestamp,
-        };
-      }),
-    );
+    const callLogViews = array.map((callLog: CallLog) => {
+      return this._toCallLogView(callLog);
+    });
+    await this._viewDao.bulkPut(callLogViews);
   }
 
   private async _updateCallLogView(
@@ -172,36 +151,53 @@ class CallLogDao extends BaseDao<CallLog, string> {
     shouldDoPut: boolean,
   ) {
     await this._viewDao.update(
-      _.pickBy(
-        {
-          id: callLog.id,
-          result: callLog.result,
-          __source: callLog.__source,
-          __timestamp: callLog.__timestamp,
-        },
-        _.identity,
-      ),
+      this._toPartialCallLogView(callLog),
       shouldDoPut,
     );
+  }
+
+  private _toPartialCallLogView(callLog: Partial<CallLog>) {
+    const caller = callLog.direction
+      ? callLog.direction === CALL_DIRECTION.INBOUND
+        ? callLog.from
+        : callLog.to
+      : undefined;
+    return _.pickBy(
+      {
+        id: callLog.id,
+        __timestamp: callLog.__timestamp,
+        caller: caller && this._toCallerView(caller),
+      },
+      _.identity,
+    );
+  }
+
+  private _toCallLogView(callLog: CallLog) {
+    const caller =
+      callLog.direction === CALL_DIRECTION.INBOUND ? callLog.from : callLog.to;
+    return {
+      id: callLog.id,
+      caller: this._toCallerView(caller),
+      __localInfo: callLog.__localInfo,
+      __timestamp: callLog.__timestamp,
+    };
+  }
+
+  private _toCallerView(caller: Caller) {
+    return caller
+      ? { ..._.pick(caller, 'name', 'phoneNumber', 'extensionNumber') }
+      : undefined;
   }
 
   private async _bulkUpdateCallLogView(
     array: Partial<CallLog>[],
     shouldDoPut: boolean,
   ) {
-    await this._viewDao.bulkUpdate(
-      array.map((callLog: CallLog) => {
-        return _.pickBy(
-          {
-            id: callLog.id,
-            result: callLog.result,
-            __source: callLog.__source,
-            __timestamp: callLog.__timestamp,
-          },
-          _.identity,
-        );
-      },        shouldDoPut),
-    );
+    const callLogViews = array.map((callLog: CallLog) => {
+      return this._toPartialCallLogView(callLog);
+    });
+
+    await this._viewDao.bulkUpdate(callLogViews, shouldDoPut);
   }
 }
 

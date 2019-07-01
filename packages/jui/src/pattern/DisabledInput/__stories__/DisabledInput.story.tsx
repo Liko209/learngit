@@ -5,12 +5,9 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiDisabledInput } from '..';
 
-storiesOf('Pattern', module)
-  .addDecorator(withInfoDecorator(JuiDisabledInput, { inline: true }))
-  .add('DisabledInput', () => {
-    return <JuiDisabledInput text="This team is read-only" />;
-  });
+storiesOf('Pattern', module).add('DisabledInput', () => {
+  return <JuiDisabledInput text="This team is read-only" />;
+});

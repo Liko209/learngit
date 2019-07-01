@@ -10,6 +10,7 @@ import RTCEngine from 'voip';
 import {
   MicrophoneSourceSettingHandler,
   SpeakerSourceSettingHandler,
+  RingerSourceSettingHandler,
   VolumeSettingHandler,
 } from './handlers';
 import { ITelephonyService } from '../service/ITelephonyService';
@@ -17,6 +18,7 @@ import { ITelephonyService } from '../service/ITelephonyService';
 type HandlerMap = {
   [SettingEntityIds.Phone_MicrophoneSource]: MicrophoneSourceSettingHandler;
   [SettingEntityIds.Phone_SpeakerSource]: SpeakerSourceSettingHandler;
+  [SettingEntityIds.Phone_RingerSource]: RingerSourceSettingHandler;
   [SettingEntityIds.Phone_Volume]: VolumeSettingHandler;
 };
 
@@ -37,6 +39,9 @@ export class PhoneSetting extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Phone_SpeakerSource]: new SpeakerSourceSettingHandler(
         this._telephonyService,
         this._rtcEngine,
+      ),
+      [SettingEntityIds.Phone_RingerSource]: new RingerSourceSettingHandler(
+        this._telephonyService,
       ),
       [SettingEntityIds.Phone_Volume]: new VolumeSettingHandler(
         this._telephonyService,

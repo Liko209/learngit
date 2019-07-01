@@ -38,14 +38,21 @@ class ForwardViewComponent extends React.Component<Props> {
         disabled={shouldDisableForwardButton}
       >
         {forwardCalls &&
-          forwardCalls.map(({ phoneNumber, label }) => {
+          forwardCalls.map(({ phoneNumber, label }, index) => {
             return (
-              <JuiMenuItem key={label} onClick={this._handleClick(phoneNumber)}>
+              <JuiMenuItem
+                key={label}
+                onClick={this._handleClick(phoneNumber)}
+                data-test-automation-id={`forward-list-${index}-item`}
+              >
                 <JuiListItemText primary={label} secondary={phoneNumber} />
               </JuiMenuItem>
             );
           })}
-        <JuiMenuItem onClick={directForward}>
+        <JuiMenuItem
+          onClick={directForward}
+          data-test-automation-id="custom-forward"
+        >
           {t('telephony.action.customForward')}
         </JuiMenuItem>
       </JuiSubMenu>

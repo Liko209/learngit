@@ -37,23 +37,7 @@ import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
-type Props = {
-  height: number;
-  minRowHeight: number;
-  overscan: number;
-  initialScrollToIndex: number;
-  stickToBottom?: boolean;
-  onScroll: (event: React.UIEvent<HTMLElement>) => void;
-  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange: (range: IndexRange) => void;
-  onRenderedRangeChange: (range: IndexRange) => void;
-  before?: React.ReactNode;
-  after?: React.ReactNode;
-  children: JSX.Element[];
-  contentStyle: React.CSSProperties;
-  stickToLastPosition?: boolean;
-  fixedWrapper?: boolean;
-};
+
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
@@ -80,9 +64,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     after = null,
     stickToBottom,
     contentStyle,
+    onBottomStatusChange = noop,
     stickToLastPosition = true,
-    fixedWrapper,
-  }: Props,
+  }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
   const shouldUseNativeImplementation = true;
@@ -217,9 +201,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     return !isRangeIn(renderedRange, computeVisibleRange());
   };
 
-  const updateRange = ({
-    forceUpdate = false,
-  }: { forceUpdate?: boolean } = {}) => {
+  const updateRange = () => {
     if (ref.current) {
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
@@ -238,7 +220,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
-      updateRange({ forceUpdate: true });
+      updateRange();
     }
   };
 
@@ -255,8 +237,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     isAtBottom: () => {
       return prevAtBottomRef.current;
     },
-    scrollToIndex: (index: number) => {
-      jumpToPosition({ index });
+    scrollToIndex: (index: number, options?: boolean) => {
+      jumpToPosition({ index, options });
     },
     getVisibleRange: computeVisibleRange,
     getPrevVisibleRange: () => prevVisibleRange,
@@ -355,7 +337,6 @@ const JuiVirtualizedList: RefForwardingComponent<
         }
         result.diff = diff;
       }
-
       return result;
     };
 
@@ -379,16 +360,23 @@ const JuiVirtualizedList: RefForwardingComponent<
     let rowElements: Element[] = getChildren(contentRef.current);
 
     if (!shouldUseNativeImplementation) {
-      rowElements = compact(rowElements.map((i) => i.firstElementChild));
+      rowElements = compact(rowElements.map(i => i.firstElementChild));
     }
 
     rowElements.forEach(handleRowSizeChange);
-    const observers = rowElements.map(observeDynamicRow);
+
+    type Observers = {
+      observer: ResizeObserver;
+      cb: (entries: ResizeObserverEntry[]) => void;
+    }[];
+
+    let observers: Observers | undefined = rowElements.map(observeDynamicRow);
     return () => {
-      observers.forEach((observer) => {
+      (observers as Observers).forEach(observer => {
         observer.observer.disconnect();
         delete observer.cb;
       });
+      observers = undefined;
     };
   },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
@@ -445,7 +433,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Update prevAtBottom
   //
   useEffect(() => {
-    prevAtBottomRef.current = computeAtBottom();
+    const original = prevAtBottomRef.current;
+    const current = (prevAtBottomRef.current = computeAtBottom());
+    if (original !== current) onBottomStatusChange(current);
   });
   //
   // Ensure no blank area
@@ -467,7 +457,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
+  const wrappedBefore = before ? <div ref={beforeRef}>{before()}</div> : null;
   const heightBeforeStartRow = rowManager.getRowsHeight(
     minIndex,
     startIndex - 1,
@@ -523,7 +513,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         {childrenToRender}
       </div>
       <div style={{ height: heightAfterStopRow }} />
-      {after}
+      {after && after()}
     </div>
   );
 };

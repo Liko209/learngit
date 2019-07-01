@@ -15,13 +15,6 @@ import { PostParser } from './PostParser';
 
 class KeywordHighlightParser extends PostParser implements IPostParser {
   type = ParserType.KEYWORD_HIGHLIGHT;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.EMOJI,
-    ParserType.PHONE_NUMBER,
-    ParserType.FILE_NAME,
-    ParserType.URL,
-  ];
   content: ParseContent;
   constructor(public options: KeywordHighlightParserOption) {
     super(options);
@@ -42,13 +35,13 @@ class KeywordHighlightParser extends PostParser implements IPostParser {
       throw Error('No keyword specified');
     }
     const terms = this.options.keyword
-      .replace(/[^a-zA-Z0-9]+/g, ' ')
+      .replace(
+        /([\.\?\*\+\^\$\[\]\(\)\{\}\-\@\!\#\%\&\_\=\"\'\:|;\/\\\|\>\<\,])/g,
+        ' ',
+      )
       .split(/\s/)
       .filter(str => str.trim());
-    return new RegExp(
-      terms.join('|').replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'),
-      'gi',
-    );
+    return new RegExp(terms.join('|'), 'gi');
   }
 }
 

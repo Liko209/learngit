@@ -18,12 +18,17 @@ import {
   RCItemSyncResponse,
   RCItemSyncInfo,
 } from 'sdk/api/ringcentral/types/RCItemSync';
-import { JError, JRCError, ERROR_CODES_RC, ERROR_CODES_SDK } from 'sdk/error';
+import { JError, JRCError, ERROR_CODES_RC } from 'sdk/error';
 import { SYNC_DIRECTION } from '../constants';
 import { IRCItemSyncConfig } from '../config/IRCItemSyncConfig';
-import { notificationCenter, RELOAD_TARGET } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
+
+type FSyncResponse<T> = {
+  resolve: (data: T[]) => void;
+  reject: (reason: JError) => void;
+};
 
 abstract class AbstractSyncController<
   T extends IdModel<IdType>,
@@ -31,6 +36,7 @@ abstract class AbstractSyncController<
 > {
   private _syncStatus: number = 0;
   private _lastSyncNewerTime: number = 0;
+  private _FSyncQueue: FSyncResponse<T>[] = [];
 
   constructor(
     protected syncName: string,
@@ -42,7 +48,8 @@ abstract class AbstractSyncController<
   async doSync(
     isSilent: boolean,
     direction: SYNC_DIRECTION,
-    recordCount?: number,
+    needNotification = true,
+    recordCount = DEFAULT_RECORD_COUNT,
   ): Promise<T[]> {
     if (!(await this.hasPermission()) || this._isInClear()) {
       mainLogger
@@ -65,13 +72,14 @@ abstract class AbstractSyncController<
         SYNC_TYPE.ISYNC,
         direction,
         recordCount,
+        needNotification,
       ).catch((reason: JError) => {
         mainLogger
           .tags(this.syncName)
           .warn(
             `do ISync failed, direction: ${direction}, count: ${recordCount}, error: ${reason}`,
           );
-        throw reason;
+        return [];
       });
     }
 
@@ -88,6 +96,7 @@ abstract class AbstractSyncController<
           SYNC_TYPE.ISYNC,
           SYNC_DIRECTION.NEWER,
           recordCount,
+          needNotification,
         ).catch((reason: JError) => {
           mainLogger
             .tags(this.syncName)
@@ -109,25 +118,34 @@ abstract class AbstractSyncController<
       mainLogger
         .tags(this.syncName)
         .info(`is already in Fsync now, status: ${this._syncStatus}`);
-      throw new JRCError(
-        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-        `${this.syncName}, invalid sync token`,
-      );
+      if (isSilent) {
+        return [];
+      }
+      return new Promise<T[]>((resolve, reject) => {
+        this._FSyncQueue.push({ resolve, reject });
+      });
     }
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_FSYNC;
     let result: T[] = [];
     if (isSilent) {
       mainLogger.tags(this.syncName).info('try to add FSync processor');
       const processor = new SilentSyncProcessor(this.syncName, async () => {
-        await this._startSync(isSilent, SYNC_TYPE.FSYNC, undefined, recordCount)
+        const data = await this._startSync(
+          isSilent,
+          SYNC_TYPE.FSYNC,
+          undefined,
+          recordCount,
+        )
           .catch((reason: JError) => {
             mainLogger
               .tags(this.syncName)
               .warn(`do silent FSync, count: ${recordCount}, error: ${reason}`);
+            this._rejectResponses(reason);
           })
           .finally(() => {
             this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
           });
+        this._resolveResponses(data || []);
       });
       silentSyncProcessorHandler.addProcessor(processor);
     } else {
@@ -142,11 +160,13 @@ abstract class AbstractSyncController<
           mainLogger
             .tags(this.syncName)
             .warn(`do FSync, count: ${recordCount}, error: ${reason}`);
+          this._rejectResponses(reason);
           throw reason;
         })
         .finally(() => {
           this._syncStatus = this._syncStatus & ~SYNC_STATUS.IN_FSYNC;
         });
+      this._resolveResponses(result);
     }
     return result;
   }
@@ -156,6 +176,7 @@ abstract class AbstractSyncController<
     syncType: SYNC_TYPE,
     direction?: SYNC_DIRECTION,
     recordCount?: number,
+    needNotification?: boolean,
   ): Promise<T[]> {
     let fetchCount: UndefinedAble<number> = undefined;
     if (syncType === SYNC_TYPE.FSYNC) {
@@ -167,7 +188,7 @@ abstract class AbstractSyncController<
     mainLogger
       .tags(this.syncName)
       .info(
-        `start sync, isSilent${isSilent}, type:${syncType}, direction:${direction}, count:${fetchCount}`,
+        `start sync, isSilent: ${isSilent}, type:${syncType}, direction:${direction}, count:${fetchCount}`,
       );
 
     const syncToken = await this.getSyncToken();
@@ -182,7 +203,12 @@ abstract class AbstractSyncController<
         mainLogger
           .tags(this.syncName)
           .info(`sync success, size:${result.records.length}`, result.syncInfo);
-        return await this._handleSuccessResponse(result, isSilent, fetchCount);
+        return await this._handleSuccessResponse(
+          result,
+          isSilent,
+          fetchCount,
+          needNotification,
+        );
       })
       .catch(async (reason: JError) => {
         await this._handleFailedResponse(reason);
@@ -200,13 +226,8 @@ abstract class AbstractSyncController<
     this._syncStatus = this._syncStatus | SYNC_STATUS.IN_CLEAR;
     await this.requestClearAllAndRemoveLocalData()
       .then(async () => {
-        await this._reset();
-        notificationCenter.emitEntityReload(
-          this._entityKey,
-          RELOAD_TARGET.FOC,
-          [],
-          true,
-        );
+        await this.reset();
+        notificationCenter.emitEntityReload(this._entityKey, [], true);
       })
       .catch((reason: JError) => {
         throw reason;
@@ -216,10 +237,19 @@ abstract class AbstractSyncController<
       });
   }
 
+  async reset() {
+    silentSyncProcessorHandler.removeProcessorByName(this.syncName);
+    this._syncStatus = 0;
+    this._lastSyncNewerTime = 0;
+    await this.removeHasMore();
+    await this.removeSyncToken();
+  }
+
   private async _handleSuccessResponse(
     result: RCItemSyncResponse<T>,
     isSilent: boolean,
     count?: number,
+    needNotification?: boolean,
   ): Promise<T[]> {
     const data = await this.handleDataAndSave(result);
     if (this.canUpdateSyncToken(result.syncInfo)) {
@@ -228,39 +258,25 @@ abstract class AbstractSyncController<
     if (count && result.records.length < count) {
       await this.setHasMore(false);
     }
-    if (isSilent) {
-      if (result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
-        notificationCenter.emitEntityReload(
-          this._entityKey,
-          RELOAD_TARGET.FOC,
-          [],
-          true,
-        );
-      } else {
-        notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
-      }
+
+    if (isSilent && result.syncInfo.syncType === SYNC_TYPE.FSYNC) {
+      notificationCenter.emitEntityReload(this._entityKey, [], true);
+    }
+
+    if (needNotification && data.length) {
+      notificationCenter.emitEntityUpdate<T, IdType>(this._entityKey, data);
     }
     return data;
   }
 
   private async _handleFailedResponse(reason: JError): Promise<void> {
     if (this.isTokenInvalidError(reason)) {
-      await this._reset();
+      await this.removeLocalData();
+      await this.reset();
       this.doSync(true, SYNC_DIRECTION.NEWER);
-      throw new JRCError(
-        ERROR_CODES_SDK.INVALID_SYNC_TOKEN,
-        `${this.syncName}, invalid sync token`,
-      );
+    } else {
+      throw reason;
     }
-    throw reason;
-  }
-
-  private async _reset() {
-    silentSyncProcessorHandler.removeProcessorByName(this.syncName);
-    this._syncStatus = 0;
-    this._lastSyncNewerTime = 0;
-    await this.removeHasMore();
-    await this.removeSyncToken();
   }
 
   private _isInClear() {
@@ -269,6 +285,20 @@ abstract class AbstractSyncController<
 
   private _isInFSync() {
     return !!(this._syncStatus & SYNC_STATUS.IN_FSYNC);
+  }
+
+  private _resolveResponses(data: T[]) {
+    this._FSyncQueue.forEach((response: FSyncResponse<T>) => {
+      response.resolve(data);
+    });
+    this._FSyncQueue = [];
+  }
+
+  private _rejectResponses(reason: JError) {
+    this._FSyncQueue.forEach((response: FSyncResponse<T>) => {
+      response.reject(reason);
+    });
+    this._FSyncQueue = [];
   }
 
   protected async setSyncToken(token: string): Promise<void> {
@@ -295,6 +325,7 @@ abstract class AbstractSyncController<
   protected abstract isTokenInvalidError(reason: JError): boolean;
   protected abstract canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean;
   protected abstract async requestClearAllAndRemoveLocalData(): Promise<void>;
+  protected abstract async removeLocalData(): Promise<void>;
   protected abstract async handleDataAndSave(
     data: RCItemSyncResponse<T>,
   ): Promise<T[]>;

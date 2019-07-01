@@ -8,7 +8,7 @@ import { CallLogBadgeController } from '../CallLogBadgeController';
 import { notificationCenter, EVENT_TYPES, ENTITY } from 'sdk/service';
 import { BADGE_STATUS } from 'sdk/module/RCItems/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { MISSED_CALL_BADGE_ID } from '../../constants';
+import { MISSED_CALL_BADGE_ID, CALL_RESULT } from '../../constants';
 
 describe('CallLogBadgeController', () => {
   let controller: CallLogBadgeController;
@@ -207,6 +207,7 @@ describe('CallLogBadgeController', () => {
       controller['_lastReadMissed'] = 100;
       const mockData = {
         id: '1',
+        result: CALL_RESULT.MISSED,
         __deactivated: true,
         __timestamp: 123,
       } as any;
@@ -218,6 +219,7 @@ describe('CallLogBadgeController', () => {
       controller['_lastReadMissed'] = 100;
       const mockData = {
         id: '1',
+        result: CALL_RESULT.MISSED,
         __deactivated: false,
         __timestamp: 123,
       } as any;
@@ -229,10 +231,24 @@ describe('CallLogBadgeController', () => {
       controller['_lastReadMissed'] = 100;
       const mockData = {
         id: '1',
+        result: CALL_RESULT.MISSED,
         __deactivated: false,
         __timestamp: 100,
       } as any;
       controller['_unreadMap'].set('1', 16);
+      expect(controller['_updateUnreadCount'](mockData)).toBeTruthy();
+      expect(controller['_unreadMap'].size).toEqual(0);
+    });
+  });
+
+  describe('_updateUnreadCount', () => {
+    it('should remove unread when call log is deactivated', () => {
+      const mockData = {
+        result: CALL_RESULT.MISSED,
+        __deactivated: true,
+        id: '456',
+      } as any;
+      controller['_unreadMap'].set('456', 123);
       expect(controller['_updateUnreadCount'](mockData)).toBeTruthy();
       expect(controller['_unreadMap'].size).toEqual(0);
     });

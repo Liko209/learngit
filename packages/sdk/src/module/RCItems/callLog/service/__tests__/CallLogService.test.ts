@@ -8,8 +8,10 @@ import { CallLogService } from '../CallLogService';
 import { CallLogController } from '../../controller/CallLogController';
 import { RCItemUserConfig } from 'sdk/module/RCItems/config';
 import { CALL_LOG_SOURCE, MODULE_NAME } from '../../constants';
+import { CallLogUserConfig } from '../../config/CallLogUserConfig';
 
 jest.mock('../../../config');
+jest.mock('../../config/CallLogUserConfig');
 jest.mock('../../controller/CallLogController', () => {
   const xx = {
     callLogActionController: {
@@ -19,11 +21,21 @@ jest.mock('../../controller/CallLogController', () => {
     allCallLogFetchController: {
       clearAll: jest.fn(),
       requestSync: jest.fn(),
-      fetchCallLogs: jest.fn(),
+      fetchData: jest.fn(),
+      internalReset: jest.fn(),
+      buildFilterFunc: jest.fn(),
     },
     missedCallLogFetchController: {
       requestSync: jest.fn(),
-      fetchCallLogs: jest.fn(),
+      fetchData: jest.fn(),
+      internalReset: jest.fn(),
+    },
+    callLogHandleDataController: {
+      handleMissedCallEvent: jest.fn(),
+      handleRCPresenceEvent: jest.fn(),
+    },
+    callLogBadgeController: {
+      initializeUnreadCount: jest.fn(),
     },
   };
   return {
@@ -58,8 +70,8 @@ describe('CallLogService', () => {
   describe('userConfig', () => {
     it('should get userConfig', async () => {
       const config = callLogService['userConfig'];
-      expect(config instanceof RCItemUserConfig).toBeTruthy();
-      expect(RCItemUserConfig).toBeCalledWith(
+      expect(config instanceof CallLogUserConfig).toBeTruthy();
+      expect(CallLogUserConfig).toBeCalledWith(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.ALL}`,
       );
     });
@@ -76,33 +88,37 @@ describe('CallLogService', () => {
   });
 
   describe('requestSyncNewer', () => {
-    it('should call all fetch controller when source is all', async () => {
-      await callLogService.requestSyncNewer(CALL_LOG_SOURCE.ALL);
+    it('should call all fetch controller', async () => {
+      await callLogService.requestSyncNewer();
       expect(
         callLogController.allCallLogFetchController.requestSync,
       ).toBeCalled();
     });
+  });
 
-    it('should call missed fetch controller when source is missed', async () => {
-      await callLogService.requestSyncNewer(CALL_LOG_SOURCE.MISSED);
+  describe('buildFilterFunc', () => {
+    it('should call all fetch controller', async () => {
+      await callLogService.buildFilterFunc({});
       expect(
-        callLogController.missedCallLogFetchController.requestSync,
+        callLogController.allCallLogFetchController.buildFilterFunc,
       ).toBeCalled();
     });
   });
 
   describe('fetchCallLogs', () => {
     it('should call all fetch controller when source is all', async () => {
-      await callLogService.fetchCallLogs(CALL_LOG_SOURCE.ALL);
+      await callLogService.fetchCallLogs({});
       expect(
-        callLogController.allCallLogFetchController.fetchCallLogs,
+        callLogController.allCallLogFetchController.fetchData,
       ).toBeCalled();
     });
 
     it('should call missed fetch controller when source is missed', async () => {
-      await callLogService.fetchCallLogs(CALL_LOG_SOURCE.MISSED);
+      await callLogService.fetchCallLogs({
+        callLogSource: CALL_LOG_SOURCE.MISSED,
+      });
       expect(
-        callLogController.missedCallLogFetchController.fetchCallLogs,
+        callLogController.missedCallLogFetchController.fetchData,
       ).toBeCalled();
     });
   });
@@ -130,6 +146,58 @@ describe('CallLogService', () => {
     it('clearAllCallLogs', async () => {
       await callLogService.clearAllCallLogs();
       expect(callLogController.allCallLogFetchController.clearAll).toBeCalled();
+    });
+  });
+
+  describe('resetFetchControllers', () => {
+    it('resetFetchControllers', async () => {
+      await callLogService.resetFetchControllers();
+      expect(
+        callLogController.allCallLogFetchController.internalReset,
+      ).toBeCalled();
+      expect(
+        callLogController.missedCallLogFetchController.internalReset,
+      ).toBeCalled();
+    });
+  });
+
+  describe('getTotalCount', () => {
+    it('getTotalCount', async () => {
+      const mockFunc = jest.fn().mockReturnValue(5);
+      callLogService.getEntitySource = jest
+        .fn()
+        .mockReturnValue({ getTotalCount: mockFunc });
+      expect(await callLogService.getTotalCount()).toEqual(5);
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('_handleMissedCallEvent', () => {
+    it('_handleMissedCallEvent', async () => {
+      const mockData = 'mockData' as any;
+      await callLogService['_handleMissedCallEvent'](mockData);
+      expect(
+        callLogController.callLogHandleDataController.handleMissedCallEvent,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_handleRCPresenceEvent', () => {
+    it('_handleRCPresenceEvent', async () => {
+      const mockData = 'mockData' as any;
+      await callLogService['_handleRCPresenceEvent'](mockData);
+      expect(
+        callLogController.callLogHandleDataController.handleRCPresenceEvent,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_initBadge', () => {
+    it('_initBadge', async () => {
+      await callLogService['_initBadge']();
+      expect(
+        callLogController.callLogBadgeController.initializeUnreadCount,
+      ).toBeCalled();
     });
   });
 });

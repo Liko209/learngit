@@ -6,7 +6,6 @@
 
 import { VoicemailService } from '../VoicemailService';
 import { VoicemailController } from '../../controller/VoicemailController';
-import { RCItemUserConfig } from '../../../config';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 
 jest.mock('../../../config');
@@ -20,7 +19,13 @@ jest.mock('../../controller/VoicemailController', () => {
     },
     voicemailFetchController: {
       clearAll: jest.fn(),
-      fetchVoicemails: jest.fn(),
+      fetchData: jest.fn(),
+      handleNotification: jest.fn(),
+      doSync: jest.fn(),
+      buildFilterFunc: jest.fn(),
+    },
+    voicemailBadgeController: {
+      initializeUnreadCount: jest.fn(),
     },
   };
   return {
@@ -44,6 +49,20 @@ describe('VoicemailService', () => {
     vmService = new VoicemailService();
   }
 
+  describe('buildFilterFunc', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should call all fetch controller', async () => {
+      await vmService.buildFilterFunc({});
+      expect(
+        vmController.voicemailFetchController.buildFilterFunc,
+      ).toBeCalled();
+    });
+  });
+
   describe('fetchVoicemails', () => {
     beforeEach(() => {
       clearMocks();
@@ -51,10 +70,16 @@ describe('VoicemailService', () => {
     });
 
     it('fetchVoicemails', async () => {
-      await vmService.fetchVoicemails(1, 1, 1);
-      expect(
-        vmController.voicemailFetchController.fetchVoicemails,
-      ).toBeCalledWith(1, 1, 1);
+      await vmService.fetchVoicemails({
+        limit: 1,
+        direction: 1 as any,
+        anchorId: 1,
+      });
+      expect(vmController.voicemailFetchController.fetchData).toBeCalledWith({
+        limit: 1,
+        direction: 1,
+        anchorId: 1,
+      });
     });
   });
 
@@ -110,6 +135,32 @@ describe('VoicemailService', () => {
       expect(
         vmController.voicemailActionController.buildDownloadUrl,
       ).toBeCalledWith('13');
+    });
+  });
+
+  describe('_syncImmediately', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('_syncImmediately', async () => {
+      await vmService['_syncImmediately']();
+      expect(vmController.voicemailFetchController.doSync).toBeCalled();
+    });
+  });
+
+  describe('_initBadge', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('_initBadge', async () => {
+      await vmService['_initBadge']();
+      expect(
+        vmController.voicemailBadgeController.initializeUnreadCount,
+      ).toBeCalled();
     });
   });
 });

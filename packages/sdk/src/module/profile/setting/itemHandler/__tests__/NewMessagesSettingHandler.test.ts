@@ -45,7 +45,7 @@ describe('NewMessagesSettingHandler', () => {
       valueType: 1,
       weight: 1,
       id: SettingEntityIds.Notification_NewMessages,
-      state: 0,
+      state: 1,
       source: [
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION,
@@ -56,6 +56,7 @@ describe('NewMessagesSettingHandler', () => {
     };
     profileService = new ProfileService();
     settingService = new SettingService();
+    settingService.getById = jest.fn().mockResolvedValue({ value: 1 });
     accoutService = new AccountService(null);
     accoutService = {
       userConfig: {
@@ -112,6 +113,25 @@ describe('NewMessagesSettingHandler', () => {
         expect(result).toEqual(mockDefaultSettingItem);
       },
     );
+
+    it('should get value is DM_AND_MENTION when new message is undefined', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_MESSAGE]: undefined,
+      });
+      mockDefaultSettingItem.value =
+        DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
+    it('should get value is off when new message is off', async () => {
+      profileService.getProfile = jest.fn().mockReturnValue({
+        [SETTING_KEYS.DESKTOP_MESSAGE]:
+          DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
+      });
+      mockDefaultSettingItem.value = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF;
+      const result = await settingHandler.fetchUserSettingEntity();
+      expect(result).toEqual(mockDefaultSettingItem);
+    });
   });
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {

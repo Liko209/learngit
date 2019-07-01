@@ -3,6 +3,7 @@
  * @Date: 2019-05-27 10:38:10
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { action, computed } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SelectSettingItem } from '@/interface/setting';
@@ -23,6 +24,7 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
     } else {
       result = this.settingItem.defaultSource || [];
     }
+
     return result;
   }
 
@@ -32,11 +34,18 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
   }
 
   @action
-  saveSetting = (newValue: string) => {
+  saveSetting = async (newValue: string) => {
     const { valueSetter, source = [] } = this.settingItemEntity;
     const rawValue = source.find(
       sourceItem => this.extractValue(sourceItem) === newValue,
     );
+    const { beforeSaving } = this.settingItem;
+    if (beforeSaving) {
+      const beforeSavingReturn = await beforeSaving(newValue);
+      if (beforeSavingReturn === false) {
+        return;
+      }
+    }
     return valueSetter && valueSetter(rawValue);
   }
 

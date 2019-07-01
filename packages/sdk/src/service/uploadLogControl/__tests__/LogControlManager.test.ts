@@ -12,6 +12,7 @@ import { LogControlManager } from '../LogControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
+import { ZipItemLevel } from '../types';
 
 jest.mock('../HealthStatusItemProvider', () => {
   const mockHealthStatusItemProvider = {
@@ -135,32 +136,40 @@ describe('LogControlManager', () => {
     });
   });
 
-  describe('registerHealthStatusItem()', () => {
-    it('should call HealthStatusItemProvider.registerHealthStatusItem', () => {
-      const mockHealthProvider = new HealthStatusItemProvider();
-      const testItem = {
-        getName: () => 'test',
-        getStatus: async () => 'status',
+  describe('getZipLog()', () => {
+    it('should get zip items from ZipItemProviders', async () => {
+      logControlManager.worker = {
+        zip: jest.fn().mockImplementation(item => item),
       };
-      logControlManager.registerHealthStatusItem(testItem);
-      expect(mockHealthProvider.registerHealthStatusItem).toBeCalledWith(
-        testItem,
-      );
+      logControlManager['_zipItemProviders'] = [
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['a']),
+        },
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['b']),
+        },
+      ];
+      const result = await logControlManager.getZipLog();
+      expect(result).toEqual(['a', 'b']);
     });
-  });
-
-  describe('unRegisterHealthStatusItem()', () => {
-    it('should call HealthStatusItemProvider.unRegisterHealthStatusItem', () => {
-      const mockHealthProvider = new HealthStatusItemProvider();
-      const testItem = {
-        getName: () => 'test',
-        getStatus: async () => 'status',
+    it('should filter zip items by level', async () => {
+      logControlManager.worker = {
+        zip: jest.fn().mockImplementation(item => item),
       };
-      logControlManager.registerHealthStatusItem(testItem);
-      logControlManager.unRegisterHealthStatusItem(testItem);
-      expect(mockHealthProvider.unRegisterHealthStatusItem).toBeCalledWith(
-        testItem,
-      );
+      logControlManager['_zipItemProviders'] = [
+        {
+          level: ZipItemLevel.DEBUG_ALL,
+          getZipItems: jest.fn().mockResolvedValue(['a']),
+        },
+        {
+          level: ZipItemLevel.NORMAL,
+          getZipItems: jest.fn().mockResolvedValue(['b']),
+        },
+      ];
+      const result = await logControlManager.getZipLog();
+      expect(result).toEqual(['b']);
     });
   });
 });

@@ -8,6 +8,7 @@ import { ChangeEvent } from 'react';
 enum JuiAudioMode {
   FULL = 'full',
   MINI = 'mini',
+  TINY = 'tiny',
 }
 
 enum JuiAudioColor {
@@ -31,6 +32,7 @@ type JuiAudioActionProps = {
   color?: JuiAudioColor;
   status: JuiAudioStatus;
   tooltip: string;
+  label: string;
   onAction: IJuiAudioAction;
 };
 
@@ -45,13 +47,14 @@ interface IJuiAudioProgressChange {
 type JuiAudioProgressProps = {
   mode: JuiAudioMode;
   value: number;
+  status: JuiAudioStatus;
   duration: number;
   onChange: IJuiAudioProgressChange;
   onDragStart(): void;
   onDragEnd(): void;
 };
 
-type JuiAudioActionTips = {
+type JuiAudioActionMap = {
   play: string;
   pause: string;
   reload: string;
@@ -60,12 +63,16 @@ type JuiAudioActionTips = {
 type JuiAudioPlayerProps = {
   src: string;
   duration: number;
-  actionTips: JuiAudioActionTips;
+  actionTips: JuiAudioActionMap;
+  actionLabels: JuiAudioActionMap;
   mode?: JuiAudioMode;
   startTime?: number;
   isHighlight?: boolean;
   onEnded?: () => void;
   onTimeUpdate?: (timestamp: number) => void;
+  onBeforePlay?: () => void;
+  onBeforeAction?: (status: JuiAudioStatus) => void;
+  onError?: () => void;
 };
 
 export {
@@ -75,7 +82,7 @@ export {
   JuiAudioStatus,
   IJuiAudioAction,
   IJuiGetAudioColor,
-  JuiAudioActionTips,
+  JuiAudioActionMap,
   JuiAudioActionProps,
   JuiAudioPlayerProps,
   JuiAudioProgressProps,

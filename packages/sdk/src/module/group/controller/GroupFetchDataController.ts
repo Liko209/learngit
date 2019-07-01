@@ -3,7 +3,7 @@
  * @Date: 2019-02-02 16:16:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import _ from 'lodash';
 
 import { Api } from '../../../api';
@@ -25,11 +25,7 @@ import {
   extractHiddenGroupIdsWithoutUnread,
 } from '../../profile';
 import { transform } from '../../../service/utils';
-import {
-  PERFORMANCE_KEYS,
-  PerformanceTracer,
-  uniqueArray,
-} from '../../../utils';
+import { uniqueArray } from '../../../utils';
 import TypeDictionary from '../../../utils/glip-type-dictionary/types';
 import { compareName } from '../../../utils/helper';
 import { isValidEmailAddress } from '../../../utils/regexUtils';
@@ -44,8 +40,9 @@ import { GroupConfigService } from '../../groupConfig';
 import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
+import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
-const kTeamIncludeMe: number = 1;
+const kTeamIncludeMe: number = 1000;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
@@ -196,7 +193,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   }> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     const result = await this.entityCacheSearchController.searchEntities(
       await this._getTransformAllGroupFunc(
@@ -224,7 +221,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
+    performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
     return {
       terms: result.terms.searchKeyTerms,
       sortableModels: result.sortableModels,
@@ -327,7 +324,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   }> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     const result = await this.entityCacheSearchController.searchEntities(
       await this._getTransformGroupFunc(fetchAllIfSearchKeyEmpty, recentFirst),
@@ -358,7 +355,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_GROUP });
+    performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_GROUP });
     return {
       terms: result.terms.searchKeyTerms,
       sortableModels: result.sortableModels,
@@ -599,7 +596,7 @@ export class GroupFetchDataController {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   }> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     const result = await this.entityCacheSearchController.searchEntities(
       await this._getTransformTeamsFunc(fetchAllIfSearchKeyEmpty, recentFirst),
@@ -631,7 +628,7 @@ export class GroupFetchDataController {
         return 0;
       },
     );
-    performanceTracer.end({ key: PERFORMANCE_KEYS.SEARCH_TEAM });
+    performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_TEAM });
     return {
       terms: result.terms.searchKeyTerms,
       sortableModels: result.sortableModels,

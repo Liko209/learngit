@@ -17,6 +17,8 @@ describe('CallLogDao', () => {
   let viewDao: CallLogViewDao;
   const mockCallLog = {
     id: 'mockId',
+    from: { phoneNumber: '213' },
+    to: { phoneNumber: '4566' },
   } as any;
 
   beforeEach(() => {
@@ -113,12 +115,7 @@ describe('CallLogDao', () => {
 
   describe('queryCallLogs', () => {
     it('should queryCallLogs in viewDao', async () => {
-      await dao.queryCallLogs(
-        CALL_LOG_SOURCE.ALL,
-        'mockId',
-        QUERY_DIRECTION.OLDER,
-        20,
-      );
+      await dao.queryCallLogs({});
       expect(viewDao.queryCallLogs).toBeCalled();
     });
   });
@@ -135,7 +132,7 @@ describe('CallLogDao', () => {
     });
   });
 
-  describe('queryCallLogBySessionIdId', () => {
+  describe('queryCallLogBySessionId', () => {
     it('should get correct call log', async () => {
       dao.createQuery = jest.fn().mockReturnValue({
         equal: jest
@@ -143,9 +140,7 @@ describe('CallLogDao', () => {
           .mockReturnValue({ first: jest.fn().mockReturnValue(mockCallLog) }),
       });
 
-      expect(await dao.queryCallLogBySessionIdId('session')).toEqual(
-        mockCallLog,
-      );
+      expect(await dao.queryCallLogBySessionId('session')).toEqual(mockCallLog);
       expect(dao.createQuery).toBeCalled();
     });
   });

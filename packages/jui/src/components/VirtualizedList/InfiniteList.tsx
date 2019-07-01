@@ -3,14 +3,7 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
-  useState,
-  RefForwardingComponent,
-  memo,
-  forwardRef,
-  useRef,
-  useCallback,
-} from 'react';
+import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
@@ -34,20 +27,18 @@ type JuiInfiniteListProps = {
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
-  loadingRenderer: JSX.Element;
-  loadingMoreRenderer: JSX.Element;
+  loadingRenderer?: (() => JSX.Element) | null;
+  loadingMoreRenderer?: (() => JSX.Element) | null;
   children: JSX.Element[];
   stickToBottom?: boolean;
   fallBackRenderer?: JSX.Element;
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
   fixedWrapper?: boolean;
+  onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
-const JuiInfiniteList: RefForwardingComponent<
-  JuiVirtualizedListHandles,
-  JuiInfiniteListProps
-> = (
+const JuiInfiniteList = (
   {
     height,
     minRowHeight,
@@ -61,8 +52,8 @@ const JuiInfiniteList: RefForwardingComponent<
     loadMore,
     initialScrollToIndex = 0,
     noRowsRenderer,
-    loadingRenderer,
-    loadingMoreRenderer,
+    loadingRenderer = null,
+    loadingMoreRenderer = null,
     onScroll = noop,
     onWheel = noop,
     onVisibleRangeChange = noop,
@@ -73,6 +64,7 @@ const JuiInfiniteList: RefForwardingComponent<
     contentStyle,
     stickToLastPosition,
     fixedWrapper,
+    onBottomStatusChange,
   }: JuiInfiniteListProps,
   forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
 ) => {
@@ -92,7 +84,7 @@ const JuiInfiniteList: RefForwardingComponent<
   );
 
   if (!height) {
-    return loadingRenderer;
+    return loadingRenderer && loadingRenderer();
   }
 
   return (
@@ -125,12 +117,12 @@ const JuiInfiniteList: RefForwardingComponent<
           }
         };
 
-        if (loadingInitial || !height) {
-          return loadingRenderer;
+        if (loadingInitial) {
+          return loadingRenderer && loadingRenderer();
         }
 
         if (loadingInitialFailed) {
-          return fallBackRenderer || <></>;
+          return fallBackRenderer;
         }
 
         if (children.length === 0) {
@@ -165,6 +157,7 @@ const JuiInfiniteList: RefForwardingComponent<
             stickToBottom={stickToBottom && isStickToBottomEnabled}
             stickToLastPosition={stickToLastPosition}
             fixedWrapper={fixedWrapper}
+            onBottomStatusChange={onBottomStatusChange}
           >
             {children}
           </JuiVirtualizedList>
@@ -174,11 +167,6 @@ const JuiInfiniteList: RefForwardingComponent<
   );
 };
 
-const memoInfiniteList = memo(
-  forwardRef(JuiInfiniteList),
-) as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    JuiInfiniteListProps & React.RefAttributes<JuiVirtualizedListHandles>
-  >
->;
+const memoInfiniteList = memo(forwardRef(JuiInfiniteList));
+
 export { memoInfiniteList as JuiInfiniteList, JuiInfiniteListProps };

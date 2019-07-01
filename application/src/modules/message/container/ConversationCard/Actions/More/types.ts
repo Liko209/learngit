@@ -6,8 +6,8 @@
 
 enum MENU_LIST_ITEM_TYPE {
   QUOTE,
-  DELETE,
   EDIT,
+  DELETE,
 }
 
 type Props = {

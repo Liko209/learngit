@@ -1,6 +1,8 @@
-import getDocTitle from '../getDocTitle';
+import { getDocTitle } from '../getDocTitle';
 
-jest.mock('@/utils/i18nT', () => (key: string) => key);
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (key: string) => key,
+}));
 
 jest.mock('@/store/utils', () => ({
   getEntity: (name: string, id: number) => ({
@@ -33,9 +35,9 @@ describe('get doc title', () => {
 
     it('should return current page section title title when get diff page section', async () => {
       let title = await getDocTitle('/settings/messages');
-      expect(title).toEqual('setting.Settings - setting.messages.title');
+      expect(title).toEqual('setting.Settings - setting.messages');
       title = await getDocTitle('/settings/general');
-      expect(title).toEqual('setting.Settings - setting.general.title');
+      expect(title).toEqual('setting.Settings - setting.general');
       title = await getDocTitle('/settings/notification_and_sounds');
       expect(title).toEqual(
         'setting.Settings - setting.notificationAndSounds.title',

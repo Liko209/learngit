@@ -258,7 +258,7 @@ describe('fileUploadController', () => {
           },
         );
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
@@ -288,7 +288,7 @@ describe('fileUploadController', () => {
         ) as any;
         expect(progress.rate.loaded).toBe(-1);
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
@@ -316,7 +316,7 @@ describe('fileUploadController', () => {
         expect(partialModifyController.updatePartially).not.toBeCalled();
 
         done();
-      },         1000);
+      }, 1000);
     });
   });
 
@@ -461,7 +461,7 @@ describe('fileUploadController', () => {
       const result = await fileUploadController.getFileVersion(
         pseudoItemFile as ItemFile,
       );
-      expect(result).toBe(0);
+      expect(result).toBe(1);
     });
   });
 
@@ -896,7 +896,7 @@ describe('fileUploadController', () => {
           fileUploadController['_uploadFileQueue'].addProcessor,
         ).toHaveBeenCalledTimes(2);
         done();
-      },         100);
+      }, 100);
     });
   });
 
@@ -1048,7 +1048,7 @@ describe('fileUploadController', () => {
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
@@ -1081,7 +1081,7 @@ describe('fileUploadController', () => {
         expect(spyHandleFileItemSendFailed).not.toBeCalled();
         expect(spySendItemFile).toBeCalled();
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
@@ -1100,7 +1100,7 @@ describe('fileUploadController', () => {
           expect.anything(),
         );
         done();
-      },         1000);
+      }, 1000);
     });
 
     it('should notify upload failed when can not find the cache of the item', async (done: jest.DoneCallback) => {
@@ -1132,7 +1132,7 @@ describe('fileUploadController', () => {
         );
         expect(fileUploadController.getUploadProgress(5).rate.loaded).toBe(-1);
         done();
-      },         1000);
+      }, 1000);
     });
   });
 

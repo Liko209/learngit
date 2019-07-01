@@ -8,7 +8,7 @@ import React, { Component, RefObject, createRef, cloneElement } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
-import { mainLogger } from 'sdk';
+import { mainLogger, PerformanceTracer } from 'sdk';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
 import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -26,7 +26,6 @@ import {
   StreamProps,
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
-import { toTitleCase } from '@/utils/string';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
@@ -40,6 +39,7 @@ import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
+import { MESSAGE_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -70,6 +70,8 @@ class StreamViewComponent extends Component<Props> {
   private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
+
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -120,6 +122,11 @@ class StreamViewComponent extends Component<Props> {
     }
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
+
+    this._performanceTracer.end({
+      key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+      count: postIds.length,
+    });
   }
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
@@ -163,10 +170,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderNewMessagesDivider(streamItem: StreamItem) {
     const { t } = this.props;
+    const dividerText: string = t('message.stream.newMessagesDivider');
     return (
       <TimeNodeDivider
         key="TimeNodeDividerNewMessagesDivider"
-        value={toTitleCase(t('message.stream.newMessages'))}
+        value={dividerText}
       />
     );
   }
@@ -182,17 +190,18 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _RENDERER_MAP = {
+    [StreamItemType.POST]: this._renderPost,
+    [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
+    [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
+    [StreamItemType.INITIAL_POST]: this._renderInitialPost,
+  };
+
   private _renderStreamItem = (
     streamItem: StreamItem,
     index: number,
   ): JSX.Element => {
-    const RENDERER_MAP = {
-      [StreamItemType.POST]: this._renderPost,
-      [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
-      [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
-      [StreamItemType.INITIAL_POST]: this._renderInitialPost,
-    };
-    const streamItemRenderer = RENDERER_MAP[streamItem.type];
+    const streamItemRenderer = this._RENDERER_MAP[streamItem.type];
     return streamItemRenderer.call(this, streamItem, index);
   }
 
@@ -232,7 +241,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {countText} {toTitleCase(t('message.stream.newMessages'))}
+          {countText} {t('message.stream.newMessages')}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
@@ -285,25 +294,14 @@ class StreamViewComponent extends Component<Props> {
     startIndex,
     stopIndex,
   }: IndexRange) => {
-    if (startIndex === -1 || stopIndex === -1) return;
+    const listEl = this._listRef.current;
+    if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const {
       items,
-      mostRecentPostId,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
     } = this.props;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
-    const visiblePosts = _(visibleItems)
-      .flatMap('value')
-      .concat();
-    if (
-      this.props.hasMore('down') ||
-      !visiblePosts.includes(mostRecentPostId)
-    ) {
-      this.handleMostRecentHidden();
-    } else {
-      this.handleMostRecentViewed();
-    }
     if (this._historyViewed) {
       return;
     }
@@ -318,6 +316,14 @@ class StreamViewComponent extends Component<Props> {
       } else {
         this._historyViewed = false;
       }
+    }
+  }
+
+  private _bottomStatusChangeHandler = (isAtBottom: boolean) => {
+    if (this.props.hasMore('down') || !isAtBottom) {
+      this.handleMostRecentHidden();
+    } else if (isAtBottom) {
+      this.handleMostRecentViewed();
     }
   }
 
@@ -414,15 +420,20 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _defaultLoading() {
+    return <DefaultLoadingWithDelay delay={100} />;
+  }
+
+  private _defaultLoadingMore() {
+    return <DefaultLoadingMore />;
+  }
+
   render() {
     const { loadMore, hasMore, items, loadingStatus } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
-
-    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
-    const defaultLoadingMore = <DefaultLoadingMore />;
 
     return (
       <JuiSizeMeasurer>
@@ -450,10 +461,11 @@ class StreamViewComponent extends Component<Props> {
                       minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
                       loadInitialData={this._loadInitialPosts}
                       loadMore={loadMore}
-                      loadingRenderer={defaultLoading}
+                      loadingRenderer={this._defaultLoading}
                       hasMore={hasMore}
-                      loadingMoreRenderer={defaultLoadingMore}
+                      loadingMoreRenderer={this._defaultLoadingMore}
                       onVisibleRangeChange={this._handleVisibilityChanged}
+                      onBottomStatusChange={this._bottomStatusChangeHandler}
                     >
                       {this._renderStreamItems()}
                     </JuiInfiniteList>
@@ -488,7 +500,6 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-
     const atBottom =
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {

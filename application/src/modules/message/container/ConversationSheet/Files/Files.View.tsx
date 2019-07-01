@@ -10,6 +10,7 @@ import {
   JuiFileWithPreview,
   JuiPreviewImage,
   JuiDelayPlaceholder,
+  JuiFileSection,
 } from 'jui/pattern/ConversationCard/Files';
 import { getThumbnailSize } from 'jui/foundation/utils';
 import {
@@ -132,121 +133,114 @@ class FilesView extends React.Component<FilesViewProps> {
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
-        {files[FileType.image].map((file: ExtendFileItem) => {
-          const { item } = file;
-          const { origHeight, id, origWidth, name, downloadUrl } = item;
-          let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
-          if (singleImage) {
-            size = getThumbnailSize(origWidth, origHeight);
-          }
-          const placeholder = (
-            <JuiDelayPlaceholder width={size.width} height={size.height} />
-          );
-          if (id < 0 || this.props.isRecentlyUploaded(id)) {
-            return this._renderItem(
-              id,
-              progresses,
-              name,
-              (callback: Function) => (
-                <JuiPreviewImage
-                  key={id}
-                  didLoad={() => this._handleImageDidLoad(id, callback)}
-                  handleImageClick={this._handleImageClick(
-                    id,
-                    urlMap.get(id) || '',
-                    origWidth,
-                    origHeight,
-                  )}
-                  placeholder={placeholder}
-                  width={size.width}
-                  height={size.height}
-                  forceSize={!singleImage}
-                  squareSize={SQUARE_SIZE}
-                  fileName={postParser(name, {
-                    fileName: true,
-                    keyword: this.context.keyword,
-                  })}
-                  url={accelerateURL(urlMap.get(id)) || ''}
-                  Actions={this._getActions(downloadUrl, id, postId)}
-                />
-              ),
+        <JuiFileSection>
+          {files[FileType.image].map((file: ExtendFileItem) => {
+            const { item } = file;
+            const { origHeight, id, origWidth, name, downloadUrl } = item;
+            let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
+            if (singleImage) {
+              size = getThumbnailSize(origWidth, origHeight);
+            }
+            const placeholder = (
+              <JuiDelayPlaceholder width={size.width} height={size.height} />
             );
-          }
-          return (
-            <JuiPreviewImage
-              key={id}
-              placeholder={React.cloneElement(placeholder, {
-                onClick: this._handleImageClick(
-                  id,
-                  urlMap.get(id) || '',
-                  size.width,
-                  size.height,
-                ),
-              })}
-              handleImageClick={this._handleImageClick(
+            const props = {
+              width: size.width,
+              height: size.height,
+              forceSize: !singleImage,
+              squareSize: SQUARE_SIZE,
+              handleImageClick: this._handleImageClick(
                 id,
                 urlMap.get(id) || '',
                 size.width,
                 size.height,
-              )}
-              width={size.width}
-              height={size.height}
-              forceSize={!singleImage}
-              squareSize={SQUARE_SIZE}
-              fileName={postParser(name, {
+              ),
+              fileName: postParser(name, {
                 fileName: true,
                 keyword: this.context.keyword,
-              })}
-              url={accelerateURL(urlMap.get(id)) || ''}
-              Actions={this._getActions(downloadUrl, id, postId)}
-            />
-          );
-        })}
-        {files[FileType.document].map((file: ExtendFileItem) => {
-          const { item, previewUrl } = file;
-          const { size, type, id, name, downloadUrl } = item;
-          const { status } = item.latestVersion;
-          const iconType = getFileIcon(type);
-          const supportFileViewer = isSupportFileViewer(type);
-          const fileReadyForViewer = isFileReadyForViewer(status);
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
-          return (
-            <JuiFileWithPreview
-              key={id}
-              fileName={postParser(name, {
-                fileName: true,
-                keyword: this.context.keyword,
-              })}
-              size={`${getFileSize(size)}`}
-              url={accelerateURL(previewUrl)!}
-              iconType={iconType}
-              disabled={supportFileViewer && !fileReadyForViewer}
-              Actions={this._getActions(downloadUrl, id, postId)}
-            />
-          );
-        })}
-        {files[FileType.others].map((file: ExtendFileItem) => {
-          const { item } = file;
-          const { size, type, name, downloadUrl, id } = item;
-          const iconType = getFileIcon(type);
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
-          return (
-            <JuiFileWithoutPreview
-              key={id}
-              fileName={postParser(name, {
-                fileName: true,
-                keyword: this.context.keyword,
-              })}
-              size={`${getFileSize(size)}`}
-              iconType={iconType}
-              Actions={this._getActions(downloadUrl, id, postId)}
-            />
-          );
-        })}
+              }),
+              url: accelerateURL(urlMap.get(id)) || '',
+              Actions: this._getActions(downloadUrl, id, postId),
+            };
+            const future = (
+              <JuiPreviewImage
+                key={id}
+                didLoad={(callback: Function) =>
+                  this._handleImageDidLoad(id, callback)
+                }
+                placeholder={placeholder}
+                {...props}
+              />
+            );
+            const flag = id < 0 || this.props.isRecentlyUploaded(id);
+            if (flag) {
+              return this._renderItem(id, progresses, name, future);
+            }
+            return (
+              <JuiPreviewImage
+                key={id}
+                placeholder={React.cloneElement(placeholder, {
+                  onClick: this._handleImageClick(
+                    id,
+                    urlMap.get(id) || '',
+                    size.width,
+                    size.height,
+                  ),
+                })}
+                {...props}
+              />
+            );
+          })}
+        </JuiFileSection>
+        <JuiFileSection>
+          {files[FileType.document].map((file: ExtendFileItem) => {
+            const { item, previewUrl } = file;
+            const { size, type, id, name, downloadUrl } = item;
+            const status = item.latestVersion && item.latestVersion.status;
+            const iconType = getFileIcon(type);
+            const supportFileViewer = isSupportFileViewer(type);
+            const fileReadyForViewer = isFileReadyForViewer(status);
+            if (id < 0) {
+              return this._renderItem(id, progresses, name);
+            }
+            return (
+              <JuiFileWithPreview
+                key={id}
+                fileName={postParser(name, {
+                  fileName: true,
+                  keyword: this.context.keyword,
+                })}
+                size={`${getFileSize(size)}`}
+                url={accelerateURL(previewUrl)!}
+                iconType={iconType}
+                disabled={supportFileViewer && !fileReadyForViewer}
+                Actions={this._getActions(downloadUrl, id, postId)}
+              />
+            );
+          })}
+        </JuiFileSection>
+        <JuiFileSection>
+          {files[FileType.others].map((file: ExtendFileItem) => {
+            const { item } = file;
+            const { size, type, name, downloadUrl, id } = item;
+            const iconType = getFileIcon(type);
+            if (id < 0) {
+              return this._renderItem(id, progresses, name);
+            }
+            return (
+              <JuiFileWithoutPreview
+                key={id}
+                fileName={postParser(name, {
+                  fileName: true,
+                  keyword: this.context.keyword,
+                })}
+                size={`${getFileSize(size)}`}
+                iconType={iconType}
+                Actions={this._getActions(downloadUrl, id, postId)}
+              />
+            );
+          })}
+        </JuiFileSection>
       </>
     );
   }

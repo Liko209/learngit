@@ -1,5 +1,7 @@
 const name2icon = {
+  filter: 'filter',
   voicemail: 'voicemail',
+  transcription: 'transcription',
   answer: 'answer',
   member_count: 'people',
   phone: 'phone',
@@ -137,6 +139,12 @@ const name2icon = {
   arrow_right: 'arrow_right',
   pause: 'pause',
   play: 'play',
+  incall: 'incall',
+  outcall: 'outcall',
+  missedcall: 'missedcall',
+  read: 'read',
+  unread: 'unread',
+  dial: 'dial',
   forwardcall: 'forwardcall',
 };
 

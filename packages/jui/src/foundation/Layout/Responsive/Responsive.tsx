@@ -118,8 +118,8 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     prevState: ResponsiveState,
   ) {
     const { visual, defaultWidth } = nextProps;
-    const { prevVisual } = prevState;
-    if (visual === false && prevVisual !== visual) {
+    const { prevVisual, width } = prevState;
+    if (visual === false && (prevVisual !== visual || width)) {
       return {
         prevVisual: visual,
         isShow: false,
@@ -169,18 +169,6 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     }
   }
 
-  handlerClickShowPanel = () => {
-    const { minWidth } = this.props;
-    this.setState({ isShow: true, width: Number(minWidth) });
-  }
-
-  handlerClickHidePanel = () => {
-    const { isShow } = this.state;
-    if (isShow) {
-      this.setState({ isShow: false });
-    }
-  }
-
   toggleShowPanel = () => {
     const { isShow } = this.state;
     const { visual } = this.props;
@@ -221,9 +209,6 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   renderMode = () => {
     const { isShow, width } = this.state;
     const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
-    if (visual === undefined) {
-      return null;
-    }
     return (
       <>
         {(this.isManualMode || !visual) && this.renderButton()}
