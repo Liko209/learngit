@@ -4,31 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactWrapper } from 'enzyme';
-
-type ResolverMap = {
-  [key: string]: (wrapper: ReactWrapper) => any;
-};
-
-function findByAutomationID(wrapper: ReactWrapper, id: string) {
-  return helper(wrapper.find({ 'data-test-automation-id': id }));
-}
-
-const kResolvers: ResolverMap = {
-  leftRail: (wrapper: ReactWrapper) => findByAutomationID(wrapper, 'leftRail'),
-};
-
-const handler = {
-  get: (target: ReactWrapper, name: string) => {
-    const resolver = kResolvers[name];
-    if (resolver) {
-      return resolver(target);
-    }
-    return target[name];
-  },
-};
+import { TestApp } from './application';
 
 function helper(wrapper: ReactWrapper) {
-  const p = new Proxy(wrapper, handler);
+  const p = new TestApp(wrapper);
   return p;
 }
 

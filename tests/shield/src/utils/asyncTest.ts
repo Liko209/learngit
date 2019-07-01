@@ -6,21 +6,19 @@
 
 type TestFunc = Function | (() => Promise<void>);
 
+function wait(duration = 0) {
+  return new Promise(resolve => setTimeout(resolve, duration));
+}
+
 function asyncTest(func: TestFunc, timeout = 0): Promise<void> {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      if (func) {
-        const result = func();
-        if (result instanceof Promise) {
-          result.then(resolve);
-        } else {
-          resolve();
-        }
-      } else {
-        resolve();
+  return wait(timeout).then(() => {
+    if (func) {
+      const result = func();
+      if (result instanceof Promise) {
+        result.then();
       }
-    },         timeout);
+    }
   });
 }
 
-export { asyncTest };
+export { asyncTest, wait };
