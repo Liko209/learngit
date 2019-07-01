@@ -19,6 +19,7 @@ const DATA_REACTING_CONFIG = {
   eventName: 'Jup_Web_settings_updateSetting',
   name: 'browser',
   type: 'desktopNotificationSettings',
+  endPoint: 'web',
 };
 
 class NotificationBrowserSettingItemViewModel extends StoreViewModel
