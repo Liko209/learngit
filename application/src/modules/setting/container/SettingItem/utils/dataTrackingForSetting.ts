@@ -5,6 +5,7 @@
  */
 
 import { DataTracking } from '@/interface/setting';
+import _ from 'lodash';
 import { dataAnalysis } from 'sdk';
 
 const dataTrackingForSetting = (config: DataTracking, value?: any) => {
@@ -22,4 +23,10 @@ const dataTrackingForSetting = (config: DataTracking, value?: any) => {
   );
 };
 
-export { dataTrackingForSetting };
+const debounceTrackData = _.debounce(
+  (dataTracking: DataTracking, newValue: number) =>
+    dataTrackingForSetting(dataTracking, newValue),
+  1000,
+);
+
+export { dataTrackingForSetting, debounceTrackData };

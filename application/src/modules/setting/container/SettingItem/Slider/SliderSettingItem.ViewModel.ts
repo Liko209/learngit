@@ -6,15 +6,13 @@
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SliderSettingItem } from '@/interface/setting';
-import _ from 'lodash';
-import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
+import { debounceTrackData } from '../utils/dataTrackingForSetting';
 import { SliderSettingItemProps } from './types';
 
 class SliderSettingItemViewModel extends BaseSettingItemViewModel<
   SliderSettingItemProps,
   SliderSettingItem
 > {
-  _dataTrackingDebounce: Function;
   @action
   saveSetting = async (newValue: number) => {
     const { valueSetter } = this.settingItemEntity;
@@ -26,12 +24,7 @@ class SliderSettingItemViewModel extends BaseSettingItemViewModel<
       }
     }
     valueSetter && valueSetter(newValue);
-    if (dataTracking) {
-      this._dataTrackingDebounce =
-        this._dataTrackingDebounce ||
-        _.debounce(() => dataTrackingForSetting(dataTracking, newValue), 1000);
-      !dataTracking && this._dataTrackingDebounce();
-    }
+    dataTracking && debounceTrackData(dataTracking, newValue);
   }
 }
 
