@@ -7,13 +7,11 @@
 import React from 'react';
 import fs from 'fs';
 import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
-import { service } from 'sdk';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { h, act, TestApp, MockApp } from 'shield/application';
-import notificationCenter from 'sdk/service/notificationCenter';
-
-import { App } from '@/modules/app/container';
 import history from '@/history';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { service } from 'sdk';
 
 jest.setTimeout(300 * 1000);
 
@@ -40,6 +38,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       await act(async () => {
         wrapper = h(mount(<MockApp />));
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
+        notificationCenter.emitKVChange(service.SERVICE.LOGIN);
       });
 
       await act(async () => {

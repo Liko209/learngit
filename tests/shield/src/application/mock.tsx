@@ -4,8 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { Jupiter, container, ModuleConfig } from 'framework';
-import { App } from '@/modules/app/container';
+import {
+  Jupiter,
+  container,
+  ModuleConfig,
+  injectable,
+  decorate,
+} from 'framework';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
+import { ClientService } from '@/modules/common';
 
 type ModuleMap = {
   [key: string]: ModuleConfig;
@@ -16,6 +23,8 @@ type MockAppProps = {
 };
 
 let kAllModules: ModuleMap;
+
+decorate(injectable(), ClientService);
 
 function initAllModules() {
   if (!kAllModules) {
@@ -39,6 +48,8 @@ function initAllModules() {
     kAllModules['featuresFlags'] = featuresFlags.config;
     kAllModules['notification'] = notification.config;
     kAllModules['setting'] = setting.config;
+
+    container.bind(CLIENT_SERVICE).to(ClientService);
   }
 }
 
@@ -73,6 +84,7 @@ class MockApp extends Component<MockAppProps, State> {
   }
 
   render() {
+    const { App } = require('@/modules/app/container');
     return <App />;
   }
 }
