@@ -211,7 +211,8 @@ class RCCallerIdController {
         if (_.get(callerInfo, 'callerId.type') === PhoneNumberType.Blocked) {
           return BLOCKED_NUMBER_CALLER_ID;
         }
-        return _.get(callerInfo, 'callerId.phoneInfo.id');
+        const id = _.get(callerInfo, 'callerId.phoneInfo.id');
+        return id && _.toNumber(id);
       }
     }
     return null;

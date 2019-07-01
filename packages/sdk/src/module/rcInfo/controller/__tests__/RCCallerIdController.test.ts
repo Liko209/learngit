@@ -342,7 +342,7 @@ describe('RCInfoFetchController', () => {
       });
 
       const result = await rcCallerIdController.getExtensionCallerId();
-      expect(result).toBe('1');
+      expect(result).toBe(1);
     });
     it('should return id is 0 when extension caller id type is blocked', async () => {
       rcCallerIdController[
