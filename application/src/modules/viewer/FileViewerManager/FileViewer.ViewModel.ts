@@ -6,6 +6,8 @@
 
 import React from 'react';
 import { computed, action, observable, Reaction } from 'mobx';
+
+import { Person } from 'sdk/module/person/entity';
 import { AbstractViewModel } from '@/base';
 import {
   IViewerView,
@@ -15,6 +17,7 @@ import moment from 'moment';
 import FileItemModel from '@/store/models/FileItem';
 import { dateFormatter } from '@/utils/date';
 import { getEntity } from '@/store/utils';
+import PersonModel from '@/store/models/Person';
 import { ENTITY_NAME } from '@/store';
 import { ItemVersionPage, Item, ItemVersions } from 'sdk/module/item/entity';
 import { Notification } from '@/containers/Notification';
@@ -75,7 +78,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   private get _person() {
     const { newestCreatorId } = this._item;
     return newestCreatorId
-      ? getEntity(ENTITY_NAME.PERSON, newestCreatorId)
+      ? getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, newestCreatorId)
       : undefined;
   }
 
@@ -113,12 +116,11 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
 
   @computed
   get title() {
-    let userDisplayName;
+    let userDisplayName = '';
     let uid;
     if (this._person) {
-      this._person.userDisplayName &&
-        (userDisplayName = this._person.userDisplayName);
-      this._person.id && (uid = this._person.id);
+      userDisplayName = this._person.userDisplayName;
+      uid = this._person.id;
     }
     const { createdAt } = this._item;
 
