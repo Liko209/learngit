@@ -182,7 +182,7 @@ describe('RCInfoApi', () => {
         method: 'put',
         authFree: false,
         via: NETWORK_VIA.HTTP,
-        params: 'mockRequest',
+        data: 'mockRequest',
         HAPriority: HA_PRIORITY.HIGH,
       });
     });

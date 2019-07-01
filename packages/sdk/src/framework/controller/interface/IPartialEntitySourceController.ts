@@ -6,7 +6,7 @@
 
 import { IdModel, ModelIdType } from '../../model';
 
-interface IModelSourceController<
+interface IPartialEntitySourceController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 > {
@@ -15,4 +15,4 @@ interface IModelSourceController<
   getEntityNotificationKey: () => string;
 }
 
-export { IModelSourceController };
+export { IPartialEntitySourceController };

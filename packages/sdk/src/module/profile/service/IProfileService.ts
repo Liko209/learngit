@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { SettingOption } from '../types';
 import { Profile } from '../entity';
 

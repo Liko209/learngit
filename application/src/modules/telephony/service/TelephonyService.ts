@@ -42,7 +42,7 @@ import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
 import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
-import { IPhoneNumberRecord } from 'sdk/src/api';
+import { IPhoneNumberRecord } from 'sdk/api';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 

@@ -5,6 +5,7 @@
  */
 
 import { Token } from 'foundation';
+import { IdModel } from 'sdk/framework/model';
 
 type RCCountryInfo = {
   uri?: string;
@@ -180,14 +181,6 @@ type IExtensionCallerFeature = {
     };
   };
 };
-type IExtensionCallerId = {
-  id: string;
-  uri: string;
-  byDevice: [];
-  byFeature: IExtensionCallerFeature[];
-  extensionNameForOutboundCalls?: boolean;
-  extensionNumberForInternalCalls?: boolean;
-};
 type IExtensionCallerFeatureRequest = {
   feature: string;
   callerId: {
@@ -197,6 +190,15 @@ type IExtensionCallerFeatureRequest = {
     };
   };
 };
+// add type IdModel for partialModifyController
+type IExtensionCallerId = IdModel<string> & {
+  uri: string;
+  byDevice: [];
+  byFeature: IExtensionCallerFeature[];
+  extensionNameForOutboundCalls?: boolean;
+  extensionNumberForInternalCalls?: boolean;
+};
+
 type IExtensionCallerIdRequest = {
   byFeature: IExtensionCallerFeatureRequest[];
 };

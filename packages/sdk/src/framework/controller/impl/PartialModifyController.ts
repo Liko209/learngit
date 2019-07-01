@@ -7,7 +7,7 @@
 import { IdModel, Raw, ModelIdType } from '../../model';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { IEntitySourceController } from '../interface/IEntitySourceController';
+import { IPartialEntitySourceController } from '../interface/IPartialEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
@@ -17,11 +17,7 @@ class PartialModifyController<
   IdType extends ModelIdType = number
 > implements IPartialModifyController<T, IdType> {
   constructor(
-    public entitySourceController: {
-      getEntityNotificationKey: () => string;
-      get: (id: IdType) => Promise<T | null>;
-      update: (item: T) => Promise<void>;
-    },
+    public entitySourceController: IPartialEntitySourceController<T, IdType>,
   ) {}
 
   async updatePartially(

@@ -12,12 +12,14 @@ import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import {
   IExtensionCallerFeatureRequest,
   IExtensionCallerId,
+  IExtensionCallerFeature,
 } from 'sdk/api/ringcentral/types/common';
 import { RCInfoApi } from 'sdk/api';
 import { CALLER_ID_FEATURE_NAME } from '../config/constants';
 import { RC_INFO } from 'sdk/service';
 import { PartialModifyController } from 'sdk/framework/controller/impl/PartialModifyController';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
+import { IPartialEntitySourceController } from 'sdk/framework/controller/interface/IPartialEntitySourceController';
 
 const CALLER_ID_ORDER = {
   [PhoneNumberType.DirectNumber]: 0,
@@ -54,7 +56,10 @@ class RCCallerIdController {
     this._initPartialController();
   }
   private _initPartialController() {
-    const entitySourceController = {
+    const entitySourceController: IPartialEntitySourceController<
+      IExtensionCallerId,
+      string
+    > = {
       getEntityNotificationKey: () => {
         return RC_INFO.EXTENSION_CALLER_ID;
       },
@@ -152,8 +157,7 @@ class RCCallerIdController {
   private _recordsSortFn(a: PhoneNumberModel, b: PhoneNumberModel) {
     return CALLER_ID_ORDER[a.usageType] - CALLER_ID_ORDER[b.usageType];
   }
-
-  async setDefaultCallerId(callerId: number) {
+  private _getCallerIdRequest(callerId: number) {
     const params: IExtensionCallerFeatureRequest = {
       feature: CALLER_ID_FEATURE_NAME,
       callerId: {},
@@ -167,6 +171,11 @@ class RCCallerIdController {
         phoneInfo: { id: callerId.toString() },
       };
     }
+    return params;
+  }
+
+  async setDefaultCallerId(callerId: number) {
+    const params = this._getCallerIdRequest(callerId);
     const preHandlePartial = (
       partialModel: Partial<IExtensionCallerId>,
       originalModel: IExtensionCallerId,
@@ -174,11 +183,11 @@ class RCCallerIdController {
       let newData = _.cloneDeep(originalModel.byFeature);
       newData = newData.map(item => {
         if (item.feature === CALLER_ID_FEATURE_NAME) {
-          item = params;
+          return params as IExtensionCallerFeature;
         }
         return item;
       });
-      partialModel['byFeature'] = newData;
+      partialModel.byFeature = newData;
       return partialModel;
     };
     await this._partialModifyController.updatePartially(
@@ -199,10 +208,10 @@ class RCCallerIdController {
         item => item.feature === CALLER_ID_FEATURE_NAME,
       );
       if (callerInfo) {
-        if (callerInfo.callerId.type === PhoneNumberType.Blocked) {
+        if (_.get(callerInfo, 'callerId.type') === PhoneNumberType.Blocked) {
           return BLOCKED_NUMBER_CALLER_ID;
         }
-        return +callerInfo.callerId.phoneInfo.id;
+        return _.get(callerInfo, 'callerId.phoneInfo.id');
       }
     }
     return null;

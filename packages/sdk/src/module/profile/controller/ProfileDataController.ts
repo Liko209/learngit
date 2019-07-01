@@ -17,9 +17,7 @@ import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
-import { SETTING_KEYS } from '../constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { RCInfoService } from 'sdk/module/rcInfo';
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,

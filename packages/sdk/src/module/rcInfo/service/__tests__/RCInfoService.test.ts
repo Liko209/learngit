@@ -199,6 +199,24 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDefaultCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().getDefaultCallerId,
+      ).toBeCalled();
+    });
+  });
+
+  describe('setDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.setDefaultCallerId(1);
+      expect(
+        rcInfoController.getRCCallerIdController().setDefaultCallerId,
+      ).toBeCalledWith(1);
+    });
+  });
+
   describe('isRCFeaturePermissionEnabled()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isRCFeaturePermissionEnabled(1);
