@@ -29,4 +29,8 @@ const debounceTrackData = _.debounce(
   1000,
 );
 
-export { dataTrackingForSetting, debounceTrackData };
+const booleanTransform = (value: boolean) => {
+  return value ? 'on' : 'off';
+};
+
+export { dataTrackingForSetting, debounceTrackData, booleanTransform };

@@ -10,7 +10,10 @@ import { UserSettingEntity } from 'sdk/module/setting';
 import { getEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
-import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
+import {
+  dataTrackingForSetting,
+  booleanTransform,
+} from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
 import { NotificationBrowserSettingItemViewProps } from './types';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../constant';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
@@ -35,7 +38,13 @@ class NotificationBrowserSettingItemViewModel extends StoreViewModel
   setToggleState = async (checked: boolean) => {
     const { valueSetter } = this.settingItemEntity;
     await (valueSetter && valueSetter({ desktopNotifications: checked }));
-    dataTrackingForSetting(DATA_REACTING_CONFIG, checked ? 'on' : 'off');
+    dataTrackingForSetting(
+      {
+        ...DATA_REACTING_CONFIG,
+        optionTransform: () => booleanTransform(checked),
+      },
+      checked,
+    );
   }
 }
 

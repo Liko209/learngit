@@ -6,6 +6,7 @@
 import {
   dataTrackingForSetting,
   debounceTrackData,
+  booleanTransform,
 } from '../dataTrackingForSetting';
 import { dataAnalysis } from 'sdk';
 jest.mock('sdk');
@@ -26,5 +27,14 @@ describe('debounceTrackData()', () => {
     debounceTrackData({});
     debounceTrackData({});
     expect(dataAnalysis.track).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('booleanTransform()', () => {
+  it('should return on when call booleanTransform with true ', async () => {
+    expect(booleanTransform(true)).toEqual('on');
+  });
+  it('should return off when call booleanTransform with false ', async () => {
+    expect(booleanTransform(false)).toEqual('off');
   });
 });

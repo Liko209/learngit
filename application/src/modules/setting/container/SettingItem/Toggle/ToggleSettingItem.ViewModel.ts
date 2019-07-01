@@ -5,11 +5,11 @@
  */
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
-import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
+import {
+  dataTrackingForSetting,
+  booleanTransform,
+} from '../utils/dataTrackingForSetting';
 import { ToggleSettingItemProps } from './types';
-
-const OFF = 'off';
-const ON = 'on';
 
 class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
   ToggleSettingItemProps
@@ -25,7 +25,11 @@ class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
       }
     }
     valueSetter && valueSetter(value);
-    dataTracking && dataTrackingForSetting(dataTracking, value ? ON : OFF);
+    dataTracking &&
+      dataTrackingForSetting(
+        { ...dataTracking, optionTransform: () => booleanTransform(value) },
+        value,
+      );
   }
 }
 
