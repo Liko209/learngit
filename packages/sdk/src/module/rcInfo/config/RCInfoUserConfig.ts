@@ -72,7 +72,7 @@ class RCInfoUserConfig extends DBConfig {
   }
 
   async setExtensionPhoneNumberList(value: any) {
-    return await this.put(RC_INFO_KEYS.EXTENSION_PHONE_NUMBER_LIST, value);
+    await this.put(RC_INFO_KEYS.EXTENSION_PHONE_NUMBER_LIST, value);
   }
 
   async getExtensionCallerId() {
@@ -80,7 +80,7 @@ class RCInfoUserConfig extends DBConfig {
   }
 
   async setExtensionCallerId(value: any) {
-    return await this.put(RC_INFO_KEYS.EXTENSION_CALLER_ID, value);
+    await this.put(RC_INFO_KEYS.EXTENSION_CALLER_ID, value);
   }
 
   async setDialingPlan(value: any) {
