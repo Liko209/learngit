@@ -4,7 +4,7 @@ import java.net.URI
 
 class Context {
     final static String SUCCESS_EMOJI  = ':white_check_mark:'
-    final static String FAILURE_EMOJI  = ':negative_squared_cross_mark:'
+    final static String FAILURE_EMOJI  = ':x:'
     final static String ABORTED_EMOJI  = ':no_entry:'
     final static String UPWARD_EMOJI   = ':chart_with_upwards_trend:'
     final static String DOWNWARD_EMOJI = ':chart_with_downwards_trend:'
@@ -421,7 +421,6 @@ class JupiterJob extends BaseJob {
 
     void run() {
         try {
-            context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
             doRun()
             context.buildStatus = true
         } finally {
@@ -442,6 +441,7 @@ class JupiterJob extends BaseJob {
 
     void doRun() {
         cancelOldBuildOfSameCause()
+        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
         // using a high performance node to build
         jenkins.node(context.isSkipUnitTestAndStaticAnalysis? context.e2eNode : context.buildNode) {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
@@ -450,7 +450,9 @@ class JupiterJob extends BaseJob {
             jenkins.withEnv([
                 "PATH+NODEJS=${nodejsHome}/bin",
                 'TZ=UTC-8',
+                'CI=false',
                 'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
+                'ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/',
                 'NODE_OPTIONS=--max_old_space_size=12000',
             ]) {
                 stage(name: 'Collect Facts'){ collectFacts() }
@@ -518,6 +520,7 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'grep --version'
         jenkins.sh 'which tr'
         jenkins.sh 'which xargs'
+        jenkins.sh 'yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb -y || true'
 
         // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
         long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
@@ -557,6 +560,7 @@ class JupiterJob extends BaseJob {
         // keep node_modules to speed up build process
         // keep a lock file to help us decide if we need to upgrade dependencies
         jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
+        // jenkins.sh "git clean -xdf"  // work around errors
 
         // update runtime context
 
@@ -628,7 +632,12 @@ class JupiterJob extends BaseJob {
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage -w 16'
+        if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
+            jenkins.sh 'npm run test -- --coverage -w 16'
+        } else {
+            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage -w 16'
+        }
+
         String reportName = 'Coverage'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: reportName, reportTitles: reportName,
@@ -723,7 +732,7 @@ class JupiterJob extends BaseJob {
             jenkins.sshagent(credentials: [context.deployCredentialId]) {
                 deployToRemote(sourceDir, context.deployUri, context.juiHeadHashDir)
             }
-            // juiAutomation()
+            juiAutomation()
             lockKey(context.lockCredentialId, context.lockUri, context.juiLockKey)
         }
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
@@ -848,6 +857,7 @@ class JupiterJob extends BaseJob {
             "QUARANTINE_PASSED_THRESHOLD=1",
             "DEBUG=axios",
             "ENABLE_SSL=true",
+            "ENABLE_NOTIFICATION=true",
             "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
         ]) {
             jenkins.dir(E2E_DIRECTORY) {
