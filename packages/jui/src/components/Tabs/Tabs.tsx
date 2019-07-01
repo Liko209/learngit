@@ -13,7 +13,6 @@ import React, {
   MouseEvent,
   Children,
 } from 'react';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { StyledTabs } from './StyledTabs';
 import { StyledTab, StyledTabProps } from './StyledTab';
 import { StyledContainer } from './StyledContainer';
@@ -22,6 +21,7 @@ import { JuiTabProps } from './Tab';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
 import { RuiTooltip } from 'rcui/components/Tooltip';
+import { JuiIconography } from '../../foundation/Iconography';
 
 type States = {
   openMenu: boolean;
@@ -49,8 +49,6 @@ const CLASSES = {
   tab: {
     root: 'root',
     selected: 'selected',
-    labelContainer: 'labelContainer',
-    label: 'label',
   },
 };
 
@@ -132,7 +130,6 @@ class JuiTabs extends PureComponent<Props, States> {
     if (domMore) {
       this._moreWidth = domMore.getBoundingClientRect().width;
     }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
   }
 
   private _measureContainerWidth = () => {
@@ -145,7 +142,6 @@ class JuiTabs extends PureComponent<Props, States> {
         parseFloat(cs.borderLeftWidth!) + parseFloat(cs.borderRightWidth!);
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
-    // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
   }
 
   private _measureTabWidths = () => {
@@ -158,8 +154,6 @@ class JuiTabs extends PureComponent<Props, States> {
       }
       return 0;
     });
-    // console.log('tabs', `_tabWidths: ${this._tabWidths}`);
-    // console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
   }
 
   private _calculateIndexTabsAndIndexMenus = () => {
@@ -290,7 +284,7 @@ class JuiTabs extends PureComponent<Props, States> {
       value: MORE,
       icon: (
         <RuiTooltip title={moreText} tooltipForceHide={tooltipForceHide}>
-          <MoreHoriz />
+          <JuiIconography>more_horiz</JuiIconography>
         </RuiTooltip>
       ),
       onClick: this._showMenuList,

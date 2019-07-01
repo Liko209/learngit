@@ -29,23 +29,15 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
     max-width: ${width(30)};
     min-height: ${height(8)};
     text-transform: none;
-  }
-  &.selected {
-    .label {
-      ${typography('body2')};
-      color: ${primary('700')}
-    }
-  }
-  .labelContainer {
-    padding-left: ${spacing(2)};
-    padding-right: ${spacing(2)};
+    padding: ${({ icon, theme }) => (icon ? '0' : spacing(0, 2)({ theme }))};
     ${ellipsis()}
-    width: 100%;
     box-sizing: border-box;
-  }
-  .label {
     ${typography('body1')}
     color: ${grey('900')}
+  }
+  &.selected {
+    ${typography('body2')};
+    color: ${primary('700')};
   }
 `;
 
