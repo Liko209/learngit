@@ -32,51 +32,24 @@ import { ProfileService } from '../../profile';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { SyncGlobalConfig } from '../config';
-import { LOG_INDEX_DATA, MODULE_NAME } from '../constant';
+import { LOG_INDEX_DATA } from '../constant';
 import { SyncListener, SyncService } from '../service';
 
 import { ChangeModel, SYNC_SOURCE } from '../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
-import { Nullable } from 'sdk/types';
-import { InformationRecorder, AbstractRecord } from 'sdk/utils';
-import _ from 'lodash';
 import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
 
 const LOG_TAG = 'SyncController';
-
-type RequestStatus = 'none' | 'executing' | 'success' | 'failed';
-
 class SyncController {
   private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
-  private _indexDataTaskController: IndexTaskController;
-  private _syncInformationRecorder: InformationRecorder<{
-    lastIndexTimestamp: Nullable<number>;
-    initial: RequestStatus;
-    index: RequestStatus;
-    remaining: RequestStatus;
-    logs: any[];
-  }> = new InformationRecorder(
-    MODULE_NAME,
-    () =>
-      new AbstractRecord({
-        lastIndexTimestamp: null,
-        sync: 'none',
-        initial: 'none',
-        index: 'none',
-        remaining: 'none',
-        logs: [],
-      }),
-    {
-      logTags: [LOG_TAG],
-    },
-  );
   private _progressBar: {
     start: () => void;
     stop: () => void;
   };
+  private _indexDataTaskController: IndexTaskController;
 
   constructor() {
     const progressBar = progressManager.newProgressBar();
@@ -87,10 +60,7 @@ class SyncController {
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
-    this._syncInformationRecorder.log(
-      'sync service SERVICE.SOCKET_STATE_CHANGE',
-      state,
-    );
+    mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
     if (state === 'connected') {
       this._onSocketConnected();
     } else if (state === 'refresh') {
@@ -120,10 +90,7 @@ class SyncController {
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
-    this._syncInformationRecorder
-      .startTransaction()
-      .log(`start syncData time: ${lastIndexTimestamp}`)
-      .set('lastIndexTimestamp', lastIndexTimestamp);
+    mainLogger.log(LOG_TAG, `start syncData time: ${lastIndexTimestamp}`);
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData();
@@ -131,19 +98,19 @@ class SyncController {
       } else {
         await this._firstLogin();
       }
-    } catch (error) {
-      this._syncInformationRecorder.warn('syncData failed', { error });
+    } catch (e) {
+      mainLogger.log(LOG_TAG, 'syncData fail', e);
     }
   }
 
   handleStoppingSocketEvent() {
     // this is for update newer than tag
-    this._syncInformationRecorder.log('handleStoppingSocketEvent');
+    mainLogger.log(LOG_TAG, 'handleStoppingSocketEvent');
     this._resetSocketConnectedLocalTime();
   }
 
   handleWakeUpFromSleep() {
-    this._syncInformationRecorder.log('handleWakeUpFromSleep');
+    mainLogger.log(LOG_TAG, 'handleWakeUpFromSleep');
     this._resetSocketConnectedLocalTime();
   }
 
@@ -153,13 +120,10 @@ class SyncController {
     const currentTime = Date.now();
     try {
       await this._fetchInitial(currentTime);
-      this._syncInformationRecorder.info('fetch initial data success');
+      mainLogger.info(LOG_TAG, 'fetch initial data success');
       notificationCenter.emitKVChange(SERVICE.LOGIN);
-    } catch (error) {
-      this._syncInformationRecorder.error(
-        'fetch initial data error, force logout',
-        { error },
-      );
+    } catch (e) {
+      mainLogger.error(LOG_TAG, 'fetch initial data error, force logout');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     this._checkFetchedRemaining(currentTime);
@@ -168,9 +132,6 @@ class SyncController {
   }
 
   private async _fetchInitial(time: number) {
-    this._syncInformationRecorder
-      .set('initial', 'executing')
-      .log('fetch initial data start');
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
@@ -182,44 +143,31 @@ class SyncController {
     });
 
     onInitialHandled && (await onInitialHandled());
-    this._syncInformationRecorder
-      .set('initial', 'success')
-      .log('fetch initial data and handle success');
+    mainLogger.log(LOG_TAG, 'fetch initial data and handle success');
   }
 
   private async _checkFetchedRemaining(time: number) {
-    this._syncInformationRecorder.log('_checkFetchedRemaining flow start');
     const syncConfig = ServiceLoader.getInstance<SyncService>(
       ServiceConfig.SYNC_SERVICE,
     ).userConfig;
     if (!syncConfig.getFetchedRemaining()) {
       try {
         if (this._isFetchingRemaining) {
-          this._syncInformationRecorder.info('is fetching remaining data');
+          mainLogger.info(LOG_TAG, 'is fetching remaining data');
           return;
         }
         this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
-        this._syncInformationRecorder
-          .info('fetch remaining data success')
-          .log('_checkFetchedRemaining flow success');
-      } catch (error) {
+        mainLogger.info(LOG_TAG, 'fetch remaining data success');
+      } catch (e) {
         this._isFetchingRemaining = false;
-        this._syncInformationRecorder
-          .set('remaining', 'failed')
-          .error('fetch remaining data error', { error })
-          .log('_checkFetchedRemaining flow failed');
+        mainLogger.error(LOG_TAG, 'fetch remaining data error');
       }
-    } else {
-      this._syncInformationRecorder.log('_checkFetchedRemaining flow end');
     }
   }
 
   private async _fetchRemaining(time: number) {
-    this._syncInformationRecorder
-      .set('remaining', 'executing')
-      .log('remaining flow start')
-      .log('start fetching remaining');
+    mainLogger.log(LOG_TAG, 'start fetching remaining');
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
@@ -231,20 +179,17 @@ class SyncController {
     });
 
     onRemainingHandled && (await onRemainingHandled());
+    mainLogger.log('fetch remaining data and handle success');
     const syncConfig = ServiceLoader.getInstance<SyncService>(
       ServiceConfig.SYNC_SERVICE,
     ).userConfig;
     syncConfig.setFetchedRemaining(true);
-    this._syncInformationRecorder
-      .set('remaining', 'success')
-      .log('fetch remaining data and handle success')
-      .log('remaining flow success');
   }
 
   private async _syncIndexData() {
     const executeFunc = async () => {
       const timeStamp = this.getIndexTimestamp();
-      this._syncInformationRecorder.log(`start fetching index:${timeStamp}`);
+      mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
       this._progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
       const syncConfig = ServiceLoader.getInstance<SyncService>(
@@ -252,11 +197,8 @@ class SyncController {
       ).userConfig;
       // 5 minutes ago to ensure data is correct
       try {
-        this._syncInformationRecorder.set('index', 'executing');
         const result = await this.fetchIndexData(String(timeStamp - 300000));
-        this._syncInformationRecorder
-          .log(LOG_INDEX_DATA, 'fetch index done')
-          .set('index', 'success');
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
 
         const performanceTracer = PerformanceTracer.start();
@@ -267,11 +209,9 @@ class SyncController {
 
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
-        this._syncInformationRecorder.log(LOG_INDEX_DATA, 'handle index done');
+        mainLogger.log(LOG_INDEX_DATA, 'handle index done');
       } catch (error) {
-        this._syncInformationRecorder
-          .set('index', 'failed')
-          .warn('fetch index failed', { error });
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
 
@@ -336,10 +276,6 @@ class SyncController {
     return this._fetchData(indexData)(params);
   }
 
-  getStatus() {
-    return _.omit(this._syncInformationRecorder.getCurrentRecord(), 'logs');
-  }
-
   /* handle incoming data */
   private async _dispatchIncomingData(
     data: IndexDataModel,
@@ -400,7 +336,7 @@ class SyncController {
         this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
       )
       .then(() => {
-        this._syncInformationRecorder.debug(
+        mainLogger.debug(
           LOG_INDEX_DATA,
           `store index data done===${Date.now() - start}`,
         );
@@ -419,7 +355,7 @@ class SyncController {
               notificationCenter.emitEntityUpdate(key, value.entities);
             }
           });
-          this._syncInformationRecorder.debug(
+          mainLogger.debug(
             LOG_INDEX_DATA,
             `emit index data done===${Date.now() - s}`,
           );
@@ -432,7 +368,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingCompany() company.length: ${companies &&
         companies.length}, source: ${source}`,
@@ -452,7 +388,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingItem() item.length: ${items &&
         items.length}, source: ${source}`,
@@ -472,7 +408,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPresence() item.length: ${presences &&
         presences.length}, source: ${source}`,
@@ -492,7 +428,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingState() states.length: ${states &&
         states.length}, source: ${source}`,
@@ -512,7 +448,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingProfile(), source: ${source}`,
     );
@@ -530,7 +466,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPerson() persons.length: ${persons &&
         persons.length}, source: ${source}`,
@@ -550,7 +486,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingGroup() groups.length: ${groups &&
         groups.length}, source: ${source}`,
@@ -571,7 +507,7 @@ class SyncController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ) {
-    this._syncInformationRecorder.info(
+    mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingPost() posts.length: ${posts &&
         posts.map(post => post._id)}, source: ${source}`,
@@ -619,7 +555,7 @@ class SyncController {
       }
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
-      this._syncInformationRecorder.error('sync/handleData: ', { error });
+      mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
@@ -668,9 +604,7 @@ class SyncController {
       const succeed = socketUserConfig.getIndexSucceed();
 
       if (!succeed) {
-        this._syncInformationRecorder.info(
-          ' _checkIndex, last index was not succeed',
-        );
+        mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
         await this.syncData();
       }
     }
@@ -690,12 +624,14 @@ class SyncController {
       ServiceConfig.SYNC_SERVICE,
     ).userConfig;
     if (forceUpdate) {
-      this._syncInformationRecorder.log(
+      mainLogger.log(
+        LOG_TAG,
         `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
       );
       syncConfig.setLastIndexTimestamp(time);
     } else if (this.canUpdateIndexTimeStamp()) {
-      this._syncInformationRecorder.log(
+      mainLogger.log(
+        LOG_TAG,
         `updateIndexTimestamp time: ${time} forceUpdate:false`,
       );
       syncConfig.setLastIndexTimestamp(time);
@@ -721,7 +657,7 @@ class SyncController {
 
   private _resetSocketConnectedLocalTime() {
     if (AccountGlobalConfig.getUserDictionary()) {
-      this._syncInformationRecorder.info('reset socket connected time');
+      mainLogger.info(LOG_TAG, 'reset socket connected time');
       this._updateSocketConnectedLocalTime(0);
     }
   }

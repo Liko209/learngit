@@ -22,10 +22,10 @@ export class HealthStatusItemProvider implements IZipItemProvider {
                 .getStatus()
                 .then(
                   (status: any) =>
-                    `----- ${item.name} -----\n\n${toText(status)}\n`,
+                    `[ ${item.name} ]\n\n${toText(status)}\n`,
                 );
             }
-            return `----- ${item.name} -----\n\n${toText(item.getStatus())}\n`;
+            return `[ ${item.name} ]\n\n${toText(item.getStatus())}\n`;
           }),
         ];
       }),

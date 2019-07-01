@@ -18,14 +18,13 @@ export class RegisterItemManager<T extends UniqueItem>
   constructor(private _name: string) {}
 
   register(item: T): void {
-    const duplicateItem = _.find(
+    const duplicateItemIndex = _.findIndex(
       this._items,
-      (it: T) => it.identify === item.identify,
+      (it: T) => it.identify === item.identify && !!item.identify,
     );
-    if (duplicateItem) {
-      const warnText = `register item: ${item.name} is duplicate with: ${
-        duplicateItem.name
-      }`;
+    if (duplicateItemIndex > -1) {
+      this._items.splice(duplicateItemIndex, 1);
+      const warnText = `register item: ${item.name} is duplicate, will replace pre item`;
       logManager
         .getLogger(LOG_TAG)
         .tags(this._name)
@@ -42,9 +41,7 @@ export class RegisterItemManager<T extends UniqueItem>
   }
 
   unRegister(item: T): void {
-    this._items = this._items.filter(
-      it => it === item || item.identify !== it.identify,
-    );
+    this._items = this._items.filter(it => item.identify !== it.identify);
   }
 
   get(identify: Symbol | string) {
