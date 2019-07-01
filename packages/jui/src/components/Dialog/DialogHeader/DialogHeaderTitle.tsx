@@ -40,9 +40,9 @@ class WrappedDialogTitle extends React.PureComponent<
 
   checkWidth() {
     if (this.rootRef.current) {
-      const h2 = this.rootRef.current.querySelector('h2');
-      if (h2) {
-        const childSpans = Array.from(h2.children).filter(
+      const title = this.rootRef.current.querySelector('h6');
+      if (title) {
+        const childSpans = Array.from(title.children).filter(
           (child: Element) => child.tagName === 'SPAN',
         );
         const childrenWidth = childSpans.reduce(
@@ -101,7 +101,7 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
     padding: 0;
     flex: 1;
     min-width: 0;
-    h2 {
+    h6 {
       color: ${palette('grey', '900')};
       text-align: ${({ variant }) =>
         variant === 'responsive' ? 'center' : 'left'};
@@ -112,7 +112,7 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
           : typography('title2')};
     }
 
-    &.vertical h2 {
+    &.vertical h6 {
       display: flex;
       flex-direction: column;
       align-items: center;
