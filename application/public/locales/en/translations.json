@@ -615,12 +615,11 @@
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
-      "ReplyMessageSuccess": "Your voice message was sent successfully.",
+      "ReplyMessageSuccess": "Voice message sent.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped",
-      "ReplyVoiceMessageSuccess": "Voice message sent."
+      "FlipSuccess": "Call flipped"
     },
     "notification": {
       "incomingCall": "Incoming Call",
