@@ -14,7 +14,6 @@ const webpack = require('webpack');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const HappyPack = require('happypack');
 
@@ -37,41 +36,11 @@ const moduleRules = [
   },
   {
     test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/country-flag'),
     use: [
       {
         loader: 'svg-sprite-loader',
         options: {
-          extract: true,
-          publicPath: '/static/',
-          spriteFilename: 'country-flag-[hash:6].svg',
-          symbolId: 'country-flag-[name]',
-        },
-      },
-      {
-        loader: 'svgo-loader',
-        options: {
-          plugins: [
-            { removeTitle: true },
-            { convertColors: { shorthex: false } },
-            { convertPathData: true },
-            { reusePaths: true },
-          ],
-        },
-      },
-    ],
-  },
-  {
-    test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/jupiter-icon'),
-    use: [
-      {
-        loader: 'svg-sprite-loader',
-        options: {
-          extract: true,
-          publicPath: '/static/',
-          spriteFilename: 'jupiter-icon-[hash:6].svg',
-          symbolId: 'jupiter-[name]',
+          symbolId: 'icon-[name]',
         },
       },
       {
@@ -107,7 +76,6 @@ const plugins = [
     'window.Quill': 'quill/dist/quill.js',
     Quill: 'quill/dist/quill.js',
   }),
-  new SpriteLoaderPlugin(),
 ];
 
 const resolvePlugins = [
