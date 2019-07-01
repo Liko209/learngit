@@ -18,6 +18,7 @@
     "can-fixture-socket": "2.0.2",
     "@types/socket.io-client": "1.4.32",
     "socket.io-client": "git+ssh://git@git.ringcentral.com:Fiji/FIJI-socket.io-client.git#Jupiter-2.1.101",
-    "path-to-regexp": "3.0.0"
+    "path-to-regexp": "3.0.0",
+    "nock": "10.0.6"
   }
 }

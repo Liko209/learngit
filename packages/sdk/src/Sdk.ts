@@ -76,7 +76,9 @@ class Sdk {
     );
 
     if (!loginResp || !loginResp.success) {
-      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      if (process.env.NODE_ENV !== 'test') {
+        window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      }
     }
     this._subscribeNotification();
     this._initDataAnalysis();

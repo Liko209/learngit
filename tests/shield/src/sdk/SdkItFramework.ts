@@ -12,6 +12,8 @@ import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
 const debug = createDebug('SdkItFramework');
+const nock = require('nock');
+nock.disableNetConnect();
 
 type ItContext = {
   currentUserId: () => number;
