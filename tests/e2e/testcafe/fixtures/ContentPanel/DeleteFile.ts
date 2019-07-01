@@ -58,71 +58,72 @@ test.meta(<ITestMeta>{
   let filesTabItem = rightRail.filesTab.nthItem(0);
   let postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
 
-  // await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
-  //   await moreActionOnFile.clickMore();
-  // });
+  await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
+    await moreActionOnFile.clickMore();
+  });
 
-  // await h(t).withLog(`Then will show ${deleteFileMenuItem}`, async() => {
-  //   await t.expect(moreActionOnFile.deleteFileMenu).ok();
-  // });
+  await h(t).withLog(`Then will show ${deleteFileMenuItem}`, async() => {
+    await t.expect(moreActionOnFile.deleteFileMenu).ok();
+  });
 
-  // await h(t).withLog(`When I click the ${deleteFileMenuItem} of the file`, async() => {
-  //   await moreActionOnFile.clickDeleteFile();
-  // });
+  await h(t).withLog(`When I click the ${deleteFileMenuItem} of the file`, async() => {
+    await moreActionOnFile.clickDeleteFile();
+  });
 
-  // await h(t).withLog(`Then will show confirm delete dialog`, async() => {
-  //   await confirmDeleteDialog.ensureLoaded();
-  // });
+  await h(t).withLog(`Then will show confirm delete dialog`, async() => {
+    await confirmDeleteDialog.ensureLoaded();
+  });
 
-  // await h(t).withLog(`And I click the Cancel button`, async() => {
-  //   await confirmDeleteDialog.clickCancelButton();
-  // });
+  await h(t).withLog(`And I click the Cancel button`, async() => {
+    await confirmDeleteDialog.clickCancelButton();
+  });
 
-  // await h(t).withLog(`Then the dialog should be closed`, async() => {
-  //   await confirmDeleteDialog.ensureDismiss();
-  // });
+  await h(t).withLog(`Then the dialog should be closed`, async() => {
+    await confirmDeleteDialog.ensureDismiss();
+  });
 
-  // await h(t).withLog(`And the file should remain`, async() => {
-  //   await t.expect(postItem.exists).ok();
-  // });
+  await h(t).withLog(`And the file should remain`, async() => {
+    await t.expect(postItem.exists).ok();
+  });
 
-  // await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
-  //   await rightRail.filesEntry.enter();
-  //   await rightRail.filesEntry.shouldBeOpened();
-  // });
+  await h(t).withLog(`When I click Files Tab on the right self(Entry2:right self)`, async () => {
+    await rightRail.filesEntry.enter();
+    await rightRail.filesEntry.shouldBeOpened();
+  });
 
-  // await h(t).withLog(`And I hover the file item`, async () => {
-  //   await filesTabItem.nameShouldBe(filename);
-  //   await t.hover(filesTabItem.self)
-  // });
+  await h(t).withLog(`And I hover the file item`, async () => {
+    await filesTabItem.nameShouldBe(filename);
+    await t.hover(filesTabItem.self)
+  });
 
-  // await h(t).withLog(`And I click the more button of the file on the right rail`, async() => {
-  //   await filesTabItem.clickMore();
-  // });
+  await h(t).withLog(`And I click the more button of the file on the right rail`, async() => {
+    await filesTabItem.clickMore();
+  });
 
-  // await h(t).withLog(`Then delete file menu item should be on the file action menu`, async() => {
-  //   await t.expect(moreActionOnFile.deleteFileMenu).ok();
-  // });
+  await h(t).withLog(`Then delete file menu item should be on the file action menu`, async() => {
+    await t.expect(moreActionOnFile.deleteFileMenu).ok();
+  });
 
-  // await h(t).withLog(`When I click the ${deleteFileMenuItem} of the file`, async() => {
-  //   await moreActionOnFile.clickDeleteFile();
-  // });
+  await h(t).withLog(`When I click the ${deleteFileMenuItem} of the file`, async() => {
+    await moreActionOnFile.clickDeleteFile();
+  });
 
-  // await h(t).withLog(`Then will show confirm delete dialog`, async() => {
-  //   await confirmDeleteDialog.ensureLoaded();
-  // });
+  await h(t).withLog(`Then will show confirm delete dialog`, async() => {
+    await confirmDeleteDialog.ensureLoaded();
+  });
 
-  // await h(t).withLog('When I click delete', async() => {
-  //   await confirmDeleteDialog.clickDeleteButton();
-  // })
+  await h(t).withLog('When I click delete', async() => {
+    await confirmDeleteDialog.clickDeleteButton();
+  })
 
-  // await h(t).withLog('Then the file should be delete', async() => {
-  //   await t.expect(rightRail.filesTab.nthItem(0).exists).notOk();
-  // })
+  await h(t).withLog('Then the file should be delete', async() => {
+    await t.expect(rightRail.filesTab.nthItem(0).exists).notOk();
+  })
 
+  const messageText = `anotherMessage${message}`
   await h(t).withLog('When I upload another image', async () => {
     await conversationPage.uploadFilesToMessageAttachment(imagePath);
-    await conversationPage.sendMessage(`anotherMessage${message}`);
+    await conversationPage.sendMessage(messageText);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
 
@@ -132,7 +133,20 @@ test.meta(<ITestMeta>{
         await t.click(postItem.img);
         await viewerDialog.ensureLoaded();
   })
-  await t.debug();
+
+  const moreActionOnViewer = app.homePage.moreActionOnViewer;
+  await h(t).withLog('And I delete this image', async () => {
+    await moreActionOnViewer.ensureLoaded();
+    await moreActionOnViewer.clickMore();
+    await moreActionOnViewer.clickDeleteFile();
+    await confirmDeleteDialog.ensureLoaded();
+    await confirmDeleteDialog.clickDeleteButton();
+  })
+
+  await h(t).withLog('Then viewer should be closed and the image should be deleted', async () => {
+    await t.expect(viewerDialog.exists).notOk();
+    await t.expect(postItem.img.exists).notOk();
+  })
 });
 
 test.meta(<ITestMeta>{
