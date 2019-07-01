@@ -1088,6 +1088,17 @@ Veniam anim velit amet aliqua proident.`}
           </Emoji>,
         ]);
       });
+
+      it('should parse correcly when quote an emoji', () => {
+        expect(
+          renderToStaticMarkup(postParser('> :joy:', {
+            emoji: { hostName },
+            html: true,
+          }) as any),
+        ).toMatch(
+          /<q><span aria-label="😂, joy" class="emoji-mart-emoji"><span style="[\s\S]+">😂<\/span><\/span><\/q>/,
+        );
+      });
     });
 
     describe('html and highlight', () => {
