@@ -75,3 +75,8 @@ export type TReplacedData<
 export interface IEntityDataProvider<Model> {
   getByIds(ids: number[]): Promise<Model[]>;
 }
+export type HasMore = {
+  older?: boolean;
+  newer?: boolean;
+  both?: boolean;
+};
