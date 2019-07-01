@@ -6,12 +6,11 @@
 
 import React from 'react';
 import fs from 'fs';
-import { act } from 'react-dom/test-utils';
 import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
 import { service } from 'sdk';
 import { asyncTest, wait } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { h, TestApp } from 'shield/application';
+import { h, act, TestApp } from 'shield/application';
 import { container, Jupiter } from 'framework';
 import notificationCenter from 'sdk/service/notificationCenter';
 
@@ -71,17 +70,16 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
 
       await act(async () => {
         wrapper.update();
+        const leftNav = wrapper.leftNav;
+        console.warn('wait 76', leftNav);
+
+        // const str = wrapper.debug();
+        const str = leftNav.debug();
+        fs.writeFileSync('./out.txt', str);
+
+        console.warn('unmount 76');
+        wrapper.unmount();
       });
-      await wait(10 * 1000);
-      const leftNav = wrapper.leftNav;
-      console.warn('wait 76', leftNav);
-
-      // const str = wrapper.debug();
-      const str = leftNav.debug();
-      fs.writeFileSync('./out.txt', str);
-
-      console.warn('unmount 76');
-      // wrapper.unmount();
     });
   });
 });

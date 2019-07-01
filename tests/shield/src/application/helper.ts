@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactWrapper } from 'enzyme';
+import { act as ract } from 'react-dom/test-utils';
 import { TestApp } from './application';
 
 function helper(wrapper: ReactWrapper) {
@@ -11,4 +12,22 @@ function helper(wrapper: ReactWrapper) {
   return p;
 }
 
-export { helper as h };
+type JactCallback = (() => void) | (() => Promise<void>);
+
+function act(callback: JactCallback): Promise<void> {
+  if (!callback) {
+    return Promise.resolve();
+  }
+  return new Promise(resolve => {
+    ract(() => {
+      const result = callback();
+      if (result instanceof Promise) {
+        result.then(resolve);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+export { helper as h, act };
