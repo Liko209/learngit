@@ -22,6 +22,7 @@ type FileActionMenuProps = {
   variant?: IconButtonVariant;
   showViewInPostAction?: boolean;
   groupId?: number;
+  asyncOperationDecorator?: (op: Function) => Promise<any>;
 } & FileDeleteActionProps &
   FileNameEditActionProps &
   WithTranslation;
@@ -75,6 +76,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
       postId,
       groupId,
       disablePortal,
+      asyncOperationDecorator,
       ...rest
     } = this.props;
     return (
@@ -89,7 +91,11 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
           {showViewInPostAction && groupId && (
-            <ViewInPostAction fileId={fileId} groupId={groupId} />
+            <ViewInPostAction
+              asyncOperationDecorator={asyncOperationDecorator}
+              fileId={fileId}
+              groupId={groupId}
+            />
           )}
           <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
         </JuiMenuList>

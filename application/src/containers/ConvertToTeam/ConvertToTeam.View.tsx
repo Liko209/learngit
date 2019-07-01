@@ -13,7 +13,7 @@ import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 // import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
+import { Loading } from 'jui/hoc/withLoading';
 // import {
 //   JuiListToggleButton,
 //   JuiListToggleItemProps,
@@ -35,14 +35,6 @@ const NAME_INPUT_PROPS = {
 //   'data-test-automation-id': 'ConvertToTeamTeamDescription',
 //   maxLength: 1000,
 // };
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
 
 // Please do not delete the commented code.
 // Now convert to team does not support permission settings.

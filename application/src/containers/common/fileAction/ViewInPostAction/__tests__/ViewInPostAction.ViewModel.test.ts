@@ -11,6 +11,30 @@ import { test, testable } from 'shield';
 import { mockService } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { ViewInPostActionViewModel } from '../ViewInPostAction.ViewModel';
+import {
+  JServerError,
+  JNetworkError,
+  ERROR_CODES_SERVER,
+  ERROR_CODES_NETWORK,
+} from 'sdk/error';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastMessageAlign,
+  ToastType,
+} from '@/containers/ToastWrapper/Toast/types';
+
+jest.mock('@/containers/Notification');
+
+function toastParamsBuilder(message: string) {
+  return {
+    message,
+    type: ToastType.ERROR,
+    messageAlign: ToastMessageAlign.LEFT,
+    fullWidth: false,
+    dismissible: false,
+    autoHideDuration: 3000,
+  };
+}
 
 describe('ViewInPostAction.ViewModel', () => {
   beforeEach(() => {
@@ -51,6 +75,41 @@ describe('ViewInPostAction.ViewModel', () => {
         expect(jumpToPost).not.toBeCalled();
         done();
       });
+    }
+  }
+
+  @testable
+  class errorHandler {
+    @test('should show toast when backend error happen')
+    @mockService(PostService, 'getLatestPostIdByItem', () => {
+      throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+    })
+    async t1() {
+      Notification.flashToast = jest.fn();
+      const vm = new ViewInPostActionViewModel({
+        fileId: 123,
+        groupId: 123,
+      } as any);
+      await vm.viewInPost();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('message.prompt.viewInPostFailedWithServerIssue'),
+      );
+    }
+
+    @test('should show toast when network error happen [JPT-2044]')
+    @mockService(PostService, 'getLatestPostIdByItem', () => {
+      throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+    })
+    async t2() {
+      Notification.flashToast = jest.fn();
+      const vm = new ViewInPostActionViewModel({
+        fileId: 123,
+        groupId: 123,
+      } as any);
+      await vm.viewInPost();
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        toastParamsBuilder('message.prompt.viewInPostFailedWithNetworkIssue'),
+      );
     }
   }
 });

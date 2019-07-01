@@ -51,6 +51,15 @@ class ViewerTitleViewComponent extends Component<
     this.setState({ smallWindow: width < 640 });
   }
 
+  asyncOperationDecorator = (setLoading: Function) => async (op: Function) => {
+    setLoading(true);
+    try {
+      return await op();
+    } finally {
+      setLoading(false);
+    }
+  }
+
   render() {
     const { item, total, currentIndex, person, t, groupId } = this.props;
     const { name, downloadUrl, createdAt } = item;
@@ -106,6 +115,9 @@ class ViewerTitleViewComponent extends Component<
                       groupId={groupId}
                       showViewInPostAction={true}
                       fileId={item.id}
+                      asyncOperationDecorator={this.asyncOperationDecorator(
+                        viewerContext.setLoading,
+                      )}
                       beforeDelete={() => {
                         viewerContext.setDeleteItem(true);
                       }}

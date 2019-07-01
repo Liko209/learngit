@@ -10,15 +10,26 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { PostService } from 'sdk/module/post';
 import { jumpToPost } from '@/common/jumpToPost';
 import portalManager from '@/common/PortalManager';
+import { catchError } from '@/common/catchError';
 
 class ViewInPostActionViewModel extends StoreViewModel<ViewInPostActionProps> {
+  @catchError.flash({
+    network: 'message.prompt.viewInPostFailedWithNetworkIssue',
+    server: 'message.prompt.viewInPostFailedWithServerIssue',
+  })
   viewInPost = async () => {
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );
-    const { groupId, fileId } = this.props;
-    // MTODO: cache error
-    const postId = await postService.getLatestPostIdByItem(groupId, fileId);
+    const { groupId, fileId, asyncOperationDecorator } = this.props;
+    let postId;
+    if (asyncOperationDecorator) {
+      postId = await asyncOperationDecorator(() =>
+        postService.getLatestPostIdByItem(groupId, fileId),
+      );
+    } else {
+      postId = await postService.getLatestPostIdByItem(groupId, fileId);
+    }
 
     if (postId) {
       portalManager.dismissAll();
