@@ -27,6 +27,10 @@ class Wrapper {
   unmount() {
     this.wrapper.unmount();
   }
+
+  debug() {
+    return this.wrapper.debug();
+  }
 }
 
 export { Wrapper };

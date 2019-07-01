@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './application';
+export * from './mock';
 export * from './mockEntity';
 export * from './mockGlobalValue';
 export * from './mockSingleEntity';

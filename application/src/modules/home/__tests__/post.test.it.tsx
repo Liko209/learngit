@@ -8,10 +8,8 @@ import React from 'react';
 import fs from 'fs';
 import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
 import { service } from 'sdk';
-import { asyncTest, wait } from 'shield/utils';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { h, act, TestApp } from 'shield/application';
-import { container, Jupiter } from 'framework';
+import { h, act, TestApp, MockApp } from 'shield/application';
 import notificationCenter from 'sdk/service/notificationCenter';
 
 import { App } from '@/modules/app/container';
@@ -30,30 +28,6 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
   describe('test', () => {
     beforeAll(async () => {
       await sdk.setup();
-
-      const leaveBlocker = require('@/modules/leave-blocker/module.config');
-      const router = require('@/modules/router/module.config');
-      const app = require('@/modules/app/module.config');
-      const message = require('@/modules/message/module.config');
-      const GlobalSearch = require('@/modules/GlobalSearch/module.config');
-      const home = require('@/modules/home/module.config');
-      const featuresFlag = require('@/modules/featuresFlags/module.config');
-      const notification = require('@/modules/notification/module.config');
-      const setting = require('@/modules/setting/module.config');
-
-      const jupiter = container.get(Jupiter);
-
-      jupiter.registerModule(leaveBlocker.config);
-      jupiter.registerModule(featuresFlag.config);
-      jupiter.registerModule(router.config);
-      jupiter.registerModule(home.config);
-      jupiter.registerModule(app.config);
-      jupiter.registerModule(message.config);
-      jupiter.registerModule(GlobalSearch.config);
-      jupiter.registerModule(notification.config);
-      jupiter.registerModule(setting.config);
-
-      await jupiter.bootstrap();
     });
 
     afterAll(async () => {
@@ -64,17 +38,17 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       history.push(url);
       let wrapper: TestApp;
       await act(async () => {
-        wrapper = h(mount(<App />));
+        wrapper = h(mount(<MockApp />));
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
       });
 
       await act(async () => {
         wrapper.update();
-        const leftNav = wrapper.leftNav;
+        const leftNav = wrapper.aboutDialog;
         console.warn('wait 76', leftNav);
 
         // const str = wrapper.debug();
-        const str = leftNav.debug();
+        const str = wrapper.debug();
         fs.writeFileSync('./out.txt', str);
 
         console.warn('unmount 76');
