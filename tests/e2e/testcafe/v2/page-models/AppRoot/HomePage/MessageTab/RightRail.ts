@@ -8,13 +8,24 @@ export class RightRail extends BaseWebComponent {
   }
 
   get expandStatusButton() {
-    this.warnFlakySelector();
-    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
   get foldStatusButton() {
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
+  }
+
+  get title() {
     this.warnFlakySelector();
-    return this.getSelector('button[aria-label="Show details"]');
+    return this.self.find('#right-rail-header').child().nth(0);
+  }
+
+  async shouldBeFolded() {
+    await this.t.expect(this.self.clientWidth).eql(0);
+  }
+
+  async shouldBeExpanded() {
+    await this.t.expect(this.self.clientWidth).gt(0);
   }
 
   async expand() {
@@ -26,7 +37,11 @@ export class RightRail extends BaseWebComponent {
   }
 
   get tabList() {
-    return this.self.find('[role="tablist"]')
+    return this.self.find('[role="tablist"]');
+  }
+
+  get displayedTabButtons() {
+    return this.tabList.find('button[role="tab"]');
   }
 
   get listSubTitle() {
@@ -79,6 +94,14 @@ export class RightRail extends BaseWebComponent {
 
   async openMore() {
     await this.t.click(this.moreButton);
+  }
+
+  get moreTabsMenu() {
+    return this.getSelector('ul[role="menu"]');
+  }
+
+  get moreTabsMenuEntries() {
+    return this.moreTabsMenu.find('li[role="menuitem"]');
   }
 
   get imagesTab() {
@@ -192,7 +215,6 @@ class BaseTab extends BaseWebComponent {
 
 class FilesTab extends BaseTab {
 
-
   get subTitle() {
     return this.getSubTitle('Files');
   }
@@ -267,11 +289,11 @@ class ImageAndFileItem extends BaseWebComponent {
     await this.t.expect(this.name.withText(name).exists).ok();
   }
 
-  get more(){
-    return this.getSelectorByAutomationId('fileActionMore',this.self);
+  get more() {
+    return this.getSelectorByAutomationId('fileActionMore', this.self);
   }
-  
-  async clickMore(){
+
+  async clickMore() {
     await this.t.click(this.more);
   }
 

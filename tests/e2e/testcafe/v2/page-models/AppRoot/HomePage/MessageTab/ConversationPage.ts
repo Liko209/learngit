@@ -413,6 +413,10 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get markupTips() {
+    return this.getSelectorByAutomationId('markupTips');
+  }
+
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
   }
@@ -688,11 +692,34 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.ql-editor');
   }
 
+  get postImg() {
+    return this.self.find('img');
+  }
+
   async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
       .pressKey('enter');
+  }
+
+  async deleteMessage() {
+    await this.t
+      .selectText(this.editTextArea)
+      .pressKey('delete')
+      .wait(1e3)
+      .pressKey('enter');
+  }
+
+  async enterEditTextAreaWithSpace() {
+    await this.t
+      .wait(1e3)
+      .typeText(this.editTextArea, '  ')
+      .pressKey('enter');
+  }
+
+  async editTextAreaFocused() {
+    return await this.editTextArea.focused;
   }
 
   get mentions() {
@@ -708,7 +735,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get emojis() {
-    return this.self.find('.emoji');
+    return this.self.find('.emoji-mart-emoji');
   }
 
   async shouldHasEmojiByValue(value: string) {
@@ -747,7 +774,7 @@ export class PostItem extends BaseWebComponent {
   }
 
 
-  get likeCount() {
+  get likeCountSpan() {
     return this.likeButtonOnFooter.nextSibling('span');
   }
 
@@ -819,7 +846,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   async getLikeCount() {
-    return await this.getNumber(this.likeCount);
+    return await this.getNumber(this.likeCountSpan);
   }
 
   async likeShouldBe(n: number, maxRetry = 5, interval = 5e3) {
@@ -837,7 +864,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-Name="cardHeaderNotification"]');
   }
 
-  get fileNotification() {
+  get itemCardActivity() {
     return this.getSelectorByAutomationId('conversation-card-activity', this.headerNotification);
   }
 
@@ -998,8 +1025,30 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('note-body');
   }
 
+  /** task */
+  get taskCheckBox() {
+    this.warnFlakySelector();
+    return this.title.prevSibling('span')
+  }
+
+  async taskShouldBeMarkCompleted() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).ok();
+  }
+
+  async taskShouldBeMarkIncomplete() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).notOk();
+  }
+
   get taskAssignee() {
     return this.getSelectorByAutomationIdUnderSelf('avatar-name');
+  }
+
+  get taskAssigneeAvatar() {
+    return this.taskAssignee.find('[uid]');
+  }
+
+  get taskAssigneeName() {
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name-name');
   }
 
   get taskSection() {
@@ -1010,7 +1059,7 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
-  get taskShowOld() {
+  get taskShowOrHidOldLink() {
     return this.getSelectorByAutomationIdUnderSelf('task-show-old');
   }
 
@@ -1019,7 +1068,15 @@ class ConversationCardItem extends BaseWebComponent {
   }
 
   get taskOldAssignees() {
-    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv);
+  }
+
+  get taskOldAssigneeNames() {
+    return this.getSelectorByAutomationId('avatar-name-name', this.taskOldAssigneesDiv);
+  }
+
+  async hideLinkShouldUnderOldAssignees() {
+    await this.t.expect(this.taskOldAssigneesDiv.nextSibling('div').withAttribute('data-test-automation-id', 'task-show-old').exists).ok();
   }
 
   get codeBody() {

@@ -23,7 +23,11 @@ export class VoicemailPage extends BaseWebComponent {
   }
 
   get items() {
-    return this.getSelector('[data-test-automation-class="voicemail-item"]')
+    return this.getSelectorByAutomationClass('voicemail-item');
+  }
+
+  get emptyPage() {
+    return this.getSelectorByAutomationId('voicemailEmptyPage');
   }
 
   voicemailItemByNth(n: number) {

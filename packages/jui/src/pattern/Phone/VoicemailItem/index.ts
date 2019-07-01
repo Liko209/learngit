@@ -35,6 +35,7 @@ const StyledContactWrapper = styled.div`
 
 export * from './VoicemailSummary';
 export * from './Actions';
+export * from './ActionButton';
 export {
   StyledTime,
   StyleVoicemailItem,

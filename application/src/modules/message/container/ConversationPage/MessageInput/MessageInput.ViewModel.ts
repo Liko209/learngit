@@ -32,6 +32,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { isEmpty } from './helper';
 
 const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
   container
@@ -131,12 +132,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._memoryDraftMap.set(groupId, quote);
   }
 
-  private _isEmpty = (content: string) => {
-    const commentText = content.trim();
-    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+)*<\/p>)+$/gm;
-    return re.test(commentText);
-  }
-
   private _doToneTransfer = (colons: string) => {
     if (WhiteOnlyList.indexOf(colons.split('::')[0].replace(':', '')) > -1) {
       return colons.replace(/:skin-tone-+\d+:/g, '');
@@ -187,7 +182,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   cellWillChange = (newGroupId: number, oldGroupId: number) => {
-    const draft = this._isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
+    const draft = isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
       ? ''
       : this._memoryDraftMap.get(oldGroupId) || '';
     this._groupConfigService.updateDraft({
@@ -197,7 +192,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSaveDraft = () => {
-    const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    const draft = isEmpty(this.draft) ? '' : this.draft;
     this._memoryDraftMap.set(this.props.id, draft);
     this._groupConfigService.updateDraft({
       draft,
@@ -234,6 +229,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   set draft(draft: string) {
     this._memoryDraftMap.set(this.props.id, draft);
+  }
+
+  @computed
+  get hasInput() {
+    return !isEmpty(this.draft);
   }
 
   @computed

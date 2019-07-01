@@ -13,8 +13,15 @@ class SliderSettingItemViewModel extends BaseSettingItemViewModel<
   SliderSettingItem
 > {
   @action
-  saveSetting = (newValue: number) => {
+  saveSetting = async (newValue: number) => {
     const { valueSetter } = this.settingItemEntity;
+    const { beforeSaving } = this.settingItem;
+    if (beforeSaving) {
+      const beforeSavingReturn = await beforeSaving(newValue);
+      if (beforeSavingReturn === false) {
+        return;
+      }
+    }
     return valueSetter && valueSetter(newValue);
   }
 }

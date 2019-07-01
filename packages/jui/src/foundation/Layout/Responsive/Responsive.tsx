@@ -209,9 +209,6 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   renderMode = () => {
     const { isShow, width } = this.state;
     const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
-    if (visual === undefined) {
-      return null;
-    }
     return (
       <>
         {(this.isManualMode || !visual) && this.renderButton()}
