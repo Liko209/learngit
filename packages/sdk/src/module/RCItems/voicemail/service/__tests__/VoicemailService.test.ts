@@ -19,9 +19,10 @@ jest.mock('../../controller/VoicemailController', () => {
     },
     voicemailFetchController: {
       clearAll: jest.fn(),
-      fetchVoicemails: jest.fn(),
+      fetchData: jest.fn(),
       handleNotification: jest.fn(),
       doSync: jest.fn(),
+      buildFilterFunc: jest.fn(),
     },
     voicemailBadgeController: {
       initializeUnreadCount: jest.fn(),
@@ -48,6 +49,20 @@ describe('VoicemailService', () => {
     vmService = new VoicemailService();
   }
 
+  describe('buildFilterFunc', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should call all fetch controller', async () => {
+      await vmService.buildFilterFunc({});
+      expect(
+        vmController.voicemailFetchController.buildFilterFunc,
+      ).toBeCalled();
+    });
+  });
+
   describe('fetchVoicemails', () => {
     beforeEach(() => {
       clearMocks();
@@ -55,10 +70,16 @@ describe('VoicemailService', () => {
     });
 
     it('fetchVoicemails', async () => {
-      await vmService.fetchVoicemails(1, 1, 1);
-      expect(
-        vmController.voicemailFetchController.fetchVoicemails,
-      ).toBeCalledWith(1, 1, 1);
+      await vmService.fetchVoicemails({
+        limit: 1,
+        direction: 1 as any,
+        anchorId: 1,
+      });
+      expect(vmController.voicemailFetchController.fetchData).toBeCalledWith({
+        limit: 1,
+        direction: 1,
+        anchorId: 1,
+      });
     });
   });
 

@@ -650,7 +650,8 @@ describe('TelephonyService', () => {
     const original = Array(50)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
+    const fn = telephonyService.updateInputStringFactory('inputString');
+    fn(original);
     expect(telephonyService._telephonyStore.inputString.length).toBe(30);
   });
 
@@ -658,8 +659,11 @@ describe('TelephonyService', () => {
     const original = Array(30)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
-    telephonyService.concatInputString('2');
+    const updateFn = telephonyService.updateInputStringFactory('inputString');
+    const concatFn = telephonyService.concatInputStringFactory('inputString');
+
+    updateFn(original);
+    concatFn('2');
     expect(telephonyService._telephonyStore.inputString).toBe(original);
   });
 
@@ -703,7 +707,10 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.concatInputString('5');
+    const concatInputString = telephonyService.concatInputStringFactory(
+      'inputString',
+    );
+    concatInputString('5');
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('12345');

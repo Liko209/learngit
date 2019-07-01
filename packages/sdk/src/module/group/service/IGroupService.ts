@@ -47,8 +47,7 @@ interface IGroupService {
 
   hasMorePostInRemote(
     groupId: number,
-    direction: QUERY_DIRECTION,
-  ): Promise<boolean>;
+  ): Promise<{ older: boolean; newer: boolean; both: boolean }>;
 
   updateHasMore(
     groupId: number,

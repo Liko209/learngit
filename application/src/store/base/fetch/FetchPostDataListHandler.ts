@@ -36,7 +36,7 @@ class FetchPostDataListHandler extends FetchSortableDataListHandler<
       `${ENTITY.FOC_RELOAD}.${groupId}`,
       (ids: number[]) => {
         mainLogger.info(LOG_TAG, `reload group ${groupId}`);
-        this.handleHasMore(true, QUERY_DIRECTION.OLDER);
+        this.handleHasMore({ older: true }, QUERY_DIRECTION.OLDER);
         this.handleDataDeleted({
           type: EVENT_TYPES.DELETE,
           body: { ids },

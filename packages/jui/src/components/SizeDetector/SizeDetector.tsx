@@ -32,12 +32,19 @@ const JuiSizeDetector = ({
   };
   useEffect(() => {
     if (targets) {
-      const disposers: ResizeObserver[] = targets.map((target: HTMLElement) => {
-        const observer = new ResizeObserver(updateSize);
-        observer.observe(target);
-        return observer;
-      });
-      return () => disposers.forEach((ro: ResizeObserver) => ro.disconnect());
+      let disposers: ResizeObserver[] | undefined = targets.map(
+        (target: HTMLElement) => {
+          const observer = new ResizeObserver(updateSize);
+          observer.observe(target);
+          return observer;
+        },
+      );
+      return () => {
+        (disposers as ResizeObserver[]).forEach((ro: ResizeObserver) =>
+          ro.disconnect(),
+        );
+        disposers = undefined;
+      };
     }
 
     return () => {};

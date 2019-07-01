@@ -30,7 +30,6 @@ const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const appPackage = require(paths.appPackageJson);
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const argv = process.argv;
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -167,6 +166,15 @@ module.exports = {
         codeMirror: {
           test: /[\\/]codemirror[\\/]/,
           name: 'codemirror',
+        },
+        svgChunks: {
+          test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
+          name: 'svg.iconChunks',
+          minChunks: 1,
+        },
+        countryChunks: {
+          test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+          name: 'svg.countryFlagChunks',
         },
       },
       name: false,
@@ -322,16 +330,13 @@ module.exports = {
             // See https://github.com/webpack/webpack/issues/6571
             sideEffects: true,
           },
-          // country flag svg loader
           {
-            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            test: /\.svg$/,
             use: [
               {
                 loader: 'svg-sprite-loader',
                 options: {
-                  extract: true,
-                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
-                  symbolId: 'country-flag-[name]',
+                  symbolId: 'icon-[name]',
                 },
               },
               {
@@ -340,31 +345,7 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
-                    { reusePaths: true },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
-            use: [
-              {
-                loader: 'svg-sprite-loader',
-                options: {
-                  extract: true,
-                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
-                  symbolId: 'jupiter-[name]',
-                },
-              },
-              {
-                loader: 'svgo-loader',
-                options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },
@@ -498,8 +479,6 @@ module.exports = {
       // The formatter is invoked directly in WebpackDevServerUtils during development
       // formatter: typescriptFormatter,
     }),
-    // svg sprite loader plugin
-    new SpriteLoaderPlugin(),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],

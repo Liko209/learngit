@@ -230,6 +230,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
           onAction={this._onAction}
         />
         <JuiAudioProgress
+          status={status}
           mode={mode}
           duration={duration}
           value={timestamp}

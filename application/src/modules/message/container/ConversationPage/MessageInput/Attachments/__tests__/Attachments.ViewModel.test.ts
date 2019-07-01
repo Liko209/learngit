@@ -162,7 +162,10 @@ describe('AttachmentsViewModel', () => {
           mentionsIds: [],
         };
 
-        const messageInputViewModel = new MessageInputViewModel({ id: 456 });
+        const messageInputViewModel = new MessageInputViewModel({
+          id: 456,
+          onUpArrowPressed: jest.fn(),
+        });
         const vm1 = new AttachmentsViewModel({
           id: messageInputViewModel.id,
         });
