@@ -6,7 +6,8 @@
 
 import { FetchSortableDataListHandler } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
+import { ENTITY_NAME } from '@/store';
 import { Item } from 'sdk/module/item/entity';
 import { mainLogger } from 'sdk';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -75,9 +76,7 @@ abstract class PostCacheController implements IPreFetchController {
     if (this._currentGroupId !== groupId) {
       if (this.hasCache(this._currentGroupId)) {
         mainLogger.debug(
-          `PostCacheController: setCurrentCacheConversation original =>  ${
-            this._currentGroupId
-          }`,
+          `PostCacheController: setCurrentCacheConversation original =>  ${this._currentGroupId}`,
         );
         this.get(this._currentGroupId).maintainMode = true;
       }

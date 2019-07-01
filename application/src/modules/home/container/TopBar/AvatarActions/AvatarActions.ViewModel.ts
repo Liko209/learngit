@@ -7,7 +7,7 @@
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
