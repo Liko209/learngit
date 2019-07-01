@@ -50,12 +50,12 @@ class AllCallsViewModel extends StoreViewModel<AllCallsProps> {
         : QUERY_DIRECTION.NEWER;
 
     try {
-      return await this._service.fetchCallLogs(
-        this._source,
-        anchor && anchor.id,
-        pageSize,
-        realDirection,
-      );
+      return await this._service.fetchCallLogs({
+        callLogSource: this._source,
+        anchorId: anchor && anchor.id,
+        limit: pageSize,
+        direction: realDirection,
+      });
     } catch (error) {
       this.isError = true;
 

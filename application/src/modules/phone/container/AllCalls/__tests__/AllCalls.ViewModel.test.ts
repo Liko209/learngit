@@ -26,12 +26,11 @@ describe('VoicemailDataProvider', () => {
     async t1() {
       const vm = new AllCallsViewModel({ type: CallLogType.All, height: 800 });
       const ret = await vm._fetchData(QUERY_DIRECTION.OLDER, 1);
-      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith(
-        CALL_LOG_SOURCE.ALL,
-        undefined,
-        1,
-        QUERY_DIRECTION.NEWER,
-      );
+      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith({
+        callLogSource: CALL_LOG_SOURCE.ALL,
+        limit: 1,
+        direction: QUERY_DIRECTION.NEWER,
+      });
       expect(ret).toBeTruthy();
     }
 
@@ -48,12 +47,12 @@ describe('VoicemailDataProvider', () => {
         id: '1',
         sortValue: 1,
       });
-      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith(
-        CALL_LOG_SOURCE.MISSED,
-        '1',
-        1,
-        QUERY_DIRECTION.OLDER,
-      );
+      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith({
+        callLogSource: CALL_LOG_SOURCE.MISSED,
+        limit: 1,
+        anchorId: '1',
+        direction: QUERY_DIRECTION.OLDER,
+      });
       expect(ret).toBeTruthy();
     }
 
