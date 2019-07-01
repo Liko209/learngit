@@ -9,21 +9,23 @@ import { IProcessor } from './IProcessor';
 import { mainLogger } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
+import { UndefinedAble } from 'sdk/types';
+
+type SequenceProcessorOption = {
+  name: string;
+  addProcessorStrategy?: (
+    totalProcessors: IProcessor[],
+    newProcessors: IProcessor,
+    existed: boolean,
+  ) => IProcessor[];
+  maxSize?: number;
+  onExceedMaxSize?: (totalProcessors: IProcessor[]) => void;
+};
 
 class SequenceProcessorHandler extends AbstractProcessor {
-  private _isExecuting: boolean = false;
-  constructor(
-    name: string,
-    addProcessorStrategy?: (
-      totalProcessors: IProcessor[],
-      newProcessors: IProcessor,
-      existed: boolean,
-    ) => IProcessor[],
-    private _maxSize?: number,
-    private _onExceedMaxSize?: (totalProcessors: IProcessor[]) => void,
-  ) {
-    super(name, addProcessorStrategy);
-
+  protected _isExecuting: boolean = false;
+  constructor(public option: SequenceProcessorOption) {
+    super(option.name, option.addProcessorStrategy);
     this._subscribeNotifications();
   }
 
@@ -46,11 +48,11 @@ class SequenceProcessorHandler extends AbstractProcessor {
 
   private _addProcessor(processor: IProcessor) {
     if (
-      this._maxSize &&
-      this._onExceedMaxSize &&
-      this._processors.length === this._maxSize
+      this.option.maxSize &&
+      this._processors.length === this.option.maxSize &&
+      this.option.onExceedMaxSize
     ) {
-      this._onExceedMaxSize(this._processors);
+      this.option.onExceedMaxSize(this._processors);
     }
 
     return super.addProcessor(processor);
@@ -112,4 +114,4 @@ class SequenceProcessorHandler extends AbstractProcessor {
   }
 }
 
-export { SequenceProcessorHandler };
+export { SequenceProcessorHandler, SequenceProcessorOption };
