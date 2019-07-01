@@ -22,10 +22,8 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
 
   makeCall = () => {
     if (!this._telephonyStore.inputString) {
-      this._telephonyStore.enterFirstLetterThroughKeypad();
-      return this._telephonyService.updateInputString(
-        this._telephonyService.lastCalledNumber,
-      );
+      this._telephonyStore.enterFirstLetterThroughKeypadForInputString();
+      return this._updateInputString(this._telephonyService.lastCalledNumber);
     }
     /**
      * TODO: move this call making & state changing logic down to SDK
@@ -48,6 +46,10 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
   private _trackCall = (analysisSource: string) => {
     analyticsCollector.makeOutboundCall(analysisSource);
   }
+
+  private _updateInputString = this._telephonyService.updateInputStringFactory(
+    'inputString',
+  );
 }
 
 export { DialBtnViewModel };
