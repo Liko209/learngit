@@ -24,7 +24,7 @@ const dataTrackingForSetting = (config: DataTracking, value?: any) => {
 };
 
 const debounceTrackData = _.debounce(
-  (dataTracking: DataTracking, newValue: any) =>
+  (dataTracking: DataTracking, newValue?: any) =>
     dataTrackingForSetting(dataTracking, newValue),
   1000,
 );
