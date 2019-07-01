@@ -6,6 +6,7 @@ import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 
+// todo
 itForSdk('Send post test', ({ server, data, sdk }) => {
   let groupService: GroupService;
   let postService: PostService;

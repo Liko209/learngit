@@ -22,12 +22,12 @@ class DataDispatcher extends EventEmitter2 {
       return;
     }
     return Promise.all(
-      Object.keys(entries).map((key: string) =>
+      Object.keys(entries).map((key: string) => {
         this.emitAsync(
           this._getEmitEvent('SOCKET', key, partial),
           entries[key],
-        ),
-      ),
+        );
+      }),
     );
   }
 

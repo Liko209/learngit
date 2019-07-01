@@ -136,7 +136,7 @@ export type GlipData = {
   people: GlipPerson[];
   groups: GlipGroup[];
   teams: GlipGroup[];
-  posts?: GlipPost[];
+  posts: GlipPost[];
   clientConfig: GlipClientConfig;
   state: GlipState;
   groupState: GlipGroupState[];

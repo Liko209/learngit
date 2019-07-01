@@ -6,10 +6,14 @@ const debugEnabled = true;
 debug['useColors'] = true;
 debug.enabled = debugEnabled;
 _debug.enable('-UT_LOG');
-function createDebug(tag: string) {
+function createDebug(tag: string, enabled?: boolean) {
   const newDebug = _debug(tag);
   newDebug['useColors'] = true;
-  newDebug.enabled = debugEnabled;
+  if (enabled !== undefined) {
+    newDebug.enabled = enabled;
+  } else {
+    newDebug.enabled = debugEnabled;
+  }
   return newDebug;
 }
 
