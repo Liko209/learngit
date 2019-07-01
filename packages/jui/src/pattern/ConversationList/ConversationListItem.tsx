@@ -23,6 +23,8 @@ type MuiMenuItemPropsExtend = MuiMenuItemProps & {
   component?: React.ElementType;
   TouchRippleProps?: any;
   isItemHover?: boolean;
+  // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+  button?: any;
 };
 
 const StyledRightWrapper = styled.div`
@@ -65,15 +67,17 @@ const JuiMenuContain = styled(JuiMenu)`
   }
 `;
 
-const FilteredComponent = ({ isItemHover, ...rest }) => (
-  <MuiMenuItem {...rest} />
-);
+const FilteredComponent = ({
+  isItemHover,
+  ...rest
+}: MuiMenuItemPropsExtend) => <MuiMenuItem {...rest} />;
 
 const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
   && {
     white-space: nowrap;
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
+    min-height: unset;
     line-height: ${height(8)};
     color: ${grey('900')};
     /**

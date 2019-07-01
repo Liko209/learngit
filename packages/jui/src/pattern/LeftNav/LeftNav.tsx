@@ -108,6 +108,7 @@ const StyledListItem = styled(MuiListItem)`
 
 const StyledListItemIcon = styled(MuiListItemIcon)`
   width: ${width(16)};
+  min-width: unset;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -236,11 +237,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
             return expand ? (
               NavItem
             ) : (
-              <RuiTooltip
-                title={item.title}
-                key={index}
-                placement="right"
-              >
+              <RuiTooltip title={item.title} key={index} placement="right">
                 {NavItem}
               </RuiTooltip>
             );

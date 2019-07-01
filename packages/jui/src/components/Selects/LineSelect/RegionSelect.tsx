@@ -42,6 +42,10 @@ const StyledRegionSelectWrap = styled('div')`
   }
 `;
 
+const StyledListItemIcon = styled(MuiListItemIcon)`
+  min-width: unset;
+`;
+
 const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
   const [value, setValue] = useState(props.initialRegionValue);
 
@@ -78,13 +82,13 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
       }
       return (
         <StyledRegionSelectWrap>
-          <MuiListItemIcon>
+          <StyledListItemIcon>
             <JuiIconography
               iconSize="large"
               symbol={selectRegion.regionIcon}
               desc={selectRegion.desc}
             />
-          </MuiListItemIcon>
+          </StyledListItemIcon>
           <JuiListItemText>{renderLabel}</JuiListItemText>
         </StyledRegionSelectWrap>
       );
