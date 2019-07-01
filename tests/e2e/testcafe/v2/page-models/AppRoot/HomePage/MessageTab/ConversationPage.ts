@@ -413,12 +413,21 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get messageInputTips(){
+    this.warnFlakySelector();
+    return this.self.find('div').find('div').find('div');
+  }
+
   get markupTips() {
     return this.getSelectorByAutomationId('markupTips');
   }
 
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
+  }
+
+  async existBlankLine(index:number){
+    await this.t.expect(this.messageInputArea.child('p').nth(index).child('br').exists).ok();
   }
 
   async elementShouldBeOnTheTop(sel: Selector) {
@@ -448,6 +457,11 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
+  }
+  async upArrowToEditLastMsg() {
+    await this.t
+      .click(this.messageInputArea)
+      .pressKey('up')
   }
 
   async typeAtSymbol() {

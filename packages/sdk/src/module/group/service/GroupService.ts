@@ -207,11 +207,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .hasTeamAdmin(permission);
   }
 
-  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
-    return this.getGroupConfigController().hasMorePostInRemote(
-      groupId,
-      direction,
-    );
+  async hasMorePostInRemote(groupId: number) {
+    return this.getGroupConfigController().hasMorePostInRemote(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
