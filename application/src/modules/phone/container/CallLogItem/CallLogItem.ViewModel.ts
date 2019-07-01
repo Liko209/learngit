@@ -20,7 +20,9 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(ServiceConfig.RC_INFO_SERVICE);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
 
   @observable canEditBlockNumbers: boolean = false;
 
@@ -109,6 +111,10 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
       ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
     );
+  }
+
+  shouldShowCall = async () => {
+    return this._rcInfoService.isVoipCallingAvailable();
   }
 }
 

@@ -3,7 +3,7 @@
  * @Date: 2019-06-26 09:16:38
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { shallow } from 'enzyme';
 import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import React from 'react';
@@ -18,6 +18,7 @@ import { Actions } from '../Actions';
 import { ENTITY_TYPE } from '../../constants';
 import { Block } from '../Block';
 import { Message } from '../Message';
+import { Call } from '../Call';
 
 const mockPhoneAndPerson = ({ phone, person }: any) => (name: any) => {
   if (name === ENTITY_NAME.PHONE_NUMBER) {
@@ -194,6 +195,72 @@ describe('Action', () => {
       );
       wrapper.update();
       expect(wrapper.find(Message).exists()).toBeTruthy();
+    }
+  }
+
+  @testable
+  class JPT2373 {
+    @test('should not show call button if isBlock')
+    t1() {
+      const wrapper = mountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={7}
+          caller={{} as Caller}
+          showCall={true}
+          hookAfterClick={() => {}}
+          canEditBlockNumbers={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      expect(wrapper.find(Call).exists()).toBeFalsy();
+    }
+  }
+
+  @testable
+  class JPT2384 {
+    @test('should not show call button if not permission')
+    t1() {
+      const wrapper = mountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={7}
+          caller={{} as Caller}
+          showCall={false}
+          hookAfterClick={() => {}}
+          canEditBlockNumbers={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      expect(wrapper.find(Call).exists()).toBeFalsy();
+    }
+  }
+
+  @testable
+  class JPT2364 {
+    @test('should show call button if has permission and not block')
+    @mockService(PersonService, 'matchContactByPhoneNumber')
+    @mockService(RCInfoService, 'isNumberBlocked', false)
+    @mockEntity(
+      mockPhoneAndPerson({
+        phone: {
+          formattedPhoneNumber: '+1234567890',
+        },
+      }),
+    )
+    t1() {
+      const wrapper = mountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={7}
+          caller={mockCaller}
+          showCall={true}
+          hookAfterClick={() => {}}
+          canEditBlockNumbers={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      expect(wrapper.find(Call).exists()).toBeTruthy();
     }
   }
 });

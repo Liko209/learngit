@@ -21,7 +21,9 @@ describe('VoicemailItem.View', () => {
     @test('should be pause if unmount component [JPT-2219]')
     t1() {
       const props = {};
-      const wrapper = shallow(<VoicemailItemView {...props} />);
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
+        disableLifecycleMethods: true,
+      });
       const inst = wrapper.instance();
       inst._AudioPlayer = audioPlayer;
       wrapper.unmount();
@@ -33,7 +35,9 @@ describe('VoicemailItem.View', () => {
   class componentDidUpdate {
     @test('should not be called if selected is true [JPT-2222]')
     t1() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(<VoicemailItemView />, {
+        disableLifecycleMethods: true,
+      });
       wrapper.setProps({
         selected: true,
       });
@@ -42,7 +46,9 @@ describe('VoicemailItem.View', () => {
 
     @test('should not be called if shouldPause is false [JPT-2222]')
     t2() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(<VoicemailItemView />, {
+        disableLifecycleMethods: true,
+      });
       wrapper.setProps({
         selected: false,
       });
@@ -53,7 +59,9 @@ describe('VoicemailItem.View', () => {
       'should not be called if shouldPause is false && selected is true [JPT-2222]',
     )
     t3() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(<VoicemailItemView />, {
+        disableLifecycleMethods: true,
+      });
       wrapper.setProps({
         selected: true,
         shouldPause: false,
@@ -65,7 +73,9 @@ describe('VoicemailItem.View', () => {
       'should not be called if shouldPause is true && selected is false [JPT-2222]',
     )
     t4() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(<VoicemailItemView />, {
+        disableLifecycleMethods: true,
+      });
       wrapper.setProps({
         selected: false,
         shouldPause: true,
@@ -75,7 +85,9 @@ describe('VoicemailItem.View', () => {
 
     @test('should not be called if current is null [JPT-2222]')
     t5() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(<VoicemailItemView />, {
+        disableLifecycleMethods: true,
+      });
       const inst = wrapper.instance();
       inst._AudioPlayer = {
         current: null,
@@ -117,7 +129,9 @@ describe('VoicemailItem.View', () => {
     t1() {
       const props = { isAudioActive: false };
 
-      const wrapper = shallow(<VoicemailItemView {...props} />);
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
+        disableLifecycleMethods: true,
+      });
       const instance: any = wrapper.instance();
 
       expect(instance.playerMode).toBe(JuiAudioMode.MINI);
@@ -133,7 +147,9 @@ describe('VoicemailItem.View', () => {
     t2() {
       const props = { isAudioActive: false };
 
-      const wrapper = shallow(<VoicemailItemView {...props} />);
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
+        disableLifecycleMethods: true,
+      });
       const instance: any = wrapper.instance();
 
       wrapper.setState({ isHover: true });
