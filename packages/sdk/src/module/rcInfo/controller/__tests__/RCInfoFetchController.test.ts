@@ -349,6 +349,24 @@ describe('RCInfoFetchController', () => {
     });
   });
 
+  describe('requestExtensionCallerId', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getExtensionCallerId = jest
+        .fn()
+        .mockReturnValue('extensionCallerId');
+      notificationCenter.emit.mockImplementationOnce(() => {});
+      await rcInfoFetchController.requestExtensionCallerId();
+      expect(RCInfoApi.getExtensionCallerId).toBeCalled();
+      expect(RCInfoUserConfig.prototype.setExtensionCallerId).toBeCalledWith(
+        'extensionCallerId',
+      );
+      expect(notificationCenter.emit).toBeCalledWith(
+        RC_INFO.EXTENSION_CALLER_ID,
+        'extensionCallerId',
+      );
+    });
+  });
+
   describe('getRCClientInfo()', () => {
     it('should get value from config when value is invalid', async () => {
       rcInfoFetchController[
@@ -488,6 +506,29 @@ describe('RCInfoFetchController', () => {
       expect(await rcInfoFetchController.getExtensionPhoneNumberList()).toEqual(
         'test',
       );
+    });
+  });
+
+  describe('getExtensionCallerId()', () => {
+    it('should get value from config when value is invalid', async () => {
+      rcInfoFetchController.rcInfoUserConfig.getExtensionCallerId = jest
+        .fn()
+        .mockResolvedValue('test');
+      expect(await rcInfoFetchController.getExtensionCallerId()).toEqual(
+        'test',
+      );
+    });
+  });
+
+  describe('setPhoneData()', () => {
+    it('should call config to set data', async () => {
+      rcInfoFetchController[
+        'rcInfoUserConfig'
+      ].setExtensionCallerId = jest.fn();
+      await rcInfoFetchController.setExtensionCallerId('test');
+      expect(
+        rcInfoFetchController['rcInfoUserConfig'].setExtensionCallerId,
+      ).toBeCalledWith('test');
     });
   });
 
