@@ -43,7 +43,6 @@ export type Theme = {
   radius: Radius;
   spacing: Spacing;
   zIndex: ZIndex;
-  size: size;
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;
