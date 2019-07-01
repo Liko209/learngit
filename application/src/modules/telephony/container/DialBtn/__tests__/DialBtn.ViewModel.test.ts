@@ -9,21 +9,30 @@ import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { DialBtnViewModel } from '../DialBtn.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
-
-jest.mock('../../../service/TelephonyService');
+import { ClientService } from '@/modules/common';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
-container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 let dialBtnViewModel: DialBtnViewModel;
 
 beforeAll(() => {
   dialBtnViewModel = new DialBtnViewModel();
   dialBtnViewModel._telephonyService.makeCall = jest.fn();
-  dialBtnViewModel._telephonyService.updateInputString = jest.fn();
+  Object.defineProperty(
+    dialBtnViewModel._telephonyService,
+    'lastCalledNumber',
+    {
+      get: () => '1',
+    },
+  );
+  dialBtnViewModel._telephonyStore.enterFirstLetterThroughKeypadForInputString = jest.fn();
 });
 
 describe('dialBtnViewModel', () => {
@@ -37,11 +46,12 @@ describe('dialBtnViewModel', () => {
   });
 
   it('should call updateInputString function', () => {
+    dialBtnViewModel._telephonyStore.enterFirstLetterThroughKeypadForInputString = jest.fn();
     dialBtnViewModel._telephonyStore.inputString = '';
     dialBtnViewModel.makeCall();
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    expect(_telephonyService.updateInputString).toBeCalled();
+    expect(
+      dialBtnViewModel._telephonyStore
+        .enterFirstLetterThroughKeypadForInputString,
+    ).toBeCalled();
   });
 });

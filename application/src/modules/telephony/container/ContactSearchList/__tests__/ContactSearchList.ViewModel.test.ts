@@ -48,7 +48,15 @@ let contactSearchListViewModel: ContactSearchListViewModel;
 
 beforeAll(() => {
   (getEntity as jest.Mock).mockReturnValue({});
-  contactSearchListViewModel = new ContactSearchListViewModel({});
+  const mockedFn = jest.fn();
+
+  contactSearchListViewModel = new ContactSearchListViewModel({
+    onContactSelected: jest.fn(),
+    inputStringProps: 'inputString',
+  });
+  contactSearchListViewModel._telephonyService.makeCall = jest.fn();
+  contactSearchListViewModel.props.onContactSelected = (args: any) =>
+    contactSearchListViewModel._telephonyService.makeCall(args);
 });
 
 afterEach(() => {
