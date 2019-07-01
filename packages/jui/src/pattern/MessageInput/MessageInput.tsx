@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import { Delta, Sources, RangeStatic } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
@@ -14,6 +14,8 @@ import {
 import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
+
+Quill.debug(false);
 
 const MessageInputDropZoneClasses: CSSProperties = {
   display: 'flex',
