@@ -449,6 +449,11 @@ export class ConversationPage extends BaseConversationPage {
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
+  async upArrowToEditLastMsg() {
+    await this.t
+      .click(this.messageInputArea)
+      .pressKey('up')
+  }
 
   async typeAtSymbol() {
     await this.t.click(this.messageInputArea).typeText(this.messageInputArea, '@');
