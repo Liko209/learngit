@@ -34,7 +34,7 @@ class MessageViewComponent extends Component<Props> {
           variant="round"
           autoFocus={false}
           size="small"
-          key="voicemail-read"
+          key="message-button"
           onClick={goToConversation}
           data-test-automation-id="voicemail-read-button"
           tooltipTitle={this.title}
