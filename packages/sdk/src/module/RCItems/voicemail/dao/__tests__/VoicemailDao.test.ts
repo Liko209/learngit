@@ -98,8 +98,16 @@ describe('VoicemailDao', () => {
     it('should call view dao to get sorted ids ', async () => {
       voicemailViewDao.queryVoicemails = jest.fn().mockResolvedValue([1]);
       voicemailDao['batchGet'] = jest.fn().mockResolvedValue([]);
-      await voicemailDao.queryVoicemails(123, 1 as any, 2);
-      expect(voicemailViewDao.queryVoicemails).toBeCalledWith(123, 1 as any, 2);
+      await voicemailDao.queryVoicemails({
+        limit: 123,
+        direction: 1 as any,
+        anchorId: 2,
+      });
+      expect(voicemailViewDao.queryVoicemails).toBeCalledWith({
+        limit: 123,
+        direction: 1 as any,
+        anchorId: 2,
+      });
       expect(voicemailDao['batchGet']).toBeCalledWith([1], true);
     });
   });
