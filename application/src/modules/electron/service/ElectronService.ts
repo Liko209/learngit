@@ -22,9 +22,9 @@ class ElectronService {
     const bringAppToFront = window.jupiterElectron.bringAppToFront;
     bringAppToFront && bringAppToFront();
   }
-  isURLSchemeBound(url: string) {
+  async isURLSchemeBound(url: string) {
     const isURLSchemeBound = window.jupiterElectron.isSchemeBound;
-    return !isURLSchemeBound || (isURLSchemeBound && isURLSchemeBound(url));
+    return !isURLSchemeBound || isURLSchemeBound(url);
   }
 }
 
