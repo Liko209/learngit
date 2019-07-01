@@ -231,13 +231,6 @@ test.meta(<ITestMeta>{
   const miniProfile = app.homePage.miniProfile;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  const openTeamT1Profile = async () => {
-    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
-    await conversationPage.openMoreButtonOnHeader();
-    await conversationPage.headerMoreMenu.openProfile();
-    await profileDialog.ensureLoaded();
-  }
-
   title = `Given I login with ${loginUser.company.number}#${loginUser.extension}`;
   await h(t).withLog(title, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -245,7 +238,12 @@ test.meta(<ITestMeta>{
   });
 
   title = 'When I open team T1 profile.';
-  await h(t).withLog(title, openTeamT1Profile);
+  await h(t).withLog(title, async () => {
+    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+    await profileDialog.ensureLoaded();
+  });
 
   title = 'And click memberButton.';
 
@@ -261,7 +259,7 @@ test.meta(<ITestMeta>{
 
   title = 'Then Display the mini profile dialog.'
 
-  await h(t).withLog('', async () => {
+  await h(t).withLog(title, async () => {
     await t.expect(miniProfile.self.exists).ok();
   })
 });
