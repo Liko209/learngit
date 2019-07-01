@@ -461,6 +461,18 @@ class DashboardPair {
     this.unit = unit;
   }
 
+  private isOverBaseline(value: number, baseline?: number): boolean {
+    if (!baseline) {
+      return false;
+    }
+
+    if (value < 100) {
+      return value > (baseline + 10);
+    } else {
+      return value > (baseline * 1.1);
+    }
+  }
+
   formatHtml(goal?: number): string {
     let color = _config.colors.pass;
     let text = [this.current.toFixed(2), this.unit];
@@ -468,14 +480,16 @@ class DashboardPair {
     if (this.last) {
       const offset = this.current - this.last;
       if (offset > 0) {
-        color = _config.colors.warning;
+        if (this.isOverBaseline(this.current, this.last)) {
+          color = _config.colors.warning;
+        }
         text.push('(+', offset.toFixed(2), ')');
       } else if (offset < 0) {
         text.push('(', offset.toFixed(2), ')');
       }
     }
 
-    if (goal && this.current > goal) {
+    if (this.isOverBaseline(this.current, goal)) {
       color = _config.colors.block;
     }
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text.join('')}</span>`
@@ -486,7 +500,9 @@ class DashboardPair {
     if (this.last) {
       const offset = this.current - this.last;
       if (offset > 0) {
-        icon = _config.icons.warning;
+        if (this.isOverBaseline(this.current, this.last)) {
+          icon = _config.icons.warning;
+        }
         suffix = `(+${offset.toFixed(2)})`;
       } else {
         suffix = `(${offset.toFixed(2)})`;
@@ -498,7 +514,7 @@ class DashboardPair {
       level = 'warn';
     }
 
-    if (goal && this.current > goal) {
+    if (this.isOverBaseline(this.current, goal)) {
       icon = _config.icons.block;
       level = 'block';
     }
