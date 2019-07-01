@@ -14,13 +14,20 @@ import {
 } from '../../../foundation/utils/styles';
 
 const ToggleButton = styled(MuiSwitch)`
-  && {
+  &.custom-root {
+    padding: 0px;
     width: ${spacing(9)};
+    height: ${spacing(5)};
   }
-  .custom-switchBase {
+
+  && .custom-switchBase {
     width: ${spacing(9)};
     height: ${spacing(5)};
     transform: translateX(${spacing(-2)});
+    padding: 0;
+    &:hover {
+      background: none;
+    }
   }
   ${props =>
     !props.disabled
@@ -42,11 +49,7 @@ const ToggleButton = styled(MuiSwitch)`
     opacity: 1;
     background: ${palette('accent', 'ash')};
     border-radius: ${({ theme }) => theme.shape.borderRadius * 2.5}px;
-    padding: ${spacing(1)};
-    width: ${spacing(9)};
-    height: ${spacing(4.5)};
-    box-sizing: border-box;
-    transform: translate(-50%, -50%);
+    height: ${spacing(5)};
     margin: 0;
   }
 
@@ -62,7 +65,7 @@ const ToggleButton = styled(MuiSwitch)`
     }
   }
 
-  .custom-checked {
+  && .custom-checked {
     transform: translateX(${spacing(2)});
     .custom-icon {
       background: #fff;
