@@ -47,11 +47,11 @@ class VoicemailViewModel extends StoreViewModel<VoicemailProps>
         : QUERY_DIRECTION.NEWER;
 
     try {
-      return await this._service.fetchVoicemails(
-        pageSize,
-        realDirection,
-        anchor && anchor.id,
-      );
+      return await this._service.fetchVoicemails({
+        limit: pageSize,
+        direction: realDirection,
+        anchorId: anchor && anchor.id,
+      });
     } catch (error) {
       this.isError = true;
 

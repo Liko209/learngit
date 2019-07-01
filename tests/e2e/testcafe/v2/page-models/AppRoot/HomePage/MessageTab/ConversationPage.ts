@@ -449,6 +449,11 @@ export class ConversationPage extends BaseConversationPage {
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
+  async upArrowToEditLastMsg() {
+    await this.t
+      .click(this.messageInputArea)
+      .pressKey('up')
+  }
 
   async typeAtSymbol() {
     await this.t.click(this.messageInputArea).typeText(this.messageInputArea, '@');
@@ -731,7 +736,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get emojis() {
-    return this.self.find('.emoji');
+    return this.self.find('.emoji-mart-emoji');
   }
 
   async shouldHasEmojiByValue(value: string) {
@@ -860,7 +865,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-Name="cardHeaderNotification"]');
   }
 
-  get fileNotification() {
+  get itemCardActivity() {
     return this.getSelectorByAutomationId('conversation-card-activity', this.headerNotification);
   }
 
@@ -1021,8 +1026,30 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('note-body');
   }
 
+  /** task */
+  get taskCheckBox() {
+    this.warnFlakySelector();
+    return this.title.prevSibling('span')
+  }
+
+  async taskShouldBeMarkCompleted() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).ok();
+  }
+
+  async taskShouldBeMarkIncomplete() {
+    await this.t.expect(this.taskCheckBox.hasClass('checked')).notOk();
+  }
+
   get taskAssignee() {
     return this.getSelectorByAutomationIdUnderSelf('avatar-name');
+  }
+
+  get taskAssigneeAvatar() {
+    return this.taskAssignee.find('[uid]');
+  }
+
+  get taskAssigneeName() {
+    return this.getSelectorByAutomationIdUnderSelf('avatar-name-name');
   }
 
   get taskSection() {
@@ -1033,7 +1060,7 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('task-description');
   }
 
-  get taskShowOld() {
+  get taskShowOrHidOldLink() {
     return this.getSelectorByAutomationIdUnderSelf('task-show-old');
   }
 
@@ -1042,7 +1069,15 @@ class ConversationCardItem extends BaseWebComponent {
   }
 
   get taskOldAssignees() {
-    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv)
+    return this.getSelectorByAutomationId('avatar-name', this.taskOldAssigneesDiv);
+  }
+
+  get taskOldAssigneeNames() {
+    return this.getSelectorByAutomationId('avatar-name-name', this.taskOldAssigneesDiv);
+  }
+
+  async hideLinkShouldUnderOldAssignees() {
+    await this.t.expect(this.taskOldAssigneesDiv.nextSibling('div').withAttribute('data-test-automation-id', 'task-show-old').exists).ok();
   }
 
   get codeBody() {

@@ -5,13 +5,16 @@
  */
 
 import { AbstractFetchController } from '../AbstractFetchController';
-import { daoManager } from 'sdk/dao';
-import { CALL_LOG_SOURCE } from '../../constants';
 import { ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
 import { mainLogger } from 'foundation';
 import { RCItemApi } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCItemSyncController } from 'sdk/module/RCItems/sync';
+import { CALL_RESULT, CALL_LOG_SOURCE } from '../../constants';
+import { RCItemFetchController } from 'sdk/module/RCItems/common/controller/RCItemFetchController';
+import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
+import { daoManager } from 'sdk/dao';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 class TestFetchController extends AbstractFetchController {
   handleDataAndSave = jest.fn();
@@ -71,39 +74,26 @@ describe('AbstractFetchController', () => {
     setUp();
   });
 
-  describe('fetchCallLogs', () => {
-    it('should get data from dao', async () => {
-      const mockData = { id: 'test' };
-      const mockQueryCallLogs = jest.fn().mockResolvedValue([mockData]);
-      daoManager.getDao = jest.fn().mockReturnValue({
-        queryCallLogs: mockQueryCallLogs,
+  describe('buildFilterFunc', () => {
+    it('should filter valid data by source type', async () => {
+      const mockData = [
+        { id: '1', result: CALL_RESULT.MISSED, __deactivated: false },
+        { id: '2', result: CALL_RESULT.VOICEMAIL, __deactivated: false },
+        { id: '3', result: CALL_RESULT.UNKNOWN, __deactivated: false },
+        { id: '4', result: CALL_RESULT.MISSED, __deactivated: true },
+        { id: '5', result: CALL_RESULT.MISSED, __deactivated: false },
+      ];
+      RCItemFetchController.prototype.buildFilterFunc = jest
+        .fn()
+        .mockReturnValue((data: any) => {
+          return data.id !== '5';
+        });
+      const filter = await controller.buildFilterFunc({
+        callLogSource: CALL_LOG_SOURCE.MISSED,
       });
-      mockConfig.getHasMore.mockReturnValue(false);
-
-      expect(
-        await controller.fetchCallLogs(CALL_LOG_SOURCE.ALL, undefined, 1),
-      ).toEqual({
-        data: [mockData],
-        hasMore: true,
-      });
-    });
-
-    it('should get data from remote when local does not have enough data', async () => {
-      const mockData = { id: 'test' };
-      const mockQueryCallLogs = jest.fn().mockResolvedValue([mockData]);
-      daoManager.getDao = jest.fn().mockReturnValue({
-        queryCallLogs: mockQueryCallLogs,
-      });
-      mockConfig.getHasMore.mockReturnValue(true);
-      controller.doSync = jest.fn().mockResolvedValue([mockData]);
-
-      expect(await controller.fetchCallLogs(CALL_LOG_SOURCE.ALL)).toEqual({
-        data: [mockData, mockData],
-        hasMore: true,
-      });
-      expect(mockBadgeController.handleCallLogs).toBeCalledWith([
-        mockData,
-        mockData,
+      expect(mockData.filter(filter)).toEqual([
+        { id: '1', result: CALL_RESULT.MISSED, __deactivated: false },
+        { id: '2', result: CALL_RESULT.VOICEMAIL, __deactivated: false },
       ]);
     });
   });
@@ -195,6 +185,61 @@ describe('AbstractFetchController', () => {
 
       await controller.internalReset();
       expect(RCItemSyncController.prototype.reset).toBeCalled();
+    });
+  });
+
+  describe('getFilterInfo', () => {
+    it('should get caller from call log', () => {
+      expect(
+        controller['getFilterInfo']({
+          direction: CALL_DIRECTION.INBOUND,
+          from: 'from',
+          to: 'to',
+        } as any),
+      ).toEqual('from');
+      expect(
+        controller['getFilterInfo']({
+          direction: CALL_DIRECTION.OUTBOUND,
+          from: 'from',
+          to: 'to',
+        } as any),
+      ).toEqual('to');
+      expect(controller['getFilterInfo']({} as any)).toEqual({});
+    });
+  });
+
+  describe('fetchDataFromDB', () => {
+    it('should call dao', async () => {
+      const mockFunc = jest.fn().mockReturnValue('data');
+      daoManager.getDao = jest
+        .fn()
+        .mockReturnValue({ queryCallLogs: mockFunc });
+      expect(await controller['fetchDataFromDB']({})).toEqual('data');
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('onDBFetchFinished', () => {
+    it('should call performanceTracer', () => {
+      const tracer = { trace: jest.fn() };
+      controller['onDBFetchFinished']([{}, {}] as any, tracer as any);
+      expect(tracer.trace).toBeCalledWith({
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.FETCH_CALL_LOG_FROM_DB,
+        count: 2,
+      });
+    });
+  });
+
+  describe('onFetchFinished', () => {
+    it('should call performanceTracer', () => {
+      const tracer = { end: jest.fn() };
+      controller['_badgeController'].handleCallLogs = jest.fn();
+      controller['onFetchFinished']([{}, {}] as any, tracer as any);
+      expect(tracer.end).toBeCalledWith({
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.FETCH_CALL_LOG,
+        count: 2,
+      });
+      expect(controller['_badgeController'].handleCallLogs).toBeCalled();
     });
   });
 });

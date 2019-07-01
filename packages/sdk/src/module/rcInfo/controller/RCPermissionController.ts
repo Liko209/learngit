@@ -160,6 +160,12 @@ class RCPermissionController {
         },
       ],
       [
+        ERCServiceFeaturePermission.ON_DEMAND_CALL_RECORDING,
+        {
+          featureName: RCServiceFeatureName.ON_DEMAND_CALL_RECORDING,
+        },
+      ],
+      [
         ERCServiceFeaturePermission.CALL_PARK,
         {
           featureName: RCServiceFeatureName.CALL_PARK,

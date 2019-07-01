@@ -62,7 +62,10 @@ describe('MessageInputViewModel', () => {
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
     }));
-    messageInputViewModel = new MessageInputViewModel({ id: 123 });
+    messageInputViewModel = new MessageInputViewModel({
+      id: 123,
+      onUpArrowPressed: jest.fn(),
+    });
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -155,6 +158,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();
@@ -165,6 +169,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();
@@ -270,7 +275,10 @@ describe('MessageInputViewModel', () => {
     describe('hasInput', () => {
       beforeEach(() => {
         jest.clearAllMocks();
-        messageInputViewModel = new MessageInputViewModel({ id: 123 });
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onUpArrowPressed: jest.fn(),
+        });
       });
       it('should be true when there is draft in current conversation input', () => {
         messageInputViewModel._memoryDraftMap = new Map();
