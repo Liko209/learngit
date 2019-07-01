@@ -275,7 +275,10 @@ describe('MessageInputViewModel', () => {
     describe('hasInput', () => {
       beforeEach(() => {
         jest.clearAllMocks();
-        messageInputViewModel = new MessageInputViewModel({ id: 123 });
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onUpArrowPressed: jest.fn(),
+        });
       });
       it('should be true when there is draft in current conversation input', () => {
         messageInputViewModel._memoryDraftMap = new Map();
