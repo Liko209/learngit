@@ -4,46 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { HealthModuleManager, BaseHealthModule } from 'foundation';
 import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
 
 describe('HealthStatusItemProvider', () => {
-  describe('registerHealthStatusItem()', () => {
-    it('should register successfully', () => {
-      const provider = new HealthStatusItemProvider();
-      provider.registerHealthStatusItem({
-        getName: () => 'test',
-        getStatus: async () => 'status',
-      });
-      expect(provider['_items'].length).toEqual(1);
-    });
-  });
-  describe('unRegisterHealthStatusItem()', () => {
-    it('should unRegister by name', () => {
-      const provider = new HealthStatusItemProvider();
-      const testItem = {
-        getName: () => 'test',
-        getStatus: async () => 'status',
-      };
-      provider.registerHealthStatusItem(testItem);
-      provider.unRegisterHealthStatusItem('test');
-      expect(provider['_items'].length).toEqual(0);
-    });
-    it('should unRegister by item instance', () => {
-      const provider = new HealthStatusItemProvider();
-      const testItem = {
-        getName: () => 'test',
-        getStatus: async () => 'status',
-      };
-      provider.registerHealthStatusItem(testItem);
-      provider.unRegisterHealthStatusItem(testItem);
-      expect(provider['_items'].length).toEqual(0);
-    });
-  });
   describe('getZipItems()', () => {
     it('should getZipItems', async () => {
       const provider = new HealthStatusItemProvider();
-      provider.registerHealthStatusItem({
-        getName: () => 'test',
+      const module1 = new BaseHealthModule(Symbol('xx'), 'xx');
+      HealthModuleManager.getInstance().register(module1);
+      module1.register({
+        name: 'test',
         getStatus: async () => 'status',
       });
       const result = await provider.getZipItems();
