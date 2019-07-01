@@ -30,19 +30,25 @@ import { buildTitleAndDesc } from '@/modules/setting/utils';
 import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 
-const NewMessageSelectDataTrackingOption = {
+const NewMessageSelectDataTrackingOption: {
+  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
+} = {
   always: 'All new messages',
   mentions_or_dms: 'Direct messages and mentions',
   never: 'Off',
 };
 
-const EmailNotificationSelectDataTrackingOption = {
+const EmailNotificationSelectDataTrackingOption: {
+  [key in EMAIL_NOTIFICATION_OPTIONS]: string
+} = {
   900000: 'Every 15 minutes',
   3600000: 'Every hour',
   0: 'Off',
 };
 
-const BadgeCountSelectDataTrackingOption = {
+const BadgeCountSelectDataTrackingOption: {
+  [key in NEW_MESSAGE_BADGES_OPTIONS]: string
+} = {
   groups_and_mentions: 'Direct messages and mentions only',
   all: 'All new messages',
 };

@@ -18,7 +18,6 @@ import { ESettingItemState } from 'sdk/framework/model/setting';
 import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
 
 const DATA_REACTING_CONFIG = {
-  eventName: 'Jup_Web_settings_updateSetting',
   name: 'regionSettings',
   type: 'phoneGeneral',
 };

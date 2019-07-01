@@ -41,7 +41,7 @@ describe('SliderSettingItemViewModel', () => {
       expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(10);
     });
 
-    it('should not save setting ', async () => {
+    it('should not save setting when beforeSaving return false', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });

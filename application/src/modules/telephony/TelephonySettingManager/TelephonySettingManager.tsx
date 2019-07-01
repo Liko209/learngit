@@ -31,12 +31,16 @@ import {
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
 
-const DefaultPhoneAppDataTrackingOption = {
+const DefaultPhoneAppDataTrackingOption: {
+  [key in CALLING_OPTIONS]: string
+} = {
   glip: 'Use RingCentral App (this app)',
   ringcentral: 'Use RingCentral Phone',
 };
 
-const CallerIDDataTrackingOption = {
+const CallerIDDataTrackingOption: {
+  [key in IPhoneNumberRecord['usageType']]: string
+} = {
   DirectNumber: '"DID", personal direct number',
   MainCompanyNumber: '"companyMain", company main number',
   Blocked: 'blocked',
