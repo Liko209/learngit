@@ -840,6 +840,10 @@
         "label": "Speaker source",
         "description": "Update your speaker source for RingCentral voice calls"
       },
+      "ringerSource": {
+        "label": "Ringer source",
+        "description": "Choose a sound for new team messages"
+      },
       "volume": {
         "label": "Volume control",
         "description": "Update the volume"
