@@ -35,6 +35,9 @@ type ViewerViewModelProps = CommonProps & {
   setOnCurrentItemDeletedCb: (callback: (nextItemId: number) => void) => void;
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
   deleteItem?: boolean;
+
+  onContentLoad?: () => {};
+  onContentError?: () => {};
 };
 
 type ViewerViewProps = CommonProps & {

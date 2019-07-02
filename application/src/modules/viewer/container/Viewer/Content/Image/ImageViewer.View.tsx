@@ -211,6 +211,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         height={fitHeight || imageHeight}
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}
+                        onLoad={value.onContentLoad}
+                        onError={value.onContentError}
                         thumbnailSrc={thumbnailSrc}
                       />
                     );

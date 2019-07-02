@@ -144,12 +144,25 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   doPreload = () => {
     if (this.ids) {
+      this._preloadController.setIsAllowed(false);
       this._preloadController.replacePreload(this.ids, this._getItemIndex());
     }
   }
 
   stopPreload = () => {
     this._preloadController.stop();
+  }
+
+  onContentLoad = () => {
+    setTimeout(() => {
+      this._preloadController.setIsAllowed(true);
+    });
+  }
+
+  onContentError = () => {
+    setTimeout(() => {
+      this._preloadController.setIsAllowed(true);
+    });
   }
 
   dispose() {
