@@ -37,17 +37,12 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
-import {
-  ERCServiceFeaturePermission,
-  ERCWebUris,
-} from 'sdk/module/rcInfo/types';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
-import { Dialog } from '@/containers/Dialog';
-import i18nT from '@/utils/i18nT';
-import portalManager from '@/common/PortalManager';
+import { showRCDownloadDialog } from './utils';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -59,7 +54,7 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
@@ -355,38 +350,7 @@ class TelephonyService {
         RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
-    const fallback = async () => {
-      portalManager.dismissAll();
-      const { startLoading, stopLoading } = Dialog.confirm({
-        title: await i18nT('telephony.prompt.RCPhoneIsNotInstalledTitle'),
-        content: await i18nT('telephony.prompt.RCPhoneIsNotInstalledBody'),
-        okText: await i18nT('telephony.prompt.RCPhoneIsNotInstalledOK'),
-        onOK: async () => {
-          startLoading();
-          const service: RCInfoService = ServiceLoader.getInstance(
-            ServiceConfig.RC_INFO_SERVICE,
-          );
-          try {
-            const downloadUrl = await service.generateWebSettingUri(
-              ERCWebUris.RC_APP_DOWNLOAD_URL,
-            );
-            this._clientService.open(downloadUrl);
-          } catch {
-            Notification.flashToast({
-              message: await i18nT('telephony.prompt.RCPhoneGetDownloadError'),
-              type: ToastType.ERROR,
-              messageAlign: ToastMessageAlign.LEFT,
-              fullWidth: false,
-              dismissible: false,
-            });
-          } finally {
-            stopLoading();
-          }
-        },
-      });
-    };
-
-    this._clientService.invokeApp(url, { fallback });
+    this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
