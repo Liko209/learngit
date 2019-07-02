@@ -5,4 +5,5 @@
  */
 
 export * from './CallerIdSelectSourceItem';
+export * from './CallerIdSelectValue';
 export * from './PhoneNumberRecord';
