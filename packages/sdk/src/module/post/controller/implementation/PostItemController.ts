@@ -40,19 +40,28 @@ class PostItemProcessor implements IProcessor {
   private _itemInfo: ProcessorInfo;
   private _processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>;
   private _resolve?: (post: Nullable<Post>) => void;
+  private _reject?: (post: null) => void;
   constructor(
     itemInfo: ProcessorInfo,
     processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>,
     resolve?: (post: Nullable<Post>) => void,
+    reject?: (post: null) => void,
   ) {
     this._itemInfo = itemInfo;
     this._processFunc = processFunc;
     this._resolve = resolve;
+    this._reject = reject;
   }
   async process(): Promise<boolean> {
-    const result = await this._processFunc(this._itemInfo);
-    if (this._resolve) {
-      this._resolve(result);
+    try {
+      const result = await this._processFunc(this._itemInfo);
+      if (this._resolve) {
+        this._resolve(result);
+      }
+    } catch (error) {
+      if (this._reject) {
+        this._reject(null);
+      }
     }
     return true;
   }
@@ -306,12 +315,13 @@ class PostItemController implements IPostItemController {
     groupId: number,
     itemId: number,
   ): Promise<Nullable<Post>> {
-    return new Promise<Nullable<Post>>(resolve => {
+    return new Promise<Nullable<Post>>((resolve, reject) => {
       const itemInfo = { groupId, itemId };
       const processor = new PostItemProcessor(
         itemInfo,
         this._getLatestPostIdByItem,
         resolve,
+        reject,
       );
       this._sequenceProcessor.addProcessor(processor);
     });
