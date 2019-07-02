@@ -111,7 +111,7 @@ test(formalName('Should not display in conversation list when last conversation 
   });
 });
 
-test.only(formalName('Should open the last opened conversation for some conditions', ['P2', 'JPT-2154', 'ConversationList', 'Yilia Hong']), async (t: TestController) => {
+test(formalName('Should open the last opened conversation for some conditions', ['P2', 'JPT-2154', 'ConversationList', 'Yilia Hong']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
 
@@ -139,7 +139,7 @@ test.only(formalName('Should open the last opened conversation for some conditio
   await h(t).withLog('The conversation team1 should be last conversation', async () => {
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).setLastGroupId(team1.glipId);
-    await t.wait(3000); // Wait for sending API success
+    await t.wait(5000); // Wait for sending API success
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
