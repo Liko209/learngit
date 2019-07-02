@@ -87,6 +87,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
+    const ids = this._vmQueue.map(i => i.id);
+    if (ids.includes(id)) {
+      return;
+    }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
       onCreate: () => this.buildNotification(postModel, groupModel),
