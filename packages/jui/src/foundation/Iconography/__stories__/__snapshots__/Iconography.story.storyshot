@@ -31,7 +31,10 @@ exports[`Storyshots Foundation Iconography: Foundation Iconography 1`] = `
       <title>
         ha
       </title>
-      <use />
+      <use
+        href="#undefined"
+        xlinkHref="#undefined"
+      />
     </svg>
   </span>
 </div>

@@ -18,6 +18,7 @@ import * as feedback from '@/modules/feedback/module.config';
 import * as emoji from '@/modules/emoji/module.config';
 import * as phone from '@/modules/phone/module.config';
 import * as setting from '@/modules/setting/module.config';
+import * as media from '@/modules/media/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
@@ -44,6 +45,7 @@ class Application {
     jupiter.registerModule(emoji.config);
     jupiter.registerModule(phone.config);
     jupiter.registerModule(setting.config);
+    jupiter.registerModule(media.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

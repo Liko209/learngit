@@ -1301,7 +1301,9 @@ exports[`Storyshots Pattern/MessageInput JuiInputFooter: Pattern/MessageInput Ju
 }
 
 .c1 {
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: left;
 }
 
@@ -1322,6 +1324,8 @@ exports[`Storyshots Pattern/MessageInput JuiInputFooter: Pattern/MessageInput Ju
     <p
       aria-describedby={null}
       className="MuiTypography-root MuiTypography-body2 c3 c4"
+      onBlur={[Function]}
+      onFocus={[Function]}
       onMouseLeave={[Function]}
       onMouseOver={[Function]}
       onTouchEnd={[Function]}

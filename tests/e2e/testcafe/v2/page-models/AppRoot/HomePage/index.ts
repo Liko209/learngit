@@ -7,6 +7,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
+import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
@@ -24,7 +25,7 @@ import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
-import { MoreActionOnFile } from './MoreActionOnFile';
+import { MoreActionOnFile, MoreActionOnViewer } from './MoreActionOnFile';
 import { PhoneTab } from './PhoneTab';
 import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
@@ -60,6 +61,10 @@ export class HomePage extends BaseWebComponent {
 
   get messageTab() {
     return this.getComponent(MessageTab);
+  }
+
+  get postDeleteConfirmDialog() {
+    return this.getComponent(PostDeleteConfirmDialog);
   }
 
   get phoneTab() {
@@ -188,6 +193,10 @@ export class HomePage extends BaseWebComponent {
 
   get moreActionOnFile() {
     return this.getComponent(MoreActionOnFile);
+  }
+
+  get moreActionOnViewer() {
+    return this.getComponent(MoreActionOnViewer);
   }
 
   get deleteVoicemailDialog() {

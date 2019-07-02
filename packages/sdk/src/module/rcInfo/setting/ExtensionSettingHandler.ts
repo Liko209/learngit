@@ -15,7 +15,7 @@ import {
 import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RC_INFO } from 'sdk/service';
 import { IRCInfoService } from '../service/IRCInfoService';
-import { ERCWebSettingUri } from '../types';
+import { ERCWebUris } from '../types';
 
 export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
   string
@@ -46,7 +46,7 @@ export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
       valueType: ESettingValueType.LINK,
       valueGetter: () => {
         return this._rcInfoService.generateWebSettingUri(
-          ERCWebSettingUri.EXTENSION_URI,
+          ERCWebUris.EXTENSION_URI,
         );
       },
       parentModelId: SettingModuleIds.PhoneSetting_General.id,

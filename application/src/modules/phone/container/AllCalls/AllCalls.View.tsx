@@ -32,8 +32,8 @@ type Props = WithTranslation & AllCallsViewProps;
 class AllCallsViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
@@ -89,7 +89,7 @@ class AllCallsViewComponent extends Component<Props> {
     const { listHandler, isError, onErrorReload } = this.props;
 
     return (
-      <PhoneWrapper height={this._height}>
+      <PhoneWrapper pageHeight={this._height}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (

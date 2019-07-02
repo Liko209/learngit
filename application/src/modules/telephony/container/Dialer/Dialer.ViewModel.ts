@@ -59,6 +59,21 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   get dialerMinimizeTranslateY() {
     return this._telephonyStore.dialerMinimizeTranslateY;
   }
+
+  @computed
+  get shouldDisplayDialer() {
+    return this._telephonyStore.shouldDisplayDialer;
+  }
+
+  @computed
+  private get _hasCall() {
+    return !!this._telephonyStore.callId;
+  }
+
+  @computed
+  get shouldDisplayCallCtrl() {
+    return this._hasCall && !this.keypadEntered;
+  }
 }
 
 export { DialerViewModel };

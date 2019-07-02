@@ -116,7 +116,20 @@ describe('EntityBaseService', () => {
         dao,
         networkConfig,
       );
-      expect(service.getEntitySource()['canSaveRemoteData']).toBeTruthy();
+      expect(
+        service.getEntitySource()['requestConfig']['canSaveRemoteData'],
+      ).toBeTruthy();
+    });
+  });
+
+  describe('canRequest()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return true', () => {
+      const result = service['canRequest']();
+      expect(result).toBeTruthy();
     });
   });
 
@@ -197,6 +210,29 @@ describe('EntityBaseService', () => {
       const result = await service.getById(1);
 
       expect(result).toBeNull();
+    });
+
+    it('should not call network client once when canRequest return false', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
+      service._checkTypeFunc = jest.fn().mockReturnValue(true);
+      service['canRequest'] = jest.fn().mockReturnValue(false);
+      jest.spyOn(dao, 'get').mockImplementation(async () => {
+        return null;
+      });
+
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+
+      const result = await service.getById(1);
+
+      expect(networkConfig.networkClient.get).not.toHaveBeenCalled();
+
+      expect(result).toBeUndefined();
     });
   });
 

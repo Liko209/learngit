@@ -26,8 +26,8 @@ type JuiVirtualizedListProps = {
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
-  before?: React.ReactNode;
-  after?: React.ReactNode;
+  before?: (() => React.ReactNode) | null;
+  after?: (() => React.ReactNode) | null;
   height: number;
   minRowHeight: number;
   overscan?: number;

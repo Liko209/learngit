@@ -9,7 +9,7 @@ import { notificationCenter, SERVICE, WINDOW } from '../../../../service';
 import { AccountService } from '../../../account/service';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
-import { LDFlagSet } from 'ldclient-js';
+import { LDFlagSet } from 'launchdarkly-js-client-sdk';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';

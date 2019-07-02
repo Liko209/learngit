@@ -19,6 +19,7 @@ import { SendPostController } from '../implementation/SendPostController';
 import { PostSearchController } from '../implementation/PostSearchController';
 import { ProgressService } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { PostItemController } from '../implementation/PostItemController';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
@@ -100,6 +101,14 @@ describe('PostController', () => {
       const postController = new PostController();
       const result = postController.getPostSearchController();
       expect(result instanceof PostSearchController).toBe(true);
+    });
+  });
+
+  describe('getPostItemController', () => {
+    it('getPostItemController should not be null/undefined', () => {
+      const postController = new PostController();
+      const result = postController.getPostItemController();
+      expect(result instanceof PostItemController).toBe(true);
     });
   });
 });

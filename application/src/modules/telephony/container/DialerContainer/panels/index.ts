@@ -6,5 +6,3 @@
 
 export * from './CallControlPanel';
 export * from './DialerPanel';
-export * from './ContactSearchPanel';
-export * from './KeypadPanel';

@@ -1,0 +1,94 @@
+/*
+ * @Author: Conner (conner.kang@ringcentral.com)
+ * @Date: 2019-06-24 10:00:00
+ * Copyright © RingCentral. All rights reserved.
+ */
+import {
+  IMediaService,
+  MediaOptions,
+  MediaDeviceType,
+} from '@/interface/media';
+import { mediaManager } from '../MediaManager';
+import { computed, autorun } from 'mobx';
+import { UserSettingEntity } from 'sdk/module/setting';
+import SettingModel from '@/store/models/UserSetting';
+import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
+
+const SETTING_ITEM__VOLUME = SettingEntityIds.Phone_Volume;
+const SETTING_ITEM__SPEAKER_SOURCE = SettingEntityIds.Phone_SpeakerSource;
+
+class MediaService implements IMediaService {
+  private _globalVolume: number = 1;
+  private _outputDevices: MediaDeviceType[] = [];
+
+  constructor() {
+    autorun(() => {
+      if (this.globalVolume !== this._globalVolume) {
+        mediaManager.setGlobalVolume(this.globalVolume);
+        this._globalVolume = this.globalVolume;
+      }
+      if (this.outputDevices !== this._outputDevices) {
+        mediaManager.setOutputDevices(this.outputDevices);
+        this._outputDevices = this.outputDevices;
+      }
+    });
+  }
+
+  createMedia(mediaOptions: MediaOptions) {
+    mediaManager.setGlobalVolume(this.globalVolume);
+    return mediaManager.createMedia(mediaOptions);
+  }
+
+  canPlayType(mimeType: string) {
+    mediaManager.canPlayType(mimeType);
+    return true;
+  }
+
+  @computed
+  get volumeEntity() {
+    return getEntity<UserSettingEntity, SettingModel>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__VOLUME,
+    );
+  }
+
+  @computed
+  get globalVolume() {
+    return this.volumeEntity.value;
+  }
+
+  @computed
+  get outputDeviceEntity() {
+    return getEntity<UserSettingEntity, SettingModel>(
+      ENTITY_NAME.USER_SETTING,
+      SETTING_ITEM__SPEAKER_SOURCE,
+    );
+  }
+
+  @computed
+  get outputDevices() {
+    const devices = this.outputDeviceEntity.value;
+    let deviceIds = [];
+    if (Array.isArray(devices) && devices.length !== 0) {
+      deviceIds = devices
+        .filter(
+          device =>
+            !this._isDefaultDevice(device) && !this._isVirtualDevice(device),
+        )
+        .map(device => device.deviceId);
+    }
+    return deviceIds;
+  }
+
+  private _isDefaultDevice(device: MediaDeviceInfo) {
+    return device.deviceId === 'default' || /default/gi.test(device.label);
+  }
+
+  private _isVirtualDevice(device: MediaDeviceInfo) {
+    return /Virtual/gi.test(device.label);
+  }
+}
+
+export { MediaService };

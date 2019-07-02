@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-05-09 10:51:18
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-06-06 21:37:20
+ * @Last Modified time: 2019-06-27 16:41:33
  */
 
 
@@ -635,7 +635,7 @@ test.meta(<ITestMeta>{
 });
 
 
-test.meta(<ITestMeta>{
+test.skip.meta(<ITestMeta>{
   priority: ['P2'], caseIds: ['JPT-2115'], keywords: ['emoji'], maintainers: ['Potar.he']
 })('Check can close the matching emoji list', async (t) => {
   const users = h(t).rcData.mainCompany.users;

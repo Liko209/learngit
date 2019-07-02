@@ -1,0 +1,14 @@
+{
+    "on_merge": {
+      "fixtures": [
+        "fixtures/MessageInput/Send.ts",
+        "fixtures/ContentPanel/Note.ts"
+      ],
+      "include_tags": [
+        "JPT-89","JPT-294","JPT-420"
+      ],
+      "browsers": [
+        "selenium:chrome"
+      ]
+    }
+  }

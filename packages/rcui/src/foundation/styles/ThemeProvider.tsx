@@ -25,7 +25,6 @@ class ThemeProvider extends Component<
     this.state = {
       theme: null,
     };
-    this.onThemeChanged = this.onThemeChanged.bind(this);
   }
 
   async componentDidMount() {
@@ -47,7 +46,7 @@ class ThemeProvider extends Component<
     themeHandler.offAny(this.onThemeChanged);
   }
 
-  onThemeChanged(themeOptions: {}) {
+  onThemeChanged = (themeOptions: {}) => {
     if (!this._mounted) return;
     this.setState({
       theme: createTheme(themeOptions),
