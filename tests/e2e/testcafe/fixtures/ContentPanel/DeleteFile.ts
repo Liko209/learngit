@@ -129,7 +129,7 @@ test.meta(<ITestMeta>{
 
   postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
   const viewerDialog = app.homePage.viewerDialog;
-  await h(t).withLog('When I open image viewer', async () => {
+  await h(t).withLog('When I open image viewer (Entry3:file viewer)', async () => {
         await t.click(postItem.img);
         await viewerDialog.ensureLoaded();
   })
@@ -157,7 +157,7 @@ test.meta(<ITestMeta>{
 })(`Check the Delete menu status for the sender/other members`, async (t) => {
   const deleteFileMenuItem = 'Delete file';
   let filename = '1';
-  const filesPath = ['../../sources/1.docx'];
+  const imagePath = ['../../sources/1.png'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[3];
@@ -181,9 +181,9 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('And I open the team and upload a file', async () => {
+  await h(t).withLog('And I open the team and upload a image', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
+    await conversationPage.uploadFilesToMessageAttachment(imagePath);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
   });
@@ -196,11 +196,12 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
-  await h(t).withLog(`When I click the more button of the file(Entry1: conversation history)`, async() => {
+  await h(t).withLog(`When I hover click the more button of the file(Entry1: conversation history)`, async() => {
+    await t.hover(conversationPage.nthPostItem(-1).img)
     await moreActionOnFile.clickMore();
   });
 
-  await h(t).withLog(`Then will show ${deleteFileMenuItem}`, async() => {
+  await h(t).withLog(`Then will show ${deleteFileMenuItem} menu item`, async() => {
     await t.expect(moreActionOnFile.deleteFileMenu).ok();
   });
 
@@ -211,4 +212,44 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then will not show confirm delete dialog`, async() => {
     await t.expect(confirmDeleteDialog.exists).notOk();
   });
+
+  const rightRail = app.homePage.messageTab.rightRail;
+  let imageTabItem = rightRail.imagesTab.nthItem(0);
+  await h(t).withLog(`When I open file action menu on the right self(Entry2:right self)`, async () => {
+    await rightRail.imagesEntry.enter();
+    await rightRail.imagesEntry.shouldBeOpened();
+    await imageTabItem.nameShouldBe(filename);
+    await t.hover(imageTabItem.self)
+    await imageTabItem.clickMore();
+  });
+
+  await h(t).withLog(`Then delete file menu item should be on the file action menu`, async() => {
+    await t.expect(moreActionOnFile.deleteFileMenu).ok();
+  });
+
+  await h(t).withLog(`When I click the ${deleteFileMenuItem} of the file`, async() => {
+    await moreActionOnFile.clickDeleteFile();
+  });
+
+  await h(t).withLog(`Then will not show confirm delete dialog`, async() => {
+    await t.expect(confirmDeleteDialog.exists).notOk();
+  })
+
+  const postItem = conversationPage.nthPostItem(-1);
+  const viewerDialog = app.homePage.viewerDialog;
+  await h(t).withLog(`When I open the image in file viewer (Entry3: file viewer)`, async() => {
+        await t.click(postItem.img);
+        await viewerDialog.ensureLoaded();
+  });
+
+  const moreActionOnViewer = app.homePage.moreActionOnViewer;
+  await h(t).withLog(`And I click the delete button of the file`, async() => {
+    await moreActionOnViewer.clickMore();
+    await moreActionOnViewer.clickDeleteFile();
+  });
+
+  await h(t).withLog(`Then will not show confirm delete dialog`, async() => {
+    await t.expect(confirmDeleteDialog.exists).notOk();
+  });
+
 });
