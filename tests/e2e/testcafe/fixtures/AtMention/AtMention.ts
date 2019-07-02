@@ -1,8 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-12 20:06:23
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-07-02 14:05:00
  */
 
 import * as _ from 'lodash';
@@ -555,5 +555,55 @@ async (t: TestController) => {
     await t.expect(atMentionPostCard.likeButtonOnFooter.exists).notOk();
     await atMentionPostCard.likeShouldBe(0);
   });
+});
+
+// ALEX TODO: JPT number
+test(formalName('Show empty page when there are no posts in AtMention list', ['P2', 'JPT-XX', 'Alessia.Li', 'AtMention']),
+async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
+  await h(t).resetGlipAccount(loginUser);
+
+  const app = new AppRoot(t);
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  const emptyPage = mentionPage.emptyPage;
+
+  await h(t).withLog(`When I login Jupiter with this extension which has no AtMention posts: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can see empty page in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(emptyPage.exists).ok();
+  }, true);
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  let atMentionPostId;
+  await h(t).withLog('And I receive an AtMention post', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    await h(t).glip(otherUser).init();
+    atMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, chat.glipId);
+  });
+
+  await h(t).withLog('Then I can see this post instead of empty page in the mentions page', async () => {
+    await t.expect(emptyPage.exists).notOk();
+    const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
+    await t.expect(atMentionPostCard.exists).ok();
+  }, true);
+
+  await h(t).withLog('When this AtMention post is deleted', async () => {
+    await  h(t).glip(otherUser).updatePost(atMentionPostId, { deactivated: true })
+  });
+
+  await h(t).withLog('Then I can see empty page in the mentions page again', async () => {
+    await t.expect(emptyPage.exists).ok();
+  }, true);
 });
 
