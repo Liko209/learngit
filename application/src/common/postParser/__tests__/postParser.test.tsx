@@ -834,6 +834,19 @@ Veniam anim velit amet aliqua proident.`}
           '123  ss',
         ]);
       });
+
+      it('should only render at mention when there is unicode emoji in at mention', () => {
+        expect(
+          postParser(`sdds${atmention('12244', '🤣')}123  ss`, {
+            atMentions: { map },
+            emoji: { hostName },
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention key={0} id='12244' isCurrent={false} name='@🤣' />,
+          '123  ss',
+        ]);
+      });
     });
 
     describe('html and at mention and url', () => {
