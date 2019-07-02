@@ -18,7 +18,7 @@ const DOWNLOAD_ID = 'downloadTag';
 @observer
 class DownloadViewComponent extends Component<Props> {
   _handleClick = async () => {
-    const { getUri, hookAfterClick } = this.props;
+    const { getUri, hookAfterClick, type } = this.props;
     const downloadLink = await getUri();
     const aLinkDom = document.getElementById(DOWNLOAD_ID);
     if (!aLinkDom) {
@@ -26,7 +26,9 @@ class DownloadViewComponent extends Component<Props> {
     }
     aLinkDom.setAttribute('href', downloadLink);
     aLinkDom.click();
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   render() {
