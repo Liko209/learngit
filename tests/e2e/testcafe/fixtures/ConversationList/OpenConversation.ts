@@ -75,6 +75,7 @@ test(formalName('Should not display in conversation list when last conversation 
   await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
+    type: "DirectMessage",
     members: [loginUser, users[0]],
     owner: loginUser
   }
@@ -107,5 +108,54 @@ test(formalName('Should not display in conversation list when last conversation 
       const currentUrl = await h(t).href;
       assert.strictEqual(currentUrl, targetUrl, `${currentUrl} is invalid`);
     });
+  });
+});
+
+test.only(formalName('Should open the last opened conversation for some conditions', ['P2', 'JPT-2154', 'ConversationList', 'Yilia Hong']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+
+  let team1 = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+  let team2 = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with two conversation in teams section', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team1, team2]);
+  });
+
+  const app = new AppRoot(t);
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog('The conversation team1 should be last conversation', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).setLastGroupId(team1.glipId);
+    await t.wait(3000); // Wait for sending API success
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I open the conversation team2', async () => {
+    await teamsSection.conversationEntryById(team2.glipId).enter();
+  });
+
+  await h(t).withLog(`When I relogin with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+  });
+
+  await h(t).withLog('Then show the last opened conversation team2', async () => {
+    await conversationPage.groupIdShouldBe(team2.glipId);
   });
 });
