@@ -4,30 +4,30 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactWrapper } from 'enzyme';
-import { act as ract } from 'react-dom/test-utils';
 import { TestApp } from './application';
+export { act } from 'react-dom/test-utils';
 
 function helper(wrapper: ReactWrapper) {
   const p = new TestApp(wrapper);
   return p;
 }
 
-type JactCallback = (() => void) | (() => Promise<void>);
+// type JactCallback = (() => void) | (() => Promise<void>);
 
-function act(callback: JactCallback): Promise<void> {
-  if (!callback) {
-    return Promise.resolve();
-  }
-  return new Promise(resolve => {
-    ract(() => {
-      const result = callback();
-      if (result instanceof Promise) {
-        result.then(resolve);
-      } else {
-        resolve();
-      }
-    });
-  });
-}
+// function act(callback: JactCallback): Promise<void> {
+//   if (!callback) {
+//     return Promise.resolve();
+//   }
+//   return new Promise(resolve => {
+//     ract(() => {
+//       const result = callback();
+//       if (result && result.then) {
+//         result.then(resolve);
+//       } else {
+//         resolve();
+//       }
+//     });
+//   });
+// }
 
-export { helper as h, act };
+export { helper as h };

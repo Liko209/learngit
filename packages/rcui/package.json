@@ -48,8 +48,8 @@
     "tinycolor2": "1.4.1"
   },
   "peerDependencies": {
-    "react": "16.8.6",
-    "react-dom": "16.8.6"
+    "react": "16.9.0-alpha.0",
+    "react-dom": "16.9.0-alpha.0"
   },
   "devDependencies": {
     "@babel/core": "7.3.4",

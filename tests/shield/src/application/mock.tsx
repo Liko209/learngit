@@ -3,7 +3,7 @@
  * @Date: 2019-07-01 16:26:05
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { useState, useEffect, ComponentType } from 'react';
 import {
   Jupiter,
   container,
@@ -13,6 +13,7 @@ import {
 } from 'framework';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
+import { App } from '@/modules/app/container';
 
 type ModuleMap = {
   [key: string]: ModuleConfig;
@@ -53,40 +54,36 @@ function initAllModules() {
   }
 }
 
-type State = {
-  modules: string[];
-};
-
-class MockApp extends Component<MockAppProps, State> {
-  constructor(props: MockAppProps) {
-    super(props);
-
-    initAllModules();
-
-    let { modules } = props;
-    if (!modules || modules.length === 0) {
-      modules = Object.keys(kAllModules);
+function bootstrapJupiter(modules: string[]): Promise<void> {
+  const jupiter = container.get(Jupiter);
+  modules.forEach((name: string) => {
+    const config = kAllModules[name];
+    if (config) {
+      jupiter.registerModule(config);
     }
-    this.state = { modules };
-  }
+  });
 
-  async componentWillMount() {
-    const jupiter = container.get(Jupiter);
-    const { modules } = this.state;
-    modules.forEach((name: string) => {
-      const config = kAllModules[name];
-      if (config) {
-        jupiter.registerModule(config);
-      }
-    });
-
-    await jupiter.bootstrap();
-  }
-
-  render() {
-    const { App } = require('@/modules/app/container');
-    return <App />;
-  }
+  return jupiter.bootstrap();
 }
 
-export { MockApp };
+const mock = (Comp: ComponentType) => (props: MockAppProps) => {
+  // init modules if needed
+  initAllModules();
+
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!loaded) {
+      let { modules } = props;
+      if (!modules || modules.length === 0) {
+        modules = Object.keys(kAllModules);
+      }
+      bootstrapJupiter(modules).then(() => setLoaded(true));
+    }
+  });
+  return loaded ? <Comp /> : null;
+};
+
+const MockApp = mock(App);
+
+export { MockApp, mock };

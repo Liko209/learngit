@@ -36,6 +36,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       const url = `/message/${team1._id}?code=123`;
       history.push(url);
       let wrapper: TestApp;
+
       await act(async () => {
         wrapper = h(mount(<MockApp />));
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
