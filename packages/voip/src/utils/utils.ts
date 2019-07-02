@@ -15,6 +15,15 @@ function isFireFox() {
   return userAgent && userAgent.indexOf('Firefox') > -1;
 }
 
+function isSafari() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return (
+    userAgent &&
+    userAgent.indexOf('Safari') > -1 &&
+    userAgent.indexOf('Chrome') < 0
+  );
+}
+
 function opusPTInRtpmap(sdp: any): string {
   const opusLine = sdp.find((opusCodecLine: string) => {
     const opusDefRegexp = /a=rtpmap.*opus.*/gi;
@@ -90,5 +99,6 @@ export {
   customizedOpusFmtp,
   opusPTInRtpmap,
   isFireFox,
+  isSafari,
   randomBetween,
 };
