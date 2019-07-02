@@ -108,7 +108,7 @@ describe('AttachedSequenceProcessorHandler', () => {
         expect(processorsNames).toHaveLength(4);
         expect(processorsNames).toEqual(['a0', 'b0', 'a1', 'b1']);
         done();
-      }, 50);
+      }, 500);
     });
 
     it('Processor should be called fairly if execution time are different', async (done: any) => {
@@ -146,7 +146,7 @@ describe('AttachedSequenceProcessorHandler', () => {
         expect(processorsNames).toHaveLength(6);
         expect(processorsNames).toEqual(['a0', 'b0', 'a1', 'b1', 'a2', 'a3']);
         done();
-      }, 70);
+      }, 500);
     });
   });
 
@@ -161,7 +161,7 @@ describe('AttachedSequenceProcessorHandler', () => {
       );
 
       for (let i = 0; i < 10; i++) {
-        const processor = new MyProcessor({ name: `task_${i}`, sleepTime: 10 });
+        const processor = new MyProcessor({ name: `task_${i}`, sleepTime: 20 });
         attachedSequenceProcessorHandler.addProcessor(processor);
       }
 
