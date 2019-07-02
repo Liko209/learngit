@@ -167,15 +167,11 @@ class MessageRouterComponent extends Component<Props, State> {
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={(props: Props) => (
-              <PostListPage type={POST_LIST_TYPE.mentions} />
-            )}
+            render={() => <PostListPage type={POST_LIST_TYPE.mentions} />}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={(props: Props) => (
-              <PostListPage type={POST_LIST_TYPE.bookmarks} />
-            )}
+            render={() => <PostListPage type={POST_LIST_TYPE.bookmarks} />}
           />
           <Route
             path={'/messages/:id'}

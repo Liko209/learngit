@@ -30,7 +30,6 @@ type StreamViewProps = {
   plugins: TPluginsProps;
   fetchInitialPosts: () => Promise<void>;
   fetchNextPagePosts: () => Promise<void>;
-  initialPostFetcher: () => Promise<void>;
 };
 
 type TPluginsProps = {

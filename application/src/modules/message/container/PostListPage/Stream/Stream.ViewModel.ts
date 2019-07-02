@@ -51,7 +51,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   };
 
   @observable
-  fetchInitialPosts: () => Promise<void> = () => Promise.resolve()
+  fetchInitialPosts = () => Promise.resolve()
 
   @computed
   get ids() {
