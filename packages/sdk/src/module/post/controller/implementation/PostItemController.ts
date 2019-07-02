@@ -282,6 +282,25 @@ class PostItemController implements IPostItemController {
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
+  private async _getPostsFromRemote(ids: number[]) {
+    if (ids.length) {
+      const remoteData = await PostAPI.requestByIds(ids);
+      return remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
+    }
+    return [];
+  }
+  private _getLatestPost(groupId: number, posts: Post[]) {
+    if (posts.length) {
+      const postsInCurrentGroup = posts.filter(
+        (post: Post) => post.group_id === groupId && !post.deactivated,
+      );
+      if (postsInCurrentGroup.length) {
+        postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
+        return postsInCurrentGroup[0];
+      }
+    }
+    return null;
+  }
 
   async getLatestPostIdByItem(
     groupId: number,
@@ -308,33 +327,14 @@ class PostItemController implements IPostItemController {
     if (item) {
       const ids = item.post_ids;
       const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
-      const localPost = this._getLatestPostId(groupId, localPosts);
+      const localPost = this._getLatestPost(groupId, localPosts);
       if (localPost) {
         return localPost;
       }
       const restIds = _.difference(ids, localPosts.map(({ id }) => id));
       if (restIds.length) {
         const remotePosts = await this._getPostsFromRemote(restIds);
-        return this._getLatestPostId(groupId, remotePosts);
-      }
-    }
-    return null;
-  }
-  private async _getPostsFromRemote(ids: number[]) {
-    if (ids.length) {
-      const remoteData = await PostAPI.requestByIds(ids);
-      return remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
-    }
-    return [];
-  }
-  private _getLatestPostId(groupId: number, posts: Post[]) {
-    if (posts.length) {
-      const postsInCurrentGroup = posts.filter(
-        (post: Post) => post.group_id === groupId && !post.deactivated,
-      );
-      if (postsInCurrentGroup.length) {
-        postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
-        return postsInCurrentGroup[0];
+        return this._getLatestPost(groupId, remotePosts);
       }
     }
     return null;
