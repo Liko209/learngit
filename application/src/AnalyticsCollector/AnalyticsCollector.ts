@@ -152,6 +152,12 @@ class AnalyticsCollector {
       source,
     });
   }
+
+  phoneCallBack(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_outboundCall', {
+      source,
+    });
+  }
 }
 
 export { AnalyticsCollector };

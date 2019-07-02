@@ -10,6 +10,7 @@ import { ENTITY_TYPE } from '../../constants';
 type CallProps = {
   id: number;
   caller: Caller;
+  entity: ENTITY_TYPE;
 };
 
 type CallViewProps = {
