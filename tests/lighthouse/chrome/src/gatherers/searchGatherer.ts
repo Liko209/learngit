@@ -13,7 +13,7 @@ class SearchGatherer extends BaseGatherer {
     'search_people',
     'search_team',
     'search_post',
-    'ui_globalsearch_tab_render'
+    // 'ui_globalsearch_tab_render'
   ];
 
   constructor(keywords: Array<string>) {
@@ -50,7 +50,7 @@ class SearchGatherer extends BaseGatherer {
         ui: []
       };
     }
-    
+
     return result;
   }
 

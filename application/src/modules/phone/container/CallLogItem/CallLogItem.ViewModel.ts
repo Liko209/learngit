@@ -18,9 +18,12 @@ import ProfileModel from '@/store/models/Profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { i18nP } from '@/utils/i18nT';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(ServiceConfig.RC_INFO_SERVICE);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
 
   @observable canEditBlockNumbers: boolean = false;
 
@@ -91,11 +94,11 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     const { duration } = this.data;
     const { secondTime, hourTime, minuteTime } = getHourMinuteSeconds(duration);
     const normalize = (s: number, suffix: string) =>
-      s > 0 ? `${s}${suffix}` : '';
+      s > 0 ? `${s} ${suffix}` : '';
     const array = [
-      normalize(hourTime, ' hour'),
-      normalize(minuteTime, ' min'),
-      normalize(secondTime, ' sec'),
+      normalize(hourTime, i18nP('common.time.hour')),
+      normalize(minuteTime, i18nP('common.time.min')),
+      normalize(secondTime, i18nP('common.time.sec')),
     ];
     return array.join(' ');
   }

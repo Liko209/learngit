@@ -16,7 +16,13 @@ import {
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
 import { transform2Map } from '@/store/utils';
-import { ISortableModel, IMatchFunc, ITransformFunc, ISortFunc } from './types';
+import {
+  ISortableModel,
+  IMatchFunc,
+  ITransformFunc,
+  ISortFunc,
+  HasMore,
+} from './types';
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
@@ -47,7 +53,7 @@ export interface IFetchSortableDataProvider<
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: SortableModel,
-  ): Promise<{ data: Model[]; hasMore: boolean }>;
+  ): Promise<{ data: Model[]; hasMore: HasMore | boolean }>;
 
   totalCount?(): number;
   fetchTotalCount?(): Promise<number>;
@@ -153,7 +159,10 @@ export class FetchSortableDataListHandler<
 
   async fetchDataBy(
     direction: QUERY_DIRECTION,
-    dataLoader: () => Promise<{ data: Model[]; hasMore: boolean }>,
+    dataLoader: () => Promise<{
+      data: Model[];
+      hasMore: HasMore | boolean;
+    }>,
   ) {
     const { data = [], hasMore } = await dataLoader();
     const sortableResult: SortableModel[] = [];
@@ -193,7 +202,7 @@ export class FetchSortableDataListHandler<
         this.listStore.items.length - this._pageSize,
         this.listStore.items.length,
       );
-      this.handleHasMore(true, QUERY_DIRECTION.OLDER);
+      this.handleHasMore({ older: true }, QUERY_DIRECTION.OLDER);
       this.sortableListStore.replaceAll(sortableResult);
     } else {
       sortableResult = this.listStore.items;
@@ -374,8 +383,14 @@ export class FetchSortableDataListHandler<
   @action
   handleDataReload = (payload: NotificationEntityReloadPayload<IdType>) => {
     mainLogger.tags(LOG_TAG).info('reload foc: ', this._entityName);
-    this.sortableListStore.setHasMore(this._defaultHasMoreUp, true);
-    this.sortableListStore.setHasMore(this._defaultHasMoreDown, false);
+    this.sortableListStore.setHasMore(
+      this._defaultHasMoreUp,
+      QUERY_DIRECTION.OLDER,
+    );
+    this.sortableListStore.setHasMore(
+      this._defaultHasMoreDown,
+      QUERY_DIRECTION.NEWER,
+    );
     this.handleDataDeleted({
       type: EVENT_TYPES.DELETE,
       body: {
@@ -487,12 +502,12 @@ export class FetchSortableDataListHandler<
     return isPosChanged;
   }
 
-  protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {
-    let inFront = false;
-    if (direction === QUERY_DIRECTION.OLDER) {
-      inFront = true;
-    }
-    this.sortableListStore.setHasMore(hasMore, inFront);
+  @action
+  protected handleHasMore(
+    hasMore: HasMore | boolean,
+    direction: QUERY_DIRECTION,
+  ) {
+    this.sortableListStore.setHasMore(hasMore, direction);
   }
 
   protected handlePageData(result: SortableModel[]) {

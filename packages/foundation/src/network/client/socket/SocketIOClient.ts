@@ -10,6 +10,7 @@ import { SocketResponse } from './SocketResponse';
 interface ISocketRequestDelegate {
   request: (request: SocketRequest) => Promise<SocketResponse>;
   isClientAvailable: () => boolean;
+  send: (type: string, options: any) => void;
 }
 class SocketClient implements ISocketRequestDelegate {
   static get: () => ISocketRequestDelegate;
@@ -43,6 +44,10 @@ class SocketClient implements ISocketRequestDelegate {
     const socketRequestPromise = this.socketRequestHelper.newRequest(request);
     this.socket.emit('request', request);
     return socketRequestPromise;
+  }
+
+  send(type: string, options: any) {
+    this.socket.emit(type, options);
   }
 
   isClientAvailable() {

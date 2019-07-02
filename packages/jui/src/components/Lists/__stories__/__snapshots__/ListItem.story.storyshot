@@ -494,7 +494,10 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
               className="c5"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -826,7 +829,10 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
               className="c8"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>

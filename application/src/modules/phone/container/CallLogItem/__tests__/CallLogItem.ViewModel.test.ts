@@ -13,6 +13,18 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockService } from 'shield/sdk';
 
 jest.mock('@/utils/date');
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text,
+}));
 
 describe('CallLogItemViewModel', () => {
   @testable

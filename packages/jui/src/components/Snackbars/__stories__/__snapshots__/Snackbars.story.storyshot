@@ -384,7 +384,10 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
             role="img"
             size="large"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </button>

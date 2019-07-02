@@ -66,6 +66,7 @@ describe('RCItemFetchController', () => {
       { name: 'Jupiter  Engineer', phoneNumber: '678' },
       { name: 'GlipSomeOne' },
       { phoneNumber: '4949494949' },
+      { name: 'XCZ' },
     ];
     const mockKey = [
       'Jupiter',
@@ -75,6 +76,7 @@ describe('RCItemFetchController', () => {
       '6502345678',
       'SomeOne',
       '49',
+      'xcz',
     ];
     const mockMatchedContacts = [
       {
@@ -106,6 +108,7 @@ describe('RCItemFetchController', () => {
       { phoneContacts: [{ phoneNumber: { id: '6502345678' } }] },
       { phoneContacts: [] },
       { phoneContacts: [] },
+      { phoneContacts: [] },
     ];
     const mockResult = [
       [
@@ -131,6 +134,7 @@ describe('RCItemFetchController', () => {
       [{ phoneNumber: '6502345678' }],
       [{ name: 'GlipSomeOne' }],
       [{ phoneNumber: '4949494949' }],
+      [{ name: 'XCZ' }],
     ];
     it.each`
       key           | matchedContacts           | result
@@ -139,6 +143,9 @@ describe('RCItemFetchController', () => {
       ${mockKey[2]} | ${mockMatchedContacts[2]} | ${mockResult[2]}
       ${mockKey[3]} | ${mockMatchedContacts[3]} | ${mockResult[3]}
       ${mockKey[4]} | ${mockMatchedContacts[4]} | ${mockResult[4]}
+      ${mockKey[5]} | ${mockMatchedContacts[5]} | ${mockResult[5]}
+      ${mockKey[6]} | ${mockMatchedContacts[6]} | ${mockResult[6]}
+      ${mockKey[7]} | ${mockMatchedContacts[7]} | ${mockResult[7]}
     `(
       'should get correct filter func',
       async ({ key, matchedContacts, result }) => {

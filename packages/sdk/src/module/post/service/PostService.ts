@@ -127,7 +127,7 @@ class PostService extends EntityBaseService<Post> {
 
   async getRemotePostsByGroupId(
     params: IRemotePostRequest,
-  ): Promise<IPostResult | null> {
+  ): Promise<{ posts: Post[]; items: any[]; hasMore: boolean } | null> {
     return this.getPostController()
       .getPostFetchController()
       .getRemotePostsByGroupId(params);
