@@ -9,7 +9,11 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import CallLogModel from '@/store/models/CallLog';
-import { CallLogItemProps } from './types';
+import {
+  CallLogItemProps,
+  CallLogResponsiveObject,
+  BREAK_POINT_MAP,
+} from './types';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
@@ -18,9 +22,12 @@ import ProfileModel from '@/store/models/Profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import moment from 'moment';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(ServiceConfig.RC_INFO_SERVICE);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
 
   @observable canEditBlockNumbers: boolean = false;
 
@@ -102,7 +109,49 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   @computed
   get startTime() {
+    if (this.callLogResponsiveMap.DateFormat === 'short') {
+      return moment(this.data.startTime).format('hh MM A');
+    }
     return postTimestamp(this.data.startTime);
+  }
+
+  @computed
+  get callLogResponsiveMap() {
+    let responsiveObject: CallLogResponsiveObject = {
+      ButtonToShow: 3,
+      ShowCallInfo: true,
+      DateFormat: 'full',
+    };
+    const width = this.props.width;
+    if (width >= BREAK_POINT_MAP.FULL) {
+      responsiveObject = {
+        ButtonToShow: 3,
+        ShowCallInfo: true,
+        DateFormat: 'full',
+      };
+    }
+    if (width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL) {
+      responsiveObject = {
+        ButtonToShow: 3,
+        ShowCallInfo: true,
+        DateFormat: 'full',
+      };
+    }
+    if (width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND) {
+      responsiveObject = {
+        ButtonToShow: 3,
+        ShowCallInfo: true,
+        DateFormat: 'full',
+      };
+    }
+    if (width <= BREAK_POINT_MAP.SHORT) {
+      responsiveObject = {
+        ButtonToShow: 2,
+        ShowCallInfo: false,
+        DateFormat: 'short',
+      };
+    }
+    return responsiveObject;
   }
 
   private async _fetchBlockPermission() {

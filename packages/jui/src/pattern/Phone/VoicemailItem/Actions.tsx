@@ -6,6 +6,7 @@ const JuiActionIconWrapper = styled.div`
   border-radius: 50%;
   &:not(:last-child) {
     margin-right: ${spacing(2)};
+    margin-left: auto;
   }
 `;
 

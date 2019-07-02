@@ -9,7 +9,20 @@ import { RCMessage } from 'sdk/module/RCItems';
 type CallLogItemProps = {
   id: string;
   didOpenMiniProfile?: Function;
+  width: number;
 };
+
+type CallLogResponsiveObject = {
+  ButtonToShow: number;
+  ShowCallInfo: boolean;
+  DateFormat: string;
+};
+
+enum BREAK_POINT_MAP {
+  FULL = 832,
+  EXPAND = 640,
+  SHORT = 400,
+}
 
 type CallLogItemViewProps = {
   caller?: Caller;
@@ -21,6 +34,12 @@ type CallLogItemViewProps = {
   startTime: string;
   isMissedCall: boolean;
   direction: RCMessage['direction'];
+  callLogResponsiveMap: CallLogResponsiveObject;
 } & CallLogItemProps;
 
-export { CallLogItemProps, CallLogItemViewProps };
+export {
+  CallLogItemProps,
+  CallLogItemViewProps,
+  CallLogResponsiveObject,
+  BREAK_POINT_MAP,
+};

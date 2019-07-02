@@ -23,10 +23,18 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { VoicemailViewProps, VoicemailProps, JuiAudioStatus } from './types';
+import {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioStatus,
+  JuiAudioMode,
+  ResponsiveObject,
+  BREAK_POINT_MAP,
+} from './types';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
+import moment from 'moment';
 
 const FLASH_TOAST_DURATION = 3000;
 
@@ -74,6 +82,50 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @computed
   get _id() {
     return this.props.id;
+  }
+
+  @computed
+  get voiceMailResponsiveMap() {
+    let responsiveObject: ResponsiveObject = {
+      JuiAudioMode: JuiAudioMode.FULL,
+      ButtonToShow: 3,
+      ShowTranscriptionText: true,
+      DateFormat: 'full',
+    };
+    const width = this.props.width;
+    if (width >= BREAK_POINT_MAP.FULL) {
+      responsiveObject = {
+        JuiAudioMode: JuiAudioMode.FULL,
+        ButtonToShow: 3,
+        ShowTranscriptionText: true,
+        DateFormat: 'full',
+      };
+    }
+    if (width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL) {
+      responsiveObject = {
+        JuiAudioMode: JuiAudioMode.FULL,
+        ButtonToShow: 2,
+        ShowTranscriptionText: false,
+        DateFormat: 'full',
+      };
+    }
+    if (width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND) {
+      responsiveObject = {
+        JuiAudioMode: JuiAudioMode.MINI,
+        ButtonToShow: 2,
+        ShowTranscriptionText: false,
+        DateFormat: 'full',
+      };
+    }
+    if (width <= BREAK_POINT_MAP.SHORT) {
+      responsiveObject = {
+        JuiAudioMode: JuiAudioMode.TINY,
+        ButtonToShow: 1,
+        ShowTranscriptionText: false,
+        DateFormat: 'short',
+      };
+    }
+    return responsiveObject;
   }
 
   get voicemailService() {
@@ -201,6 +253,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @computed
   get createTime() {
     const { creationTime } = this.voicemail;
+    if (this.voiceMailResponsiveMap.DateFormat === 'short') {
+      return moment(creationTime).format('hh MM A');
+    }
     return postTimestamp(creationTime);
   }
 

@@ -30,7 +30,9 @@ import noVoicemailImage from '../images/no-voicemail.svg';
 type Props = VoicemailViewProps & WithTranslation;
 
 @observer
-class VoicemailWrapper extends Component<Props & { height: number }> {
+class VoicemailWrapper extends Component<
+  Props & { height: number; width: number }
+> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
@@ -42,6 +44,10 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
     const { height } = this.props;
 
     return height - VOICEMAIL_HEADER;
+  }
+  private get _width() {
+    const { width } = this.props;
+    return width;
   }
 
   private get _noRowsRenderer() {
@@ -60,7 +66,7 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
   private _renderItems() {
     const { listHandler } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: number) => {
-      return <VoicemailItem key={itemId} id={itemId} />;
+      return <VoicemailItem width={this._width} key={itemId} id={itemId} />;
     });
   }
 
@@ -103,10 +109,18 @@ class VoicemailComp extends Component<Props> {
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {({
+          width: width,
+          height: height,
+        }: {
+          width: number;
+          height: number;
+        }) => (
           <Observer>
-            {() => <VoicemailWrapper height={height} {...this.props} />}
+            {() => (
+              <VoicemailWrapper height={height} width={width} {...this.props} />
+            )}
           </Observer>
         )}
       </ReactResizeDetector>

@@ -29,7 +29,27 @@ type VoicemailViewProps = {
 };
 
 type VoicemailProps = {
+  width: number;
   id: number;
 };
 
-export { VoicemailViewProps, VoicemailProps, JuiAudioMode, JuiAudioStatus };
+type ResponsiveObject = {
+  JuiAudioMode: JuiAudioMode;
+  ButtonToShow: number;
+  ShowTranscriptionText: boolean;
+  DateFormat: string;
+};
+enum BREAK_POINT_MAP {
+  FULL = 832,
+  EXPAND = 640,
+  SHORT = 400,
+}
+
+export {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioMode,
+  JuiAudioStatus,
+  ResponsiveObject,
+  BREAK_POINT_MAP,
+};

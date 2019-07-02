@@ -20,12 +20,9 @@ import { VoicemailDao } from '../../dao/VoicemailDao';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
 import { RCMessageBadgeController } from 'sdk/module/RCItems/common/controller/RCMessageBadgeController';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
-<<<<<<< HEAD
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-=======
 import { RCItemFetchController } from 'sdk/module/RCItems/common/controller/RCItemFetchController';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../../config/performanceKeys';
->>>>>>> develop
 
 jest.mock('sdk/dao');
 jest.mock('../../dao/VoicemailDao');

@@ -12,15 +12,17 @@ import {
   VoicemailSummary,
   StyledAudioPlayerWrapper,
   StyledContactWrapper,
+  StyledActionWrapper,
   // StyledVoicemailDetail,
 } from 'jui/pattern/Phone/VoicemailItem';
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
-import { VoicemailViewProps, JuiAudioMode } from './types';
-import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
+import { VoicemailViewProps, JuiAudioMode, ResponsiveObject } from './types';
+import { ENTITY_TYPE } from '../constants';
 
-type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
+type VoicemailItemProps = VoicemailViewProps &
+  WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
 type State = {
   isHover: boolean;
 };
@@ -35,9 +37,15 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
 
   get playerMode() {
     const { isHover } = this.state;
-    const { isAudioActive } = this.props;
+    const {
+      isAudioActive,
+      voiceMailResponsiveMap: voiceMailResponsiveMap,
+    } = this.props;
 
-    return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+    if (voiceMailResponsiveMap.JuiAudioMode === JuiAudioMode.FULL) {
+      return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+    }
+    return voiceMailResponsiveMap.JuiAudioMode;
   }
 
   componentDidUpdate() {
@@ -93,6 +101,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       createTime,
       direction,
       canEditBlockNumbers,
+      voiceMailResponsiveMap: voiceMailResponsiveMap,
       // onChange,
       // selected,
     } = this.props;
@@ -121,6 +130,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
           {audio && (
             <StyledAudioPlayerWrapper>
               <JuiAudioPlayer
+                responsiveSize={voiceMailResponsiveMap}
                 ref={this._AudioPlayer}
                 onBeforePlay={onBeforePlay}
                 onBeforeAction={onBeforeAction}
@@ -144,14 +154,16 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
             </StyledTime>
           )}
           {isHover && (
-            <Actions
-              id={id}
-              caller={caller}
-              entity={ENTITY_TYPE.VOICEMAIL}
-              maxButtonCount={MAX_BUTTON_COUNT}
-              hookAfterClick={this.handleMouseLeave}
-              canEditBlockNumbers={canEditBlockNumbers}
-            />
+            <StyledActionWrapper>
+              <Actions
+                id={id}
+                caller={caller}
+                entity={ENTITY_TYPE.VOICEMAIL}
+                maxButtonCount={voiceMailResponsiveMap.ButtonToShow}
+                hookAfterClick={this.handleMouseLeave}
+                canEditBlockNumbers={canEditBlockNumbers}
+              />
+            </StyledActionWrapper>
           )}
         </VoicemailSummary>
         {/* <StyledVoicemailDetail> */}
