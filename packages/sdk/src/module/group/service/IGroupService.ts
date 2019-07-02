@@ -134,6 +134,8 @@ interface IGroupService {
   getTeamIdsIncludeMe(): Set<number>;
 
   handleGroupFetchedPosts(groupId: number, posts: Post[]): void;
+
+  sendTypingEvent(groupId: number, isClear: boolean): void;
 }
 
 export { IGroupService };

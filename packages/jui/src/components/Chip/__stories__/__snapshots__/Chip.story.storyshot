@@ -237,7 +237,10 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
           className="c5"
           role="img"
         >
-          <use />
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
         </svg>
       </span>
     </span>
@@ -533,7 +536,10 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
           className="c4"
           role="img"
         >
-          <use />
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
         </svg>
       </span>
     </span>
