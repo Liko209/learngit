@@ -12,6 +12,14 @@ import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
 import './blockExternalRequest';
+import {
+  IMockServer,
+  IRequest,
+  INetworkRequestExecutorListener,
+} from './mocks/server/types';
+import { createResponse } from './mocks/server/utils';
+import { IRequestResponse } from './utils/network/networkDataTool';
+import { ProxyServer } from './mocks/server/ProxyServer';
 const debug = createDebug('SdkItFramework');
 
 type ItContext = {
@@ -111,6 +119,7 @@ export function itForSdk(
 ) {
   let userId: number;
   let companyId: number;
+  const proxyServer = InstanceManager.get(ProxyServer);
   const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
   const useAccount = (_companyId: number, _userId: number) => {
@@ -134,6 +143,54 @@ export function itForSdk(
   const apply = () => {
     mockGlipServer.applyGlipData(glipData);
   };
+
+  class SpyServer implements IMockServer {
+    handle(request: IRequest<any>, listener: INetworkRequestExecutorListener) {}
+  }
+
+  function applyNetworkData(
+    requestResponses: IRequestResponse | IRequestResponse[],
+  ) {
+    if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
+      const requestResponsePool: IRequestResponse[] = [];
+      jest
+        .spyOn(proxyServer, 'getRequestResponsePool')
+        .mockImplementation(() => requestResponsePool);
+    }
+    const pool = proxyServer.getRequestResponsePool();
+    if (_.isArray(requestResponses)) {
+      requestResponses.forEach(reqRes => {
+        pool.push(reqRes);
+      });
+    } else {
+      pool.push(requestResponses);
+    }
+  }
+
+  // function mockFromJson(
+  //   hostAlias: string,
+  //   host: string,
+  //   path: string,
+  //   method: string,
+  //   response: any,
+  // ) {
+  //   let server: IMockServer;
+  //   if (hostAlias === 'glip') {
+  //     server = mockGlipServer;
+  //   } else {
+  //     jest.spyOn(mockGlipServer, '').mockImplementationOnce;
+  //     server = fileServer;
+  //   }
+  //   // jest
+  //   //   .spyOn(mockGlipServer.api['/api/posts'], 'get')
+  //   //   .mock.mockImplementationOnce((request: any) => {
+  //   //     return createResponse({
+  //   //       data: { posts: MOCK_POSTS, items: [] },
+  //   //     });
+  //   //   });
+  // }
+
+  // mockFromJson();
 
   // provide for it case to mock data.
   const itCtx: ItContext = {
