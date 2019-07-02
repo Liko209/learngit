@@ -6,7 +6,6 @@
 import React, { SFC, memo } from 'react';
 import MuiBadge, { BadgeProps as MuiBadgeProps } from '@material-ui/core/Badge';
 import styled, { css } from '../../foundation/styled-components';
-import { Omit } from '../../foundation/utils/typeHelper';
 
 const MAX_SIZE = 6;
 
@@ -50,7 +49,7 @@ const StyledBadge = styled<RuiBadgeProps>(MuiBadge)`
   }
 `;
 
-export type RuiBadgeProps = Omit<MuiBadgeProps, 'innerRef'> & {
+type RuiBadgeProps = Pick<MuiBadgeProps, 'children' | 'classes'> & {
   placement?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 };
 
@@ -71,4 +70,4 @@ RuiBadge.defaultProps = {
 
 RuiBadge.displayName = 'RuiBadge';
 
-export { RuiBadge, MuiBadgeProps };
+export { RuiBadge, RuiBadgeProps };
