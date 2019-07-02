@@ -21,8 +21,8 @@ import PostAPI from 'sdk/api/glip/post';
 jest.mock('sdk/dao');
 jest.mock('sdk/module/post/dao');
 jest.mock('sdk/api/glip/post');
-jest.mock('../../../../../module/item');
-
+jest.mock('sdk/module/item');
+jest.mock('sdk/framework/processor');
 class FakeActionController implements IPostActionController {
   likePost(
     postId: number,
@@ -263,7 +263,40 @@ describe('PostItemController', () => {
     });
   });
 
-  describe('getLatestPostIdByItem()', () => {
+  describe('getLatestPostIdByItem', () => {
+    it('should call addProcessor', (done: jest.DoneCallback) => {
+      postItemController['_sequenceProcessor'].addProcessor = jest.fn();
+      postItemController.getLatestPostIdByItem(1, 1);
+      setTimeout(() => {
+        expect(
+          postItemController['_sequenceProcessor'].addProcessor,
+        ).toBeCalled();
+        done();
+      }, 0);
+    });
+  });
+
+  describe('_addProcessorStrategy()', () => {
+    it('should change old to new when have two processor', async () => {
+      const result = await postItemController['_addProcessorStrategy'](
+        [1, 2],
+        4,
+        true,
+      );
+      expect(result).toEqual([1, 4]);
+    });
+
+    it('should add a new when have one processor', async () => {
+      const result = await postItemController['_addProcessorStrategy'](
+        [1],
+        2,
+        true,
+      );
+      expect(result).toEqual([1, 2]);
+    });
+  });
+
+  describe('_getLatestPostIdByItem()', () => {
     beforeEach(() => {
       const localPosts = [
         {
@@ -310,35 +343,47 @@ describe('PostItemController', () => {
       itemService.getById = jest
         .fn()
         .mockResolvedValue({ post_ids: [4, 5, 6, 7] });
-      postDao.queryPostViewByIds = jest.fn().mockResolvedValue(localPosts);
+      postDao.batchGet = jest.fn().mockResolvedValue(localPosts);
       PostAPI.requestByIds = jest.fn().mockResolvedValue(remoteData);
     });
     it('should return latest post id is 7 when get post in local', async () => {
-      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
       expect(PostAPI.requestByIds).not.toBeCalled();
-      expect(result).toBe(7);
+      expect(result.id).toBe(7);
     });
     it('should return latest post id is 5 when can not get post in local', async () => {
-      postDao.queryPostViewByIds = jest.fn().mockResolvedValue([
+      postDao.batchGet = jest.fn().mockResolvedValue([
         {
           id: 7,
           group_id: 2,
           created_at: 7,
         },
       ]);
-      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
       expect(PostAPI.requestByIds).toBeCalled();
-      expect(result).toBe(4);
+      expect(result.id).toBe(4);
     });
     it('should return null when post_ids is not in local and remote', async () => {
-      postDao.queryPostViewByIds = jest.fn().mockResolvedValue([]);
+      postDao.batchGet = jest.fn().mockResolvedValue([]);
       PostAPI.requestByIds = jest.fn().mockResolvedValue({ posts: [] });
-      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
       expect(result).toBeNull();
     });
     it('should return null when item is null', async () => {
       itemService.getById = jest.fn().mockResolvedValue(null);
-      const result = await postItemController.getLatestPostIdByItem(1, 1);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
       expect(result).toBeNull();
     });
   });

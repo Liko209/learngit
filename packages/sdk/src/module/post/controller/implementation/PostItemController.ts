@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { PostItemData } from '../../entity/PostItemData';
 import { ItemFile } from '../../../item/entity';
 
-import { Post, PostView } from '../../entity/Post';
+import { Post } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -28,10 +28,58 @@ import { PostDao } from '../../dao';
 import PostAPI from 'sdk/api/glip/post';
 import { transform } from 'sdk/service/utils';
 import { Raw } from 'sdk/framework/model';
+import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
 
 const LOG_TAG = 'PostItemController';
+const SEQUENCE_NAME = 'GetPostsSequence';
+type ProcessorInfo = {
+  groupId: number;
+  itemId: number;
+};
+class PostItemProcessor implements IProcessor {
+  private _itemInfo: ProcessorInfo;
+  private _processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>;
+  private _resolve?: (post: Nullable<Post>) => void;
+  constructor(
+    itemInfo: ProcessorInfo,
+    processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>,
+    resolve?: (post: Nullable<Post>) => void,
+  ) {
+    this._itemInfo = itemInfo;
+    this._processFunc = processFunc;
+    this._resolve = resolve;
+  }
+  async process(): Promise<boolean> {
+    const result = await this._processFunc(this._itemInfo);
+    if (this._resolve) {
+      this._resolve(result);
+    }
+    return true;
+  }
+  name(): string {
+    return this._itemInfo.itemId.toString();
+  }
+}
 class PostItemController implements IPostItemController {
-  constructor(public postActionController: IPostActionController) {}
+  private _sequenceProcessor: SequenceProcessorHandler;
+  constructor(public postActionController: IPostActionController) {
+    this._sequenceProcessor = new SequenceProcessorHandler(
+      SEQUENCE_NAME,
+      this._addProcessorStrategy,
+    );
+  }
+  private _addProcessorStrategy = (
+    totalProcessors: IProcessor[],
+    newProcessors: IProcessor,
+    existed: boolean,
+  ) => {
+    if (totalProcessors.length > 1) {
+      totalProcessors[1] = newProcessors;
+    } else {
+      totalProcessors.push(newProcessors);
+    }
+    return totalProcessors;
+  }
 
   /**
    * public APIs
@@ -234,6 +282,44 @@ class PostItemController implements IPostItemController {
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {
     return this.getPseudoItemStatusInPost(post).indexOf(status) > -1;
   }
+
+  async getLatestPostIdByItem(
+    groupId: number,
+    itemId: number,
+  ): Promise<Nullable<Post>> {
+    return new Promise<Nullable<Post>>(resolve => {
+      const itemInfo = { groupId, itemId };
+      const processor = new PostItemProcessor(
+        itemInfo,
+        this._getLatestPostIdByItem,
+        resolve,
+      );
+      this._sequenceProcessor.addProcessor(processor);
+    });
+  }
+  private _getLatestPostIdByItem = async ({
+    groupId,
+    itemId,
+  }: ProcessorInfo): Promise<Nullable<Post>> => {
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    const item = await itemService.getById(itemId);
+    if (item) {
+      const ids = item.post_ids;
+      const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
+      const localPost = this._getLatestPostId(groupId, localPosts);
+      if (localPost) {
+        return localPost;
+      }
+      const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+      if (restIds.length) {
+        const remotePosts = await this._getPostsFromRemote(restIds);
+        return this._getLatestPostId(groupId, remotePosts);
+      }
+    }
+    return null;
+  }
   private async _getPostsFromRemote(ids: number[]) {
     if (ids.length) {
       const remoteData = await PostAPI.requestByIds(ids);
@@ -241,39 +327,14 @@ class PostItemController implements IPostItemController {
     }
     return [];
   }
-  private _getLatestPostId(groupId: number, posts: Post[] | PostView[]) {
+  private _getLatestPostId(groupId: number, posts: Post[]) {
     if (posts.length) {
       const postsInCurrentGroup = posts.filter(
         (post: Post) => post.group_id === groupId && !post.deactivated,
       );
       if (postsInCurrentGroup.length) {
         postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
-        return postsInCurrentGroup[0].id;
-      }
-    }
-    return null;
-  }
-  async getLatestPostIdByItem(
-    groupId: number,
-    itemId: number,
-  ): Promise<Nullable<number>> {
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    const item = await itemService.getById(itemId);
-    if (item) {
-      const ids = item.post_ids;
-      const localPosts = await daoManager
-        .getDao(PostDao)
-        .queryPostViewByIds(ids);
-      const localPostId = this._getLatestPostId(groupId, localPosts);
-      if (localPostId) {
-        return localPostId;
-      }
-      const restIds = _.difference(ids, localPosts.map(({ id }) => id));
-      if (restIds.length) {
-        const remotePosts = await this._getPostsFromRemote(restIds);
-        return this._getLatestPostId(groupId, remotePosts);
+        return postsInCurrentGroup[0];
       }
     }
     return null;
