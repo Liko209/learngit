@@ -32,7 +32,7 @@ function initAllModules() {
     const leaveBlocker = require('@/modules/leave-blocker/module.config');
     const router = require('@/modules/router/module.config');
     const app = require('@/modules/app/module.config');
-    const message = require('@/modules/message/module.config');
+    // const message = require('@/modules/message/module.config');
     const GlobalSearch = require('@/modules/GlobalSearch/module.config');
     const home = require('@/modules/home/module.config');
     const featuresFlags = require('@/modules/featuresFlags/module.config');
@@ -42,7 +42,7 @@ function initAllModules() {
     kAllModules['leave-blocker'] = leaveBlocker.config;
     kAllModules['router'] = router.config;
     kAllModules['app'] = app.config;
-    kAllModules['message'] = message.config;
+    // kAllModules['message'] = message.config;
     kAllModules['GlobalSearch'] = GlobalSearch.config;
     kAllModules['home'] = home.config;
     kAllModules['featuresFlags'] = featuresFlags.config;
