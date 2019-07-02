@@ -47,6 +47,7 @@ import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import { Dialog } from '@/containers/Dialog';
 import i18nT from '@/utils/i18nT';
+import portalManager from '@/common/PortalManager';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -355,6 +356,7 @@ class TelephonyService {
     };
     const url = buildURL(phoneNumber);
     const fallback = async () => {
+      portalManager.dismissAll();
       const { startLoading, stopLoading } = Dialog.confirm({
         title: await i18nT('telephony.prompt.RCPhoneIsNotInstalledTitle'),
         content: await i18nT('telephony.prompt.RCPhoneIsNotInstalledBody'),
