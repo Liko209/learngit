@@ -142,7 +142,10 @@ class RTCProvManager extends EventEmitter2 {
       rtcLogger.error(LOG_TAG, `the request error is: ${error}`);
     }
 
-    rtcLogger.info(LOG_TAG, `the response is: ${JSON.stringify(response)}`);
+    rtcLogger.info(
+      LOG_TAG,
+      `the response is: ${JSON.stringify(_.omit(response, 'request'))}`,
+    );
 
     if (!response) {
       rtcLogger.error(LOG_TAG, 'the response is null');
@@ -167,9 +170,7 @@ class RTCProvManager extends EventEmitter2 {
     this._requestErrorRetryInterval = kRTCProvRequestErrorRetryTimerMin;
     rtcLogger.info(
       LOG_TAG,
-      `Reset SIP provisioning info error retry interval to ${
-        this._requestErrorRetryInterval
-      }`,
+      `Reset SIP provisioning info error retry interval to ${this._requestErrorRetryInterval}`,
     );
 
     if (
