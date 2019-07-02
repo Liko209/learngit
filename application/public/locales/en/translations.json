@@ -38,7 +38,10 @@
       "Thursday": "Thursday",
       "Friday": "Friday",
       "Saturday": "Saturday",
-      "Sunday": "Sunday"
+      "Sunday": "Sunday",
+      "hour": "hour",
+      "min": "min",
+      "sec": "sec"
     },
     "verb": {
       "like": "like",
