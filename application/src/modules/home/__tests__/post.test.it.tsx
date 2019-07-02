@@ -6,12 +6,13 @@
 
 import React from 'react';
 import fs from 'fs';
-import { mount, shallow, ReactWrapper, ShallowWrapper } from 'enzyme';
+import { mount } from 'enzyme';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { h, act, TestApp, MockApp } from 'shield/application';
 import history from '@/history';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
+import { wait } from 'shield/utils';
 
 jest.setTimeout(300 * 1000);
 
@@ -47,11 +48,11 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
         console.warn('wait 76', leftNav);
 
         // const str = wrapper.debug();
+        await wait(100);
         const str = wrapper.debug();
         fs.writeFileSync('./out.txt', str);
-
-        console.warn('unmount 76');
-        wrapper.unmount();
+        // wrapper.unmount();
+        wrapper.update();
       });
     });
   });

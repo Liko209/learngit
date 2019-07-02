@@ -6,6 +6,7 @@
 import _ from 'lodash';
 
 const MODEL_MAP = {
+  Badge: require('../models/Badge'),
   Call: require('../models/Call'),
   CallLog: require('../models/CallLog'),
   CodeIte: require('../models/CodeItem'),
