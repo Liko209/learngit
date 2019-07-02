@@ -4,38 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { createRef, RefObject } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiDialer, JuiHeaderContainer } from 'jui/pattern/Dialer';
+import { JuiDialer } from 'jui/pattern/Dialer';
 // import ReactDOM from 'react-dom';
-import { DialerTitleBar } from '../DialerTitleBar';
-import { DialerHeader } from '../DialerHeader';
-import { DialerContainer } from '../DialerContainer';
 import { DialerViewProps } from './types';
 import { withDialogOrNewWindow } from '../../HOC';
 import { Incoming } from '../Incoming';
-import { DialerKeypadHeader } from '../DialerKeypadHeader';
+import { KeypadPanel } from '../KeypadPanel';
+import { DialerPanel } from '../DialerPanel';
+import { CallCtrlPanel } from '../CallCtrlPanel';
+
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
-  dialerHeaderRef: RefObject<any> = createRef();
-
   renderDialer = () => {
-    const { isIncomingCall, keypadEntered } = this.props;
+    const {
+      isIncomingCall,
+      keypadEntered,
+      shouldDisplayCallCtrl,
+      shouldDisplayDialer,
+    } = this.props;
     if (isIncomingCall) return <Incoming />;
-
-    return (
-      <>
-        <JuiHeaderContainer>
-          <DialerTitleBar />
-          {keypadEntered ? (
-            <DialerKeypadHeader />
-          ) : (
-            <DialerHeader ref={this.dialerHeaderRef} />
-          )}
-        </JuiHeaderContainer>
-        <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
-      </>
-    );
+    if (keypadEntered) return <KeypadPanel />;
+    if (shouldDisplayCallCtrl) return <CallCtrlPanel />;
+    if (shouldDisplayDialer) return <DialerPanel />;
+    return null;
   }
 
   render() {

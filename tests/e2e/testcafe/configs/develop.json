@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": ["./fixtures/**/*.ts", "./telephony/**/*.ts"],
-    "include_tags": ["P0", "P1"],
+    "include_tags": ["P0", "P1", "P2"],
     "exclude_tags": [],
     "browsers": ["selenium:chrome"]
   },

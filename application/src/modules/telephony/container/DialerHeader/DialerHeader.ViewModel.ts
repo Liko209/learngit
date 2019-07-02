@@ -10,7 +10,7 @@ import { TelephonyStore, INCOMING_STATE } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { DialerHeaderProps, DialerHeaderViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent } from 'react';
 
 class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   implements DialerHeaderViewProps {
@@ -37,11 +37,11 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
   }
 
   deleteLastInputString = () => {
-    this._telephonyService.deleteInputString();
+    this._deleteInputString();
   }
 
   deleteInputString = () => {
-    this._telephonyService.deleteInputString(true);
+    this._deleteInputString(true);
   }
 
   onFocus = () => {
@@ -54,33 +54,16 @@ class DialerHeaderViewModel extends StoreViewModel<DialerHeaderProps>
 
   @action
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    this._telephonyService.updateInputString(e.target.value);
+    this._updateInputString(e.target.value);
   }
 
-  @action
-  onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (
-      !this._telephonyStore.shouldEnterContactSearch &&
-      e.key === 'Enter' &&
-      this._telephonyStore.inputString.length
-    ) {
-      /**
-       * TODO: move this call making & state changing logic down to SDK
-       */
-      this._makeCall(this._telephonyStore.inputString);
-    }
-  }
+  private _updateInputString = this._telephonyService.updateInputStringFactory(
+    'forwardString',
+  );
 
-  // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
-  _makeCall = async (val: string) => {
-    // make sure `this._telephonyStore.dialerCall()` run before `this._telephonyStore.end()`
-    if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise(resolve => {
-        requestAnimationFrame(resolve);
-      });
-      this._telephonyStore.end();
-    }
-  }
+  private _deleteInputString = this._telephonyService.deleteInputStringFactory(
+    'forwardString',
+  );
 
   @computed
   get uid() {

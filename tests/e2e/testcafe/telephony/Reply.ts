@@ -18,11 +18,11 @@ test.meta(<ITestMeta>{
   priority: ['P2'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Should the tooltip "More options" of "more" button is showed', async (t) => {
+})('Should the tooltip "Call actions" of "more" button is showed', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
+  const tooltipText = 'Call actions';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -209,7 +209,6 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -265,7 +264,6 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

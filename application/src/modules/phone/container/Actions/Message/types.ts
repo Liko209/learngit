@@ -14,6 +14,7 @@ type MessageProps = {
 };
 
 type MessageViewProps = {
+  entity: ENTITY_TYPE;
   hookAfterClick?: () => void;
   goToConversation: () => void;
 };

@@ -82,6 +82,63 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
     });
   });
 
+  test(formalName('Show massage draft when refreshing App', ['P2', 'JPT-2360']),
+    async (t) => {
+      const app = new AppRoot(t);
+      const users = h(t).rcData.mainCompany.users;
+      const loginUser = users[4];
+      await h(t).platform(loginUser).init();
+      await h(t).glip(loginUser).init();
+      await h(t).glip(loginUser).resetProfileAndState();
+  
+      let teamId1, teamId2, conversation1, conversation2;
+      await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
+        teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
+          type: 'Team',
+          name: `1 ${uuid()}`,
+          members: [loginUser.rcId, users[5].rcId]
+        });
+        teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
+          type: 'Team',
+          name: `2 ${uuid()}`,
+          members: [loginUser.rcId, users[5].rcId, users[6].rcId]
+        });
+      });
+  
+      await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+        async () => {
+          await h(t).directLoginWithUser(SITE_URL, loginUser);
+          await app.homePage.ensureLoaded();
+        },
+      );
+  
+      const teamSection = app.homePage.messageTab.teamsSection;
+      await h(t).withLog('Then I can check conversation A and B exist', async () => {
+        await teamSection.expand();
+        conversation1 = teamSection.conversationEntryById(teamId1);
+        conversation2 = teamSection.conversationEntryById(teamId2);
+        await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+        await t.expect(conversation2.exists).ok({ timeout: 10e3 });
+      });
+  
+      const msg = uuid();
+      const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
+      await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
+        await conversation1.enter();
+        await t.typeText(inputField, msg)
+      }, true);
+  
+      await h(t).withLog('When I refresh App'), async () => {
+        await h(t).reload();
+        await app.homePage.ensureLoaded();
+      });
+  
+      await h(t).withLog(`Then I can find input field still is ${msg}`, async () => {
+        await t.expect(conversation1.hasDraftMessage).notOk();
+        await t.expect(inputField.textContent).eql(msg);
+      });
+    });
+
 test(formalName('Show massage draft if only has files when switching conversation', ['P2', 'JPT-139']),
   async (t) => {
     const app = new AppRoot(t);

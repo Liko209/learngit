@@ -237,7 +237,7 @@ test.meta(<ITestMeta>{
     const isIndexZero = i === 0
 
     await h(t).withLog(`When I am on hover more icon`, async () => {
-      await t.hover(moreActionOnFile.more);
+      await t.hover(moreActionOnFile.self);
     });
 
     isIndexOne && await h(t).withLog(`Then show '${moreTooltip}' tooltip`, async () => {

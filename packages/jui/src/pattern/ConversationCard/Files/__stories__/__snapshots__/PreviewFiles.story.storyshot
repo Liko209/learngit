@@ -527,7 +527,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -624,7 +627,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -721,7 +727,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -818,7 +827,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -896,7 +908,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -971,7 +986,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1046,7 +1064,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1121,7 +1142,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1198,7 +1222,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1344,7 +1371,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1490,7 +1520,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1636,7 +1669,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

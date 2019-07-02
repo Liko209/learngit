@@ -14,6 +14,8 @@ type DialerViewProps = {
   dialerMinimizeTranslateY: number;
   startMinimizeAnimation: boolean;
   callWindowState: string;
+  shouldDisplayDialer: boolean;
+  shouldDisplayCallCtrl: boolean;
 };
 
 export { DialerProps, DialerViewProps };

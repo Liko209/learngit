@@ -7,7 +7,6 @@ import * as React from 'react';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { DialerHeader } from '../DialerHeader';
 import {
   JuiReply,
   JuiPreDefineMessage,
@@ -15,6 +14,7 @@ import {
   JuiHeaderContainer,
   JuiTitleBar,
   JuiCustomReply,
+  JuiHeader,
 } from 'jui/pattern/Dialer';
 import { JuiIconButton } from 'jui/components/Buttons';
 import {
@@ -28,6 +28,8 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
+import { getDisplayName } from '../../helpers';
+import { Avatar } from '@/containers/Avatar';
 
 type Props = ViewProps & WithTranslation;
 
@@ -225,6 +227,18 @@ class ReplyViewComponent extends React.Component<Props> {
     this._WillCallBack,
   ];
 
+  private _Avatar = () => {
+    const { uid } = this.props;
+    return (
+      <Avatar
+        uid={uid}
+        showDefaultAvatar={!uid}
+        imgProps={{ draggable: false }}
+        size="large"
+      />
+    );
+  }
+
   private _Back = () => {
     const { t, quitReply } = this.props;
     return (
@@ -243,13 +257,19 @@ class ReplyViewComponent extends React.Component<Props> {
   }
 
   render() {
-    const { t, replyCountdownTime } = this.props;
+    const { t, replyCountdownTime, isExt, phone } = this.props;
 
     return (
       <>
         <JuiHeaderContainer>
           <JuiTitleBar />
-          <DialerHeader Back={this._Back} />
+          <JuiHeader
+            Avatar={this._Avatar}
+            name={getDisplayName(t, name)}
+            phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
+            showDialerInputField={false}
+            Back={this._Back}
+          />
         </JuiHeaderContainer>
         <JuiReply
           PreDefines={this._PreDefineMessages}
