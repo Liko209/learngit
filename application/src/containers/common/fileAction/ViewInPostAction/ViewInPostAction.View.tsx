@@ -7,11 +7,9 @@ import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { ViewInPostActionViewProps } from './types';
 import { withTranslation } from 'react-i18next';
-import { observer } from 'mobx-react';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { action } from 'mobx';
 
-@observer
 class ViewInPostActionViewComponent extends Component<
   ViewInPostActionViewProps
 > {
