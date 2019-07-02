@@ -496,27 +496,17 @@ class DashboardPair {
   }
 
   formatGlip(key: string, handleCount: number, link: string, goal?: number): { level: string, text: string } {
-    let icon = _config.icons.pass, suffix = '';
-    if (this.last) {
-      const offset = this.current - this.last;
-      if (offset > 0) {
-        if (this.isOverBaseline(this.current, this.last)) {
-          icon = _config.icons.warning;
-        }
-        suffix = `(+${offset.toFixed(2)})`;
-      } else {
-        suffix = `(${offset.toFixed(2)})`;
-      }
-    }
+    let icon = _config.icons.pass;
 
     let level = 'pass';
-    if (suffix.startsWith('(+')) {
+    if (this.isOverBaseline(this.current, this.last)) {
       level = 'warn';
+      icon = _config.icons.warning;
     }
 
     if (this.isOverBaseline(this.current, goal)) {
-      icon = _config.icons.block;
       level = 'block';
+      icon = _config.icons.block;
     }
 
     let text = [icon, 'do [**', key, '**](', link, ') ', Config.sceneRepeatCount, ' times, average consuming time: **',
