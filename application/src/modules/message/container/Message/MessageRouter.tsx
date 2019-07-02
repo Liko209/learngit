@@ -168,13 +168,13 @@ class MessageRouterComponent extends Component<Props, State> {
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
             render={(props: Props) => (
-              <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
+              <PostListPage type={POST_LIST_TYPE.mentions} />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
             render={(props: Props) => (
-              <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
+              <PostListPage type={POST_LIST_TYPE.bookmarks} />
             )}
           />
           <Route
@@ -195,6 +195,8 @@ class MessageRouterComponent extends Component<Props, State> {
   }
 }
 
-const MessageRouter = withRouter(withTranslation('translations')(MessageRouterComponent));
+const MessageRouter = withRouter(
+  withTranslation('translations')(MessageRouterComponent),
+);
 
 export { MessageRouter };

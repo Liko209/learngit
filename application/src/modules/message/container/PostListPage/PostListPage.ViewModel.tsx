@@ -134,7 +134,6 @@ class PostListPageViewModel extends AbstractViewModel {
     ) as MultiEntityMapStore<Post, PostModel>;
     const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
     let postsFromService: Post[] = [];
-
     const postsFromStore = idsInStore
       .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
       .filter((post: PostModel) => !post.deactivated);
