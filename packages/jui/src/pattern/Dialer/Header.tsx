@@ -23,6 +23,7 @@ import { JuiTextField } from '../../components/Forms';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton } from '../../components/Buttons';
 import ReactDOM from 'react-dom';
+import { isFunction, debounce } from 'lodash';
 
 type Props = {
   Back?: React.ComponentType;
@@ -38,8 +39,8 @@ type Props = {
   onBlur?: () => void;
   focus?: boolean;
   ariaLabelForDelete?: string;
-  deleteLastInputString?: () => void;
-  deleteInputString?: () => void;
+  deleteInputString?: (caretPos: number) => void;
+  deleteAllInputString?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 };
 
@@ -159,6 +160,24 @@ const SearchInput = styled(JuiTextField)<any>`
   }
 `;
 
+function moveCaretToPos(inputField: HTMLInputElement, pos: number) {
+  if (!inputField) {
+    return;
+  }
+  inputField.blur();
+
+  if (isFunction((inputField as any).createTextRange)) {
+    const FieldRange = ((inputField as any).createTextRange as Function)();
+    FieldRange.moveStart('character', pos);
+    FieldRange.collapse();
+    FieldRange.select();
+  } else if (inputField.selectionStart || inputField.selectionStart === 0) {
+    inputField.selectionStart = pos;
+    inputField.selectionEnd = pos;
+  }
+  inputField && inputField.focus();
+}
+
 class JuiHeader extends PureComponent<Props, State> {
   private _mouseDownTime: number;
   private _timerForClearAll: NodeJS.Timeout;
@@ -218,12 +237,12 @@ class JuiHeader extends PureComponent<Props, State> {
     e.stopPropagation();
     this._mouseDownTime = +new Date();
     this._timerForClearAll = setTimeout(() => {
-      const { deleteInputString } = this.props;
+      const { deleteAllInputString } = this.props;
 
-      if (!deleteInputString) {
+      if (!deleteAllInputString) {
         return;
       }
-      deleteInputString();
+      deleteAllInputString();
       this._clearTimeout();
     },                                  1000);
   }
@@ -231,21 +250,77 @@ class JuiHeader extends PureComponent<Props, State> {
   private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (this._inputRef.current) {
-      const input = (ReactDOM.findDOMNode(
+    const input =
+      this._inputRef.current &&
+      (ReactDOM.findDOMNode(
         this._inputRef.current,
       ) as HTMLDivElement).querySelector('input');
-      input && input.focus();
+
+    if (!input) {
+      return;
     }
-    if (!this.props.deleteLastInputString) {
+    const caretPos = this._doGetCaretPosition();
+
+    if (!this.props.deleteInputString) {
       return;
     }
     const mouseUpTime = +new Date();
-    if (this._mouseDownTime && mouseUpTime - this._mouseDownTime < 1000) {
-      this.props.deleteLastInputString();
-      this._clearTimeout();
+    if (this._mouseDownTime && mouseUpTime - this._mouseDownTime >= 1000) {
+      return;
     }
+
+    if (input.selectionStart !== input.selectionEnd) {
+      document.execCommand('delete', false);
+      this._moveCaretToPos(input, input.selectionStart || 0);
+    } else {
+      this.props.deleteInputString(caretPos);
+      this._moveCaretToPos(input, caretPos === 0 ? 0 : caretPos - 1);
+    }
+
+    this._clearTimeout();
     delete this._mouseDownTime;
+  }
+
+  private _moveCaretToPos = debounce(moveCaretToPos, 17, {
+    leading: false,
+    trailing: true,
+  });
+
+  private _doGetCaretPosition() {
+    if (!this._inputRef.current) {
+      return 0;
+    }
+    const inputField = (ReactDOM.findDOMNode(
+      this._inputRef.current,
+    ) as HTMLDivElement).querySelector('input') as HTMLInputElement;
+    // Initialize
+    let iCaretPos = 0;
+
+    // IE Support
+    if ((document as any).selection) {
+      // Set focus on the element
+      inputField.focus();
+
+      // To get cursor position, get empty selection range
+      const oSel = (document as any).selection.createRange();
+
+      // Move selection start to 0 position
+      oSel.moveStart('character', -inputField.value.length);
+
+      // The caret position is selection length
+      iCaretPos = oSel.text.length;
+    } else if (
+      // Firefox support
+      inputField.selectionStart ||
+      inputField.selectionStart === 0
+    ) {
+      iCaretPos =
+        inputField.selectionDirection === 'backward'
+          ? inputField.selectionStart
+          : inputField.selectionEnd || 0;
+    }
+    // Return results
+    return iCaretPos;
   }
 
   private _clearTimeout = () => {

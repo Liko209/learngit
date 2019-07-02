@@ -71,7 +71,7 @@ class DialerHeaderViewComponent extends React.Component<Props> {
         focus={dialerInputFocused}
         placeholder={t('telephony.dialerPlaceholder')}
         ariaLabelForDelete={t('telephony.delete')}
-        deleteLastInputString={deleteLastInputString}
+        deleteAllInputString={deleteLastInputString}
         deleteInputString={deleteInputString}
         Back={Back}
       />

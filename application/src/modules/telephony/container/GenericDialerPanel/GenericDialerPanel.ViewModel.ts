@@ -24,7 +24,7 @@ class GenericDialerPanelViewModel extends StoreViewModel<
   );
   private _concatInputString: (str: string) => void;
   private _updateInputString: (str: string) => void;
-  private _deleteInputString: (clearAll?: boolean) => void;
+  private _deleteInputString: (clearAll: boolean, caretPos?: number) => void;
 
   constructor(props: GenericDialerPanelProps) {
     super(props);
@@ -134,11 +134,11 @@ class GenericDialerPanelViewModel extends StoreViewModel<
 
   onAfterDialerOpen = () => this.props.onAfterMount();
 
-  deleteLastInputString = () => {
-    this._deleteInputString();
+  deleteInputString = (caretPos: number) => {
+    this._deleteInputString(false, caretPos);
   }
 
-  deleteInputString = () => {
+  deleteAllInputString = () => {
     this._deleteInputString(true);
   }
 
