@@ -78,7 +78,7 @@ describe('DeviceNameHelper', () => {
       expect(result).toBe('BeatsStudio Wireless');
     });
 
-    describe('when device.label is empty', () => {
+    describe('when device.label is empty [JPT-2418]', () => {
       it('should return device order', () => {
         const speaker1: MediaDeviceInfo = {
           deviceId: DEVICE_1,
