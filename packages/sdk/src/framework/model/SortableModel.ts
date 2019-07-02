@@ -7,6 +7,7 @@
 export type SortableModel<T> = {
   id: number;
   displayName: string;
+  lowerCaseName: string;
   firstSortKey?: any;
   secondSortKey?: any;
   thirdSortKey?: any;
