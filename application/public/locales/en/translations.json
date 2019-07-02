@@ -681,6 +681,7 @@
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
     "recordings": "Recordings",
+    "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
@@ -710,6 +711,8 @@
       "pause": "Pause Voicemail",
       "reload": "Reload Voicemail"
     },
+    "inputFilter": "Filter voicemail",
+    "clearFilter": "Clear voicemail filter",
     "downloadVoicemail": "Download Voicemail",
     "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
     "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
