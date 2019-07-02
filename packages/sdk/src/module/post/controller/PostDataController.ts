@@ -46,12 +46,14 @@ class PostDataController {
     if (shouldSaveToDb) {
       this.deletePreInsertPosts(transformedData);
     }
-    const posts: Post[] =
-      (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
-    const items =
-      (await ServiceLoader.getInstance<ItemService>(
+    const values = await Promise.all([
+      this.filterAndSavePosts(transformedData, shouldSaveToDb),
+      ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
-      ).handleIncomingData(data.items)) || [];
+      ).handleIncomingData(data.items),
+    ]);
+    const posts: Post[] = values[0] || [];
+    const items = values[1] || [];
     performanceTracer.end({
       key: POST_PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
       count: posts.length,
