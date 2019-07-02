@@ -21,7 +21,7 @@ class ClientService implements IClientService {
   open(url: string) {
     window.open(url);
   }
- async invokeApp(urlScheme: string, options: InvokeAppOpts) {
+  async invokeApp(urlScheme: string, options: InvokeAppOpts) {
     let appPortal = document.getElementById(
       'app-portal',
     ) as HTMLIFrameElement | null;
@@ -36,14 +36,13 @@ class ClientService implements IClientService {
       appPortal.style.display = 'none';
       const body = document.body;
       body.appendChild(appPortal);
-      
     }
     if (!window.jupiterElectron) {
       return;
     }
     const isBound = await this._electronService.isURLSchemeBound(urlScheme);
     if (!isBound) {
-     return options.fallback();
+      return options.fallback();
     }
     appPortal.setAttribute('src', urlScheme);
   }
