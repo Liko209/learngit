@@ -88,10 +88,6 @@ class TelephonyStore {
   @observable
   customReplyMessage: string = '';
 
-  // TODO: move out of telephony store when minization won't destroy the telephony dialog
-  @observable
-  shiftKeyDown = false;
-
   @observable
   shouldKeepDialog: boolean;
 
@@ -142,9 +138,13 @@ class TelephonyStore {
   @observable
   dialerFocused: boolean;
 
-  // TODO: move out of telephony store when minization won't destroy the telephony dialog
+  /**
+   * TODO: move out of telephony store when minization won't destroy the telephony dialog
+   */
   @observable
-  firstLetterEnteredThroughKeypad: boolean;
+  firstLetterEnteredThroughKeypadForInputString: boolean;
+  @observable
+  firstLetterEnteredThroughKeypadForForwardString: boolean;
 
   @observable
   enteredDialer: boolean = false;
@@ -181,7 +181,17 @@ class TelephonyStore {
       () => this.inputString.length,
       length => {
         if (!length) {
-          this.firstLetterEnteredThroughKeypad = false;
+          this.resetFirstLetterThroughKeypadForInputString();
+        }
+      },
+    );
+
+    // TODO: move out of telephony store when minization won't destroy the telephony dialog
+    reaction(
+      () => this.forwardString.length,
+      length => {
+        if (!length) {
+          this.resetFirstLetterThroughKeypadForForwardString();
         }
       },
     );
@@ -224,16 +234,6 @@ class TelephonyStore {
       });
     }
     return false;
-  }
-
-  // TODO: move out of telephony store when minization won't destroy the telephony dialog
-  @computed
-  get shouldEnterContactSearch() {
-    return (
-      this.shouldDisplayDialer &&
-      !!this.inputString.trim().length &&
-      !this.firstLetterEnteredThroughKeypad
-    );
   }
 
   private _matchContactByPhoneNumber = async (phone: string) => {
@@ -325,11 +325,6 @@ class TelephonyStore {
   }
 
   @action
-  setShiftKeyDown = (down: boolean) => {
-    this.shiftKeyDown = down;
-  }
-
-  @action
   openDialer = () => {
     this._history.add(DIALING);
     this._openCallWindow();
@@ -387,7 +382,7 @@ class TelephonyStore {
 
   @action
   directCall = () => {
-    this.firstLetterEnteredThroughKeypad = false;
+    this.resetFirstLetterThroughKeypadForInputString();
     this._openCallWindow();
   }
 
@@ -427,8 +422,23 @@ class TelephonyStore {
   }
 
   @action
-  enterFirstLetterThroughKeypad = () => {
-    this.firstLetterEnteredThroughKeypad = true;
+  enterFirstLetterThroughKeypadForInputString = () => {
+    this.firstLetterEnteredThroughKeypadForInputString = true;
+  }
+
+  @action
+  resetFirstLetterThroughKeypadForInputString = () => {
+    this.firstLetterEnteredThroughKeypadForInputString = false;
+  }
+
+  @action
+  enterFirstLetterThroughKeypadForForwardString = () => {
+    this.firstLetterEnteredThroughKeypadForForwardString = true;
+  }
+
+  @action
+  resetFirstLetterThroughKeypadForForwardString = () => {
+    this.firstLetterEnteredThroughKeypadForForwardString = false;
   }
 
   @computed
@@ -565,7 +575,10 @@ class TelephonyStore {
   }
 
   @computed
-  get callId(): string {
+  get callId() {
+    if (this.callDisconnected) {
+      return undefined;
+    }
     return this.call.callId;
   }
 

@@ -23,6 +23,7 @@ import {
   ChildrenType,
 } from '@/common/postParser';
 import { i18nP } from '@/utils/i18nT';
+import { action } from 'mobx';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   static customEmojiMap() {
@@ -94,11 +95,13 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
         : i18nP('message.atMentionAllTeam'),
       isCurrent:
         post.isTeamMention ||
-        (post.isAdminMention && TextMessageViewModel.getGroup(post.groupId).isAdmin),
+        (post.isAdminMention &&
+          TextMessageViewModel.getGroup(post.groupId).isAdmin),
     };
     return kv;
   }
 
+  @action
   private _getContent = (keyword?: string) => {
     return moizePostParser(this._post.text, {
       keyword,

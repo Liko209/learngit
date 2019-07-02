@@ -67,8 +67,8 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
         value: '',
         regionIcon: {
           id: '',
-          url: '',
           viewBox: '',
+          content: '',
         },
         regionCode: '',
       };

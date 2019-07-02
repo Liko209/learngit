@@ -128,7 +128,10 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
         I'm warn snackbar
@@ -153,7 +156,10 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
         I'm info snackbar
@@ -178,7 +184,10 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
         I'm success snackbar
@@ -203,7 +212,10 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
         I'm error snackbar

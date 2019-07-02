@@ -328,7 +328,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -375,7 +378,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -417,7 +423,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>

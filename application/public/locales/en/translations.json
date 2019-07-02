@@ -38,7 +38,10 @@
       "Thursday": "Thursday",
       "Friday": "Friday",
       "Saturday": "Saturday",
-      "Sunday": "Sunday"
+      "Sunday": "Sunday",
+      "hour": "hour",
+      "min": "min",
+      "sec": "sec"
     },
     "verb": {
       "like": "like",
@@ -281,7 +284,12 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
-    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> is typing...",
+      "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    }
   },
   "item": {
     "activity": {
@@ -540,7 +548,7 @@
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
-      "conversationArchived": "The team was archived. To know more, contact the team administrator.",
+      "conversationArchived": "This team was archived. To know more, contact the team administrator.",
       "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
     }
   },
@@ -615,7 +623,7 @@
       "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
       "ParkOk": "Your call is parked at location",
       "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
-      "ReplyMessageSuccess": "Your voice message was sent successfully.",
+      "ReplyMessageSuccess": "Voice message sent.",
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
@@ -673,6 +681,7 @@
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
     "recordings": "Recordings",
+    "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
@@ -702,6 +711,8 @@
       "pause": "Pause Voicemail",
       "reload": "Reload Voicemail"
     },
+    "inputFilter": "Filter voicemail",
+    "clearFilter": "Clear voicemail filter",
     "downloadVoicemail": "Download Voicemail",
     "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
     "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
@@ -854,7 +865,11 @@
     "noDevices": "No devices",
     "microphone": "Microphone",
     "builtInMicrophone": "Built-in microphone",
-    "builtInSpeaker": "Built-in speaker"
+    "builtInSpeaker": "Built-in speaker",
+    "prompt": {
+      "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
+      "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    }
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -864,11 +879,13 @@
     "NextFile": "View next file",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
-    "TeamArchived": "The team was archived. To know more, contact the team administrator.",
+    "TeamArchived": "This team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned",
+    "mentionedOne2One": "{{person}} mentioned you",
+    "group": "{{person}} posted in {{conversation}}",
+    "mentioned": "{{person}} mentioned you in {{conversation}}",
     "notificationEnabled": "Notifications are now enabled.",
     "topBanner": {
       "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",

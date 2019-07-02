@@ -17,7 +17,7 @@ class FileDeleteActionViewComponent extends Component<
   FileDeleteActionViewProps
 > {
   deleteFile = () => {
-    const { t, fileName, handleDeleteFile } = this.props;
+    const { t, fileName, handleDeleteFile, beforeDelete } = this.props;
     const { startLoading, stopLoading } = Dialog.confirm({
       title: t('message.prompt.deleteFileTitle'),
       content: (
@@ -34,6 +34,7 @@ class FileDeleteActionViewComponent extends Component<
       cancelText: t('common.dialog.cancel'),
       modalProps: { 'data-test-automation-id': 'confirmDeleteDialog' },
       async onOK() {
+        beforeDelete && beforeDelete();
         startLoading();
         const result = await handleDeleteFile();
         stopLoading();

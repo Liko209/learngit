@@ -49,12 +49,6 @@ export class ConversationCard extends React.Component<
     isFocusMoreAction: false,
   };
 
-  componentDidUpdate(prevProps: ConversationCardViewProps) {
-    if (this.props.isEditMode && !prevProps.isEditMode) {
-      this._focusEditor();
-    }
-  }
-
   handleMouseOver = () => {
     this.setState({
       isHover: true,
@@ -101,13 +95,6 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  private _focusEditor() {
-    setTimeout(() => {
-      if (this._editMessageInputRef.current) {
-        this._editMessageInputRef.current.focusEditor();
-      }
-    },         100);
-  }
   get _navigationProps(): {
     mode?: string;
     navigate?: () => void;

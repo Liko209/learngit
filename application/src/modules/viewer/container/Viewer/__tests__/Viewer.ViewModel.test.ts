@@ -5,18 +5,17 @@
  */
 
 import { ViewerViewModel } from '../Viewer.ViewModel';
-import { notificationCenter } from 'sdk/service';
-import { ITEM_SORT_KEYS } from 'sdk/module/item';
-
+import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import { VIEWER_ITEM_TYPE } from '../constants';
 import { ViewerViewProps } from '../types';
 import { ItemListDataSource } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import * as mobx from 'mobx';
-
 import { getEntity, getSingleEntity } from '@/store/utils';
 import FileItemModel from '@/store/models/FileItem';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import * as module from 'sdk/module/item';
+import * as utils from '../Utils';
 
 jest.mock('@/store/utils');
 
@@ -28,7 +27,7 @@ jest.mock('../Viewer.DataSource', () => {
     fetchData: jest.fn(),
     getFilterFunc: jest.fn().mockReturnValue(true),
     isExpectedItemOfThisGroup: jest.fn().mockReturnValue(true),
-    fetchIndexInfo: jest.fn().mockImplementation(() => {}),
+    fetchIndexInfo: jest.fn(),
   };
   return {
     ItemListDataSource: () => dataSource,
@@ -93,6 +92,7 @@ describe('Viewer.ViewModel', () => {
       const notificationOn = jest.spyOn(notificationCenter, 'on');
       const vm = new ViewerViewModel(props);
       expect(notificationOn).toBeCalled();
+      notificationOn.mockRestore();
       vm.dispose();
     });
   });
@@ -178,7 +178,6 @@ describe('Viewer.ViewModel', () => {
       vm.dispose();
     });
   });
-
   describe('switchToPrevious()', () => {
     it('should load data then switch to previous', (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
@@ -263,6 +262,7 @@ describe('Viewer.ViewModel', () => {
         done();
       });
     });
+
     it('should update index directly when ids has next image', () => {
       const dataSource = createDataSource();
       dataSource.getIds.mockReturnValue([2, 3]);
@@ -273,6 +273,33 @@ describe('Viewer.ViewModel', () => {
       expect(vm.hasNext).toBeTruthy();
       vm.switchToNext();
       expect(updateCurrentItemIndex).toBeCalled();
+    });
+  });
+  describe('user delete item', () => {
+    it('should call getNextItemToDisplay [JPT-2033]', async done => {
+      const itemNotificationKey = 'key';
+      jest
+        .spyOn(module.ItemNotification, 'getItemNotificationKey')
+        .mockReturnValue(itemNotificationKey);
+
+      const getNextItemToDisplaySpy = jest
+        .spyOn(utils, 'getNextItemToDisplay')
+        .mockReturnValue({ index: 2, itemId: 123 });
+      jest.spyOn(utils, 'isExpectedItemOfThisGroup').mockReturnValue(true);
+      const dataSource = createDataSource();
+      dataSource.fetchIndexInfo.mockReturnValue({ totalCount: 1, index: -1 });
+
+      const vm = new ViewerViewModel({ ...props, itemId: 1 });
+      vm.currentIndex = 1;
+      vm.total = 3;
+      notificationCenter.emit(itemNotificationKey, {
+        type: EVENT_TYPES.UPDATE,
+        body: { entities: [{}] },
+      });
+      setImmediate(() => {
+        expect(getNextItemToDisplaySpy).toHaveBeenCalled();
+        done();
+      });
     });
   });
 });
