@@ -274,7 +274,10 @@ Array [
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -552,7 +555,10 @@ Array [
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>

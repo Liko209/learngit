@@ -46,6 +46,7 @@ const setup = () => {
       setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
       setTimeout: jest.fn().mockReturnThis(),
+      setChannel: jest.fn().mockReturnThis(),
       build: jest.fn().mockImplementation(() => mockRequest),
     };
   });

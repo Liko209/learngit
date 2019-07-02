@@ -130,7 +130,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -182,7 +185,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -234,7 +240,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -286,7 +295,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -434,7 +446,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -472,7 +487,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -510,7 +528,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -548,7 +569,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -702,7 +726,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -743,7 +770,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -784,7 +814,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -825,7 +858,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>

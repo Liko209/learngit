@@ -1,9 +1,9 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ContentPanel/CodeSnippet.ts"
+      "./fixtures/PhoneTab/**/*.ts"
     ],
-   "browsers": [
+    "browsers": [
       "selenium:chrome"
     ]
   }

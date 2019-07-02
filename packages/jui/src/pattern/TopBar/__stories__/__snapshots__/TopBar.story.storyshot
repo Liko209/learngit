@@ -628,7 +628,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                   className="c7"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -866,7 +869,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                     className="c7"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -917,7 +923,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                     className="c7"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

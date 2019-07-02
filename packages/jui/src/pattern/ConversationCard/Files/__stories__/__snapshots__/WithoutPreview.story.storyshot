@@ -431,7 +431,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -520,7 +523,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -609,7 +615,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -698,7 +707,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>

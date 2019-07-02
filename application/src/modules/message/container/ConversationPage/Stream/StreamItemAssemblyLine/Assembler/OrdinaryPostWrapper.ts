@@ -15,7 +15,7 @@ export class OrdinaryPostWrapper extends Assembler {
     const convert2StreamItem: (i: ISortableModel) => StreamItem = i => ({
       id: i.sortValue,
       type: StreamItemType.POST,
-      value: [i.id],
+      value: i.id,
       timeStart: i.sortValue,
     });
 
@@ -34,9 +34,7 @@ export class OrdinaryPostWrapper extends Assembler {
     let item = streamItemList;
     deleted.forEach((id: number) => {
       item = item.filter(
-        item =>
-          item.type !== StreamItemType.POST ||
-          !(item.value as number[]).includes(id),
+        item => item.type !== StreamItemType.POST || item.value !== id,
       );
     });
     return { streamItemList: item, deleted: [], ...rest };

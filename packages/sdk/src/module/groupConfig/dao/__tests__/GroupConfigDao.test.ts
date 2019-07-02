@@ -11,6 +11,18 @@ import { QUERY_DIRECTION } from '../../../../dao/constants';
 describe('groupConfig Dao', () => {
   let groupConfigDao: GroupConfigDao;
 
+  function getMockHasMore({
+    older = true,
+    newer = true,
+    both = true,
+  }: {
+    older?: boolean;
+    newer?: boolean;
+    both?: boolean;
+  }) {
+    return { older, newer, both };
+  }
+
   beforeAll(() => {
     const { database } = setup();
     groupConfigDao = new GroupConfigDao(database);
@@ -18,11 +30,8 @@ describe('groupConfig Dao', () => {
 
   describe('hasMoreRemotePost', () => {
     it('has more because of this object does not exit', async () => {
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(
-        123,
-        QUERY_DIRECTION.OLDER,
-      );
-      expect(hasMoreRemotePost).toBe(true);
+      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
     });
 
     it('has more because of has_more does not exit', async () => {
@@ -32,11 +41,8 @@ describe('groupConfig Dao', () => {
       await groupConfigDao.update(mock);
       const obj = await groupConfigDao.get(123);
       expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(
-        123,
-        QUERY_DIRECTION.OLDER,
-      );
-      expect(hasMoreRemotePost).toBe(true);
+      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
     });
 
     it('has more because of has_more is true', async () => {
@@ -47,11 +53,8 @@ describe('groupConfig Dao', () => {
       await groupConfigDao.update(mock);
       const obj = await groupConfigDao.get(123);
       expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(
-        123,
-        QUERY_DIRECTION.OLDER,
-      );
-      expect(hasMoreRemotePost).toBe(true);
+      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
+      expect(hasMoreRemotePost).toEqual(getMockHasMore({}));
     });
 
     it('does not has more because of has_more is false', async () => {
@@ -62,11 +65,10 @@ describe('groupConfig Dao', () => {
       await groupConfigDao.update(mock);
       const obj = await groupConfigDao.get(123);
       expect(obj).toEqual(mock);
-      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(
-        123,
-        QUERY_DIRECTION.OLDER,
+      const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(123);
+      expect(hasMoreRemotePost).toEqual(
+        getMockHasMore({ older: false, both: false }),
       );
-      expect(hasMoreRemotePost).toBe(false);
     });
   });
 

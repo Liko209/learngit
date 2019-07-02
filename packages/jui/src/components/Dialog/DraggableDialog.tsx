@@ -39,7 +39,7 @@ const PaperComponent = ({
   return (
     <Draggable
       bounds="body"
-      defaultPosition={{ x, y }}
+      defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
       ref={dragRef}
       onStart={onStart}
       onStop={onStop}

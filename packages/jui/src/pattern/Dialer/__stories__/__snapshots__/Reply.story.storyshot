@@ -571,6 +571,101 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   >
     <div
       className="c2"
+      data-test-automation-id="telephony-dialer-title"
+    >
+      <div
+        className="c3"
+        data-test-automation-id="telephony-dialer-title-left"
+      />
+      <div
+        className="c4"
+      >
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c5"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="small"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c6  icon c7"
+              size="small"
+            >
+              <svg
+                className="c8"
+                role="img"
+              >
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
+        <button
+          aria-describedby={null}
+          className="MuiButtonBase-root MuiIconButton-root c5"
+          disabled={false}
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseOver={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          size="small"
+          tabIndex="0"
+          title={null}
+          type="button"
+          variant="plain"
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className="c6  icon c7"
+              size="small"
+            >
+              <svg
+                className="c8"
+                role="img"
+              >
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
+              </svg>
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      className="c9"
       data-test-automation-id="telephony-dialer-header"
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
@@ -614,7 +709,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                   className="c8"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>

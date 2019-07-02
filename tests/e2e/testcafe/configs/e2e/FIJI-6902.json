@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/RightRail/Layout.ts"
+    ],
+    "include_tags": [
+      "P2"
+    ]
+  }
+}
