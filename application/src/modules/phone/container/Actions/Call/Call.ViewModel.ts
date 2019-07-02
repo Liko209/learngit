@@ -20,7 +20,7 @@ class CallViewModel extends StoreViewModel<CallProps> {
     const { caller } = this.props;
     const toNumber = caller.extensionNumber || caller.phoneNumber;
     // actions ensure caller exist
-    this._telephonyService.makeCall(toNumber!);
+    await this._telephonyService.makeCall(toNumber!);
   }
 }
 

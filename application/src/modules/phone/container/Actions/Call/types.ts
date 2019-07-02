@@ -15,7 +15,7 @@ type CallProps = {
 type CallViewProps = {
   entity: ENTITY_TYPE;
   hookAfterClick?: () => void;
-  doCall: () => void;
+  doCall: () => Promise<void>;
 };
 
 export { CallProps, CallViewProps, ENTITY_TYPE };
