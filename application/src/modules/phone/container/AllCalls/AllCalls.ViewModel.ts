@@ -30,12 +30,12 @@ class AllCallsViewModel extends StoreViewModel<AllCallsProps> {
     ServiceConfig.CALL_LOG_SERVICE,
   );
 
-  constructor(props: any) {
+  constructor(props: AllCallsProps) {
     super(props);
 
     this.reaction(
       () => this.props.filterValue,
-      async filterKey => {
+      async (filterKey: string) => {
         this._filterFunc = await this._service.buildFilterFunc({
           filterKey,
           callLogSource: this._source,
