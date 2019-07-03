@@ -14,7 +14,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDialogHeader } from 'jui/components/Dialog/DialogHeader';
-import { dataAnalysis } from 'sdk';
+import { dataAnalysis, PerformanceTracer } from 'sdk';
 import { JuiZoomButtonGroup } from 'jui/pattern/DragZoom';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -26,6 +26,8 @@ import {
 import { JuiViewerSidebar, isSameScale } from 'jui/pattern/Viewer';
 import ViewerContext, { ViewerContextType } from './ViewerContext';
 import { IViewerView } from './interface';
+
+import { VIEWER_PERFORMANCE_KEYS } from '../../performanceKeys';
 import _ from 'lodash';
 
 const MAX_SCALE = 10.0;
@@ -87,6 +89,7 @@ class ViewerViewComponent extends Component<
   ViewerViewType & WithTranslation,
   State
 > {
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   constructor(props: ViewerViewType & WithTranslation) {
     super(props);
     this.state = {
@@ -126,6 +129,9 @@ class ViewerViewComponent extends Component<
   }
 
   componentDidMount() {
+    this._performanceTracer.end({
+      key: VIEWER_PERFORMANCE_KEYS.UI_VIEWER_PAGE_RENDER,
+    });
     dataAnalysis.page('Jup_Web/DT_conversation_fullScreenViewer');
     window.addEventListener('keydown', this._handlerKeydown, {
       passive: false,
