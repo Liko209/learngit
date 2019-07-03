@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "include_tags": [],
+    "browsers": ["selenium:chrome"]
+  }
+}
