@@ -172,9 +172,6 @@ const getStylesObject = moize(
   {
     maxSize: 100,
     transformArgs: ([styles]) => [styles],
-    onCacheAdd(cache) {
-      console.log('hihihi 3', cache.keys);
-    },
   },
 );
 
