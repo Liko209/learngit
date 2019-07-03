@@ -56,27 +56,24 @@ describe('TelephonyAccountController', () => {
   let mockCall;
   let accountController: TelephonyAccountController;
   let rtcAccount: RTCAccount;
-  let callController: TelephonyCallController;
+  let callControllerList: Map<number, TelephonyCallController>;
 
-  const callId = '123';
+  const callId = 123;
   const toNum = '123';
   const fromNum = '456';
 
   function setup() {
     mockAcc = new MockAccount();
     mockCall = new MockCall();
+    callControllerList = new Map();
 
     rtcAccount = new RTCAccount(null);
-    accountController = new TelephonyAccountController(
-      { createAccount: jest.fn().mockReturnValue(rtcAccount) },
-      mockAcc,
-      mockCall,
-    );
-
-    callController = new TelephonyCallController(null);
+    accountController = new TelephonyAccountController({
+      createAccount: jest.fn().mockReturnValue(rtcAccount),
+    });
 
     Object.assign(accountController, {
-      _telephonyCallDelegate: callController,
+      _callControllerList: callControllerList,
     });
     ServiceLoader.getInstance = jest
       .fn()
@@ -173,14 +170,16 @@ describe('TelephonyAccountController', () => {
         _telephonyCallDelegate: undefined,
       });
       accountController.onAccountStateChanged(RTC_ACCOUNT_STATE.REGISTERED);
-      rtcAccount.makeCall = jest.fn().mockReturnValue({});
+      rtcAccount.makeCall = jest.fn().mockReturnValue({
+        setCallDelegate: jest.fn(),
+      });
       const res = await accountController.makeCall(toNum, fromNum);
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toBeCalled();
+      expect(callControllerList.size).toBe(1);
     });
 
     it('should return error when rtc make call fail', async () => {
-      const spy = jest.spyOn(mockCall, 'onCallStateChange');
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
         voipCountryBlocked: false,
         voipFeatureEnabled: true,
@@ -199,6 +198,7 @@ describe('TelephonyAccountController', () => {
       const res = await accountController.makeCall(toNum, fromNum);
       expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
       expect(rtcAccount.makeCall).toBeCalled();
+      expect(callControllerList.size).toBe(0);
     });
   });
 
@@ -246,31 +246,43 @@ describe('TelephonyAccountController', () => {
 
   describe('hangUp', () => {
     it('should call controller to hang up', () => {
-      jest.spyOn(callController, 'hangUp');
-      accountController.hangUp('123');
+      const callController = {
+        hangUp: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.hangUp(callId);
       expect(callController.hangUp).toBeCalled();
     });
   });
 
   describe('mute', () => {
     it('should call controller to mute', () => {
-      jest.spyOn(callController, 'mute');
-      accountController.mute('123');
+      const callController = {
+        mute: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.mute(callId);
       expect(callController.mute).toBeCalled();
     });
   });
 
   describe('unmute', () => {
     it('should call controller to unmute', () => {
-      jest.spyOn(callController, 'unmute');
-      accountController.unmute('123');
+      const callController = {
+        unmute: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.unmute(callId);
       expect(callController.unmute).toBeCalled();
     });
   });
 
   describe('answer', () => {
     it('should call controller to answer call', () => {
-      jest.spyOn(callController, 'answer');
+      const callController = {
+        answer: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
       accountController.answer(callId);
       expect(callController.answer).toBeCalled();
     });
@@ -278,23 +290,21 @@ describe('TelephonyAccountController', () => {
 
   describe('sendToVoiceMail', () => {
     it('should call controller to send call to voice mail', () => {
-      jest.spyOn(callController, 'sendToVoiceMail');
+      const callController = {
+        sendToVoiceMail: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
       accountController.sendToVoiceMail(callId);
       expect(callController.sendToVoiceMail).toBeCalled();
     });
   });
 
-  describe('ignore', () => {
-    it('should call controller to ignore call', () => {
-      jest.spyOn(callController, 'ignore');
-      accountController.ignore(callId);
-      expect(callController.ignore).toBeCalled();
-    });
-  });
-
   describe('startReply', () => {
     it('should call controller to startReply', () => {
-      jest.spyOn(callController, 'startReply');
+      const callController = {
+        startReply: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
       accountController.startReply(callId);
       expect(callController.startReply).toBeCalled();
     });
@@ -302,7 +312,10 @@ describe('TelephonyAccountController', () => {
 
   describe('ignore', () => {
     it('should call controller to ignore call', () => {
-      jest.spyOn(callController, 'ignore');
+      const callController = {
+        ignore: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
       accountController.ignore(callId);
       expect(callController.ignore).toBeCalled();
     });
@@ -310,15 +323,21 @@ describe('TelephonyAccountController', () => {
 
   describe('replyWithMessage', () => {
     it('should call controller to reply with message', () => {
-      jest.spyOn(callController, 'replyWithMessage');
-      accountController.replyWithMessage('', '');
+      const callController = {
+        replyWithMessage: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
+      accountController.replyWithMessage(callId, '');
       expect(callController.replyWithMessage).toBeCalled();
     });
   });
 
   describe('replyWithPattern', () => {
     it('should call controller to reply with pattern', () => {
-      jest.spyOn(callController, 'replyWithPattern');
+      const callController = {
+        replyWithPattern: jest.fn(),
+      };
+      accountController._addControllerToList(callId, callController);
       accountController.replyWithPattern(
         callId,
         RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
@@ -382,6 +401,7 @@ describe('TelephonyAccountController', () => {
       accountController.setAccountDelegate(mockAcc);
       await accountController.onReceiveIncomingCall(rtcCall);
       expect(mockAcc.onReceiveIncomingCall).toBeCalledWith(1);
+      expect(callControllerList.size).toBe(1);
     });
   });
 
@@ -399,6 +419,22 @@ describe('TelephonyAccountController', () => {
       const spy = jest.spyOn(rtcAccount, 'state');
       accountController.getVoipState();
       expect(spy).toBeCalled();
+    });
+  });
+
+  describe('_addControllerToList', () => {
+    it('should add controller to list', () => {
+      const spy = jest.spyOn(callControllerList, 'set');
+      accountController._addControllerToList(callId, {});
+      expect(spy).toBeCalledWith(callId, {});
+    });
+  });
+
+  describe('_removeControllerFromList', () => {
+    it('should remove controller from list', () => {
+      const spy = jest.spyOn(callControllerList, 'delete');
+      accountController._removeControllerFromList(callId);
+      expect(spy).toBeCalledWith(callId);
     });
   });
 });

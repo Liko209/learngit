@@ -38,7 +38,10 @@
       "Thursday": "Thursday",
       "Friday": "Friday",
       "Saturday": "Saturday",
-      "Sunday": "Sunday"
+      "Sunday": "Sunday",
+      "hour": "hour",
+      "min": "min",
+      "sec": "sec"
     },
     "verb": {
       "like": "like",
@@ -281,7 +284,12 @@
     "message": "Message",
     "atMentionAllTeam": "Team",
     "atMentionAllAdmin": "admin",
-    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~"
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> is typing...",
+      "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    }
   },
   "item": {
     "activity": {
@@ -619,7 +627,9 @@
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped"
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -673,6 +683,7 @@
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
     "recordings": "Recordings",
+    "noMatchesFound": "No matches found",
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
@@ -702,6 +713,8 @@
       "pause": "Pause Voicemail",
       "reload": "Reload Voicemail"
     },
+    "inputFilter": "Filter voicemail",
+    "clearFilter": "Clear voicemail filter",
     "downloadVoicemail": "Download Voicemail",
     "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
     "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
@@ -863,12 +876,15 @@
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "FileDeleted": "The file was deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "This team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
   },
   "notification": {
-    "mentioned": "You were mentioned",
+    "mentionedOne2One": "{{person}} mentioned you",
+    "group": "{{person}} posted in {{conversation}}",
+    "mentioned": "{{person}} mentioned you in {{conversation}}",
     "notificationEnabled": "Notifications are now enabled.",
     "topBanner": {
       "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",

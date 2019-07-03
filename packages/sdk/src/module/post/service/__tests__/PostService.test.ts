@@ -5,7 +5,7 @@
  */
 
 import { PostController } from '../../controller/PostController';
-import { PostSearchController } from '../../controller/implementation/PostSearchController';
+import { PostSearchManagerController } from '../../controller/implementation/PostSearchManagerController';
 import { PostService } from '../PostService';
 import { PostDataController } from '../../controller/PostDataController';
 import { ProfileService } from '../../../profile';
@@ -30,7 +30,7 @@ jest.mock('../../../account/config/AccountUserConfig', () => {
 jest.mock('../../../group');
 jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
-jest.mock('../../controller/implementation/PostSearchController');
+jest.mock('../../controller/implementation/PostSearchManagerController');
 jest.mock('../../controller/implementation/PostItemController');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
@@ -51,15 +51,15 @@ describe('PostService', () => {
   function setUp() {
     profileService = new ProfileService();
     groupService = new GroupService();
-    postController = new PostController();
-    postService = new PostService();
+    postController = new PostController(groupService);
+    postService = new PostService(groupService);
 
     const serviceMap = new Map([[ServiceConfig.GROUP_SERVICE, groupService]]);
 
     ServiceLoader.getInstance = jest.fn().mockImplementation(name => {
       return serviceMap.get(name);
     });
-    accountService = new AccountService();
+    accountService = new AccountService(null as any);
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((serviceName: string) => {
@@ -111,7 +111,9 @@ describe('PostService', () => {
       const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
       const post = [{ id: 1 }, { id: 2 }] as any;
       postDataController.transformData = jest.fn().mockReturnValue(post);
-      const notificationController = postService.getEntityNotificationController();
+      const notificationController = postService[
+        'getEntityNotificationController'
+      ]();
       notificationController['onReceivedNotification'] = jest.fn();
       await postService.handleSexioData(rawPost);
 
@@ -133,12 +135,12 @@ describe('PostService', () => {
     });
   });
   describe('PostSearchController', () => {
-    let postSearchController: PostSearchController;
+    let postSearchController: PostSearchManagerController;
     beforeEach(() => {
       clearMocks();
       setUp();
 
-      postSearchController = new PostSearchController();
+      postSearchController = new PostSearchManagerController();
       postController.getPostSearchController = jest
         .fn()
         .mockImplementation(() => {
@@ -151,24 +153,17 @@ describe('PostService', () => {
     it('searchPosts', async () => {
       const params = { q: '11' };
       await postService.searchPosts(params);
-      expect(postSearchController.searchPosts).toBeCalledWith(params);
-    });
-
-    it('getSearchContentsCount', async () => {
-      const params = { q: '11' };
-      await postService.getSearchContentsCount(params);
-      expect(postSearchController.getContentsCount).toBeCalledWith(params);
+      expect(postSearchController.startSearch).toBeCalledWith(params);
     });
 
     it('scrollSearchPosts', async () => {
-      const requestId = Date.now();
-      await postService.scrollSearchPosts(requestId);
-      expect(postSearchController.scrollSearchPosts).toBeCalledWith(requestId);
+      await postService.scrollSearchPosts('key');
+      expect(postSearchController.scrollSearch).toBeCalledWith('key');
     });
 
     it('endPostSearch', async () => {
-      await postService.endPostSearch();
-      expect(postSearchController.endPostSearch).toBeCalledWith();
+      await postService.endPostSearch('key');
+      expect(postSearchController.endSearch).toBeCalledWith('key');
     });
   });
 

@@ -7,6 +7,7 @@
 import TypeDictionary from './types';
 import GlipTypeUtil from './util';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 interface IMessage<V> {
   [key: number]: V;
@@ -15,25 +16,47 @@ interface ISystemMessage {
   type: string;
   data: object[];
 }
+
+const socketKeyMap = {
+  STATE: 'state',
+  GROUP: 'group',
+  POST: 'post',
+  COMPANY: 'company',
+  PERSON: 'person',
+  PROFILE: 'profile',
+  ACCOUNT: 'account',
+  ITEM: 'item',
+  SEARCH: 'search',
+  LOGOUT: 'logout',
+};
+
 const socketMessageMap: IMessage<string> = {
-  [TypeDictionary.TYPE_ID_STATE]: 'state',
-  [TypeDictionary.TYPE_ID_GROUP]: 'group',
-  [TypeDictionary.TYPE_ID_TEAM]: 'group',
-  [TypeDictionary.TYPE_ID_POST]: 'post',
-  [TypeDictionary.TYPE_ID_COMPANY]: 'company',
-  [TypeDictionary.TYPE_ID_PERSON]: 'person',
-  [TypeDictionary.TYPE_ID_PROFILE]: 'profile',
-  [TypeDictionary.TYPE_ID_ACCOUNT]: 'account',
-  [TypeDictionary.TYPE_ID_TASK]: 'item',
-  [TypeDictionary.TYPE_ID_FILE]: 'item',
-  [TypeDictionary.TYPE_ID_PLUGIN]: 'item',
-  [TypeDictionary.TYPE_ID_EVENT]: 'item',
-  [TypeDictionary.TYPE_ID_LINK]: 'item',
-  [TypeDictionary.TYPE_ID_CONFERENCE]: 'item',
-  [TypeDictionary.TYPE_ID_MEETING]: 'item',
-  [TypeDictionary.TYPE_ID_PAGE]: 'item',
-  [TypeDictionary.TYPE_ID_CODE]: 'item',
-  [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: 'item',
+  [TypeDictionary.TYPE_ID_STATE]: socketKeyMap.STATE,
+  [TypeDictionary.TYPE_ID_GROUP]: socketKeyMap.GROUP,
+  [TypeDictionary.TYPE_ID_TEAM]: socketKeyMap.GROUP,
+  [TypeDictionary.TYPE_ID_POST]: socketKeyMap.POST,
+  [TypeDictionary.TYPE_ID_COMPANY]: socketKeyMap.COMPANY,
+  [TypeDictionary.TYPE_ID_PERSON]: socketKeyMap.PERSON,
+  [TypeDictionary.TYPE_ID_PROFILE]: socketKeyMap.PROFILE,
+  [TypeDictionary.TYPE_ID_ACCOUNT]: socketKeyMap.ACCOUNT,
+  [TypeDictionary.TYPE_ID_TASK]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_FILE]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_PLUGIN]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_EVENT]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_LINK]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_CONFERENCE]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_MEETING]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_PAGE]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_CODE]: socketKeyMap.ITEM,
+  [TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM]: socketKeyMap.ITEM,
+};
+
+const socketMessageParser = {
+  presence_unified: parsePresence,
+  message: parseSocketMessage,
+  partial: parseSocketMessage,
+  typing: parseTyping,
+  system_message: parseSocketMessage,
 };
 
 function getSocketMessageKey(id: number) {
@@ -80,8 +103,12 @@ function parseSocketMessage(message: string | ISystemMessage) {
         obj.__trigger_ids = post_creator_ids;
       }
       if (obj.search_results) {
-        result['search'] = obj.search_results;
+        result[socketKeyMap.SEARCH] = obj.search_results;
       }
+      if (obj.force_logout) {
+        result[socketKeyMap.LOGOUT] = obj.force_logout;
+      }
+
       const key = getSocketMessageKey(obj._id);
       if (key) {
         result[key] = result[key] || [];
@@ -92,9 +119,28 @@ function parseSocketMessage(message: string | ISystemMessage) {
   return result;
 }
 
+function parsePresence(message: string) {
+  return {
+    presence: message,
+  };
+}
+function parseTyping(message: string) {
+  return {
+    typing: message,
+  };
+}
+
+function parseSocketData(channel: string, message: string | ISystemMessage) {
+  if (socketMessageParser[channel]) {
+    return socketMessageParser[channel](message);
+  }
+  mainLogger.log(`Jupiter has not support ${channel} channel yet`);
+}
+
 export {
   TypeDictionary,
   GlipTypeUtil,
   parseSocketMessage,
   getSocketMessageKey,
+  parseSocketData,
 };

@@ -49,17 +49,18 @@ abstract class RCItemFetchController<
     const numberSet = new Set(
       phoneContacts.phoneContacts.map(data => data.phoneNumber.id),
     );
-    const terms = SearchUtils.getTermsFromText(filterKey);
+    const terms = SearchUtils.getTermsFromText(filterKey.toLowerCase().trim());
 
     return (data: T): boolean => {
       const { name, extensionNumber, phoneNumber } = this.getFilterInfo(data);
+      const lowerCaseName = name && name.toLowerCase();
       let result =
         (extensionNumber && numberSet.has(extensionNumber)) ||
         (phoneNumber && numberSet.has(phoneNumber));
       if (!result) {
         result = terms.every((term: string) => {
           return !!(
-            (name && name.includes(term)) ||
+            (lowerCaseName && lowerCaseName.includes(term)) ||
             (extensionNumber && extensionNumber.includes(term)) ||
             (phoneNumber && phoneNumber.includes(term))
           );

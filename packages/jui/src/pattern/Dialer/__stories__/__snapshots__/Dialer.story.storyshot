@@ -42,6 +42,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c5 {
@@ -565,7 +566,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             role="img"
             size="large"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
         02:32
@@ -606,7 +610,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -644,7 +651,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -696,7 +706,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -774,7 +787,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -819,7 +835,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -864,7 +883,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -909,7 +931,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -954,7 +979,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -999,7 +1027,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
                   className="c5"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>

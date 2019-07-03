@@ -33,12 +33,10 @@
     "ter-indent": false,
     "ter-computed-property-spacing": false,
     "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"],
-    "no-eval": true,
-    "no-debugger": true
+    "no-eval": true
   },
   "jsRules": {
     "no-empty": true,
-    "no-eval": true,
-    "no-debugger": true
+    "no-eval": true
   }
 }

@@ -477,6 +477,25 @@ describe('glipdown text', () => {
         ).toEqual('😂');
       });
 
+      it('should return unicode emoji even after the same emoji transformation for non-unicode is cached [BUG-FIJI-7086]', () => {
+        expect(
+          postParser(':joy:hahahah', {
+            emoji: { hostName, unicodeOnly: false },
+          }),
+        ).toEqual([
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+            😂
+          </Emoji>,
+          'hahahah',
+        ]);
+
+        expect(
+          postParser(':joy:hahahah', {
+            emoji: { hostName, unicodeOnly: true },
+          }),
+        ).toEqual('😂hahahah');
+      });
+
       it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: { hostName } })).toEqual([
           <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
@@ -815,6 +834,19 @@ Veniam anim velit amet aliqua proident.`}
           '123  ss',
         ]);
       });
+
+      it('should only render at mention when there is unicode emoji in at mention', () => {
+        expect(
+          postParser(`sdds${atmention('12244', '🤣')}123  ss`, {
+            atMentions: { map },
+            emoji: { hostName },
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention key={0} id='12244' isCurrent={false} name='@🤣' />,
+          '123  ss',
+        ]);
+      });
     });
 
     describe('html and at mention and url', () => {
@@ -1068,6 +1100,17 @@ Veniam anim velit amet aliqua proident.`}
             😂
           </Emoji>,
         ]);
+      });
+
+      it('should parse correcly when quote an emoji', () => {
+        expect(
+          renderToStaticMarkup(postParser('> :joy:', {
+            emoji: { hostName },
+            html: true,
+          }) as any),
+        ).toMatch(
+          /<q><span aria-label="😂, joy" class="emoji-mart-emoji"><span style="[\s\S]+">😂<\/span><\/span><\/q>/,
+        );
       });
     });
 

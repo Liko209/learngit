@@ -239,7 +239,7 @@ function withDialogOrNewWindow<T>(
       },         300);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       this._telephonyStore.onDialerBlur();
       window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
       window.removeEventListener(BLUR, this._onBlur);

@@ -11,6 +11,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTC_CALL_ACTION,
+  RTC_CALL_ACTION_ERROR_CODE,
   RECORD_STATE as RTC_RECORD_STATE,
 } from 'voip';
 import {
@@ -23,6 +24,7 @@ import {
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { ToggleController } from '../ToggleController';
+import { CALL_ACTION_ERROR_CODE } from '../../types';
 
 jest.mock('voip');
 jest.mock('sdk/service/notificationCenter');
@@ -223,7 +225,7 @@ describe('TelephonyCallController', () => {
       callController._updateCallRecordState = jest.fn();
       recordToggle.onSuccess = jest.fn();
       callController.startRecord().then(result => {
-        expect(result).toEqual(options);
+        expect(result).toEqual(CALL_ACTION_ERROR_CODE.NO_ERROR);
         done();
       });
       expect(callController._updateCallRecordState).toBeCalledWith(
@@ -242,13 +244,16 @@ describe('TelephonyCallController', () => {
           done();
         })
         .catch(result => {
-          expect(result).toEqual('');
+          expect(result).toEqual(CALL_ACTION_ERROR_CODE.INVALID);
           done();
         });
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.RECORDING,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.START_RECORD, -1);
+      callController.onCallActionFailed(
+        RTC_CALL_ACTION.START_RECORD,
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
+      );
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.IDLE,
       );
@@ -264,7 +269,7 @@ describe('TelephonyCallController', () => {
           done();
         })
         .catch(result => {
-          expect(result).toEqual('-8');
+          expect(result).toEqual(CALL_ACTION_ERROR_CODE.ACR_ON);
           done();
         });
 
@@ -285,7 +290,7 @@ describe('TelephonyCallController', () => {
       expect.assertions(2);
       callController._updateCallRecordState = jest.fn();
       callController.stopRecord().then(result => {
-        expect(result).toEqual(options);
+        expect(result).toEqual(CALL_ACTION_ERROR_CODE.NO_ERROR);
         done();
       });
       expect(callController._updateCallRecordState).toBeCalledWith(
@@ -303,13 +308,16 @@ describe('TelephonyCallController', () => {
           done();
         })
         .catch(result => {
-          expect(result).toEqual('');
+          expect(result).toEqual(CALL_ACTION_ERROR_CODE.INVALID);
           done();
         });
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.IDLE,
       );
-      callController.onCallActionFailed(RTC_CALL_ACTION.STOP_RECORD, -1);
+      callController.onCallActionFailed(
+        RTC_CALL_ACTION.STOP_RECORD,
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
+      );
       expect(callController._updateCallRecordState).toBeCalledWith(
         RECORD_STATE.RECORDING,
       );

@@ -6,6 +6,7 @@ exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -266,7 +267,10 @@ exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect
                       role="img"
                       size="large"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </div>

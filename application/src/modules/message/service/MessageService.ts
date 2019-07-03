@@ -7,7 +7,6 @@
 import { ReactNode } from 'react';
 import { inject } from 'framework';
 import { MessageStore } from '../store';
-import debounce from 'lodash/debounce';
 
 class MessageService {
   @inject(MessageStore) private _messageStore: MessageStore;
@@ -26,9 +25,11 @@ class MessageService {
     return this._messageStore.draftMap.get(id) || '';
   }
 
-  setEditInputFocus = debounce((id: number) => {
-    this._messageStore.currentFocusedInput = id;
-  },                           200);
+  setEditInputFocus = (id: number) => {
+    window.requestAnimationFrame(
+      () => (this._messageStore.currentFocusedInput = id),
+    );
+  }
 
   blurEditInputFocus() {
     this._messageStore.currentFocusedInput = undefined;
