@@ -25,7 +25,7 @@ beforeAll(() => {
     matchContactByPhoneNumber: jest.fn(),
   });
   (getEntity as jest.Mock).mockReturnValue({
-    holdState: HOLD_STATE.DISABLE,
+    holdState: HOLD_STATE.DISABLED,
   });
   holdViewModel = new HoldViewModel();
 });
