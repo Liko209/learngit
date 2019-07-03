@@ -11,9 +11,11 @@ import { InstanceManager } from './InstanceManager';
 import {
   IRequestResponse,
   SERVER_ALIAS_MAP,
-} from 'src/sdk/utils/network/networkDataTool';
+} from '../../utils/network/networkDataTool';
 import _ from 'lodash';
 import { createResponse } from './utils';
+import { createDebug } from 'sdk/__tests__/utils';
+const debug = createDebug('ProxyServer', false);
 
 export class ProxyServer implements IMockServer {
   private _findResponseInRequestResponsePool(request: {
@@ -24,7 +26,6 @@ export class ProxyServer implements IMockServer {
   }) {
     const { host, hostAlias, method, path } = request;
     const pool = this.getRequestResponsePool();
-    console.warn('pool: ', pool);
     return pool.find(item => {
       return (
         (item.host === host || (hostAlias && item.hostAlias === hostAlias)) &&
@@ -44,9 +45,9 @@ export class ProxyServer implements IMockServer {
   ) => {
     const transRequestInfo = {
       host: request.host,
+      path: request.path,
       hostAlias: '',
       method: request.method,
-      path: request.path,
     };
     const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
       request.host.startsWith(key),
@@ -54,11 +55,12 @@ export class ProxyServer implements IMockServer {
     if (match) {
       transRequestInfo.hostAlias = match[1];
     }
+    debug('handle request: ', transRequestInfo);
     const matchReqRes = this._findResponseInRequestResponsePool(
       transRequestInfo,
     );
     if (matchReqRes) {
-      console.log('TCL: matchReqRes', matchReqRes);
+      debug('matchReqRes', matchReqRes);
       if (
         matchReqRes.response.status < 300 &&
         matchReqRes.response.status > 199

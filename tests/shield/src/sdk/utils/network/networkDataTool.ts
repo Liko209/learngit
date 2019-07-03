@@ -11,35 +11,33 @@ const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';
 const GLIP_SOCKET_CHANEL_PATTERN = /^\d+\[\"([^"]*)\",(.*)\]$/;
 // [fullMatch, hostName, path]
-const URL_HOST_PATH = /^(?:https|http|wss|ws)?\:\/\/([^\/:?#]+)(?:\:\d*)?(\/*[^?#]*[^?#\/])/;
+const URL_HOST_PATH = /^((?:https|http|wss|ws)?\:\/\/(?:[^\/:?#]+))(?:\:\d*)?(\/*[^?#]*[^?#\/])/;
 // const URL_HOST_PATH = /^(?:https|http)?\:\/\/((?:[^\/:?#]+)(?:\:\d*)?)(\/[^?#]*[^?#\/])/;
 export const SERVER_ALIAS_MAP = {
   // GLP-DEV-XMN
-  'api-glpdevxmn.lab.nordigy.ru': 'rc',
-  'glpdevxmn.asialab.glip.net': 'glip',
+  'https://api-glpdevxmn.lab.nordigy.ru': 'rc',
+  'https://glpdevxmn.asialab.glip.net': 'glip',
   // xmnup
-  'api-xmnup.lab.nordigy.ru': 'rc',
-  'xmnup.asialab.glip.net': 'glip',
+  'https://api-xmnup.lab.nordigy.ru': 'rc',
+  'https://xmnup.asialab.glip.net': 'glip',
   // chris sandbox
-  'aws13-g04-uds02.asialab.glip.net': 'glip',
+  'https://aws13-g04-uds02.asialab.glip.net': 'glip',
   // production
-  'platform.ringcentral.com': 'rc',
-  'app.glip.com': 'glip',
+  'https://platform.ringcentral.com': 'rc',
+  'https://app.glip.com': 'glip',
 };
-
-export { SERVER_ALIAS_MAP };
 
 // we define a simple/common version IRequest here,
 // definition in foundation contain some business properties. we don't need it
 
-interface IRequest {
+interface IRequest<T = any> {
   url: string;
   host: string;
   hostAlias?: string;
   path: string;
   method: string;
   headers: object;
-  data?: object;
+  data?: T;
   withCredentials: boolean;
 }
 
@@ -81,12 +79,13 @@ interface INetworkInfo {
   hostAlias?: string;
 }
 
-export interface IRequestResponse extends INetworkInfo {
+export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo {
   type: 'request-response';
   via: string;
   // url: string;
-  request: IRequest;
-  response: IResponse;
+  method: string;
+  request: IRequest<Req>;
+  response: IResponse<Res>;
 }
 
 export interface ISocketInfo<T = any> extends INetworkInfo {
@@ -110,7 +109,7 @@ interface ISocketResponseInfo<T = any> extends ISocketInfo {
 }
 
 class Utils {
-  static parseHostPatch(url: string) {
+  static parseHostPath(url: string) {
     const match = url.match(URL_HOST_PATH);
     if (match) {
       const [, host, path] = match;
@@ -245,13 +244,14 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
             'readystatechange',
             readyStateChangeListener,
           );
-          const { host, path } = Utils.parseHostPatch(openUrl);
+          const { host, path } = Utils.parseHostPath(openUrl);
           const responseHeader =
             request.getAllResponseHeaders && request.getAllResponseHeaders();
           onXhrInfoComing &&
             onXhrInfoComing({
               host,
               path,
+              method,
               url: openUrl,
               type: 'request-response',
               via: 'xhr',
@@ -301,7 +301,7 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
       onSocketInfoComing({
         type: 'socket-message',
         url: socket.url,
-        ...Utils.parseHostPatch(socket.url),
+        ...Utils.parseHostPath(socket.url),
         protocol: socket.protocol,
         direction: 'send',
         rawData: arguments[0],
@@ -313,7 +313,7 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
           onSocketInfoComing({
             type: 'socket-message',
             url: socket.url,
-            ...Utils.parseHostPatch(socket.url),
+            ...Utils.parseHostPath(socket.url),
             protocol: socket.protocol,
             direction: 'receive',
             rawData: event.data,
@@ -335,23 +335,21 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
 class NetworkDataTool {
   private _infoPool: (ISocketInfo | IRequestResponse)[] = [];
 
-  private _aliasServer(info: ISocketInfo | IRequestResponse) {
+  private _aliasHost(host: string) {
     const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
-      info.host.startsWith(key),
+      host.startsWith(key),
     );
-    if (match) {
-      info.hostAlias = match[1];
-    }
+    return match ? match[1] : undefined;
   }
 
   startWatch() {
     subscribeXHR(xhrInfo => {
-      this._aliasServer(xhrInfo);
+      xhrInfo.hostAlias = this._aliasHost(xhrInfo.host);
       this._infoPool.push(xhrInfo);
     });
     subscribeSocket(socketInfo => {
       const parseResult = Utils.parseGlip(socketInfo);
-      this._aliasServer(socketInfo);
+      socketInfo.hostAlias = this._aliasHost(socketInfo.host);
       this._infoPool.push(parseResult);
       switch (socketInfo.chanel) {
         case 'response':
@@ -369,13 +367,15 @@ class NetworkDataTool {
           ) as ISocketInfo;
           if (sourceRequest) {
             const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
+            const { host, path } = Utils.parseHostPath(rawRequest.url);
             this._infoPool.push({
+              host,
+              path,
+              method: rawRequest.method,
               type: 'request-response',
               via: 'socket',
               url: rawRequest.url,
-              host: rawRequest.host,
-              hostAlias: rawRequest.hostAlias,
-              path: rawRequest.path,
+              hostAlias: this._aliasHost(host),
               request: rawRequest,
               response: Utils.fromSocketResponse(socketResponse.data),
             });

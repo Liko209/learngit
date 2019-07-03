@@ -4,7 +4,7 @@ import { Socket } from 'net';
 import { EventEmitter } from 'events';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
-const debug = createDebug('BlockExternalRequest', false);
+const debug = createDebug('BlockExternalRequest', true);
 
 class SimpleBlockRequest extends EventEmitter {
   emit(event: any, ...args: any) {
@@ -41,13 +41,15 @@ function wrapRequest(transport: typeof http | typeof https) {
       options = arguments[1];
       callback = arguments[2];
     } else {
+      debug('options?: ', arguments);
       return rawRequest.call(transport, arguments);
     }
 
     debug('options: ', _.pick(options, ['host', 'path']));
 
-    const socket = new Socket();
-    const response = new IncomingMessage(socket);
+    const socket = new EventEmitter();
+    // const socket = new Socket();
+    const response = new IncomingMessage(socket as any);
     const req = new SimpleBlockRequest();
     req.on('data', (chunk: any) => {
       debug('data chunk', chunk);

@@ -1,0 +1,72 @@
+{
+  "host": "https://glpdevxmn.asialab.glip.net",
+  "path": "/api/post",
+  "method": "post",
+  "type": "request-response",
+  "via": "socket",
+  "url": "https://glpdevxmn.asialab.glip.net/api/post",
+  "hostAlias": "glip",
+  "request": {
+    "url": "https://glpdevxmn.asialab.glip.net/api/post",
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "path": "/api/post",
+    "method": "post",
+    "headers": {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTU2MjAzNTc4NDk2MiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjIwMzU3ODQsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.ohqBT8dRFyvYgV3wi29BL0JrJXKLqlOGDJZnSKBH25x1zraYqu1JlkTmoiWF3O1fjMwT46SIrjNHzkPyDPiYZg"
+    },
+    "data": {
+      "links": [],
+      "created_at": 1562075334027,
+      "modified_at": 1562075334027,
+      "creator_id": 187875331,
+      "version": 2655238855854571,
+      "new_version": 2655238855854571,
+      "unique_id": "2655238855854571",
+      "is_new": true,
+      "model_size": 0,
+      "text": "test message",
+      "group_id": 43638790,
+      "from_group_id": 43638790,
+      "item_ids": [],
+      "post_ids": [],
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "request_id": "8"
+    },
+    "withCredentials": true
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "398",
+      "X-Request-Id": "user_id:187875331;id:eb118220-0cad-459a-9dfc-c014ea1570b4",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 201,
+    "data": {
+      "created_at": 1562075335322,
+      "creator_id": 187875331,
+      "version": 2655238855854571,
+      "model_size": 0,
+      "is_new": true,
+      "item_ids": [],
+      "post_ids": [],
+      "modified_at": 1562075335322,
+      "unique_id": "2655238855854571",
+      "text": "test message",
+      "group_id": 43638790,
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "function_id": "post",
+      "items": [],
+      "_id": 2794397700
+    }
+  }
+}

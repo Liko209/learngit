@@ -1,0 +1,106 @@
+{
+  "host": "https://glpdevxmn.asialab.glip.net",
+  "path": "/api/team/43638790",
+  "type": "request-response",
+  "method": "put",
+  "via": "socket",
+  "url": "https://glpdevxmn.asialab.glip.net/api/team/43638790",
+  "hostAlias": "glip",
+  "request": {
+    "url": "https://glpdevxmn.asialab.glip.net/api/team/43638790",
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "path": "/api/team/43638790",
+    "method": "put",
+    "headers": {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTU2MjAzNTc4NDk2MiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjIwMzU3ODQsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.ohqBT8dRFyvYgV3wi29BL0JrJXKLqlOGDJZnSKBH25x1zraYqu1JlkTmoiWF3O1fjMwT46SIrjNHzkPyDPiYZg"
+    },
+    "data": {
+      "created_at": 1559902726605,
+      "creator_id": 187875331,
+      "version": 4417626927267840,
+      "model_size": 0,
+      "is_new": false,
+      "members": [187875331],
+      "is_team": true,
+      "is_public": false,
+      "privacy": "private",
+      "description": "modify name from aaaaaa",
+      "set_abbreviation": "[test]new name",
+      "permissions": {
+        "admin": {
+          "uids": [187875331],
+          "level": 63
+        },
+        "user": {
+          "uids": [],
+          "level": 9
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "aaaaaa",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1562075335322,
+      "modified_at": 1562074599529,
+      "deactivated": false,
+      "most_recent_post_id": 2794397700,
+      "most_recent_post_created_at": 1562075335322,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "pinned_post_ids": [2723848196, 2723840004, 2723495940, 2723487748],
+      "model_id": "43638790",
+      "_id": 43638790,
+      "request_id": "18"
+    },
+    "withCredentials": true
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "827",
+      "X-Request-Id": "user_id:187875331;id:06417780-2571-4d20-9e00-f3b997616818",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 200,
+    "data": {
+      "_id": 43638790,
+      "created_at": 1559902726605,
+      "creator_id": 187875331,
+      "version": 3322063955689472,
+      "model_size": 0,
+      "is_new": false,
+      "members": [187875331],
+      "is_team": true,
+      "is_public": false,
+      "privacy": "private",
+      "description": "modify name from aaaaaa",
+      "set_abbreviation": "[test]new name",
+      "permissions": {
+        "admin": {
+          "uids": [187875331],
+          "level": 63
+        },
+        "user": {
+          "uids": [],
+          "level": 9
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "_test_new_name",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1562075755458,
+      "modified_at": 1562075755458,
+      "deactivated": false,
+      "most_recent_post_id": 2794414084,
+      "most_recent_post_created_at": 1562075754993,
+      "team_mention_cursor": 0,
+      "admin_mention_cursor": 0,
+      "last_author_id": 187875331,
+      "post_cursor": 17,
+      "pinned_post_ids": [2723848196, 2723840004, 2723495940, 2723487748],
+      "model_id": "43638790"
+    }
+  }
+}

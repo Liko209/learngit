@@ -1,0 +1,76 @@
+{
+  "host": "https://glpdevxmn.asialab.glip.net",
+  "path": "/api/post/2794397700",
+  "method": "put",
+  "type": "request-response",
+  "via": "socket",
+  "url": "https://glpdevxmn.asialab.glip.net/api/post/2794397700",
+  "hostAlias": "glip",
+  "request": {
+    "url": "https://glpdevxmn.asialab.glip.net/api/post/2794397700",
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "path": "/api/post/2794397700",
+    "method": "put",
+    "headers": {
+      "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTU2MjAzNTc4NDk2MiwidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjIwMzU3ODQsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.ohqBT8dRFyvYgV3wi29BL0JrJXKLqlOGDJZnSKBH25x1zraYqu1JlkTmoiWF3O1fjMwT46SIrjNHzkPyDPiYZg"
+    },
+    "data": {
+      "created_at": 1562075335322,
+      "creator_id": 187875331,
+      "version": 450051851681792,
+      "model_size": 0,
+      "is_new": false,
+      "item_ids": [],
+      "post_ids": [],
+      "modified_at": 1562075469165,
+      "unique_id": "2655238855854571",
+      "text": "test message",
+      "group_id": 43638790,
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "function_id": "post",
+      "items": [],
+      "likes": [],
+      "model_id": "2794397700",
+      "_id": 2794397700,
+      "request_id": "16"
+    },
+    "withCredentials": true
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "434",
+      "X-Request-Id": "user_id:187875331;id:56866969-63ba-4ad5-bf48-6ba5e8c08567",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 200,
+    "data": {
+      "_id": 2794397700,
+      "created_at": 1562075335322,
+      "creator_id": 187875331,
+      "version": 7378445151502336,
+      "model_size": 0,
+      "is_new": false,
+      "item_ids": [],
+      "post_ids": [],
+      "modified_at": 1562075474834,
+      "unique_id": "2655238855854571",
+      "text": "test message",
+      "group_id": 43638790,
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "function_id": "post",
+      "items": [],
+      "likes": [],
+      "model_id": "2794397700"
+    }
+  }
+}

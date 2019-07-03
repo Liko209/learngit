@@ -32,7 +32,7 @@ const SERVER_ALIAS_MAP = {
   'app.glip.com': 'glip',
 };
 class Utils {
-  static parseHostPatch(url) {
+  static parseHostPath(url) {
     const match = url.match(URL_HOST_PATH);
     if (match) {
       const [, host, path] = match;
@@ -152,13 +152,14 @@ function subscribeXHR(callback) {
             'readystatechange',
             readyStateChangeListener,
           );
-          const { host, path } = Utils.parseHostPatch(openUrl);
+          const { host, path } = Utils.parseHostPath(openUrl);
           const responseHeader =
             request.getAllResponseHeaders && request.getAllResponseHeaders();
           onXhrInfoComing &&
             onXhrInfoComing({
               host,
               path,
+              method,
               url: openUrl,
               type: 'request-response',
               via: 'xhr',
@@ -207,7 +208,7 @@ function subscribeSocket(callback) {
       onSocketInfoComing(
         Object.assign(
           { type: 'socket-message', url: socket.url },
-          Utils.parseHostPatch(socket.url),
+          Utils.parseHostPath(socket.url),
           {
             protocol: socket.protocol,
             direction: 'send',
@@ -222,7 +223,7 @@ function subscribeSocket(callback) {
           onSocketInfoComing(
             Object.assign(
               { type: 'socket-message', url: socket.url },
-              Utils.parseHostPatch(socket.url),
+              Utils.parseHostPath(socket.url),
               {
                 protocol: socket.protocol,
                 direction: 'receive',
@@ -247,22 +248,20 @@ class NetworkDataTool {
   constructor() {
     this._infoPool = [];
   }
-  _aliasServer(info) {
+  _aliasHost(host) {
     const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
-      info.host.startsWith(key),
+      host.startsWith(key),
     );
-    if (match) {
-      info.hostAlias = match[1];
-    }
+    return match ? match[1] : undefined;
   }
   startWatch() {
     subscribeXHR(xhrInfo => {
-      this._aliasServer(xhrInfo);
+      xhrInfo.hostAlias = this._aliasHost(xhrInfo.host);
       this._infoPool.push(xhrInfo);
     });
     subscribeSocket(socketInfo => {
       const parseResult = Utils.parseGlip(socketInfo);
-      this._aliasServer(socketInfo);
+      socketInfo.hostAlias = this._aliasHost(socketInfo.host);
       this._infoPool.push(parseResult);
       switch (socketInfo.chanel) {
         case 'response':
@@ -280,13 +279,15 @@ class NetworkDataTool {
           );
           if (sourceRequest) {
             const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
+            const { host, path } = Utils.parseHostPath(rawRequest.url);
             this._infoPool.push({
+              host,
+              path,
+              method: rawRequest.method,
               type: 'request-response',
               via: 'socket',
               url: rawRequest.url,
-              host: rawRequest.host,
-              hostAlias: rawRequest.hostAlias,
-              path: rawRequest.path,
+              hostAlias: this._aliasHost(host),
               request: rawRequest,
               response: Utils.fromSocketResponse(socketResponse.data),
             });
