@@ -43,11 +43,6 @@ class AllCallsViewComponent extends Component<Props> {
     return height - CALL_HISTORY_USED_HEIGHT;
   }
 
-  private get _width() {
-    const { width } = this.props;
-    return width;
-  }
-
   private get _noRowsRenderer() {
     const { t } = this.props;
 
@@ -62,14 +57,14 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
-          width={this._width}
+          width={width}
         />
       );
     });

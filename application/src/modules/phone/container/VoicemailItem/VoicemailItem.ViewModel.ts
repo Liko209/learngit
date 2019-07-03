@@ -11,7 +11,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
-import { postTimestamp } from '@/utils/date';
 import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -28,15 +27,21 @@ import {
   VoicemailProps,
   JuiAudioStatus,
   JuiAudioMode,
-  ResponsiveObject,
   BREAK_POINT_MAP,
+  Handler,
 } from './types';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
-import moment from 'moment';
 
 const FLASH_TOAST_DURATION = 3000;
+
+const voiceMailDefaultResponsiveInfo = {
+  audioMode: JuiAudioMode.FULL,
+  buttonToShow: 3,
+  showTranscriptionText: true,
+  dateFormat: 'full',
+};
 
 class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   implements VoicemailViewProps {
@@ -84,48 +89,56 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     return this.props.id;
   }
 
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
+    }
+    return voiceMailDefaultResponsiveInfo;
+  }
+
   @computed
   get voiceMailResponsiveMap() {
-    let responsiveObject: ResponsiveObject = {
-      JuiAudioMode: JuiAudioMode.FULL,
-      ButtonToShow: 3,
-      ShowTranscriptionText: true,
-      DateFormat: 'full',
-    };
-    const width = this.props.width;
-    if (width >= BREAK_POINT_MAP.FULL) {
-      responsiveObject = {
-        JuiAudioMode: JuiAudioMode.FULL,
-        ButtonToShow: 3,
-        ShowTranscriptionText: true,
-        DateFormat: 'full',
-      };
-    }
-    if (width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL) {
-      responsiveObject = {
-        JuiAudioMode: JuiAudioMode.FULL,
-        ButtonToShow: 2,
-        ShowTranscriptionText: false,
-        DateFormat: 'full',
-      };
-    }
-    if (width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND) {
-      responsiveObject = {
-        JuiAudioMode: JuiAudioMode.MINI,
-        ButtonToShow: 2,
-        ShowTranscriptionText: false,
-        DateFormat: 'full',
-      };
-    }
-    if (width <= BREAK_POINT_MAP.SHORT) {
-      responsiveObject = {
-        JuiAudioMode: JuiAudioMode.TINY,
-        ButtonToShow: 1,
-        ShowTranscriptionText: false,
-        DateFormat: 'short',
-      };
-    }
-    return responsiveObject;
+    const kHandlers: Handler[] = [];
+
+    kHandlers.push({
+      checker: (width: number) => width >= BREAK_POINT_MAP.FULL,
+      info: voiceMailDefaultResponsiveInfo,
+    });
+    kHandlers.push({
+      checker: (width: number) =>
+        width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL,
+      info: {
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      },
+    });
+    kHandlers.push({
+      checker: (width: number) =>
+        width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND,
+      info: {
+        audioMode: JuiAudioMode.MINI,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      },
+    });
+    kHandlers.push({
+      checker: (width: number) => width <= BREAK_POINT_MAP.SHORT,
+      info: {
+        audioMode: JuiAudioMode.TINY,
+        buttonToShow: 1,
+        showTranscriptionText: false,
+        dateFormat: 'short',
+      },
+    });
+
+    return this._getResponsiveMap(kHandlers);
   }
 
   get voicemailService() {
@@ -252,11 +265,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get createTime() {
-    const { creationTime } = this.voicemail;
-    if (this.voiceMailResponsiveMap.DateFormat === 'short') {
-      return moment(creationTime).format('hh MM A');
-    }
-    return postTimestamp(creationTime);
+    return this.voicemail.creationTime;
   }
 
   private async _fetchBlockPermission() {

@@ -5,6 +5,8 @@
  */
 import { Caller } from 'sdk/module/RCItems/types';
 import { RCMessage } from 'sdk/module/RCItems';
+import { Checker } from '../../types';
+import { CommonResponsiveObject } from '../VoicemailItem/types';
 
 type CallLogItemProps = {
   id: string;
@@ -12,17 +14,14 @@ type CallLogItemProps = {
   width: number;
 };
 
-type CallLogResponsiveObject = {
-  ButtonToShow: number;
-  ShowCallInfo: boolean;
-  DateFormat: string;
+type CallLogResponsiveObject = CommonResponsiveObject & {
+  showCallInfo: boolean;
 };
 
-enum BREAK_POINT_MAP {
-  FULL = 832,
-  EXPAND = 640,
-  SHORT = 400,
-}
+type Handler = {
+  checker: Checker;
+  info: CallLogResponsiveObject;
+};
 
 type CallLogItemViewProps = {
   caller?: Caller;
@@ -39,8 +38,9 @@ type CallLogItemViewProps = {
 } & CallLogItemProps;
 
 export {
+  Checker,
+  Handler,
   CallLogItemProps,
   CallLogItemViewProps,
   CallLogResponsiveObject,
-  BREAK_POINT_MAP,
 };

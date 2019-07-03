@@ -22,6 +22,7 @@ import {
 } from 'jui/pattern/Phone/CallLog';
 import { Actions } from '../Actions';
 import { ENTITY_TYPE } from '../constants';
+import { getCreateTime } from '@/utils/date';
 
 type Props = CallLogItemViewProps & WithTranslation;
 
@@ -96,7 +97,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
           </StyledContactWrapper>
           <StyledCallLogStatusWrapper>
             <CallLogStatus
-              isShowCallInfo={callLogResponsiveMap.ShowCallInfo}
+              isShowCallInfo={callLogResponsiveMap.showCallInfo}
               icon={icon}
               callType={t(callType)}
               duration={duration}
@@ -109,14 +110,16 @@ class CallLogItemViewComponent extends Component<Props, State> {
                 id={id}
                 caller={caller}
                 entity={ENTITY_TYPE.CALL_LOG}
-                maxButtonCount={callLogResponsiveMap.ButtonToShow}
+                maxButtonCount={callLogResponsiveMap.buttonToShow}
                 hookAfterClick={this.handleMouseLeave}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}
               />
             </StyledActionWrapper>
           ) : (
-            <StyledTime>{startTime}</StyledTime>
+            <StyledTime>
+              {getCreateTime(startTime, callLogResponsiveMap.dateFormat)}
+            </StyledTime>
           )}
         </VoicemailSummary>
       </StyleVoicemailItem>

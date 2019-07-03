@@ -130,8 +130,8 @@ describe('VoicemailItem.View', () => {
       const props = {
         isAudioActive: false,
         voiceMailResponsiveMap: {
-          JuiAudioMode: JuiAudioMode.FULL,
-          ButtonToShow: 3,
+          audioMode: JuiAudioMode.FULL,
+          buttonToShow: 3,
         },
       };
 
@@ -154,8 +154,8 @@ describe('VoicemailItem.View', () => {
       const props = {
         isAudioActive: false,
         voiceMailResponsiveMap: {
-          JuiAudioMode: JuiAudioMode.FULL,
-          ButtonToShow: 3,
+          audioMode: JuiAudioMode.FULL,
+          buttonToShow: 3,
         },
       };
 

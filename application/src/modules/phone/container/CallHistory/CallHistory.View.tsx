@@ -75,7 +75,7 @@ class CallHistoryComp extends Component<
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
         {({ height, width }: { width: number; height: number }) => (
           <Observer>
             {() => (

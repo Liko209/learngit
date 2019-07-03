@@ -9,21 +9,23 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import CallLogModel from '@/store/models/CallLog';
-import {
-  CallLogItemProps,
-  CallLogResponsiveObject,
-  BREAK_POINT_MAP,
-} from './types';
+import { CallLogItemProps, Handler } from './types';
+import { BREAK_POINT_MAP } from '../VoicemailItem/types';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
-import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
+import { getHourMinuteSeconds } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import moment from 'moment';
 import { i18nP } from '@/utils/i18nT';
+
+const callLogDefaultResponsiveInfo = {
+  buttonToShow: 3,
+  showCallInfo: true,
+  dateFormat: 'full',
+};
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -110,49 +112,47 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   @computed
   get startTime() {
-    if (this.callLogResponsiveMap.DateFormat === 'short') {
-      return moment(this.data.startTime).format('hh MM A');
+    return this.data.startTime;
+  }
+
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
     }
-    return postTimestamp(this.data.startTime);
+    return callLogDefaultResponsiveInfo;
   }
 
   @computed
   get callLogResponsiveMap() {
-    let responsiveObject: CallLogResponsiveObject = {
-      ButtonToShow: 3,
-      ShowCallInfo: true,
-      DateFormat: 'full',
-    };
-    const width = this.props.width;
-    if (width >= BREAK_POINT_MAP.FULL) {
-      responsiveObject = {
-        ButtonToShow: 3,
-        ShowCallInfo: true,
-        DateFormat: 'full',
-      };
-    }
-    if (width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL) {
-      responsiveObject = {
-        ButtonToShow: 3,
-        ShowCallInfo: true,
-        DateFormat: 'full',
-      };
-    }
-    if (width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND) {
-      responsiveObject = {
-        ButtonToShow: 3,
-        ShowCallInfo: true,
-        DateFormat: 'full',
-      };
-    }
-    if (width <= BREAK_POINT_MAP.SHORT) {
-      responsiveObject = {
-        ButtonToShow: 2,
-        ShowCallInfo: false,
-        DateFormat: 'short',
-      };
-    }
-    return responsiveObject;
+    const kHandlers: Handler[] = [];
+
+    kHandlers.push({
+      checker: (width: number) => width >= BREAK_POINT_MAP.FULL,
+      info: callLogDefaultResponsiveInfo,
+    });
+    kHandlers.push({
+      checker: (width: number) =>
+        width < BREAK_POINT_MAP.FULL && width > BREAK_POINT_MAP.SHORT,
+      info: {
+        buttonToShow: 2,
+        showCallInfo: true,
+        dateFormat: 'full',
+      },
+    });
+    kHandlers.push({
+      checker: (width: number) => width <= BREAK_POINT_MAP.SHORT,
+      info: {
+        buttonToShow: 2,
+        showCallInfo: false,
+        dateFormat: 'short',
+      },
+    });
+
+    return this._getResponsiveMap(kHandlers);
   }
 
   private async _fetchBlockPermission() {

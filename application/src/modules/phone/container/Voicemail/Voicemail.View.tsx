@@ -50,10 +50,6 @@ class VoicemailWrapper extends Component<
 
     return height - VOICEMAIL_HEADER;
   }
-  private get _width() {
-    const { width } = this.props;
-    return width;
-  }
 
   private get _noRowsRenderer() {
     const { t, filterValue } = this.props;
@@ -89,9 +85,9 @@ class VoicemailWrapper extends Component<
   private _onFilterChange = debounce(this.props.onFilterChange, DELAY_DEBOUNCE);
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: number) => {
-      return <VoicemailItem width={this._width} key={itemId} id={itemId} />;
+      return <VoicemailItem width={width} key={itemId} id={itemId} />;
     });
   }
 

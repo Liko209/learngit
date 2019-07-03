@@ -20,6 +20,7 @@ import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
 import { VoicemailViewProps, JuiAudioMode, ResponsiveObject } from './types';
 import { ENTITY_TYPE } from '../constants';
+import { getCreateTime } from '@/utils/date';
 
 type VoicemailItemProps = VoicemailViewProps &
   WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
@@ -54,10 +55,10 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       voiceMailResponsiveMap: voiceMailResponsiveMap,
     } = this.props;
 
-    if (voiceMailResponsiveMap.JuiAudioMode === JuiAudioMode.FULL) {
+    if (voiceMailResponsiveMap.audioMode === JuiAudioMode.FULL) {
       return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
     }
-    return voiceMailResponsiveMap.JuiAudioMode;
+    return voiceMailResponsiveMap.audioMode;
   }
 
   componentDidUpdate() {
@@ -162,7 +163,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
           )}
           {!isHover && (
             <StyledTime data-test-automation-id={`voicemail-${id}-time`}>
-              {createTime}
+              {getCreateTime(createTime, voiceMailResponsiveMap.dateFormat)}
             </StyledTime>
           )}
           {isHover && (
@@ -171,7 +172,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
                 id={id}
                 caller={caller}
                 entity={ENTITY_TYPE.VOICEMAIL}
-                maxButtonCount={voiceMailResponsiveMap.ButtonToShow}
+                maxButtonCount={voiceMailResponsiveMap.buttonToShow}
                 hookAfterClick={this.handleMouseLeave}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}

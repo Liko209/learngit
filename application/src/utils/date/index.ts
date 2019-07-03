@@ -32,6 +32,11 @@ function getDateMessage(
   return m.format('l'); // 30/10/2018  2018/10/30
 }
 
+const DATE_FORMAT = {
+  short: 'short',
+  full: 'full',
+};
+
 const WEEKDAY = [
   'common.time.Sunday',
   'common.time.Monday',
@@ -234,6 +239,13 @@ function formatDuration(milliSeconds: number) {
   }
   return moment.utc(milliSeconds).format('mm:ss');
 }
+
+function getCreateTime(creationTime: string, dateFormat: string) {
+  if (dateFormat === DATE_FORMAT.short) {
+    return moment(creationTime).format('hh MM A');
+  }
+  return postTimestamp(creationTime);
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -245,6 +257,7 @@ export {
   formatSeconds,
   getHourMinuteSeconds,
   formatDuration,
+  getCreateTime,
 };
 
 // 7 days inside

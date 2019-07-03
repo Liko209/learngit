@@ -6,4 +6,6 @@ type Audio = Attachment & {
   downloadUrl: string;
 };
 
-export { Audio };
+type Checker = (width: number) => boolean;
+
+export { Audio, Checker };
