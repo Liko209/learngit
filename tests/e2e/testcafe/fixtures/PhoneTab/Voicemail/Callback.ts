@@ -1,6 +1,6 @@
 /*
  * @Author: allen.lian
- * @Date: 2019-07-01 15:46:48
+ * @Date: 2019-07-03 13:24:28
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -11,10 +11,7 @@ import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
-
-import * as assert from 'assert'
-import { addOneVoicemailFromExt } from './utils';
-import { userInfo } from 'os';
+import { addOneVoicemailFromGuest } from './utils';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -23,10 +20,10 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['FIJI-2364'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
-})('Go to conversation from the voicemail', async (t) => {
+})('Call back from the voicemail', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const callee = users[4];
   const caller = users[5];
@@ -50,7 +47,7 @@ test.meta(<ITestMeta>{
     await app.homePage.phoneTab.voicemailEntry.enter();
   });
 
-  await h(t).withLog('Then voicemail page should be open', async () => {
+  await h(t).withLog('Then call history page should be open', async () => {
     await voicemailPage.ensureLoaded();
   });
 
@@ -59,38 +56,23 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton()
   }
 
-  await addOneVoicemailFromExt(t, caller, callee, app);
+  await addOneVoicemailFromGuest(t, caller, callee, app);
 
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
   const voicemailId = await voicemailItem.id;
-  const voicemailName = await voicemailItem.callerName.textContent;
-  
 
-  await h(t).withLog('When I click Message button', async (step) => {
+  await h(t).withLog('When I click Call back button', async (step) => {
     step.setMetadata('id', voicemailId)
-    await voicemailItem.ClickMessageButton();
+    await voicemailItem.ClickCallbackButton();
   });
-
-  const conversationPage = app.homePage.messageTab.conversationPage; 
-  
-  await h(t).withLog(`Then the conversation should be open`, async () => {
-    await t.expect(conversationPage.title.textContent).eql(voicemailName);
-  });
-
-  
-  const messageTab = app.homePage.leftPanel.messagesEntry;
-  
-  await h(t).withLog(`Open Message page`, async () => {
-    await messageTab.enter();
-  });
-
-  const phoneTab = app.homePage.leftPanel.phoneEntry;
-  
-  await h(t).withLog(`Open Phone page`, async () => {
-    await phoneTab.enter();
-    await voicemailPage.ensureLoaded();
+   
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
+    await telephonyDialog.ensureLoaded();
+    await t.wait(5e3);
+    await telephonyDialog.clickHangupButton();
+    await t.wait(5e3);
   });
   
 });
-
