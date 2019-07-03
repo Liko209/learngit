@@ -61,28 +61,13 @@ if (process.env.NODE_ENV === 'test') {
 
   // mock console for jest
   global.console = {
-    assert: jest.fn(),
-    clear: jest.fn(),
-    context: jest.fn(),
-    count: jest.fn(),
-    countReset: jest.fn(),
-    debug: jest.fn(),
-    error: (message) => {
-      throw (message instanceof Error ? message : new Error(message))
+    ...global.console,
+    error: message => {
+      throw message instanceof Error ? message : new Error(message);
     },
-    group: jest.fn(),
-    groupCollapsed: jest.fn(),
-    groupEnd: jest.fn(),
-    info: jest.fn(),
-    log: jest.fn(),
-    time: jest.fn(),
-    timeEnd: jest.fn(),
-    timeLog: jest.fn(),
-    timeStamp: jest.fn(),
-    trace: jest.fn(),
-    warn: (message) => {
-      throw message
-    }
+    warn: message => {
+      throw message;
+    },
   };
 
   global.fetch = require('jest-fetch-mock');

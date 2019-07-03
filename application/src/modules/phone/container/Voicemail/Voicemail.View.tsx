@@ -6,8 +6,10 @@
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer, Observer } from 'mobx-react';
+import { debounce } from 'lodash';
 import ReactResizeDetector from 'react-resize-detector';
 import { PhoneWrapper } from 'jui/pattern/Phone/PhoneWrapper';
+import { JuiPhoneFilter } from 'jui/pattern/Phone/Filter';
 import { JuiEmptyPage } from 'jui/pattern/EmptyPage';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
 import { ErrorPage } from '@/modules/common/container/ErrorPage';
@@ -26,6 +28,9 @@ import {
   LOADING_DELAY,
 } from './config';
 import noVoicemailImage from '../images/no-voicemail.svg';
+import noResultImage from '../images/no-result.svg';
+
+const DELAY_DEBOUNCE = 300;
 
 type Props = VoicemailViewProps & WithTranslation;
 
@@ -51,17 +56,37 @@ class VoicemailWrapper extends Component<
   }
 
   private get _noRowsRenderer() {
-    const { t } = this.props;
+    const { t, filterValue } = this.props;
+
+    const message = filterValue
+      ? t('phone.noMatchesFound')
+      : t('phone.noVoicemailAvailable');
+
+    const image = filterValue ? noResultImage : noVoicemailImage;
 
     return (
       <JuiEmptyPage
         data-test-automation-id="voicemailEmptyPage"
-        image={noVoicemailImage}
-        message={t('phone.noVoicemailAvailable')}
+        image={image}
+        message={message}
         height={this._height}
       />
     );
   }
+
+  private get _filterRenderer() {
+    const { t } = this.props;
+
+    return (
+      <JuiPhoneFilter
+        placeholder={t('voicemail.inputFilter')}
+        clearButtonLabel={t('voicemail.clearFilter')}
+        onChange={this._onFilterChange}
+      />
+    );
+  }
+
+  private _onFilterChange = debounce(this.props.onFilterChange, DELAY_DEBOUNCE);
 
   private _renderItems() {
     const { listHandler } = this.props;
@@ -78,6 +103,7 @@ class VoicemailWrapper extends Component<
         <JuiConversationPageHeader
           title={t('phone.voicemail')}
           data-test-automation-id="VoicemailPageHeader"
+          Right={this._filterRenderer}
         />
         <PhoneWrapper>
           {isError ? (

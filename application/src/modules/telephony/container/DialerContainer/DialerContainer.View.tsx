@@ -8,12 +8,7 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { DialPad } from 'jui/pattern/Dialer';
 import { DialerContainerViewProps, DialerContainerViewState } from './types';
-import {
-  CallControlPanel,
-  DialerPanel,
-  ContactSearchPanel,
-  KeypadPanel,
-} from './panels';
+import { CallControlPanel, DialerPanel } from './panels';
 
 const CLOSE_TOOLTIP_TIME = 5000;
 
@@ -67,17 +62,12 @@ class DialerContainerView extends React.Component<
 
   render() {
     const {
-      keypadEntered,
-      isDialer,
       isForward,
       clickToInput,
       playAudio,
       dialerInputFocused,
       callerPhoneNumberList,
       chosenCallerPhoneNumber,
-      shouldEnterContactSearch,
-      dtmfThroughKeypad,
-      dtmfThroughKeyboard,
       dialerFocused,
       shouldCloseToolTip,
       enteredDialer,
@@ -102,7 +92,7 @@ class DialerContainerView extends React.Component<
       },
     };
 
-    if (isDialer || isForward) {
+    if (isForward) {
       return (
         <DialerPanel
           callerIdProps={callerIdProps}
@@ -111,18 +101,6 @@ class DialerContainerView extends React.Component<
           clickToInput={clickToInput}
           dialerInputFocused={dialerInputFocused}
           isForward={isForward}
-        />
-      );
-    }
-    if (shouldEnterContactSearch) {
-      return <ContactSearchPanel callerIdProps={callerIdProps} />;
-    }
-    if (keypadEntered) {
-      return (
-        <KeypadPanel
-          dtmfThroughKeypad={dtmfThroughKeypad}
-          dtmfThroughKeyboard={dtmfThroughKeyboard}
-          dialerFocused={dialerFocused}
         />
       );
     }

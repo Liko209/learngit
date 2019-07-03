@@ -6,6 +6,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -142,7 +143,10 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -157,6 +161,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -310,7 +315,10 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>

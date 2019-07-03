@@ -273,7 +273,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._streamController.hasMore(direction)) {
+    if (
+      direction !== QUERY_DIRECTION.BOTH &&
+      !this._streamController.hasMore(direction)
+    ) {
       return [];
     }
     return await this._streamController.fetchData(direction, limit);
@@ -291,10 +294,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
       this._streamController.replacePostList([post]);
-      await Promise.all([
-        this._loadPosts(QUERY_DIRECTION.OLDER),
-        this._loadPosts(QUERY_DIRECTION.NEWER),
-      ]);
+      await this._loadPosts(QUERY_DIRECTION.BOTH);
     } else {
       // TODO error handing
     }

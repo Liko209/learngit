@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c10 {
@@ -393,7 +394,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                     className="c10"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -498,7 +502,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                     className="c10"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -603,7 +610,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                     className="c10"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -708,7 +718,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                     className="c10"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -813,7 +826,10 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
                     className="c10"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

@@ -14,6 +14,7 @@ import {
   IUseInput,
   IJuiPhoneFilter,
   JuiPhoneFilterProps,
+  IJuiChangePhoneFilter,
   IChangePhoneFilter,
   FilterIconState,
 } from './types';
@@ -106,4 +107,4 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
 const JuiPhoneFilter = memo(PhoneFilter);
 
-export { JuiPhoneFilter, JuiPhoneFilterProps };
+export { JuiPhoneFilter, JuiPhoneFilterProps, IJuiChangePhoneFilter };

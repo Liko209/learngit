@@ -18,7 +18,7 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, INCOMING_STATE } from '../store';
+import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -63,7 +63,7 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
-  private _callId?: string;
+  private _callId: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
@@ -85,7 +85,7 @@ class TelephonyService {
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.directCall();
   }
@@ -97,7 +97,7 @@ class TelephonyService {
     }
     this._telephonyStore.id = id;
     const { fromNum, callId, fromName } = this._telephonyStore.call;
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -600,9 +600,9 @@ class TelephonyService {
 
     if (isRecording) {
       this._telephonyStore.isStopRecording = true;
-      $fetch = this._serverTelephonyService.stopRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.stopRecord(this._callId);
     } else {
-      $fetch = this._serverTelephonyService.startRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.startRecord(this._callId);
     }
 
     try {
@@ -622,7 +622,7 @@ class TelephonyService {
 
   dtmf = (digits: string) => {
     this._telephonyStore.inputKey(digits);
-    return this._serverTelephonyService.dtmf(this._callId as string, digits);
+    return this._serverTelephonyService.dtmf(this._callId, digits);
   }
 
   callComponent = () => import('../container/Call');
@@ -650,62 +650,49 @@ class TelephonyService {
     );
   }
 
-  @action
-  concatInputString = (str: string) => {
-    if (
-      this._telephonyStore.inputString.length <
-      this._telephonyStore.maximumInputLength
-    ) {
-      // only set forwardString
-      if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
-        this._telephonyStore.forwardString += str;
+  concatInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    str: string,
+  ) => {
+    runInAction(() => {
+      if (
+        this._telephonyStore[prop].length <
+        this._telephonyStore.maximumInputLength
+      ) {
+        this._telephonyStore[prop] += str;
         return;
       }
-      this._telephonyStore.inputString += str;
-      return;
-    }
-    return;
+    });
   }
 
-  @action
-  updateInputString = (str: string) => {
-    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
-      this._telephonyStore.forwardString = str.slice(
+  updateInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    str: string,
+  ) => {
+    runInAction(() => {
+      this._telephonyStore[prop] = str.slice(
         0,
         this._telephonyStore.maximumInputLength,
       );
       return;
-    }
-    this._telephonyStore.inputString = str.slice(
-      0,
-      this._telephonyStore.maximumInputLength,
-    );
-    return;
+    });
   }
 
-  @action
-  deleteInputString = (clearAll: boolean = false) => {
-    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+  deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    clearAll: boolean = false,
+  ) => {
+    runInAction(() => {
       if (clearAll) {
-        this._telephonyStore.forwardString = '';
+        this._telephonyStore[prop] = '';
         return;
       }
-      this._telephonyStore.forwardString = this._telephonyStore.forwardString.slice(
+      this._telephonyStore[prop] = this._telephonyStore[prop].slice(
         0,
-        this._telephonyStore.forwardString.length - 1,
+        this._telephonyStore[prop].length - 1,
       );
       return;
-    }
-    if (clearAll) {
-      this._telephonyStore.inputString = '';
-      return;
-    }
-    this._telephonyStore.inputString = this._telephonyStore.inputString.slice(
-      0,
-      this._telephonyStore.inputString.length - 1,
-    );
-    return;
+    });
   }
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._hasActiveOutBoundCallDisposer &&
@@ -772,17 +759,14 @@ class TelephonyService {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.startReply(this._callId as string);
+    return this._serverTelephonyService.startReply(this._callId);
   }
 
   replyWithMessage = (message: string) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.replyWithMessage(
-      this._callId as string,
-      message,
-    );
+    return this._serverTelephonyService.replyWithMessage(this._callId, message);
   }
 
   replyWithPattern = (
@@ -794,7 +778,7 @@ class TelephonyService {
       return;
     }
     return this._serverTelephonyService.replyWithPattern(
-      this._callId as string,
+      this._callId,
       pattern,
       time,
       timeUnit,
@@ -862,20 +846,14 @@ class TelephonyService {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.forward(
-      this._callId as string,
-      phoneNumber,
-    );
+    return this._serverTelephonyService.forward(this._callId, phoneNumber);
   }
 
   flip = (flipNumber: number) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.flip(
-      this._callId as string,
-      flipNumber,
-    );
+    return this._serverTelephonyService.flip(this._callId, flipNumber);
   }
 
   getForwardPermission = () => {

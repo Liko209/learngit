@@ -42,6 +42,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c8 {
@@ -685,7 +686,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                 className="c8"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -723,7 +727,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                 className="c8"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -775,7 +782,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                   className="c8"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>

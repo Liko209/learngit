@@ -1,8 +1,8 @@
 /*
  * @Author: Zack.Zheng
  * @Date: 2019-05-07 11:11:11
- * @Last Modified by: Zack.Zheng
- * @Last Modified time: 2019-05-07 11:11:11
+ * @Last Modified by: Lex Huang (lex.huang@ringcentral.com)
+ * @Last Modified time: 2019-06-28 14:14:07
  */
 
 import { h } from '../v2/helpers'
@@ -229,7 +229,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickMinimizeButton();
   });
   await h(t).withLog('And I hover the “end” button', async () => {
-    await minimizeCallWindow.clickHangupButton();
+    await minimizeCallWindow.hoverhandupButton();
   });
   await h(t).withLog('Then show the tooltip', async () => {
     await telephonyDialog.showTooltip(tooltipText);

@@ -413,12 +413,21 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get messageInputTips(){
+    this.warnFlakySelector();
+    return this.self.find('div').find('div').find('div');
+  }
+
   get markupTips() {
     return this.getSelectorByAutomationId('markupTips');
   }
 
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
+  }
+
+  async existBlankLine(index:number){
+    await this.t.expect(this.messageInputArea.child('p').nth(index).child('br').exists).ok();
   }
 
   async elementShouldBeOnTheTop(sel: Selector) {
@@ -687,6 +696,10 @@ export class PostItem extends BaseWebComponent {
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
+  }
+
+  get fileThumbnail() {
+    return this.getSelectorByAutomationId('fileCardMedia', this.self);
   }
 
   get editTextArea() {

@@ -6,6 +6,7 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c6 {
@@ -264,7 +265,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -339,7 +343,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -414,7 +421,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -489,7 +499,10 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -512,6 +525,7 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c3 {
@@ -624,7 +638,10 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
             className="c3"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </div>
@@ -667,7 +684,10 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
             className="c3"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </div>

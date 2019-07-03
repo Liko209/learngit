@@ -90,7 +90,8 @@ describe('StreamViewModel', () => {
       type: 'delete',
     });
   });
-  it('should fetch initial data if the postIds added while the previous postIds is empty', async () => {
+  it('should use _fetchInitialPosts if the postIds added while the previous postIds is empty', async () => {
+    expect(vm.fetchInitialPosts).not.toBe(vm._fetchInitialPosts);
     const localProps = { ...newProps };
     postService.getPostsByIds.mockResolvedValue({
       posts: [
@@ -101,9 +102,7 @@ describe('StreamViewModel', () => {
     });
     vm._postIds = [];
     await vm.onReceiveProps(localProps);
-    expect(mockedSortableListHandler.fetchData).toBeCalledWith(
-      QUERY_DIRECTION.NEWER,
-    );
+    expect(vm.fetchInitialPosts).toBe(vm._fetchInitialPosts);
     expect(vm._postIds).toEqual([1, 2]);
   });
 });
