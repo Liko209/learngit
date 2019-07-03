@@ -8,7 +8,7 @@ import { Post } from 'sdk/module/post/entity';
 jest.setTimeout(30000);
 itForSdk(
   'Send post test',
-  ({ server, data, sdk, currentUserId, currentCompanyId }) => {
+  ({ server, data, sdk, currentUserId, currentCompanyId, mockResponse }) => {
     let groupService: GroupService;
     let postService: PostService;
     let stateService: StateService;
@@ -19,7 +19,6 @@ itForSdk(
       .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
     glipData.teams.push(team1);
     data.apply();
-
     beforeAll(async () => {
       await sdk.setup();
       groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);

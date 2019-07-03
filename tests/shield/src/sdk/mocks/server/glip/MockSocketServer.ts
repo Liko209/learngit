@@ -1,14 +1,19 @@
-const fixtureSocket = require('can-fixture-socket');
-// const io = require('socket.io-client');
-import io from 'socket.io-client';
+import { Server } from 'mock-socket';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('MockSocketServer', true);
 
 export class MockSocketServer {
   socket: any;
 
-  constructor() {
-    this.socket = new fixtureSocket.Server(io);
+  constructor(url: string) {
+    this.socket = new Server(url);
+    this.on('connection', () => {
+      debug('connection', url);
+    });
+    this.on('ping', () => {
+      debug('ping', url);
+      this.socket.send('pong');
+    });
   }
 
   on(channel: string, listener: (message: any) => void) {

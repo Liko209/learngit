@@ -10,4 +10,8 @@ jest.mock('foundation/network/client/http/Http', () =>
 jest.mock('foundation/network/client/socket/Socket', () =>
   require('shield/sdk/mocks/Socket'),
 );
+jest.mock('foundation/network/client/socket/socket.io.js', () =>
+  require('shield/sdk/mocks/socket.io.js'),
+);
+jest.mock('../packages/voip/src/signaling/RTCSipUserAgent');
 jest.setTimeout(30 * 1000);

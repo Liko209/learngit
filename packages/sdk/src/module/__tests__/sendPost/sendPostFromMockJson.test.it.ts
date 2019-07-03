@@ -7,7 +7,7 @@ import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 
 // todo
-itForSdk('Send post test', ({ server, data, sdk }) => {
+itForSdk('Send post test', ({ server, data, sdk, mockResponse }) => {
   let groupService: GroupService;
   let postService: PostService;
   let stateService: StateService;
@@ -18,6 +18,7 @@ itForSdk('Send post test', ({ server, data, sdk }) => {
   const team1 = data.helper().team.createTeam('Test Team with thomas', [123]);
   glipData.teams.push(team1);
   data.apply();
+  mockResponse(require('./SEND_POST.SUCCESS.json'));
 
   beforeAll(async () => {
     await sdk.setup();

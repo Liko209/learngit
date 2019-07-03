@@ -3,7 +3,7 @@ import { INetworkRequestExecutorListener, IRequest } from '../types';
 import { createResponse, isPromise } from '../utils';
 import { Handler, IResponseAdapter } from './types';
 import { createDebug } from 'sdk/__tests__/utils';
-const debug = createDebug('ResponseAdapter');
+const debug = createDebug('ResponseAdapter', true);
 
 export class ResponseAdapter implements IResponseAdapter {
   adapt = (handler: Handler) => {
@@ -16,7 +16,7 @@ export class ResponseAdapter implements IResponseAdapter {
       try {
         handlerResp = handler(request, routeParams);
       } catch (error) {
-        debug('handle error', error);
+        debug('handle error: ', error);
         cb.onFailure(
           createResponse({
             request,
@@ -34,7 +34,7 @@ export class ResponseAdapter implements IResponseAdapter {
             cb.onSuccess(response);
           })
           .catch(error => {
-            debug('handle error', error);
+            debug('handle error: ', error);
             cb.onFailure(
               createResponse({
                 request,
