@@ -29,6 +29,8 @@ test.meta(<ITestMeta>{
   const callHistoryTitle = 'Call history';
 
   const app = new AppRoot(t);
+
+  await h(t).resetGlipAccount(callee);
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: callee.company.number,
