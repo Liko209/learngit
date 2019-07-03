@@ -48,7 +48,8 @@ describe('CallLogItemView', () => {
       const props = {
         isMissedCall: true,
         duration: 'duration',
-        callLogResponsiveMap: { ShowCallInfo: true },
+        callLogResponsiveMap: { showCallInfo: true },
+        isShowCallInfo: true,
       } as any;
       const wrapper = mountWithTheme(<CallLogItemView {...props} />);
       expect(
@@ -64,7 +65,8 @@ describe('CallLogItemView', () => {
       const props = {
         isMissedCall: false,
         duration: 'duration',
-        callLogResponsiveMap: { ShowCallInfo: true },
+        callLogResponsiveMap: { showCallInfo: true },
+        isShowCallInfo: true,
       } as any;
       const wrapper = mountWithTheme(<CallLogItemView {...props} />);
       expect(

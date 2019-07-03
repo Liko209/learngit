@@ -388,20 +388,6 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class createTime {
-    @test('should be call postTimestamp if get createTime [JPT-2144]')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      creationTime: 'creationTime',
-    })
-    t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      vm.createTime;
-      expect(postTimestamp).toHaveBeenCalledWith('creationTime');
-    }
-  }
-
-  @testable
   class shouldShowCall {
     @test('should be true if has call permission [JPT-2384]')
     @mockService(RCInfoService, [
