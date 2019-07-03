@@ -1,6 +1,6 @@
 /*
  * @Author: allen.lian
- * @Date: 2019-07-01 15:46:48
+ * @Date: 2019-07-03 11:21:14
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -11,7 +11,6 @@ import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
-
 import { addOneCallLogFromGuest } from './utils';
 
 fixture('Setting/EnterPoint')
@@ -21,10 +20,10 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['FIJI-2364'],
   maintainers: ['Allen.Lian'],
-  keywords: ['call history']
-})('Go to conversation from the call history', async (t) => {
+  keywords: ['voicemail']
+})('Call back from the call history', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const callee = users[4];
   const caller = users[5];
@@ -62,30 +61,18 @@ test.meta(<ITestMeta>{
 
   const callhistoryItem = callhistoryPage.callhistoryItemByNth(0);
   const callhistoryId = await callhistoryItem.id;
-  const callhistoryName = await callhistoryItem.callerName.textContent;
 
-  await h(t).withLog('When I click Message button', async (step) => {
+  await h(t).withLog('When I click Call back button', async (step) => {
     step.setMetadata('id', callhistoryId)
-    await callhistoryItem.ClickMessageButton();
+    await callhistoryItem.ClickCallbackButton();
   });
-
-  const conversationPage = app.homePage.messageTab.conversationPage; 
    
-  await h(t).withLog(`Then the conversation should be open`, async () => {
-    await t.expect(conversationPage.title.textContent).eql(callhistoryName);
-  });
-
-  const messageTab = app.homePage.leftPanel.messagesEntry;
-  
-  await h(t).withLog(`Open Message page`, async () => {
-    await messageTab.enter();
-  });
-
-  const phoneTab = app.homePage.leftPanel.phoneEntry;
-  
-  await h(t).withLog(`Open Phone page`, async () => {
-    await phoneTab.enter();
-    await callhistoryPage.ensureLoaded();
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
+    await telephonyDialog.ensureLoaded();
+    await t.wait(5e3);
+    await telephonyDialog.clickHangupButton();
+    await t.wait(5e3);
   });
   
 });

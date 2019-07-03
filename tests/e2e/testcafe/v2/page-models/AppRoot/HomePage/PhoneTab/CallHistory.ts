@@ -95,6 +95,14 @@ class CallHistoryItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.messageButton);
   }
 
+  get callbackButton () {
+    return this.getSelectorByAutomationId('calllog-call-button', this.self);
+  }
+
+  async ClickCallbackButton() {
+    await this.t.hover(this.self).click(this.callbackButton);
+  }
+
   get deleteButton() {
     return this.getSelectorByAutomationId('calllog-delete-button');
   }

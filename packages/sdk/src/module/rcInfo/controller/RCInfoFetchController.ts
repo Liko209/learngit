@@ -17,11 +17,12 @@ import {
   IExtensionPhoneNumberList,
   GetBlockNumberListParams,
   BlockNumberItem,
-} from '../../../api/ringcentral';
-import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
+  BLOCK_STATUS,
+} from 'sdk/api/ringcentral';
+import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
-import notificationCenter from '../../../service/notificationCenter';
-import { RC_INFO } from '../../../service/eventKey';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { RC_INFO } from 'sdk/service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
@@ -226,6 +227,7 @@ class RCInfoFetchController {
     const params: GetBlockNumberListParams = {
       page: 1,
       perPage: DEFAULT_PAGE_SIZE,
+      status: BLOCK_STATUS.BLOCKED,
     };
     const result: BlockNumberItem[] = [];
     await this._requestBlockNumberListByPage(params, result);
@@ -237,7 +239,12 @@ class RCInfoFetchController {
     result: BlockNumberItem[],
   ) {
     const response = await RCInfoApi.getBlockNumberList(params);
-    response.records && result.push(...response.records);
+    response.records &&
+      result.push(
+        ...response.records.filter(data => {
+          return data.status === BLOCK_STATUS.BLOCKED;
+        }),
+      );
     if (
       response.paging &&
       response.paging.page &&
