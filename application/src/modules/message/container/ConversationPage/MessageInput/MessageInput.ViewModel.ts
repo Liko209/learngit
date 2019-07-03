@@ -135,10 +135,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       },
     );
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.addEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   dispose = () => {
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.removeEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   @action
@@ -312,11 +320,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       this._trackSendPost();
-      let realContent: string = content;
-
-      if (content.trim().length === 0) {
-        realContent = '';
-      }
+      const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
         groupId: this.props.id,
@@ -350,6 +354,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       type,
       this._group.analysisType,
     );
+  }
+
+  private _handleBeforeUnload() {
+    this.forceSaveDraft();
   }
 }
 

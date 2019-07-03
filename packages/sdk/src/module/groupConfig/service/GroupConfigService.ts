@@ -10,7 +10,9 @@ import { daoManager } from '../../../dao';
 import { GroupConfigDao } from '../dao/GroupConfigDao';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { Post } from 'sdk/module/post/entity';
+import { mainLogger } from 'foundation';
 
+const MODULE_NAME = 'GroupConfigService';
 class GroupConfigService extends EntityBaseService<GroupConfig> {
   private _groupConfigController: GroupConfigController;
   constructor() {
@@ -32,6 +34,8 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
     draft?: string;
     attachment_item_ids?: number[];
   }): Promise<boolean> {
+    mainLogger.tags(MODULE_NAME).log('updateDraft', params);
+
     return this.getGroupConfigController().updateDraft(params);
   }
 

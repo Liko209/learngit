@@ -12,7 +12,10 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
-import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  CALL_ACTION_ERROR_CODE,
+} from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
@@ -63,7 +66,7 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
-  private _callId?: string;
+  private _callId: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
@@ -85,7 +88,7 @@ class TelephonyService {
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.directCall();
   }
@@ -97,7 +100,7 @@ class TelephonyService {
     }
     this._telephonyStore.id = id;
     const { fromNum, callId, fromName } = this._telephonyStore.call;
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -596,33 +599,48 @@ class TelephonyService {
     }
 
     let $fetch: Promise<any>;
-    let isRecording: boolean = this._telephonyStore.isRecording;
+    const isRecording: boolean = this._telephonyStore.isRecording;
 
     if (isRecording) {
       this._telephonyStore.isStopRecording = true;
-      $fetch = this._serverTelephonyService.stopRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.stopRecord(this._callId);
     } else {
-      $fetch = this._serverTelephonyService.startRecord(this._callId as string);
+      if (
+        !(await this._rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.ON_DEMAND_CALL_RECORDING,
+        ))
+      ) {
+        ToastCallError.toastOnDemandRecording();
+        return;
+      }
+      $fetch = this._serverTelephonyService.startRecord(this._callId);
     }
 
     try {
       await $fetch;
       isRecording && (this._telephonyStore.isStopRecording = false);
-    } catch {
+    } catch (e) {
       if (isRecording) {
         ToastCallError.toastFailedToStopRecording();
         this._telephonyStore.isStopRecording = false;
       } else {
-        ToastCallError.toastFailedToRecord();
+        switch (e) {
+          case CALL_ACTION_ERROR_CODE.ACR_ON: {
+            ToastCallError.toastAutoRecording();
+            break;
+          }
+          default: {
+            ToastCallError.toastFailedToRecord();
+            break;
+          }
+        }
       }
-
-      isRecording = !isRecording;
     }
   }
 
   dtmf = (digits: string) => {
     this._telephonyStore.inputKey(digits);
-    return this._serverTelephonyService.dtmf(this._callId as string, digits);
+    return this._serverTelephonyService.dtmf(this._callId, digits);
   }
 
   callComponent = () => import('../container/Call');
@@ -765,17 +783,14 @@ class TelephonyService {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.startReply(this._callId as string);
+    return this._serverTelephonyService.startReply(this._callId);
   }
 
   replyWithMessage = (message: string) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.replyWithMessage(
-      this._callId as string,
-      message,
-    );
+    return this._serverTelephonyService.replyWithMessage(this._callId, message);
   }
 
   replyWithPattern = (
@@ -787,7 +802,7 @@ class TelephonyService {
       return;
     }
     return this._serverTelephonyService.replyWithPattern(
-      this._callId as string,
+      this._callId,
       pattern,
       time,
       timeUnit,
@@ -855,20 +870,14 @@ class TelephonyService {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.forward(
-      this._callId as string,
-      phoneNumber,
-    );
+    return this._serverTelephonyService.forward(this._callId, phoneNumber);
   }
 
   flip = (flipNumber: number) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.flip(
-      this._callId as string,
-      flipNumber,
-    );
+    return this._serverTelephonyService.flip(this._callId, flipNumber);
   }
 
   getForwardPermission = () => {

@@ -10,7 +10,11 @@ import { JobSchedulerConfig } from './JobSchedulerConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { WINDOW, SERVICE } from '../../../service/eventKey';
 import { mainLogger } from 'foundation/src';
-import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 
 class ScheduleJobProcessor implements IProcessor {
   constructor(
@@ -39,7 +43,9 @@ class JobScheduler {
   constructor() {
     this._isOnline = true;
     this._jobMap = new Map<JOB_KEY, JobInfo>();
-    this._jobProcessor = new SequenceProcessorHandler(UTIL_NAME);
+    this._jobProcessor = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name: UTIL_NAME },
+    );
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this.onNetWorkChanged(onLine);
     });

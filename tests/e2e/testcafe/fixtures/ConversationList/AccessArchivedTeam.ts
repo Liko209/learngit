@@ -64,7 +64,7 @@ test(formalName('Bookmarks/@mentions behavior of Archived Teams', ['JPT-1727', '
     await archiveTeamDialog.clickArchiveButton();
   });
 
-  const alertText = 'The team was archived. To know more, contact the team administrator.'
+  const alertText = 'This team was archived. To know more, contact the team administrator.'
   let postItemMention;
   let postItemBookmark;
 

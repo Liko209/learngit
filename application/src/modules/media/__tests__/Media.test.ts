@@ -31,18 +31,10 @@ const noUseTrackOpts = {
 
 describe('Media', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
+    window.HTMLMediaElement.prototype.load = jest.fn();
+
+    window.HTMLMediaElement.prototype.play = jest.fn();
+
     jest
       .spyOn(trackManager, 'getTrack')
       .mockReturnValue(new MediaTrack(useTrackOpts));
