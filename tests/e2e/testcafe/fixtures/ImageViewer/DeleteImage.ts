@@ -54,9 +54,9 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
     await t.click(posts.nth(-1).find('img'));
   });
 
-  const viewerDialog = app.homePage.viewerDialog;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    await viewerDialog.shouldBePopup();
+    await viewerDialog.ensureLoaded();
   });
 
   await h(t).withLog('When I delete the post and image', async () => {
@@ -65,7 +65,7 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
-    await viewerDialog.shouldBeClosed();
+    await viewerDialog.ensureDismiss();
   });
 
   const alertText = 'Sorry, the image you were viewing is deleted.'
@@ -113,9 +113,9 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
     await t.click(posts.nth(-1).find('img'));
   });
 
-  const viewerDialog = app.homePage.viewerDialog;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    await viewerDialog.shouldBePopup();
+    await viewerDialog.ensureLoaded();
   });
 
   await h(t).withLog('When I delete team', async () => {
@@ -123,7 +123,7 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
-    await viewerDialog.shouldBeClosed();
+    await viewerDialog.ensureDismiss();
   });
 
   const alertText = 'The team was deleted. To know more, contact the team administrator.'
@@ -175,9 +175,9 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
     await t.click(posts.nth(-1).find('img'));
   });
 
-  const viewerDialog = app.homePage.viewerDialog;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    await viewerDialog.shouldBePopup();
+    await viewerDialog.ensureLoaded();
   });
 
   await h(t).withLog('When I archive team', async () => {
@@ -185,7 +185,7 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
-    await viewerDialog.shouldBeClosed();
+    await viewerDialog.ensureDismiss();
   });
 
   const alertText = 'The team was archived. To know more, contact the team administrator.'
@@ -237,9 +237,9 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
     await t.click(posts.nth(-1).find('img'));
   });
 
-  const viewerDialog = app.homePage.viewerDialog;
+  const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    await viewerDialog.shouldBePopup();
+    await viewerDialog.ensureLoaded();
   });
 
   await h(t).withLog('When I close the team', async () => {
@@ -249,7 +249,7 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
   });
 
   await h(t).withLog('Then the dialog should be close', async () => {
-    await viewerDialog.shouldBeClosed();
+    await viewerDialog.ensureDismiss();
   });
 
   const alertText = 'You removed the conversation.'

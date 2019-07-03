@@ -106,6 +106,7 @@ const FileCardMediaWrapper = ({
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
   height: ${height(50)};
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   background-color: ${palette('accent', 'ash')};
   opacity: ${({ disabled, theme }) =>
     disabled ? theme.palette.action.hoverOpacity * 3 : 1};
