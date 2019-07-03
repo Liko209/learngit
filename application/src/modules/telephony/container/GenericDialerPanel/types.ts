@@ -48,7 +48,7 @@ export type GenericDialerPanelViewProps = {
   dialerInputFocused: boolean;
   inputString: string;
   deleteAllInputString: () => void;
-  deleteInputString: (caretPos: number) => void;
+  deleteInputString: (startPos: number, endPos: number) => void;
   onBlur: () => void;
   onFocus: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;

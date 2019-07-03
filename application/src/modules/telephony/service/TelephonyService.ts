@@ -678,9 +678,10 @@ class TelephonyService {
 
   deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
     clearAll: boolean = false,
-    caretPos?: number,
+    start?: number,
+    end?: number,
   ) => {
-    if (!clearAll && caretPos === undefined) {
+    if (!clearAll && (typeof start !== 'number' || typeof end !== 'number')) {
       throw new Error('Must pass the caret position');
     }
     runInAction(() => {
@@ -690,7 +691,7 @@ class TelephonyService {
       }
       this._telephonyStore[prop] = this._telephonyStore[prop]
         .split('')
-        .filter((v, idx) => idx !== (caretPos as number) - 1)
+        .filter((v, idx) => idx < (start as number) || idx > (end as number))
         .join('');
 
       return;

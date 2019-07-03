@@ -39,7 +39,7 @@ type Props = {
   onBlur?: () => void;
   focus?: boolean;
   ariaLabelForDelete?: string;
-  deleteInputString?: (caretPos: number) => void;
+  deleteInputString?: (startPos: number, endPos: number) => void;
   deleteAllInputString?: () => void;
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 };
@@ -259,24 +259,40 @@ class JuiHeader extends PureComponent<Props, State> {
     if (!input) {
       return;
     }
-    const caretPos = this._doGetCaretPosition();
+    input.focus(); // focus first
 
-    if (!this.props.deleteInputString) {
-      return;
-    }
     const mouseUpTime = +new Date();
     if (this._mouseDownTime && mouseUpTime - this._mouseDownTime >= 1000) {
       return;
     }
-
-    if (input.selectionStart !== input.selectionEnd) {
-      document.execCommand('delete', false);
-      this._moveCaretToPos(input, input.selectionStart || 0);
-    } else {
-      this.props.deleteInputString(caretPos);
-      this._moveCaretToPos(input, caretPos === 0 ? 0 : caretPos - 1);
+    /**
+     * if the browser support `document.execCommand('delete', false)` within input box which is not a standard operation
+     * then we can handle the delete operation to the `change` event's callback
+     */
+    if (!document.execCommand('delete', false)) {
+      if (!this.props.deleteInputString) {
+        return;
+      }
+      // #1: has selected a range
+      if (
+        typeof input.selectionStart === 'number' &&
+        typeof input.selectionEnd === 'number' &&
+        input.selectionStart !== input.selectionEnd
+      ) {
+        const [min, max] = [
+          input.selectionStart as number,
+          input.selectionEnd as number,
+        ];
+        this.props.deleteInputString(min, max - 1);
+        this._moveCaretToPos(input, input.selectionStart);
+      } else {
+        // #2: else delete the one before the caret
+        const caretPos = this._doGetCaretPosition();
+        const deletePos = caretPos === 0 ? 0 : caretPos - 1;
+        this.props.deleteInputString(deletePos, deletePos);
+        this._moveCaretToPos(input, deletePos);
+      }
     }
-
     this._clearTimeout();
     delete this._mouseDownTime;
   }
