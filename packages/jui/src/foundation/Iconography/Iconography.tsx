@@ -42,12 +42,14 @@ type JuiIconographyProps = {
 
 type SvgSymbol = {
   id: string;
-  url: string;
   viewBox: string;
+  content: string;
+  node?: SVGSymbolElement;
 };
 
-const StyledSpan = styled('span')`
+const StyledSpan = styled('span')<React.HTMLAttributes<HTMLElement>>`
   display: inline-flex;
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
 const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
@@ -87,7 +89,7 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
     ...rest
   } = props;
   const iconName = name2icon[children as string];
-  const useHref = symbol ? symbol.url : `#icon-${iconName}`;
+  const useHref = symbol ? `#${symbol.id}` : `#icon-${iconName}`;
   const _className = `${className || ''} ${children || ''} icon`;
   return useLoading ? (
     <RuiCircularProgress size={loadingSize} />

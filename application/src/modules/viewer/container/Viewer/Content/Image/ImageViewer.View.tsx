@@ -109,8 +109,15 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     }
   }
 
-  onCurrentItemDeleted = () => {
-    const { t } = this.props;
+  onCurrentItemDeleted = (nextItemId: number) => {
+    const { t, deleteItem } = this.props;
+    if (deleteItem) {
+      if (nextItemId === -1) {
+        this.context();
+      }
+      return;
+    }
+
     mainLogger.tags('ImageViewer').info('onCurrentItemDeleted');
     Notification.flashToast({
       message: t('viewer.ImageDeleted'),

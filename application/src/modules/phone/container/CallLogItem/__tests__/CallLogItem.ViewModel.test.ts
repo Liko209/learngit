@@ -11,6 +11,18 @@ import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 
 jest.mock('@/utils/date');
+jest.mock('i18next', () => ({
+  languages: ['en'],
+  services: {
+    backendConnector: {
+      state: {
+        'en|translation': -1,
+      },
+    },
+  },
+  isInitialized: true,
+  t: (text: string) => text,
+}));
 
 describe('CallLogItemViewModel', () => {
   @testable

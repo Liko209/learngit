@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { container } from 'framework';
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
 import { PostService } from 'sdk/module/post';
@@ -17,6 +19,10 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
+import { MessageService } from '@/modules/message/service';
+import { Dialog } from '@/containers/Dialog';
+import { mainLogger } from 'sdk';
+import i18nT from '@/utils/i18nT';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -27,7 +33,7 @@ enum ERROR_TYPES {
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private static _draftMap = new Map<number, string>();
+  private messageService: MessageService = container.get(MESSAGE_SERVICE);
   private _postService: PostService;
   @computed
   get id() {
@@ -85,18 +91,15 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   @computed
   get draft() {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    return draftMap.get(this.props.id) || '';
+    return this.messageService.getDraft(this.props.id);
   }
 
   saveDraft(draft: string) {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    draftMap.set(this.props.id, draft);
+    return this.messageService.enterEditMode(this.props.id, draft);
   }
 
   removeDraft() {
-    const draftMap = EditMessageInputViewModel._draftMap;
-    draftMap.delete(this.props.id);
+    return this.messageService.leaveEditMode(this.props.id);
   }
 
   @action
@@ -114,8 +117,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         return;
       }
       vm.error = '';
-      if (content.trim()) {
+      if (content.trim() || vm._post.itemIds.length) {
         vm._editPost(content, mentionIds);
+      } else {
+        vm._handleDelete();
       }
       vm.removeDraft();
     };
@@ -152,6 +157,28 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   private async _editPost(content: string, ids: number[]) {
     await this._handleEditPost(content, ids);
     this._exitEditMode();
+  }
+
+  private _deletePost = async () => {
+    await this._postService.deletePost(this.id);
+  }
+
+  private _handleDelete = async () => {
+    Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'deleteConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'deleteOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'deleteCancelButton' },
+      title: await i18nT('message.prompt.deletePostTitle'),
+      content: await i18nT('message.prompt.deletePostContent'),
+      okText: await i18nT('common.dialog.delete'),
+      okType: 'negative',
+      cancelText: await i18nT('common.dialog.cancel'),
+      onOK: () => {
+        this._deletePost().catch((e: Error) => {
+          mainLogger.error(`delete post error: ${e}`);
+        });
+      },
+    });
   }
 }
 

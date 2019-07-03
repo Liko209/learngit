@@ -79,7 +79,7 @@ abstract class AbstractSyncController<
           .warn(
             `do ISync failed, direction: ${direction}, count: ${recordCount}, error: ${reason}`,
           );
-        throw reason;
+        return [];
       });
     }
 

@@ -16,8 +16,10 @@ import * as notification from '@/modules/notification/module.config';
 import * as common from '@/modules/common/module.config';
 import * as feedback from '@/modules/feedback/module.config';
 import * as emoji from '@/modules/emoji/module.config';
+import * as viewer from '@/modules/viewer/module.config';
 import * as phone from '@/modules/phone/module.config';
 import * as setting from '@/modules/setting/module.config';
+import * as media from '@/modules/media/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
@@ -44,8 +46,10 @@ class Application {
     jupiter.registerModule(feedback.config);
     jupiter.registerModule(common.config);
     jupiter.registerModule(emoji.config);
+    jupiter.registerModule(viewer.config);
     jupiter.registerModule(phone.config);
     jupiter.registerModule(setting.config);
+    jupiter.registerModule(media.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

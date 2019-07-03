@@ -6,6 +6,7 @@ exports[`Storyshots Foundation Iconography: Foundation Iconography 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c1 {
@@ -31,7 +32,10 @@ exports[`Storyshots Foundation Iconography: Foundation Iconography 1`] = `
       <title>
         ha
       </title>
-      <use />
+      <use
+        href="#undefined"
+        xlinkHref="#undefined"
+      />
     </svg>
   </span>
 </div>

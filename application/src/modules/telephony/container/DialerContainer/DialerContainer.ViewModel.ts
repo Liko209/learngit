@@ -43,16 +43,6 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   @computed
-  get isDialer() {
-    return (
-      this._telephonyStore.shouldDisplayDialer &&
-      (!this.trimmedInputString.length ||
-        (!!this.trimmedInputString.length &&
-          this._telephonyStore.firstLetterEnteredThroughKeypad))
-    );
-  }
-
-  @computed
   get isForward() {
     return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
   }
@@ -106,24 +96,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
 
   @computed
   get trimmedInputString() {
-    return this._telephonyStore.inputString.trim();
-  }
-
-  @computed
-  get shouldEnterContactSearch() {
-    return this._telephonyStore.shouldEnterContactSearch;
-  }
-
-  dtmfThroughKeyboard = (digit: string) => {
-    if (!this._telephonyStore.dialerFocused) {
-      return;
-    }
-    this.dtmfThroughKeypad(digit);
-  }
-
-  dtmfThroughKeypad = (digit: string) => {
-    this.playAudio(digit);
-    this._telephonyService.dtmf(digit);
+    return this._telephonyStore.forwardString.trim();
   }
 
   playAudio = (digit: string) => {
@@ -142,11 +115,8 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     if (!this.canClickToInput) {
       return;
     }
-    if (!this.trimmedInputString.length && !this.isForward) {
-      this._telephonyStore.enterFirstLetterThroughKeypad();
-    }
     this.playAudio(str);
-    this._telephonyService.concatInputString(str);
+    this._concatInputString(str);
 
     if (!this._dialerContainerRef) {
       return;
@@ -164,6 +134,10 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     this._telephonyService.setCallerPhoneNumber(str)
 
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();
+
+  private _concatInputString = this._telephonyService.concatInputStringFactory(
+    'forwardString',
+  );
 }
 
 export { DialerContainerViewModel };

@@ -42,6 +42,7 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c7 {
@@ -85,7 +86,7 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
   background-color: #fff;
   width: 32px;
   height: 32px;
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 2px 2px 0 rgba(0,0,0,0.12),0 0 2px 0 rgba(0,0,0,0.14);
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -645,7 +646,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                   className="c7"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>
@@ -883,7 +887,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                     className="c7"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -934,7 +941,10 @@ exports[`Storyshots Pattern/TopBar TopBar: Pattern/TopBar TopBar 1`] = `
                     className="c7"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

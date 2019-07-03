@@ -127,7 +127,7 @@ class PostService extends EntityBaseService<Post> {
 
   async getRemotePostsByGroupId(
     params: IRemotePostRequest,
-  ): Promise<IPostResult | null> {
+  ): Promise<{ posts: Post[]; items: any[]; hasMore: boolean } | null> {
     return this.getPostController()
       .getPostFetchController()
       .getRemotePostsByGroupId(params);
@@ -178,25 +178,25 @@ class PostService extends EntityBaseService<Post> {
   async searchPosts(params: ContentSearchParams) {
     return await this.getPostController()
       .getPostSearchController()
-      .searchPosts(params);
+      .startSearch(params);
   }
 
-  async scrollSearchPosts(requestId: number) {
+  async scrollSearchPosts(key: string) {
     return await this.getPostController()
       .getPostSearchController()
-      .scrollSearchPosts(requestId);
+      .scrollSearch(key);
   }
 
-  async endPostSearch() {
+  async endPostSearch(key: string) {
     return await this.getPostController()
       .getPostSearchController()
-      .endPostSearch();
+      .endSearch(key);
   }
 
-  async getSearchContentsCount(params: ContentSearchParams) {
+  async getLatestPostIdByItem(groupId: number, itemId: number) {
     return await this.getPostController()
-      .getPostSearchController()
-      .getContentsCount(params);
+      .getPostItemController()
+      .getLatestPostIdByItem(groupId, itemId);
   }
 
   private get _postDataController() {

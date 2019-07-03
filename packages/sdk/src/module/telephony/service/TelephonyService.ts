@@ -104,82 +104,82 @@ class TelephonyService extends EntityBaseService<Call>
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
   }
 
-  hangUp = (callId: string) => {
+  hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
   }
 
-  mute = (callId: string) => {
+  mute = (callId: number) => {
     this.telephonyController.getAccountController().mute(callId);
   }
 
-  unmute = (callId: string) => {
+  unmute = (callId: number) => {
     this.telephonyController.getAccountController().unmute(callId);
   }
 
-  hold = async (callId: string) => {
+  hold = async (callId: number) => {
     return await this.telephonyController.getAccountController().hold(callId);
   }
 
-  unhold = async (callId: string) => {
+  unhold = async (callId: number) => {
     return await this.telephonyController.getAccountController().unhold(callId);
   }
 
-  startRecord = async (callId: string) => {
+  startRecord = async (callId: number) => {
     return await this.telephonyController
       .getAccountController()
       .startRecord(callId);
   }
 
-  stopRecord = async (callId: string) => {
+  stopRecord = async (callId: number) => {
     return await this.telephonyController
       .getAccountController()
       .stopRecord(callId);
   }
 
-  dtmf = (callId: string, digits: string) => {
+  dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
   }
 
-  answer = (callId: string) => {
+  answer = (callId: number) => {
     this.telephonyController.getAccountController().answer(callId);
   }
 
-  sendToVoiceMail = (callId: string) => {
+  sendToVoiceMail = (callId: number) => {
     this.telephonyController.getAccountController().sendToVoiceMail(callId);
   }
 
-  ignore = (callId: string) => {
+  ignore = (callId: number) => {
     this.telephonyController.getAccountController().ignore(callId);
   }
 
-  startReply = (callId: string) => {
+  startReply = (callId: number) => {
     this.telephonyController.getAccountController().startReply(callId);
   }
 
-  replyWithMessage = (callId: string, message: string) => {
+  replyWithMessage = (callId: number, message: string) => {
     this.telephonyController
       .getAccountController()
       .replyWithMessage(callId, message);
   }
 
-  park = async (callId: string) => {
+  park = async (callId: number) => {
     return await this.telephonyController.getAccountController().park(callId);
   }
 
-  flip = async (callId: string, flipNumber: number) => {
+  flip = async (callId: number, flipNumber: number) => {
     return await this.telephonyController
       .getAccountController()
       .flip(callId, flipNumber);
   }
 
-  forward = async (callId: string, phoneNumber: string) => {
+  forward = async (callId: number, phoneNumber: string) => {
     return await this.telephonyController
       .getAccountController()
       .forward(callId, phoneNumber);
   }
 
   replyWithPattern = (
-    callId: string,
+    callId: number,
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
@@ -187,6 +187,10 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
+  }
+
+  getRingerDevicesList = () => {
+    return this.telephonyController.getRingerDevicesList();
   }
 
   get phoneSetting() {

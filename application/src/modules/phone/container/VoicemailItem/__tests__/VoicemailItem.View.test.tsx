@@ -7,6 +7,7 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { VoicemailItemView } from '../VoicemailItem.View';
+import { JuiAudioMode } from '../types';
 
 describe('VoicemailItem.View', () => {
   const audioPlayer = {
@@ -105,6 +106,43 @@ describe('VoicemailItem.View', () => {
         selected: false,
       });
       expect(audioPlayer.current.pause).toHaveBeenCalled();
+    }
+  }
+
+  @testable
+  class playerMode {
+    @test(
+      'should player progress show when playing and hide after pause. [JPT-2377]',
+    )
+    t1() {
+      const props = { isAudioActive: false };
+
+      const wrapper = shallow(<VoicemailItemView {...props} />);
+      const instance: any = wrapper.instance();
+
+      expect(instance.playerMode).toBe(JuiAudioMode.MINI);
+
+      wrapper.setProps({ isAudioActive: true });
+
+      expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+    }
+
+    @test(
+      'should player progress show when hover and keep show after playing. [JPT-2374]',
+    )
+    t2() {
+      const props = { isAudioActive: false };
+
+      const wrapper = shallow(<VoicemailItemView {...props} />);
+      const instance: any = wrapper.instance();
+
+      wrapper.setState({ isHover: true });
+
+      expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+
+      wrapper.setProps({ isAudioActive: true });
+
+      expect(instance.playerMode).toBe(JuiAudioMode.FULL);
     }
   }
 });

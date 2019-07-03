@@ -6,10 +6,8 @@ import radius from './theme/radius.json';
 import spacing from './theme/spacing.json';
 import zIndex from './theme/zIndex.json';
 import breakpoints from './theme/breakpoints.json';
-
 import { createMuiTheme } from '@material-ui/core/styles';
 import createMuiPalette from '@material-ui/core/styles/createPalette';
-
 import { Theme, ThemeOptions, PaletteOptions } from './theme';
 
 function createPalette(paletteOptions: PaletteOptions) {
@@ -33,6 +31,10 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     zIndex: zIndexInput = {},
     breakpoints: breakpointsInput = {},
   } = options;
+
+  // suppress material-ui warning
+  // @ts-ignore
+  typographyInput.suppressWarning = true;
 
   const theme = deepmerge(
     {

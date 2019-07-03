@@ -84,6 +84,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
 
   private async _showNotification() {
     const { phoneNumber, callId, displayName } = this._telephonyStore;
+    if (!callId) {
+      return;
+    }
     let { callerName } = this._telephonyStore;
     let formatNumber = phoneNumber;
     if (phoneNumber) {

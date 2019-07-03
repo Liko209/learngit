@@ -8,6 +8,7 @@ import { getLogger } from 'log4js';
 import { filterByTags, readTestLog } from './libs/filter';
 import { RUNNER_OPTS } from './config';
 import { accountPoolClient, finishRun } from './init';
+import * as assert from 'assert';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -25,6 +26,7 @@ async function runTests(runnerOpts) {
   const testCafe = await createTestCafe(runnerOpts.TESTCAFE_HOST, undefined, undefined, sslOptions);
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
+  assert(runnerOpts.FIXTURES && runnerOpts.FIXTURES.length > 0, 'fixtures should not be empty!');
 
   runner
     .src([`${__dirname}/.dummy-test.ts`, ...runnerOpts.FIXTURES])

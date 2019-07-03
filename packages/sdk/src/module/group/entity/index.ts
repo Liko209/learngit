@@ -12,6 +12,7 @@ import {
   Group,
   GroupCommon,
   TeamPermissionParams,
+  GroupTyping,
 } from './Group';
 
 export {
@@ -22,4 +23,5 @@ export {
   Group,
   GroupCommon,
   TeamPermissionParams,
+  GroupTyping,
 };
