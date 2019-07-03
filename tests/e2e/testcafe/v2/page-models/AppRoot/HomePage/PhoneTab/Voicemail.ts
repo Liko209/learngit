@@ -100,6 +100,14 @@ class VoicemailItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.messageButton);
   }
 
+  get callbackButton () {
+    return this.getSelectorByAutomationId('voicemail-call-button', this.self);
+  }
+
+  async ClickCallbackButton() {
+    await this.t.hover(this.self).click(this.callbackButton);
+  }
+
 
   get readToggleButton() {
     return this.getSelectorByAutomationId('voicemail-read-button');
