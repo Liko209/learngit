@@ -16,7 +16,6 @@ import { WebphoneSession } from 'webphone-client';
 import { ClientFunction } from 'testcafe';
 import * as _ from 'lodash';
 import * as assert from 'assert';
-import { debug } from 'util';
 
 fixture('NotificationAndSounds/AudioSources')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -195,15 +194,8 @@ test.meta(<ITestMeta>{
   });
 
   const defaultDeviceId = 'default';
-  const defaultDeviceLabel = 'Use system default';
   const deviceInfos: deviceInfo[] = await getDeviceInfos();
   const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
-
-  await h(t).withLog(`Then I can see "{defaultMicroLabel}" in Microphone source selectorBox of audio sources section`, async (step) => {
-    step.setMetadata('defaultMicroLabel', defaultDeviceLabel);
-    await notificationAndSoundsPage.currentMicrophoneSourceLabelToBe(defaultDeviceLabel);
-    await notificationAndSoundsPage.currentMicrophoneSourceIdToBe(defaultDeviceId);
-  });
 
   for (let i = 0; i < audioOutputs.length + 2; i++) {
     await h(t).withLog(`When I click ringer source selectorBox`, async () => {
@@ -478,34 +470,6 @@ test.meta(<ITestMeta>{
     await notificationAndSoundsPage.currentRingerSourceLabelToBe(newAudioOutput.label);
     await notificationAndSoundsPage.currentRingerSourceIdToBe(deviceId);
   });
-
-  // /** assert device in use */
-  // await h(t).withLog(`When the caller call loginUser`, async () => {
-  //   await callerWebPhoneSession.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-  // });
-
-  // const telephonyDialog = app.homePage.telephonyDialog;
-  // await h(t).withLog(`and loginUser answer the call`, async () => {
-  //   await telephonyDialog.ensureLoaded();
-  // });
-
-  // await h(t).withLog(`Then the ringer source id: {deviceId} should be in use`, async (step) => {
-  //   step.setMetadata('deviceId', deviceId);
-  //   let currentDeviceId = ''
-  //   await H.retryUntilPass(async () => {
-  //     currentDeviceId = await ClientFunction(() => {
-  //       const videoElement = document.querySelector('video[id^=remote-audio-]');
-  //       return videoElement["srcObject"]['getAudioTracks']()[0]['getCapabilities']();
-  //     })();
-  //     assert.ok(currentDeviceId == deviceId, `${currentDeviceId} != ${deviceId}`);
-  //   })
-  // });
-
-  // await h(t).withLog(`And I hangup the call`, async () => {
-  //   await t.wait(3e3); // wait phone call connected
-  //   await telephonyDialog.clickHangupButton();
-  //   await telephonyDialog.ensureDismiss();
-  // });
 });
 
 test.meta(<ITestMeta>{
