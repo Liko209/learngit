@@ -68,8 +68,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       from_num: '',
       call_id: '',
       call_state: CALL_STATE.IDLE,
-      hold_state: HOLD_STATE.DISABLE,
-      record_state: RECORD_STATE.DISABLE,
+      hold_state: HOLD_STATE.DISABLED,
+      record_state: RECORD_STATE.DISABLED,
       startTime: Date.now(),
       connectTime: 0,
       disconnectTime: 0,
@@ -155,7 +155,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _handleUnHoldAction(isSuccess: boolean) {
     if (!isSuccess) {
       this._updateCallHoldState(HOLD_STATE.HELD);
-      this._updateCallRecordState(RECORD_STATE.DISABLE);
+      this._updateCallRecordState(RECORD_STATE.DISABLED);
     }
   }
 
@@ -306,7 +306,12 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   hold() {
     this._updateCallHoldState(HOLD_STATE.HELD);
-    this._updateCallRecordState(RECORD_STATE.DISABLE);
+    const state = this._rtcCall.getRecordState();
+    this._updateCallRecordState(
+      state === RTC_RECORD_STATE.IDLE
+        ? RECORD_STATE.DISABLED
+        : RECORD_STATE.RECORDING_DISABLED,
+    );
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.HOLD, resolve, reject);
       const request: ToggleRequest = {

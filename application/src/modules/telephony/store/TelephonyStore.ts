@@ -452,7 +452,7 @@ class TelephonyStore {
   // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
   @computed
   get holdDisabled() {
-    return this.holdState === HOLD_STATE.DISABLE;
+    return this.holdState === HOLD_STATE.DISABLED;
   }
 
   // TODO: move to Hold.ViewModel.ts when implementing the multi-call feature
@@ -470,7 +470,7 @@ class TelephonyStore {
   // TODO: move to Record.ViewModel.ts when implementing the multi-call feature
   @computed
   get recordDisabled() {
-    return this.recordState === RECORD_STATE.DISABLE;
+    return this.recordState === RECORD_STATE.DISABLED;
   }
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
