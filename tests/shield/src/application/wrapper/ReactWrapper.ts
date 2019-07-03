@@ -49,6 +49,8 @@ class ReactWrapper implements IWrapper {
     Simulate.change(this.inst.instance, { target: { value: text } });
   }
 
+  flush() {}
+
   toString() {
     return `${this.inst.type}`;
   }

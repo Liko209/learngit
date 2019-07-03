@@ -43,6 +43,10 @@ class EnzymeWrapper implements IWrapper {
     this.wrapper.simulate('change', { target: { value: text } });
   }
 
+  flush() {
+    this.wrapper.update();
+  }
+
   toString() {
     return this.wrapper.debug();
   }

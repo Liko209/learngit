@@ -24,6 +24,9 @@ interface IWrapper {
   // simulate typing event
   input(text: string): void;
 
+  // commit all updates to internal object
+  flush(): void;
+
   toString(): string;
 }
 

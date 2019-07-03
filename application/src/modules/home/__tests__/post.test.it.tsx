@@ -11,6 +11,7 @@ import { h, act, TestApp, MockApp, bootstrap } from 'shield/application';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
 import { wait } from 'shield/utils';
+import history from '@/history';
 
 jest.setTimeout(300 * 1000);
 
@@ -31,12 +32,15 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       // await sdk.cleanUp();
     });
     it('should send post', async () => {
-      const url = `/message/${team1._id}?code=123`;
+      const url = `/message/${team1._id}`;
       let wrapper: TestApp;
       await bootstrap({ url });
+
+      console.warn(history);
+
       await act(async () => {
-        // wrapper = h(mount(<MockApp />));
         wrapper = h(<MockApp inited={true} />);
+        await wait(100);
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         notificationCenter.emitKVChange(service.SERVICE.LOGIN);
       });
@@ -44,13 +48,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       await wait(1000);
 
       await act(async () => {
-        // wrapper.update();
-        const inst = wrapper;
-        if (inst) {
-          const about = inst.aboutDialog;
-          console.warn(888888, about);
-        }
-        console.warn(wrapper.toString());
+        wrapper.flush();
         fs.writeFileSync('./out.txt', `${wrapper.toString()}`);
       });
     });

@@ -8,7 +8,7 @@ import { TestApp } from './application';
 export { act } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';
 
-function helper(element: ReactElement, type: WrapperType = WrapperType.React) {
+function helper(element: ReactElement, type: WrapperType = WrapperType.Enzyme) {
   const p = new TestApp(getWrapper(element, type));
   return p;
 }

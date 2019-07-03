@@ -25,6 +25,10 @@ class TestApp {
     return this._imp.find(component);
   }
 
+  flush() {
+    this._imp.flush();
+  }
+
   toString() {
     return this._imp.toString();
   }
