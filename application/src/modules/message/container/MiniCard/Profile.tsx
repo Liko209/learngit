@@ -73,7 +73,7 @@ class ProfileMiniCard {
 
     this.div.setAttribute(
       'style',
-      `position: absolute; ${x}; ${y}; z-index: 1500;`,
+      `position: absolute; ${x}; ${y}; z-index: 1300;`,
     );
   }
 
