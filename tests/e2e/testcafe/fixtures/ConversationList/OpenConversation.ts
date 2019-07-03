@@ -139,7 +139,6 @@ test(formalName('Should open the last opened conversation for some conditions', 
   await h(t).withLog('The conversation team1 should be last conversation', async () => {
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).setLastGroupId(team1.glipId);
-    await t.wait(5000); // Wait for sending API success
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -149,6 +148,7 @@ test(formalName('Should open the last opened conversation for some conditions', 
 
   await h(t).withLog('Then I open the conversation team2', async () => {
     await teamsSection.conversationEntryById(team2.glipId).enter();
+    await t.wait(5e3); // Wait for sending API success
   });
 
   await h(t).withLog(`When I relogin with ${loginUser.company.number}#${loginUser.extension}`, async () => {
