@@ -27,7 +27,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 type DataMap = {
   [key: string]: {
     caption: string;
-    idListProvider: () => number[];
+    idListProvider: () => number[] | undefined;
   };
 };
 
@@ -43,7 +43,7 @@ class PostListPageViewModel extends AbstractViewModel {
         if (Array.isArray(atMentionPostIds)) {
           return atMentionPostIds.sort((a: number, b: number) => b - a);
         }
-        return [];
+        return undefined;
       },
     },
     [POST_LIST_TYPE.bookmarks]: {
@@ -56,7 +56,7 @@ class PostListPageViewModel extends AbstractViewModel {
         if (Array.isArray(favoritePostIds)) {
           return favoritePostIds;
         }
-        return [];
+        return undefined;
       },
     },
   };
@@ -78,11 +78,11 @@ class PostListPageViewModel extends AbstractViewModel {
   }
 
   @computed
-  get ids(): number[] {
+  get ids(): number[] | undefined {
     if (this._type && this._dataMap[this._type]) {
       return this._dataMap[this._type].idListProvider();
     }
-    return [];
+    return undefined;
   }
 
   onReceiveProps(props: PostListPageProps) {
@@ -110,6 +110,9 @@ class PostListPageViewModel extends AbstractViewModel {
     pageSize: number,
     anchor?: ISortableModelWithData<Post>,
   ) => {
+    if (this.ids === undefined) {
+      return { hasMore: true, data: [] };
+    }
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );
@@ -134,7 +137,6 @@ class PostListPageViewModel extends AbstractViewModel {
     ) as MultiEntityMapStore<Post, PostModel>;
     const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
     let postsFromService: Post[] = [];
-
     const postsFromStore = idsInStore
       .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
       .filter((post: PostModel) => !post.deactivated);

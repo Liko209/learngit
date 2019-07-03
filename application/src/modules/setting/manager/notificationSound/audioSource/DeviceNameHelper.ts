@@ -3,14 +3,13 @@
  * @Date: 2019-06-04 20:51:12
  * Copyright © RingCentral. All rights reserved.
  */
-import i18next from '@/i18n';
 const UNKNOWN = 'Unknown';
 
 class DeviceNameHelper {
   static getDeviceName(
     device: MediaDeviceInfo,
     allDevices: MediaDeviceInfo[],
-    t: i18next.TFunction,
+    t: Function,
   ) {
     let result = '';
 
@@ -43,18 +42,15 @@ class DeviceNameHelper {
     return /(built-in|internal)/gi.test(device.label);
   }
 
-  private static _getDefaultDeviceName(t: i18next.TFunction) {
+  private static _getDefaultDeviceName(t: Function) {
     return t('setting.useDefault');
   }
 
-  private static _getNoDeviceName(t: i18next.TFunction) {
+  private static _getNoDeviceName(t: Function) {
     return t('setting.noDevices');
   }
 
-  private static _getBuiltInDeviceName(
-    device: MediaDeviceInfo,
-    t: i18next.TFunction,
-  ) {
+  private static _getBuiltInDeviceName(device: MediaDeviceInfo, t: Function) {
     const MAP = {
       audioinput: t('setting.builtInMicrophone'),
       audiooutput: t('setting.builtInSpeaker'),
@@ -65,7 +61,7 @@ class DeviceNameHelper {
   private static _getOrderedDeviceName(
     device: MediaDeviceInfo,
     allDevices: MediaDeviceInfo[],
-    t: i18next.TFunction,
+    t: Function,
   ) {
     let text = '';
     const index = allDevices
