@@ -266,7 +266,11 @@ const moizePostParser = moize(postParser, {
   updateExpire: true,
   transformArgs: ([text, options]) => {
     return [
-      `${text} ${options.keyword} ${options.html} ${options.phoneNumber}`,
+      `${text} ${options.keyword} ${options.html} ${
+        options.phoneNumber
+      } ${Object.values(options.atMentions.map)
+        .map(({ name }) => name)
+        .join(',')}`,
     ];
   },
 });
