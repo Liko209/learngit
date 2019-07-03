@@ -236,20 +236,6 @@ describe('CallLogItemViewModel', () => {
   }
 
   @testable
-  class startTime {
-    @test('should be call postTimestamp if get startTime [JPT-2144]')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      startTime: 'startTime',
-    })
-    t1() {
-      const vm = new CallLogItemViewModel({ id: 'id' });
-      vm.startTime;
-      expect(postTimestamp).toHaveBeenCalledWith('startTime');
-    }
-  }
-
-  @testable
   class shouldShowCall {
     @test('should be true if has call permission [JPT-2384]')
     @mockService(RCInfoService, [
