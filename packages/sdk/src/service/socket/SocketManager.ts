@@ -42,7 +42,7 @@ export class SocketManager {
       .get(MODULE_IDENTIFY)!
       .register({
         name: 'SocketConnectState',
-        getStatus: () => ({ state: this.activeFSM.state }),
+        getStatus: () => ({ state: this.activeFSM ? this.activeFSM.state : 'none' }),
       });
   }
 

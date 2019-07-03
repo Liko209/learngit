@@ -23,7 +23,7 @@ export class HealthStatusItemProvider implements IZipItemProvider {
                 (status: any) => `[ ${item.name} ]\n\n${toText(status)}\n`,
               );
             }
-            return `[ ${item.name} ]\n\n${toText(status)}\n`;
+            return `[ ${item.name} ]\n\n${toText(result)}\n`;
           }),
         ];
       }),
