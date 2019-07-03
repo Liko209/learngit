@@ -107,6 +107,7 @@ interface IRequest {
   requestConfig: object;
   readonly authFree: boolean;
   startTime: number;
+  channel?: string;
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;

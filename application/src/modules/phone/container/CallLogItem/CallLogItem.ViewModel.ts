@@ -15,6 +15,7 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
+import { i18nP } from '@/utils/i18nT';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   @computed
@@ -79,11 +80,11 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     const { duration } = this.data;
     const { secondTime, hourTime, minuteTime } = getHourMinuteSeconds(duration);
     const normalize = (s: number, suffix: string) =>
-      s > 0 ? `${s}${suffix}` : '';
+      s > 0 ? `${s} ${suffix}` : '';
     const array = [
-      normalize(hourTime, ' hour'),
-      normalize(minuteTime, ' min'),
-      normalize(secondTime, ' sec'),
+      normalize(hourTime, i18nP('common.time.hour')),
+      normalize(minuteTime, i18nP('common.time.min')),
+      normalize(secondTime, i18nP('common.time.sec')),
     ];
     return array.join(' ');
   }

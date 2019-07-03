@@ -685,7 +685,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                 className="c8"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -723,7 +726,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                 className="c8"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -775,7 +781,10 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
                   className="c8"
                   role="img"
                 >
-                  <use />
+                  <use
+                    href="#undefined"
+                    xlinkHref="#undefined"
+                  />
                 </svg>
               </span>
             </span>

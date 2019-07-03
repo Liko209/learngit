@@ -344,6 +344,15 @@ const theme = {
   },
   maxHeight: { dialog: '72vh' },
   opacity: [0.1, 0.2],
+  radius: {
+    circle: '50%',
+    zero: '0px',
+    sm: '2px',
+    md: '3px',
+    lg: '4px',
+    xl: '8px',
+    xxl: '16px',
+  },
 };
 
 const mountWithTheme = (content: React.ReactNode) =>
