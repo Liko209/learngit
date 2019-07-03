@@ -28,9 +28,11 @@ const postService = {
 };
 const groupService = {
   updateGroupDraft: jest.fn(),
+  sendTypingEvent: jest.fn(),
 };
 const groupConfigService = {
   updateDraft: jest.fn(),
+  getDraft: jest.fn(),
 };
 
 let fileIDs: number = -1001;

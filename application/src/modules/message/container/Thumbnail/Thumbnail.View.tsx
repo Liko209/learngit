@@ -29,11 +29,11 @@ class ThumbnailView extends React.Component<ViewProps & Props> {
     );
   }
   render() {
-    const { icon, type } = this.props;
+    const { icon, type, onClick } = this.props;
     return type === 'image' ? (
       this._renderIcon()
     ) : (
-      <JuiThumbnail iconType={icon} />
+      <JuiThumbnail iconType={icon} onClick={onClick} />
     );
   }
 }

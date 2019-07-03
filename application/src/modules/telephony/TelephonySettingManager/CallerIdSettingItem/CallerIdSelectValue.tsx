@@ -9,10 +9,10 @@ import { PhoneNumberRecord, PhoneNumberRecordProps } from './PhoneNumberRecord';
 
 type CallerIdSelectValueProps = PhoneNumberRecordProps;
 
-const CallerIdSelectValue = React.memo(({ value }: PhoneNumberRecordProps) => (
+const CallerIdSelectValue = ({ value }: PhoneNumberRecordProps) => (
   <JuiText>
     <PhoneNumberRecord value={value} />
   </JuiText>
-));
+);
 
 export { CallerIdSelectValue, CallerIdSelectValueProps };

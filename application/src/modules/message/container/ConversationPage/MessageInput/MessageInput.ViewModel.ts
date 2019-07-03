@@ -12,6 +12,7 @@ import {
 } from './types';
 import { notificationCenter } from 'sdk/service';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -73,6 +74,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
+  private _groupService: GroupService;
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
@@ -112,6 +114,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       ServiceConfig.POST_SERVICE,
     );
 
+    this._groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+
     this._itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
@@ -129,10 +135,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       },
     );
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.addEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   dispose = () => {
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.removeEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   @action
@@ -190,6 +204,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   contentChange = (draft: string) => {
+    if ((!isEmpty(draft) || !isEmpty(this.draft)) && draft !== this.draft) {
+      this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    }
     this.error = '';
     this.draft = draft;
   }
@@ -341,6 +358,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       type,
       this._group.analysisType,
     );
+  }
+
+  private _handleBeforeUnload() {
+    this.forceSaveDraft();
   }
 }
 

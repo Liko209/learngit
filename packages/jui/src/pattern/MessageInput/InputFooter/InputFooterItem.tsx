@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ReactNode } from 'react';
 import styled from '../../../foundation/styled-components';
 import { grey, typography } from '../../../foundation/utils/styles';
 import { JuiFade } from '../../../components/Animation';
@@ -12,14 +12,16 @@ import { JuiText } from '../../../components/Text';
 
 type InputFooterItemProps = {
   show: boolean;
-  content: ComponentType | string;
+  content: ReactNode | string;
   align: 'left' | 'right' | 'center';
 };
 
 const InputFooterItemWrapper = styled(JuiFade)<{
   align: InputFooterItemProps['align'];
 }>`
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: ${({ align }) => align};
 `;
 

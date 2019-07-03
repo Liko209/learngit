@@ -68,6 +68,12 @@ type TeamPermissionParams = {
   permissions?: TeamPermission;
 };
 
+type GroupTyping = {
+  group_id: number;
+  user_id: number;
+  clear?: boolean;
+};
+
 export {
   GroupQueryType,
   FEATURE_STATUS,
@@ -76,4 +82,5 @@ export {
   Group,
   GroupCommon,
   TeamPermissionParams,
+  GroupTyping,
 };

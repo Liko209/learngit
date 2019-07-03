@@ -39,6 +39,7 @@ class NetworkRequestBuilder implements IRequest {
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
   startTime: number = Date.now();
+  channel: string = '';
 
   options(options: IRequest) {
     const {
@@ -52,6 +53,7 @@ class NetworkRequestBuilder implements IRequest {
       authFree,
       requestConfig,
       HAPriority,
+      channel,
     } = options;
 
     this.headers = headers || {};
@@ -64,6 +66,7 @@ class NetworkRequestBuilder implements IRequest {
     this.data = data || {};
     this.requestConfig = requestConfig || {};
     this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
+    this.channel = channel || '';
     return this;
   }
 
@@ -197,6 +200,15 @@ class NetworkRequestBuilder implements IRequest {
    */
   public setAuthfree(value: boolean) {
     this.authFree = value;
+    return this;
+  }
+
+  /**
+   * Setter channel
+   * @param {string} value
+   */
+  public setChannel(value: string) {
+    this.channel = value;
     return this;
   }
 

@@ -145,13 +145,7 @@ const _transformEmoji = (
       EmojiConvertType.UNICODE,
     );
   }
-  if (new RegExp(EMOJI_ASCII_REGEX_SIMPLE).test(fullText)) {
-    _fullText = EmojiTransformer.replace(
-      _fullText,
-      emojiOptions,
-      EmojiConvertType.ASCII,
-    );
-  }
+
   if (
     !emojiOptions.unicodeOnly &&
     emojiOptions.customEmojiMap &&
@@ -169,6 +163,14 @@ const _transformEmoji = (
       _fullText,
       emojiOptions,
       EmojiConvertType.EMOJI_ONE,
+    );
+  }
+
+  if (new RegExp(EMOJI_ASCII_REGEX_SIMPLE).test(fullText)) {
+    _fullText = EmojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.ASCII,
     );
   }
   return _fullText;
@@ -219,11 +221,7 @@ const postParser: FullParser = (
     } = options;
     const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
     let transformedText = fullText;
-    // transform all kinds of emojis to one certain pattern at the very beginning for better performance
-    if (emoji && !emojiTransformed) {
-      transformedText = _transformEmoji(transformedText, emoji);
-      options.emojiTransformed = true;
-    }
+
     if (
       atMentions &&
       !atMentionTransformed &&
@@ -234,6 +232,13 @@ const postParser: FullParser = (
       transformedText = AtMentionTransformer.replace(transformedText);
       options.atMentionTransformed = true;
     }
+
+    // transform all kinds of emojis to one certain pattern at the very beginning for better performance
+    if (emoji && !emojiTransformed) {
+      transformedText = _transformEmoji(transformedText, emoji);
+      options.emojiTransformed = true;
+    }
+
     if (html) {
       return _parseMarkdown(transformedText, options);
     }
