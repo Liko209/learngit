@@ -31,7 +31,7 @@ afterEach(() => {
 });
 
 describe('dialerHeaderViewModel', () => {
-  it('should call deleteInputString function', () => {
+  it.skip('should call deleteInputString function', () => {
     dialerHeaderViewModel._telephonyStore.forwardString = '123';
     dialerHeaderViewModel.deleteLastInputString();
     expect(dialerHeaderViewModel._telephonyStore.forwardString).toEqual('12');

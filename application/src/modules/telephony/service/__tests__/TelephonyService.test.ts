@@ -720,7 +720,7 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString();
+    telephonyService.deleteInputString(false, 3, 3);
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('123');
