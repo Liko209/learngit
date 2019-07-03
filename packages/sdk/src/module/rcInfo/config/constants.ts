@@ -21,6 +21,7 @@ const RC_INFO_KEYS = {
   DIALING_PLAN: 'dialing_plan',
   ACCOUNT_SERVICE_INFO: 'account_service_info',
   FORWARDING_NUMBERS: 'forwarding_numbers',
+  BLOCK_NUMBER: 'block_number',
 };
 
 const RC_INFO_GLOBAL_KEYS = {

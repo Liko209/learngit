@@ -396,6 +396,7 @@ describe('TelephonyService', () => {
     });
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
@@ -507,6 +508,34 @@ describe('TelephonyService', () => {
       ).toBe(true);
 
       await (telephonyService as TelephonyService).hangUp();
+    });
+
+    it('Should prompt toast when recording disabled in service web [JPT-2427]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastOnDemandRecording).toHaveBeenCalled();
+      expect(mockedServerTelephonyService.startRecord).not.toBeCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
+    });
+
+    it('Should prompt toast when auto recording in service web [JPT-2428]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      mockedServerTelephonyService.startRecord = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(-8));
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastAutoRecording).toHaveBeenCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
     });
   });
 

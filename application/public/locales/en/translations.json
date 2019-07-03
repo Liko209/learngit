@@ -72,7 +72,8 @@
     "team": "team",
     "play": "Play",
     "pause": "Pause",
-    "reload": "Reload"
+    "reload": "Reload",
+    "goToConversation": "Go to conversation"
   },
   "auth": {
     "signIn": "Sign in",
@@ -627,7 +628,9 @@
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped"
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -673,10 +676,16 @@
     "tab": {
       "callHistory": "Call history"
     },
+    "callBack": "Call back",
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",
     "voicemail": "Voicemail",
+    "block": "Block",
+    "blockNumber": "Block number",
+    "unblockNumber": "Unblock number",
+    "blockThisNumber": "Block this number",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "This number will not be able to reach you if blocked. Do you want to block it?",
     "faxes": "Faxes",
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
@@ -685,6 +694,12 @@
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
+      "numberHasBeenBlocked": "The number has been blocked",
+      "numberHasBeenUnblocked": "The number has been unblocked",
+      "notAbleToUnblockForNetworkIssue": "Sorry, we weren't able to unblock this number. Check your network connection, then try again.",
+      "notAbleToUnblockForServerIssue": "Sorry, something went wrong on our end and we weren't able to unblock this number. Try again later.",
+      "notAbleToBlockForNetworkIssue": "Sorry, we weren't able to block this number. Check your network connection, then try again.",
+      "notAbleToBlockForServerIssue": "Sorry, something went wrong on our end and we weren't able to block this number. Try again later.",
       "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
       "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
       "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",

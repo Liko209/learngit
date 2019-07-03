@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 
 type ReadProps = {
   id: number;
@@ -18,4 +18,4 @@ type ReadViewProps = {
   hookAfterClick: () => void;
 };
 
-export { BUTTON_TYPE, ReadProps, ReadViewProps };
+export { ReadProps, ReadViewProps };

@@ -10,7 +10,7 @@ import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
 import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../../api';
 import notificationCenter from '../../../service/notificationCenter';
-import { SERVICE } from '../../../service/eventKey';
+import { SERVICE, SOCKET } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
 import { setRCToken } from '../../../authenticator/utils';
 import { AccountGlobalConfig } from '../config';
@@ -24,6 +24,8 @@ import {
 import { AbstractService, AccountManager } from '../../../framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { Nullable } from '../../../types';
+import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 const LOG_TAG = 'AccountService';
@@ -43,13 +45,28 @@ class AccountService extends AbstractService
   private _authController: AuthController;
   private _userConfig: AccountUserConfig;
   private _authUserConfig: AuthUserConfig;
+  private _subscribeController: ISubscribeController;
 
   constructor(private _accountManager: AccountManager) {
     super();
+    this._subscribeController = SubscribeController.buildSubscriptionController(
+      {
+        [SOCKET.LOGOUT]: this.onGlipForceLogout,
+      },
+    );
   }
 
-  protected onStarted() {}
-  protected onStopped() {}
+  protected onStarted() {
+    if (this._subscribeController) {
+      this._subscribeController.subscribe();
+    }
+  }
+  protected onStopped() {
+    if (this._subscribeController) {
+      this._subscribeController.unsubscribe();
+    }
+    delete this._subscribeController;
+  }
 
   get userConfig() {
     if (!this._userConfig) {
@@ -186,8 +203,19 @@ class AccountService extends AbstractService
   }
 
   onRefreshTokenFailure(forceLogout: boolean) {
+    mainLogger
+      .tags(LOG_TAG)
+      .info('Refresh Token failed, force logout:', forceLogout);
+    this.onForceLogout(forceLogout);
+  }
+
+  onGlipForceLogout = (forceLogout: boolean) => {
+    mainLogger.tags(LOG_TAG).info('Glip force logout:', forceLogout);
+    this.onForceLogout(forceLogout);
+  }
+
+  onForceLogout(forceLogout: boolean) {
     if (forceLogout) {
-      mainLogger.tags(LOG_TAG).info('Refresh Token failed, force logout.');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
   }

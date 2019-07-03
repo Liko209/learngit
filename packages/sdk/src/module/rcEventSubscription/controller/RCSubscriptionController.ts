@@ -81,9 +81,9 @@ class RCSubscriptionController {
     );
 
     if (!this._sequenceSubscriptionHandler) {
-      this._sequenceSubscriptionHandler = new SequenceProcessorHandler(
-        CLASS_NAME,
-      );
+      this._sequenceSubscriptionHandler = new SequenceProcessorHandler({
+        name: CLASS_NAME,
+      });
     }
     this._sequenceSubscriptionHandler.addProcessor(processor);
   }
