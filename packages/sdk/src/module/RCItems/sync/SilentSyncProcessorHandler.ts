@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SingletonSequenceProcessor } from 'sdk/framework/processor';
 
-const silentSyncProcessorHandler = new SequenceProcessorHandler(
-  'silentSyncProcessorHandler',
+const silentSyncProcessorHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+  { name: 'silentSyncProcessorHandler' },
 );
 
 export { silentSyncProcessorHandler };

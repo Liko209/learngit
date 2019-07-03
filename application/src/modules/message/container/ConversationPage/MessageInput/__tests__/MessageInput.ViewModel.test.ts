@@ -13,6 +13,7 @@ import {
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
+import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
 import { isEmpty } from '../helper';
@@ -22,6 +23,7 @@ jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
+jest.mock('sdk/module/group');
 
 const postService = new PostService();
 const userId = 1232222;
@@ -32,6 +34,10 @@ const groupConfigService = {
 
 const itemService = {
   getUploadItems: jest.fn(),
+};
+
+const groupService = {
+  sendTypingEvent: jest.fn(),
 };
 
 ServiceLoader.getInstance = jest
@@ -47,6 +53,10 @@ ServiceLoader.getInstance = jest
 
     if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
       return groupConfigService;
+    }
+
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
     }
 
     return { userConfig: { getGlipUserId: () => userId } };
@@ -284,6 +294,16 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel._memoryDraftMap = new Map();
         messageInputViewModel._memoryDraftMap.set(123, 'test');
         expect(messageInputViewModel.hasInput).toBeTruthy();
+      });
+    });
+    describe('contentChange()', () => {
+      it('should not call sendTypingEvent when being called and both new and old draft has no content', () => {
+        messageInputViewModel.contentChange('');
+        expect(groupService.sendTypingEvent).not.toBeCalled();
+      });
+      it('should call sendTypingEvent when being called and new draft has content', () => {
+        messageInputViewModel.contentChange('xx');
+        expect(groupService.sendTypingEvent).toBeCalledWith(123, false);
       });
     });
   });

@@ -45,6 +45,9 @@ class WrappedDialogTitle extends React.PureComponent<
         const childSpans = Array.from(h2.children).filter(
           (child: Element) => child.tagName === 'SPAN',
         );
+        childSpans.forEach((child: HTMLElement) => {
+          child.style.alignSelf = 'auto';
+        });
         const childrenWidth = childSpans.reduce(
           (a, b) => a + b.getBoundingClientRect().width,
           0,

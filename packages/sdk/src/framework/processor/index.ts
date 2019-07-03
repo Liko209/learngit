@@ -6,3 +6,4 @@
 
 export { IProcessor } from './IProcessor';
 export { SequenceProcessorHandler } from './SequenceProcessorHandler';
+export { SingletonSequenceProcessor } from './SingletonSequenceProcessor';

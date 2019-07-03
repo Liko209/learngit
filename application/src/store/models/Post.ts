@@ -36,7 +36,7 @@ export default class PostModel extends Base<Post> {
   @observable
   groupId: number;
   @observable
-  itemData?: { version_map: {} };
+  itemData?: { version_map?: {} };
   @observable
   source?: string;
   @observable
@@ -138,7 +138,9 @@ export default class PostModel extends Base<Post> {
     const isFileItemReady = fileItem.id > 0;
     if (!isFileItemReady) return 1;
 
-    const version = this.itemData.version_map[fileItem.id];
+    const version =
+      this.itemData.version_map && this.itemData.version_map[fileItem.id];
+
     if (!version) {
       // should not come here, due to exist bug, some data's version_map is incorrect. bug ticket: FIJI-6596
       mainLogger.error('can not find version info in post itemData', {

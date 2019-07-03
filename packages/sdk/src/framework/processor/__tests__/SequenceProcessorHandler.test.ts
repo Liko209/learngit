@@ -21,7 +21,10 @@ class MockProcessor implements IProcessor {
 let handler: SequenceProcessorHandler;
 describe('SequenceProcessorHandler', () => {
   beforeEach(() => {
-    handler = new SequenceProcessorHandler('test', undefined, 2);
+    handler = new SequenceProcessorHandler({
+      name: 'test',
+      maxSize: 2,
+    });
     Object.assign(handler, { _isExecuting: true });
   });
   describe('addProcessor', () => {
@@ -32,17 +35,16 @@ describe('SequenceProcessorHandler', () => {
       expect(handler.getProcessors().length).toEqual(1);
     });
     it('should not over max queue - 1', () => {
-      handler = new SequenceProcessorHandler(
-        'test',
-        undefined,
-        2,
-        (totalProcessors: IProcessor[]) => {
+      handler = new SequenceProcessorHandler({
+        name: 'test',
+        maxSize: 2,
+        onExceedMaxSize: (totalProcessors: IProcessor[]) => {
           const lastProcessor = totalProcessors.shift();
           if (lastProcessor && lastProcessor.cancel) {
             lastProcessor.cancel();
           }
         },
-      );
+      });
       for (let i = 0; i < 4; i = i + 1) {
         const processor = new MockProcessor();
         processor.name.mockReturnValue(i);
@@ -52,17 +54,16 @@ describe('SequenceProcessorHandler', () => {
     });
 
     it('should not over max queue - 2', () => {
-      handler = new SequenceProcessorHandler(
-        'test',
-        undefined,
-        2,
-        (totalProcessors: IProcessor[]) => {
+      handler = new SequenceProcessorHandler({
+        name: 'test',
+        maxSize: 2,
+        onExceedMaxSize: (totalProcessors: IProcessor[]) => {
           const lastProcessor = totalProcessors.shift();
           if (lastProcessor && lastProcessor.cancel) {
             lastProcessor.cancel();
           }
         },
-      );
+      });
       const processors = [];
       for (let i = 0; i < 4; i = i + 1) {
         const processor = new MockProcessor();

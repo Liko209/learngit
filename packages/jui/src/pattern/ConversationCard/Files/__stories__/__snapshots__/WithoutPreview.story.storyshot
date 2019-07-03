@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c9 {
@@ -45,6 +46,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c6.c6 > *:nth-child(n + 2) {
@@ -448,7 +453,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -537,7 +545,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -626,7 +637,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -715,7 +729,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>

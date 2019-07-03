@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -328,7 +329,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -336,6 +340,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
     </div>
     <div
       className="c5"
+      data-test-automation-id="zoomGroupPercent"
     >
       100%
     </div>
@@ -375,7 +380,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -417,7 +425,10 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>

@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { computed, action } from 'mobx';
+import { computed, action, observable } from 'mobx';
 import StoreViewModel from '@/store/ViewModel';
 import { StreamProps, SuccinctPost } from './types';
 import { FetchSortableDataListHandler } from '@/store/base/fetch/FetchSortableDataListHandler';
@@ -49,6 +49,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     hasMoreDown: true,
     entityName: ENTITY_NAME.POST,
   };
+
+  @observable
+  fetchInitialPosts = () => Promise.resolve()
 
   @computed
   get ids() {
@@ -97,7 +100,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       (!selfProvide && !this._postIds.length && postIds.length);
     if (shouldRunInitial) {
       this._postIds = postIds;
-      await this.fetchInitialPosts();
+      this.fetchInitialPosts = this._fetchInitialPosts;
       return;
     }
 
@@ -135,15 +138,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  fetchInitialPosts = async () => {
-    this._initial = false;
+  _fetchInitialPosts = async () => {
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
-    return await this._batchFetchPosts();
+    await this._batchFetchPosts();
+    this._initial = false;
   }
 
   @action
   fetchNextPagePosts = async () => {
-    return await this._batchFetchPosts();
+    await this._batchFetchPosts();
   }
 
   @action
