@@ -209,6 +209,10 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
     );
   }
+
+  shouldShowCall = async () => {
+    return this._rcInfoService.isVoipCallingAvailable();
+  }
 }
 
 export { VoicemailItemViewModel };

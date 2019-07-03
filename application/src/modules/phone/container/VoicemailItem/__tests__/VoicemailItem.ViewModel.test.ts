@@ -400,4 +400,26 @@ describe('VoicemailItemViewModel', () => {
       expect(postTimestamp).toHaveBeenCalledWith('creationTime');
     }
   }
+
+  @testable
+  class shouldShowCall {
+    @test('should be true if has call permission [JPT-2384]')
+    @mockService(RCInfoService, [
+      {
+        method: 'isRCFeaturePermissionEnabled',
+        data: true,
+      },
+      {
+        method: 'isVoipCallingAvailable',
+        data: false,
+      },
+    ])
+    @mockEntity({
+      attachments: [],
+    })
+    async t1() {
+      const vm = new VoicemailItemViewModel({ id: 1 });
+      expect(await vm.shouldShowCall()).toBeFalsy();
+    }
+  }
 });

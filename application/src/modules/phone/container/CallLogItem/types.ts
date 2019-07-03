@@ -21,6 +21,7 @@ type CallLogItemViewProps = {
   startTime: string;
   isMissedCall: boolean;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 } & CallLogItemProps;
 
 export { CallLogItemProps, CallLogItemViewProps };
