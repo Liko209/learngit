@@ -10,3 +10,4 @@ export * from './mockGlobalValue';
 export * from './mockSingleEntity';
 export * from './mockStore';
 export * from './helper';
+export * from './wrapper';

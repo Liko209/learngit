@@ -7,7 +7,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed, action } from 'mobx';
 import { GLOBAL_KEYS } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { getGlobalValue } from '@/store/utils';
 import { LeftRailProps } from './types';
 import { getValidPath } from './helper';

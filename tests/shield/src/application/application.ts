@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IWrapper } from './wrapper';
+import { ComponentType } from 'react';
 
 class TestApp {
   private _imp: IWrapper;
@@ -18,6 +19,10 @@ class TestApp {
 
   get aboutDialog() {
     return this._imp.findByAutomationID('about-page-dialog', true);
+  }
+
+  find(component: ComponentType) {
+    return this._imp.find(component);
   }
 
   toString() {

@@ -3,7 +3,7 @@
  * @Date: 2019-07-03 09:47:58
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactElement } from 'react';
+import { ReactElement, ComponentType } from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
 
@@ -24,6 +24,23 @@ class EnzymeWrapper implements IWrapper {
       return new EnzymeWrapper(result.first());
     }
     return new EnzymeWrapper(result);
+  }
+
+  find(component: ComponentType) {
+    const result = this.wrapper.find(component);
+    return [new EnzymeWrapper(result)];
+  }
+
+  click() {
+    this.wrapper.simulate('click');
+  }
+
+  enter() {
+    this.wrapper.simulate('keypress', { key: 'Enter' });
+  }
+
+  input(text: string) {
+    this.wrapper.simulate('change', { target: { value: text } });
   }
 
   toString() {

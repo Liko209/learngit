@@ -3,7 +3,8 @@
  * @Date: 2019-07-03 09:53:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactElement } from 'react';
+import { ReactElement, ComponentType } from 'react';
+import { Simulate } from 'react-dom/test-utils';
 import TestRender, { ReactTestInstance } from 'react-test-renderer';
 import { IWrapper } from './interface';
 
@@ -24,6 +25,28 @@ class ReactWrapper implements IWrapper {
       return new ReactWrapper(result[0]);
     }
     return new ReactWrapper(result);
+  }
+
+  find(component: ComponentType) {
+    const results = this.inst.findAllByType(component);
+    return results.map(item => new ReactWrapper(item));
+  }
+
+  click() {
+    Simulate.click(this.inst.instance);
+  }
+
+  enter() {
+    Simulate.keyPress(this.inst.instance, {
+      key: 'Enter',
+      keyCode: 13,
+      which: 13,
+    });
+  }
+
+  input(text: string) {
+    // @ts-ignore
+    Simulate.change(this.inst.instance, { target: { value: text } });
   }
 
   toString() {

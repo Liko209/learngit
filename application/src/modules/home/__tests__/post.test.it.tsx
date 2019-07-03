@@ -6,8 +6,6 @@
 
 import React from 'react';
 import fs from 'fs';
-// import { mount } from 'enzyme';
-import TestRenderer, { ReactTestRenderer } from 'react-test-renderer';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { h, act, TestApp, MockApp, bootstrap } from 'shield/application';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -36,7 +34,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       const url = `/message/${team1._id}?code=123`;
       let wrapper: TestApp;
       await bootstrap({ url });
-      act(() => {
+      await act(async () => {
         // wrapper = h(mount(<MockApp />));
         wrapper = h(<MockApp inited={true} />);
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
@@ -45,7 +43,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
 
       await wait(1000);
 
-      act(() => {
+      await act(async () => {
         // wrapper.update();
         const inst = wrapper;
         if (inst) {

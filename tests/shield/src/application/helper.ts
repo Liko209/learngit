@@ -6,10 +6,10 @@
 import { ReactElement } from 'react';
 import { TestApp } from './application';
 export { act } from 'react-dom/test-utils';
-import { getWrapper } from './wrapper';
+import { getWrapper, WrapperType } from './wrapper';
 
-function helper(element: ReactElement) {
-  const p = new TestApp(getWrapper(element));
+function helper(element: ReactElement, type: WrapperType = WrapperType.React) {
+  const p = new TestApp(getWrapper(element, type));
   return p;
 }
 

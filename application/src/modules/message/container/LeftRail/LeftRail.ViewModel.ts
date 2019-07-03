@@ -15,7 +15,7 @@ import {
 import StoreViewModel from '@/store/ViewModel';
 import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { getGlobalValue } from '@/store/utils';
