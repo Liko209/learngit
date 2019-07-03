@@ -23,7 +23,8 @@ import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
 import { USED_HEIGHT, MIN_HEIGHT_FIX } from '../ContentSearchResult/constants';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
+import { PerformanceTracer } from 'sdk';
+import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
 import {
   MAX_COUNT,
   ITEM_HEIGHT,
@@ -44,8 +45,8 @@ type State = {
 class ItemListViewComponent extends Component<Props, State> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
@@ -58,7 +59,7 @@ class ItemListViewComponent extends Component<Props, State> {
 
   state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
 
-  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -159,7 +160,7 @@ class ItemListViewComponent extends Component<Props, State> {
 
   componentDidUpdate() {
     this._performanceTracer.end({
-      key: PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
+      key: GLOBAL_SEARCH_PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
       count: this.props.ids.length,
     });
   }

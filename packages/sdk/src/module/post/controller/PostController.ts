@@ -24,9 +24,10 @@ import { IPreInsertController } from '../../common/controller/interface/IPreInse
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
 import { ENTITY } from '../../../service/eventKey';
-import { PostSearchController } from './implementation/PostSearchController';
+import { PostSearchManagerController } from './implementation/PostSearchManagerController';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { PostItemController } from './implementation/PostItemController';
 
 class PostController {
   private _actionController: PostActionController;
@@ -35,7 +36,8 @@ class PostController {
   private _postFetchController: PostFetchController;
   private _discontinuousPostController: DiscontinuousPostController;
   private _postDataController: PostDataController;
-  private _postSearchController: PostSearchController;
+  private _postSearchController: PostSearchManagerController;
+  private _postItemController: PostItemController;
   constructor(private _groupService: IGroupService) {}
 
   getPostActionController(): PostActionController {
@@ -50,7 +52,13 @@ class PostController {
       );
       const entitySourceController = buildEntitySourceController<Post>(
         persistentController,
-        requestController,
+        {
+          requestController,
+          canSaveRemoteData: false,
+          canRequest: () => {
+            return true;
+          },
+        },
       );
 
       const partialModifyController = buildPartialModifyController<Post>(
@@ -131,10 +139,19 @@ class PostController {
 
   getPostSearchController() {
     if (!this._postSearchController) {
-      this._postSearchController = new PostSearchController();
+      this._postSearchController = new PostSearchManagerController();
     }
 
     return this._postSearchController;
+  }
+
+  getPostItemController() {
+    if (!this._postItemController) {
+      this._postItemController = new PostItemController(
+        this.getPostActionController(),
+      );
+    }
+    return this._postItemController;
   }
 
   private _getPreInsertController() {

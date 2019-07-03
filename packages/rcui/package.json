@@ -16,6 +16,7 @@
     "storybook": "start-storybook -p 6006",
     "test": "jest",
     "test-watch": "jest --watchAll",
+    "update-snapshot": "jest --updateSnapshot storyshots.test.jsx",
     "build:storybook": "build-storybook -c .storybook -o public",
     "build:lib": "rollup -c",
     "serve:lib": "rollup -c -w",
@@ -58,6 +59,7 @@
     "@storybook/addon-info": "5.0.10",
     "@storybook/addon-jest": "5.0.10",
     "@storybook/addon-knobs": "5.0.10",
+    "@storybook/addon-storyshots": "5.0.10",
     "@storybook/react": "5.0.10",
     "@svgr/rollup": "^4.2.0",
     "@types/enzyme": "3.9.0",
@@ -135,7 +137,10 @@
     "typescript": "3.4.2",
     "webpack": "4.23.1",
     "webpack-bundle-analyzer": "3.0.4",
-    "winston": "3.2.1"
+    "winston": "3.2.1",
+    "babel-plugin-macros": "2.5.1",
+    "babel-plugin-require-context-hook": "1.0.0",
+    "react-jss": "8.6.1"
   },
   "husky": {
     "hooks": {

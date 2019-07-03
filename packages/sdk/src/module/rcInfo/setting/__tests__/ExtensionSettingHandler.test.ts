@@ -13,7 +13,7 @@ import {
 } from '../../../setting';
 import { SettingModuleIds } from '../../../setting/constants';
 import { IRCInfoService } from '../../service/IRCInfoService';
-import { ERCWebSettingUri } from '../../types';
+import { ERCWebUris } from '../../types';
 import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
 import { spyOnTarget } from 'sdk/__tests__/utils';
 
@@ -139,7 +139,7 @@ describe('ExtensionSettingHandler', () => {
       });
       expect(res.valueGetter()).resolves.toEqual('glip.com');
       expect(rcInfoService.generateWebSettingUri).toBeCalledWith(
-        ERCWebSettingUri.EXTENSION_URI,
+        ERCWebUris.EXTENSION_URI,
       );
     });
   });

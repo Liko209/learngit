@@ -8,21 +8,13 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { DialPad } from 'jui/pattern/Dialer';
 import { DialerContainerViewProps, DialerContainerViewState } from './types';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import {
-  CallControlPanel,
-  DialerPanel,
-  ContactSearchPanel,
-  KeypadPanel,
-} from './panels';
-
-type Props = DialerContainerViewProps & WithTranslation;
+import { CallControlPanel, DialerPanel } from './panels';
 
 const CLOSE_TOOLTIP_TIME = 5000;
 
 @observer
-class DialerContainerViewComponent extends React.Component<
-  Props,
+class DialerContainerView extends React.Component<
+  DialerContainerViewProps,
   DialerContainerViewState
 > {
   private _timer: NodeJS.Timeout;
@@ -70,18 +62,12 @@ class DialerContainerViewComponent extends React.Component<
 
   render() {
     const {
-      keypadEntered,
-      isDialer,
       isForward,
       clickToInput,
       playAudio,
       dialerInputFocused,
       callerPhoneNumberList,
       chosenCallerPhoneNumber,
-      t,
-      shouldEnterContactSearch,
-      dtmfThroughKeypad,
-      dtmfThroughKeyboard,
       dialerFocused,
       shouldCloseToolTip,
       enteredDialer,
@@ -90,29 +76,26 @@ class DialerContainerViewComponent extends React.Component<
     const { shouldShowToolTip } = this.state;
 
     const callerIdProps = {
-      value: chosenCallerPhoneNumber,
-      menu: callerPhoneNumberList,
-      label: t('telephony.callFrom'),
-      disabled: false,
-      heightSize: 'default',
-      onChange: this._onChange,
+      callerIdProps: {
+        value: chosenCallerPhoneNumber,
+        menu: callerPhoneNumberList,
+        disabled: false,
+        onChange: this._onChange,
+      },
+      tooltipProps: {
+        open:
+          this._shouldShowToolTip &&
+          enteredDialer &&
+          shouldShowToolTip &&
+          !shouldCloseToolTip,
+        tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
+      },
     };
 
-    const tooltipProps = {
-      title: t('telephony.callerIdSelector.tooltip') as string,
-      open:
-        this._shouldShowToolTip &&
-        enteredDialer &&
-        shouldShowToolTip &&
-        !shouldCloseToolTip,
-      tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
-    };
-
-    if (isDialer || isForward) {
+    if (isForward) {
       return (
         <DialerPanel
           callerIdProps={callerIdProps}
-          tooltipProps={tooltipProps}
           dialerFocused={dialerFocused}
           playAudio={playAudio}
           clickToInput={clickToInput}
@@ -121,30 +104,9 @@ class DialerContainerViewComponent extends React.Component<
         />
       );
     }
-    if (shouldEnterContactSearch) {
-      return (
-        <ContactSearchPanel
-          callerIdProps={callerIdProps}
-          tooltipProps={tooltipProps}
-        />
-      );
-    }
-    if (keypadEntered) {
-      return (
-        <KeypadPanel
-          dtmfThroughKeypad={dtmfThroughKeypad}
-          dtmfThroughKeyboard={dtmfThroughKeyboard}
-          dialerFocused={dialerFocused}
-        />
-      );
-    }
 
     return <CallControlPanel />;
   }
 }
-
-const DialerContainerView = withTranslation('translations')(
-  DialerContainerViewComponent,
-);
 
 export { DialerContainerView, DialPad };

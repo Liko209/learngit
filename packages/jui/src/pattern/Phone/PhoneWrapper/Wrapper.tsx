@@ -6,10 +6,10 @@
 import { height } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
 
-const PhoneWrapper = styled.div`
+const PhoneWrapper = styled.div<{ pageHeight?: number }>`
   margin: 0 auto;
   width: 100%;
-  height: 100%;
+  height: ${props => (props.pageHeight ? `${props.pageHeight}px` : '100%')};
   position: relative;
   max-width: ${height(200)};
 `;

@@ -10,7 +10,7 @@ import { h } from '../../v2/helpers';
 import { v4 as uuid } from 'uuid';
 import { SITE_URL, BrandTire } from '../../config';
 import { setupCase, teardownCase } from '../../init';
-import { IGroup } from '../../v2/models';
+import { ITestMeta, IGroup } from '../../v2/models';
 
 
 fixture('MessageInput/draft')
@@ -74,6 +74,63 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
 
     await h(t).withLog(`When I enter conversation A`, async () => {
       await conversation1.enter();
+    });
+
+    await h(t).withLog(`Then I can find input field still is ${msg}`, async () => {
+      await t.expect(conversation1.hasDraftMessage).notOk();
+      await t.expect(inputField.textContent).eql(msg);
+    });
+  });
+
+test(formalName('Show massage draft when refreshing App', ['P2', 'JPT-2360']),
+  async (t) => {
+    const app = new AppRoot(t);
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[4];
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
+
+    let teamId1, teamId2, conversation1, conversation2;
+    await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
+      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `1 ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId]
+      });
+      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
+        type: 'Team',
+        name: `2 ${uuid()}`,
+        members: [loginUser.rcId, users[5].rcId, users[6].rcId]
+      });
+    });
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+      async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      },
+    );
+
+    const teamSection = app.homePage.messageTab.teamsSection;
+    await h(t).withLog('Then I can check conversation A and B exist', async () => {
+      await teamSection.expand();
+      conversation1 = teamSection.conversationEntryById(teamId1);
+      conversation2 = teamSection.conversationEntryById(teamId2);
+      await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+      await t.expect(conversation2.exists).ok({ timeout: 10e3 });
+    });
+
+    const msg = uuid();
+    const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
+    await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
+      await conversation1.enter();
+      await t.typeText(inputField, msg)
+    }, true);
+
+    await h(t).withLog('When I refresh App', async () => {
+      await h(t).reload();
+      await app.homePage.ensureLoaded();
     });
 
     await h(t).withLog(`Then I can find input field still is ${msg}`, async () => {
@@ -405,4 +462,295 @@ test(formalName(`Check shouldn't mark draft icon in the conversation list when r
   await h(t).withLog('Then no data in the attachment area', async () => {
     await t.expect(conversationPage.fileNamesOnMessageArea.exists).notOk();
   });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1380'],
+  keywords: ['Draft'],
+  maintainers: ['Mia.Cai']
+})('Check can mark draft icon in the conversation list when refresh or close tab', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
+  let conversation1, conversation2;
+  let team1 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  let team2 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  await h(t).withLog('Given I have an extension with 2 teams', async () => {
+    await h(t).scenarioHelper.createTeams([team1, team2]);
+  });
+
+  await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
+    await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog('Then I can check conversation A and B exist', async () => {
+    await teamSection.expand();
+    conversation1 = teamSection.conversationEntryById(team1.glipId);
+    conversation2 = teamSection.conversationEntryById(team2.glipId);
+    await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+    await t.expect(conversation2.exists).ok({ timeout: 10e3 });
+  });
+
+  const msg = uuid();
+  const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
+  const url = new URL(SITE_URL)
+  const Conversation1_URL = `${url.protocol}//${url.hostname}/messages/${team1.glipId}`;
+  await h(t).withLog(`When I enter conversation A to type message "${msg}"`, async () => {
+    await conversation1.enter();
+    await t.typeText(inputField, msg)
+  }, true);
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+  await h(t).withLog(`When I refresh the app`, async () => {
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+  await h(t).withLog(`When I close the conversation A`, async () => {
+    await conversation1.openMoreMenu();
+    await app.homePage.messageTab.moreMenu.close.enter();
+  });
+
+  await h(t).withLog(`And I reopen the conversation A`, async () => {
+    await t.navigateTo(Conversation1_URL);
+  });
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-140'],
+  keywords: ['Draft'],
+  maintainers: ['Mia.Cai']
+})(`Check shouldn't mark massage draft when log out app`, async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
+  let conversation1, conversation2;
+  let team1 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  let team2 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+
+  await h(t).withLog('Given I have 2 teams', async () => {
+    await h(t).scenarioHelper.createTeams([team1, team2]);
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog('Then I can check conversation A and B exist', async () => {
+    await teamSection.expand();
+    conversation1 = teamSection.conversationEntryById(team1.glipId);
+    conversation2 = teamSection.conversationEntryById(team2.glipId);
+    await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+    await t.expect(conversation2.exists).ok({ timeout: 10e3 });
+  });
+
+  const msg = uuid();
+  const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
+  await h(t).withLog(`And I enter conversation A to type message "${msg}"`, async () => {
+    await conversation1.enter();
+    await t.typeText(inputField, msg)
+  }, true);
+
+  await h(t).withLog('When I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+  await h(t).withLog(`When I re-login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
+  });
+
+  await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).notOk();
+  });
+
+  await h(t).withLog(`When I enter conversation A`, async () => {
+    await conversation1.enter();
+  });
+
+  await h(t).withLog(`Then no message on the input field`, async () => {
+    await t.expect(conversation1.hasDraftMessage).notOk();
+    await t.expect(inputField.textContent).eql("");
+  });
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-149'],
+  keywords: ['Draft'],
+  maintainers: ['Mia.Cai']
+})(`Check shouldn't mark draft icon in the conversation list when deleting the draft information`, async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
+
+  let conversation1, conversation2;
+  let team1 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  let team2 = <IGroup>{
+    type: 'Team',
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have 2 teams', async () => {
+    await h(t).scenarioHelper.createTeams([team1, team2]);
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
+    async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    },
+  );
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog('Then I can check conversation A and B exist', async () => {
+    await teamSection.expand();
+    conversation1 = teamSection.conversationEntryById(team1.glipId);
+    conversation2 = teamSection.conversationEntryById(team2.glipId);
+    await t.expect(conversation1.exists).ok({ timeout: 10e3 });
+    await t.expect(conversation2.exists).ok({ timeout: 10e3 });
+  });
+
+  // Entry1: with text messages
+  const msg = uuid();
+  const inputField = app.homePage.messageTab.conversationPage.messageInputArea;
+  await h(t).withLog(`When I enter conversation A to type message "${msg}"`, async () => {
+    await conversation1.enter();
+    await t.typeText(inputField, msg)
+  }, true);
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+  await h(t).withLog(`When I enter conversation A`, async () => {
+    await conversation1.enter();
+  });
+
+  await h(t).withLog(`And I delete the draft information`, async () => {
+    await t.selectText(inputField).pressKey('delete');
+  });
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).notOk();
+  });
+
+  // Entry2: with files
+  const file = ['../../sources/1.txt'];
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`When I enter conversation A to select file in the attachment area`, async () => {
+    await conversation1.enter();
+    await conversationPage.uploadFilesToMessageAttachment(file);
+  }, true);
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then I can find "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).ok();
+  });
+
+  await h(t).withLog(`When I enter conversation A`, async () => {
+    await conversation1.enter();
+  });
+
+  await h(t).withLog('And I remove the file from the conversation', async () => {
+    await conversationPage.removeFileOnMessageArea();
+  });
+
+  await h(t).withLog('And I enter conversation B', async () => {
+    await conversation2.enter();
+  });
+
+  await h(t).withLog('Then no "Draft" icon on right of Conversation A name', async () => {
+    await t.expect(conversation1.hasDraftMessage).notOk();
+  });
+
 });

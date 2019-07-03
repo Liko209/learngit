@@ -57,7 +57,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
       quoteText += '\n';
     }
     quoteText = quoteText.replace(
-      /^(>\s)?(.*?)\n/gim,
+      /^(>\s)?(.*?)\r?\n/gim,
       ($0: string, $1: string, $2: string) => `> ${$2}<br/>`,
     );
 

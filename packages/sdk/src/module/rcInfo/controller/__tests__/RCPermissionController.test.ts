@@ -203,5 +203,15 @@ describe('RCInfoFetchController', () => {
       );
       expect(res).toBeTruthy();
     });
+
+    it('should return true when users have on-demand call recording permission', async () => {
+      mockFetchController.getRCExtensionInfo.mockReturnValueOnce({
+        serviceFeatures: FULL_RC_PERMISSION_JSON.serviceFeatures,
+      });
+      const res = await rcPermissionController.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.ON_DEMAND_CALL_RECORDING,
+      );
+      expect(res).toBeTruthy();
+    });
   });
 });

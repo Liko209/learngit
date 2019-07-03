@@ -4,16 +4,68 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable, action } from 'mobx';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import { CallLogService } from 'sdk/module/RCItems/callLog';
+import { CALL_LOG_SOURCE } from 'sdk/module/RCItems/callLog/constants';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { StoreViewModel } from '@/store/ViewModel';
-import { AllCallsProps } from './types';
+import { AllCallsProps, FetchAllCallsData, CallLogType } from './types';
 import { AllCallsListHandler } from './AllCallsListHandler';
 
 class AllCallsViewModel extends StoreViewModel<AllCallsProps> {
+  @observable
+  isError = false;
+
+  private _service = ServiceLoader.getInstance<CallLogService>(
+    ServiceConfig.CALL_LOG_SERVICE,
+  );
+
+  @computed
+  private get _source() {
+    return this.props.type === CallLogType.All
+      ? CALL_LOG_SOURCE.ALL
+      : CALL_LOG_SOURCE.MISSED;
+  }
+
+  @computed
+  private get _handler() {
+    return new AllCallsListHandler(this.props.type, this._fetchData);
+  }
+
   @computed
   get listHandler() {
-    return new AllCallsListHandler(this.props.type)
-      .fetchSortableDataListHandler;
+    return this._handler.fetchSortableDataListHandler;
+  }
+
+  @action
+  private _fetchData: FetchAllCallsData = async (
+    direction,
+    pageSize,
+    anchor,
+  ) => {
+    const realDirection =
+      direction === QUERY_DIRECTION.NEWER
+        ? QUERY_DIRECTION.OLDER
+        : QUERY_DIRECTION.NEWER;
+
+    try {
+      return await this._service.fetchCallLogs({
+        callLogSource: this._source,
+        anchorId: anchor && anchor.id,
+        limit: pageSize,
+        direction: realDirection,
+      });
+    } catch (error) {
+      this.isError = true;
+
+      return { data: [], hasMore: true };
+    }
+  }
+
+  @action
+  onErrorReload = () => {
+    this.isError = false;
   }
 }
 

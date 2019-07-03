@@ -978,8 +978,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click show old to expand the collapsed section`, async () => {
-    await t.expect(messageTab.postItemById(updatedPostId).itemCard.taskShowOld.exists).ok();
-    await t.click(messageTab.postItemById(updatedPostId).itemCard.taskShowOld);
+    await t.expect(messageTab.postItemById(updatedPostId).itemCard.taskShowOrHidOldLink.exists).ok();
+    await t.click(messageTab.postItemById(updatedPostId).itemCard.taskShowOrHidOldLink);
   });
 
   await h(t).withLog(`And the posts highlight the keyword {text} in show old task assignee`, async (step) => {

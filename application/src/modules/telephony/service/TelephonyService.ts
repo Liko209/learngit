@@ -18,7 +18,7 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
-import { TelephonyStore, INCOMING_STATE } from '../store';
+import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
@@ -40,10 +40,11 @@ import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
+import keypadBeeps from './sounds/sounds.json';
+import { sleep } from '../helpers';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
-const DIRECT_NUMBER = 'DirectNumber';
 const DIALER_OPENED_KEY = 'dialerOpenedCount';
 
 class TelephonyService {
@@ -62,11 +63,16 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
-  private _callId?: string;
+  private _callId: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
   private _defaultCallerPhoneNumberDisposer: IReactionDisposer;
+  private _ringtone: HTMLAudioElement | null;
+  private _keypadBeepPool: HTMLMediaElement[] | null;
+  private _currentSoundTrackForBeep: number | null;
+  private _canPlayMP3: boolean = false;
+  private _canPlayOgg: boolean = false;
 
   private _onMadeOutgoingCall = (id: number) => {
     // TODO: This should be a list in order to support multiple call
@@ -79,7 +85,7 @@ class TelephonyService {
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.directCall();
   }
@@ -91,7 +97,7 @@ class TelephonyService {
     }
     this._telephonyStore.id = id;
     const { fromNum, callId, fromName } = this._telephonyStore.call;
-    this._callId = callId;
+    this._callId = id;
 
     this._telephonyStore.callerName = fromName;
     const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
@@ -115,15 +121,15 @@ class TelephonyService {
       return;
     }
 
-    (this._audio as HTMLAudioElement).src = ringTone;
-    (this._audio as HTMLAudioElement).currentTime = 0;
-    (this._audio as HTMLAudioElement).autoplay = true;
-    (this._audio as HTMLAudioElement).muted = shouldMute;
+    (this._ringtone as HTMLAudioElement).src = ringTone;
+    (this._ringtone as HTMLAudioElement).currentTime = 0;
+    (this._ringtone as HTMLAudioElement).autoplay = true;
+    (this._ringtone as HTMLAudioElement).muted = shouldMute;
     mainLogger
       .tags(TelephonyService.TAG)
       .info('ready to play the ringtone', new Date());
     try {
-      await (this._audio as HTMLAudioElement).play();
+      await (this._ringtone as HTMLAudioElement).play();
       mainLogger
         .tags(TelephonyService.TAG)
         .info('ringtone playing', new Date());
@@ -158,12 +164,12 @@ class TelephonyService {
   }
 
   private _pauseRingtone = async () => {
-    if (!this._audio) {
+    if (!this._ringtone) {
       return;
     }
     mainLogger.tags(TelephonyService.TAG).info(`pause audio, ${new Date()}`);
-    (this._audio as HTMLAudioElement).pause();
-    this._audio.src = '';
+    (this._ringtone as HTMLAudioElement).pause();
+    this._ringtone.src = '';
     return;
   }
 
@@ -211,8 +217,16 @@ class TelephonyService {
     this._telephonyStore.canUseTelephony = true;
 
     if (document && document.createElement) {
-      this._audio = document.createElement('audio');
-      this._audio.loop = true;
+      this._ringtone = document.createElement('audio');
+      this._ringtone.loop = true;
+
+      this._canPlayMP3 = this._ringtone.canPlayType('audio/mp3') !== '';
+      this._canPlayOgg = this._ringtone.canPlayType('audio/ogg') !== '';
+
+      this._keypadBeepPool = Array(this._telephonyStore.maximumInputLength)
+        .fill(1)
+        .map(() => document.createElement('audio'));
+      this._currentSoundTrackForBeep = 0;
     }
 
     this._getDialerOpenedCount();
@@ -322,24 +336,6 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
   }
 
-  getDefaultCallerId = () => {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
-    const person = personService.getSynchronously(this._getGlipUserId());
-    if (person && person.rc_phone_numbers) {
-      const res = person.rc_phone_numbers.find(
-        (phoneNumber: PhoneNumberModel) => {
-          return phoneNumber.usageType === DIRECT_NUMBER;
-        },
-      );
-      if (res) {
-        return res.phoneNumber;
-      }
-      return '';
-    }
-    return '';
-  }
   makeRCPhoneCall(phoneNumber: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
@@ -581,7 +577,6 @@ class TelephonyService {
       $fetch = this._serverTelephonyService.unhold(this._callId);
     } else {
       mainLogger.info(`${TelephonyService.TAG}hold call id=${this._callId}`);
-      this._telephonyStore.hold(); // for swift UX
       $fetch = this._serverTelephonyService.hold(this._callId);
     }
 
@@ -593,8 +588,6 @@ class TelephonyService {
         : ToastCallError.toastFailedToHold();
       isHeld = !isHeld;
     }
-
-    isHeld ? this._telephonyStore.unhold() : this._telephonyStore.hold();
   }
 
   startOrStopRecording = async () => {
@@ -607,10 +600,9 @@ class TelephonyService {
 
     if (isRecording) {
       this._telephonyStore.isStopRecording = true;
-      $fetch = this._serverTelephonyService.stopRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.stopRecord(this._callId);
     } else {
-      this._telephonyStore.startRecording(); // for swift UX
-      $fetch = this._serverTelephonyService.startRecord(this._callId as string);
+      $fetch = this._serverTelephonyService.startRecord(this._callId);
     }
 
     try {
@@ -626,15 +618,11 @@ class TelephonyService {
 
       isRecording = !isRecording;
     }
-
-    isRecording
-      ? this._telephonyStore.stopRecording()
-      : this._telephonyStore.startRecording();
   }
 
   dtmf = (digits: string) => {
     this._telephonyStore.inputKey(digits);
-    return this._serverTelephonyService.dtmf(this._callId as string, digits);
+    return this._serverTelephonyService.dtmf(this._callId, digits);
   }
 
   callComponent = () => import('../container/Call');
@@ -662,62 +650,49 @@ class TelephonyService {
     );
   }
 
-  @action
-  concatInputString = (str: string) => {
-    if (
-      this._telephonyStore.inputString.length <
-      this._telephonyStore.maximumInputLength
-    ) {
-      // only set forwardString
-      if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
-        this._telephonyStore.forwardString += str;
+  concatInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    str: string,
+  ) => {
+    runInAction(() => {
+      if (
+        this._telephonyStore[prop].length <
+        this._telephonyStore.maximumInputLength
+      ) {
+        this._telephonyStore[prop] += str;
         return;
       }
-      this._telephonyStore.inputString += str;
-      return;
-    }
-    return;
+    });
   }
 
-  @action
-  updateInputString = (str: string) => {
-    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
-      this._telephonyStore.forwardString = str.slice(
+  updateInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    str: string,
+  ) => {
+    runInAction(() => {
+      this._telephonyStore[prop] = str.slice(
         0,
         this._telephonyStore.maximumInputLength,
       );
       return;
-    }
-    this._telephonyStore.inputString = str.slice(
-      0,
-      this._telephonyStore.maximumInputLength,
-    );
-    return;
+    });
   }
 
-  @action
-  deleteInputString = (clearAll: boolean = false) => {
-    if (this._telephonyStore.incomingState === INCOMING_STATE.FORWARD) {
+  deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
+    clearAll: boolean = false,
+  ) => {
+    runInAction(() => {
       if (clearAll) {
-        this._telephonyStore.forwardString = '';
+        this._telephonyStore[prop] = '';
         return;
       }
-      this._telephonyStore.forwardString = this._telephonyStore.forwardString.slice(
+      this._telephonyStore[prop] = this._telephonyStore[prop].slice(
         0,
-        this._telephonyStore.forwardString.length - 1,
+        this._telephonyStore[prop].length - 1,
       );
       return;
-    }
-    if (clearAll) {
-      this._telephonyStore.inputString = '';
-      return;
-    }
-    this._telephonyStore.inputString = this._telephonyStore.inputString.slice(
-      0,
-      this._telephonyStore.inputString.length - 1,
-    );
-    return;
+    });
   }
+
+  deleteInputString = this.deleteInputStringFactory('inputString');
 
   dispose = () => {
     this._hasActiveOutBoundCallDisposer &&
@@ -735,7 +710,8 @@ class TelephonyService {
     delete this._hasActiveOutBoundCallDisposer;
     delete this._callerPhoneNumberDisposer;
     delete this._incomingCallDisposer;
-    delete this._audio;
+    delete this._ringtone;
+    delete this._keypadBeepPool;
   }
 
   @action
@@ -765,40 +741,32 @@ class TelephonyService {
     if (!dialer) {
       return null;
     }
-    return dialer.getBoundingClientRect();
+    return (dialer.parentElement as HTMLDivElement).getBoundingClientRect();
   }
-
-  private _audio: HTMLAudioElement | null;
 
   private get _isRingtonePlaying() {
     // https://stackoverflow.com/questions/36803176/how-to-prevent-the-play-request-was-interrupted-by-a-call-to-pause-error
     return (
-      this._audio &&
-      this._audio.currentTime > 0 &&
-      !this._audio.paused &&
-      !this._audio.ended &&
-      this._audio.readyState > 2
+      this._ringtone &&
+      this._ringtone.currentTime > 0 &&
+      !this._ringtone.paused &&
+      !this._ringtone.ended &&
+      this._ringtone.readyState > 2
     );
   }
 
-  private get _canPlayMP3() {
-    return this._audio && this._audio.canPlayType('audio/mp3') !== '';
-  }
   startReply = () => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.startReply(this._callId as string);
+    return this._serverTelephonyService.startReply(this._callId);
   }
 
   replyWithMessage = (message: string) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.replyWithMessage(
-      this._callId as string,
-      message,
-    );
+    return this._serverTelephonyService.replyWithMessage(this._callId, message);
   }
 
   replyWithPattern = (
@@ -810,7 +778,7 @@ class TelephonyService {
       return;
     }
     return this._serverTelephonyService.replyWithPattern(
-      this._callId as string,
+      this._callId,
       pattern,
       time,
       timeUnit,
@@ -878,26 +846,68 @@ class TelephonyService {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.forward(
-      this._callId as string,
-      phoneNumber,
-    );
+    return this._serverTelephonyService.forward(this._callId, phoneNumber);
   }
 
   flip = (flipNumber: number) => {
     if (!this._callId) {
       return;
     }
-    return this._serverTelephonyService.flip(
-      this._callId as string,
-      flipNumber,
-    );
+    return this._serverTelephonyService.flip(this._callId, flipNumber);
   }
 
   getForwardPermission = () => {
     return this._rcInfoService.isRCFeaturePermissionEnabled(
       ERCServiceFeaturePermission.CALL_FORWARDING,
     );
+  }
+
+  /**
+   * Perf: since it's a loop around search, we should not block the main thread
+   * while searching for the next available <audio/> roundly
+   * even if the sounds for each key last actually very short
+   */
+  private async _getPlayableSoundTrack(
+    cursor = this._currentSoundTrackForBeep as number,
+  ): Promise<[HTMLMediaElement, number] | null> {
+    if (!Array.isArray(this._keypadBeepPool)) {
+      return null;
+    }
+    const currentSoundTrack = this._keypadBeepPool[cursor];
+
+    // if the current <audio/> is playing, search for the next none
+    if (!currentSoundTrack.paused) {
+      const { promise } = sleep();
+      await promise;
+      return Array.isArray(this._keypadBeepPool)
+        ? this._getPlayableSoundTrack(
+            ((cursor as number) + 1) % this._keypadBeepPool.length,
+          )
+        : null;
+    }
+    return [currentSoundTrack, cursor];
+  }
+
+  playBeep = async (value: string) => {
+    value === '+' ? '0' : value;
+
+    if (
+      this._keypadBeepPool &&
+      this._canPlayOgg &&
+      keypadBeeps[value] &&
+      this._currentSoundTrackForBeep !== null
+    ) {
+      const res = await this._getPlayableSoundTrack();
+      if (!Array.isArray(res)) {
+        return;
+      }
+      const [currentSoundTrack, cursor] = res as [HTMLMediaElement, number];
+      currentSoundTrack.pause();
+      currentSoundTrack.src = keypadBeeps[value];
+      currentSoundTrack.currentTime = 0;
+      currentSoundTrack.play();
+      this._currentSoundTrackForBeep = cursor;
+    }
   }
 }
 

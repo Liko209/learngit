@@ -4,30 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCItemSyncController } from '../../sync/RCItemSyncController';
 import { Voicemail } from '../entity';
 import { RCItemUserConfig } from '../../config';
 import { RCItemApi } from 'sdk/api/ringcentral/RCItemApi';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
-import {
-  RC_MESSAGE_TYPE,
-  SYNC_DIRECTION,
-  DEFAULT_FETCH_SIZE,
-  MESSAGE_AVAILABILITY,
-} from '../../constants';
+import { RC_MESSAGE_TYPE, MESSAGE_AVAILABILITY } from '../../constants';
 import { SYNC_TYPE } from '../../sync';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
-import { mainLogger } from 'foundation';
-import { FetchResult } from '../../types';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
-import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { mainLogger, PerformanceTracer } from 'foundation';
+import { Caller, FilterOptions, FetchDataOptions } from '../../types';
+import { daoManager } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
 import { VoicemailBadgeController } from './VoicemailBadgeController';
+import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { RCItemFetchController } from '../../common/controller/RCItemFetchController';
 
 const MODULE_NAME = 'VoicemailFetchController';
 
-class VoicemailFetchController extends RCItemSyncController<Voicemail> {
+class VoicemailFetchController extends RCItemFetchController<Voicemail> {
   constructor(
     userConfig: RCItemUserConfig,
     private _entitySourceController: IEntitySourceController<Voicemail>,
@@ -40,66 +35,15 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
     );
   }
 
-  async fetchVoicemails(
-    limit = DEFAULT_FETCH_SIZE,
-    direction = QUERY_DIRECTION.OLDER,
-    anchorId?: number,
-  ): Promise<FetchResult<Voicemail>> {
-    const performanceTracer = PerformanceTracer.initial();
-    let hasMore = true;
-    mainLogger
-      .tags(this.syncName)
-      .info(
-        `fetchVoicemails, anchorId:${anchorId}, limit:${limit}, direction:${direction}, anchorId:${anchorId}`,
+  async buildFilterFunc(
+    option: FilterOptions<Voicemail>,
+  ): Promise<(voicemail: Voicemail) => boolean> {
+    const filterFunc = await super.buildFilterFunc(option);
+    return (voicemail: Voicemail): boolean => {
+      return (
+        voicemail.availability === MESSAGE_AVAILABILITY.ALIVE &&
+        filterFunc(voicemail)
       );
-
-    let results: Voicemail[] = [];
-    const dao = daoManager.getDao(VoicemailDao);
-    results = results.concat(
-      await dao.queryVoicemails(limit, direction, anchorId),
-    );
-
-    performanceTracer.trace({
-      key: PERFORMANCE_KEYS.FETCH_VOICEMAILS_FROM_DB,
-      count: results.length,
-    });
-
-    // only request from server when has no data in local
-    if (results.length < limit) {
-      hasMore = await this.syncConfig.getHasMore();
-      mainLogger
-        .tags(this.syncName)
-        .info('fetch size not enough, need fetch from server: ', { hasMore });
-      if (hasMore) {
-        results = results.concat(
-          await this.doSync(
-            false,
-            direction === QUERY_DIRECTION.OLDER
-              ? SYNC_DIRECTION.OLDER
-              : SYNC_DIRECTION.NEWER,
-            false,
-          ),
-        );
-        this._badgeController.handleVoicemails(results);
-        hasMore = await this.syncConfig.getHasMore();
-      }
-    }
-
-    mainLogger
-      .tags(this.syncName)
-      .info(
-        `fetchVoicemails success, dataSize:${
-          results.length
-        }, hasMore:${hasMore}`,
-      );
-
-    performanceTracer.end({
-      key: PERFORMANCE_KEYS.FETCH_VOICEMAILS,
-      count: results.length,
-    });
-    return {
-      hasMore,
-      data: results,
     };
   }
 
@@ -114,15 +58,15 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
   }
 
   protected async requestClearAllAndRemoveLocalData(): Promise<void> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     mainLogger.tags(MODULE_NAME).log('clearMessages');
     await RCItemApi.deleteAllMessages({ type: RC_MESSAGE_TYPE.VOICEMAIL });
     performanceTracer.trace({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS_FROM_SERVER,
+      key: VOICEMAIL_PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS_FROM_SERVER,
     });
     await this.removeLocalData();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS,
+      key: VOICEMAIL_PERFORMANCE_KEYS.CLEAR_ALL_VOICEMAILS,
     });
   }
 
@@ -169,6 +113,40 @@ class VoicemailFetchController extends RCItemSyncController<Voicemail> {
       messageType:
         syncType === SYNC_TYPE.FSYNC ? RC_MESSAGE_TYPE.VOICEMAIL : undefined,
     });
+  }
+
+  protected getFilterInfo(data: Voicemail): Caller {
+    return data.from || {};
+  }
+
+  protected async fetchDataFromDB(
+    options: FetchDataOptions<Voicemail>,
+  ): Promise<Voicemail[]> {
+    const dao = daoManager.getDao(VoicemailDao);
+    return await dao.queryVoicemails(options);
+  }
+
+  protected onDBFetchFinished(
+    results: Voicemail[],
+    performanceTracer?: PerformanceTracer,
+  ): void {
+    performanceTracer &&
+      performanceTracer.trace({
+        key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS_FROM_DB,
+        count: results.length,
+      });
+  }
+
+  protected onFetchFinished(
+    results: Voicemail[],
+    performanceTracer?: PerformanceTracer,
+  ): void {
+    this._badgeController.handleVoicemails(results);
+    performanceTracer &&
+      performanceTracer.end({
+        key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS,
+        count: results.length,
+      });
   }
 }
 

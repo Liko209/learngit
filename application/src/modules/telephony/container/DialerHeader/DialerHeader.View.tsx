@@ -55,7 +55,6 @@ class DialerHeaderViewComponent extends React.Component<Props> {
       dialerInputFocused,
       deleteLastInputString,
       deleteInputString,
-      onKeyDown,
       Back,
     } = this.props;
 
@@ -74,7 +73,6 @@ class DialerHeaderViewComponent extends React.Component<Props> {
         ariaLabelForDelete={t('telephony.delete')}
         deleteLastInputString={deleteLastInputString}
         deleteInputString={deleteInputString}
-        onKeyDown={onKeyDown}
         Back={Back}
       />
     );

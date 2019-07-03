@@ -154,18 +154,7 @@ export class ContactSearchListViewModel
       );
       phoneNumber = this.trimmedInputString;
     }
-    this._makeCall(phoneNumber);
-  }
-
-  // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
-  private _makeCall = async (val: string) => {
-    // make sure line 30 run before end()
-    if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise((resolve) => {
-        requestAnimationFrame(resolve);
-      });
-      this._telephonyStore.end();
-    }
+    this.props.onContactSelected(phoneNumber);
   }
 
   @action
@@ -175,15 +164,17 @@ export class ContactSearchListViewModel
 
   private _searchReaction = debounce(
     async () => {
+      let trimmedInputString = '';
       runInAction(() => {
-        if (!this.trimmedInputString.length) {
+        trimmedInputString = this.trimmedInputString;
+        if (!trimmedInputString.length) {
           this.searchResult = [];
           return;
         }
       });
       const [currentSearchResult, parsedPhone] = await Promise.all([
-        this._searchContacts(),
-        this._telephonyService.isValidNumber(this.trimmedInputString),
+        this._searchContacts(trimmedInputString),
+        this._telephonyService.isValidNumber(trimmedInputString),
       ]);
 
       runInAction(() => {
@@ -218,13 +209,13 @@ export class ContactSearchListViewModel
     },
   );
 
-  private _searchContacts = async () => {
+  private _searchContacts = async (searchString: string) => {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     return searchService.doFuzzySearchPhoneContacts({
-      searchKey: this._telephonyStore.inputString,
+      searchKey: searchString,
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
     });
@@ -257,7 +248,7 @@ export class ContactSearchListViewModel
 
   @computed
   get trimmedInputString() {
-    return this._telephonyStore.inputString.trim();
+    return this._telephonyStore[this.props.inputStringProps].trim();
   }
 
   @computed

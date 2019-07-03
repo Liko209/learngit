@@ -8,7 +8,7 @@ import moment from 'moment';
 import { RuiSlider } from 'rcui/components/Forms';
 import styled from '../../foundation/styled-components';
 import { width, spacing, palette, typography } from '../../foundation/utils';
-import { JuiAudioMode, JuiAudioProgressProps } from './types';
+import { JuiAudioMode, JuiAudioStatus, JuiAudioProgressProps } from './types';
 
 const StyledClock = styled.span`
   ${typography('caption1')};
@@ -36,27 +36,36 @@ const JuiAudioProgress = ({
   mode = JuiAudioMode.FULL,
   value = 0,
   duration = 0,
+  status,
   onChange,
   onDragStart,
   onDragEnd,
 }: JuiAudioProgressProps) => {
-  const isMiniMode = Object.is(mode, JuiAudioMode.MINI);
+  if (Object.is(mode, JuiAudioMode.TINY)) {
+    return null;
+  }
+
   const currentTime = Math.min(value, duration);
+
   const elProgressClock = (
+    <StyledClock data-test-automation-id="audio-current-time">
+      {formatTime(currentTime)}
+    </StyledClock>
+  );
+
+  const elDurationsClock = (
     <StyledClock data-test-automation-id="audio-end-time">
       {formatTime(duration)}
     </StyledClock>
   );
 
-  if (isMiniMode) {
-    return elProgressClock;
+  if (Object.is(mode, JuiAudioMode.MINI)) {
+    return status === JuiAudioStatus.PAUSE ? elProgressClock : elDurationsClock;
   }
 
   return (
     <Fragment>
-      <StyledClock data-test-automation-id="audio-current-time">
-        {formatTime(currentTime)}
-      </StyledClock>
+      {elProgressClock}
       <StyledSlider
         max={duration}
         value={value}
@@ -64,7 +73,7 @@ const JuiAudioProgress = ({
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       />
-      {elProgressClock}
+      {elDurationsClock}
     </Fragment>
   );
 };

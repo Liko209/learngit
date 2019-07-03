@@ -1,0 +1,10 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "fixtures/MessageInput/draft.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}

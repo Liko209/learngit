@@ -87,7 +87,7 @@ class MessageSettingManager implements IMessageSettingManager {
       },
     ];
 
-    emailNotificationSettingItems.forEach((i) =>
+    emailNotificationSettingItems.forEach(i =>
       this._settingService.registerItem(
         MESSAGE_SETTING_SCOPE,
         SETTING_SECTION__EMAIL_NOTIFICATIONS,

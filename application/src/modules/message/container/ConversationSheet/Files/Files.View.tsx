@@ -31,6 +31,9 @@ import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
 import moize from 'moize';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { container } from 'framework';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import FileItemModel from '@/store/models/FileItem';
 import {
   postParser,
   SearchHighlightContext,
@@ -42,6 +45,7 @@ const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   componentWillUnmount() {
@@ -110,6 +114,12 @@ class FilesView extends React.Component<FilesViewProps> {
       mode,
       postId,
     );
+  }
+
+  _handleFileClick = (item: FileItemModel) => (
+    ev: React.MouseEvent<HTMLElement>,
+  ) => {
+    this._viewerService.open(item.id);
   }
 
   private _handleImageDidLoad = (id: number, callback: Function) => {
@@ -196,7 +206,7 @@ class FilesView extends React.Component<FilesViewProps> {
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
             const { size, type, id, name, downloadUrl } = item;
-            const { status } = item.latestVersion;
+            const status = item.latestVersion && item.latestVersion.status;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
             const fileReadyForViewer = isFileReadyForViewer(status);
@@ -213,6 +223,11 @@ class FilesView extends React.Component<FilesViewProps> {
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
+                handleFileClick={
+                  supportFileViewer && fileReadyForViewer
+                    ? this._handleFileClick(item)
+                    : undefined
+                }
                 disabled={supportFileViewer && !fileReadyForViewer}
                 Actions={this._getActions(downloadUrl, id, postId)}
               />

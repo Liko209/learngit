@@ -63,6 +63,9 @@ window.HTMLMediaElement.prototype.load = jest.fn();
 window.HTMLMediaElement.prototype.play = jest.fn();
 window.HTMLMediaElement.prototype.pause = jest.fn();
 window.HTMLMediaElement.prototype.addTextTrack = jest.fn();
+window.HTMLMediaElement.prototype.canPlayType = jest
+  .fn()
+  .mockResolvedValue(true);
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {
@@ -647,7 +650,8 @@ describe('TelephonyService', () => {
     const original = Array(50)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
+    const fn = telephonyService.updateInputStringFactory('inputString');
+    fn(original);
     expect(telephonyService._telephonyStore.inputString.length).toBe(30);
   });
 
@@ -655,8 +659,11 @@ describe('TelephonyService', () => {
     const original = Array(30)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
-    telephonyService.concatInputString('2');
+    const updateFn = telephonyService.updateInputStringFactory('inputString');
+    const concatFn = telephonyService.concatInputStringFactory('inputString');
+
+    updateFn(original);
+    concatFn('2');
     expect(telephonyService._telephonyStore.inputString).toBe(original);
   });
 
@@ -700,7 +707,10 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.concatInputString('5');
+    const concatInputString = telephonyService.concatInputStringFactory(
+      'inputString',
+    );
+    concatInputString('5');
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('12345');
@@ -865,6 +875,38 @@ describe('TelephonyService', () => {
       expect(telephonyService._telephonyStore.chosenCallerPhoneNumber).toEqual(
         defaultCallerPhoneNumber,
       );
+    });
+  });
+
+  describe('playBeep', () => {
+    it('should call `HTMLMediaElement.prototype.play` when receive index within the audio list', async () => {
+      var keys = [
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '*',
+        '#',
+        '+',
+      ];
+      for (let i of keys) {
+        await telephonyService.playBeep(i);
+        await sleep(16);
+        expect(window.HTMLMediaElement.prototype.play).toBeCalled();
+      }
+    });
+    it('should not cann `HTMLMediaElement.prototype.play` when receive index not within the audio list', async () => {
+      for (let i = 58; i < 123; i++) {
+        await telephonyService.playBeep(String.fromCharCode(i));
+        await sleep(16);
+        expect(window.HTMLMediaElement.prototype.play).not.toBeCalled();
+      }
     });
   });
 });

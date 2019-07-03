@@ -26,6 +26,7 @@ import {
   RegionSettingItemViewProps,
 } from './types';
 import { RegionSettingInfo } from 'sdk/module/rcInfo/setting/types';
+import { catchError } from '@/common/catchError';
 
 const AVOID_AREA_CODE_BEGIN_NUM = '0';
 const AREA_CODE_ALLOW_LEN = 3;
@@ -197,6 +198,10 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     }
   }
 
+  @catchError.flash({
+    network: 'message.prompt.updateRegionalSettingsNetworkError',
+    server: 'message.prompt.updateRegionalSettingsBackendError',
+  })
   @action
   saveRegion = async (
     dialPlanISOCode: string,

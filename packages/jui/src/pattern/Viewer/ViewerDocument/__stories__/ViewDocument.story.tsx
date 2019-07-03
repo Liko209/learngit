@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiViewerDocument } from '../ViewerDocument';
 
-type ScaleType = 'page-fit' | number;
+type ScaleType = number;
 type ViewportType = {
   width: number;
   height: number;
@@ -98,7 +98,7 @@ const ViewerDocument = () => {
           pages={getPages()}
           pageIndex={pageIndex}
           scale={scale}
-          onScaleChange={scale => scale && setCurrentScale(scale)}
+          onScaleChange={scale => scale && setCurrentScale(Number(scale))}
           onCurrentPageIdxChanged={idx => setCurrentPageIdx(idx)}
         />
       </div>

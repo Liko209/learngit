@@ -6,6 +6,7 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c10 {
@@ -34,6 +35,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c5.c5 > *:nth-child(n + 2) {
@@ -55,6 +60,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c11.c11 > *:nth-child(n + 2) {
@@ -374,6 +383,8 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
           aria-describedby={null}
           className="MuiTypography-root MuiTypography-h6 c2 c3"
           data-test-automation-id="conversation-page-header-title"
+          onBlur={[Function]}
+          onFocus={[Function]}
           onMouseLeave={[Function]}
           onMouseOver={[Function]}
           onTouchEnd={[Function]}
@@ -546,7 +557,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -587,7 +601,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -628,7 +645,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
