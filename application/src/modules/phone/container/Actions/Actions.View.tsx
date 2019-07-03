@@ -9,12 +9,14 @@ import { Delete } from './Delete';
 import { Download } from './Download';
 import { ENTITY_TYPE } from '../constants';
 import { Message } from './Message';
+import { Call } from './Call';
 
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get _actions() {
-    const { entity, shouldShowBlock, person } = this.props;
+    const { entity, shouldShowBlock, person, showCall, isBlock } = this.props;
 
     return [
+      showCall && !isBlock && Call,
       person !== null && Message,
       entity === ENTITY_TYPE.VOICEMAIL && Read,
       entity === ENTITY_TYPE.VOICEMAIL && Download,

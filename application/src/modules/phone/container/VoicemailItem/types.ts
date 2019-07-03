@@ -26,6 +26,7 @@ type VoicemailViewProps = {
   shouldPause: boolean;
   createTime: string;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 };
 
 type VoicemailProps = {

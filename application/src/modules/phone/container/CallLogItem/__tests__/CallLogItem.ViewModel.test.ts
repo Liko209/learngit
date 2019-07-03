@@ -59,7 +59,9 @@ describe('CallLogItemViewModel', () => {
 
   @testable
   class isUnread {
-    @test('should be true if missedcall call log timestamp > lastReadMissed [JPT-2174]')
+    @test(
+      'should be true if missedcall call log timestamp > lastReadMissed [JPT-2174]',
+    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       timestamp: 2,
@@ -71,7 +73,9 @@ describe('CallLogItemViewModel', () => {
       expect(vm.isUnread).toBeTruthy();
     }
 
-    @test('should be false if missedcall call log timestamp < lastReadMissed [JPT-2174]')
+    @test(
+      'should be false if missedcall call log timestamp < lastReadMissed [JPT-2174]',
+    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       timestamp: 1,
@@ -242,6 +246,28 @@ describe('CallLogItemViewModel', () => {
       const vm = new CallLogItemViewModel({ id: 'id' });
       vm.startTime;
       expect(postTimestamp).toHaveBeenCalledWith('startTime');
+    }
+  }
+
+  @testable
+  class shouldShowCall {
+    @test('should be true if has call permission [JPT-2384]')
+    @mockService(RCInfoService, [
+      {
+        method: 'isRCFeaturePermissionEnabled',
+        data: true,
+      },
+      {
+        method: 'isVoipCallingAvailable',
+        data: false,
+      },
+    ])
+    @mockEntity({
+      attachments: [],
+    })
+    async t1() {
+      const vm = new CallLogItemViewModel({ id: 1 });
+      expect(await vm.shouldShowCall()).toBeFalsy();
     }
   }
 });
