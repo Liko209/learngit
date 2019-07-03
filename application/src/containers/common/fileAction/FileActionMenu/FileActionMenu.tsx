@@ -22,7 +22,7 @@ type FileActionMenuProps = {
   variant?: IconButtonVariant;
   showViewInPostAction?: boolean;
   groupId?: number;
-  asyncOperationDecorator?: (op: Function) => Promise<any>;
+  asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
   FileNameEditActionProps &
   WithTranslation;

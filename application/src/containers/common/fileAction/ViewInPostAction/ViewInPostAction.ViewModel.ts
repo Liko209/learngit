@@ -4,36 +4,33 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { ViewInPostActionProps } from './types';
-import { StoreViewModel } from '@/store/ViewModel';
-import { PostService } from 'sdk/module/post';
 import { jumpToPost } from '@/common/jumpToPost';
 import portalManager from '@/common/PortalManager';
 import { catchError } from '@/common/catchError';
+import { FileActionViewModel } from '../common/FIleAction.ViewModel';
+import { ViewInPostActionProps } from './types';
 
-class ViewInPostActionViewModel extends StoreViewModel<ViewInPostActionProps> {
+class ViewInPostActionViewModel extends FileActionViewModel<
+  ViewInPostActionProps
+> {
   @catchError.flash({
     network: 'message.prompt.viewInPostFailedWithNetworkIssue',
     server: 'message.prompt.viewInPostFailedWithServerIssue',
   })
   viewInPost = async () => {
-    const postService = ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    );
-    const { groupId, fileId, asyncOperationDecorator } = this.props;
-    let postId;
+    const { groupId, asyncOperationDecorator } = this.props;
+    let post;
     if (asyncOperationDecorator) {
-      postId = await asyncOperationDecorator(() =>
-        postService.getLatestPostIdByItem(groupId, fileId),
-      );
+      post = await asyncOperationDecorator(() =>
+        this.item.getDirectRelatedPostInGroup(groupId),
+      )();
     } else {
-      postId = await postService.getLatestPostIdByItem(groupId, fileId);
+      post = await this.item.getDirectRelatedPostInGroup(groupId);
     }
 
-    if (postId) {
+    if (post) {
       portalManager.dismissAll();
-      jumpToPost({ groupId, id: postId });
+      jumpToPost({ groupId, id: post.id });
     }
   }
 }

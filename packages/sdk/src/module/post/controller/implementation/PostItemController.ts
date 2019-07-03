@@ -241,14 +241,14 @@ class PostItemController implements IPostItemController {
     }
     return [];
   }
-  private _getLatestPostId(groupId: number, posts: Post[] | PostView[]) {
+  private _getLatestPostId(groupId: number, posts: Post[]) {
     if (posts.length) {
       const postsInCurrentGroup = posts.filter(
         (post: Post) => post.group_id === groupId && !post.deactivated,
       );
       if (postsInCurrentGroup.length) {
         postsInCurrentGroup.sort((a, b) => b.created_at - a.created_at);
-        return postsInCurrentGroup[0].id;
+        return postsInCurrentGroup[0];
       }
     }
     return null;
@@ -256,19 +256,17 @@ class PostItemController implements IPostItemController {
   async getLatestPostIdByItem(
     groupId: number,
     itemId: number,
-  ): Promise<Nullable<number>> {
+  ): Promise<Nullable<Post>> {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
     const item = await itemService.getById(itemId);
     if (item) {
       const ids = item.post_ids;
-      const localPosts = await daoManager
-        .getDao(PostDao)
-        .queryPostViewByIds(ids);
-      const localPostId = this._getLatestPostId(groupId, localPosts);
-      if (localPostId) {
-        return localPostId;
+      const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
+      const localPost = this._getLatestPostId(groupId, localPosts);
+      if (localPost) {
+        return localPost;
       }
       const restIds = _.difference(ids, localPosts.map(({ id }) => id));
       if (restIds.length) {

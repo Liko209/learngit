@@ -4,17 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ViewerViewModelProps } from '../types';
 import FileItemModel from '@/store/models/FileItem';
 import PersonModel from '@/store/models/Person';
 
-type ViewerTitleProps = { itemId: number };
-
-type ViewerTitleViewModelProps = ViewerViewModelProps;
-
-type ViewerTitleViewProps = ViewerViewModelProps & {
-  item: FileItemModel;
-  person: PersonModel;
+type ViewerTitleProps = {
+  itemId: number;
+  currentItemId: number;
+  groupId: number;
+  currentIndex: number;
+  total: number;
 };
 
-export { ViewerTitleProps, ViewerTitleViewProps, ViewerTitleViewModelProps };
+type ViewerTitleViewProps = ViewerTitleProps & {
+  item: FileItemModel;
+  sender: PersonModel;
+};
+
+export { ViewerTitleProps, ViewerTitleViewProps };

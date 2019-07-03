@@ -51,19 +51,22 @@ class ViewerTitleViewComponent extends Component<
     this.setState({ smallWindow: width < 640 });
   }
 
-  asyncOperationDecorator = (setLoading: Function) => async (op: Function) => {
-    setLoading(true);
-    try {
-      return await op();
-    } finally {
-      setLoading(false);
-    }
+  createAsyncOperationDecorator = (setLoading: Function) => (
+    op: () => Promise<any>,
+  ) => {
+    return async () => {
+      setLoading(true);
+      try {
+        return await op();
+      } finally {
+        setLoading(false);
+      }
+    };
   }
 
   render() {
-    const { item, total, currentIndex, person, t, groupId } = this.props;
+    const { item, total, currentIndex, sender, t, groupId } = this.props;
     const { name, downloadUrl, createdAt } = item;
-    const { userDisplayName, id } = person;
     return (
       <ViewerContext.Consumer>
         {viewerContext => (
@@ -80,21 +83,23 @@ class ViewerTitleViewComponent extends Component<
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
                 />
-                <JuiDialogHeaderMeta>
-                  <JuiDialogHeaderMetaLeft>
-                    <Avatar
-                      uid={id}
-                      data-test-automation-id={'previewerSenderAvatar'}
+                {sender && (
+                  <JuiDialogHeaderMeta>
+                    <JuiDialogHeaderMetaLeft>
+                      <Avatar
+                        uid={sender.id}
+                        data-test-automation-id={'previewerSenderAvatar'}
+                      />
+                    </JuiDialogHeaderMetaLeft>
+                    <JuiDialogHeaderMetaRight
+                      title={sender.userDisplayName}
+                      data-test-automation-id={'previewerSenderInfo'}
+                      subtitle={dateFormatter.dateAndTimeWithoutWeekday(
+                        moment(createdAt),
+                      )}
                     />
-                  </JuiDialogHeaderMetaLeft>
-                  <JuiDialogHeaderMetaRight
-                    title={userDisplayName}
-                    data-test-automation-id={'previewerSenderInfo'}
-                    subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                      moment(createdAt),
-                    )}
-                  />
-                </JuiDialogHeaderMeta>
+                  </JuiDialogHeaderMeta>
+                )}
                 <JuiDialogHeaderTitle
                   variant="responsive"
                   data-test-automation-id={'previewerTitle'}
@@ -115,9 +120,11 @@ class ViewerTitleViewComponent extends Component<
                       groupId={groupId}
                       showViewInPostAction={true}
                       fileId={item.id}
-                      asyncOperationDecorator={this.asyncOperationDecorator(
-                        viewerContext.setLoading,
-                      )}
+                      asyncOperationDecorator={
+                        this.createAsyncOperationDecorator(
+                          viewerContext.setLoading,
+                        ) as FunctionDecorator
+                      }
                       beforeDelete={() => {
                         viewerContext.setDeleteItem(true);
                       }}

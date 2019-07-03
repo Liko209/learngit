@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ViewerViewProps, ViewerViewModelProps } from './types';
+import { ViewerViewProps } from './types';
 import { ViewerTitle } from './Title';
 import { ViewerContent } from './Content';
 import { JuiViewerBackground } from 'jui/pattern/ImageViewer';
@@ -14,11 +14,8 @@ import ViewerContext from './ViewerContext';
 import { Loading } from 'jui/hoc/withLoading';
 
 @observer
-class ViewerView extends Component<
-  ViewerViewProps & ViewerViewModelProps,
-  any
-> {
-  constructor(props: ViewerViewProps & ViewerViewModelProps) {
+class ViewerView extends Component<ViewerViewProps, any> {
+  constructor(props: ViewerViewProps) {
     super(props);
     this.state = {
       contextValue: {
@@ -82,7 +79,7 @@ class ViewerView extends Component<
             data-test-automation-id="Viewer"
             show={this.state.contextValue.show}
           >
-            <ViewerTitle itemId={rest.itemId} {...rest} />
+            <ViewerTitle {...rest} />
             <ViewerContent
               data-test-automation-id="ViewerContent"
               left={contentLeftRender({
