@@ -1,4 +1,6 @@
 import { SortUtils } from '../SortUtils';
+import { array } from '@storybook/addon-knobs';
+import { SortableModel, IdModel } from 'sdk/framework/model';
 
 /*
  * @Author: Thomas thomas.yang@ringcentral.com
@@ -120,5 +122,36 @@ describe('SortUtils', () => {
       );
     };
     expect(items.sort(sortFn)).toEqual([item1, item2, item3]);
+  });
+
+  describe('compareArrayOfSameLens', () => {
+    it.each`
+      arrA         | arrB         | res
+      ${[1]}       | ${[1]}       | ${0}
+      ${[1, 2]}    | ${[1, 2]}    | ${0}
+      ${[1, 3]}    | ${[1, 2]}    | ${1}
+      ${[1, -2]}   | ${[1, -3]}   | ${1}
+      ${[1, 2]}    | ${[1, 3]}    | ${-1}
+      ${[1, 2, 3]} | ${[1, 3, 2]} | ${-1}
+    `('$arrA compare to $arrB, res is: $res', ({ arrA, arrB, res }) => {
+      const result = SortUtils.compareArrayOfSameLens(arrA, arrB);
+      expect(result).toBe(res);
+    });
+  });
+
+  describe('compareSortableModel', () => {
+    const compareModels = [
+      { id: 1, sortWeights: [1, 2, 3], lowerCaseName: 'b' },
+      { id: 2, sortWeights: [1, 2, 4], lowerCaseName: 'b' },
+      { id: 3, sortWeights: [1, 2, 4], lowerCaseName: 'a' },
+      { id: 4, sortWeights: [1, 2, 4], lowerCaseName: 'a a' },
+    ];
+    it('should return expected order', () => {
+      const res = compareModels.sort((a: any, b: any) =>
+        SortUtils.compareSortableModel(a, b),
+      );
+
+      expect(res.map(x => x.id)).toEqual([3, 4, 2, 1]);
+    });
   });
 });

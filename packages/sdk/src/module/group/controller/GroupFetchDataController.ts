@@ -41,12 +41,12 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { LAST_ACCESS_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { SortUtils } from 'sdk/framework/utils';
 
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
-const SortableModelKeys = ['firstSortKey', 'secondSortKey', 'thirdSortKey'];
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
@@ -302,11 +302,9 @@ export class GroupFetchDataController {
           : 0;
         return {
           id: group.id,
-          firstSortKey: keyWeight,
-          secondSortKey: mostRecentViewTime,
-          thirdSortKey: -group.members.length, // the shorter the higher
           lowerCaseName: lowerCaseGroupName,
           displayName: groupName,
+          sortWeights: [keyWeight, mostRecentViewTime, -group.members.length],
           entity: group,
         };
       } while (false);
@@ -343,21 +341,7 @@ export class GroupFetchDataController {
     groupA: SortableModel<Group>,
     groupB: SortableModel<Group>,
   ) => {
-    let result = 0;
-    for (const iterator of SortableModelKeys) {
-      result = groupB[iterator] - groupA[iterator];
-      if (result !== 0) {
-        return result;
-      }
-    }
-
-    if (groupA.lowerCaseName < groupB.lowerCaseName) {
-      return -1;
-    }
-    if (groupA.lowerCaseName > groupB.lowerCaseName) {
-      return 1;
-    }
-    return 0;
+    return SortUtils.compareSortableModel<Group>(groupA, groupB);
   }
 
   private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
@@ -394,7 +378,7 @@ export class GroupFetchDataController {
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
-      let sortValue: number = 0;
+      let keyWeight: number = 0;
       do {
         if (!this.groupService.isValid(group)) {
           break;
@@ -455,7 +439,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        sortValue = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
+        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
 
         isMatched = true;
       } while (false);
@@ -472,8 +456,7 @@ export class GroupFetchDataController {
           lowerCaseName,
           id: group.id,
           displayName: groupName,
-          firstSortKey: sortValue,
-          secondSortKey: mostRecentViewTime,
+          sortWeights: [keyWeight, mostRecentViewTime],
           entity: group,
         };
       }
@@ -530,7 +513,7 @@ export class GroupFetchDataController {
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
-      let sortValue: number = 0;
+      let keyWeight: number = 0;
       do {
         if (!this._idValidTeam(team)) {
           break;
@@ -566,7 +549,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        sortValue = this._getNameMatchWeight(
+        keyWeight = this._getNameMatchWeight(
           lowerCaseAbbreviation,
           searchKeyTerms,
         );
@@ -587,9 +570,7 @@ export class GroupFetchDataController {
           id: team.id,
           lowerCaseName: team.set_abbreviation.toLowerCase(),
           displayName: team.set_abbreviation,
-          firstSortKey: sortValue,
-          secondSortKey: mostRecentViewTime,
-          thirdSortKey: isMeInTeam,
+          sortWeights: [keyWeight, mostRecentViewTime, isMeInTeam],
           entity: team,
         };
       }

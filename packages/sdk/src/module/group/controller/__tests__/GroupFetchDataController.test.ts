@@ -607,12 +607,7 @@ describe('GroupFetchDataController', () => {
       );
       expect(result.sortableModels.length).toEqual(505);
       const expectedModels = result.sortableModels.slice(0, 4);
-      expect(expectedModels.map(x => x.id)).toEqual([
-        12002,
-        12006,
-        13006,
-        12008,
-      ]);
+      expect(expectedModels.map(x => x.id)).toEqual([...ids, 13002]);
     });
   });
 

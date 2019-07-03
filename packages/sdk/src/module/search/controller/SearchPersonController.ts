@@ -31,6 +31,7 @@ import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
+import { SortUtils } from 'sdk/framework/utils';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -158,30 +159,11 @@ class SearchPersonController {
     return result;
   }
 
-  private get _sortByKeyFunc() {
-    return (personA: SortableModel<Person>, personB: SortableModel<Person>) => {
-      if (personA.firstSortKey > personB.firstSortKey) {
-        return -1;
-      }
-      if (personA.firstSortKey < personB.firstSortKey) {
-        return 1;
-      }
-
-      if (personA.secondSortKey > personB.secondSortKey) {
-        return -1;
-      }
-      if (personA.secondSortKey < personB.secondSortKey) {
-        return 1;
-      }
-
-      if (personA.lowerCaseName < personB.lowerCaseName) {
-        return -1;
-      }
-      if (personA.lowerCaseName > personB.lowerCaseName) {
-        return 1;
-      }
-      return 0;
-    };
+  private _sortByKeyFunc = (
+    personA: SortableModel<Person>,
+    personB: SortableModel<Person>,
+  ) => {
+    return SortUtils.compareSortableModel<Person>(personA, personB);
   }
 
   private _getMostRecentViewTime(
@@ -386,8 +368,7 @@ class SearchPersonController {
           id: person.id,
           displayName: personName,
           lowerCaseName: personNameLowerCase,
-          firstSortKey: sortValue,
-          secondSortKey: recentViewTime,
+          sortWeights: [sortValue, recentViewTime],
           entity: person,
           extraData: matchedNumbers,
         };
