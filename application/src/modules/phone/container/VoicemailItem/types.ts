@@ -51,6 +51,7 @@ type Handler = {
 enum BREAK_POINT_MAP {
   FULL = 832,
   EXPAND = 640,
+  SMALL = 480,
   SHORT = 400,
 }
 

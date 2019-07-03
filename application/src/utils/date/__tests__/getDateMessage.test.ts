@@ -85,7 +85,7 @@ describe('getCreateTime', () => {
       moment(timestamp).format('hh MM A'),
     );
   });
-  it.only('should be call postTimestamp if get createTime [JPT-2144]', () => {
+  it('should be call postTimestamp if get createTime [JPT-2144]', () => {
     const timestamp = moment().toISOString();
 
     expect(getCreateTime(timestamp, 'full')).toEqual(postTimestamp(timestamp));

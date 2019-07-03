@@ -136,7 +136,7 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     });
     kHandlers.push({
       checker: (width: number) =>
-        width < BREAK_POINT_MAP.FULL && width > BREAK_POINT_MAP.SHORT,
+        width < BREAK_POINT_MAP.FULL && width >= BREAK_POINT_MAP.SMALL,
       info: {
         buttonToShow: 2,
         showCallInfo: true,
@@ -144,9 +144,18 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
       },
     });
     kHandlers.push({
+      checker: (width: number) =>
+        width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.SMALL,
+      info: {
+        buttonToShow: 1,
+        showCallInfo: true,
+        dateFormat: 'full',
+      },
+    });
+    kHandlers.push({
       checker: (width: number) => width <= BREAK_POINT_MAP.SHORT,
       info: {
-        buttonToShow: 2,
+        buttonToShow: 1,
         showCallInfo: false,
         dateFormat: 'short',
       },
