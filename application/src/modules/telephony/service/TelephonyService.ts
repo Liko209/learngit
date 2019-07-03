@@ -12,7 +12,10 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'sdk/module/telephony';
-import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  CALL_ACTION_ERROR_CODE,
+} from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter } from 'sdk/service';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
@@ -596,27 +599,42 @@ class TelephonyService {
     }
 
     let $fetch: Promise<any>;
-    let isRecording: boolean = this._telephonyStore.isRecording;
+    const isRecording: boolean = this._telephonyStore.isRecording;
 
     if (isRecording) {
       this._telephonyStore.isStopRecording = true;
       $fetch = this._serverTelephonyService.stopRecord(this._callId);
     } else {
+      if (
+        !(await this._rcInfoService.isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.ON_DEMAND_CALL_RECORDING,
+        ))
+      ) {
+        ToastCallError.toastOnDemandRecording();
+        return;
+      }
       $fetch = this._serverTelephonyService.startRecord(this._callId);
     }
 
     try {
       await $fetch;
       isRecording && (this._telephonyStore.isStopRecording = false);
-    } catch {
+    } catch (e) {
       if (isRecording) {
         ToastCallError.toastFailedToStopRecording();
         this._telephonyStore.isStopRecording = false;
       } else {
-        ToastCallError.toastFailedToRecord();
+        switch (e) {
+          case CALL_ACTION_ERROR_CODE.ACR_ON: {
+            ToastCallError.toastAutoRecording();
+            break;
+          }
+          default: {
+            ToastCallError.toastFailedToRecord();
+            break;
+          }
+        }
       }
-
-      isRecording = !isRecording;
     }
   }
 
