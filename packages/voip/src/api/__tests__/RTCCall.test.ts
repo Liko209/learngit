@@ -2204,13 +2204,11 @@ describe('RTC call', () => {
 
     it('should get media statics per 2s and print log to console when call enter connected state. [JPT-997]', done => {
       setup();
-      jest.spyOn(rtcLogger, 'info');
       jest.spyOn(session.mediaStreams, 'getMediaStats');
       call._rtcMediaStatsManager.setMediaStatsReport('report');
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         expect(session.mediaStreams.getMediaStats.mock.calls[0][1]).toBe(2000);
-        expect(rtcLogger.info).toHaveBeenCalledTimes(1);
         done();
       });
     });
