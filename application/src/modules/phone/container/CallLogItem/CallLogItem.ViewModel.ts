@@ -19,14 +19,11 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
-<<<<<<< HEAD
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import moment from 'moment';
-=======
 import { i18nP } from '@/utils/i18nT';
->>>>>>> develop
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
