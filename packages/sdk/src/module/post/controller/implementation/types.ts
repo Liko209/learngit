@@ -41,3 +41,8 @@ export type SearchRequestInfo = {
   isSearchEnded?: boolean;
   scrollSize?: number;
 };
+
+export type ProcessorInfo = {
+  groupId: number;
+  itemId: number;
+};

@@ -29,13 +29,11 @@ import PostAPI from 'sdk/api/glip/post';
 import { transform } from 'sdk/service/utils';
 import { Raw } from 'sdk/framework/model';
 import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
+import { ProcessorInfo } from './types';
 
 const LOG_TAG = 'PostItemController';
 const SEQUENCE_NAME = 'GetPostsSequence';
-type ProcessorInfo = {
-  groupId: number;
-  itemId: number;
-};
+
 class PostItemProcessor implements IProcessor {
   private _itemInfo: ProcessorInfo;
   private _processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>;
