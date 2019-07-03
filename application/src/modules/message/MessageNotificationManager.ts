@@ -88,6 +88,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
+    const ids = this._vmQueue.map(i => i.id);
+    if (ids.includes(id)) {
+      return;
+    }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
       onCreate: () => this.buildNotification(postModel, groupModel),
@@ -102,7 +106,15 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     });
 
     if (this._vmQueue.length >= MAX_SIZE) {
-      this._vmQueue[MAX_SIZE - 1].vm.dispose();
+      const notification = this._vmQueue[MAX_SIZE - 1];
+      if (!notification) {
+        logger.warn(
+          'notification view model not found, current length is',
+          this._vmQueue.length,
+        );
+      } else {
+        notification.vm.dispose();
+      }
       delete this._vmQueue[MAX_SIZE - 1];
       this._vmQueue.length = MAX_SIZE - 1;
     }
