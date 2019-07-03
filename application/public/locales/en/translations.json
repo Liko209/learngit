@@ -627,7 +627,9 @@
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped"
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
     },
     "notification": {
       "incomingCall": "Incoming Call",

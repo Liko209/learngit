@@ -25,18 +25,9 @@ const hasMediaOpts = {
 
 describe('MediaTrack', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
+    window.HTMLMediaElement.prototype.load = jest.fn();
+
+    window.HTMLMediaElement.prototype.play = jest.fn();
   });
   afterEach(() => {
     jest.restoreAllMocks();

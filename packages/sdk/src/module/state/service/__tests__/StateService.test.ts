@@ -146,7 +146,7 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const groups: Partial<Group>[] = [];
       await stateService.handleGroupCursor(groups);
-      expect(mockHandleGroupCursor).toBeCalledWith(groups);
+      expect(mockHandleGroupCursor).toBeCalledWith(groups, undefined);
     });
   });
 
