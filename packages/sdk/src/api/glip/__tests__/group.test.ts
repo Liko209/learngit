@@ -7,6 +7,7 @@ import GroupAPI from '../group';
 import Api from '../../api';
 
 jest.mock('../../api');
+jest.mock('foundation');
 
 describe('GroupAPI', () => {
   describe('requestGroupById()', () => {
@@ -24,15 +25,19 @@ describe('GroupAPI', () => {
   describe('pinPost()', () => {
     it('pinPost() has different api, because team and group have different path', () => {
       GroupAPI.pinPost('team/123', { is_team: true, pin_post_ids: [] });
-      expect(GroupAPI.glipNetworkClient.put)
-        .toHaveBeenCalledWith({path: 'team/123', data: { is_team: true, pin_post_ids: [] }});
+      expect(GroupAPI.glipNetworkClient.put).toHaveBeenCalledWith({
+        path: 'team/123',
+        data: { is_team: true, pin_post_ids: [] },
+      });
     });
   });
   describe('addTeamMembers()', () => {
     it('glipNetworkClient addTeamMembers() should be called with specific data', () => {
       GroupAPI.addTeamMembers(2, [1, 2, 3]);
-      expect(GroupAPI.glipNetworkClient.put)
-        .toHaveBeenCalledWith({path: '/add_team_members/2', data: { members: [1, 2, 3] }});
+      expect(GroupAPI.glipNetworkClient.put).toHaveBeenCalledWith({
+        path: '/add_team_members/2',
+        data: { members: [1, 2, 3] },
+      });
     });
   });
   describe('createTeam()', () => {
@@ -64,7 +69,16 @@ describe('GroupAPI', () => {
         _csrf: null,
       };
       GroupAPI.createTeam(data);
-      expect(GroupAPI.glipNetworkClient.post).toHaveBeenCalledWith({ data, path: '/team'});
+      expect(GroupAPI.glipNetworkClient.post).toHaveBeenCalledWith({
+        data,
+        path: '/team',
+      });
+    });
+  });
+  describe('sendTypingEvent', () => {
+    it('should send when socket is not undefined', () => {
+      GroupAPI.sendTypingEvent({});
+      expect(GroupAPI.glipNetworkClient.send).toHaveBeenCalled();
     });
   });
 });

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { IPreFetchController } from './cache/interface/IPreFetchController';
 import { WINDOW } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import pinnedPostCacheController from './cache/PinnedPostCacheController';
 import conversationPostCacheController from './cache/ConversationPostCacheController';
@@ -19,9 +19,9 @@ class PreFetchConversationDataHandler {
   constructor(preFetchControllers: IPreFetchController[]) {
     this._cachedGroupIds = new Set();
     this._preFetchControllers = preFetchControllers;
-    this._preFetchQueueHandler = new SequenceProcessorHandler(
-      'PreFetchConversationDataHandler',
-    );
+    this._preFetchQueueHandler = new SequenceProcessorHandler({
+      name: 'PreFetchConversationDataHandler',
+    });
 
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this._onNetWorkChanged(onLine);

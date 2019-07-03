@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c14 {
@@ -296,6 +297,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c1 {
   height: 200px;
+  cursor: default;
   background-color: #bfbfbf;
   opacity: 0.36;
 }
@@ -373,6 +375,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -455,7 +458,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -470,6 +476,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -552,7 +559,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -567,6 +577,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -649,7 +660,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -664,6 +678,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -746,7 +761,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

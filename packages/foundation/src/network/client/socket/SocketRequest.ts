@@ -9,6 +9,7 @@ import NetworkRequestBuilder from '../NetworkRequestBuilder';
 class SocketRequest extends BaseRequest {
   parameters: object & { request_id: string };
   uri: string = '';
+  channel: string = '';
   constructor(builder: NetworkRequestBuilder) {
     super(builder);
     this.parameters = {
@@ -17,6 +18,7 @@ class SocketRequest extends BaseRequest {
       request_id: builder.id,
     };
     this.uri = builder.path;
+    this.channel = builder.channel;
     delete this.params;
   }
   needAuth(): boolean {

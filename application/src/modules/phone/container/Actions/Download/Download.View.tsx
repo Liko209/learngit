@@ -8,8 +8,8 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
-import { DownloadViewProps, BUTTON_TYPE } from './types';
+import { JuiActionIconWrapper, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { DownloadViewProps } from './types';
 
 type Props = DownloadViewProps & WithTranslation;
 
@@ -18,7 +18,7 @@ const DOWNLOAD_ID = 'downloadTag';
 @observer
 class DownloadViewComponent extends Component<Props> {
   _handleClick = async () => {
-    const { getUri, hookAfterClick } = this.props;
+    const { getUri, hookAfterClick, type } = this.props;
     const downloadLink = await getUri();
     const aLinkDom = document.getElementById(DOWNLOAD_ID);
     if (!aLinkDom) {
@@ -26,7 +26,9 @@ class DownloadViewComponent extends Component<Props> {
     }
     aLinkDom.setAttribute('href', downloadLink);
     aLinkDom.click();
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   render() {

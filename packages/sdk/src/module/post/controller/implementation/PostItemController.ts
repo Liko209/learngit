@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { PostItemData } from '../../entity/PostItemData';
 import { ItemFile } from '../../../item/entity';
 
-import { Post, PostView } from '../../entity/Post';
+import { Post } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -28,10 +28,66 @@ import { PostDao } from '../../dao';
 import PostAPI from 'sdk/api/glip/post';
 import { transform } from 'sdk/service/utils';
 import { Raw } from 'sdk/framework/model';
+import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
+import { ProcessorInfo } from './types';
 
 const LOG_TAG = 'PostItemController';
+const SEQUENCE_NAME = 'GetPostsSequence';
+
+class PostItemProcessor implements IProcessor {
+  private _itemInfo: ProcessorInfo;
+  private _processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>;
+  private _resolve: (post: Nullable<Post>) => void;
+  private _reject: (error: Error) => void;
+  constructor(
+    itemInfo: ProcessorInfo,
+    processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>,
+    resolve: (post: Nullable<Post>) => void,
+    reject: (error: Error) => void,
+  ) {
+    this._itemInfo = itemInfo;
+    this._processFunc = processFunc;
+    this._resolve = resolve;
+    this._reject = reject;
+  }
+  async process(): Promise<boolean> {
+    try {
+      const result = await this._processFunc(this._itemInfo);
+      this._resolve(result);
+    } catch (error) {
+      this._reject(error);
+    }
+    return true;
+  }
+  name(): string {
+    return this._itemInfo.itemId.toString();
+  }
+  cancel(): void {
+    this._resolve(null);
+  }
+}
 class PostItemController implements IPostItemController {
-  constructor(public postActionController: IPostActionController) {}
+  private _sequenceProcessor: SequenceProcessorHandler;
+  constructor(public postActionController: IPostActionController) {
+    this._sequenceProcessor = new SequenceProcessorHandler({
+      name: SEQUENCE_NAME,
+      addProcessorStrategy: this._addProcessorStrategy,
+    });
+  }
+  private _addProcessorStrategy = (
+    totalProcessors: IProcessor[],
+    newProcessor: IProcessor,
+    existed: boolean,
+  ) => {
+    if (totalProcessors.length) {
+      totalProcessors.forEach((processor: IProcessor) => {
+        if (processor && processor.cancel) {
+          processor.cancel();
+        }
+      });
+    }
+    return [newProcessor];
+  }
 
   /**
    * public APIs
@@ -241,7 +297,7 @@ class PostItemController implements IPostItemController {
     }
     return [];
   }
-  private _getLatestPostId(groupId: number, posts: Post[]) {
+  private _getLatestPost(groupId: number, posts: Post[]) {
     if (posts.length) {
       const postsInCurrentGroup = posts.filter(
         (post: Post) => post.group_id === groupId && !post.deactivated,
@@ -253,10 +309,26 @@ class PostItemController implements IPostItemController {
     }
     return null;
   }
+
   async getLatestPostIdByItem(
     groupId: number,
     itemId: number,
   ): Promise<Nullable<Post>> {
+    return new Promise<Nullable<Post>>((resolve, reject) => {
+      const itemInfo = { groupId, itemId };
+      const processor = new PostItemProcessor(
+        itemInfo,
+        this._getLatestPostIdByItem,
+        resolve,
+        reject,
+      );
+      this._sequenceProcessor.addProcessor(processor);
+    });
+  }
+  private _getLatestPostIdByItem = async ({
+    groupId,
+    itemId,
+  }: ProcessorInfo): Promise<Nullable<Post>> => {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
@@ -264,14 +336,14 @@ class PostItemController implements IPostItemController {
     if (item) {
       const ids = item.post_ids;
       const localPosts = await daoManager.getDao(PostDao).batchGet(ids);
-      const localPost = this._getLatestPostId(groupId, localPosts);
+      const localPost = this._getLatestPost(groupId, localPosts);
       if (localPost) {
         return localPost;
       }
       const restIds = _.difference(ids, localPosts.map(({ id }) => id));
       if (restIds.length) {
         const remotePosts = await this._getPostsFromRemote(restIds);
-        return this._getLatestPostId(groupId, remotePosts);
+        return this._getLatestPost(groupId, remotePosts);
       }
     }
     return null;

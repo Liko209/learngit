@@ -34,7 +34,11 @@ class ForwardViewComponent extends React.Component<Props> {
   }
   render() {
     const { t } = this.props;
-
+    /**
+     * TODO: delete the folders: DialerHeader&DialerContainer
+     * And using <GenericDialerPanel/> to full fill the task
+     * And Delete <DialerHeader/> & <DialerContainer/>
+     */
     return (
       <>
         <JuiHeaderContainer>

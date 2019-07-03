@@ -69,8 +69,8 @@ export class FetchDataListHandler<
     } = options;
     this._pageSize = pageSize;
     this._entityName = entityName;
-    this.listStore._hasMoreUp = hasMoreUp;
-    this.listStore._hasMoreDown = hasMoreDown;
+    this.listStore.hasMore.older = hasMoreUp;
+    this.listStore.hasMore.newer = hasMoreDown;
     this._defaultHasMoreUp = hasMoreUp;
     this._defaultHasMoreDown = hasMoreDown;
     if (dataChangeCallBack) {
@@ -83,16 +83,11 @@ export class FetchDataListHandler<
   }
 
   hasMore(direction: QUERY_DIRECTION) {
-    return direction === QUERY_DIRECTION.OLDER
-      ? this.listStore._hasMoreUp
-      : this.listStore._hasMoreDown;
+    return this.listStore.hasMore[direction];
   }
 
   setHasMore(value: boolean, direction: QUERY_DIRECTION) {
-    return this.listStore.setHasMore(
-      value,
-      direction === QUERY_DIRECTION.OLDER,
-    );
+    return this.listStore.setHasMore(value, direction);
   }
 
   addDataChangeCallback(cb: DeltaDataHandler<IdType, SortableModel>) {
@@ -170,7 +165,7 @@ export class FetchDataListHandler<
       inFront = true;
     }
     const hasMore = result.length >= this._pageSize;
-    this.listStore.setHasMore(hasMore, inFront);
+    this.listStore.setHasMore(hasMore, direction);
     if (result.length > 0) {
       this._listStore.append(result, inFront);
     }

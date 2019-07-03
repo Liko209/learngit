@@ -6,6 +6,7 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c10 {
@@ -556,7 +557,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -597,7 +601,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -638,7 +645,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
                 className="c10"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>

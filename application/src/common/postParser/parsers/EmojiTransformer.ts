@@ -36,13 +36,14 @@ class EmojiTransformer {
     const reg = this.getRegexp(options, convertType);
     return originalStr.replace(reg, (_match: string, pre = '', emoji) => {
       const enlarge = emoji.length === originalStr.trim().length;
-      const id = b64EncodeUnicode(emoji + enlarge);
+      const id = b64EncodeUnicode((unicodeOnly ? 'u' : '') + emoji + enlarge);
       if (this.emojiDataMap[id]) {
         return pre + this.getReplacePattern(id);
       }
       const obj = customEmojiMap[emoji.slice(1, -1)];
 
       if (
+        !unicodeOnly &&
         convertType === EmojiConvertType.CUSTOM &&
         obj &&
         typeof obj === 'object' &&

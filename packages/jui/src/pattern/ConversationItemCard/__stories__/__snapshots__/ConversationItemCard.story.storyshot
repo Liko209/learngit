@@ -68,6 +68,7 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c3 {
@@ -529,6 +530,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c10 {
@@ -1105,6 +1107,7 @@ exports[`Storyshots Pattern/ConversationItemCard eventItemCard: Pattern/Conversa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c3 {
@@ -1294,6 +1297,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c22 {

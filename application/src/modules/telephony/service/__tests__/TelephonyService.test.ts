@@ -396,6 +396,7 @@ describe('TelephonyService', () => {
     });
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
@@ -507,6 +508,34 @@ describe('TelephonyService', () => {
       ).toBe(true);
 
       await (telephonyService as TelephonyService).hangUp();
+    });
+
+    it('Should prompt toast when recording disabled in service web [JPT-2427]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastOnDemandRecording).toHaveBeenCalled();
+      expect(mockedServerTelephonyService.startRecord).not.toBeCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
+    });
+
+    it('Should prompt toast when auto recording in service web [JPT-2428]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      mockedServerTelephonyService.startRecord = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(-8));
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastAutoRecording).toHaveBeenCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
     });
   });
 
@@ -650,7 +679,8 @@ describe('TelephonyService', () => {
     const original = Array(50)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
+    const fn = telephonyService.updateInputStringFactory('inputString');
+    fn(original);
     expect(telephonyService._telephonyStore.inputString.length).toBe(30);
   });
 
@@ -658,8 +688,11 @@ describe('TelephonyService', () => {
     const original = Array(30)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
-    telephonyService.concatInputString('2');
+    const updateFn = telephonyService.updateInputStringFactory('inputString');
+    const concatFn = telephonyService.concatInputStringFactory('inputString');
+
+    updateFn(original);
+    concatFn('2');
     expect(telephonyService._telephonyStore.inputString).toBe(original);
   });
 
@@ -703,7 +736,10 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.concatInputString('5');
+    const concatInputString = telephonyService.concatInputStringFactory(
+      'inputString',
+    );
+    concatInputString('5');
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('12345');

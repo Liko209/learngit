@@ -12,6 +12,7 @@ import {
 } from './types';
 import { notificationCenter } from 'sdk/service';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -32,6 +33,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
 
 const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
@@ -72,6 +74,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
+  private _groupService: GroupService;
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
@@ -81,14 +84,27 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private _oldId: number;
-
+  private _debounceFactor: number = 3e2;
   @observable
   error: string = '';
+
+  private _upHandler = debounce(
+    this.props.onUpArrowPressed,
+    this._debounceFactor,
+    {
+      leading: true,
+    },
+  );
 
   keyboardEventHandler = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
+    },
+    up: {
+      key: 38,
+      empty: true,
+      handler: this._upHandler,
     },
   };
 
@@ -96,6 +112,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     super(props);
     this._postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
+    );
+
+    this._groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
     );
 
     this._itemService = ServiceLoader.getInstance<ItemService>(
@@ -115,10 +135,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       },
     );
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.addEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   dispose = () => {
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.removeEventListener(
+      'beforeunload',
+      this._handleBeforeUnload.bind(this),
+    );
   }
 
   @action
@@ -176,6 +204,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   contentChange = (draft: string) => {
+    if ((!isEmpty(draft) || !isEmpty(this.draft)) && draft !== this.draft) {
+      this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    }
     this.error = '';
     this.draft = draft;
   }
@@ -289,11 +320,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       this._trackSendPost();
-      let realContent: string = content;
-
-      if (content.trim().length === 0) {
-        realContent = '';
-      }
+      const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
         groupId: this.props.id,
@@ -327,6 +354,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       type,
       this._group.analysisType,
     );
+  }
+
+  private _handleBeforeUnload() {
+    this.forceSaveDraft();
   }
 }
 

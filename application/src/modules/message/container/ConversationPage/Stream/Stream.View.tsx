@@ -155,8 +155,8 @@ class StreamViewComponent extends Component<Props> {
     }
   }
 
-  private _renderPost(streamItem: StreamItem & { value: number[] }) {
-    const postId = streamItem.value[0];
+  private _renderPost(streamItem: StreamItem & { value: number }) {
+    const postId = streamItem.value;
     return (
       <ConversationPost
         id={postId}
@@ -307,10 +307,9 @@ class StreamViewComponent extends Component<Props> {
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
     if (firstPostItem) {
-      const isHistoryRead = firstPostItem.value.some(
-        (i: number) =>
-          0 <= i && (i <= historyReadThrough || i <= firstHistoryUnreadPostId),
-      );
+      const i = firstPostItem.value;
+      const isHistoryRead =
+        0 <= i && (i <= historyReadThrough || i <= firstHistoryUnreadPostId);
       if (isHistoryRead) {
         this.handleFirstUnreadViewed();
       } else {
@@ -352,7 +351,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _findStreamItemIndexByPostId = (id: number) => {
     return this.props.items.findIndex((item: StreamItemPost) => {
-      return item.type === StreamItemType.POST && item.value.includes(id);
+      return item.type === StreamItemType.POST && item.value === id;
     });
   }
 

@@ -10,8 +10,8 @@ import { Notification } from '@/containers/Notification';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { CallLogService } from 'sdk/module/RCItems/callLog';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { DeleteViewModel } from '../Delete.ViewModel';
-import { BUTTON_TYPE } from '../types';
 
 jest.mock('@/containers/Notification');
 

@@ -31,11 +31,10 @@ describe('VoicemailViewModel', () => {
     async t1() {
       const vm = new VoicemailViewModel();
       const ret = await vm._fetchData(QUERY_DIRECTION.OLDER, 1);
-      expect(voicemailService.fetchVoicemails).toHaveBeenCalledWith(
-        1,
-        QUERY_DIRECTION.NEWER,
-        undefined,
-      );
+      expect(voicemailService.fetchVoicemails).toHaveBeenCalledWith({
+        limit: 1,
+        direction: QUERY_DIRECTION.NEWER,
+      });
       expect(ret).toBeTruthy();
     }
 
@@ -47,11 +46,11 @@ describe('VoicemailViewModel', () => {
         id: 1,
         sortValue: 1,
       });
-      expect(voicemailService.fetchVoicemails).toHaveBeenCalledWith(
-        1,
-        QUERY_DIRECTION.OLDER,
-        1,
-      );
+      expect(voicemailService.fetchVoicemails).toHaveBeenCalledWith({
+        limit: 1,
+        direction: QUERY_DIRECTION.OLDER,
+        anchorId: 1,
+      });
       expect(ret).toBeTruthy();
     }
 
