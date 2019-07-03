@@ -69,10 +69,10 @@ class PostItemProcessor implements IProcessor {
 class PostItemController implements IPostItemController {
   private _sequenceProcessor: SequenceProcessorHandler;
   constructor(public postActionController: IPostActionController) {
-    this._sequenceProcessor = new SequenceProcessorHandler(
-      SEQUENCE_NAME,
-      this._addProcessorStrategy,
-    );
+    this._sequenceProcessor = new SequenceProcessorHandler({
+      name: SEQUENCE_NAME,
+      addProcessorStrategy: this._addProcessorStrategy,
+    });
   }
   private _addProcessorStrategy = (
     totalProcessors: IProcessor[],
