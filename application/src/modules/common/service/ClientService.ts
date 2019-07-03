@@ -36,7 +36,6 @@ class ClientService implements IClientService {
       appPortal.style.display = 'none';
       const body = document.body;
       body.appendChild(appPortal);
-      
     }
     if (!window.jupiterElectron) {
       return;
