@@ -65,8 +65,16 @@ class ViewerTitleViewComponent extends Component<
   }
 
   render() {
-    const { item, total, currentIndex, sender, t, groupId } = this.props;
-    const { name, downloadUrl, createdAt } = item;
+    const {
+      item,
+      total,
+      currentIndex,
+      sender,
+      createdAt,
+      t,
+      groupId,
+    } = this.props;
+    const { name, downloadUrl } = item;
     return (
       <ViewerContext.Consumer>
         {viewerContext => (
@@ -83,7 +91,7 @@ class ViewerTitleViewComponent extends Component<
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
                 />
-                {sender && (
+                {sender && createdAt && (
                   <JuiDialogHeaderMeta>
                     <JuiDialogHeaderMetaLeft>
                       <Avatar

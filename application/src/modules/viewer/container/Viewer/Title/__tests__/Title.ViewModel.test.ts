@@ -6,55 +6,95 @@
 
 import { getEntity } from '@/store/utils';
 import { ViewerTitleViewModel } from '../Title.ViewModel';
-import { ViewerTitleViewModelProps } from '../types';
+import { ViewerTitleProps } from '../types';
+import * as mobx from 'mobx';
+import { FileItem } from 'jui/pattern/ConversationCard/Files/style';
+import * as storeUtils from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+
 jest.mock('@/store/utils');
-const props: ViewerTitleViewModelProps = {
+const props: ViewerTitleProps = {
   groupId: 1,
   itemId: 1,
-  type: 1,
-  init: jest.fn(),
   currentItemId: 1,
   currentIndex: 1,
   total: 1,
-  ids: [],
-  updateCurrentItemIndex: jest.fn(),
-  loadMore: jest.fn(),
-  setOnCurrentItemDeletedCb: jest.fn(),
-  getCurrentItemId: jest.fn(),
-  getCurrentIndex: jest.fn(),
-  setOnItemSwitchCb: jest.fn(),
-  switchToPrevious: jest.fn(),
-  switchToNext: jest.fn(),
-  stopPreload: jest.fn(),
-  hasPrevious: true,
-  hasNext: true,
 };
 
 describe('TitleViewModel', () => {
-  beforeAll(() => {
+  const autoRunSpy = jest.spyOn(mobx, 'autorun').mockImplementation(e => e);
+  function getVM() {
+    const vm = new ViewerTitleViewModel(props);
+    return vm;
+  }
+  beforeEach(() => {
     jest.resetAllMocks();
   });
+
+  describe('constructor()', () => {
+    it('should init correctly', () => {
+      const vm = getVM();
+      expect(vm.sender).toBe(null);
+      expect(vm.createdAt).toBe(null);
+      expect(autoRunSpy).toBeCalledWith(vm.updateSenderInfo, undefined);
+    });
+  });
+
   describe('item()', () => {
     it('should be return Item info when call item()', () => {
-      const vm = new ViewerTitleViewModel(props);
+      const vm = getVM();
       (getEntity as jest.Mock).mockReturnValue({ itemId: 1 });
       expect(vm.item).toEqual({ itemId: 1 });
     });
   });
-  describe('person()', () => {
-    it('should be return person info when call person() and newestCreatorId exist', () => {
-      const vm = new ViewerTitleViewModel(props);
-      (getEntity as jest.Mock).mockImplementation((type: string) =>
-        type === 'person' ? { personId: 1 } : { newestCreatorId: 1 },
-      );
-      expect(vm.person).toEqual({ personId: 1 });
+
+  describe('updateSenderInfo()', () => {
+    it('should get post from item.getDirectRelatedPostInGroup', async (done: any) => {
+      const fileItem = {
+        getDirectRelatedPostInGroup: jest.fn(),
+      };
+      const spy = jest.spyOn(storeUtils, 'getEntity').mockReturnValue(fileItem);
+      const vm = getVM();
+
+      await vm.updateSenderInfo();
+
+      expect(fileItem.getDirectRelatedPostInGroup).toBeCalled();
+
+      spy.mockRestore();
+      done();
     });
-    it('should be return null when call person() and newestCreatorId not exist', () => {
-      const vm = new ViewerTitleViewModel(props);
-      (getEntity as jest.Mock).mockImplementation((type: string) =>
-        type === 'person' ? { personId: 1 } : {},
-      );
-      expect(vm.person).toEqual({});
+
+    it('should get sender when item.getDirectRelatedPostInGroup return post', async (done: any) => {
+      const fileItem = {
+        getDirectRelatedPostInGroup: jest.fn(() => ({ creator_id: 123 })),
+      };
+      const spy = jest.spyOn(storeUtils, 'getEntity').mockReturnValue(fileItem);
+      const vm = getVM();
+
+      await vm.updateSenderInfo();
+
+      expect(spy).toBeCalledWith(ENTITY_NAME.PERSON, 123);
+
+      spy.mockRestore();
+      done();
+    });
+
+    it('should set sender and createdAt to null when cannot get post', async (done: any) => {
+      const fileItem = {
+        getDirectRelatedPostInGroup: jest.fn(() => null),
+      };
+      const spy = jest.spyOn(storeUtils, 'getEntity').mockReturnValue(fileItem);
+      const vm = getVM();
+      vm.sender = {};
+      vm.createdAt = {};
+
+      await vm.updateSenderInfo();
+
+      expect(vm.sender).toBe(null);
+      expect(vm.createdAt).toBe(null);
+
+      spy.mockRestore();
+      done();
     });
   });
 });

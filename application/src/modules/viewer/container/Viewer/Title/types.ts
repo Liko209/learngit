@@ -17,7 +17,8 @@ type ViewerTitleProps = {
 
 type ViewerTitleViewProps = ViewerTitleProps & {
   item: FileItemModel;
-  sender: PersonModel;
+  sender: PersonModel | null;
+  createdAt: number | null;
 };
 
 export { ViewerTitleProps, ViewerTitleViewProps };
