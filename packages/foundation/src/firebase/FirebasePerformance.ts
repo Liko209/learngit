@@ -7,6 +7,7 @@
 import * as firebase from 'firebase/app';
 // Add the Performance Monitoring library
 import 'firebase/performance';
+import { firebaseConfigProEnv } from './types';
 
 class FirebasePerformance {
   private static _instance: FirebasePerformance;
@@ -20,18 +21,8 @@ class FirebasePerformance {
   }
 
   initialize() {
-    const firebaseConfig = {
-      apiKey: 'AIzaSyAMEhBz7K7CNr1XFkBWh0xx8fzqc7omv6c',
-      authDomain: 'jupiter-ca30a.firebaseapp.com',
-      databaseURL: 'https://jupiter-ca30a.firebaseio.com',
-      projectId: 'jupiter-ca30a',
-      storageBucket: '',
-      messagingSenderId: '939459062083',
-      appId: '1:939459062083:web:3669766199ae04d7',
-    };
-
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfigProEnv);
     this._performance = firebase.performance();
   }
 
