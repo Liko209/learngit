@@ -10,7 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import {
   ERCServiceFeaturePermission,
-  ERCWebSettingUri,
+  ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
 } from '../types';
@@ -192,10 +192,10 @@ class RCInfoService extends EntityBaseService<IdModel>
       .getCallerIdList();
   }
 
-  async generateWebSettingUri(type: ERCWebSettingUri) {
+  async generateWebSettingUri(type: ERCWebUris) {
     return this.getRCInfoController()
       .getRcWebSettingInfoController()
-      .generateRCAuthCodeUri(type);
+      .getRCWebUriByType(type);
   }
 
   private get regionInfoController() {

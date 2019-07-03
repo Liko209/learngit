@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -337,6 +338,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c13 {
@@ -1301,7 +1303,9 @@ exports[`Storyshots Pattern/MessageInput JuiInputFooter: Pattern/MessageInput Ju
 }
 
 .c1 {
-  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: left;
 }
 

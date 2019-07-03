@@ -191,10 +191,12 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
   beforeEach(() => {
     postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
-      getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({
+        requestId: 1,
+        posts: [],
+        hasMore: true,
+        contentCount: {},
+      }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -207,17 +209,24 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
     });
 
     await vm.onPostsFetch();
-    expect(postService.getSearchContentsCount).toHaveBeenCalledWith(
-      expect.not.objectContaining({ type: ESearchContentTypes }),
-    );
+    expect(postService.searchPosts).toHaveBeenCalledWith({
+      q: 'searchKey',
+      scroll_size: 20,
+      type: 'all',
+    });
   });
 
   it('postsCount should change with the "type" search option', async () => {
     const vm = new ContentSearchResultViewModel({});
 
-    postService.getSearchContentsCount.mockResolvedValue({
-      [TypeDictionary.TYPE_ID_POST]: 12,
-      [TypeDictionary.TYPE_ID_EVENT]: 3,
+    postService.searchPosts.mockResolvedValue({
+      requestId: 1,
+      posts: [],
+      hasMore: true,
+      contentCount: {
+        [TypeDictionary.TYPE_ID_POST]: 12,
+        [TypeDictionary.TYPE_ID_EVENT]: 3,
+      },
     });
 
     await vm.onPostsFetch();
@@ -245,10 +254,12 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
   beforeEach(() => {
     postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
-      getSearchContentsCount: jest.fn().mockResolvedValue({}),
-      searchPosts: jest
-        .fn()
-        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+      searchPosts: jest.fn().mockResolvedValue({
+        requestId: 1,
+        posts: [],
+        hasMore: true,
+        contentCount: {},
+      }),
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
@@ -266,11 +277,16 @@ describe('ContentSearchResult fix(FIJI-4870)', () => {
         id: TypeDictionary.TYPE_ID_TASK,
       },
     ];
-    postService.getSearchContentsCount.mockResolvedValue({
-      [TypeDictionary.TYPE_ID_POST]: 12,
-      [TypeDictionary.TYPE_ID_EVENT]: 3,
-      [TypeDictionary.TYPE_ID_FILE]: 1,
-      [TypeDictionary.TYPE_ID_TASK]: 5,
+    postService.searchPosts.mockResolvedValue({
+      requestId: 1,
+      posts: [],
+      hasMore: true,
+      contentCount: {
+        [TypeDictionary.TYPE_ID_POST]: 12,
+        [TypeDictionary.TYPE_ID_EVENT]: 3,
+        [TypeDictionary.TYPE_ID_FILE]: 1,
+        [TypeDictionary.TYPE_ID_TASK]: 5,
+      },
     });
 
     const vm = new ContentSearchResultViewModel({});

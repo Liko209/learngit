@@ -6,6 +6,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c5 {
@@ -34,6 +35,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c0.c0 > *:nth-child(n + 2) {
@@ -130,7 +135,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -182,7 +190,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -234,7 +245,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -286,7 +300,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
                 className="c5"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
             <input
@@ -313,6 +330,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -341,6 +359,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c0.c0 > *:nth-child(n + 2) {
@@ -434,7 +456,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -472,7 +497,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -510,7 +538,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -548,7 +579,10 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -564,6 +598,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -592,6 +627,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c0.c0 > *:nth-child(n + 2) {
@@ -702,7 +741,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -743,7 +785,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -784,7 +829,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>
@@ -825,7 +873,10 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
               className="c4"
               role="img"
             >
-              <use />
+              <use
+                href="#undefined"
+                xlinkHref="#undefined"
+              />
             </svg>
           </span>
         </span>

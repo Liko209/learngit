@@ -115,12 +115,7 @@ describe('CallLogDao', () => {
 
   describe('queryCallLogs', () => {
     it('should queryCallLogs in viewDao', async () => {
-      await dao.queryCallLogs(
-        CALL_LOG_SOURCE.ALL,
-        'mockId',
-        QUERY_DIRECTION.OLDER,
-        20,
-      );
+      await dao.queryCallLogs({});
       expect(viewDao.queryCallLogs).toBeCalled();
     });
   });

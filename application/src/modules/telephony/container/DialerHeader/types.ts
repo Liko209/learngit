@@ -3,7 +3,7 @@
  * @Date: 2019-03-06 15:43:50
  * Copyright © RingCentral. All rights reserved.
  */
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent } from 'react';
 
 type DialerHeaderProps = {
   Back?: React.ComponentType<any>;
@@ -24,7 +24,6 @@ type DialerHeaderViewProps = {
   dialerInputFocused: boolean;
   deleteLastInputString: () => void;
   deleteInputString: () => void;
-  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
 } & DialerHeaderProps;
 
 export { DialerHeaderProps, DialerHeaderViewProps };

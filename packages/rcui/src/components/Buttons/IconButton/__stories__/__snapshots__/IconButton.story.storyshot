@@ -1,0 +1,1027 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Buttons/IconButtons Floating: Buttons/IconButtons Floating 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c0.c0 {
+  background-color: inherit;
+  color: rgba(0,0,0,0.87);
+  width: 48px;
+  height: 48px;
+  min-height: 32px;
+}
+
+.c0.c0 .c1,
+.c0.c0 .c1 svg {
+  font-size: 16px;
+}
+
+.c0.c0:hover {
+  background-color: rgb(235,235,235);
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <button
+    className="MuiButtonBase-root MuiFab-root MuiFab-sizeMedium c0"
+    disabled={false}
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    tabIndex="0"
+    type="button"
+  >
+    <span
+      className="MuiFab-label"
+    >
+      <span
+        className="c1 call-add icon c2"
+      >
+        <svg
+          className="c3"
+        >
+          <use
+            href="#icon-call-add"
+            xlinkHref="#icon-call-add"
+          />
+        </svg>
+      </span>
+    </span>
+    <span
+      className="MuiTouchRipple-root"
+    />
+  </button>
+</div>
+`;
+
+exports[`Storyshots Buttons/IconButtons capsule: Buttons/IconButtons capsule 1`] = `
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c6.c6 .c3,
+.c6.c6 .c3 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c3 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c6.c6:active .c3 {
+  color: #0684DB;
+}
+
+.c6.c6.c6.c6.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .c3,
+.c7.c7 .c3 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover .c3 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c7.c7:active .c3 {
+  color: #0684DB;
+}
+
+.c7.c7.c7.c7.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #0684DB;
+  opacity: 1;
+  padding: 0;
+}
+
+.c2.c2 .c3,
+.c2.c2 .c3 svg {
+  font-size: 20px;
+}
+
+.c2.c2:hover {
+  background-color: transparent;
+}
+
+.c2.c2:active .c3 {
+  color: #0684DB;
+}
+
+.c2.c2.c2.c2.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 .rippleVisible {
+  color: #0684DB;
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: crcrHC;
+  animation-name: crcrHC;
+}
+
+.c1 {
+  display: inline-block;
+  background-color: #ffffff;
+  padding: 10px 10px;
+  border-radius: 30px;
+  box-shadow: 0px 1px 1px #9e9e9e;
+}
+
+.c1 .inline-icon {
+  display: inline-block;
+  padding: 0px 6px;
+  margin-top: 0;
+  box-sizing: content-box;
+}
+
+.c0 {
+  background-color: #eeeeee;
+  padding: 12px 0;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c1"
+      size="medium"
+    >
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 star icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-star"
+                xlinkHref="#icon-star"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 thumbup icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-thumbup"
+                xlinkHref="#icon-thumbup"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 call-add icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-call-add"
+                xlinkHref="#icon-call-add"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 signal-0 icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-signal-0"
+                xlinkHref="#icon-signal-0"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Buttons/IconButtons group: Buttons/IconButtons group 1`] = `
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c6.c6 .c3,
+.c6.c6 .c3 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c3 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c6.c6:active .c3 {
+  color: #0684DB;
+}
+
+.c6.c6.c6.c6.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684DB;
+  opacity: 1;
+  padding: 0;
+}
+
+.c2.c2 .c3,
+.c2.c2 .c3 svg {
+  font-size: 20px;
+}
+
+.c2.c2:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c2.c2:hover .c3 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c2.c2:active .c3 {
+  color: #0684DB;
+}
+
+.c2.c2.c2.c2.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 .rippleVisible {
+  color: #0684DB;
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: crcrHC;
+  animation-name: crcrHC;
+}
+
+.c1 {
+  display: inline-block;
+  background-color: #ffffff;
+}
+
+.c1 .inline-icon {
+  display: inline-block;
+}
+
+.c0 {
+  background-color: #eeeeee;
+  padding: 12px 0;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div
+    className="c0"
+  >
+    <div
+      className="c1"
+      size="medium"
+    >
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 star icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-star"
+                xlinkHref="#icon-star"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 thumbup icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-thumbup"
+                xlinkHref="#icon-thumbup"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 call-add icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-call-add"
+                xlinkHref="#icon-call-add"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <button
+        aria-describedby={null}
+        className="MuiButtonBase-root MuiIconButton-root inline-icon c2"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 signal-0 icon c4"
+          >
+            <svg
+              className="c5"
+            >
+              <use
+                href="#icon-signal-0"
+                xlinkHref="#icon-signal-0"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Buttons/IconButtons plain: Buttons/IconButtons plain 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c0.c0 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684DB;
+  opacity: 1;
+  padding: 0;
+}
+
+.c0.c0 .c1,
+.c0.c0 .c1 svg {
+  font-size: 20px;
+}
+
+.c0.c0:hover {
+  background-color: transparent;
+}
+
+.c0.c0:hover .c1 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c0.c0:active .c1 {
+  color: #0684DB;
+}
+
+.c0.c0.c0.c0.disabled .c1 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 .rippleVisible {
+  color: #0684DB;
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: crcrHC;
+  animation-name: crcrHC;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <button
+    aria-describedby={null}
+    className="MuiButtonBase-root MuiIconButton-root c0"
+    disabled={false}
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    size="medium"
+    tabIndex="0"
+    title={null}
+    type="button"
+    variant="plain"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c1 star icon c2"
+      >
+        <svg
+          className="c3"
+        >
+          <use
+            href="#icon-star"
+            xlinkHref="#icon-star"
+          />
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Storyshots Buttons/IconButtons round: Buttons/IconButtons round 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c4.c4 .c1,
+.c4.c4 .c1 svg {
+  font-size: 20px;
+}
+
+.c4.c4:hover .c1 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c4.c4:active .c1 {
+  color: #0684DB;
+}
+
+.c4.c4.c4.c4.disabled .c1 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684DB;
+  opacity: 1;
+  padding: 0;
+}
+
+.c0.c0 .c1,
+.c0.c0 .c1 svg {
+  font-size: 20px;
+}
+
+.c0.c0:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0:hover .c1 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c0.c0:active .c1 {
+  color: #0684DB;
+}
+
+.c0.c0.c0.c0.disabled .c1 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 .rippleVisible {
+  color: #0684DB;
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: crcrHC;
+  animation-name: crcrHC;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <button
+    aria-describedby={null}
+    className="MuiButtonBase-root MuiIconButton-root c0"
+    disabled={false}
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    size="medium"
+    tabIndex="0"
+    title={null}
+    type="button"
+    variant="round"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c1 star icon c2"
+      >
+        <svg
+          className="c3"
+        >
+          <use
+            href="#icon-star"
+            xlinkHref="#icon-star"
+          />
+        </svg>
+      </span>
+    </span>
+    <span
+      className="MuiTouchRipple-root"
+    />
+  </button>
+</div>
+`;
+
+exports[`Storyshots Buttons/IconButtons toggle: Buttons/IconButtons toggle 1`] = `
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c4.c4 .c1,
+.c4.c4 .c1 svg {
+  font-size: 20px;
+}
+
+.c4.c4:hover .c1 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c4.c4:active .c1 {
+  color: #0684DB;
+}
+
+.c4.c4.c4.c4.disabled .c1 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684DB;
+  opacity: 1;
+  padding: 0;
+}
+
+.c0.c0 .c1,
+.c0.c0 .c1 svg {
+  font-size: 20px;
+}
+
+.c0.c0:hover {
+  background-color: rgba(6,132,219,0.08);
+}
+
+.c0.c0:hover .c1 {
+  color: rgba(6,132,219,0.92);
+}
+
+.c0.c0:active .c1 {
+  color: #0684DB;
+}
+
+.c0.c0.c0.c0.disabled .c1 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 .rippleVisible {
+  color: #0684DB;
+  opacity: 0.16;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: crcrHC;
+  animation-name: crcrHC;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <button
+    aria-describedby={null}
+    className="MuiButtonBase-root MuiIconButton-root c0"
+    disabled={false}
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    size="medium"
+    tabIndex="0"
+    title={null}
+    type="button"
+    variant="toggle"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c1 thumbup icon c2"
+      >
+        <svg
+          className="c3"
+        >
+          <use
+            href="#icon-thumbup"
+            xlinkHref="#icon-thumbup"
+          />
+        </svg>
+      </span>
+    </span>
+    <span
+      className="MuiTouchRipple-root"
+    />
+  </button>
+</div>
+`;
