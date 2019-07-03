@@ -17,8 +17,11 @@ describe('LeftNav.View', () => {
   describe('onRouteChange', () => {
     jest.spyOn(history, 'push').mockImplementation();
     const props = {
-      history: { listen: jest.fn(), push: history.push },
-      location: { pathname: '/message/123' },
+      history: {
+        listen: jest.fn(),
+        push: history.push,
+        location: { pathname: '/message/123' },
+      },
       iconGroups: [[], []],
     } as any;
     let view: any;

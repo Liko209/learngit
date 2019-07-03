@@ -144,6 +144,7 @@ test.meta(<ITestMeta>{
   })
 
   await h(t).withLog('Then viewer should be closed and the image should be deleted', async () => {
+    await t.expect(confirmDeleteDialog.exists).notOk({timeout:1e3})
     await t.expect(viewerDialog.exists).notOk();
     await t.expect(postItem.img.exists).notOk();
   })

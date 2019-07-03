@@ -11,11 +11,13 @@ describe('Socket', () => {
   let socket: Socket;
   const mockRequestFunc = jest.fn();
   const mockAvailableFunc = jest.fn();
+  const mockSendFunc = jest.fn();
 
   beforeEach(() => {
     socket = new Socket();
     SocketClient.get = jest.fn().mockReturnValue({
       request: mockRequestFunc,
+      send: mockSendFunc,
       isClientAvailable: mockAvailableFunc,
     });
   });
@@ -56,6 +58,35 @@ describe('Socket', () => {
       const mockRequest = {
         id: 123,
         params: 456,
+      } as any;
+      socket.request(mockRequest, mockListener);
+    });
+    it('should call send when request has channel but channel is not request', done => {
+      mockListener.onSuccess.mockImplementationOnce(() => {
+        expect(socket.tasks.size).toEqual(0);
+        done();
+      });
+      const mockResponse = 'mockResponse';
+      mockSendFunc.mockResolvedValueOnce(mockResponse);
+      const mockRequest = {
+        id: 123,
+        params: 456,
+        channel: 'typing',
+      } as any;
+      socket.request(mockRequest, mockListener);
+    });
+
+    it('should call request when request has channel but channel is request', done => {
+      mockListener.onFailure.mockImplementationOnce(() => {
+        expect(socket.tasks.size).toEqual(0);
+        done();
+      });
+      const mockResponse = 'mockResponse';
+      mockRequestFunc.mockRejectedValueOnce(mockResponse);
+      const mockRequest = {
+        id: 123,
+        params: 456,
+        channel: 'request',
       } as any;
       socket.request(mockRequest, mockListener);
     });

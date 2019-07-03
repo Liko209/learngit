@@ -6,14 +6,10 @@
 
 import { Voicemail } from '../entity';
 import { EntityBaseService } from 'sdk/framework';
-import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { daoManager } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
-import {
-  DEFAULT_FETCH_SIZE,
-  READ_STATUS,
-  SYNC_DIRECTION,
-} from '../../constants';
-import { FetchResult } from '../../types';
+import { READ_STATUS, SYNC_DIRECTION } from '../../constants';
+import { FetchResult, FetchDataOptions, FilterOptions } from '../../types';
 import { RCItemUserConfig } from '../../config';
 import { MODULE_NAME } from '../constants';
 import { VoicemailController } from '../controller';
@@ -60,15 +56,19 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     this._getVoicemailController().voicemailFetchController.requestSync();
   }
 
+  async buildFilterFunc(
+    options: FilterOptions<Voicemail>,
+  ): Promise<(voicemail: Voicemail) => boolean> {
+    return this._getVoicemailController().voicemailFetchController.buildFilterFunc(
+      options,
+    );
+  }
+
   async fetchVoicemails(
-    limit = DEFAULT_FETCH_SIZE,
-    direction = QUERY_DIRECTION.OLDER,
-    anchorId?: number,
+    options: FetchDataOptions<Voicemail>,
   ): Promise<FetchResult<Voicemail>> {
-    return this._getVoicemailController().voicemailFetchController.fetchVoicemails(
-      limit,
-      direction,
-      anchorId,
+    return this._getVoicemailController().voicemailFetchController.fetchData(
+      options,
     );
   }
 

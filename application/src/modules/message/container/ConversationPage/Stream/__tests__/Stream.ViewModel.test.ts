@@ -614,7 +614,7 @@ describe('StreamViewModel', () => {
         await vm.loadNextPosts();
         await vm.loadNextPosts();
         expect(Notification.flashToast).toHaveBeenCalledTimes(1);
-      },         1000);
+      }, 1000);
     });
   });
 
@@ -692,10 +692,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });
@@ -707,10 +707,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });
@@ -722,10 +722,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });

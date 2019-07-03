@@ -28,9 +28,11 @@ const postService = {
 };
 const groupService = {
   updateGroupDraft: jest.fn(),
+  sendTypingEvent: jest.fn(),
 };
 const groupConfigService = {
   updateDraft: jest.fn(),
+  getDraft: jest.fn(),
 };
 
 let fileIDs: number = -1001;
@@ -44,7 +46,7 @@ function mockUpload() {
       firstItem.id = -firstItem.id;
       _uploadedItems.push(firstItem);
       _uploadingItems.splice(0, 1);
-    },         3);
+    }, 3);
   }
 }
 
@@ -160,7 +162,10 @@ describe('AttachmentsViewModel', () => {
           mentionsIds: [],
         };
 
-        const messageInputViewModel = new MessageInputViewModel({ id: 456 });
+        const messageInputViewModel = new MessageInputViewModel({
+          id: 456,
+          onUpArrowPressed: jest.fn(),
+        });
         const vm1 = new AttachmentsViewModel({
           id: messageInputViewModel.id,
         });

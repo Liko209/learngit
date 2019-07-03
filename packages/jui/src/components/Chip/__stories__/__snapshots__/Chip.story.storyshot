@@ -42,6 +42,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c5 {
@@ -237,7 +238,10 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
           className="c5"
           role="img"
         >
-          <use />
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
         </svg>
       </span>
     </span>
@@ -347,6 +351,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -533,7 +538,10 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
           className="c4"
           role="img"
         >
-          <use />
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
         </svg>
       </span>
     </span>

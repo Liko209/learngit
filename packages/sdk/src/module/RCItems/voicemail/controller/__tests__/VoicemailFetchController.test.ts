@@ -10,12 +10,19 @@ import { Voicemail } from '../../entity';
 import { RCItemUserConfig } from '../../../config';
 import { RCItemApi } from 'sdk/api';
 import { notificationCenter } from 'sdk/service';
-import { RC_MESSAGE_TYPE, SYNC_DIRECTION } from 'sdk/module/RCItems/constants';
+import {
+  RC_MESSAGE_TYPE,
+  SYNC_DIRECTION,
+  MESSAGE_AVAILABILITY,
+} from 'sdk/module/RCItems/constants';
 import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
 import { VoicemailDao } from '../../dao/VoicemailDao';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
 import { RCMessageBadgeController } from 'sdk/module/RCItems/common/controller/RCMessageBadgeController';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { RCItemFetchController } from 'sdk/module/RCItems/common/controller/RCItemFetchController';
+import { VOICEMAIL_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 jest.mock('sdk/dao');
 jest.mock('../../dao/VoicemailDao');
@@ -35,7 +42,19 @@ describe('VoicemailFetchController', () => {
   let voicemailFetchController: VoicemailFetchController;
   let entitySourceController: EntitySourceController<Voicemail>;
   let mockBadgeController: RCMessageBadgeController<Voicemail>;
+  const mockRCInfoService = {
+    isRCFeaturePermissionEnabled: jest.fn(),
+    isVoipCallingAvailable: jest.fn(),
+  };
+
   function setUp() {
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.RC_INFO_SERVICE) {
+        return mockRCInfoService;
+      }
+      return;
+    });
+
     vmDao = new VoicemailDao(null as any);
     rcItemUserConfig = new RCItemUserConfig('name');
     entitySourceController = new EntitySourceController(
@@ -56,8 +75,29 @@ describe('VoicemailFetchController', () => {
     daoManager.getDao = jest.fn().mockResolvedValue(vmDao);
   }
   beforeEach(() => {
-    setUp();
     clearMocks();
+    setUp();
+  });
+
+  describe('buildFilterFunc', () => {
+    it('should filter valid data ', async () => {
+      const mockData = [
+        { id: '1', availability: MESSAGE_AVAILABILITY.ALIVE },
+        { id: '2', availability: MESSAGE_AVAILABILITY.DELETED },
+        { id: '3', availability: MESSAGE_AVAILABILITY.ALIVE },
+      ];
+      RCItemFetchController.prototype.buildFilterFunc = jest
+        .fn()
+        .mockReturnValue((data: any) => {
+          return data.id !== '3';
+        });
+      const filter = (await voicemailFetchController.buildFilterFunc(
+        {},
+      )) as any;
+      expect(mockData.filter(filter)).toEqual([
+        { id: '1', availability: MESSAGE_AVAILABILITY.ALIVE },
+      ]);
+    });
   });
 
   describe('sendSyncRequest', () => {
@@ -106,51 +146,6 @@ describe('VoicemailFetchController', () => {
     });
   });
 
-  describe('fetchVoicemails', () => {
-    const localData = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    const remoteData = [{ id: 4 }, { id: 5 }, { id: 6 }];
-
-    beforeEach(() => {
-      rcItemUserConfig.getHasMore = jest.fn().mockResolvedValue(false);
-      daoManager.getDao = jest.fn().mockReturnValue(vmDao);
-      vmDao.queryVoicemails = jest.fn().mockResolvedValue(localData);
-      voicemailFetchController.doSync = jest.fn().mockResolvedValue(remoteData);
-    });
-
-    it('should get from db and server when db has not enough data', async () => {
-      rcItemUserConfig.getHasMore = jest
-        .fn()
-        .mockResolvedValueOnce(true)
-        .mockResolvedValueOnce(false);
-      const result = await voicemailFetchController.fetchVoicemails(
-        100,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
-      expect(voicemailFetchController.doSync).toBeCalled();
-      expect(result).toEqual({
-        hasMore: false,
-        data: localData.concat(remoteData),
-      });
-    });
-
-    it('should only get from the server and when db has no data', async () => {
-      vmDao.queryVoicemails = jest.fn().mockResolvedValue([]);
-      rcItemUserConfig.getHasMore = jest.fn().mockReturnValue(true);
-      const result = await voicemailFetchController.fetchVoicemails(
-        100,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
-      expect(voicemailFetchController.doSync).toBeCalled();
-      expect(result).toEqual({
-        hasMore: true,
-        data: [...remoteData],
-      });
-      expect(mockBadgeController.handleVoicemails).toBeCalled();
-    });
-  });
-
   describe('isTokenInvalidError', () => {
     it('should return true when is token error ', () => {
       const res = voicemailFetchController['isTokenInvalidError'](
@@ -171,6 +166,26 @@ describe('VoicemailFetchController', () => {
         new JError('123', ERROR_CODES_RC.CLG_102),
       );
       expect(res).toBeFalsy();
+    });
+  });
+
+  describe('hasPermission', () => {
+    it('should return false when call permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(false);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await voicemailFetchController['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return false when callLog permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      expect(await voicemailFetchController['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return true when callLog/call permission is enabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await voicemailFetchController['hasPermission']()).toBeTruthy();
     });
   });
 
@@ -214,6 +229,62 @@ describe('VoicemailFetchController', () => {
         },
       ]);
       expect(entitySourceController.bulkDelete).toBeCalledWith([2, 3]);
+    });
+  });
+
+  describe('getFilterInfo', () => {
+    it('should get caller from call log', () => {
+      expect(
+        voicemailFetchController['getFilterInfo']({
+          from: 'from',
+        } as any),
+      ).toEqual('from');
+      expect(voicemailFetchController['getFilterInfo']({} as any)).toEqual({});
+    });
+  });
+
+  describe('fetchDataFromDB', () => {
+    it('should call dao', async () => {
+      const mockFunc = jest.fn().mockReturnValue('data');
+      daoManager.getDao = jest
+        .fn()
+        .mockReturnValue({ queryVoicemails: mockFunc });
+      expect(await voicemailFetchController['fetchDataFromDB']({})).toEqual(
+        'data',
+      );
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('onDBFetchFinished', () => {
+    it('should call performanceTracer', () => {
+      const tracer = { trace: jest.fn() };
+      voicemailFetchController['onDBFetchFinished'](
+        [{}, {}] as any,
+        tracer as any,
+      );
+      expect(tracer.trace).toBeCalledWith({
+        key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS_FROM_DB,
+        count: 2,
+      });
+    });
+  });
+
+  describe('onFetchFinished', () => {
+    it('should call performanceTracer', () => {
+      const tracer = { end: jest.fn() };
+      voicemailFetchController['_badgeController'].handleVoicemails = jest.fn();
+      voicemailFetchController['onFetchFinished'](
+        [{}, {}] as any,
+        tracer as any,
+      );
+      expect(tracer.end).toBeCalledWith({
+        key: VOICEMAIL_PERFORMANCE_KEYS.FETCH_VOICEMAILS,
+        count: 2,
+      });
+      expect(
+        voicemailFetchController['_badgeController'].handleVoicemails,
+      ).toBeCalled();
     });
   });
 });

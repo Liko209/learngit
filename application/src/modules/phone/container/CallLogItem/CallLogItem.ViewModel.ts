@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
@@ -15,8 +15,23 @@ import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { i18nP } from '@/utils/i18nT';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
+
+  @observable canEditBlockNumbers: boolean = false;
+
+  constructor(props: CallLogItemProps) {
+    super(props);
+    this._fetchBlockPermission();
+  }
+
   @computed
   get data() {
     return getEntity(ENTITY_NAME.CALL_LOG, this.props.id) as CallLogModel;
@@ -79,11 +94,11 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     const { duration } = this.data;
     const { secondTime, hourTime, minuteTime } = getHourMinuteSeconds(duration);
     const normalize = (s: number, suffix: string) =>
-      s > 0 ? `${s}${suffix}` : '';
+      s > 0 ? `${s} ${suffix}` : '';
     const array = [
-      normalize(hourTime, ' hour'),
-      normalize(minuteTime, ' min'),
-      normalize(secondTime, ' sec'),
+      normalize(hourTime, i18nP('common.time.hour')),
+      normalize(minuteTime, i18nP('common.time.min')),
+      normalize(secondTime, i18nP('common.time.sec')),
     ];
     return array.join(' ');
   }
@@ -91,6 +106,16 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   @computed
   get startTime() {
     return postTimestamp(this.data.startTime);
+  }
+
+  private async _fetchBlockPermission() {
+    this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
+    );
+  }
+
+  shouldShowCall = async () => {
+    return this._rcInfoService.isVoipCallingAvailable();
   }
 }
 

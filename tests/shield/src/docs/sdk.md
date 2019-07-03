@@ -16,25 +16,42 @@ describe('', () => {
 
   @testable
   class SomeMethod {
+    // mock single function without data
     @mockService(PostService, 'methodName')
+    t1() {}
+
+    // mock single function with data
     @mockService(PostService, 'methodName', data)
-    @mockService(PostService, 'methodName', () => {})
+    t2() {}
+
+    // mock single function with impl
+    @mockService(PostService, 'methodName', (params) => {})
+    t3() {}
+
+    // mock service Class single resolve function 
     @mockService.resolve(PostService, 'methodName')
+    t4() {}
+
+    // mock service Class single reject function 
     @mockService.reject(PostService, 'methodName')
-    @mockService.reject(PostService, 'methodName')
+    t5() {}
+
+
+    // mock service Class multi reject function 
     @mockService.resolve(PostService, [
       {
         method: 'methodName1', // will mockResolveValue
         data: args => { return false },
-      }, {
-        method: 'methodName2',
-        type: 'reject', // will mockRejectedValue
-        data: args => { return false },
       },
     ])
+    t6() {}
+
+    // mock instance service if you should be test some function have been called 
     @mockService(itemService, 'methodName', data)
-    @mockService(itemService, 'methodName', data)
-    t1() {}
+    t7() {
+      expect(itemService.methodName).toHaveBeenCalled();
+    }
   }
+
 })
 ```
