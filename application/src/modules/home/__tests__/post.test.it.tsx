@@ -32,7 +32,7 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
       // await sdk.cleanUp();
     });
     it('should send post', async () => {
-      const url = `/message/${team1._id}`;
+      const url = `/messages/${team1._id}`;
       let wrapper: TestApp;
       await bootstrap({ url });
 

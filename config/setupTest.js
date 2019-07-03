@@ -8,7 +8,9 @@ import './jest/setup/timezone';
 import './jest/setup/mobx';
 import './jest/setup/styledTheme';
 import './jest/setup/media';
+import './jest/setup/selection';
 
 jest.mock('@/modules/common/util/lazyComponent');
 jest.mock('@/containers/ThemeProvider');
-jest.mock('@/modules/router/container/AuthRoute/AuthRoute');
+jest.mock('jui/components/Tabs/Tabs');
+// jest.mock('@/modules/router/container/AuthRoute/AuthRoute');
