@@ -66,16 +66,16 @@ test(formalName('Open the image thumbnail that support preview', ['Potar.He', 'P
   });
 
   await h(t).withLog(`When I hover the image item ${filesName[0]} thumbnail`, async () => {
-    await t.hover(imageTab.nthItem(0).thumbnail)
+    await t.hover(imageTab.nthItem(0).imageThumbnail)
   });
 
   await h(t).withLog('Then the mouser cursor should be litter hand', async () => {
-    const style = await imageTab.nthItem(0).thumbnail.style;
+    const style = await imageTab.nthItem(0).imageThumbnail.style;
     assert.strictEqual(style['cursor'], 'pointer', "the cursor style is not little hand");
   });
 
   await h(t).withLog(`When I click the image thumbnail of the image file ${filesName[0]}`, async () => {
-    await t.click(imageTab.nthItem(0).thumbnail)
+    await t.click(imageTab.nthItem(0).imageThumbnail)
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;

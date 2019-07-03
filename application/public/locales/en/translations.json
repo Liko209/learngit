@@ -627,7 +627,9 @@
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped"
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -878,6 +880,7 @@
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "FileDeleted": "The file was deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "This team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
