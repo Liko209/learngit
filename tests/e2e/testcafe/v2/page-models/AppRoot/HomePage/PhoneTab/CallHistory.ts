@@ -27,6 +27,10 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('callHistoryEmptyPage');
   }
 
+  callhistoryItemByNth(n: number) {
+    return this.getComponent(CallHistoryItem, this.items.nth(n));
+  }
+
   get items() {
     return this.getSelectorByAutomationClass('call-history-item');
   }
@@ -36,7 +40,7 @@ export class CallHistoryPage extends BaseWebComponent {
   }
 
   get moreIcon() {
-    return this.getSelectorByAutomationId('callHistory-header-more',this.self);
+    return this.getSelectorByAutomationId('callHistory-header-more', this.self);
   }
 
   get deleteAllCallButton() {
@@ -82,6 +86,15 @@ class CallHistoryItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('calllog-more-button', this.self);
   }
 
+  get messageButton() {
+    return this.getSelectorByAutomationId('calllog-message-button', this.self);
+  }
+
+
+  async ClickMessageButton() {
+    await this.t.hover(this.self).click(this.messageButton);
+  }
+
   get deleteButton() {
     return this.getSelectorByAutomationId('calllog-delete-button');
   }
@@ -93,6 +106,37 @@ class CallHistoryItem extends BaseWebComponent {
   async clickDeleteButton() {
     await this.t.click(this.deleteButton);
   }
+
+
+
+  get blockToggle() {
+    return this.getSelectorByAutomationId('calllog-block-button');
+  }
+
+  get blockButton() {
+    return this.getSelectorByIcon('blocked', this.blockToggle);
+  }
+
+  get unblockButton() {
+    return this.getSelectorByIcon('unblocked', this.blockToggle);
+  }
+
+  async clickBlockButton() {
+    await this.t.click(this.blockButton);
+  }
+
+  async hoverBlockButton() {
+    await this.t.hover(this.blockButton);
+  }
+
+  async clickUnblockButton() {
+    await this.t.click(this.unblockButton);
+  }
+
+  async hoverUnblockButton() {
+    await this.t.hover(this.unblockButton);
+  }
+
 }
 
 export class DeleteAllCalllDialog extends BaseWebComponent {

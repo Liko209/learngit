@@ -30,6 +30,7 @@ import { PhoneTab } from './PhoneTab';
 import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
 import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
 import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
+import { BlockNumberDialog } from './PhoneTab/index';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -201,6 +202,10 @@ export class HomePage extends BaseWebComponent {
 
   get deleteVoicemailDialog() {
     return this.getComponent(DeleteVoicemailDialog);
+  }
+
+  get blockNumberDialog() {
+    return this.getComponent(BlockNumberDialog)
   }
 
   get deleteAllCalllDialog() {

@@ -63,3 +63,36 @@ export class PhoneTab extends BaseWebComponent {
     return this.getComponent(CallHistoryPage);
   }
 }
+
+
+
+export class BlockNumberDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId("blockNumberConfirmDialog");
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId("DialogTitle", this.self)
+  }
+
+  get content() {
+    return this.getSelectorByAutomationId("DialogContent", this.self)
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId("blockNumberCancelButton", this.self)
+  }
+
+  get blockButton() {
+    return this.getSelectorByAutomationId("blockNumberOkButton", this.self)
+  }
+
+  async clickCancelButton() {
+    return this.t.click(this.cancelButton);
+  }
+
+  async clickBlockButton() {
+    return this.t.click(this.blockButton);
+  }
+
+}
