@@ -164,7 +164,7 @@ test.meta(<ITestMeta>{
 test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2422'],
-  maintainers: ['potar.he'],
+  maintainers: ['looper.wang'],
   keywords: ['AudioSources']
 })(`Ringer source should be from the selected settings`, async (t) => {
   const users = h(t).rcData.mainCompany.users
@@ -363,7 +363,7 @@ test.meta(<ITestMeta>{
 test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2431'],
-  maintainers: ['potar.he'],
+  maintainers: ['looper.wang'],
   keywords: ['AudioSources']
 })(`The ringer source should be from the last selected settings when the currently used device is removed`, async (t) => {
   const users = h(t).rcData.mainCompany.users
@@ -475,7 +475,7 @@ test.meta(<ITestMeta>{
 test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2266', 'JPT-2267', 'JPT-2429', 'JPT-2430'],
-  maintainers: ['potar.he'],
+  maintainers: ['potar.he', 'looper.wang'],
   keywords: ['AudioSources']
 })(`The Microphone/Speaker/Ringer source should be from the default when no last used device and the currently used device is removed
 & The Microphone/Speaker/Ringer source should be from the last selected settings when the currently used device is removed`, async (t) => {
