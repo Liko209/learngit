@@ -61,10 +61,16 @@ export type UnreadPostQuery = {
   unreadCount: number;
 };
 
+export type IPostResultHasMore = {
+  older: boolean;
+  newer: boolean;
+  both: boolean;
+};
+
 export type IPostResult = {
   posts: Post[];
   items: Item[];
-  hasMore: boolean;
+  hasMore: IPostResultHasMore;
   limit?: number;
 };
 

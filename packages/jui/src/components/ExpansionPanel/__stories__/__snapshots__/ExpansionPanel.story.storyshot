@@ -6,6 +6,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c5 {

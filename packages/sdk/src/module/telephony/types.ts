@@ -55,6 +55,14 @@ enum MAKE_CALL_ERROR_CODE {
 
 type LogoutCallback = () => void;
 
+enum CALL_ACTION_ERROR_CODE {
+  NO_ERROR = 0,
+  INVALID = -1,
+  OTHER_ACTION_IN_PROGRESS = -6,
+  ACR_ON = -8,
+  OTHERS,
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
@@ -63,4 +71,5 @@ export {
   E911_STATUS,
   TelephonyCallInfo,
   LogoutCallback,
+  CALL_ACTION_ERROR_CODE,
 };

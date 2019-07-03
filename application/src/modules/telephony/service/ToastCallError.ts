@@ -95,6 +95,20 @@ class ToastCallError {
       "Call error: something went wrong on our end and we weren't able to park the call.",
     );
   }
+
+  static toastOnDemandRecording() {
+    ToastCallError.toast('telephony.prompt.OnDemandRecording', 3000);
+    mainLogger.info(
+      'Call error: On-demand call recording disabled in Service Web.',
+    );
+  }
+
+  static toastAutoRecording() {
+    ToastCallError.toast('telephony.prompt.AutoRecording', 3000);
+    mainLogger.info(
+      'Call error: Automatic call recording enabled in Service Web.',
+    );
+  }
 }
 
 export { ToastCallError };

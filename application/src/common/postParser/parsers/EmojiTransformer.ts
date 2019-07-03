@@ -12,6 +12,7 @@ import {
   mapUnicodeToShort,
   mapEmojiOne,
   mapSpecial,
+  getEmojiDataFromUnicode,
 } from '@/common/emojiHelpers';
 import {
   EMOJI_UNICODE_REGEX,
@@ -20,7 +21,9 @@ import {
   EMOJI_ONE_REGEX_SIMPLE,
   EMOJI_ASCII_REGEX_SIMPLE,
   b64EncodeUnicode,
+  EMOJI_SKIN_TONE_CODES,
 } from '../utils';
+import data from 'emoji-mart/data/all.json';
 
 class EmojiTransformer {
   static emojiDataMap = {};
@@ -33,13 +36,14 @@ class EmojiTransformer {
     const reg = this.getRegexp(options, convertType);
     return originalStr.replace(reg, (_match: string, pre = '', emoji) => {
       const enlarge = emoji.length === originalStr.trim().length;
-      const id = b64EncodeUnicode(emoji + enlarge);
+      const id = b64EncodeUnicode((unicodeOnly ? 'u' : '') + emoji + enlarge);
       if (this.emojiDataMap[id]) {
         return pre + this.getReplacePattern(id);
       }
       const obj = customEmojiMap[emoji.slice(1, -1)];
 
       if (
+        !unicodeOnly &&
         convertType === EmojiConvertType.CUSTOM &&
         obj &&
         typeof obj === 'object' &&
@@ -48,6 +52,8 @@ class EmojiTransformer {
         const data = {
           className: this._getClassName(enlarge),
           src: obj.data,
+          isCustomEmoji: true,
+          isEnlarged: enlarge,
         };
         return pre + this.getReplacePattern(id, data);
       }
@@ -77,16 +83,22 @@ class EmojiTransformer {
           ? mapEmojiOne[shortName].fname
           : mapValue;
       const code = this._convertFromCodePoint(unicode);
+      const skinTone = this._hasSkinTone(unicode);
 
       if (unicodeOnly || !hostName) {
         return pre + code;
       }
+      const emojiName = this._transferUnicodeToEmojiData(unicode);
 
       const data = {
         className: this._getClassName(enlarge),
         alt: code,
         title: emoji,
         src: this._getSrc(unicode, hostName),
+        isCustomEmoji: false,
+        name: emojiName ? emojiName.id : '',
+        tone: skinTone,
+        isEnlarged: enlarge,
       };
       return pre + this.getReplacePattern(id, data);
     });
@@ -111,6 +123,31 @@ class EmojiTransformer {
       [EmojiConvertType.EMOJI_ONE]: EMOJI_ONE_REGEX_SIMPLE,
     };
     return new RegExp(regexpMap[convertType], 'gi');
+  }
+
+  private static _transferUnicodeToEmojiData(unicode: string) {
+    const emojiData = getEmojiDataFromUnicode(unicode, data);
+    const skinToneIndex = this._hasSkinTone(unicode);
+    if (skinToneIndex > -1) {
+      return getEmojiDataFromUnicode(
+        unicode.replace(
+          `-${EMOJI_SKIN_TONE_CODES[skinToneIndex - 1].toLowerCase()}`,
+          '',
+        ),
+        data,
+      );
+    }
+    return emojiData;
+  }
+
+  private static _hasSkinTone(unicode: string) {
+    let toneCodeIndex: number = -1;
+    EMOJI_SKIN_TONE_CODES.forEach((toneCode, index) => {
+      if (unicode.toLowerCase().indexOf(toneCode.toLowerCase()) > -1) {
+        toneCodeIndex = index + 1;
+      }
+    });
+    return toneCodeIndex;
   }
 
   private static _convertFromCodePoint(unicode: string) {

@@ -4,4 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/**
+ * TODO: delete the folder when finish FIJI-4135
+ */
 export * from './DialerHeader';

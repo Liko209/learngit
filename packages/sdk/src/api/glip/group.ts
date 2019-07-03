@@ -7,6 +7,7 @@ import Api from '../api';
 import { GroupApiType } from '../../models';
 import { Group } from '../../module/group/entity';
 import { Raw } from '../../framework/model';
+import { NETWORK_VIA } from 'foundation';
 
 class GroupAPI extends Api {
   /**
@@ -52,6 +53,15 @@ class GroupAPI extends Api {
     delete group.id;
     const path = group.is_team ? `/team/${id}` : `/group/${id}`;
     return this.glipNetworkClient.put<Raw<Group>>({ path, data: group });
+  }
+
+  static sendTypingEvent(options: any) {
+    return this.glipNetworkClient.send({
+      path: '',
+      data: options,
+      via: NETWORK_VIA.SOCKET,
+      channel: 'typing',
+    });
   }
 }
 

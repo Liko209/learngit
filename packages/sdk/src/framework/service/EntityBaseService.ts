@@ -26,9 +26,10 @@ import { IEntityNotificationController } from '../controller/interface/IEntityNo
 import { BaseSettingEntity } from '../model/setting';
 import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
-import { Nullable } from 'sdk/types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 import { ConfigChangeHistory } from '../config/types';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { UserConfig } from 'sdk/module/config';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
@@ -51,6 +52,10 @@ class EntityBaseService<
     super();
     configMigrator.addHistory(this);
     this._initControllers();
+  }
+
+  getUserConfig(): UndefinedAble<UserConfig> {
+    return undefined;
   }
 
   getHistoryDetail(): Nullable<ConfigChangeHistory> {
@@ -146,12 +151,19 @@ class EntityBaseService<
     return true;
   }
 
+  protected canRequest(): boolean {
+    return true;
+  }
+
+  private _canRequest = () => {
+    return this.canRequest();
+  }
+
   private _initControllers() {
     if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
       this._entityCacheController = this.buildEntityCacheController();
       this.initialEntitiesCache();
     }
-
     if (this.dao || this._entityCacheController) {
       this._entitySourceController = buildEntitySourceController(
         buildEntityPersistentController<T, IdType>(
@@ -159,20 +171,21 @@ class EntityBaseService<
           this._entityCacheController,
         ),
         this.networkConfig
-          ? buildRequestController<T, IdType>(this.networkConfig)
+          ? {
+              requestController: buildRequestController<T, IdType>(
+                this.networkConfig,
+              ),
+              canSaveRemoteData: this.canSaveRemoteEntity(),
+              canRequest: this._canRequest,
+            }
           : undefined,
-        this.canSaveRemoteEntity(),
       );
     }
   }
 
   protected async initialEntitiesCache() {
     mainLogger.debug('_initialEntitiesCache begin');
-    if (
-      this.dao &&
-      this._entityCacheController &&
-      !this._entityCacheController.isStartInitial()
-    ) {
+    if (this.dao && !this._entityCacheController.isStartInitial()) {
       const models = await this.dao.getAll();
       this._entityCacheController.initialize(models);
       mainLogger.debug('_initialEntitiesCache done');

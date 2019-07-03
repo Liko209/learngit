@@ -7,6 +7,7 @@ import {
   IRTCCallDelegate,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
+  RTC_CALL_ACTION_ERROR_CODE,
   RTCCallActionSuccessOptions,
   RTCCall,
   RTC_REPLY_MSG_PATTERN,
@@ -28,14 +29,19 @@ import { telephonyLogger } from 'foundation';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
+import { CALL_ACTION_ERROR_CODE } from '../types';
+
+type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
 interface IResultResolveFn {
-  (value: string | PromiseLike<string>): void;
+  (value: CallActionResult | PromiseLike<CallActionResult>): void;
 }
 
 interface IResultRejectFn {
-  (value: string | PromiseLike<string>): void;
+  (value: CallActionResult | PromiseLike<CallActionResult>): void;
 }
+
+const ACR_ON = -8;
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _rtcCall: RTCCall;
@@ -139,63 +145,138 @@ class TelephonyCallController implements IRTCCallDelegate {
     this._handleCallStateChanged(state);
   }
 
-  private _handleHoldSuccess(
-    callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
-  ) {
-    this._holdToggle.onSuccess();
-    this._handleCallActionCallback(callAction, true, options);
+  private _handleHoldAction(isSuccess: boolean) {
+    if (!isSuccess) {
+      this._updateCallHoldState(HOLD_STATE.IDLE);
+      const state = this._rtcCall.getRecordState();
+      this._updateCallRecordState(
+        state === RTC_RECORD_STATE.IDLE
+          ? RECORD_STATE.IDLE
+          : RECORD_STATE.RECORDING,
+      );
+    }
   }
 
-  private _handleUnHoldSuccess(
-    callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
-  ) {
-    this._holdToggle.onSuccess();
-    this._handleCallActionCallback(callAction, true, options);
+  private _handleUnHoldAction(isSuccess: boolean) {
+    if (!isSuccess) {
+      this._updateCallHoldState(HOLD_STATE.HELD);
+      this._updateCallRecordState(RECORD_STATE.DISABLE);
+    }
   }
 
-  private _handleStartRecordSuccess(
-    callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
-  ) {
-    this._recordToggle.onSuccess();
-    this._handleCallActionCallback(callAction, true, options);
+  private _transformCallActionErrorCode(code: number) {
+    let res = CALL_ACTION_ERROR_CODE.OTHERS;
+    switch (code) {
+      case RTC_CALL_ACTION_ERROR_CODE.INVALID:
+        res = CALL_ACTION_ERROR_CODE.INVALID;
+        break;
+      case RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS:
+        res = CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS;
+        break;
+      case ACR_ON:
+        res = CALL_ACTION_ERROR_CODE.ACR_ON;
+        break;
+    }
+    return res;
   }
 
-  private _handleStopRecordSuccess(
-    callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions,
+  private _handleStartRecordAction(
+    isSuccess: boolean,
+    options: RTCCallActionSuccessOptions | number,
   ) {
-    this._recordToggle.onSuccess();
-    this._handleCallActionCallback(callAction, true, options);
+    let res = CALL_ACTION_ERROR_CODE.NO_ERROR;
+    if (!isSuccess) {
+      this._updateCallRecordState(RECORD_STATE.IDLE);
+      res =
+        options && typeof options === 'number'
+          ? this._transformCallActionErrorCode(options)
+          : CALL_ACTION_ERROR_CODE.OTHERS;
+    }
+
+    return res;
+  }
+
+  private _handleStopRecordAction(
+    isSuccess: boolean,
+    options: RTCCallActionSuccessOptions | number,
+  ) {
+    let res = CALL_ACTION_ERROR_CODE.NO_ERROR;
+
+    if (!isSuccess) {
+      this._updateCallRecordState(RECORD_STATE.RECORDING);
+      res =
+        options && typeof options === 'number'
+          ? this._transformCallActionErrorCode(options)
+          : CALL_ACTION_ERROR_CODE.OTHERS;
+    }
+
+    return res;
+  }
+
+  private _handleToggleState(callAction: RTC_CALL_ACTION, isSuccess: boolean) {
+    let toggleController: ToggleController | null = null;
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD:
+      case RTC_CALL_ACTION.UNHOLD:
+        toggleController = this._holdToggle;
+        break;
+      case RTC_CALL_ACTION.START_RECORD:
+      case RTC_CALL_ACTION.STOP_RECORD:
+        toggleController = this._recordToggle;
+        break;
+    }
+    if (toggleController) {
+      isSuccess ? toggleController.onSuccess() : toggleController.onFailure();
+    }
+  }
+
+  private _handleParkAction(
+    isSuccess: boolean,
+    options: RTCCallActionSuccessOptions | number,
+  ) {
+    return options &&
+      typeof options !== 'number' &&
+      isSuccess &&
+      options.parkExtension
+      ? options.parkExtension
+      : '';
+  }
+
+  private _handleActionResult(
+    callAction: RTC_CALL_ACTION,
+    isSuccess: boolean,
+    options: RTCCallActionSuccessOptions | number,
+  ) {
+    let res: string | CALL_ACTION_ERROR_CODE = '';
+
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD:
+        this._handleHoldAction(isSuccess);
+        break;
+      case RTC_CALL_ACTION.UNHOLD:
+        this._handleUnHoldAction(isSuccess);
+        break;
+      case RTC_CALL_ACTION.START_RECORD:
+        res = this._handleStartRecordAction(isSuccess, options);
+        break;
+      case RTC_CALL_ACTION.STOP_RECORD:
+        res = this._handleStopRecordAction(isSuccess, options);
+        break;
+      case RTC_CALL_ACTION.PARK:
+        res = this._handleParkAction(isSuccess, options);
+        break;
+    }
+
+    this._handleToggleState(callAction, isSuccess);
+    return res;
   }
 
   onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ) {
-    switch (callAction) {
-      case RTC_CALL_ACTION.HOLD:
-        this._handleHoldSuccess(callAction, options);
-        break;
-      case RTC_CALL_ACTION.UNHOLD:
-        this._handleUnHoldSuccess(callAction, options);
-        break;
-      case RTC_CALL_ACTION.START_RECORD:
-        this._handleStartRecordSuccess(callAction, options);
-        break;
-      case RTC_CALL_ACTION.STOP_RECORD:
-        this._handleStopRecordSuccess(callAction, options);
-        break;
-      case RTC_CALL_ACTION.PARK:
-      case RTC_CALL_ACTION.FLIP:
-      case RTC_CALL_ACTION.FORWARD:
-        this._handleCallActionCallback(callAction, true, options);
-        break;
-      default:
-        telephonyLogger.info(`CallActionSuccess: ${callAction} is not handled`);
-    }
+    const res = this._handleActionResult(callAction, true, options);
+    this._handleCallActionCallback(callAction, true, res);
   }
 
   private _updateCallHoldState(state: HOLD_STATE) {
@@ -208,25 +289,6 @@ class TelephonyCallController implements IRTCCallDelegate {
     }
   }
 
-  private _handleHoldActionFailed() {
-    this._updateCallHoldState(HOLD_STATE.IDLE);
-    const state = this._rtcCall.getRecordState();
-    if (state === RTC_RECORD_STATE.IDLE) {
-      this._updateCallRecordState(RECORD_STATE.IDLE);
-    } else {
-      this._updateCallRecordState(RECORD_STATE.RECORDING);
-    }
-    this._handleCallActionCallback(RTC_CALL_ACTION.HOLD, false);
-    this._holdToggle.onFailure();
-  }
-
-  private _handleUnHoldActionFailed() {
-    this._updateCallHoldState(HOLD_STATE.HELD);
-    this._updateCallRecordState(RECORD_STATE.DISABLE);
-    this._handleCallActionCallback(RTC_CALL_ACTION.UNHOLD, false);
-    this._holdToggle.onFailure();
-  }
-
   private _updateCallRecordState(state: RECORD_STATE) {
     const call = this._getCallEntity();
     if (call) {
@@ -237,42 +299,9 @@ class TelephonyCallController implements IRTCCallDelegate {
     }
   }
 
-  private _handleStartRecordActionFailed() {
-    this._updateCallRecordState(RECORD_STATE.IDLE);
-    this._handleCallActionCallback(RTC_CALL_ACTION.START_RECORD, false);
-    this._recordToggle.onFailure();
-  }
-
-  private _handleStopRecordActionFailed() {
-    this._updateCallRecordState(RECORD_STATE.RECORDING);
-    this._handleCallActionCallback(RTC_CALL_ACTION.STOP_RECORD, false);
-    this._recordToggle.onFailure();
-  }
-
   onCallActionFailed(callAction: RTC_CALL_ACTION, code: number) {
-    switch (callAction) {
-      case RTC_CALL_ACTION.HOLD:
-        this._handleHoldActionFailed();
-        break;
-      case RTC_CALL_ACTION.UNHOLD:
-        this._handleUnHoldActionFailed();
-        break;
-      case RTC_CALL_ACTION.START_RECORD:
-        this._handleStartRecordActionFailed();
-        break;
-      case RTC_CALL_ACTION.STOP_RECORD:
-        this._handleStopRecordActionFailed();
-        break;
-      case RTC_CALL_ACTION.PARK:
-      case RTC_CALL_ACTION.FLIP:
-      case RTC_CALL_ACTION.FORWARD:
-        this._handleCallActionCallback(callAction, false);
-        break;
-      default:
-        telephonyLogger.info(
-          `onCallActionFailed: ${callAction} is not handled`,
-        );
-    }
+    const res = this._handleActionResult(callAction, false, code);
+    this._handleCallActionCallback(callAction, false, res);
   }
 
   hangUp() {
@@ -318,11 +347,12 @@ class TelephonyCallController implements IRTCCallDelegate {
   unhold() {
     this._updateCallHoldState(HOLD_STATE.IDLE);
     const state = this._rtcCall.getRecordState();
-    if (state === RTC_RECORD_STATE.IDLE) {
-      this._updateCallRecordState(RECORD_STATE.IDLE);
-    } else {
-      this._updateCallRecordState(RECORD_STATE.RECORDING);
-    }
+    this._updateCallRecordState(
+      state === RTC_RECORD_STATE.IDLE
+        ? RECORD_STATE.IDLE
+        : RECORD_STATE.RECORDING,
+    );
+
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.UNHOLD, resolve, reject);
       const request: ToggleRequest = {
@@ -435,18 +465,14 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _handleCallActionCallback(
     callAction: RTC_CALL_ACTION,
     isSuccess: boolean,
-    options?: RTCCallActionSuccessOptions,
+    result: string | CALL_ACTION_ERROR_CODE,
   ) {
     const promiseResolvers = this._callActionCallbackMap.get(callAction);
     if (promiseResolvers) {
-      let res = '';
       if (isSuccess) {
-        if (options && options.parkExtension) {
-          res = options.parkExtension;
-        }
-        promiseResolvers.resolve(res);
+        promiseResolvers.resolve(result);
       } else {
-        promiseResolvers.reject(res);
+        promiseResolvers.reject(result);
       }
     }
   }

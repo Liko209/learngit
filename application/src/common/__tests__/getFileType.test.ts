@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FileItemModel, { FileType } from '../../store/models/FileItem';
-import { getFileType } from '../getFileType';
+import { getFileType, isFileReadyForViewer } from '../getFileType';
 import { SupportPreviewImageExtensions } from 'sdk/module/item/module/file/utils/ImageFileExtensions';
 
 const previewUrl = 'http://www.google.com';
@@ -61,5 +61,9 @@ describe('getFileType', () => {
     expect(extendFile.type).toBe(FileType.others);
     expect(extendFile.previewUrl).toBe('');
     expect(extendFile.item).toEqual(fileItem);
+  });
+
+  it('should isFileReadyForViewer return true when status os "ready"', () => {
+    expect(isFileReadyForViewer('ready')).toEqual(true);
   });
 });

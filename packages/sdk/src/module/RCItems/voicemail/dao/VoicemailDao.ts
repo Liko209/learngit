@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao, QUERY_DIRECTION, daoManager } from 'sdk/dao';
+import { BaseDao, daoManager } from 'sdk/dao';
 import { Voicemail } from '../entity';
 import { IDatabase } from 'foundation';
 import { VoicemailViewDao } from './VoicemailViewDao';
+import { FetchDataOptions } from '../../types';
 
 class VoicemailDao extends BaseDao<Voicemail> {
   static COLLECTION_NAME = 'voicemail';
@@ -130,15 +131,9 @@ class VoicemailDao extends BaseDao<Voicemail> {
   }
 
   async queryVoicemails(
-    limit: number,
-    direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
-    anchorId?: number,
+    options: FetchDataOptions<Voicemail>,
   ): Promise<Voicemail[]> {
-    const vmIds = await this._voicemailViewDao.queryVoicemails(
-      limit,
-      direction,
-      anchorId,
-    );
+    const vmIds = await this._voicemailViewDao.queryVoicemails(options);
     const voicemails =
       (vmIds.length && (await this.batchGet(vmIds, true))) || [];
     return voicemails;

@@ -9,20 +9,21 @@ import { TelephonyStore } from '../../../store';
 import { TelephonyService } from '../../../service/TelephonyService';
 import { DialerHeaderViewModel } from '../DialerHeader.ViewModel';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
-
-jest.mock('../../../service/TelephonyService');
+import { ClientService } from '@/modules/common';
+import { CLIENT_SERVICE } from '@/modules/common/interface';
 
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
+decorate(injectable(), ClientService);
 
-container.bind(TELEPHONY_SERVICE).to(TelephonyService);
 container.bind(TelephonyStore).to(TelephonyStore);
+container.bind(TELEPHONY_SERVICE).to(TelephonyService);
+container.bind(CLIENT_SERVICE).to(ClientService);
 
 let dialerHeaderViewModel: DialerHeaderViewModel;
 
 beforeAll(() => {
   dialerHeaderViewModel = new DialerHeaderViewModel();
-  dialerHeaderViewModel._telephonyService.deleteInputString = jest.fn();
 });
 
 afterEach(() => {
@@ -31,19 +32,9 @@ afterEach(() => {
 
 describe('dialerHeaderViewModel', () => {
   it('should call deleteInputString function', () => {
+    dialerHeaderViewModel._telephonyStore.forwardString = '123';
     dialerHeaderViewModel.deleteLastInputString();
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    expect(_telephonyService.deleteInputString).toBeCalled();
-  });
-
-  it('should call deleteInputString function', () => {
-    dialerHeaderViewModel.deleteInputString();
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    expect(_telephonyService.deleteInputString).toBeCalled();
+    expect(dialerHeaderViewModel._telephonyStore.forwardString).toEqual('12');
   });
 
   it('should initialize with dialer opened', () => {
@@ -68,45 +59,18 @@ describe('dialerHeaderViewModel', () => {
 
   it('should call updateInputString', () => {
     const value = 'abc';
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    _telephonyService.updateInputString = jest.fn();
     dialerHeaderViewModel.onChange({
       target: {
         value,
       },
     });
-    expect(_telephonyService.updateInputString).toBeCalled();
-  });
-
-  it('should not make a call with empty input string', () => {
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    _telephonyService.makeCall = jest.fn();
-    dialerHeaderViewModel.onKeyDown({
-      key: 'Enter',
-    });
-    expect(_telephonyService.makeCall).not.toBeCalled();
-  });
-
-  it('should call deleteInputString', () => {
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    _telephonyService.deleteInputString = jest.fn();
-    dialerHeaderViewModel.deleteLastInputString();
-    expect(_telephonyService.deleteInputString).toHaveBeenCalledTimes(1);
+    expect(dialerHeaderViewModel.forwardString).toEqual(value);
   });
 
   it('should call deleteInputString with `true`', () => {
-    const _telephonyService: TelephonyService = container.get(
-      TELEPHONY_SERVICE,
-    );
-    _telephonyService.deleteInputString = jest.fn();
+    dialerHeaderViewModel._telephonyStore.forwardString = '123';
     dialerHeaderViewModel.deleteInputString();
-    expect(_telephonyService.deleteInputString).toBeCalledWith(true);
+    expect(dialerHeaderViewModel.forwardString).toEqual('');
   });
 
   it('should initialize with empty uid', () => {

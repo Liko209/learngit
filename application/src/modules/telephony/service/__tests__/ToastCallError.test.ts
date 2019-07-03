@@ -117,4 +117,18 @@ describe('ToastCallError', () => {
     ToastCallError.toastParkError();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
+
+  it('should display on-demand error [JPT-2427]', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.OnDemandRecording';
+    ToastCallError.toastOnDemandRecording();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display auto-recording error [JPT-2428]', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.AutoRecording';
+    ToastCallError.toastAutoRecording();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
 });

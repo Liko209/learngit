@@ -175,15 +175,15 @@ describe('StreamController', () => {
 
       expect(streamController.items).toEqual([
         { id: 1, type: StreamItemType.INITIAL_POST, timeStart: 1 },
-        { id: 101, type: StreamItemType.POST, value: [1], timeStart: 101 },
-        { id: 102, type: StreamItemType.POST, value: [2], timeStart: 102 },
-        { id: 103, type: StreamItemType.POST, value: [3], timeStart: 103 },
+        { id: 101, type: StreamItemType.POST, value: 1, timeStart: 101 },
+        { id: 102, type: StreamItemType.POST, value: 2, timeStart: 102 },
+        { id: 103, type: StreamItemType.POST, value: 3, timeStart: 103 },
         { id: 104, type: StreamItemType.NEW_MSG_SEPARATOR, timeStart: 104 },
-        { id: 105, type: StreamItemType.POST, value: [5], timeStart: 105 },
-        { id: 106, type: StreamItemType.POST, value: [6], timeStart: 106 },
-        { id: 107, type: StreamItemType.POST, value: [7], timeStart: 107 },
-        { id: 108, type: StreamItemType.POST, value: [8], timeStart: 108 },
-        { id: 109, type: StreamItemType.POST, value: [9], timeStart: 109 },
+        { id: 105, type: StreamItemType.POST, value: 5, timeStart: 105 },
+        { id: 106, type: StreamItemType.POST, value: 6, timeStart: 106 },
+        { id: 107, type: StreamItemType.POST, value: 7, timeStart: 107 },
+        { id: 108, type: StreamItemType.POST, value: 8, timeStart: 108 },
+        { id: 109, type: StreamItemType.POST, value: 9, timeStart: 109 },
       ]);
 
       //

@@ -9,6 +9,7 @@ import { JuiAtMention } from 'jui/components/AtMention';
 import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { Emoji } from 'emoji-mart';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -476,24 +477,35 @@ describe('glipdown text', () => {
         ).toEqual('😂');
       });
 
-      it('should return array with only image emoji only', () => {
+      it('should return unicode emoji even after the same emoji transformation for non-unicode is cached [BUG-FIJI-7086]', () => {
+        expect(
+          postParser(':joy:hahahah', {
+            emoji: { hostName, unicodeOnly: false },
+          }),
+        ).toEqual([
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+            😂
+          </Emoji>,
+          'hahahah',
+        ]);
+
+        expect(
+          postParser(':joy:hahahah', {
+            emoji: { hostName, unicodeOnly: true },
+          }),
+        ).toEqual('😂hahahah');
+      });
+
+      it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: { hostName } })).toEqual([
-          <img
-            alt='😁'
-            className='emoji enlarge-emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f601.png?v=2.2.7'
-            title='😁'
-            key={0}
-          />,
+          <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
+            😁
+          </Emoji>,
         ]);
         expect(postParser(':-/', { emoji: { hostName } })).toEqual([
-          <img
-            className='emoji enlarge-emoji'
-            alt='😕'
-            title=':-/'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f615.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='confused' skin={1} set={'emojione'} size={30} key={0}>
+            😕
+          </Emoji>,
         ]);
         expect(
           postParser(':a_bash:', {
@@ -511,94 +523,90 @@ describe('glipdown text', () => {
             emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji enlarge-emoji'
-            alt='😂'
-            title=':joy:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={30} key={0}>
+            😂
+          </Emoji>,
         ]);
         expect(
           postParser(':thinking_face::purse::shallow_pan_of_food:', {
             emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji'
-            alt='🤔'
+          <Emoji
+            emoji='thinking_face'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={0}
-            title=':thinking_face:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f914.png?v=2.2.7'
-          />,
-          <img
-            className='emoji'
-            alt='👛'
-            key={1}
-            title=':purse:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f45b.png?v=2.2.7'
-          />,
-          <img
-            className='emoji'
-            alt='🥘'
+          >
+            🤔
+          </Emoji>,
+          <Emoji emoji='purse' skin={1} set={'emojione'} size={20} key={1}>
+            👛
+          </Emoji>,
+          <Emoji
+            emoji='shallow_pan_of_food'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={2}
-            title=':shallow_pan_of_food:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f958.png?v=2.2.7'
-          />,
+          >
+            🥘
+          </Emoji>,
         ]);
       });
 
-      it('should parse multiple ascii emojis', () => {
+      it('should parse multiple ascii emojis[JPT-2396, JPT-2387]', () => {
         expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
-          <img
-            className='emoji'
-            alt='😕'
-            title=':-/'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f615.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='confused' skin={1} set={'emojione'} size={20} key={0}>
+            😕
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😑'
-            title='-_-'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={1}
-          />,
+          >
+            😑
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='❤'
-            title='<3'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
-            key={2}
-          />,
+          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={2}>
+            ❤
+          </Emoji>,
         ]);
 
         expect(postParser('-_- -_- -_-', { emoji: { hostName } })).toEqual([
-          <img
-            className='emoji'
-            alt='😑'
-            title='-_-'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={0}
-          />,
+          >
+            😑
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😑'
-            title='-_-'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={1}
-          />,
+          >
+            😑
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😑'
-            title='-_-'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f611.png?v=2.2.7'
+          <Emoji
+            emoji='expressionless'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={2}
-          />,
+          >
+            😑
+          </Emoji>,
         ]);
       });
 
@@ -614,20 +622,16 @@ describe('glipdown text', () => {
         ).toEqual('app:///webpack:/src/main/main.ts');
       });
 
-      it('should return array with image emoji and other text', () => {
+      it('should return array with image emoji and other text[JPT-2392, JPT-2396]', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
             emoji: { hostName },
           }),
         ).toEqual([
           'hahah',
-          <img
-            alt='😁'
-            className='emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f601.png?v=2.2.7'
-            title='😁'
-            key={0}
-          />,
+          <Emoji emoji='grin' skin={1} set={'emojione'} size={20} key={0}>
+            😁
+          </Emoji>,
           '123___',
           <img
             alt='🏳🌈'
@@ -637,21 +641,13 @@ describe('glipdown text', () => {
             key={1}
           />,
           '++ ',
-          <img
-            className='emoji'
-            alt='😓'
-            title="':("
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f613.png?v=2.2.7'
-            key={2}
-          />,
+          <Emoji emoji='sweat' skin={1} set={'emojione'} size={20} key={2}>
+            😓
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😂'
-            title=':joy:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            key={3}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={3}>
+            😂
+          </Emoji>,
         ]);
       });
 
@@ -662,21 +658,19 @@ describe('glipdown text', () => {
             emoji: { hostName },
           }),
         ).toEqual([
-          <img
-            className='emoji'
-            alt='❤'
-            title='<3'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/2764.png?v=2.2.7'
-            key={0}
-          />,
+          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={0}>
+            ❤
+          </Emoji>,
           ' ',
-          <img
-            className='emoji'
-            alt='😅'
-            title="':)"
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f605.png?v=2.2.7'
+          <Emoji
+            emoji='sweat_smile'
+            skin={1}
+            set={'emojione'}
+            size={20}
             key={1}
-          />,
+          >
+            😅
+          </Emoji>,
         ]);
       });
     });
@@ -795,13 +789,9 @@ Veniam anim velit amet aliqua proident.`}
             name='@Jesse'
           />,
           ' ',
-          <img
-            className='emoji'
-            alt='😂'
-            title=':joy:'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            key={1}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+            😂
+          </Emoji>,
         ]);
       });
 
@@ -826,13 +816,9 @@ Veniam anim velit amet aliqua proident.`}
           />,
           ' wrote:',
           <q key={1}>sdfsadf</q>,
-          <img
-            alt='😂'
-            className='emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            title=':joy:'
-            key={2}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={2}>
+            😂
+          </Emoji>,
         ]);
       });
 
@@ -845,6 +831,19 @@ Veniam anim velit amet aliqua proident.`}
         ).toEqual([
           'sdds',
           <JuiAtMention key={0} id='122' isCurrent={false} name=':joy:' />,
+          '123  ss',
+        ]);
+      });
+
+      it('should only render at mention when there is unicode emoji in at mention', () => {
+        expect(
+          postParser(`sdds${atmention('12244', '🤣')}123  ss`, {
+            atMentions: { map },
+            emoji: { hostName },
+          }),
+        ).toEqual([
+          'sdds',
+          <JuiAtMention key={0} id='12244' isCurrent={false} name='@🤣' />,
           '123  ss',
         ]);
       });
@@ -1056,13 +1055,9 @@ Veniam anim velit amet aliqua proident.`}
           <pre className='codesnippet' key={0}>
             &lt;a href='http://heynow.com' target='_blank'
             rel='noreferrer'&gt;some link&lt;/a&gt;
-            <img
-              className='emoji'
-              alt='😂'
-              title=':joy:'
-              src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-              key={0}
-            />
+            <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+              😂
+            </Emoji>
           </pre>,
         ]);
       });
@@ -1101,14 +1096,21 @@ Veniam anim velit amet aliqua proident.`}
           >
             https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
           </a>,
-          <img
-            alt='😂'
-            className='emoji'
-            src='https://d2rbro28ib85bu.cloudfront.net/emoji/emojione/png/1f602.png?v=2.2.7'
-            title=':joy:'
-            key={1}
-          />,
+          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+            😂
+          </Emoji>,
         ]);
+      });
+
+      it('should parse correcly when quote an emoji', () => {
+        expect(
+          renderToStaticMarkup(postParser('> :joy:', {
+            emoji: { hostName },
+            html: true,
+          }) as any),
+        ).toMatch(
+          /<q><span aria-label="😂, joy" class="emoji-mart-emoji"><span style="[\s\S]+">😂<\/span><\/span><\/q>/,
+        );
       });
     });
 

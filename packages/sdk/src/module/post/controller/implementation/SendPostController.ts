@@ -187,6 +187,7 @@ class SendPostController implements ISendPostController {
       id: originalPost.id,
       data: post,
     };
+
     const result = [obj];
     const replacePosts = new Map<number, Post>();
     replacePosts.set(originalPost.id, post);
@@ -206,6 +207,7 @@ class SendPostController implements ISendPostController {
     // 2. delete from db
     await this.preInsertController.delete(originalPost);
     await dao.put(post);
+
     return result;
   }
 
