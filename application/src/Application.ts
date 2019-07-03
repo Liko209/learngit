@@ -21,11 +21,7 @@ import * as setting from '@/modules/setting/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
-// Firebase App (the core Firebase SDK) is always required and must be listed first
-import * as firebase from 'firebase/app';
-
-// Add the Performance Monitoring library
-import 'firebase/performance';
+import { FirebasePerformance } from '../../packages/foundation';
 
 @injectable()
 class Application {
@@ -34,6 +30,7 @@ class Application {
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
     Pal.instance.setErrorReporter(errorReporter);
+    FirebasePerformance.getInstance().initialize();
     const jupiter = this._jupiter;
     // TODO auto load modules
     jupiter.registerModule(sw.config);
@@ -57,21 +54,6 @@ class Application {
         '@/modules/electron/module.config'),
       );
     }
-
-    // TODO: Replace the following with your app's Firebase project configuration
-    const firebaseConfig = {
-      apiKey: 'AIzaSyAMEhBz7K7CNr1XFkBWh0xx8fzqc7omv6c',
-      authDomain: 'jupiter-ca30a.firebaseapp.com',
-      databaseURL: 'https://jupiter-ca30a.firebaseio.com',
-      projectId: 'jupiter-ca30a',
-      storageBucket: '',
-      messagingSenderId: '939459062083',
-      appId: '1:939459062083:web:3669766199ae04d7',
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.performance();
     return this._jupiter.bootstrap();
   }
 }
