@@ -55,7 +55,13 @@ describe('PreloadController', () => {
       expect(preloadCtrl.getInProgressId()).toEqual(5);
       expect(preloadCtrl.getPendingIds()).toEqual([3, 6, 2]);
 
+      preloadCtrl.onSuccess({ id: preloadCtrl.getInProgressId() }, 0, 0);
+      expect(preloadCtrl.getInProgressId()).toEqual(3);
+
       preloadCtrl.stop();
+      expect(preloadCtrl.getPendingIds()).toEqual([]);
+
+      preloadCtrl._startPreload();
       expect(preloadCtrl.getPendingIds()).toEqual([]);
     });
   });
