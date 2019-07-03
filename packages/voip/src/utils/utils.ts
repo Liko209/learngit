@@ -19,8 +19,8 @@ function isSafari() {
   const userAgent = navigator.userAgent.toLowerCase();
   return (
     userAgent &&
-    userAgent.indexOf('Safari') > -1 &&
-    userAgent.indexOf('Chrome') < 0
+    userAgent.indexOf('safari') > -1 &&
+    userAgent.indexOf('chrome') < 0
   );
 }
 
