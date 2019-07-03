@@ -26,7 +26,7 @@ class MessageViewComponent extends Component<Props> {
   }
 
   render() {
-    const { goToConversation } = this.props;
+    const { goToConversation, entity } = this.props;
     return (
       <JuiActionIconWrapper>
         <JuiIconButton
@@ -36,7 +36,7 @@ class MessageViewComponent extends Component<Props> {
           size="small"
           key="voicemail-read"
           onClick={goToConversation}
-          data-test-automation-id="voicemail-read-button"
+          data-test-automation-id={`${entity}-message-button`}
           tooltipTitle={this.title}
           ariaLabel={this.screenreaderText}
         >

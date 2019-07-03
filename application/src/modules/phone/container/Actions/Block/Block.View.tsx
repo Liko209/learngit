@@ -6,7 +6,7 @@
 
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionButton, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Notification } from '@/containers/Notification';
 import { Dialog } from '@/containers/Dialog';
 import React, { Component } from 'react';
@@ -74,14 +74,16 @@ class BlockViewComponent extends Component<Props> {
     return true;
   }
 
-  _handleClick = () => {
-    const { isBlocked, hookAfterClick } = this.props;
+  _handleClick = async () => {
+    const { isBlocked, hookAfterClick, type } = this.props;
     if (isBlocked) {
-      this._handleUnblock();
+      await this._handleUnblock();
     } else {
-      this._handleBlock();
+      await this._handleBlock();
     }
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   get _source() {

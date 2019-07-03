@@ -34,13 +34,15 @@ class ReadViewComponent extends Component<Props> {
   }
 
   private _handleClick = () => {
-    const { isRead, hookAfterClick } = this.props;
+    const { isRead, hookAfterClick, type } = this.props;
     if (isRead) {
       this._handleUnread();
     } else {
       this._handleRead();
     }
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   get title() {

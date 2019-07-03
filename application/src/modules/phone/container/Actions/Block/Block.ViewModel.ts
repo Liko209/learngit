@@ -42,7 +42,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   @action
   block = async () => {
     await this._rcInfoService.addBlockedNumber(this.props.caller.phoneNumber as string);
-    this.fetchNumberStatus(this.props.caller);
+    await this.fetchNumberStatus(this.props.caller);
     return true;
   }
 
@@ -53,7 +53,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   @action
   unblock = async () => {
     await this._rcInfoService.deleteBlockedNumbers([this.props.caller.phoneNumber as string]);
-    this.fetchNumberStatus(this.props.caller);
+    await this.fetchNumberStatus(this.props.caller);
     return true;
   }
 }
