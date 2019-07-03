@@ -235,4 +235,29 @@ export class RcPlatformSdk {
       return await this.sdk.get(url);
     });
   }
+
+  /** block and unblock phone number */
+  async getBlockPhoneNumbers() {
+    const url = `/restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.get(url);
+    });
+  }
+
+  async updateBlockOrAllowPhoneNumber(blockedNumberId: string, data: { uri?: string, id?: string, phoneNUmber?: string, label?: string, status?: 'Blocked' | 'Allowed' }) {
+    const url = `/restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers/${blockedNumberId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.put(url, data);
+    });
+  }
+
+  async resetBlockPhoneNumber() {
+    let ids;
+    await this.getBlockPhoneNumbers().then(res => {
+      ids = res.data.records.filter(item => item.status == 'Blocked').map(res => res.id);
+    });
+    for (const id of ids) {
+      await this.updateBlockOrAllowPhoneNumber(id, { status: 'Allowed' });
+    }
+  }
 }

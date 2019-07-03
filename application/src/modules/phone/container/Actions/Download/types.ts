@@ -3,7 +3,7 @@
  * @Date: 2019-05-24 07:27:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 
 type DownloadProps = {
   id: number;
@@ -16,4 +16,4 @@ type DownloadViewProps = {
   hookAfterClick: () => void;
 };
 
-export { BUTTON_TYPE, DownloadProps, DownloadViewProps };
+export { DownloadProps, DownloadViewProps };
