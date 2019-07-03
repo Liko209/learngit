@@ -83,7 +83,7 @@ describe('Jupiter', () => {
       provides: [MyServiceProvides],
     };
 
-    it.skip('should be register module', async () => {
+    it('should be register module', async () => {
       const jupiter = new Jupiter();
       jupiter.registerModuleAsync(
         () => new Promise(res => res({ config: myServiceModuleConfig })),
