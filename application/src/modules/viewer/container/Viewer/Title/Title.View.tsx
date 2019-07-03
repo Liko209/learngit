@@ -17,6 +17,7 @@ import {
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
   JuiDialogHeaderSubtitle,
+  JuiDialogHeaderTitleMainTitle,
 } from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -91,28 +92,32 @@ class ViewerTitleViewComponent extends Component<
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
                 />
-                {sender && createdAt && (
-                  <JuiDialogHeaderMeta>
-                    <JuiDialogHeaderMetaLeft>
-                      <Avatar
-                        uid={sender.id}
-                        data-test-automation-id={'previewerSenderAvatar'}
+                <JuiDialogHeaderMeta>
+                  {sender && createdAt && (
+                    <>
+                      <JuiDialogHeaderMetaLeft>
+                        <Avatar
+                          uid={sender.id}
+                          data-test-automation-id={'previewerSenderAvatar'}
+                        />
+                      </JuiDialogHeaderMetaLeft>
+                      <JuiDialogHeaderMetaRight
+                        title={sender.userDisplayName}
+                        data-test-automation-id={'previewerSenderInfo'}
+                        subtitle={dateFormatter.dateAndTimeWithoutWeekday(
+                          moment(createdAt),
+                        )}
                       />
-                    </JuiDialogHeaderMetaLeft>
-                    <JuiDialogHeaderMetaRight
-                      title={sender.userDisplayName}
-                      data-test-automation-id={'previewerSenderInfo'}
-                      subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                        moment(createdAt),
-                      )}
-                    />
-                  </JuiDialogHeaderMeta>
-                )}
+                    </>
+                  )}
+                </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle
                   variant="responsive"
                   data-test-automation-id={'previewerTitle'}
                 >
-                  <span>{name}</span>
+                  <JuiDialogHeaderTitleMainTitle>
+                    {name}
+                  </JuiDialogHeaderTitleMainTitle>
                   <JuiDialogHeaderSubtitle>
                     {' '}
                     {total > -1 && currentIndex > -1

@@ -8,7 +8,6 @@ import { getEntity } from '@/store/utils';
 import { ViewerTitleViewModel } from '../Title.ViewModel';
 import { ViewerTitleProps } from '../types';
 import * as mobx from 'mobx';
-import { FileItem } from 'jui/pattern/ConversationCard/Files/style';
 import * as storeUtils from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 

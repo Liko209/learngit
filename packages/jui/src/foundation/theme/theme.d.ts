@@ -25,6 +25,7 @@ export {
   Spacing,
   ZIndex,
   size,
+  ThemeStyle,
 } from 'rcui/foundation/styles/theme';
 
 export type Shape = {
