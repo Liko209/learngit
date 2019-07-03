@@ -154,12 +154,14 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   }
 
   onContentLoad = () => {
-    setTimeout(() => {
-      this._preloadController.setIsAllowed(true);
-    });
+    this.enablePreload();
   }
 
   onContentError = () => {
+    this.enablePreload();
+  }
+
+  enablePreload = () => {
     setTimeout(() => {
       this._preloadController.setIsAllowed(true);
     });
