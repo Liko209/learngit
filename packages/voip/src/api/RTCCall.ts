@@ -219,8 +219,8 @@ class RTCCall {
   }
 
   hangup(): void {
-    this._account.removeCallFromCallManager(this._callInfo.uuid);
     this._fsm.hangup();
+    this._account.removeCallFromCallManager(this._callInfo.uuid);
   }
 
   flip(target: number): void {

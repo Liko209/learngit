@@ -17,8 +17,8 @@ import {
 } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
-import { rtcLogger } from '../../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
+import { RTCMediaStatsManager } from '../../signaling/RTCMediaStatsManager';
 
 describe('RTC call', () => {
   afterEach(() => {
@@ -106,6 +106,7 @@ describe('RTC call', () => {
     public sessionDescriptionHandler: SessionDescriptionHandler;
     public remoteIdentity: any;
     public mediaStreams: MediaStreams;
+    public mediaStatsManager: RTCMediaStatsManager;
     constructor() {
       super();
       this.remoteIdentity = {
@@ -114,6 +115,7 @@ describe('RTC call', () => {
       };
       this.mediaStreams = new MediaStreams(this);
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
+      this.mediaStatsManager = new RTCMediaStatsManager();
     }
 
     emitSessionReinviteAccepted() {
