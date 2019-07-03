@@ -269,7 +269,7 @@ describe('ContactInfoViewModel', () => {
         () => !!vm.personId,
         () => {
           expect(vm.isExt).toEqual(true);
-          expect(vm.displayNumber).toEqual('Ext. 101');
+          expect(vm.displayNumber).toEqual('telephony.Ext101');
           done();
         },
       );

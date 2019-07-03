@@ -96,7 +96,7 @@ class ContactInfoViewModel extends StoreViewModel<ContactInfoProps>
   @computed
   get displayNumber() {
     if (this.isExt) {
-      return `Ext. ${this.phoneNumber}`;
+      return `${i18nP('telephony.Ext')}${this.phoneNumber}`;
     }
 
     return this.phoneNumber;
