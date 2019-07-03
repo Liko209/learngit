@@ -1,4 +1,9 @@
-import { ToggleSettingItemViewModel } from '../ToggleSettingItem.ViewModel';
+/*
+ * @Author: looper Wang (looper.wang@ringcentral.com)
+ * @Date: 2019-06-28 14:40:39
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { SliderSettingItemViewModel } from '../SliderSettingItem.ViewModel';
 import { jupiter } from 'framework';
 import { SettingStore } from '../../../../store/SettingStore';
 import { getEntity } from '@/store/utils';
@@ -10,7 +15,7 @@ jest.mock('@/store/utils');
 function mockSettingItem(item: any) {
   jest
     .spyOn<any, any>(
-      ToggleSettingItemViewModel.prototype,
+      SliderSettingItemViewModel.prototype,
       '_settingStore',
       'get',
     )
@@ -19,7 +24,7 @@ function mockSettingItem(item: any) {
     });
 }
 
-describe('ToggleSettingItemViewModel', () => {
+describe('SliderSettingItemViewModel', () => {
   beforeAll(() => {
     const settingStore: SettingStore = jupiter.get(SettingStore);
     jest
@@ -27,36 +32,36 @@ describe('ToggleSettingItemViewModel', () => {
       .mockReturnValue({ id: 'PAGE_1' });
   });
   describe('saveSetting()', () => {
-    it('should save setting [JPT-2083]', async () => {
+    it('should save setting ', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
-      const vm = new ToggleSettingItemViewModel({ id: 1 });
-      await vm.saveSetting(false);
-      expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(false);
+      const vm = new SliderSettingItemViewModel({ id: 1 });
+      await vm.saveSetting(10);
+      expect(vm.settingItemEntity.valueSetter).toHaveBeenCalledWith(10);
     });
 
-    it('should not save setting ', async () => {
+    it('should not save setting when beforeSaving return false', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
       mockSettingItem({
         beforeSaving: () => false,
       });
-      const vm = new ToggleSettingItemViewModel({ id: 1 });
-      await vm.saveSetting(false);
+      const vm = new SliderSettingItemViewModel({ id: 1 });
+      await vm.saveSetting(10);
       expect(vm.settingItemEntity.valueSetter).not.toHaveBeenCalled();
     });
     it('should save setting with beforeSaving ', async () => {
       getEntity.mockReturnValue({
         valueSetter: jest.fn(),
       });
-      const vm = new ToggleSettingItemViewModel({ id: 1 });
+      const vm = new SliderSettingItemViewModel({ id: 1 });
       const beforeSaving = jest.fn();
       mockSettingItem({
         beforeSaving,
       });
-      await vm.saveSetting(false);
+      await vm.saveSetting(10);
       expect(beforeSaving).toHaveBeenCalled();
     });
   });
