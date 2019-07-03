@@ -20,9 +20,6 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
-
-// Using manual mock to improve mock priority.
-// jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
 jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');

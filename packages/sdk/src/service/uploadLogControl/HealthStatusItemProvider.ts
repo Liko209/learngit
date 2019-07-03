@@ -17,15 +17,13 @@ export class HealthStatusItemProvider implements IZipItemProvider {
         return [
           `=========== ${_module.name} ==========\n`,
           ..._module.getAll().map(item => {
-            if (item.getStatus['then']) {
-              return item
-                .getStatus()
-                .then(
-                  (status: any) =>
-                    `[ ${item.name} ]\n\n${toText(status)}\n`,
-                );
+            const result = item.getStatus();
+            if (_.isObject(result) && result['then']) {
+              return result.then(
+                (status: any) => `[ ${item.name} ]\n\n${toText(status)}\n`,
+              );
             }
-            return `[ ${item.name} ]\n\n${toText(item.getStatus())}\n`;
+            return `[ ${item.name} ]\n\n${toText(status)}\n`;
           }),
         ];
       }),
