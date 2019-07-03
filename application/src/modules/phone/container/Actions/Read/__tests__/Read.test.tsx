@@ -46,7 +46,7 @@ describe('Read', () => {
     t1() {
       const wrapper = mountWithTheme(<Read id={1234} type={BUTTON_TYPE.ICON} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('unread');
+      expect(buttonProps.children).toBe('read');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markUnread');
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsReadMarkItAsUnread');
     }
@@ -58,7 +58,7 @@ describe('Read', () => {
     t2() {
       const wrapper = mountWithTheme(<Read id={1234} type={BUTTON_TYPE.ICON} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('read');
+      expect(buttonProps.children).toBe('unread');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markRead');
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsUnreadMarkItAsRead');
     }
