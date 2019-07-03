@@ -43,7 +43,7 @@ class SettingPageViewComponent extends Component<Props> {
     this._sources = [el];
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     this._performanceTracer.end({
       key: SETTING_PERFORMANCE_KEYS.UI_SETTING_PAGE_RENDER,
     });

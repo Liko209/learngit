@@ -128,10 +128,13 @@ class ViewerViewComponent extends Component<
     }
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     this._performanceTracer.end({
       key: VIEWER_PERFORMANCE_KEYS.UI_VIEWER_PAGE_RENDER,
     });
+  }
+
+  componentDidMount() {
     dataAnalysis.page('Jup_Web/DT_conversation_fullScreenViewer');
     window.addEventListener('keydown', this._handlerKeydown, {
       passive: false,
