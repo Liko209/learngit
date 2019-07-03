@@ -23,6 +23,7 @@ import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
 type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
 type State = {
   isHover: boolean;
+  showCall: boolean;
 };
 
 @observer
@@ -31,7 +32,18 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
 
   state = {
     isHover: false,
+    showCall: false,
   };
+
+  async componentDidMount() {
+    const { shouldShowCall } = this.props;
+    if (shouldShowCall) {
+      const showCall = await shouldShowCall();
+      this.setState({
+        showCall,
+      });
+    }
+  }
 
   get playerMode() {
     const { isHover } = this.state;
@@ -96,7 +108,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       // onChange,
       // selected,
     } = this.props;
-    const { isHover } = this.state;
+    const { isHover, showCall } = this.state;
 
     return (
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
@@ -151,6 +163,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
               maxButtonCount={MAX_BUTTON_COUNT}
               hookAfterClick={this.handleMouseLeave}
               canEditBlockNumbers={canEditBlockNumbers}
+              showCall={showCall}
             />
           )}
         </VoicemailSummary>

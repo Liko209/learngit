@@ -9,11 +9,13 @@ type ActionsProps = {
   maxButtonCount: number;
   hookAfterClick: () => void;
   canEditBlockNumbers: boolean;
+  showCall: boolean;
 };
 
 type ActionsViewProps = {
   shouldShowBlock: boolean;
   person: PersonModel | null;
+  isBlock: boolean;
 };
 
 export { ActionsProps, ActionsViewProps, ENTITY_TYPE };

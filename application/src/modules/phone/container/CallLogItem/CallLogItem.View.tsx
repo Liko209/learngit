@@ -26,13 +26,25 @@ type Props = CallLogItemViewProps & WithTranslation;
 
 type State = {
   isHover: boolean;
+  showCall: boolean;
 };
 
 @observer
 class CallLogItemViewComponent extends Component<Props, State> {
   state = {
     isHover: false,
+    showCall: false,
   };
+
+  async componentDidMount() {
+    const { shouldShowCall } = this.props;
+    if (shouldShowCall) {
+      const showCall = await shouldShowCall();
+      this.setState({
+        showCall,
+      });
+    }
+  }
 
   handleMouseOver = () => {
     this.setState({ isHover: true });
@@ -57,7 +69,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
       direction,
       canEditBlockNumbers,
     } = this.props;
-    const { isHover } = this.state;
+    const { isHover, showCall } = this.state;
 
     return (
       <StyleVoicemailItem
@@ -96,6 +108,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
               maxButtonCount={MAX_BUTTON_COUNT}
               hookAfterClick={this.handleMouseLeave}
               canEditBlockNumbers={canEditBlockNumbers}
+              showCall={showCall}
             />
           ) : (
             <StyledTime>{startTime}</StyledTime>
