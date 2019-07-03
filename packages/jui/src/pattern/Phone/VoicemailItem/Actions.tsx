@@ -4,9 +4,9 @@ import { grey, spacing } from '../../../foundation/utils/styles';
 const JuiActionIconWrapper = styled.div`
   background-color: ${grey('500')};
   border-radius: 50%;
+  margin-left: auto;
   &:not(:last-child) {
     margin-right: ${spacing(2)};
-    margin-left: auto;
   }
 `;
 
