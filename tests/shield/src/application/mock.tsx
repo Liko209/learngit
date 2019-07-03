@@ -14,6 +14,7 @@ import {
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
 import { App } from '@/modules/app/container';
+import history from '@/history';
 
 type ModuleMap = {
   [key: string]: ModuleConfig;
@@ -21,6 +22,12 @@ type ModuleMap = {
 
 type MockAppProps = {
   modules?: string[];
+  inited?: boolean;
+};
+
+type BootstrapConfig = {
+  modules?: string[];
+  url?: string;
 };
 
 let kAllModules: ModuleMap;
@@ -54,8 +61,18 @@ function initAllModules() {
   }
 }
 
-function bootstrapJupiter(modules: string[]): Promise<void> {
+function bootstrap(config: BootstrapConfig): Promise<void> {
+  // init modules if needed
+  initAllModules();
+  let { modules } = config;
+  const { url } = config;
+  if (url) {
+    history.push(url);
+  }
   const jupiter = container.get(Jupiter);
+  if (!modules || modules.length === 0) {
+    modules = Object.keys(kAllModules);
+  }
   modules.forEach((name: string) => {
     const config = kAllModules[name];
     if (config) {
@@ -67,18 +84,12 @@ function bootstrapJupiter(modules: string[]): Promise<void> {
 }
 
 const mock = (Comp: ComponentType) => (props: MockAppProps) => {
-  // init modules if needed
-  initAllModules();
-
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(props.inited);
 
   useEffect(() => {
     if (!loaded) {
-      let { modules } = props;
-      if (!modules || modules.length === 0) {
-        modules = Object.keys(kAllModules);
-      }
-      bootstrapJupiter(modules).then(() => setLoaded(true));
+      const { modules } = props;
+      bootstrap({ modules }).then(() => setLoaded(true));
     }
   });
   return loaded ? <Comp /> : null;
@@ -86,4 +97,4 @@ const mock = (Comp: ComponentType) => (props: MockAppProps) => {
 
 const MockApp = mock(App);
 
-export { MockApp, mock };
+export { MockApp, mock, bootstrap, BootstrapConfig };

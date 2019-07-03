@@ -6,10 +6,10 @@
 
 import React from 'react';
 import fs from 'fs';
-import { mount } from 'enzyme';
+// import { mount } from 'enzyme';
+import TestRenderer, { ReactTestRenderer } from 'react-test-renderer';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { h, act, TestApp, MockApp } from 'shield/application';
-import history from '@/history';
+import { h, act, TestApp, MockApp, bootstrap } from 'shield/application';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
 import { wait } from 'shield/utils';
@@ -34,26 +34,26 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     });
     it('should send post', async () => {
       const url = `/message/${team1._id}?code=123`;
-      history.push(url);
       let wrapper: TestApp;
-
-      await act(async () => {
-        wrapper = h(mount(<MockApp />));
+      await bootstrap({ url });
+      act(() => {
+        // wrapper = h(mount(<MockApp />));
+        wrapper = h(<MockApp inited={true} />);
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         notificationCenter.emitKVChange(service.SERVICE.LOGIN);
       });
 
-      await act(async () => {
-        wrapper.update();
-        const leftNav = wrapper.aboutDialog;
-        console.warn('wait 76', leftNav);
+      await wait(1000);
 
-        // const str = wrapper.debug();
-        await wait(100);
-        const str = wrapper.debug();
-        fs.writeFileSync('./out.txt', str);
-        // wrapper.unmount();
-        wrapper.update();
+      act(() => {
+        // wrapper.update();
+        const inst = wrapper;
+        if (inst) {
+          const about = inst.aboutDialog;
+          console.warn(888888, about);
+        }
+        console.warn(wrapper.toString());
+        fs.writeFileSync('./out.txt', `${wrapper.toString()}`);
       });
     });
   });

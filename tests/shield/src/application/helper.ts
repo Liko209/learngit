@@ -3,12 +3,13 @@
  * @Date: 2019-06-28 16:16:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactWrapper } from 'enzyme';
+import { ReactElement } from 'react';
 import { TestApp } from './application';
 export { act } from 'react-dom/test-utils';
+import { getWrapper } from './wrapper';
 
-function helper(wrapper: ReactWrapper) {
-  const p = new TestApp(wrapper);
+function helper(element: ReactElement) {
+  const p = new TestApp(getWrapper(element));
   return p;
 }
 
