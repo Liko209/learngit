@@ -8,31 +8,21 @@ import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
 import { InitialData, GlipData, GlipState } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
+const debug = createDebug('SdkItFramework');
 import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
 import './blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
-const debug = createDebug('SdkItFramework');
+
 type Processor<ResData, ReqData, T> = (
   reqRes: IRequestResponse<ReqData, ResData>,
 ) => T;
-console.warn(222, Promise.prototype);
 
 // global.Promise = WrapPromise;
 // type GetProcessorType<T> = T extends Processor<any, any, infer R> ? R: any;
 
-function xx<
-  P extends Processor<any, any, any>,
-  Q = P extends Processor<any, any, infer R> ? R : any
->(pro: P): Q {
-  return pro({} as any);
-}
-
-const x = xx(() => {
-  return 123;
-});
 type ItContext = {
   currentUserId: () => number;
   currentCompanyId: () => number;

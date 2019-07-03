@@ -143,7 +143,7 @@ export class MockGlipServer implements IMockServer {
     const adapter: IResponseAdapter = new ResponseAdapter();
     this._router = new Router(adapter);
     this._router.applyApi(this.api);
-    this.socketServer = new MockSocketServer();
+    this.socketServer = new MockSocketServer('https://glip.socket.com');
     this.socketServer.on('connection', () => {
       console.log(
         'TCL: =-=-=-=-=-=-MockGlipServer -> constructor -> connection',
@@ -235,7 +235,7 @@ export class MockGlipServer implements IMockServer {
       posts: this.postDao.getPosts() || [],
       client_config: this.clientConfigDao.findOne()!,
       timestamp: 1561008777444,
-      scoreboard: 'wss://glip.socket.com',
+      scoreboard: 'glip.socket.com',
       // static_http_server: 'https://d2rbro28ib85bu.cloudfront.net',
     };
     return createResponse({
