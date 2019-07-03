@@ -6,6 +6,8 @@
 import { ReactElement, ComponentType } from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
+import ReactQuill from 'react-quill';
+import { Simulate } from 'react-dom/test-utils';
 
 class EnzymeWrapper implements IWrapper {
   protected wrapper: ReactWrapper;
@@ -36,11 +38,48 @@ class EnzymeWrapper implements IWrapper {
   }
 
   enter() {
-    this.wrapper.simulate('keypress', { key: 'Enter' });
+    this.wrapper.simulate('keyDown', { key: 'Enter', keyCode: 13, which: 13 });
   }
 
   input(text: string) {
-    this.wrapper.simulate('change', { target: { value: text } });
+    const quill = this.wrapper.find(ReactQuill);
+    if (quill) {
+      const editor = (quill.instance() as any).getEditor();
+      editor.focus();
+      editor.setText(text);
+      editor.update();
+      console.warn(7777777, editor.getText());
+      editor.focus();
+      const divs = quill.find('div');
+      Simulate.keyDown(quill.getDOMNode(), {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+      Simulate.keyDown(this.wrapper.getDOMNode(), {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+      Simulate.keyDown(divs.first().getDOMNode(), {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+      // divs.first().props().onKeyDown!({
+      //   key: 'Enter',
+      //   keyCode: 13,
+      //   which: 13,
+      // } as any);
+      // divs.forEach(w => {
+      //   console.warn(888888, w.debug());
+      //   w.simulate('keydown', );
+      // });
+      // quill.simulate('keydown', { key: 'Enter', keyCode: 13, which: 13 });
+      // this.enter();
+    } else {
+      this.wrapper.simulate('change', { target: { value: text } });
+    }
   }
 
   flush() {

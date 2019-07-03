@@ -33,23 +33,28 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     });
     it('should send post', async () => {
       const url = `/messages/${team1._id}`;
-      let wrapper: TestApp;
+      let app: TestApp;
       await bootstrap({ url });
 
-      console.warn(history);
-
       await act(async () => {
-        wrapper = h(<MockApp inited={true} />);
-        await wait(100);
+        app = h(<MockApp inited={true} />);
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         notificationCenter.emitKVChange(service.SERVICE.LOGIN);
       });
 
-      await wait(1000);
+      // await wait(100);
 
       await act(async () => {
-        wrapper.flush();
-        fs.writeFileSync('./out.txt', `${wrapper.toString()}`);
+        app.flush();
+        const input = app.messageInput;
+        // const testMessage = 'hello';
+        // input.input(testMessage);
+
+        app.messageEmojiButton.click();
+        app.flush();
+        await wait(100);
+
+        fs.writeFileSync('./out.txt', `${input.toString()}`);
       });
     });
   });

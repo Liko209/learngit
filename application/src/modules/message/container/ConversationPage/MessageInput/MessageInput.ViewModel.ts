@@ -305,6 +305,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @action
   private _enterHandler(vm: MessageInputViewModel) {
     return function () {
+      console.warn(888888, 'send');
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
