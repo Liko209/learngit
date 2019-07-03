@@ -4,11 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
-import styled from '../../foundation/styled-components';
-import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
 import { isEmailByReg } from '../../foundation/utils';
+import { StyledTextField } from './styles';
 
 type SelectedItem = {
   label: string;
@@ -46,23 +44,6 @@ type JuiDownshiftTextFieldProps = {
   onComposition: (isComposition: boolean) => void;
   openMenu: () => void;
 };
-
-const StyledTextField = styled<TextFieldProps>(JuiTextField)`
-  && {
-    .inputRoot {
-      flex-wrap: wrap;
-    }
-    .input {
-      flex: 1;
-    }
-    .downshift-label {
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-` as typeof MuiTextField;
 
 class JuiDownshiftTextField extends React.PureComponent<
   JuiDownshiftTextFieldProps,

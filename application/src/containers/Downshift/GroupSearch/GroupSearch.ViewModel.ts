@@ -86,11 +86,7 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
         label: group.displayName,
         email: group.displayName,
       }));
-      this.suggestions = differenceBy(
-        groups.slice(0, 20),
-        this.selectedItems,
-        'id',
-      );
+      this.suggestions = differenceBy(groups, this.selectedItems, 'id');
     });
   }
 }

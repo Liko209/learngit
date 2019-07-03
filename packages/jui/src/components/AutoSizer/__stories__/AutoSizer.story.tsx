@@ -11,25 +11,31 @@ import { JuiAutoSizer, Size } from '../AutoSizer';
 import { JuiVirtualizedList } from '../../VirtualizedList';
 
 const ROW_HEIGHT = 20;
+
 const ListWrapper = styled.div`
+  position: absolute;
   background: #f1f1f1;
+  max-height: 50%;
+  flex-direction: column;
+  display: flex;
 `;
+
 const Row = styled.div`
   height: ${ROW_HEIGHT};
 `;
 
 storiesOf('Components/AutoSizer', module).add('AutoSizer', () => {
   return (
-    <JuiAutoSizer>
-      {({ height }: Size) => (
-        <ListWrapper>
+    <ListWrapper>
+      <JuiAutoSizer>
+        {({ height }: Size) => (
           <JuiVirtualizedList minRowHeight={ROW_HEIGHT} height={height}>
-            {_.range(1, 2).map(n => (
+            {_.range(1, 50).map(n => (
               <Row key={n}>Row-{n}</Row>
             ))}
           </JuiVirtualizedList>
-        </ListWrapper>
-      )}
-    </JuiAutoSizer>
+        )}
+      </JuiAutoSizer>
+    </ListWrapper>
   );
 });
