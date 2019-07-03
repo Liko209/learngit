@@ -593,7 +593,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     /** Add new audio input stream & re-init sip session */
     pc.addStream(stream);
-    this._session.sessionDescriptionHandler.getDescription();
+    try {
+      this._session.sessionDescriptionHandler.getDescription();
+    } catch (e) {
+      rtcLogger.warn(
+        LOG_TAG,
+        `Failed to get peer connection description: ${e.message}`,
+      );
+    }
   }
 
   private _setAudioOutputDevice(deviceID: string) {
