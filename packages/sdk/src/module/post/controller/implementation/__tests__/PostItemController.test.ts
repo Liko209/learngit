@@ -17,6 +17,7 @@ import { ServiceLoader } from '../../../../serviceLoader';
 import { daoManager } from 'sdk/dao';
 import { PostDao } from 'sdk/module/post/dao';
 import PostAPI from 'sdk/api/glip/post';
+import { IProcessor } from 'sdk/framework/processor';
 
 jest.mock('sdk/dao');
 jest.mock('sdk/module/post/dao');
@@ -272,27 +273,41 @@ describe('PostItemController', () => {
           postItemController['_sequenceProcessor'].addProcessor,
         ).toBeCalled();
         done();
-      }, 0);
+      },         0);
     });
   });
 
   describe('_addProcessorStrategy()', () => {
+    const removedProcessor: IProcessor = {
+      process: jest.fn(),
+      name: jest.fn(),
+      cancel: jest.fn(),
+    };
+    const newProcessor: IProcessor = {
+      process: jest.fn(),
+      name: jest.fn(),
+      cancel: jest.fn(),
+    };
     it('should change old to new when have two processor', async () => {
       const result = await postItemController['_addProcessorStrategy'](
-        [1, 2],
-        4,
+        [removedProcessor],
+        newProcessor,
         true,
       );
-      expect(result).toEqual([1, 4]);
+      expect(result).toEqual([newProcessor]);
+      expect(removedProcessor.cancel).toBeCalled();
     });
 
     it('should add a new when have one processor', async () => {
+      const totalProcessors: IProcessor[] = [];
+      totalProcessors.forEach = jest.fn();
       const result = await postItemController['_addProcessorStrategy'](
-        [1],
-        2,
+        totalProcessors,
+        newProcessor,
         true,
       );
-      expect(result).toEqual([1, 2]);
+      expect(result).toEqual([newProcessor]);
+      expect(totalProcessors.forEach).not.toBeCalled();
     });
   });
 

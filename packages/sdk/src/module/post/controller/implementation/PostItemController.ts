@@ -37,13 +37,13 @@ const SEQUENCE_NAME = 'GetPostsSequence';
 class PostItemProcessor implements IProcessor {
   private _itemInfo: ProcessorInfo;
   private _processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>;
-  private _resolve?: (post: Nullable<Post>) => void;
-  private _reject?: (post: null) => void;
+  private _resolve: (post: Nullable<Post>) => void;
+  private _reject: (error: Error) => void;
   constructor(
     itemInfo: ProcessorInfo,
     processFunc: (info: ProcessorInfo) => Promise<Nullable<Post>>,
-    resolve?: (post: Nullable<Post>) => void,
-    reject?: (post: null) => void,
+    resolve: (post: Nullable<Post>) => void,
+    reject: (error: Error) => void,
   ) {
     this._itemInfo = itemInfo;
     this._processFunc = processFunc;
@@ -53,18 +53,17 @@ class PostItemProcessor implements IProcessor {
   async process(): Promise<boolean> {
     try {
       const result = await this._processFunc(this._itemInfo);
-      if (this._resolve) {
-        this._resolve(result);
-      }
+      this._resolve(result);
     } catch (error) {
-      if (this._reject) {
-        this._reject(null);
-      }
+      this._reject(error);
     }
     return true;
   }
   name(): string {
     return this._itemInfo.itemId.toString();
+  }
+  cancel(): void {
+    this._resolve(null);
   }
 }
 class PostItemController implements IPostItemController {
@@ -77,15 +76,17 @@ class PostItemController implements IPostItemController {
   }
   private _addProcessorStrategy = (
     totalProcessors: IProcessor[],
-    newProcessors: IProcessor,
+    newProcessor: IProcessor,
     existed: boolean,
   ) => {
-    if (totalProcessors.length > 1) {
-      totalProcessors[1] = newProcessors;
-    } else {
-      totalProcessors.push(newProcessors);
+    if (totalProcessors.length) {
+      totalProcessors.forEach((processor: IProcessor) => {
+        if (processor && processor.cancel) {
+          processor.cancel();
+        }
+      });
     }
-    return totalProcessors;
+    return [newProcessor];
   }
 
   /**
