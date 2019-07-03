@@ -20,6 +20,7 @@ import { VoicemailDao } from '../../dao/VoicemailDao';
 import { JError, ERROR_CODES_RC, ERROR_MSG_RC } from 'sdk/error';
 import { RCMessageBadgeController } from 'sdk/module/RCItems/common/controller/RCMessageBadgeController';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCItemFetchController } from 'sdk/module/RCItems/common/controller/RCItemFetchController';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
@@ -41,7 +42,19 @@ describe('VoicemailFetchController', () => {
   let voicemailFetchController: VoicemailFetchController;
   let entitySourceController: EntitySourceController<Voicemail>;
   let mockBadgeController: RCMessageBadgeController<Voicemail>;
+  const mockRCInfoService = {
+    isRCFeaturePermissionEnabled: jest.fn(),
+    isVoipCallingAvailable: jest.fn(),
+  };
+
   function setUp() {
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.RC_INFO_SERVICE) {
+        return mockRCInfoService;
+      }
+      return;
+    });
+
     vmDao = new VoicemailDao(null as any);
     rcItemUserConfig = new RCItemUserConfig('name');
     entitySourceController = new EntitySourceController(
@@ -62,8 +75,8 @@ describe('VoicemailFetchController', () => {
     daoManager.getDao = jest.fn().mockResolvedValue(vmDao);
   }
   beforeEach(() => {
-    setUp();
     clearMocks();
+    setUp();
   });
 
   describe('buildFilterFunc', () => {
@@ -153,6 +166,26 @@ describe('VoicemailFetchController', () => {
         new JError('123', ERROR_CODES_RC.CLG_102),
       );
       expect(res).toBeFalsy();
+    });
+  });
+
+  describe('hasPermission', () => {
+    it('should return false when call permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(false);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await voicemailFetchController['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return false when callLog permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      expect(await voicemailFetchController['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return true when callLog/call permission is enabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await voicemailFetchController['hasPermission']()).toBeTruthy();
     });
   });
 

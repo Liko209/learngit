@@ -16,6 +16,7 @@ type VoicemailViewProps = {
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   audio?: Audio;
   onError: () => void;
   onBeforePlay: () => void;
@@ -25,6 +26,7 @@ type VoicemailViewProps = {
   shouldPause: boolean;
   createTime: string;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 };
 
 type VoicemailProps = {
