@@ -115,7 +115,13 @@ describe('VoicemailItem.View', () => {
       'should player progress show when playing and hide after pause. [JPT-2377]',
     )
     t1() {
-      const props = { isAudioActive: false };
+      const props = {
+        isAudioActive: false,
+        voiceMailResponsiveMap: {
+          JuiAudioMode: JuiAudioMode.FULL,
+          ButtonToShow: 3,
+        },
+      };
 
       const wrapper = shallow(<VoicemailItemView {...props} />);
       const instance: any = wrapper.instance();
@@ -131,7 +137,13 @@ describe('VoicemailItem.View', () => {
       'should player progress show when hover and keep show after playing. [JPT-2374]',
     )
     t2() {
-      const props = { isAudioActive: false };
+      const props = {
+        isAudioActive: false,
+        voiceMailResponsiveMap: {
+          JuiAudioMode: JuiAudioMode.FULL,
+          ButtonToShow: 3,
+        },
+      };
 
       const wrapper = shallow(<VoicemailItemView {...props} />);
       const instance: any = wrapper.instance();

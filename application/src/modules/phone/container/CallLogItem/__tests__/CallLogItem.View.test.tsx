@@ -20,6 +20,7 @@ describe('CallLogItemView', () => {
     t1() {
       const props = {
         isUnread: true,
+        callLogResponsiveMap: { ShowCallInfo: true },
       } as any;
       const wrapper = shallow(<CallLogItemView {...props} />);
       expect(wrapper.find(ContactInfo).props().readStatus).toBe(
@@ -31,6 +32,7 @@ describe('CallLogItemView', () => {
     t2() {
       const props = {
         isUnread: false,
+        callLogResponsiveMap: { ShowCallInfo: true },
       } as any;
       const wrapper = shallow(<CallLogItemView {...props} />);
       expect(wrapper.find(ContactInfo).props().readStatus).toBe(
@@ -46,9 +48,15 @@ describe('CallLogItemView', () => {
       const props = {
         isMissedCall: true,
         duration: 'duration',
+        callLogResponsiveMap: { ShowCallInfo: true },
       } as any;
       const wrapper = mountWithTheme(<CallLogItemView {...props} />);
-      expect(wrapper.find(CallLogStatus).find(JuiListItemText).props().secondary).toBe(null);
+      expect(
+        wrapper
+          .find(CallLogStatus)
+          .find(JuiListItemText)
+          .props().secondary,
+      ).toBe(null);
     }
 
     @test('should show duration if not missed call')
@@ -56,9 +64,15 @@ describe('CallLogItemView', () => {
       const props = {
         isMissedCall: false,
         duration: 'duration',
+        callLogResponsiveMap: { ShowCallInfo: true },
       } as any;
       const wrapper = mountWithTheme(<CallLogItemView {...props} />);
-      expect(wrapper.find(CallLogStatus).find(JuiListItemText).props().secondary).toBe('duration');
+      expect(
+        wrapper
+          .find(CallLogStatus)
+          .find(JuiListItemText)
+          .props().secondary,
+      ).toBe('duration');
     }
   }
 });
