@@ -13,16 +13,16 @@ export class Header extends BaseWebComponent {
   }
 
   get backButton() {
-    return this.getBackNForward('Back');
+    return this.getBackNForward('back');
   }
 
   get forwardButton() {
-    return this.getBackNForward('Forward');
+    return this.getBackNForward('forward');
   }
 
   get searchBar() {
     this.warnFlakySelector();
-    return this.getComponent(SearchBar, this.getSelectorByIcon('search', this.self).parent('div')); // TODO: automationID
+    return this.getComponent(SearchBar, this.getSelectorByAutomationId('topBar-search-bar'));
   }
 }
 
