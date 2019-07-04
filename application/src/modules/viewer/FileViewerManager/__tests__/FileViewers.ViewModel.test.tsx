@@ -8,30 +8,26 @@ import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
 import { FileViewerViewModel } from '../FileViewer.ViewModel';
 import { Notification } from '@/containers/Notification';
-import {
-  ToastMessageAlign,
-  ToastType,
-} from '@/containers/ToastWrapper/Toast/types';
 import { ENTITY_NAME } from '@/store';
 import * as mobx from 'mobx';
 jest.mock('@/store/utils');
 
 jest.mock('@/containers/Notification');
 jest.mock('@/utils/error');
-
-function toastParamsBuilder(message: string) {
-  return {
-    message,
-    type: ToastType.ERROR,
-    messageAlign: ToastMessageAlign.LEFT,
-    fullWidth: false,
-    dismissible: false,
-  };
+const dismiss = jest.fn();
+function getVM() {
+  const vm = new FileViewerViewModel(1, 2, dismiss);
+  return vm;
 }
 
 describe('FileViewerViewModel', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    const fileItem = {
+      latestVersion: { pages: [1, 2] },
+      getDirectRelatedPostInGroup: jest.fn(() => ({})),
+    };
+    (getEntity as jest.Mock).mockReturnValue(fileItem);
     Notification.flashToast = jest.fn();
   });
   describe('viewerDestroyer()', () => {
@@ -39,6 +35,7 @@ describe('FileViewerViewModel', () => {
       const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [] },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = new FileViewerViewModel(1, 2, dismiss);
       vm.viewerDestroyer();
@@ -46,20 +43,8 @@ describe('FileViewerViewModel', () => {
     });
   });
 
-  const dismiss = jest.fn();
-  // const autoRunSpy = jest.spyOn(mobx, 'autorun').mockImplementation(e => e);
-  function getVM() {
-    const vm = new FileViewerViewModel(1, 2, dismiss);
-    return vm;
-  }
-
   describe('constructor()', () => {
     it('should init correctly', () => {
-      const fileItem = {
-        latestVersion: { pages: [1, 2] },
-        getDirectRelatedPostInGroup: jest.fn(),
-      };
-      (getEntity as jest.Mock).mockReturnValue(fileItem);
       const autoRunSpy = jest.spyOn(mobx, 'autorun').mockImplementation(e => e);
 
       const vm = getVM();
@@ -74,15 +59,16 @@ describe('FileViewerViewModel', () => {
     it('should be return undefined when pages undefined', () => {
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
 
       expect(vm.pages).toEqual(undefined);
     });
     it('should be return not undefined when pages not undefined', () => {
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
 
@@ -93,9 +79,9 @@ describe('FileViewerViewModel', () => {
   describe('update()', () => {
     it('should _currentPageIdx be 1 when pageIdx =1 and _currentPageIdx = 1 ', () => {
       const data = { scale: 1, pageIdx: 1 };
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
       vm['_currentPageIdx '] = 1;
@@ -104,9 +90,9 @@ describe('FileViewerViewModel', () => {
     });
     it('should _currentPageIdx be 2 when pageIdx =1 and _currentPageIdx = 2', () => {
       const data = { scale: 1, pageIdx: 2 };
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
       vm['_currentPageIdx '] = 1;
@@ -118,6 +104,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 0.5, pageIdx: 1 };
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
       vm['_currentScale '] = 0.5;
@@ -128,6 +115,7 @@ describe('FileViewerViewModel', () => {
       const data = { scale: 1, pageIdx: 1 };
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: jest.fn(() => ({})),
       });
       const vm = getVM();
       vm['_currentScale '] = 0.5;
@@ -138,7 +126,6 @@ describe('FileViewerViewModel', () => {
 
   describe('title()', () => {
     it('should be return not undefined when call title()', () => {
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
         getDirectRelatedPostInGroup: () => 123,
@@ -150,30 +137,17 @@ describe('FileViewerViewModel', () => {
 
   describe('handleTextFieldChange()', () => {
     it('should be return 2  when call input 2 length 2', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: [1, 2] },
-        getDirectRelatedPostInGroup: () => 123,
-      });
       const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '2' } });
       expect(vm['_textFieldValue']).toEqual(2);
     });
     it('should be return 2  when call input 3 length 2', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: [1, 2] },
-        getDirectRelatedPostInGroup: () => 123,
-      });
-
       const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '3' } });
       expect(vm['_textFieldValue']).toEqual(2);
     });
 
     it('should be return 1 when call input -1 length 2', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        latestVersion: { pages: [1, 2] },
-        getDirectRelatedPostInGroup: () => 123,
-      });
       const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '-1' } });
       expect(vm['_textFieldValue']).toEqual(1);
@@ -198,6 +172,7 @@ describe('FileViewerViewModel', () => {
 
     it('should get sender when item.getDirectRelatedPostInGroup return post', async (done: any) => {
       const fileItem = {
+        latestVersion: { pages: [1, 2] },
         getDirectRelatedPostInGroup: jest.fn(() => ({ creator_id: 123 })),
       };
       (getEntity as jest.Mock).mockReturnValue(fileItem);
@@ -212,6 +187,7 @@ describe('FileViewerViewModel', () => {
 
     it('should set sender and createdAt to null when cannot get post', async (done: any) => {
       const fileItem = {
+        latestVersion: { pages: [1, 2] },
         getDirectRelatedPostInGroup: jest.fn(() => null),
       };
       (getEntity as jest.Mock).mockReturnValue(fileItem);

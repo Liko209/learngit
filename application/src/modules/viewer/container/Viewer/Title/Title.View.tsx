@@ -126,7 +126,7 @@ class ViewerTitleViewComponent extends Component<
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
-                  <JuiButtonBar overlapSize={0}>
+                  <JuiButtonBar overlapSize={2}>
                     <Download url={downloadUrl} variant="round" />
                     <FileActionMenu
                       variant="round"

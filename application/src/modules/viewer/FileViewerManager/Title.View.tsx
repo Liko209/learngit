@@ -91,13 +91,14 @@ class ViewerTitleViewComponent extends Component<Type> {
           </JuiDialogHeaderSubtitle>
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
-          <JuiButtonBar overlapSize={-2}>
-            <Download url={downloadUrl} />
+          <JuiButtonBar overlapSize={2}>
+            <Download url={downloadUrl} variant="round" />
             <FileActionMenu
               showViewInPostAction={true}
               groupId={this.props.groupId}
               fileId={fileId}
               disablePortal={true}
+              variant="round"
             />
             <JuiIconButton
               onClick={closeViewer}
