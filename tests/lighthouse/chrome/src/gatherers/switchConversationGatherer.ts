@@ -104,9 +104,11 @@ class SwitchConversationGatherer extends BaseGatherer {
 
       await page.switchDetailTab();
 
-      await page.lookupTeamMember();
+      // await page.lookupTeamMember();
 
       this.pushGatherer(this.metricKeys);
+
+      await bluebird.delay(2000);
 
       if (needGC && index > halfCount) {
         globals.stopCollectProcessInfo();
