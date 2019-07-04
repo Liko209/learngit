@@ -12,9 +12,7 @@ import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
 
-import * as assert from 'assert'
 import { addOneCallLogFromGuest } from './utils';
-import { userInfo } from 'os';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -23,10 +21,10 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-4682'],
+  caseIds: ['FIJI-2394'],
   maintainers: ['Allen.Lian'],
-  keywords: ['voicemail']
-})('Go to conversation from the voicemail', async (t) => {
+  keywords: ['call history']
+})('Go to conversation from the call history', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const callee = users[4];
   const caller = users[5];
@@ -77,5 +75,17 @@ test.meta(<ITestMeta>{
     await t.expect(conversationPage.title.textContent).eql(callhistoryName);
   });
 
+  const messageTab = app.homePage.leftPanel.messagesEntry;
+  
+  await h(t).withLog(`Open Message page`, async () => {
+    await messageTab.enter();
+  });
+
+  const phoneTab = app.homePage.leftPanel.phoneEntry;
+  
+  await h(t).withLog(`Open Phone page`, async () => {
+    await phoneTab.enter();
+    await callhistoryPage.ensureLoaded();
+  });
   
 });

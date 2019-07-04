@@ -147,6 +147,11 @@ class AnalyticsCollector {
     dataAnalysis.track('Jup_Web/DT_phone_callHistory_deleteAll');
   }
 
+  // [FIJI-5138] Segment - Add event - Recent Call Logs
+  recentCallLogs() {
+    dataAnalysis.track('Jup_Web/DT_phone_dialer_callHistory');
+  }
+
   phoneGoToConversation(source: string) {
     dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
       source,

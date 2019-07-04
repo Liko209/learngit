@@ -9,6 +9,7 @@ import { INavigationInfo, PagingInfo } from './common';
 type GetBlockNumberListParams = {
   page: number;
   perPage: number;
+  status: BLOCK_STATUS;
 };
 
 enum BLOCK_STATUS {

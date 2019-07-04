@@ -582,7 +582,9 @@
       "back": "Back",
       "forward": "Forward",
       "customForward": "Custom...",
-      "flip": "Flip"
+      "flip": "Flip",
+      "recentCall": "Recent calls",
+      "backToDialer": "Back to dialer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -628,7 +630,9 @@
       "ForwardBackendError": "Sorry, something went wrong on our end, we weren't able to forward the call.",
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
-      "FlipSuccess": "Call flipped"
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
     },
     "notification": {
       "incomingCall": "Incoming Call",
@@ -668,7 +672,8 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "noCallLogAvailable": "There is not call log yet"
   },
   "phone": {
     "tab": {

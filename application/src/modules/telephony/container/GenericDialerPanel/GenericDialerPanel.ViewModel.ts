@@ -102,6 +102,11 @@ class GenericDialerPanelViewModel extends StoreViewModel<
   }
 
   @computed
+  get shouldDisplayRecentCalls() {
+    return this._telephonyStore.shouldDisplayRecentCalls;
+  }
+
+  @computed
   get inputString() {
     return this._telephonyStore[this.props.inputStringProps];
   }

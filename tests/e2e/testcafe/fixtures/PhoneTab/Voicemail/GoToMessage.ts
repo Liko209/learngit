@@ -23,7 +23,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-4682'],
+  caseIds: ['FIJI-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Go to conversation from the voicemail', async (t) => {
@@ -79,5 +79,18 @@ test.meta(<ITestMeta>{
   });
 
   
+  const messageTab = app.homePage.leftPanel.messagesEntry;
+  
+  await h(t).withLog(`Open Message page`, async () => {
+    await messageTab.enter();
+  });
+
+  const phoneTab = app.homePage.leftPanel.phoneEntry;
+  
+  await h(t).withLog(`Open Phone page`, async () => {
+    await phoneTab.enter();
+    await voicemailPage.ensureLoaded();
+  });
   
 });
+

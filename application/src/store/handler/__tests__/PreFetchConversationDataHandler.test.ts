@@ -7,7 +7,10 @@
 import { PreFetchConversationDataHandler } from '../PreFetchConversationDataHandler';
 import { PinnedPostCacheController } from '../cache/PinnedPostCacheController';
 import { ConversationPostCacheController } from '../cache/ConversationPostCacheController';
-import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import { notificationCenter } from 'sdk/service';
 import { WINDOW } from 'sdk/service/eventKey';
@@ -29,8 +32,8 @@ describe('PreFetchConversationDataHandler', () => {
   let preFetchConversationDataHandler: PreFetchConversationDataHandler;
   let sequenceProcessorHandler: SequenceProcessorHandler;
   function setUp() {
-    sequenceProcessorHandler = new SequenceProcessorHandler(
-      'SequenceProcessorHandler',
+    sequenceProcessorHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name: 'SequenceProcessorHandler' },
     );
     pinnedPostCacheController = new PinnedPostCacheController();
     conversationPostCacheController = new ConversationPostCacheController();
@@ -90,7 +93,7 @@ describe('PreFetchConversationDataHandler', () => {
           groupId,
         );
         done();
-      },         10);
+      }, 10);
     });
   });
 

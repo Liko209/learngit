@@ -88,7 +88,7 @@ class PersonDataController {
       }
     });
 
-    this._saveData(deactivatedData, normalData);
+    this._saveData(deactivatedData, normalData, source);
     if (shouldEmitNotification(source)) {
       if (changeMap) {
         changeMap.set(ENTITY.PERSON, { entities: persons });
@@ -98,7 +98,11 @@ class PersonDataController {
     }
   }
 
-  private async _saveData(deactivatedData: Person[], normalData: Person[]) {
+  private async _saveData(
+    deactivatedData: Person[],
+    normalData: Person[],
+    source: SYNC_SOURCE,
+  ) {
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await this.entitySourceController.bulkDelete(
@@ -106,7 +110,9 @@ class PersonDataController {
       );
     }
     if (normalData.length > 0) {
-      await this.entitySourceController.bulkPut(normalData);
+      source === SYNC_SOURCE.SOCKET
+        ? await this.entitySourceController.bulkUpdate(normalData)
+        : await this.entitySourceController.bulkPut(normalData);
     }
   }
 }
