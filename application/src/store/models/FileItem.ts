@@ -116,7 +116,7 @@ export default class FileItemModel extends ItemModel {
   }
 
   private _getDirectRelatedPostInGroup = moize.promise(
-    (groupId: number, modifiedAt = this.modifiedAt) => {
+    (groupId: number, modifiedAt) => {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
       );

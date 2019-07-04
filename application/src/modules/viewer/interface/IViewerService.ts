@@ -4,8 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type ViewerProps = {
+  itemId: number;
+  groupId: number;
+};
 interface IViewerService {
-  open: (itemId: number) => void;
+  open: (props: ViewerProps) => void;
 }
 
-export { IViewerService };
+export { IViewerService, ViewerProps };

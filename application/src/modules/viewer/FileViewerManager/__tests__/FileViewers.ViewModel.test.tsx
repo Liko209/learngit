@@ -7,12 +7,13 @@
 import { getEntity } from '@/store/utils';
 jest.mock('@/store/utils');
 import { FileViewerViewModel } from '../FileViewer.ViewModel';
-import FileItemModel from '@/store/models/FileItem';
 import { Notification } from '@/containers/Notification';
 import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ENTITY_NAME } from '@/store';
+import * as mobx from 'mobx';
 jest.mock('@/store/utils');
 
 jest.mock('@/containers/Notification');
@@ -29,11 +30,8 @@ function toastParamsBuilder(message: string) {
 }
 
 describe('FileViewerViewModel', () => {
-  beforeAll(() => {
-    jest.resetAllMocks();
-  });
-
   beforeEach(() => {
+    jest.resetAllMocks();
     Notification.flashToast = jest.fn();
   });
   describe('viewerDestroyer()', () => {
@@ -42,18 +40,42 @@ describe('FileViewerViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [] },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = new FileViewerViewModel(1, 2, dismiss);
       vm.viewerDestroyer();
       expect(dismiss).toBeCalled();
     });
   });
+
+  const dismiss = jest.fn();
+  // const autoRunSpy = jest.spyOn(mobx, 'autorun').mockImplementation(e => e);
+  function getVM() {
+    const vm = new FileViewerViewModel(1, 2, dismiss);
+    return vm;
+  }
+
+  describe('constructor()', () => {
+    it('should init correctly', () => {
+      const fileItem = {
+        latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: jest.fn(),
+      };
+      (getEntity as jest.Mock).mockReturnValue(fileItem);
+      const autoRunSpy = jest.spyOn(mobx, 'autorun').mockImplementation(e => e);
+
+      const vm = getVM();
+      expect(vm._sender).toBe(null);
+      expect(vm._createdAt).toBe(null);
+      expect(autoRunSpy).toBeCalledWith(vm.updateSenderInfo, undefined);
+      autoRunSpy.mockRestore();
+    });
+  });
+
   describe('pages()', () => {
     it('should be return undefined when pages undefined', () => {
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
 
       expect(vm.pages).toEqual(undefined);
     });
@@ -62,7 +84,7 @@ describe('FileViewerViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [1, 2] },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
 
       expect(vm.pages && vm.pages.length).toEqual(2);
     });
@@ -75,7 +97,7 @@ describe('FileViewerViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
       vm['_currentPageIdx '] = 1;
       vm.onUpdate(data);
       expect(vm['_currentPageIdx']).toEqual(1);
@@ -86,7 +108,7 @@ describe('FileViewerViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
       vm['_currentPageIdx '] = 1;
       vm.onUpdate(data);
       expect(vm['_currentPageIdx']).toEqual(2);
@@ -94,65 +116,116 @@ describe('FileViewerViewModel', () => {
 
     it('should _currentScale be 1 when pageIdx =1 and _currentScale = 1 ', () => {
       const data = { scale: 0.5, pageIdx: 1 };
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
       vm['_currentScale '] = 0.5;
       vm.onUpdate(data);
       expect(vm['_currentScale']).toEqual(0.5);
     });
     it('should _currentScale be 2 when pageIdx =1 and _currentScale = 2', () => {
       const data = { scale: 1, pageIdx: 1 };
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
       vm['_currentScale '] = 0.5;
       vm.onUpdate(data);
       expect(vm['_currentScale']).toEqual(1);
     });
   });
+
   describe('title()', () => {
     it('should be return not undefined when call title()', () => {
       const dismiss = jest.fn();
-      const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: undefined },
+        getDirectRelatedPostInGroup: () => 123,
       });
-      expect(vm.title).not.toEqual(undefined);
+      const vm = getVM();
+      expect(vm.title).toBeTruthy();
     });
   });
+
   describe('handleTextFieldChange()', () => {
     it('should be return 2  when call input 2 length 2', () => {
-      const dismiss = jest.fn();
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: () => 123,
       });
-      const vm = new FileViewerViewModel(1, dismiss);
+      const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '2' } });
       expect(vm['_textFieldValue']).toEqual(2);
     });
     it('should be return 2  when call input 3 length 2', () => {
-      const dismiss = jest.fn();
-      const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: () => 123,
       });
+
+      const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '3' } });
       expect(vm['_textFieldValue']).toEqual(2);
     });
 
     it('should be return 1 when call input -1 length 2', () => {
-      const dismiss = jest.fn();
-      const vm = new FileViewerViewModel(1, dismiss);
       (getEntity as jest.Mock).mockReturnValue({
         latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: () => 123,
       });
+      const vm = getVM();
       vm.handleTextFieldChange({ target: { value: '-1' } });
       expect(vm['_textFieldValue']).toEqual(1);
+    });
+  });
+
+  describe('updateSenderInfo()', () => {
+    it('should get post from item.getDirectRelatedPostInGroup', async (done: any) => {
+      const fileItem = {
+        latestVersion: { pages: [1, 2] },
+        getDirectRelatedPostInGroup: jest.fn(),
+      };
+      (getEntity as jest.Mock).mockReturnValue(fileItem);
+      const vm = getVM();
+
+      await vm.updateSenderInfo();
+
+      expect(fileItem.getDirectRelatedPostInGroup).toBeCalled();
+
+      done();
+    });
+
+    it('should get sender when item.getDirectRelatedPostInGroup return post', async (done: any) => {
+      const fileItem = {
+        getDirectRelatedPostInGroup: jest.fn(() => ({ creator_id: 123 })),
+      };
+      (getEntity as jest.Mock).mockReturnValue(fileItem);
+      const vm = getVM();
+
+      await vm.updateSenderInfo();
+
+      expect(getEntity).toBeCalledWith(ENTITY_NAME.PERSON, 123);
+
+      done();
+    });
+
+    it('should set sender and createdAt to null when cannot get post', async (done: any) => {
+      const fileItem = {
+        getDirectRelatedPostInGroup: jest.fn(() => null),
+      };
+      (getEntity as jest.Mock).mockReturnValue(fileItem);
+      const vm = getVM();
+      vm._sender = {};
+      vm._createdAt = {};
+      expect(vm._sender).toBeTruthy();
+
+      await vm.updateSenderInfo();
+
+      expect(vm._sender).toBe(null);
+      expect(vm._createdAt).toBe(null);
+
+      done();
     });
   });
 });

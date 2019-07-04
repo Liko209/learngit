@@ -7,7 +7,7 @@ import { ReactElement } from 'react';
 import { Item } from 'sdk/module/item/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { VIEWER_ITEM_TYPE } from './constants';
-import { Post } from 'sdk/src/module/post/entity';
+import { Post } from 'sdk/module/post/entity';
 
 type ViewerProps = {
   contentLeftRender: (props: Partial<ViewerViewProps>) => ReactElement;

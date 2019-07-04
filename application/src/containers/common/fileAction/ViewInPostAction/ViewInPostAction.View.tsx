@@ -15,7 +15,7 @@ class ViewInPostActionViewComponent extends Component<
 > {
   _Icon = (
     <JuiIconography iconColor={['grey', '500']} iconSize="small">
-      delete
+      chat_bubble
     </JuiIconography>
   );
 
