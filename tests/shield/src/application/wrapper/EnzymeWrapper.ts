@@ -6,7 +6,7 @@
 import { ReactElement, ComponentType } from 'react';
 import { mount, shallow, ShallowWrapper, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
-import ReactQuill from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill';
 import { Simulate } from 'react-dom/test-utils';
 
 class EnzymeWrapper implements IWrapper<ReactWrapper> {
@@ -20,7 +20,7 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
     this.wrapper = origin;
   }
 
-  findByAutomationID(id: string, first: boolean = false) {
+  findByAutomationID(id: string, first: boolean = true) {
     const result = this.wrapper.find({ 'data-test-automation-id': id });
     if (first) {
       return new EnzymeWrapper(result.first());
@@ -33,50 +33,49 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
     return [new EnzymeWrapper(result)];
   }
 
+  findWhere(predicate: (wrapper: ReactWrapper) => boolean) {
+    const result = this.wrapper.findWhere(predicate);
+    return [new EnzymeWrapper(result)];
+  }
+
   click() {
     this.wrapper.simulate('click');
   }
 
   enter() {
-    this.wrapper.simulate('keyDown', { key: 'Enter', keyCode: 13, which: 13 });
+    const quill = this.wrapper.find(ReactQuill);
+    if (quill) {
+      const editor: Quill = (quill.instance() as any).getEditor();
+      const text = editor.getText();
+      // @ts-ignore
+      const bindings = editor.keyboard.bindings['13'];
+      const range = { index: text.length, length: 0 };
+      const context = {
+        collapsed: true,
+        empty: false,
+        format: {},
+        offset: text.length,
+      };
+      const args = [range, context];
+      bindings.forEach(({ handler }: { handler: Function }) => {
+        Reflect.apply(handler, editor.keyboard, args);
+      });
+    } else {
+      this.wrapper.simulate('keyDown', {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+    }
   }
 
   input(text: string) {
     const quill = this.wrapper.find(ReactQuill);
     if (quill) {
-      const editor = (quill.instance() as any).getEditor();
+      const editor: Quill = (quill.instance() as any).getEditor();
       editor.focus();
       editor.setText(text);
       editor.update();
-      console.warn(7777777, editor.getText());
-      editor.focus();
-      const divs = quill.find('div');
-      Simulate.keyDown(quill.getDOMNode(), {
-        key: 'Enter',
-        keyCode: 13,
-        which: 13,
-      });
-      Simulate.keyDown(this.wrapper.getDOMNode(), {
-        key: 'Enter',
-        keyCode: 13,
-        which: 13,
-      });
-      Simulate.keyDown(divs.first().getDOMNode(), {
-        key: 'Enter',
-        keyCode: 13,
-        which: 13,
-      });
-      // divs.first().props().onKeyDown!({
-      //   key: 'Enter',
-      //   keyCode: 13,
-      //   which: 13,
-      // } as any);
-      // divs.forEach(w => {
-      //   console.warn(888888, w.debug());
-      //   w.simulate('keydown', );
-      // });
-      // quill.simulate('keydown', { key: 'Enter', keyCode: 13, which: 13 });
-      // this.enter();
     } else {
       this.wrapper.simulate('change', { target: { value: text } });
     }

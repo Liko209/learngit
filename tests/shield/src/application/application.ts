@@ -5,7 +5,7 @@
  */
 import { IWrapper } from './wrapper';
 import { ComponentType } from 'react';
-import ReactQuill from 'react-quill';
+import { ReactWrapper } from 'enzyme';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 
 class TestApp<T> {
@@ -45,10 +45,20 @@ class TestApp<T> {
     );
   }
 
+  // topbars
+  get addMenuButton() {
+    return this._imp.findWhere((wrapper: T) => {
+      const w: ReactWrapper = wrapper as any;
+      const f = w.prop('data-test-automation-id') === 'addMenuBtn';
+      if (f) {
+        console.warn(888888, w.type());
+      }
+      return f && w.type() === 'button';
+    });
+  }
+
   sendPost() {
-    this.messageInput
-      .find(ReactQuill)
-      .forEach((wrapper: IWrapper<T>) => wrapper.enter());
+    this.messageInput.enter();
   }
 
   find(component: ComponentType) {

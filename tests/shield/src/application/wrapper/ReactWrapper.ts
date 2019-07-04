@@ -19,7 +19,7 @@ class ReactWrapper implements IWrapper<ReactTestInstance> {
     this.inst = origin;
   }
 
-  findByAutomationID(id: string, first: boolean) {
+  findByAutomationID(id: string, first: boolean = true) {
     const result = this.inst.findByProps({ 'data-test-automation-id': id });
     if (first) {
       return new ReactWrapper(result[0]);

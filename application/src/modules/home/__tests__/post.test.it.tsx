@@ -39,29 +39,14 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         notificationCenter.emitKVChange(service.SERVICE.LOGIN);
 
-        await wait(100);
+        await wait(0);
 
         await t(app, async () => {
-          const input = app.messageInput;
-          const testMessage = 'hello';
-          // fs.writeFileSync('./out.txt', `${app.toString()}`);
-          // input.input(testMessage);
-          // await wait(100);
-        });
-
-        await wait(100);
-
-        await t(app, async () => {
-          const input = app.messageInput;
-          const testMessage = 'hello';
-
-          fs.writeFileSync('./out.txt', `${input.toString()}`);
-          // input.input(testMessage);
-          // await wait(100);
+          app.messageInput.input('hello');
+          app.messageInput.enter();
+          fs.writeFileSync('./out.txt', `${app.toString()}`);
         });
       });
-
-      // await wait(100);
     });
   });
 });

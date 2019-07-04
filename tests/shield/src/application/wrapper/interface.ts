@@ -15,6 +15,8 @@ interface IWrapper<T> {
 
   find(component: ComponentType): IWrapper<T>[];
 
+  findWhere(predicate: (wrapper: T) => boolean): IWrapper<T>[];
+
   // simulate mouse click event
   click(): void;
 
