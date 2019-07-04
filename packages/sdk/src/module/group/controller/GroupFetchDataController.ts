@@ -41,11 +41,13 @@ import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
 import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 
+const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1000;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-const MAX_LEFT_RAIL_GROUP: number = 100;
+const MAX_LEFT_RAIL_GROUP: number = 80;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -111,9 +113,22 @@ export class GroupFetchDataController {
       }
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
+    let count = result.length;
+    mainLogger
+      .tags(LOG_TAG)
+      .info('getGroupsByType() result origin count:', count);
+    if (count > MAX_LEFT_RAIL_GROUP) {
+      const permissionService = ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      );
+      const canShowAll = await permissionService.hasPermission(
+        UserPermissionType.CAN_SHOW_ALL_GROUP,
+      );
+      count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
+    }
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
-      : result.slice(0, result.length > MAX_LEFT_RAIL_GROUP ? MAX_LEFT_RAIL_GROUP : result.length);
+      : result.slice(0, count);
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {

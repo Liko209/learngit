@@ -34,6 +34,7 @@ import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
 import { SearchService } from 'sdk/module/search';
+import { PermissionService } from 'sdk/module/permission';
 
 const soundex = require('soundex-code');
 jest.mock('../../../../dao');
@@ -71,6 +72,7 @@ describe('GroupFetchDataController', () => {
   const companyService = new CompanyService();
   const groupConfigService = new GroupConfigService();
   const searchService = new SearchService();
+  const permissionService = new PermissionService();
   const mockUserId = 1;
 
   function prepareRecentData(groupIds: number[], time = Date.now()) {
@@ -249,6 +251,7 @@ describe('GroupFetchDataController', () => {
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
       [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
       [ServiceConfig.SEARCH_SERVICE, searchService as any],
+      [ServiceConfig.PERMISSION_SERVICE, permissionService as any],
       [
         ServiceConfig.ACCOUNT_SERVICE,
         { userConfig: AccountUserConfig.prototype } as any,
@@ -353,6 +356,78 @@ describe('GroupFetchDataController', () => {
         20,
       );
       expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
+    });
+
+    it('should return all groups if has show all group permission', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 85; i++) {
+        mock.push({ id: 1 });
+      }
+      jest.spyOn(permissionService, 'hasPermission').mockResolvedValue(true);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(result3).toEqual(mock);
+    });
+
+    it('should return limit groups if has not show all group permission', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 85; i++) {
+        mock.push({ id: 1 });
+      }
+      const spy = jest.spyOn(permissionService, 'hasPermission');
+      spy.mockResolvedValue(false);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(spy).toBeCalled();
+      expect(result3).toEqual(mock.slice(0, 80));
+    });
+
+    it('should not call has permission api if result count < 80', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 20; i++) {
+        mock.push({ id: 1 });
+      }
+      const spy = jest.spyOn(permissionService, 'hasPermission');
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(spy).not.toBeCalled();
+      expect(result3).toEqual(mock.slice(0, 20));
     });
   });
 
