@@ -183,6 +183,7 @@
           "dark": "Dark Skin Tone"
         }
       },
+      "emojiTooltip": "Emoji",
       "emojiDefaultTitle": "Pick your emoji",
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
