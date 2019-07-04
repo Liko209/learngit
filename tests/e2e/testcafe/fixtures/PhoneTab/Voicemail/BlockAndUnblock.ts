@@ -44,7 +44,7 @@ test.meta(<ITestMeta>{
     });
     await h(t).glip(callee).init();
     await h(t).glip(callee).setDefaultPhoneApp('glip');
-    await h(t).platform(callee).resetBlockPhoneNumber();
+    await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
   });
 
   const app = new AppRoot(t);
@@ -52,8 +52,8 @@ test.meta(<ITestMeta>{
     step.initMetadata({
       number: callee.company.number,
       extension: callee.extension,
-    }),
-      await h(t).directLoginWithUser(SITE_URL, callee);
+    });
+    await h(t).directLoginWithUser(SITE_URL, callee);
     await app.homePage.ensureLoaded();
   });
 

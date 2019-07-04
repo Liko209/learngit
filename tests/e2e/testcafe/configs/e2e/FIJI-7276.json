@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ActionBar/PinAndUnpin.ts"
+      "./fixtures/PhoneTab/CallHistory/ContentPanel/EmptyPage.ts"
     ],
     "browsers": [
       "selenium:chrome"
