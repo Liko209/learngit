@@ -42,7 +42,7 @@ class PersonService extends EntityBaseService<Person>
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PERSON]: this.handleIncomingData,
+        [SOCKET.PERSON]: this.handleSocketIOData,
       }),
     );
 
@@ -75,6 +75,13 @@ class PersonService extends EntityBaseService<Person>
       count: persons && persons.length,
     });
     return persons;
+  }
+
+  handleSocketIOData = async (persons: Raw<Person>[]): Promise<void> => {
+    await this.getPersonController().handleIncomingData(
+      persons,
+      SYNC_SOURCE.SOCKET,
+    );
   }
 
   handleIncomingData = async (

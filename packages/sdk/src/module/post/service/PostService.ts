@@ -24,10 +24,14 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { ChangeModel } from 'sdk/module/sync/types';
 import { PostNotificationController } from '../controller/PostNotificationController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
-  constructor(private _groupService: IGroupService) {
+  constructor(
+    private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
+  ) {
     super({ isSupportedCache: false }, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -53,7 +57,10 @@ class PostService extends EntityBaseService<Post> {
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController(this._groupService);
+      this.postController = new PostController(
+        this._groupService,
+        this._groupConfigService,
+      );
     }
     return this.postController;
   }

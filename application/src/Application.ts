@@ -23,6 +23,7 @@ import * as media from '@/modules/media/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
+import { firebasePerformanceController } from './firebase';
 
 @injectable()
 class Application {
@@ -31,6 +32,7 @@ class Application {
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
     Pal.instance.setErrorReporter(errorReporter);
+    firebasePerformanceController.initialize();
     const jupiter = this._jupiter;
     // TODO auto load modules
     jupiter.registerModule(sw.config);

@@ -34,6 +34,7 @@ type Props = {
   handleKeepOpenChange?: () => void;
   isKeepOpen?: boolean;
   i18nObj?: object;
+  tooltip?: string;
 };
 
 const StyledCutomizedComponentContainer = styled.span<{
@@ -159,7 +160,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
     return (
       <JuiIconButton
         data-test-automation-id="conversation-chatbar-emoji-button"
-        tooltipTitle="Emoji"
+        tooltipTitle={this.props.tooltip}
         onClick={this._handleClickEvent}
         size="medium"
         tooltipForceHide={tooltipForceHide}

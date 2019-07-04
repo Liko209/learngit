@@ -10,7 +10,10 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import {
   getMaxThumbnailURLInfo,
   getThumbnailURL,
@@ -35,7 +38,9 @@ class PreloadController implements IImageDownloadedListener {
     this._logger = mainLogger.tags(name);
     this._cachedIds = new Set<number>();
     this._downloader = new ImageDownloader();
-    this._sequenceHandler = new SequenceProcessorHandler(name);
+    this._sequenceHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name },
+    );
   }
 
   replacePreload(itemIds: number[], currentIndex: number) {

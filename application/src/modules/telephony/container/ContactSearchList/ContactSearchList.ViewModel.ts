@@ -31,7 +31,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { debounce } from 'lodash';
 import { mainLogger } from 'sdk';
 
-const INITIAL_PAGE_SIZE = 8;
+const INITIAL_PAGE_SIZE = 10;
 const ONE_FRAME = 1000 / 60;
 
 enum Direction {

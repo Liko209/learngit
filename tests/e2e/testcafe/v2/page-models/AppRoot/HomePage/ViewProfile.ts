@@ -95,7 +95,7 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.footer).parent('button');
+    return this.getSelectorByIcon('chat', this.footer).parent('button');
   }
 
   async goToMessages() {
@@ -185,7 +185,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.summary);
+    return this.getSelectorByIcon('chat', this.summary);
   }
 
   async goToMessages() {

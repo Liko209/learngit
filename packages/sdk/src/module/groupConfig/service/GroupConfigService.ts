@@ -62,12 +62,12 @@ class GroupConfigService extends EntityBaseService<GroupConfig> {
     return this.getGroupConfigController().getGroupSendFailurePostIds(id);
   }
 
-  async deletePostId(groupId: number, postId: number) {
-    await this.getGroupConfigController().deletePostId(groupId, postId);
+  async deletePostIds(groupId: number, postIds: number[]) {
+    await this.getGroupConfigController().deletePostIds(groupId, postIds);
   }
 
   async addPostId(groupId: number, postId: number) {
-    this.getGroupConfigController().addPostId(groupId, postId);
+    await this.getGroupConfigController().addPostId(groupId, postId);
   }
 
   async handleMyMostRecentPostChange(posts: Post[]) {

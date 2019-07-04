@@ -109,7 +109,10 @@ class ContactSearchListViewComponent extends Component<
     const hasResult = !!displayedSearchResult.length;
 
     return (
-      <ContactSearchListContainer ref={this._containerRef}>
+      <ContactSearchListContainer
+        ref={this._containerRef}
+        className="contact-search-list-container"
+      >
         {hasResult ? (
           <HotKeys
             keyMap={{

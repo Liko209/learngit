@@ -103,6 +103,10 @@ class CallLogService extends EntityBaseService<CallLog, string> {
       : this.callLogController.missedCallLogFetchController.fetchData(options);
   }
 
+  async fetchRecentCallLogs() {
+    return this.callLogController.allCallLogFetchController.fetchAllUniquePhoneNumberCalls();
+  }
+
   async clearUnreadMissedCall() {
     await this.callLogController.callLogActionController.clearUnreadMissedCall();
   }

@@ -30,15 +30,9 @@ const useFilter: IUseFilter = (initial: string) => {
 const CallHistoryWrapper = (
   props: { height: number; clearUMI: () => void } & WithTranslation,
 ) => {
-  const { t } = props;
+  const { t, clearUMI } = props;
 
   const [filterValue, setFilterValue] = useFilter('');
-
-  const clearUmi = (index: number) => {
-    if (index === CallHistoryTypes.Missed) {
-      props.clearUMI();
-    }
-  };
 
   return (
     <>
@@ -63,7 +57,7 @@ const CallHistoryWrapper = (
           position="center"
           forceFlex={true}
           defaultActiveIndex={CallHistoryTypes.All}
-          onChangeTab={clearUmi}
+          onChangeTab={clearUMI}
         >
           {TAB_CONFIG.map(
             ({ title, container, automationID }: TabConfig, index: number) => {

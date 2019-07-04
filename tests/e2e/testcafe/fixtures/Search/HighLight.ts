@@ -747,8 +747,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click show old to expand the collapsed section`, async () => {
-    await t.expect(messageTab.postItemById(updatedPostId).itemCard.eventShowOld.exists).ok();
-    await t.click(messageTab.postItemById(updatedPostId).itemCard.eventShowOld);
+    await t.expect(messageTab.postItemById(updatedPostId).itemCard.eventShowOrHideOld.exists).ok();
+    await t.click(messageTab.postItemById(updatedPostId).itemCard.eventShowOrHideOld);
   });
 
   await h(t).withLog(`And the posts highlight the keyword {keyword} in old event location`, async (step) => {
