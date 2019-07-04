@@ -53,6 +53,7 @@ export type GenericDialerPanelViewProps = {
   onFocus: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  shouldDisplayRecentCalls: boolean;
 } & Pick<
   GenericDialerPanelProps,
   | 'onContactSelected'

@@ -191,4 +191,20 @@ describe('CallLogDao', () => {
       expect(viewDao.bulkUpdate).toBeCalled();
     });
   });
+
+  describe('queryAllUniquePhoneNumberCalls', () => {
+    it('should call with right parameters', async () => {
+      const result = [{ id: '1' }];
+      viewDao.getAllUniquePhoneNumberCalls = jest
+        .fn()
+        .mockResolvedValue(result);
+
+      expect(
+        await dao.queryAllUniquePhoneNumberCalls(CALL_LOG_SOURCE.ALL),
+      ).toEqual(result);
+      expect(viewDao.getAllUniquePhoneNumberCalls).toBeCalledWith(
+        CALL_LOG_SOURCE.ALL,
+      );
+    });
+  });
 });

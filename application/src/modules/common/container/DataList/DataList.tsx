@@ -8,6 +8,7 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import {
   JuiInfiniteListProps,
   JuiInfiniteList,
+  JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { action, computed } from 'mobx';
@@ -18,6 +19,7 @@ type DataListProps = {
   initialDataCount: number;
   InfiniteListProps: Pick<
     JuiInfiniteListProps,
+    | 'initialScrollToIndex'
     | 'height'
     | 'minRowHeight'
     | 'overscan'
@@ -26,7 +28,7 @@ type DataListProps = {
     | 'noRowsRenderer'
     | 'loadMoreStrategy'
     | 'stickToLastPosition'
-  >;
+  > & { ref?: React.RefObject<JuiVirtualizedListHandles> };
   children: JSX.Element[];
   reverse?: boolean;
 };
