@@ -8,11 +8,10 @@ import i18next from 'i18next';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { formatSeconds } from '@/utils/date';
-import { DialerTitleBarProps, DialerTitleBarViewProps } from './types';
-import { TelephonyStore } from '../../store';
+import { DialerTitleBarProps } from './types';
+import { TelephonyStore, INCOMING_STATE } from '../../store';
 
-class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
-  implements DialerTitleBarViewProps {
+class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps> {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   constructor(props: DialerTitleBarProps) {
@@ -66,6 +65,11 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
   @computed
   get isDialer() {
     return this._telephonyStore.shouldDisplayDialer;
+  }
+
+  @computed
+  get isForward() {
+    return this._telephonyStore.incomingState === INCOMING_STATE.FORWARD;
   }
 
   dispose = () => {

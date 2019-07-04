@@ -285,12 +285,12 @@ describe('Telephony store', () => {
   it('jumpToRecentCall()', () => {
     const store = createStore();
     store.jumpToRecentCall();
-    expect(store.shouldDisplayRecentCalls).toBeTruthy();
+    expect(store.isRecentCalls).toBeTruthy();
   });
 
   it('backToDialer()', () => {
     const store = createStore();
     store.backToDialer();
-    expect(store.shouldDisplayRecentCalls).toBeFalsy();
+    expect(store.isRecentCalls).toBeFalsy();
   });
 });
