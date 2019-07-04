@@ -9,6 +9,7 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta, IGroup } from '../v2/models';
 import { WebphoneSession } from 'webphone-client';
+import { MiscUtils } from '../v2/utils';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -506,5 +507,63 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
     await t.expect(telephonyDialog.dialerInput.focused).ok();
+  });
+});
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-2487'],
+  priority: ['P2'],
+  maintainers: ['Naya.Fang'],
+  keywords: ['Dialer']
+})('Can enter the search contact mode after edited the content of the custom forward ', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneSettingPage;
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+  await h(t).withLog('When I receive an inbound call', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog('Then telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  await h(t).withLog('And I click the call actions button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+  await h(t).withLog('Then I hover forward options', async () => {
+    await telephonyDialog.hoverForwardButton();
+  });
+  await h(t).withLog('And I click custom forward button', async () => {
+    await telephonyDialog.clickCustomForwardButton();
+  });
+  await h(t).withLog('Then I click "11" on the keypad', async () => {
+    await telephonyDialog.tapKeypad('11');
+  });
+  await h(t).withLog('When callerUser hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+  await MiscUtils.sleep(2000)
+  await h(t).withLog('Then I click the Dialpad button', async () => {
+    await app.homePage.openDialer();
+  });
+  await h(t).withLog('Display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  const { extension } = caller;
+  const searchStr = extension.replace('+','');
+  await h(t).withLog(`And I enter "${searchStr}" into input field via keyboard`, async () => {
+    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+  });
+  await MiscUtils.sleep(2000)
+  await h(t).withLog(`Then should display the search results`, async ()=>{
+    await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
   });
 });
