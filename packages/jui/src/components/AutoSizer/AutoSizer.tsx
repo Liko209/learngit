@@ -42,7 +42,6 @@ const JuiAutoSizer = ({
       const computedStyle = getComputedStyle(ref.current);
       const paddingTop = parseInt(computedStyle.paddingTop || '0', 10);
       const paddingBottom = parseInt(computedStyle.paddingBottom || '0', 10);
-      console.log('paddingBottom: ', paddingBottom);
       setSize({
         width: offsetWidth,
         height: offsetHeight - paddingTop - paddingBottom,
