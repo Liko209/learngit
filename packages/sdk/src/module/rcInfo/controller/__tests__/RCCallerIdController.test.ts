@@ -447,4 +447,26 @@ describe('RCInfoFetchController', () => {
       expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
     });
   });
+  describe('hasSetCallerId()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return true when has set caller id to user config', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue({});
+
+      expect(await rcCallerIdController.hasSetCallerId()).toBeTruthy();
+    });
+
+    it('should return false when has not set caller id to user config', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue(null);
+
+      expect(await rcCallerIdController.hasSetCallerId()).toBeFalsy();
+    });
+  });
 });

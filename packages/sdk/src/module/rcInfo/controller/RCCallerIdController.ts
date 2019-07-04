@@ -218,6 +218,11 @@ class RCCallerIdController {
     return null;
   }
 
+  async hasSetCallerId() {
+    const result = await this._rcInfoFetchController.getExtensionCallerId();
+    return !!result;
+  }
+
   async getDefaultCallerId() {
     const defaultCallerNumberId = await this.getExtensionCallerId();
     return (
