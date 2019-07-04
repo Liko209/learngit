@@ -11,6 +11,7 @@ import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 import { notificationCenter } from 'sdk/service';
 import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
+import { daoManager } from 'sdk/dao';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -98,6 +99,18 @@ describe('AllLogFetchController', () => {
       expect(RCItemApi.syncCallLog).toBeCalledWith({
         syncType: SYNC_TYPE.FSYNC,
       });
+    });
+  });
+
+  describe('fetchAllUniquePhoneNumberCalls', () => {
+    it('should call queryAllUniquePhoneNumberCalls', async () => {
+      const calls = [{ id: '1' }];
+      daoManager.getDao = jest.fn().mockReturnValue({
+        queryAllUniquePhoneNumberCalls: jest.fn().mockResolvedValue(calls),
+      });
+
+      const result = await controller.fetchAllUniquePhoneNumberCalls();
+      expect(result).toEqual(calls);
     });
   });
 });

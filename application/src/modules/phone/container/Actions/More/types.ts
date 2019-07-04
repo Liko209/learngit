@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
-
 type MoreProps = {
   automationId: string;
 };
@@ -14,4 +12,4 @@ type MoreViewProps = {
   automationId: string;
 };
 
-export { BUTTON_TYPE, MoreProps, MoreViewProps };
+export { MoreProps, MoreViewProps };

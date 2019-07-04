@@ -571,6 +571,9 @@ class SyncController {
 
       case SYNC_SOURCE.REMAINING:
         return `${SYNC_PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
+
+      case SYNC_SOURCE.SOCKET:
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_SOCKET_INCOMING}${type}`;
     }
   }
 

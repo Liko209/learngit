@@ -28,6 +28,7 @@ type Props = {
   Back?: React.ComponentType;
   HoverActions?: React.ComponentType;
   Avatar?: React.ComponentType;
+  RecentCallBtn?: React.ComponentType;
   name?: string;
   phone?: string;
   placeholder?: string;
@@ -328,7 +329,7 @@ class JuiHeader extends PureComponent<Props, State> {
   }
 
   render() {
-    const { showDialerInputField } = this.props;
+    const { showDialerInputField, RecentCallBtn } = this.props;
 
     return (
       <StyledHeader
@@ -336,6 +337,7 @@ class JuiHeader extends PureComponent<Props, State> {
         onMouseLeave={this._handleMouseEvent}
         data-test-automation-id="telephony-dialer-header"
       >
+        {RecentCallBtn && <RecentCallBtn />}
         {showDialerInputField
           ? this._renderDialerInput()
           : this._renderCallInfo()}

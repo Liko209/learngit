@@ -131,7 +131,7 @@ class OAuthTokenHandler implements ITokenHandler {
       if (this.isAccessTokenRefreshable()) {
         if (this.isRefreshTokenExpired()) {
           networkLogger.tags(LOG_TAG).info('The refresh token expired.');
-          this._notifyRefreshTokenFailure();
+          this._notifyRefreshTokenFailure(true);
           return;
         }
         if (this.token) {
@@ -159,7 +159,7 @@ class OAuthTokenHandler implements ITokenHandler {
         }
       } else {
         networkLogger.tags(LOG_TAG).info('Token is not refreshable.');
-        this._notifyRefreshTokenFailure();
+        this._notifyRefreshTokenFailure(true);
       }
     }
   }

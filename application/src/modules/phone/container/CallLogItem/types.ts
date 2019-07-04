@@ -14,12 +14,14 @@ type CallLogItemProps = {
 type CallLogItemViewProps = {
   caller?: Caller;
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   icon: string;
   callType: string;
   duration: string;
   startTime: string;
   isMissedCall: boolean;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 } & CallLogItemProps;
 
 export { CallLogItemProps, CallLogItemViewProps };

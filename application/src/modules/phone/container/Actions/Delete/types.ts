@@ -3,7 +3,7 @@
  * @Date: 2019-05-24 07:28:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
 
 type DeleteProps = {
@@ -18,4 +18,4 @@ type DeleteViewProps = {
   deleteVoicemail: () => Promise<any>;
 };
 
-export { BUTTON_TYPE, DeleteProps, DeleteViewProps };
+export { DeleteProps, DeleteViewProps };

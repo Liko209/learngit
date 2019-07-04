@@ -72,7 +72,8 @@
     "team": "team",
     "play": "Play",
     "pause": "Pause",
-    "reload": "Reload"
+    "reload": "Reload",
+    "goToConversation": "Go to conversation"
   },
   "auth": {
     "signIn": "Sign in",
@@ -581,7 +582,9 @@
       "back": "Back",
       "forward": "Forward",
       "customForward": "Custom...",
-      "flip": "Flip"
+      "flip": "Flip",
+      "recentCall": "Recent calls",
+      "backToDialer": "Back to dialer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -669,16 +672,23 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "noCallLogAvailable": "There is not call log yet"
   },
   "phone": {
     "tab": {
       "callHistory": "Call history"
     },
+    "callBack": "Call back",
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",
     "voicemail": "Voicemail",
+    "block": "Block",
+    "blockNumber": "Block number",
+    "unblockNumber": "Unblock number",
+    "blockThisNumber": "Block this number",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "This number will not be able to reach you if blocked. Do you want to block it?",
     "faxes": "Faxes",
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
@@ -687,6 +697,12 @@
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
+      "numberHasBeenBlocked": "The number has been blocked",
+      "numberHasBeenUnblocked": "The number has been unblocked",
+      "notAbleToUnblockForNetworkIssue": "Sorry, we weren't able to unblock this number. Check your network connection, then try again.",
+      "notAbleToUnblockForServerIssue": "Sorry, something went wrong on our end and we weren't able to unblock this number. Try again later.",
+      "notAbleToBlockForNetworkIssue": "Sorry, we weren't able to block this number. Check your network connection, then try again.",
+      "notAbleToBlockForServerIssue": "Sorry, something went wrong on our end and we weren't able to block this number. Try again later.",
       "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
       "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
       "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",
