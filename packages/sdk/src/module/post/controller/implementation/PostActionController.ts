@@ -13,20 +13,19 @@ import { PostDao } from '../../dao';
 import { EditPostType } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ENTITY } from '../../../../service/eventKey';
-import { GroupConfigService } from '../../../groupConfig';
 import { IPostActionController } from '../interface/IPostActionController';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { DEFAULT_RETRY_COUNT } from 'foundation';
+import { PostDataController } from '../PostDataController';
 
 class PostActionController implements IPostActionController {
   constructor(
+    public postDataController: PostDataController,
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
-    public preInsertController: IPreInsertController<Post>,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
 
@@ -110,22 +109,9 @@ class PostActionController implements IPostActionController {
    */
 
   private async _deletePreInsertedPost(id: number): Promise<boolean> {
-    /**
-     * 1. delete from progress
-     * 2. delete indexDB
-     * 3. delete from pre inserted config
-     * 4. delete from failure config
-     */
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
-
-    this.preInsertController.delete(post);
-
-    // 4
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
-    groupConfigService.deletePostId(post.group_id, id); // does not need to wait
+    this.postDataController.deletePreInsertPosts([post]);
     return true;
   }
 

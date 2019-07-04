@@ -245,4 +245,62 @@ describe('GroupConfigService', () => {
       expect(entitySourceController.update).not.toHaveBeenCalled();
     });
   });
+
+  describe('deletePostIds', () => {
+    it('should call updateGroupConfigPartialData when failed Ids has changed', async () => {
+      jest
+        .spyOn(groupConfigController, 'getGroupSendFailurePostIds')
+        .mockResolvedValueOnce([1, 2, 3]);
+      jest
+        .spyOn(groupConfigController, 'updateGroupSendFailurePostIds')
+        .mockResolvedValueOnce(true);
+
+      await groupConfigController.deletePostIds(999, [1, 2]);
+      expect(
+        groupConfigController.updateGroupSendFailurePostIds,
+      ).toHaveBeenCalledWith({
+        id: 999,
+        send_failure_post_ids: [3],
+      });
+    });
+    it('should not call updateGroupConfigPartialData when postIds is empty', async () => {
+      jest
+        .spyOn(groupConfigController, 'getGroupSendFailurePostIds')
+        .mockResolvedValueOnce([1, 2, 3]);
+      jest
+        .spyOn(groupConfigController, 'updateGroupSendFailurePostIds')
+        .mockResolvedValueOnce(true);
+
+      await groupConfigController.deletePostIds(999, []);
+      expect(
+        groupConfigController.updateGroupSendFailurePostIds,
+      ).not.toHaveBeenCalled();
+    });
+    it('should not call updateGroupConfigPartialData when failIds is empty', async () => {
+      jest
+        .spyOn(groupConfigController, 'getGroupSendFailurePostIds')
+        .mockResolvedValueOnce([]);
+      jest
+        .spyOn(groupConfigController, 'updateGroupSendFailurePostIds')
+        .mockResolvedValueOnce(true);
+
+      await groupConfigController.deletePostIds(999, [1, 2]);
+      expect(
+        groupConfigController.updateGroupSendFailurePostIds,
+      ).not.toHaveBeenCalled();
+    });
+    it('should not call updateGroupConfigPartialData when failed Ids has not changed', async () => {
+      jest
+        .spyOn(groupConfigController, 'getGroupSendFailurePostIds')
+        .mockResolvedValueOnce([1, 2]);
+      jest
+        .spyOn(groupConfigController, 'updateGroupSendFailurePostIds')
+        .mockResolvedValueOnce(true);
+
+      await groupConfigController.deletePostIds(999, [3, 4]);
+      expect(
+        groupConfigController.updateGroupSendFailurePostIds,
+      ).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -31,7 +31,10 @@ interface IStateService {
 
   handleState(states: Partial<State>[], source: SYNC_SOURCE): Promise<void>;
 
-  handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
+  handleGroupCursor(
+    groups: Partial<Group>[],
+    ignoreCursorValidate?: boolean,
+  ): Promise<void>;
 
   handleGroupChangeForTotalUnread(
     payload: NotificationEntityPayload<Group>,

@@ -9,7 +9,6 @@ import { JuiAvatar } from '../../../components/Avatar';
 import { ContactItem } from '../../ContactInfo';
 import { JuiListItemAvatar, JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 
 import {

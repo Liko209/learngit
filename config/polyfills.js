@@ -18,6 +18,21 @@ if (process.env.NODE_ENV === 'test') {
   Object.defineProperty(window, 'IDBKeyRange', {
     value: require('fake-indexeddb/lib/FDBKeyRange'),
   });
+  Object.defineProperty(window, 'IDBIndex', {
+    value: require('fake-indexeddb/lib/FDBIndex'),
+  });
+  Object.defineProperty(window, 'IDBCursor', {
+    value: require('fake-indexeddb/lib/FDBCursor'),
+  });
+  Object.defineProperty(window, 'IDBObjectStore', {
+    value: require('fake-indexeddb/lib/FDBObjectStore'),
+  });
+  Object.defineProperty(window, 'IDBTransaction', {
+    value: require('fake-indexeddb/lib/FDBTransaction'),
+  });
+  Object.defineProperty(window, 'IDBDatabase', {
+    value: require('fake-indexeddb/lib/FDBDatabase'),
+  });
 
   // Create a localStorage and sessionStorage at window
   class FakeStorage {

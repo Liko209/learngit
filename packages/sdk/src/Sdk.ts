@@ -108,6 +108,7 @@ class Sdk {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     HandleByRingCentral.platformHandleDelegate = accountService;
+    HandleByGlip.platformHandleDelegate = accountService;
   }
 
   async onAuthSuccess(authResponse: IAuthResponse) {

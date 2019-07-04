@@ -29,6 +29,7 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   white-space: nowrap;
   flex-wrap: nowrap;
   flex-shrink: 0;
+  align-items: center;
 
   && > *:nth-child(n + 2) {
     margin-left: ${({ theme, direction = 'horizontal', overlapSize }) =>

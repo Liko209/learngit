@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+  "fixtures": ["./fixtures/Search/HighLight.ts", "./fixtures/AtMention/*.ts", "./fixtures/Bookmarks/*.ts"],
+  "browsers": ["selenium:chrome"]
+  }
+}

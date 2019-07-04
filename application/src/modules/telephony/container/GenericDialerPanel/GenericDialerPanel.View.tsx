@@ -12,6 +12,7 @@ import {
   JuiHeader,
   JuiContainer,
   ContactSearchContainer,
+  RecentCallContainer,
 } from 'jui/pattern/Dialer';
 import {
   GenericDialerPanelViewProps,
@@ -24,6 +25,8 @@ import { debounce } from 'lodash';
 import { focusCampo } from '../../helpers';
 import ReactDOM from 'react-dom';
 import { ContactSearchList } from '../ContactSearchList';
+import { RecentCalls } from '../RecentCalls';
+import { RecentCallBtn } from '../RecentCallBtn';
 
 const CLOSE_TOOLTIP_TIME = 5000;
 
@@ -168,6 +171,30 @@ class GenericDialerPanelViewComponent extends React.Component<
     );
   }
 
+  private _renderRecentCalls = () => {
+    const { displayCallerIdSelector } = this.props;
+    return (
+      <RecentCallContainer>
+        {displayCallerIdSelector && this._renderCallerIdSelector()}
+        <RecentCalls />
+      </RecentCallContainer>
+    );
+  }
+
+  private _renderKeypadActions = () => {
+    const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;
+    switch (true) {
+      case shouldEnterContactSearch:
+        return this._renderContactSearch();
+
+      case shouldDisplayRecentCalls:
+        return this._renderRecentCalls();
+
+      default:
+        return this._renderDialer();
+    }
+  }
+
   render() {
     const {
       dialerInputFocused,
@@ -180,11 +207,15 @@ class GenericDialerPanelViewComponent extends React.Component<
       onBlur,
       deleteLastInputString,
       shouldEnterContactSearch,
+      shouldDisplayRecentCalls,
       CallActionBtn,
       Back,
     } = this.props;
 
-    const callActionBtn = shouldEnterContactSearch ? undefined : CallActionBtn;
+    const callActionBtn =
+      shouldEnterContactSearch || shouldDisplayRecentCalls
+        ? undefined
+        : CallActionBtn;
 
     return (
       <>
@@ -203,19 +234,18 @@ class GenericDialerPanelViewComponent extends React.Component<
             onKeyDown={onKeyDown}
             dialerValue={inputString}
             Back={Back}
+            RecentCallBtn={
+              !shouldEnterContactSearch ? RecentCallBtn : undefined
+            }
             ref={this._dialerHeaderRef}
           />
         </JuiHeaderContainer>
         <JuiContainer
-          removePadding={shouldEnterContactSearch}
-          keypadFullSize={shouldEnterContactSearch}
+          removePadding={shouldEnterContactSearch || shouldDisplayRecentCalls}
+          keypadFullSize={shouldEnterContactSearch || shouldDisplayRecentCalls}
           CallAction={callActionBtn}
           onFocus={this._focusInput}
-          KeypadActions={
-            shouldEnterContactSearch
-              ? this._renderContactSearch()
-              : this._renderDialer()
-          }
+          KeypadActions={this._renderKeypadActions()}
         />
       </>
     );

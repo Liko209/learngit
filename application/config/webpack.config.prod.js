@@ -331,7 +331,7 @@ module.exports = {
             sideEffects: true,
           },
           {
-            test: /\.svg$/,
+            test: /jui\/src\/assets\/.*\.svg$/,
             use: [
               {
                 loader: 'svg-sprite-loader',

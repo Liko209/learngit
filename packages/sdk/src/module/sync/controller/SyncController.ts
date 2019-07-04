@@ -303,7 +303,6 @@ class SyncController {
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
       arrState.push(state);
-      arrState[0].__from_index = true;
     }
 
     let transProfile: Raw<Profile> | null = null;
@@ -572,6 +571,9 @@ class SyncController {
 
       case SYNC_SOURCE.REMAINING:
         return `${SYNC_PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
+
+      case SYNC_SOURCE.SOCKET:
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_SOCKET_INCOMING}${type}`;
     }
   }
 

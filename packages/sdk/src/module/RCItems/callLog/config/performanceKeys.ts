@@ -12,4 +12,5 @@ export enum CALL_LOG_POST_PERFORMANCE_KEYS {
   DELETE_CALL_LOG_FROM_SERVER = 'delete_call_log_from_server',
   DELETE_CALL_LOG = 'delete_call_log',
   INIT_RC_CALL_LOG_BADGE = 'init_rc_call_log_badge',
+  FETCH_RECENT_CALL_LOGS = 'fetch_recent_call_logs',
 }

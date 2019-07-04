@@ -9,6 +9,7 @@ class TelephonyService {
   forward = jest.fn();
   getForwardingNumberList = jest.fn();
   getForwardPermission = jest.fn();
+  makeCall = jest.fn();
 }
 
 export { TelephonyService };

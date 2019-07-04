@@ -12,6 +12,7 @@ import { Nullable } from 'sdk/types';
 import _ from 'lodash';
 import { CALL_DIRECTION } from '../../constants';
 import { Caller, FetchDataOptions } from '../../types';
+import { CALL_LOG_SOURCE } from '../constants';
 
 class CallLogDao extends BaseDao<CallLog, string> {
   static COLLECTION_NAME = 'callLog';
@@ -93,6 +94,10 @@ class CallLogDao extends BaseDao<CallLog, string> {
     options: FetchDataOptions<CallLog, string>,
   ): Promise<CallLog[]> {
     return this._viewDao.queryCallLogs(this._fetchCallLogsFunc, options);
+  }
+
+  async queryAllUniquePhoneNumberCalls(source: CALL_LOG_SOURCE) {
+    return this._viewDao.getAllUniquePhoneNumberCalls(source);
   }
 
   async doInTransaction(func: () => {}): Promise<void> {

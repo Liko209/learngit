@@ -127,7 +127,7 @@ const JuiDataLoader = ({
           loadData(preloadInfo.direction!, preloadInfo.count);
       }
     });
-  },        []);
+  },        [loadInitialData]);
 
   const childrenElement = children({
     loadingInitial,

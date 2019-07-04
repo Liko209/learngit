@@ -17,7 +17,7 @@ enum POST_LIST_TYPE {
 type PostListPageViewProps = WithTranslation & {
   kind: POST_LIST_TYPE;
   caption: string;
-  ids: number[];
+  ids: number[] | undefined;
   unsetCurrentPostListValue: Function;
   postFetcher: (
     direction: QUERY_DIRECTION,

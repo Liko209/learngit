@@ -178,8 +178,11 @@ describe('messageNotificationManager', () => {
   describe('enqueueVm()', () => {
     let manager;
     const crushVmIntoManager = (times: number) => {
-      [...Array(times)].forEach(() => {
-        notificationManager.enqueueVM({} as PostModel, {} as GroupModel);
+      [...Array(times)].forEach((_, index) => {
+        notificationManager.enqueueVM(
+          { id: index } as PostModel,
+          {} as GroupModel,
+        );
       });
     };
 
@@ -199,6 +202,11 @@ describe('messageNotificationManager', () => {
     it('should enqueue the vm into the vmQueue when called', () => {
       crushVmIntoManager(1);
       expect(notificationManager._vmQueue.length).toEqual(1);
+    });
+    it('should not enqueue the vm into the vmQueue when called with the existed id', () => {
+      crushVmIntoManager(20);
+      crushVmIntoManager(20);
+      expect(notificationManager._vmQueue.length).toEqual(20);
     });
     it('should cut off vmQueue when exceeds', () => {
       crushVmIntoManager(51);

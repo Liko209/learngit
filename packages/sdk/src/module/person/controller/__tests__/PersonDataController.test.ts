@@ -11,6 +11,7 @@ import { EntitySourceController } from '../../../../framework/controller/impl/En
 import { Person } from '../../entity';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
+import { SOURCE_TYPE } from 'sdk/module/telephony/controller/mediaDeviceDelegate/types';
 
 jest.mock('foundation/ioc');
 jest.mock('../../../../service/notificationCenter');
@@ -67,5 +68,26 @@ describe('PersonDataController', () => {
       rawPersonFactory.build({ _id: 1 }, SYNC_SOURCE.REMAINING),
     ]);
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  describe('_saveData', () => {
+    it('should call bulk update when the data is from socket', async () => {
+      entitySourceController.bulkUpdate = jest.fn();
+      await personDataController._saveData(
+        [],
+        [rawPersonFactory.build({ _id: 1 })],
+        SYNC_SOURCE.SOCKET,
+      );
+      expect(entitySourceController.bulkUpdate).toBeCalled();
+    });
+    it('should call bulk put when the data is from index', async () => {
+      entitySourceController.bulkPut = jest.fn();
+      await personDataController._saveData(
+        [],
+        [rawPersonFactory.build({ _id: 1 })],
+        SYNC_SOURCE.INDEX,
+      );
+      expect(entitySourceController.bulkPut).toBeCalled();
+    });
   });
 });

@@ -12,8 +12,11 @@ type ViewerContextType = {
   onTransitionExited?: () => {};
   onTransitionEntered?: () => {};
   isAnimating: boolean;
+  setDeleteItem: (value: boolean) => void;
+  deleteItem?: boolean;
 };
 export default React.createContext<ViewerContextType>({
   show: true,
   isAnimating: false,
+  setDeleteItem: () => {},
 });
