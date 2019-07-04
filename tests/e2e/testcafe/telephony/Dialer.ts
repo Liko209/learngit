@@ -9,7 +9,6 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta, IGroup } from '../v2/models';
 import { WebphoneSession } from 'webphone-client';
-import { MiscUtils } from '../v2/utils';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -538,31 +537,31 @@ test.meta(<ITestMeta>{
   await h(t).withLog('And I click the call actions button', async () => {
     await telephonyDialog.clickMoreOptionsButton();
   });
-  await h(t).withLog('Then I hover forward options', async () => {
+  await h(t).withLog('And I hover forward options', async () => {
     await telephonyDialog.hoverForwardButton();
   });
   await h(t).withLog('And I click custom forward button', async () => {
     await telephonyDialog.clickCustomForwardButton();
   });
-  await h(t).withLog('Then I click "11" on the keypad', async () => {
+  await h(t).withLog('And I click "11" on the keypad', async () => {
     await telephonyDialog.tapKeypad('11');
   });
-  await h(t).withLog('When callerUser hangup the call', async () => {
+  await h(t).withLog('And callerUser hangup the call', async () => {
     await callerWebPhone.hangup();
   });
-  await MiscUtils.sleep(2000)
-  await h(t).withLog('Then I click the Dialpad button', async () => {
+  await t.wait(2000)
+  await h(t).withLog('And I click the Dialpad button', async () => {
     await app.homePage.openDialer();
   });
-  await h(t).withLog('Display the dialer', async () => {
+  await h(t).withLog('Then display the dialer', async () => {
     await telephonyDialog.ensureLoaded();
   });
   const { extension } = caller;
   const searchStr = extension.replace('+','');
-  await h(t).withLog(`And I enter "${searchStr}" into input field via keyboard`, async () => {
+  await h(t).withLog(`When I enter "${searchStr}" into input field via keyboard`, async () => {
     await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
   });
-  await MiscUtils.sleep(2000)
+  await t.wait(2000)
   await h(t).withLog(`Then should display the search results`, async ()=>{
     await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
   });
