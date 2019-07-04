@@ -28,6 +28,7 @@ import { PostSearchManagerController } from './implementation/PostSearchManagerC
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PostItemController } from './implementation/PostItemController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostController {
   private _actionController: PostActionController;
@@ -38,7 +39,10 @@ class PostController {
   private _postDataController: PostDataController;
   private _postSearchController: PostSearchManagerController;
   private _postItemController: PostItemController;
-  constructor(private _groupService: IGroupService) {}
+  constructor(
+    private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
+  ) {}
 
   getPostActionController(): PostActionController {
     if (!this._actionController) {
@@ -66,9 +70,9 @@ class PostController {
       );
 
       this._actionController = new PostActionController(
+        this.getPostDataController(),
         partialModifyController,
         requestController,
-        this._getPreInsertController(),
         entitySourceController,
       );
     }
@@ -80,6 +84,7 @@ class PostController {
       this._sendController = new SendPostController(
         this.getPostActionController(),
         this._getPreInsertController(),
+        this.getPostDataController(),
       );
     }
     return this._sendController;
@@ -130,6 +135,7 @@ class PostController {
 
       this._postDataController = new PostDataController(
         this._groupService,
+        this._groupConfigService,
         this._getPreInsertController(),
         entitySourceController,
       );

@@ -52,7 +52,7 @@ class GroupConfigController {
       return this.updateGroupConfigPartialData(params);
     }
 
-    this.entitySourceController.update(params);
+    await this.entitySourceController.update(params);
     notificationCenter.emitEntityUpdate(
       ENTITY.GROUP_CONFIG,
       [params],
@@ -110,15 +110,17 @@ class GroupConfigController {
     }
   }
 
-  async deletePostId(groupId: number, postId: number) {
+  async deletePostIds(groupId: number, postIds: number[]) {
     this.queue = this.queue.then(async () => {
-      let failIds = await this.getGroupSendFailurePostIds(groupId);
-      if (failIds.includes(postId)) {
-        failIds = failIds.filter(id => id !== postId);
-        await this.updateGroupSendFailurePostIds({
-          id: groupId,
-          send_failure_post_ids: failIds,
-        });
+      const failIds = await this.getGroupSendFailurePostIds(groupId);
+      if (failIds.length && postIds.length) {
+        const resultIds: number[] = _.difference(failIds, postIds);
+        if (resultIds.toString() !== failIds.toString()) {
+          await this.updateGroupSendFailurePostIds({
+            id: groupId,
+            send_failure_post_ids: resultIds,
+          });
+        }
       }
     });
     return this.queue;
