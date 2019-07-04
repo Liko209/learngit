@@ -52,9 +52,11 @@ class EmojiView extends Component<Types> {
       sheetSize,
       title,
       emojiOpenStatus,
+      tooltip,
     } = this.props;
     return (
       <JuiEmojiWithTheme
+        tooltip={tooltip}
         i18nObj={this._getEmojiI18nTexts()}
         set={set}
         sheetSize={sheetSize}

@@ -8,6 +8,8 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
   MouseEvent,
+  createRef,
+  RefObject,
 } from 'react';
 import styled from '../../foundation/styled-components';
 import {
@@ -18,15 +20,16 @@ import {
   ellipsis,
 } from '../../foundation/utils/styles';
 import { JuiTextField } from '../../components/Forms';
-import MuiTextField from '@material-ui/core/TextField';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton } from '../../components/Buttons';
+import ReactDOM from 'react-dom';
 
 type Props = {
   Back?: React.ComponentType;
   HoverActions?: React.ComponentType;
-  Avatar: React.ComponentType;
-  name: string;
+  Avatar?: React.ComponentType;
+  RecentCallBtn?: React.ComponentType;
+  name?: string;
   phone?: string;
   placeholder?: string;
   showDialerInputField?: boolean;
@@ -132,7 +135,7 @@ const colorTransition = ({ theme }: { theme: Theme }) =>
     duration: theme.transitions.duration.standard,
   });
 
-const SearchInput = styled(JuiTextField)`
+const SearchInput = styled(JuiTextField)<any>`
   && {
     flex-grow: 1;
     border: none;
@@ -155,11 +158,12 @@ const SearchInput = styled(JuiTextField)`
       user-select: text;
     }
   }
-` as typeof MuiTextField;
+`;
 
 class JuiHeader extends PureComponent<Props, State> {
   private _mouseDownTime: number;
   private _timerForClearAll: NodeJS.Timeout;
+  private _inputRef: RefObject<any> = createRef();
 
   state = {
     showHoverActions: false,
@@ -189,7 +193,7 @@ class JuiHeader extends PureComponent<Props, State> {
               <Back />
             </StyledBack>
           )}
-          <Avatar />
+          {Avatar && <Avatar />}
           <StyledInfoContainer>
             <StyledName data-test-automation-id="telephony-dialer-header-name">
               {name}
@@ -228,6 +232,12 @@ class JuiHeader extends PureComponent<Props, State> {
   private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (this._inputRef.current) {
+      const input = (ReactDOM.findDOMNode(
+        this._inputRef.current,
+      ) as HTMLDivElement).querySelector('input');
+      input && input.focus();
+    }
     if (!this.props.deleteLastInputString) {
       return;
     }
@@ -290,6 +300,7 @@ class JuiHeader extends PureComponent<Props, State> {
           onKeyDown={onKeyDown || fakeFunc}
           autoFocus={true}
           autoComplete="off"
+          ref={this._inputRef}
         />
         <StyledDialerBtnContainer>
           {dialerValue && dialerValue.length && (
@@ -318,7 +329,7 @@ class JuiHeader extends PureComponent<Props, State> {
   }
 
   render() {
-    const { showDialerInputField } = this.props;
+    const { showDialerInputField, RecentCallBtn } = this.props;
 
     return (
       <StyledHeader
@@ -326,6 +337,7 @@ class JuiHeader extends PureComponent<Props, State> {
         onMouseLeave={this._handleMouseEvent}
         data-test-automation-id="telephony-dialer-header"
       >
+        {RecentCallBtn && <RecentCallBtn />}
         {showDialerInputField
           ? this._renderDialerInput()
           : this._renderCallInfo()}

@@ -15,11 +15,14 @@ import {
   ISpecialServiceNumber,
   AccountServiceInfo,
   IExtensionPhoneNumberList,
-} from '../../../api/ringcentral';
-import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
+  GetBlockNumberListParams,
+  BlockNumberItem,
+  BLOCK_STATUS,
+} from 'sdk/api/ringcentral';
+import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
-import notificationCenter from '../../../service/notificationCenter';
-import { RC_INFO } from '../../../service/eventKey';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { RC_INFO } from 'sdk/service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { RCInfoService } from '../service';
 import { AccountService } from '../../account/service';
@@ -31,7 +34,7 @@ import {
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
-const EXTENSION_PHONE_NUMBER_LIST_COUNT = 1000;
+const DEFAULT_PAGE_SIZE = 1000; // callerId(more than 200)
 
 import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
 import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
@@ -112,6 +115,11 @@ class RCInfoFetchController {
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_PHONE_DATA,
         this.requestRCPhoneData,
+        false,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_BLOCK_NUMBER,
+        this.requestBlockNumberList,
         false,
       );
       this._isRCInfoJobScheduled = true;
@@ -200,7 +208,7 @@ class RCInfoFetchController {
 
   requestExtensionPhoneNumberList = async (): Promise<void> => {
     const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList(
-      { perPage: EXTENSION_PHONE_NUMBER_LIST_COUNT },
+      { perPage: DEFAULT_PAGE_SIZE },
     );
     await this.rcInfoUserConfig.setExtensionPhoneNumberList(
       extensionPhoneNumberList,
@@ -226,6 +234,39 @@ class RCInfoFetchController {
     const accountServiceInfo = await RCInfoApi.getAccountServiceInfo();
     await this.rcInfoUserConfig.setAccountServiceInfo(accountServiceInfo);
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
+  }
+
+  requestBlockNumberList = async (): Promise<void> => {
+    const params: GetBlockNumberListParams = {
+      page: 1,
+      perPage: DEFAULT_PAGE_SIZE,
+      status: BLOCK_STATUS.BLOCKED,
+    };
+    const result: BlockNumberItem[] = [];
+    await this._requestBlockNumberListByPage(params, result);
+    await this.rcInfoUserConfig.setBlockNumbers(result);
+  }
+
+  private async _requestBlockNumberListByPage(
+    params: GetBlockNumberListParams,
+    result: BlockNumberItem[],
+  ) {
+    const response = await RCInfoApi.getBlockNumberList(params);
+    response.records &&
+      result.push(
+        ...response.records.filter(data => {
+          return data.status === BLOCK_STATUS.BLOCKED;
+        }),
+      );
+    if (
+      response.paging &&
+      response.paging.page &&
+      response.paging.totalPages &&
+      response.paging.page < response.paging.totalPages
+    ) {
+      params.page += 1;
+      await this._requestBlockNumberListByPage(params, result);
+    }
   }
 
   async requestRCAccountRelativeInfo(): Promise<void> {

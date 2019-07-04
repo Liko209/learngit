@@ -8,7 +8,7 @@ import { AbstractFetchController } from '../AbstractFetchController';
 import { ERROR_MSG_RC, ERROR_CODES_RC } from 'sdk/error';
 import { mainLogger } from 'foundation';
 import { RCItemApi } from 'sdk/api';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { RCItemSyncController } from 'sdk/module/RCItems/sync';
 import { CALL_RESULT, CALL_LOG_SOURCE } from '../../constants';
 import { RCItemFetchController } from 'sdk/module/RCItems/common/controller/RCItemFetchController';
@@ -45,10 +45,22 @@ describe('AbstractFetchController', () => {
     },
     resetFetchControllers: jest.fn(),
   };
+  const mockRCInfoService = {
+    isRCFeaturePermissionEnabled: jest.fn(),
+    isVoipCallingAvailable: jest.fn(),
+  };
 
   function setUp() {
     mainLogger.tags = jest.fn().mockReturnValue({ info: jest.fn() });
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockCallLogService);
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.CALL_LOG_SERVICE) {
+        return mockCallLogService;
+      }
+      if (data === ServiceConfig.RC_INFO_SERVICE) {
+        return mockRCInfoService;
+      }
+      return;
+    });
     controller = new TestFetchController(
       'test',
       mockConfig as any,
@@ -137,6 +149,26 @@ describe('AbstractFetchController', () => {
       await controller['removeLocalData']();
       expect(mockSourceController.clear).toBeCalled();
       expect(mockCallLogService.userConfig.setPseudoCallLogInfo).toBeCalled();
+    });
+  });
+
+  describe('hasPermission', () => {
+    it('should return false when call permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(false);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await controller['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return false when callLog permission is disabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      expect(await controller['hasPermission']()).toBeFalsy();
+    });
+
+    it('should return true when callLog/call permission is enabled', async () => {
+      mockRCInfoService.isVoipCallingAvailable.mockReturnValue(true);
+      mockRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      expect(await controller['hasPermission']()).toBeTruthy();
     });
   });
 

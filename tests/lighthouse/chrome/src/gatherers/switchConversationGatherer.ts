@@ -17,8 +17,8 @@ class SwitchConversationGatherer extends BaseGatherer {
     'goto_conversation_fetch_items',
     'conversation_fetch_from_db',
     'goto_conversation_shelf_fetch_items',
-    'ui_message_render',
-    'ui_profile_render',
+    // 'ui_message_render',
+    // 'ui_profile_render',
     // 'conversation_fetch_unread_post',
     // 'conversation_fetch_interval_post',
     // 'conversation_fetch_from_server',
@@ -104,9 +104,11 @@ class SwitchConversationGatherer extends BaseGatherer {
 
       await page.switchDetailTab();
 
-      await page.lookupTeamMember();
+      // await page.lookupTeamMember();
 
       this.pushGatherer(this.metricKeys);
+
+      await bluebird.delay(2000);
 
       if (needGC && index > halfCount) {
         globals.stopCollectProcessInfo();

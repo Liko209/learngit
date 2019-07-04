@@ -60,6 +60,10 @@ const dateFormatter = {
     const text: string = i18nP(WEEKDAY[m.day()]);
     return text;
   },
+  abbreviatedWeekday: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}`;
+  },
   exactDate: (m: Moment): string => {
     const weekday: string = dateFormatter.weekday(m);
     return `${weekday.slice(0, 3)}, ${m.format('l')}`;
@@ -177,6 +181,21 @@ const postTimestamp = buildFormatter([
   },
 ]);
 
+const dialerTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.localTime,
+  },
+  {
+    condition: condition.fromOneToSix,
+    formatter: dateFormatter.abbreviatedWeekday,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.date,
+  },
+]);
+
 function getDateTimeStamp(timestamp: number): number {
   return moment(timestamp)
     .startOf('day')
@@ -245,6 +264,7 @@ export {
   formatSeconds,
   getHourMinuteSeconds,
   formatDuration,
+  dialerTimestamp,
 };
 
 // 7 days inside

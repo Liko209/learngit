@@ -6,6 +6,7 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c9 {
@@ -232,7 +233,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -284,7 +288,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -336,7 +343,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -388,7 +398,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 className="c6"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -445,7 +458,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -498,7 +514,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -551,7 +570,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -604,7 +626,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -657,7 +682,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>
@@ -710,7 +738,10 @@ exports[`Storyshots Pattern LeftNav: Pattern LeftNav 1`] = `
                 role="img"
                 size="medium"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </div>

@@ -6,10 +6,10 @@
 
 import { RCInfoUserConfig, RCInfoGlobalConfig } from '../../config';
 import { RCInfoFetchController } from '../RCInfoFetchController';
-import { RCInfoApi, RCExtensionInfo } from '../../../../api/ringcentral';
-import { jobScheduler, JOB_KEY } from '../../../../framework/utils/jobSchedule';
-import notificationCenter from '../../../../service/notificationCenter';
-import { RC_INFO } from '../../../../service/eventKey';
+import { RCInfoApi, RCExtensionInfo, BLOCK_STATUS } from 'sdk/api/ringcentral';
+import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { RC_INFO } from 'sdk/service/eventKey';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { AccountGlobalConfig } from '../../../account/config/AccountGlobalConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -90,6 +90,11 @@ describe('RCInfoFetchController', () => {
       expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledWith(
         JOB_KEY.FETCH_SPECIAL_NUMBER_RULE,
         rcInfoFetchController.requestSpecialNumberRule,
+        false,
+      );
+      expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledWith(
+        JOB_KEY.FETCH_BLOCK_NUMBER,
+        rcInfoFetchController.requestBlockNumberList,
         false,
       );
     });
@@ -364,6 +369,35 @@ describe('RCInfoFetchController', () => {
         RC_INFO.EXTENSION_CALLER_ID,
         'extensionCallerId',
       );
+    });
+  });
+  describe('requestBlockNumberList', () => {
+    it('should send request and save to storage', async () => {
+      RCInfoApi.getBlockNumberList = jest
+        .fn()
+        .mockResolvedValueOnce({
+          records: [
+            { id: 1, status: BLOCK_STATUS.BLOCKED },
+            { id: 2, status: BLOCK_STATUS.BLOCKED },
+          ],
+          paging: { page: 1, totalPages: 2 },
+        })
+        .mockResolvedValueOnce({
+          records: [{ id: 3, status: BLOCK_STATUS.BLOCKED }, { id: 4 }],
+          paging: { page: 2, totalPages: 2 },
+        });
+      await rcInfoFetchController.requestBlockNumberList();
+      expect(RCInfoApi.getBlockNumberList).toBeCalledTimes(2);
+      expect(RCInfoApi.getBlockNumberList).toHaveBeenCalledWith({
+        page: 2,
+        perPage: 1000,
+        status: BLOCK_STATUS.BLOCKED,
+      });
+      expect(RCInfoUserConfig.prototype.setBlockNumbers).toBeCalledWith([
+        { id: 1, status: BLOCK_STATUS.BLOCKED },
+        { id: 2, status: BLOCK_STATUS.BLOCKED },
+        { id: 3, status: BLOCK_STATUS.BLOCKED },
+      ]);
     });
   });
 

@@ -27,7 +27,8 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
-jest.mock('../../../../module/account');
+jest.mock('sdk/module/account');
+jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
 
 function clearMocks() {
@@ -76,11 +77,10 @@ describe('RCInfoService', () => {
       return rawGetInstance(key);
     });
     rcInfoService = new RCInfoService();
-    rcInfoController = new RCInfoController();
+    rcInfoController = new RCInfoController({} as any);
     setup();
-    Object.assign(rcInfoService, {
-      _rcInfoController: rcInfoController,
-    });
+    rcInfoService['_DBConfig'] = {} as any;
+    rcInfoService['_rcInfoController'] = rcInfoController;
   });
   describe('getRCClientInfo()', () => {
     it('should call controller with correct parameter', () => {
@@ -248,14 +248,16 @@ describe('RCInfoService', () => {
   describe('getCountryList()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getCountryList();
-      expect(rcInfoService.regionInfoController.getCountryList).toBeCalled();
+      expect(rcInfoService['regionInfoController'].getCountryList).toBeCalled();
     });
   });
 
   describe('getCurrentCountry()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getCurrentCountry();
-      expect(rcInfoService.regionInfoController.getCurrentCountry).toBeCalled();
+      expect(
+        rcInfoService['regionInfoController'].getCurrentCountry,
+      ).toBeCalled();
     });
   });
 
@@ -263,21 +265,21 @@ describe('RCInfoService', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.setDefaultCountry('1');
       expect(
-        rcInfoService.regionInfoController.setDefaultCountry,
+        rcInfoService['regionInfoController'].setDefaultCountry,
       ).toBeCalledWith('1');
     });
   });
   describe('getAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getAreaCode();
-      expect(rcInfoService.regionInfoController.getAreaCode).toBeCalled();
+      expect(rcInfoService['regionInfoController'].getAreaCode).toBeCalled();
     });
   });
 
   describe('setAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.setAreaCode('1');
-      expect(rcInfoService.regionInfoController.setAreaCode).toBeCalledWith(
+      expect(rcInfoService['regionInfoController'].setAreaCode).toBeCalledWith(
         '1',
       );
     });
@@ -285,7 +287,7 @@ describe('RCInfoService', () => {
   describe('hasAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.hasAreaCode('1');
-      expect(rcInfoService.regionInfoController.hasAreaCode).toBeCalledWith(
+      expect(rcInfoService['regionInfoController'].hasAreaCode).toBeCalledWith(
         '1',
       );
     });
@@ -293,9 +295,9 @@ describe('RCInfoService', () => {
   describe('isAreaCodeValid()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isAreaCodeValid('1');
-      expect(rcInfoService.regionInfoController.isAreaCodeValid).toBeCalledWith(
-        '1',
-      );
+      expect(
+        rcInfoService['regionInfoController'].isAreaCodeValid,
+      ).toBeCalledWith('1');
     });
   });
 
@@ -364,6 +366,36 @@ describe('RCInfoService', () => {
       // mockProfileSetting.unsubscribe = jest.fn();
       rcInfoService['onStopped']();
       expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith({});
+    });
+  });
+
+  describe('isNumberBlocked()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.isNumberBlocked('1123');
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .isNumberBlocked,
+      ).toBeCalledWith('1123');
+    });
+  });
+
+  describe('deleteBlockedNumbers()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.deleteBlockedNumbers(['1123', '6']);
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .deleteBlockedNumbers,
+      ).toBeCalledWith(['1123', '6']);
+    });
+  });
+
+  describe('addBlockedNumber()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.addBlockedNumber('1123');
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .addBlockedNumber,
+      ).toBeCalledWith('1123');
     });
   });
 });

@@ -9,6 +9,10 @@ import { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
 import { HeartBeatCheck } from './checker/HeartBeatCheck';
 import { sleepModeDetector } from './checker/SleepModeDetector';
 import { DateFormatter } from './DateFormatter';
+import {
+  SPARTA_TIME_RANGE,
+  getSpartaRandomTime,
+} from './algorithm/SpartaRandomTime';
 
 export {
   BuildUtils,
@@ -17,4 +21,6 @@ export {
   HeartBeatCheck,
   sleepModeDetector,
   DateFormatter,
+  SPARTA_TIME_RANGE,
+  getSpartaRandomTime,
 };

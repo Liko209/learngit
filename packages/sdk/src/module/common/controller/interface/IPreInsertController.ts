@@ -14,6 +14,7 @@ interface IPreInsertController<
   bulkDelete(entities: T[]): Promise<void>;
   updateStatus(entity: T, status: PROGRESS_STATUS): void;
   isInPreInsert(preInsertId: string): boolean;
+  getPreInsertId(uniqueId: string): number;
   getAll(): { uniqueIds: string[]; ids: number[] };
 }
 

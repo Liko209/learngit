@@ -20,19 +20,31 @@ import {
   StyledCallLogStatusWrapper,
 } from 'jui/pattern/Phone/CallLog';
 import { Actions } from '../Actions';
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
 
 type Props = CallLogItemViewProps & WithTranslation;
 
 type State = {
   isHover: boolean;
+  showCall: boolean;
 };
 
 @observer
 class CallLogItemViewComponent extends Component<Props, State> {
   state = {
     isHover: false,
+    showCall: false,
   };
+
+  async componentDidMount() {
+    const { shouldShowCall } = this.props;
+    if (shouldShowCall) {
+      const showCall = await shouldShowCall();
+      this.setState({
+        showCall,
+      });
+    }
+  }
 
   handleMouseOver = () => {
     this.setState({ isHover: true });
@@ -55,8 +67,9 @@ class CallLogItemViewComponent extends Component<Props, State> {
       didOpenMiniProfile,
       isMissedCall,
       direction,
+      canEditBlockNumbers,
     } = this.props;
-    const { isHover } = this.state;
+    const { isHover, showCall } = this.state;
 
     return (
       <StyleVoicemailItem
@@ -87,13 +100,18 @@ class CallLogItemViewComponent extends Component<Props, State> {
               isMissedCall={isMissedCall}
             />
           </StyledCallLogStatusWrapper>
-          <StyledTime>{startTime}</StyledTime>
-          {isHover && (
+          {isHover ? (
             <Actions
               id={id}
+              caller={caller}
               entity={ENTITY_TYPE.CALL_LOG}
+              maxButtonCount={MAX_BUTTON_COUNT}
               hookAfterClick={this.handleMouseLeave}
+              canEditBlockNumbers={canEditBlockNumbers}
+              showCall={showCall}
             />
+          ) : (
+            <StyledTime>{startTime}</StyledTime>
           )}
         </VoicemailSummary>
       </StyleVoicemailItem>

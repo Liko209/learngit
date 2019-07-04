@@ -20,6 +20,7 @@ type Props = {
   CallAction?: React.ComponentType;
   KeypadActions: React.ComponentType[] | JSX.Element;
   keypadFullSize: boolean;
+  onFocus?: (e?: MouseEvent) => void;
 };
 
 const StyledContainer = styled('div')<{ removePadding: boolean }>`
@@ -93,17 +94,20 @@ class JuiContainer extends PureComponent<Props> {
     showHoverActions: false,
   };
 
-  _stopPropagation = (e: any) => {
+  _onFocus = (e: any) => {
+    const { onFocus } = this.props;
     // prevent drag & drop
     e.stopPropagation();
     e.preventDefault();
+
+    onFocus && onFocus(e);
   }
 
   componentDidMount() {
     if (this._containerRef.current) {
       this._containerRef.current.addEventListener(
         ANIMIATION_END_EVT,
-        this._stopPropagation,
+        this._onFocus,
       );
     }
   }
@@ -114,7 +118,7 @@ class JuiContainer extends PureComponent<Props> {
     }
     this._containerRef.current.removeEventListener(
       ANIMIATION_END_EVT,
-      this._stopPropagation,
+      this._onFocus,
     );
   }
 
@@ -135,20 +139,20 @@ class JuiContainer extends PureComponent<Props> {
 
     return (
       <StyledContainer ref={this._containerRef} removePadding={removePadding}>
-        <StyledKeypadActionsContainer onMouseDown={this._stopPropagation}>
+        <StyledKeypadActionsContainer onMouseDown={this._onFocus}>
           {keypadFullSize ? (
             keypadActions
           ) : (
             <StyledKeypadActions
               removeMargin={removeMargin}
-              onMouseDown={this._stopPropagation}
+              onMouseDown={this._onFocus}
             >
               {keypadActions}
             </StyledKeypadActions>
           )}
         </StyledKeypadActionsContainer>
         {CallAction && (
-          <StyledCallAction onMouseDown={this._stopPropagation}>
+          <StyledCallAction onMouseDown={this._onFocus}>
             <CallAction />
           </StyledCallAction>
         )}

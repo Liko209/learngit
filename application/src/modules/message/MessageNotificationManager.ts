@@ -45,6 +45,7 @@ import {
   NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
+import { CONVERSATION_TYPES } from '@/constants';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -87,6 +88,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
+    const ids = this._vmQueue.map(i => i.id);
+    if (ids.includes(id)) {
+      return;
+    }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
       onCreate: () => this.buildNotification(postModel, groupModel),
@@ -101,7 +106,15 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     });
 
     if (this._vmQueue.length >= MAX_SIZE) {
-      this._vmQueue[MAX_SIZE - 1].vm.dispose();
+      const notification = this._vmQueue[MAX_SIZE - 1];
+      if (!notification) {
+        logger.warn(
+          'notification view model not found, current length is',
+          this._vmQueue.length,
+        );
+      } else {
+        notification.vm.dispose();
+      }
       delete this._vmQueue[MAX_SIZE - 1];
       this._vmQueue.length = MAX_SIZE - 1;
     }
@@ -212,18 +225,26 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     person: PersonModel,
     group: GroupModel,
   ) {
-    let body: string;
-    let title = group.displayName;
-    if (post.existItemIds.length || post.parentId) {
+    const isOne2One = group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    const isActivity = post.existItemIds.length || post.parentId;
+    const translationArgs = {
+      person: person.userDisplayName,
+      conversation: group.displayName,
+    };
+    let title =
+      isOne2One || isActivity
+        ? group.displayName
+        : await i18nT('notification.group', translationArgs);
+    let body = this.handlePostContent(post.text);
+    if (this.isMyselfAtMentioned(post)) {
+      if (isOne2One) {
+        title = await i18nT('notification.mentionedOne2One', translationArgs);
+      } else {
+        title = await i18nT('notification.mentioned', translationArgs);
+      }
+    } else if (isActivity) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
-    } else {
-      if (this.isMyselfAtMentioned(post)) {
-        title = await i18nT('notification.mentioned');
-        body = group.displayName;
-      } else {
-        body = this.handlePostContent(post.text);
-      }
     }
     return { body, title };
   }

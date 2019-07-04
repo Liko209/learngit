@@ -6,6 +6,8 @@
 import { DBConfig } from 'sdk/module/config';
 import { daoManager } from 'sdk/dao';
 import { MODULE_NAME, RC_INFO_KEYS } from './constants';
+import { BlockNumberItem } from 'sdk/api';
+import { UndefinedAble } from 'sdk/types';
 
 class RCInfoUserConfig extends DBConfig {
   constructor() {
@@ -105,6 +107,14 @@ class RCInfoUserConfig extends DBConfig {
 
   async getForwardingNumbers() {
     return await this.get(RC_INFO_KEYS.FORWARDING_NUMBERS);
+  }
+
+  async setBlockNumbers(value: BlockNumberItem[]) {
+    return await this.put(RC_INFO_KEYS.BLOCK_NUMBER, value);
+  }
+
+  async getBlockNumbers(): Promise<UndefinedAble<BlockNumberItem[]>> {
+    return await this.get(RC_INFO_KEYS.BLOCK_NUMBER);
   }
 }
 

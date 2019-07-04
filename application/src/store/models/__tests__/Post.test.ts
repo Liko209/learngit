@@ -37,5 +37,13 @@ describe('PostModel', () => {
       const fileItem = { id: 1 } as any;
       expect(postModel.fileItemVersion(fileItem)).toEqual(1);
     });
+
+    it('should return 1 when version_map not exist in itemData', () => {
+      const postModel = new PostModel({
+        item_data: {},
+      } as Post);
+      const fileItem = { id: 1 } as any;
+      expect(postModel.fileItemVersion(fileItem)).toEqual(1);
+    });
   });
 });
