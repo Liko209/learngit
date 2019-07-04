@@ -7,9 +7,7 @@
 import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { h, act, t, TestApp, MockApp, bootstrap } from 'shield/application';
-import notificationCenter from 'sdk/service/notificationCenter';
-import { service } from 'sdk';
+import { h, act, t, MockApp, bootstrap } from 'shield/application';
 import { wait } from 'shield/utils';
 
 jest.setTimeout(300 * 1000);
@@ -36,14 +34,13 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
 
       await act(async () => {
         const app = h(<MockApp inited={true} />);
-        notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
-        notificationCenter.emitKVChange(service.SERVICE.LOGIN);
 
-        await wait(0);
+        await wait();
 
         await t(app, async () => {
           app.messageInput.input('hello');
           app.messageInput.enter();
+          await wait();
           fs.writeFileSync('./out.txt', `${app.toString()}`);
         });
       });

@@ -57,6 +57,18 @@ class TestApp<T> {
     });
   }
 
+  get rightRail() {
+    return this._imp.findByAutomationID('rightRail', true);
+  }
+
+  get streamWrapper() {
+    return this._imp.findByAutomationID('jui-stream-wrapper', true);
+  }
+
+  get stream() {
+    return this._imp.findByAutomationID('jui-stream', true);
+  }
+
   sendPost() {
     this.messageInput.enter();
   }
@@ -69,7 +81,10 @@ class TestApp<T> {
     this._imp.flush();
   }
 
-  toString() {
+  toString(flush: boolean = true) {
+    if (flush) {
+      this.flush();
+    }
     return this._imp.toString();
   }
 }
