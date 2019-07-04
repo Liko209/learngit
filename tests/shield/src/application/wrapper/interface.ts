@@ -5,15 +5,15 @@
  */
 import { ComponentType } from 'react';
 
-interface IWrapper {
+interface IWrapper<T> {
   // init with element
-  init(origin: any): void;
+  init(origin: T): void;
 
   // find node by `data-test-automation-id`, if `firstOnly` is true, will
   // only return the first found result.
-  findByAutomationID(id: string, firstOnly: boolean): IWrapper;
+  findByAutomationID(id: string, firstOnly: boolean): IWrapper<T>;
 
-  find(component: ComponentType): IWrapper[];
+  find(component: ComponentType): IWrapper<T>[];
 
   // simulate mouse click event
   click(): void;

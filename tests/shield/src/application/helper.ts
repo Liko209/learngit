@@ -5,12 +5,23 @@
  */
 import { ReactElement } from 'react';
 import { TestApp } from './application';
-export { act } from 'react-dom/test-utils';
+import { act } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';
+
+type TestCallback = (() => void) | (() => Promise<void>);
 
 function helper(element: ReactElement, type: WrapperType = WrapperType.Enzyme) {
   const p = new TestApp(getWrapper(element, type));
   return p;
+}
+
+async function test<T>(app: TestApp<T>, callback: TestCallback) {
+  if (app && callback) {
+    app.flush();
+    // @ts-ignore
+    await act(callback);
+    app.flush();
+  }
 }
 
 // type JactCallback = (() => void) | (() => Promise<void>);
@@ -31,4 +42,4 @@ function helper(element: ReactElement, type: WrapperType = WrapperType.Enzyme) {
 //   });
 // }
 
-export { helper as h };
+export { helper as h, test as t, act };

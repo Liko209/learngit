@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactElement, ComponentType } from 'react';
-import { mount, ReactWrapper } from 'enzyme';
+import { mount, shallow, ShallowWrapper, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
 import ReactQuill from 'react-quill';
 import { Simulate } from 'react-dom/test-utils';
 
-class EnzymeWrapper implements IWrapper {
+class EnzymeWrapper implements IWrapper<ReactWrapper> {
   protected wrapper: ReactWrapper;
 
   constructor(wrapper: ReactWrapper) {
@@ -91,7 +91,7 @@ class EnzymeWrapper implements IWrapper {
   }
 }
 
-function enzymeCreator(element: ReactElement): IWrapper {
+function enzymeCreator(element: ReactElement): IWrapper<ReactWrapper> {
   return new EnzymeWrapper(mount(element));
 }
 

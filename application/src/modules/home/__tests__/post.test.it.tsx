@@ -7,11 +7,10 @@
 import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { h, act, TestApp, MockApp, bootstrap } from 'shield/application';
+import { h, act, t, TestApp, MockApp, bootstrap } from 'shield/application';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
 import { wait } from 'shield/utils';
-import history from '@/history';
 
 jest.setTimeout(300 * 1000);
 
@@ -33,29 +32,36 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
     });
     it('should send post', async () => {
       const url = `/messages/${team1._id}`;
-      let app: TestApp;
       await bootstrap({ url });
 
       await act(async () => {
-        app = h(<MockApp inited={true} />);
+        const app = h(<MockApp inited={true} />);
         notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
         notificationCenter.emitKVChange(service.SERVICE.LOGIN);
+
+        await wait(100);
+
+        await t(app, async () => {
+          const input = app.messageInput;
+          const testMessage = 'hello';
+          // fs.writeFileSync('./out.txt', `${app.toString()}`);
+          // input.input(testMessage);
+          // await wait(100);
+        });
+
+        await wait(100);
+
+        await t(app, async () => {
+          const input = app.messageInput;
+          const testMessage = 'hello';
+
+          fs.writeFileSync('./out.txt', `${input.toString()}`);
+          // input.input(testMessage);
+          // await wait(100);
+        });
       });
 
       // await wait(100);
-
-      await act(async () => {
-        app.flush();
-        const input = app.messageInput;
-        // const testMessage = 'hello';
-        // input.input(testMessage);
-
-        app.messageEmojiButton.click();
-        app.flush();
-        await wait(100);
-
-        fs.writeFileSync('./out.txt', `${input.toString()}`);
-      });
     });
   });
 });

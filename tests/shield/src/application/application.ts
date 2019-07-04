@@ -8,10 +8,10 @@ import { ComponentType } from 'react';
 import ReactQuill from 'react-quill';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 
-class TestApp {
-  private _imp: IWrapper;
+class TestApp<T> {
+  private _imp: IWrapper<T>;
 
-  constructor(imp: IWrapper) {
+  constructor(imp: IWrapper<T>) {
     this._imp = imp;
   }
 
@@ -48,7 +48,7 @@ class TestApp {
   sendPost() {
     this.messageInput
       .find(ReactQuill)
-      .forEach((wrapper: IWrapper) => wrapper.enter());
+      .forEach((wrapper: IWrapper<T>) => wrapper.enter());
   }
 
   find(component: ComponentType) {

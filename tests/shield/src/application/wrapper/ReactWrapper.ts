@@ -8,14 +8,14 @@ import { Simulate } from 'react-dom/test-utils';
 import TestRender, { ReactTestInstance } from 'react-test-renderer';
 import { IWrapper } from './interface';
 
-class ReactWrapper implements IWrapper {
+class ReactWrapper implements IWrapper<ReactTestInstance> {
   protected inst: ReactTestInstance;
 
   constructor(inst: ReactTestInstance) {
     this.init(inst);
   }
 
-  init(origin: any) {
+  init(origin: ReactTestInstance) {
     this.inst = origin;
   }
 
@@ -56,7 +56,7 @@ class ReactWrapper implements IWrapper {
   }
 }
 
-function reactCreator(element: ReactElement): IWrapper {
+function reactCreator(element: ReactElement): IWrapper<ReactTestInstance> {
   const render = TestRender.create(element);
   return new ReactWrapper(render.root);
 }
