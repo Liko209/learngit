@@ -5,10 +5,22 @@
  */
 import { Caller } from 'sdk/module/RCItems/types';
 import { RCMessage } from 'sdk/module/RCItems';
+import { Checker } from '../../types';
+import { CommonResponsiveObject } from '../VoicemailItem/types';
 
 type CallLogItemProps = {
   id: string;
   didOpenMiniProfile?: Function;
+  width: number;
+};
+
+type CallLogResponsiveObject = CommonResponsiveObject & {
+  showCallInfo: boolean;
+};
+
+type Handler = {
+  checker: Checker;
+  info: CallLogResponsiveObject;
 };
 
 type CallLogItemViewProps = {
@@ -21,7 +33,14 @@ type CallLogItemViewProps = {
   startTime: string;
   isMissedCall: boolean;
   direction: RCMessage['direction'];
+  callLogResponsiveMap: CallLogResponsiveObject;
   shouldShowCall: () => Promise<boolean>;
 } & CallLogItemProps;
 
-export { CallLogItemProps, CallLogItemViewProps };
+export {
+  Checker,
+  Handler,
+  CallLogItemProps,
+  CallLogItemViewProps,
+  CallLogResponsiveObject,
+};
