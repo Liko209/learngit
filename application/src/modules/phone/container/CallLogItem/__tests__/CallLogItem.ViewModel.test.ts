@@ -236,6 +236,46 @@ describe('CallLogItemViewModel', () => {
   }
 
   @testable
+  class callLogResponsiveMap {
+    @test('should call _getResponsiveMap if window is in different width')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    t1() {
+      const vm = new CallLogItemViewModel({ id: 'id' });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 3,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t2() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 750 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 2,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t3() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 450 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+    t4() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 400 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: false,
+        dateFormat: 'short',
+      });
+    }
+  }
+
+  @testable
   class shouldShowCall {
     @test('should be true if has call permission [JPT-2384]')
     @mockService(RCInfoService, [

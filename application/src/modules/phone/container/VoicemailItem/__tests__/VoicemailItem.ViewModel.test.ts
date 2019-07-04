@@ -25,7 +25,7 @@ import { postTimestamp } from '@/utils/date';
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioStatus } from '../types';
+import { JuiAudioStatus, JuiAudioMode } from '../types';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
@@ -74,6 +74,52 @@ describe('VoicemailItemViewModel', () => {
     }
   }
 
+  @testable
+  class voiceMailResponsiveMap {
+    @test(
+      'should call return correct responsive obj if window is in different width',
+    )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    @mockEntity({})
+    t1() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 1000 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 3,
+        showTranscriptionText: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t2() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 750 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+
+    t3() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 450 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.MINI,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+    t4() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 400 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.TINY,
+        buttonToShow: 1,
+        showTranscriptionText: false,
+        dateFormat: 'short',
+      });
+    }
+  }
   @testable
   class attachment {
     @test('should be undefined if not attachment')
