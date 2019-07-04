@@ -34,13 +34,16 @@ itForSdk('Service Integration test', ({ server, data, sdk }) => {
 
       await act(async () => {
         const app = h(<MockApp inited={true} />);
-
+        // this is needed for UI & SDK to init.
         await wait();
 
         await t(app, async () => {
           app.messageInput.input('hello');
           app.messageInput.enter();
           await wait();
+          // need to flush UI when try to resolve component
+          app.flush();
+          const postView = app.postViewByID();
           fs.writeFileSync('./out.txt', `${app.toString()}`);
         });
       });

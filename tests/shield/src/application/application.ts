@@ -74,7 +74,7 @@ class TestApp<T> {
     if (id) {
       return this._imp.findByProps({ id });
     }
-    return this._imp.findByProps({ 'data-name': 'conversation-card' });
+    return this._imp.find(ConversationCard);
   }
 
   sendPost() {
