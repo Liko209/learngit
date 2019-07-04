@@ -14,7 +14,8 @@
       "save": "Save",
       "send": "Send",
       "delete": "Delete",
-      "close": "Close"
+      "close": "Close",
+      "deleteAll": "Delete all"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",

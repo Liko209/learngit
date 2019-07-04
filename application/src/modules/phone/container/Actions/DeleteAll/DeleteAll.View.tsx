@@ -50,7 +50,7 @@ class DeleteViewComponent extends Component<Props, State> {
           {t('calllog.doYouWanttoDeleteAllCallLog')}
         </JuiDialogContentText>
       ),
-      okText: t('common.dialog.delete'),
+      okText: t('common.dialog.deleteAll'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
       onOK: async () => {
