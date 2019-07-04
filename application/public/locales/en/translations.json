@@ -855,7 +855,7 @@
       },
       "ringerSource": {
         "label": "Ringer source",
-        "description": "Choose a sound for new team messages"
+        "description": "Update your ringer source for RingCentral voice calls"
       },
       "volume": {
         "label": "Volume control",
