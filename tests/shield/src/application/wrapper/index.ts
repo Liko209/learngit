@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactElement } from 'react';
-import { WrapperType, IWrapper } from './interface';
+import { WrapperType } from './interface';
 import { enzymeCreator } from './EnzymeWrapper';
 import { reactCreator } from './ReactWrapper';
 
 function getWrapper(
   element: ReactElement,
   type: WrapperType = WrapperType.React,
-): IWrapper {
+): any {
   if (type === WrapperType.Enzyme) {
     return enzymeCreator(element);
   }

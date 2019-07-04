@@ -7,6 +7,7 @@ import { IWrapper } from './wrapper';
 import { ComponentType } from 'react';
 import { ReactWrapper } from 'enzyme';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
+import { ConversationCard } from '@/modules/message/container/ConversationCard/';
 
 class TestApp<T> {
   private _imp: IWrapper<T>;
@@ -67,6 +68,13 @@ class TestApp<T> {
 
   get stream() {
     return this._imp.findByAutomationID('jui-stream', true);
+  }
+
+  postViewByID(id?: number) {
+    if (id) {
+      return this._imp.findByProps({ id });
+    }
+    return this._imp.findByProps({ 'data-name': 'conversation-card' });
   }
 
   sendPost() {

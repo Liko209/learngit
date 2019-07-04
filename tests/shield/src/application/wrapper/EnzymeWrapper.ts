@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ReactElement, ComponentType } from 'react';
-import { mount, shallow, ShallowWrapper, ReactWrapper } from 'enzyme';
+import { mount, EnzymePropSelector, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
 import ReactQuill, { Quill } from 'react-quill';
-import { Simulate } from 'react-dom/test-utils';
 
 class EnzymeWrapper implements IWrapper<ReactWrapper> {
   protected wrapper: ReactWrapper;
@@ -31,6 +30,11 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
   find(component: ComponentType) {
     const result = this.wrapper.find(component);
     return [new EnzymeWrapper(result)];
+  }
+
+  findByProps(props: EnzymePropSelector): IWrapper<ReactWrapper> {
+    const result = this.wrapper.find(props);
+    return new EnzymeWrapper(result);
   }
 
   findWhere(predicate: (wrapper: ReactWrapper) => boolean) {

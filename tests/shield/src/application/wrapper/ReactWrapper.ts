@@ -27,6 +27,16 @@ class ReactWrapper implements IWrapper<ReactTestInstance> {
     return new ReactWrapper(result);
   }
 
+  findByProps(props: { [propName: string]: any }): IWrapper<ReactTestInstance> {
+    const result = this.inst.findByProps(props);
+    return new ReactWrapper(result);
+  }
+
+  // TODO
+  findWhere(predicate: (wrapper: ReactTestInstance) => boolean) {
+    return [] as ReactWrapper[];
+  }
+
   find(component: ComponentType) {
     const results = this.inst.findAllByType(component);
     return results.map(item => new ReactWrapper(item));
