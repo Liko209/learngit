@@ -19,6 +19,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IZipItemProvider, ZipItemLevel, IZipWorker } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
 import { MemoryLogZipItemProvider } from './MemoryLogZipItemProvider';
+import { HealthStatusItemProvider } from './HealthStatusItemProvider';
 import { createWorker } from './utils';
 
 export class LogControlManager implements IAccessor {
@@ -27,6 +28,7 @@ export class LogControlManager implements IAccessor {
   private _debugMode: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
   private _zipItemProviders: IZipItemProvider[] = [];
+  private _healthStatusItemProvider: HealthStatusItemProvider;
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: ConsumerCollector;
   memoryLogCollector: MemoryCollector;
@@ -54,6 +56,8 @@ export class LogControlManager implements IAccessor {
     this.registerZipProvider(
       new MemoryLogZipItemProvider(this.memoryLogCollector),
     );
+    this._healthStatusItemProvider = new HealthStatusItemProvider();
+    this.registerZipProvider(this._healthStatusItemProvider);
     this.subscribeNotifications();
   }
 
