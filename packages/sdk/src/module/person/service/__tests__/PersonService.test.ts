@@ -75,6 +75,17 @@ describe('PersonService', () => {
     });
   });
 
+  describe('handleSocketIOData', () => {
+    it('should call controller with correct parameter', async () => {
+      const persons: Raw<Person>[] = [];
+      await personService.handleSocketIOData(persons);
+      expect(personController.handleIncomingData).toBeCalledWith(
+        persons,
+        SYNC_SOURCE.SOCKET,
+      );
+    });
+  });
+
   describe('canRequest()', () => {
     it('should return true', () => {
       ServiceLoader.getInstance = jest
