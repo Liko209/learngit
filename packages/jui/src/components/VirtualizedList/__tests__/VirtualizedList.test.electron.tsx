@@ -171,24 +171,24 @@ describe('JuiVirtualizedList', () => {
       expectItemsToBeRendered(0, 5);
       expectRangeChangeEventCalledWith(0, 5);
 
-      // // Item 0 has 1px visible
+      // Item 0 has 1px visible
       scrollTo(19);
       expectItemsToBeRendered(0, 5);
       expectRangeChangeEventNotToBeCalled();
 
-      // // Item 0 invisible
-      // // Item 6 invisible
+      // Item 0 invisible
+      // Item 6 invisible
       scrollTo(20);
       expectItemsToBeRendered(1, 5);
       expectRangeChangeEventCalledWith(1, 5);
 
-      // // Item 0 invisible
-      // // Item 6 has 1px visible
+      // Item 0 invisible
+      // Item 6 has 1px visible
       scrollTo(21);
       expectItemsToBeRendered(1, 6);
       expectRangeChangeEventCalledWith(1, 6);
 
-      // // Scroll to bottom
+      // Scroll to bottom
       scrollTo(99999);
       expectItemsToBeRendered(5, 9);
       expectRangeChangeEventCalledWith(5, 9);
@@ -328,11 +328,6 @@ describe('JuiVirtualizedList', () => {
         9,
       ]);
 
-      wrapper.unmount();
-    });
-
-      expect(getComputedStyle(wrapper.getDOMNode()).height).toBe(`${70}px`);
-      expect(getRenderedItemIds(wrapper)).toEqual([0, 1, 2, 3]);
       wrapper.unmount();
     });
 
