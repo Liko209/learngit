@@ -5,7 +5,7 @@
  */
 import { ReactElement } from 'react';
 import { TestApp } from './application';
-import { act } from 'react-dom/test-utils';
+import { act as ract } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
@@ -29,22 +29,20 @@ async function test<T>(app: TestApp<T>, callback: TestCallback) {
   }
 }
 
-// type JactCallback = (() => void) | (() => Promise<void>);
-
-// function act(callback: JactCallback): Promise<void> {
-//   if (!callback) {
-//     return Promise.resolve();
-//   }
-//   return new Promise(resolve => {
-//     ract(() => {
-//       const result = callback();
-//       if (result && result.then) {
-//         result.then(resolve);
-//       } else {
-//         resolve();
-//       }
-//     });
-//   });
-// }
+function act(callback: TestCallback): Promise<void> {
+  if (!callback) {
+    return Promise.resolve();
+  }
+  return new Promise(resolve => {
+    ract(() => {
+      const result = callback();
+      if (result && result.then) {
+        result.then(resolve);
+      } else {
+        resolve();
+      }
+    });
+  });
+}
 
 export { helper as h, test as t, act };
