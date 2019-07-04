@@ -865,6 +865,8 @@
     "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
+    "allDevices": "All audio sources",
+    "off": "Off",
     "microphone": "Microphone",
     "builtInMicrophone": "Built-in microphone",
     "builtInSpeaker": "Built-in speaker",
