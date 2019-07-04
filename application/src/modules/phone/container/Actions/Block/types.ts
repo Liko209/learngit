@@ -10,6 +10,7 @@ import { ENTITY_TYPE } from '../../constants';
 
 type BlockProps = {
   caller: Caller;
+  phoneNumber: string;
 };
 
 type BlockViewProps = {

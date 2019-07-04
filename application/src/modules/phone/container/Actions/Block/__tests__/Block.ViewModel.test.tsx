@@ -44,13 +44,20 @@ const mockCaller = {
   phoneNumber: '+1234567890'
 } as Caller;
 
+const phoneNumber = '+1234567890';
+
 describe('BlockViewModel', () => {
   @testable
   class isBlocked {
     @test('should isBlocked be undefined when init')
     @mockService(RCInfoService, 'isNumberBlocked', true)
     async t1(done: jest.DoneCallback) {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+        caller: mockCaller,
+      });
       expect(vm.isBlocked).toBeUndefined();
       await when(
         () => vm.isBlocked !== undefined,
@@ -67,7 +74,12 @@ describe('BlockViewModel', () => {
     @test('should isBlocked be true when isNumberBlocked returns true')
     @mockService(RCInfoService, 'isNumberBlocked', true)
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+        caller: mockCaller,
+      });
       await vm.fetchNumberStatus(mockCaller);
       expect(vm.isBlocked).toEqual(true);
     }
@@ -75,7 +87,12 @@ describe('BlockViewModel', () => {
     @test('should isBlocked be false when isNumberBlocked returns false')
     @mockService(RCInfoService, 'isNumberBlocked', false)
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+        caller: mockCaller,
+      });
       await vm.fetchNumberStatus(mockCaller);
       expect(vm.isBlocked).toEqual(false);
     }
@@ -93,7 +110,12 @@ describe('BlockViewModel', () => {
       data: networkErrorFunc,
     }])
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+        caller: mockCaller
+      });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
       expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
@@ -111,7 +133,12 @@ describe('BlockViewModel', () => {
       data: serverErrorFunc,
     }])
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+        caller: mockCaller,
+      });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
       expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
@@ -133,7 +160,12 @@ describe('BlockViewModel', () => {
       data: networkErrorFunc,
     }])
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+        caller: mockCaller,
+      });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
       expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
@@ -151,7 +183,12 @@ describe('BlockViewModel', () => {
       data: serverErrorFunc,
     }])
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+        caller: mockCaller,
+      });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
       expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
