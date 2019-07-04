@@ -27,6 +27,7 @@ beforeAll(() => {
   dialerContainerViewModel._telephonyService.setCallerPhoneNumber = jest.fn();
   dialerContainerViewModel._telephonyService.dtmf = jest.fn();
   dialerContainerViewModel._telephonyService.playBeep = jest.fn();
+  dialerContainerViewModel._telephonyService.onAfterDialerOpen = jest.fn();
   dialerContainerViewModel._telephonyStore.enterFirstLetterThroughKeypadForInputString = jest.fn();
 });
 
@@ -68,11 +69,13 @@ describe('DialerContainerViewModel', () => {
     expect(dialerContainerViewModel.dialerInputFocused).toBeFalsy();
   });
 
-  it('Should not enter contact search', () => {
-    expect(dialerContainerViewModel.shouldEnterContactSearch).toBeFalsy();
-  });
-
   it('Should return dialer entered state', () => {
     expect(dialerContainerViewModel.enteredDialer).toBeFalsy();
+  });
+  it('Should call onAfterDialerOpen on the telphony service', () => {
+    dialerContainerViewModel.onAfterDialerOpen();
+    expect(
+      dialerContainerViewModel._telephonyService.onAfterDialerOpen,
+    ).toHaveBeenCalled();
   });
 });

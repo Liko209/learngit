@@ -36,7 +36,7 @@ describe('DiscontinuousPosListHandler', () => {
     const store = storeManager.getEntityMapStore(entityName);
     storeManager.removeStore(store);
     postListHandler = new DiscontinuousPosListHandler(sourceIds);
-    postService = new PostService();
+    postService = new PostService(null as any);
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   }
 
@@ -65,7 +65,7 @@ describe('DiscontinuousPosListHandler', () => {
       setTimeout(() => {
         expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         done();
-      },         100);
+      }, 100);
     });
   });
 
@@ -89,7 +89,7 @@ describe('DiscontinuousPosListHandler', () => {
         // still has 10 element after
         expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         done();
-      },         100);
+      }, 100);
     });
   });
 
@@ -107,7 +107,7 @@ describe('DiscontinuousPosListHandler', () => {
       const promise = new Promise((resolve: any, reject: any) => {
         setTimeout(() => {
           resolve();
-        },         100);
+        }, 100);
       });
       await Promise.all([promise]);
     }

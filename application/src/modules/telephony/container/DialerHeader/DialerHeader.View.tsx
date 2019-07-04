@@ -10,6 +10,7 @@ import { JuiHeader } from 'jui/pattern/Dialer';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { DialerHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
+import { RecentCallBtn } from '../RecentCallBtn';
 import { getDisplayName } from '../../helpers';
 
 type Props = DialerHeaderViewProps & WithTranslation;
@@ -74,6 +75,7 @@ class DialerHeaderViewComponent extends React.Component<Props> {
         deleteLastInputString={deleteLastInputString}
         deleteInputString={deleteInputString}
         Back={Back}
+        RecentCallBtn={RecentCallBtn}
       />
     );
   }
