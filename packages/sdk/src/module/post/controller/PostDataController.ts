@@ -28,10 +28,13 @@ import { ChangeModel } from '../../sync/types';
 import GroupService from '../../group';
 import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostDataController {
+  private queue = Promise.resolve();
   constructor(
     private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
@@ -41,7 +44,7 @@ class PostDataController {
     const performanceTracer = PerformanceTracer.start();
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
-      this._deletePreInsertPosts(transformedData);
+      this.deletePreInsertPosts(transformedData);
     }
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
@@ -78,7 +81,7 @@ class PostDataController {
       );
       const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
       posts = await this.handleIndexModifiedPosts(posts);
-      this._deletePreInsertPosts(posts);
+      this.deletePreInsertPosts(posts);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
@@ -115,38 +118,71 @@ class PostDataController {
       );
       const posts = await this.handleSexioModifiedPosts(data);
       const result = await this.filterAndSavePosts(posts, true);
-      this._deletePreInsertPosts(posts);
+      this.deletePreInsertPosts(posts);
       return result;
     }
     return [];
   }
 
   private _filterPreInsertPosts(posts: Post[]) {
+    let groupPosts: { [groupId: number]: Post[] } = {};
     if (posts && posts.length) {
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
       const currentUserId = userConfig.getGlipUserId() as number;
-      return posts.filter((post: Post, index: number) => {
+      const myPosts = posts.filter((post: Post, index: number) => {
         return post.creator_id === currentUserId;
       });
+      groupPosts = this._getGroupedPosts(myPosts);
     }
-    return [];
+    return groupPosts;
   }
 
-  private _deletePreInsertPosts(posts: Post[]) {
-    try {
-      const preInsertPosts = this._filterPreInsertPosts(posts);
-      preInsertPosts.length &&
-        this.preInsertController.bulkDelete(preInsertPosts);
-    } catch (error) {
-      mainLogger.info(
-        LOG_INDEX_DATA_POST,
-        `_handlePreInsert() preInsertController.bulkDelete error ${JSON.stringify(
-          error,
-        )}`,
-      );
-    }
+  private _getGroupedPosts(posts: Post[]) {
+    const groupPosts: { [groupId: number]: Post[] } = {};
+    posts.forEach((post: Post) => {
+      groupPosts[post.group_id]
+        ? groupPosts[post.group_id].push(post)
+        : (groupPosts[post.group_id] = [post]);
+    });
+    return groupPosts;
+  }
+
+  async deletePreInsertPosts(posts: Post[]) {
+    this.queue = this.queue.then(async () => {
+      try {
+        const preInsertGroupsPosts = this._filterPreInsertPosts(posts);
+        const groupIds = Object.keys(preInsertGroupsPosts);
+        await Promise.all(
+          groupIds.map(async (groupId: string) => {
+            const rawPosts = preInsertGroupsPosts[groupId];
+            const ids: number[] = [];
+            const preInsertPosts: Post[] = [];
+            rawPosts.forEach((post: Post) => {
+              const id = this.preInsertController.getPreInsertId(
+                post.unique_id,
+              );
+              if (id) {
+                ids.push(id);
+                preInsertPosts.push(post);
+              }
+            });
+            await this._groupConfigService.deletePostIds(Number(groupId), ids);
+            preInsertPosts.length &&
+              this.preInsertController.bulkDelete(preInsertPosts);
+          }),
+        );
+      } catch (error) {
+        mainLogger.info(
+          LOG_INDEX_DATA_POST,
+          `_handlePreInsert() preInsertController.bulkDelete error ${JSON.stringify(
+            error,
+          )}`,
+        );
+      }
+    });
+    return this.queue;
   }
 
   /**
@@ -263,13 +299,9 @@ class PostDataController {
       LOG_INDEX_DATA_POST,
       `handleIndexModifiedPosts() posts.length: ${posts.length}`,
     );
-    const groupPosts: { [groupId: number]: Post[] } = {};
-    posts.forEach((post: Post) => {
-      groupPosts[post.group_id]
-        ? groupPosts[post.group_id].push(post)
-        : (groupPosts[post.group_id] = [post]);
-    });
-
+    const groupPosts: { [groupId: number]: Post[] } = this._getGroupedPosts(
+      posts,
+    );
     const removedIds = await this.removeDiscontinuousPosts(groupPosts);
     const resultPosts = posts.filter(
       (post: Post) => !removedIds.includes(post.id),
@@ -375,6 +407,13 @@ class PostDataController {
                   editedNewestPostCreationTime = post.created_at;
                 }
               }
+
+              mainLogger.info(
+                LOG_INDEX_DATA_POST,
+                `oldestPost.id ${
+                  oldestPost.id
+                } editedNewestPostCreationTime:${editedNewestPostCreationTime} groupId:${groupId}`,
+              );
             });
             posts.forEach((post: Post) => {
               if (post.created_at <= editedNewestPostCreationTime) {
@@ -393,7 +432,7 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
-          const postIds = posts && posts.map(post => post._id);
+          const postIds = posts && posts.map(post => post.id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
             `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,

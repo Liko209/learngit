@@ -80,7 +80,10 @@ const registerConfigs = {
     {
       name: ServiceConfig.POST_SERVICE,
       value: PostService,
-      injects: [ServiceConfig.GROUP_SERVICE],
+      injects: [
+        ServiceConfig.GROUP_SERVICE,
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ],
     },
     { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
     { name: ServiceConfig.GROUP_SERVICE, value: GroupService },

@@ -23,6 +23,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../../module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import { PostDataController } from '../../PostDataController';
 import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/src';
 
 jest.mock('../../../../../module/config');
@@ -35,6 +36,7 @@ jest.mock('../../../../common/controller/impl/PreInsertController');
 jest.mock('../../../../../dao');
 jest.mock('../../../../groupConfig/dao');
 jest.mock('../../../dao/PostDao');
+jest.mock('../../PostDataController');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -58,6 +60,10 @@ class MockPreInsertController<T extends ExtendedBaseModel>
     return false;
   }
 
+  getPreInsertId(uniqueId: string) {
+    return 1;
+  }
+
   getAll() {
     return {
       uniqueIds: [],
@@ -68,12 +74,20 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 
 describe('SendPostController', () => {
   let sendPostController: SendPostController;
+  let postDataController: PostDataController;
   const groupConfigService: GroupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
   beforeEach(() => {
-    const actionController = new PostActionController(null, null);
+    const actionController = new PostActionController(
+      null,
+      null,
+      null,
+      null,
+      null,
+    );
     const preInsertController = new MockPreInsertController<Post>();
+    postDataController = new PostDataController(null, null, null, null);
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
@@ -87,6 +101,7 @@ describe('SendPostController', () => {
     sendPostController = new SendPostController(
       actionController,
       preInsertController,
+      postDataController,
     );
   });
   afterEach(() => {
@@ -300,7 +315,11 @@ describe('SendPostController', () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       await sendPostController.handleSendPostSuccess(data, { id: -999 });
       expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
-      expect(groupConfigService.deletePostId).toBeCalledWith(7848853506, -999);
+      expect(postDataController.deletePreInsertPosts).toBeCalledWith([
+        {
+          id: -999,
+        },
+      ]);
       expect(postDao.put).toHaveBeenCalledTimes(1);
     });
   });

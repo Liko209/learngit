@@ -138,9 +138,10 @@ class TelephonyStore {
   @observable
   dialerFocused: boolean;
 
-  /**
-   * TODO: move out of telephony store when minization won't destroy the telephony dialog
-   */
+  @observable
+  isRecentCalls: boolean = false;
+
+  // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
   firstLetterEnteredThroughKeypadForInputString: boolean;
   @observable
@@ -615,6 +616,25 @@ class TelephonyStore {
   @computed
   get hasActiveInBoundCall() {
     return this.hasActiveCall && this.isInbound;
+  }
+
+  @computed
+  get shouldDisplayRecentCalls() {
+    return !(
+      this.hasActiveOutBoundCall ||
+      this.hasActiveInBoundCall ||
+      this.isIncomingCall
+    );
+  }
+
+  @action
+  jumpToRecentCall = () => {
+    this.isRecentCalls = true;
+  }
+
+  @action
+  backToDialer = () => {
+    this.isRecentCalls = false;
   }
 }
 

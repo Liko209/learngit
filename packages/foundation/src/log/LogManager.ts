@@ -65,7 +65,7 @@ export class LogManager {
       configManager.mergeConfig({
         enabled: false,
         browser: {
-          enabled: false,
+          enabled: true,
         },
       });
     }
