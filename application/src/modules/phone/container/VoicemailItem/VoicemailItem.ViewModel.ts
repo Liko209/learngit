@@ -6,6 +6,7 @@
 import { container } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
@@ -16,6 +17,7 @@ import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import {
   ToastMessageAlign,
   ToastType,
@@ -31,11 +33,18 @@ const FLASH_TOAST_DURATION = 3000;
 class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   implements VoicemailViewProps {
   private _phoneStore: PhoneStore = container.get(PhoneStore);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
+
   // in order to handle incoming call
   @observable shouldPause: boolean = false;
+  @observable canEditBlockNumbers: boolean = false;
 
   constructor(props: VoicemailProps) {
     super(props);
+
+    this._fetchBlockPermission();
 
     this.reaction(
       () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
@@ -193,6 +202,16 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   get createTime() {
     const { creationTime } = this.voicemail;
     return postTimestamp(creationTime);
+  }
+
+  private async _fetchBlockPermission() {
+    this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
+    );
+  }
+
+  shouldShowCall = async () => {
+    return this._rcInfoService.isVoipCallingAvailable();
   }
 }
 

@@ -10,18 +10,13 @@ import { Media } from '../../Media';
 
 describe('MediaService', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
+    window.HTMLMediaElement.prototype.load = jest.fn();
+
+    window.HTMLMediaElement.prototype.play = jest.fn();
+
+    window.HTMLMediaElement.prototype.canPlayType = jest
+      .fn()
+      .mockReturnValue('');
   });
   afterAll(() => {
     jest.clearAllMocks();
@@ -37,16 +32,8 @@ describe('MediaService', () => {
   });
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
-      const mockFunc = jest.fn();
-      Object.defineProperty(HTMLMediaElement.prototype, 'canPlayType', {
-        configurable: true,
-        get() {
-          mockFunc();
-          return true;
-        },
-      });
       mediaManager.canPlayType('audio/mp3');
-      expect(mockFunc).toBeCalled();
+      expect(window.HTMLMediaElement.prototype.canPlayType).toBeCalled();
     });
   });
   describe('globalVolume', () => {

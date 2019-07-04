@@ -64,7 +64,7 @@ class ProfileMiniCardGroupFooter extends Component<
               onClick={this.onClickMessage}
               ariaLabel={t(this.getAriaLabelKey(), { name: group.displayName })}
             >
-              chat_bubble
+              chat
             </JuiIconButton>
           )}
         </JuiProfileMiniCardFooterRight>

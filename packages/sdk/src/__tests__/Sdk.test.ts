@@ -6,7 +6,7 @@
 /// <reference path="./types.d.ts" />
 import { Foundation, NetworkManager, mainLogger } from 'foundation';
 import Sdk from '../Sdk';
-import { Api, HandleByRingCentral } from '../api';
+import { Api, HandleByRingCentral, HandleByGlip } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import notificationCenter from '../service/notificationCenter';
@@ -87,6 +87,7 @@ describe('Sdk', () => {
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
         mockAccountService,
       );
+      expect(HandleByGlip.platformHandleDelegate).toEqual(mockAccountService);
     });
   });
 

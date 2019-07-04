@@ -10,9 +10,8 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-import { Trans } from 'react-i18next';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Delete } from '../Delete';
-import { BUTTON_TYPE } from '../types';
 import { ENTITY_TYPE } from '../../../constants';
 
 jest.mock('@/containers/Dialog');

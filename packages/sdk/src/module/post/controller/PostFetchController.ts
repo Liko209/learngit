@@ -69,6 +69,10 @@ class PostFetchController {
         direction,
         limit,
       });
+      mainLogger.info(
+        LOG_FETCH_POST,
+        `groupId: ${groupId} localSize:${result.posts.length}`,
+      );
     }
 
     if (result.posts.length < limit) {

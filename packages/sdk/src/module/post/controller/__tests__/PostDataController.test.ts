@@ -8,7 +8,7 @@ import { ItemService } from '../../../item';
 import { daoManager, DeactivatedDao } from '../../../../dao';
 import { PostDao, PostDiscontinuousDao } from '../../dao';
 import { ExtendedBaseModel } from '../../../models';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { PreInsertController } from '../../../common/controller/impl/PreInsertController';
 import { PROGRESS_STATUS } from '../../../progress';
 import { PostDataController } from '../PostDataController';
 import { Item } from '../../../item/entity';
@@ -18,6 +18,7 @@ import { IEntityPersistentController } from '../../../../framework/controller/in
 import _ from 'lodash';
 import { notificationCenter, ENTITY } from '../../../../service';
 import GroupService from '../../../../module/group';
+import { GroupConfigService } from '../../../../module/groupConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { AccountService } from 'sdk/module/account';
@@ -31,41 +32,27 @@ jest.mock('../../../../framework/controller');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../group');
 jest.mock('sdk/module/account/config/AccountUserConfig');
-
-class MockPreInsertController<T extends ExtendedBaseModel>
-  implements IPreInsertController {
-  insert(entity: T): Promise<void> {
-    return;
-  }
-  delete(entity: T): void {
-    return;
-  }
-  bulkDelete(entities: T[]): Promise<void> {
-    return;
-  }
-  updateStatus(entity: T, status: PROGRESS_STATUS): void {
-    return;
-  }
-  isInPreInsert(entity: T): boolean {
-    return true;
-  }
-}
+jest.mock('../../../../module/groupConfig');
+jest.mock('../../../common/controller/impl/PreInsertController');
 
 describe('PostDataController', () => {
   const itemService = new ItemService();
   const groupService = new GroupService();
+  const groupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const deactivatedDao = new DeactivatedDao(null);
   const postDiscontinuousDao = new PostDiscontinuousDao(null);
-  const preInsertController = new MockPreInsertController();
+  const preInsertController = new PreInsertController();
   const mockEntitySourceController: EntitySourceController<
     Post
   > = new EntitySourceController<Post>(
     {} as IEntityPersistentController<Post>,
     {} as DeactivatedDao,
   );
+
   const postDataController = new PostDataController(
     groupService,
+    groupConfigService,
     preInsertController,
     mockEntitySourceController,
   );
@@ -480,6 +467,14 @@ describe('PostDataController', () => {
         }
       });
       const spy = jest.spyOn(preInsertController, 'bulkDelete');
+      preInsertController.getPreInsertId.mockImplementationOnce(
+        (id: string) => {
+          if (id === '5') {
+            return 5;
+          }
+          return undefined;
+        },
+      );
       let result = await postDataController.handleIndexPosts(posts, true);
 
       result = _.orderBy(result, 'id', 'asc');
@@ -590,6 +585,14 @@ describe('PostDataController', () => {
         return posts[arg - 1];
       });
       const spy = jest.spyOn(preInsertController, 'bulkDelete');
+      preInsertController.getPreInsertId.mockImplementationOnce(
+        (id: string) => {
+          if (id === '5') {
+            return 5;
+          }
+          return undefined;
+        },
+      );
       const result = await postDataController.handleSexioPosts(posts);
 
       expect(result).toEqual(posts);

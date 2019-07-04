@@ -7,11 +7,14 @@ import {
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
 } from 'foundation';
+import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByGlip = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.GLIP;
   rcTokenProvider?: () => string;
   defaultVia = NETWORK_VIA.ALL;
+  platformHandleDelegate: IPlatformHandleDelegate;
+
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
     return (request: IRequest) => {
@@ -34,6 +37,13 @@ const HandleByGlip = new class extends AbstractHandleType {
       }
       return true;
     };
+  }
+
+  onRefreshTokenFailure = (forceLogout: boolean) => {
+    if (!this.platformHandleDelegate) {
+      return;
+    }
+    this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
   }
 }();
 

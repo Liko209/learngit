@@ -17,7 +17,7 @@ fixture('ImageViewer')
 test(formalName('Close the viewer and toast popup when the image being viewed is deleted', ['Chris.Zhan', 'P2', 'JPT-1343']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const filesPath = ['../../sources/1.png','../../sources/2.png'];
+  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -77,7 +77,7 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
 test(formalName('Go to blank page and show a toast when the team was deleted', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const filesPath = ['../../sources/1.png','../../sources/2.png'];
+  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -139,7 +139,7 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
 test(formalName('Go to blank page and show a toast when the team was archived', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const filesPath = ['../../sources/1.png','../../sources/2.png'];
+  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -188,7 +188,7 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
     await viewerDialog.ensureDismiss();
   });
 
-  const alertText = 'The team was archived. To know more, contact the team administrator.'
+  const alertText = 'This team was archived. To know more, contact the team administrator.'
   await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
@@ -201,7 +201,7 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
 test(formalName('Go to blank page and show a toast when the team was closed', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const filesPath = ['../../sources/1.png','../../sources/2.png'];
+  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();

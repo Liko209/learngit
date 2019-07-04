@@ -5,7 +5,10 @@
  */
 
 import { ThumbnailPreloadController } from '../ThumbnailPreloadController';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { ItemFile } from 'sdk/module/item/entity';
 import { EVENT_TYPES } from 'sdk/service/constants';
@@ -18,8 +21,8 @@ describe('ThumbnailPreloadController', () => {
   let itemsObserver: Map<number, number>;
   beforeEach(() => {
     thumbnailPreloadController = new ThumbnailPreloadController();
-    sequenceProcessorHandler = new SequenceProcessorHandler(
-      'Thumbnail Sequence Processor',
+    sequenceProcessorHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name: 'Thumbnail Sequence Processor' },
     );
     itemsObserver = new Map();
     Object.assign(thumbnailPreloadController, {
