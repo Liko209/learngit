@@ -226,6 +226,15 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.hasSetCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().hasSetCallerId,
+      ).toBeCalled();
+    });
+  });
+
   describe('isRCFeaturePermissionEnabled()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isRCFeaturePermissionEnabled(1);

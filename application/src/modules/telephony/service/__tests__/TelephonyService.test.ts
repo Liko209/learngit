@@ -107,6 +107,7 @@ describe('TelephonyService', () => {
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
+      hasSetCallerId: jest.fn(),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
