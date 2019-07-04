@@ -94,11 +94,6 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
     );
   }
 
-  @computed
-  get trimmedInputString() {
-    return this._telephonyStore.forwardString.trim();
-  }
-
   playAudio = (digit: string) => {
     if (!this.canClickToInput) {
       return;
