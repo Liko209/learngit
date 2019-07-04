@@ -6,22 +6,20 @@ import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { InstanceManager } from './mocks/server/InstanceManager';
 import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
-import { InitialData, GlipData, GlipState } from './mocks/server/glip/types';
+import { InitialData, GlipData } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('SdkItFramework');
 import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
-import './blockExternalRequest';
+import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
 
 type Processor<ResData, ReqData, T> = (
   reqRes: IRequestResponse<ReqData, ResData>,
 ) => T;
-
-// global.Promise = WrapPromise;
-// type GetProcessorType<T> = T extends Processor<any, any, infer R> ? R: any;
+blockExternalRequest();
 
 type ItContext = {
   currentUserId: () => number;
@@ -79,7 +77,6 @@ function parseInitialData(initialData: InitialData): GlipData {
     clientConfig: initialData.client_config,
     state: initialData.state,
     posts: initialData.posts || [],
-    // todo parse to groupState
     groupState: userGroupStates,
     profile: initialData.profile,
   };

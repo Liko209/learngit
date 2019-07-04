@@ -85,17 +85,6 @@ class AccountDataFactory {
   }
 }
 
-// export const template: GlipData = {
-//   company: require('./template/company.json'),
-//   user: require('./template/user.json'),
-//   people: require('./template/people.json'),
-//   groups: require('./template/groups.json'),
-//   teams: require('./template/teams.json'),
-//   clientConfig: require('./template/clientConfig.json'),
-//   state: require('./template/state.json'),
-//   profile: require('./template/profile.json'),
-// };
-
 interface IScenarioDataHelper<T> {
   factory: IFactory<T>;
 }

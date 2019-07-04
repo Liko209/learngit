@@ -45,17 +45,9 @@ function wrapRequest(transport: typeof http | typeof https) {
       return rawRequest.call(transport, arguments);
     }
     debug('block request: ', _.pick(options, ['uri', 'host', 'protocol']));
-    if (!options || !options['uri']) {
-      debug('---- %O', arguments);
-    }
     const req = new SimpleBlockRequest();
     const socket = new EventEmitter();
-    // const socket = new Socket();
     const response = new IncomingMessage(socket as any);
-    // if (options.headers && options.headers.Connection === 'Upgrade' && options.headers.Upgrade === 'websocket') {
-    //   // socket connect request;
-    //   response.socket.emit('upgrade');
-    // }
     req.on('data', (chunk: any) => {
       debug('data chunk', chunk);
     });
@@ -73,9 +65,10 @@ function wrapRequest(transport: typeof http | typeof https) {
     response.headers = {};
     callback && callback(response);
     return req;
-    // // return rawRequest.call(transport, arguments);
   };
 }
 
-wrapRequest(http);
-wrapRequest(https);
+export function blockExternalRequest() {
+  wrapRequest(http);
+  wrapRequest(https);
+}
