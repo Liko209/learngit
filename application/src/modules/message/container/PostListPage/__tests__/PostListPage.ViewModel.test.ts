@@ -10,6 +10,7 @@ import storeManager from '@/store';
 import * as _ from 'lodash';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { QUERY_DIRECTION } from 'sdk/dao';
 jest.mock('sdk/module/post');
 const postService = new PostService();
 
@@ -31,14 +32,7 @@ describe('PostListPage.ViewModel', () => {
       expect(ids).toStrictEqual([4, 5, 3, 1, 2, 7, 6]);
     });
   });
-  describe('postFetcher()', () => {
-    const sourceArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-    jest.spyOn(utils, 'getSingleEntity').mockReturnValue(sourceArr);
-    jest.spyOn(utils, 'getEntity').mockReturnValue({});
-    const vm = new PostListPageViewModel();
-    vm.onReceiveProps({
-      type: POST_LIST_TYPE.mentions,
-    });
+  describe('_getDataByIds()', () => {
     const data: number[] = [];
     const mockedStore = {
       _data: data,
@@ -51,18 +45,98 @@ describe('PostListPage.ViewModel', () => {
       jest.spyOn(postService, 'getPostsByIds').mockResolvedValue({
         posts: [],
       });
-
       jest
         .spyOn(storeManager, 'getEntityMapStore')
         .mockImplementationOnce(() => mockedStore);
-      jest.spyOn(utils, 'getEntity').mockReturnValue({});
-      data.splice(0, data.length);
+      mockedStore._data.splice(0, data.length);
+      jest.spyOn(utils, 'getEntity').mockImplementation((ENTITY_NAME, id) => {
+        return {
+          0: {
+            deactivated: true,
+          },
+          1: {
+            deactivated: false,
+          },
+          2: {
+            deactivated: true,
+          },
+        }[id];
+      });
     });
     afterEach(() => jest.clearAllMocks());
-    it('should get all the posts from service', async () => {
-      await vm.postFetcher(null, 4);
-      expect(postService.getPostsByIds).toBeCalledWith([9, 8, 7, 6]);
-      expect(utils.getEntity).toBeCalledTimes(0);
+    it('should return data of posts which are not deactivated when being called', async () => {
+      mockedStore._data = [0, 1, 2];
+      const ids = [0, 1, 2];
+
+      const vm = new PostListPageViewModel();
+      const result = await vm._getDataByIds(ids);
+      expect(postService.getPostsByIds).not.toHaveBeenCalled();
+      expect(result).toHaveLength(1);
+    });
+    it('should call postService.getPostsByIds when there are idsOutOfStore', async () => {
+      mockedStore._data = [0, 1, 2];
+      const ids = [3, 4, 5];
+      const vm = new PostListPageViewModel();
+      await vm._getDataByIds(ids);
+      expect(postService.getPostsByIds).toHaveBeenCalled();
+    });
+  });
+  describe('_getOnePageData()', () => {
+    afterEach(() => jest.clearAllMocks());
+    it('should return { data: [], hasMore: true } when this.ids is undefined', async () => {
+      const vm = new PostListPageViewModel();
+      vm._type = undefined;
+      const result = await vm._getOnePageData(0, 20);
+      expect(result).toEqual({ data: [], hasMore: true });
+    });
+    it.each`
+      ids  | filteredData | pageSize | data | hasMore
+      ${4} | ${3}         | ${2}     | ${2} | ${true}
+      ${3} | ${3}         | ${2}     | ${2} | ${true}
+      ${4} | ${3}         | ${3}     | ${3} | ${true}
+      ${3} | ${3}         | ${3}     | ${3} | ${false}
+      ${3} | ${2}         | ${2}     | ${2} | ${true}
+      ${2} | ${2}         | ${2}     | ${2} | ${false}
+      ${3} | ${2}         | ${3}     | ${2} | ${false}
+      ${2} | ${2}         | ${3}     | ${2} | ${false}
+    `(
+      'should return { data: array of length $data, hasMore: $hasMore } - _getOnePageData(0, $pageSize) when length of ids is $ids and length of filteredData is $filteredData',
+      async ({ ids, filteredData, pageSize, data, hasMore }) => {
+        const vm = new PostListPageViewModel();
+        filteredData = new Array(filteredData);
+        jest.spyOn(vm, '_getDataByIds').mockImplementation((ids: number[]) => {
+          return filteredData.splice(0, ids.length);
+        });
+        vm._type = 'bookmarks';
+        jest
+          .spyOn(vm._dataMap.bookmarks, 'idListProvider')
+          .mockReturnValue(new Array(ids));
+        const result = await vm._getOnePageData(0, pageSize);
+        expect(result).toEqual({ data: new Array(data), hasMore });
+      },
+    );
+  });
+  describe('postFetcher()', () => {
+    afterEach(() => jest.clearAllMocks());
+    it('should call _getOnePageData(0, 20) when being called without anchor', async () => {
+      const vm = new PostListPageViewModel();
+      jest
+        .spyOn(vm, '_getOnePageData')
+        .mockImplementation(() => Promise.resolve());
+      await vm.postFetcher(QUERY_DIRECTION.BOTH, 20);
+      expect(vm._getOnePageData).toBeCalledWith(0, 20);
+    });
+    it('should call _getOnePageData(5, 20) when being called with anchor', async () => {
+      const vm = new PostListPageViewModel();
+      jest
+        .spyOn(vm, '_getOnePageData')
+        .mockImplementation(() => Promise.resolve());
+      vm._type = 'bookmarks';
+      jest
+        .spyOn(vm._dataMap.bookmarks, 'idListProvider')
+        .mockReturnValue([0, 1, 2, 3, 4, 5, 6]);
+      await vm.postFetcher(QUERY_DIRECTION.BOTH, 20, { id: 4 });
+      expect(vm._getOnePageData).toBeCalledWith(5, 20);
     });
   });
 });

@@ -656,10 +656,9 @@ test.meta(<ITestMeta>{
 
 });
 
-// ALEX TODO: JPT number
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-xx'],
+  caseIds: ['JPT-2486'],
   keywords: ['Bookmarks'],
   maintainers: ['Alessia.Li']
 })('Show empty page when there are no posts in Bookmarks list', async (t: TestController) => {

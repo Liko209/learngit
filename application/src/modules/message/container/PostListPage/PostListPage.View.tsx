@@ -43,13 +43,12 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
                     data-test-automation-id="post-list-page-header"
                     title={t(caption)}
                   />
-                  {ids ? (
-                    <Stream
-                      postIds={ids}
-                      key={kind}
-                      postFetcher={postFetcher}
-                    />
-                  ) : null}
+                  <Stream
+                    type={kind}
+                    postIds={ids || []}
+                    key={kind}
+                    postFetcher={postFetcher}
+                  />
                 </JuiConversationPage>
               </ConversationPageContext.Provider>
             )}

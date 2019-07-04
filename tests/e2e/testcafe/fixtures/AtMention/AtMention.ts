@@ -1,8 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-07-02 14:05:00
+ * @Last Modified by: alessia.li
+ * @Last Modified time: 2019-07-04 12:06:27
  */
 
 import * as _ from 'lodash';
@@ -557,8 +557,7 @@ async (t: TestController) => {
   });
 });
 
-// ALEX TODO: JPT number
-test(formalName('Show empty page when there are no posts in AtMention list', ['P2', 'JPT-XX', 'Alessia.Li', 'AtMention']),
+test(formalName('Show empty page when there are no posts in AtMention list', ['P2', 'JPT-2486', 'Alessia.Li', 'AtMention']),
 async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
@@ -599,7 +598,7 @@ async (t: TestController) => {
   }, true);
 
   await h(t).withLog('When this AtMention post is deleted', async () => {
-    await  h(t).glip(otherUser).updatePost(atMentionPostId, { deactivated: true })
+    await h(t).glip(otherUser).deletePost(atMentionPostId, chat.glipId);
   });
 
   await h(t).withLog('Then I can see empty page in the mentions page again', async () => {

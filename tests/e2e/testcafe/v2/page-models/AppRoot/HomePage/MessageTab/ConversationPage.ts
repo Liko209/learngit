@@ -628,7 +628,7 @@ export class MentionPage extends BaseConversationPage {
   }
 
   get emptyPage() {
-    return this.getSelectorByAutomationId('empty-page', this.self)
+    return this.getSelectorByAutomationId('mentionsEmptyPage', this.self)
   }
 
   get scrollDiv() {
@@ -647,7 +647,7 @@ export class BookmarkPage extends BaseConversationPage {
   }
 
   get emptyPage() {
-    return this.getSelectorByAutomationId('empty-page', this.self)
+    return this.getSelectorByAutomationId('bookmarksEmptyPage', this.self)
   }
 
   get scrollDiv() {
