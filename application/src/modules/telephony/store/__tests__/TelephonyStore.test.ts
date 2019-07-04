@@ -231,23 +231,6 @@ describe('Telephony store', () => {
     expect(store.isMute).toBeFalsy();
   });
 
-  it('should initialize with not entering contact search page', () => {
-    const store = createStore();
-
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-  });
-
-  it('should not entering contact search page when make/hangup a call', () => {
-    const store = createStore();
-    store.callerName = 'name';
-    store.phoneNumber = '112233';
-    call.muteState = MUTE_STATE.MUTED;
-    store.directCall();
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-    store.end();
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-  });
-
   it('should sync dialer entered state', () => {
     const store = createStore();
     expect(store.enteredDialer).toBeFalsy();
@@ -297,5 +280,17 @@ describe('Telephony store', () => {
     store.openDialer();
     store.attachedWindow();
     expect(store.isDetached).toBeFalsy();
+  });
+
+  it('jumpToRecentCall()', () => {
+    const store = createStore();
+    store.jumpToRecentCall();
+    expect(store.isRecentCalls).toBeTruthy();
+  });
+
+  it('backToDialer()', () => {
+    const store = createStore();
+    store.backToDialer();
+    expect(store.isRecentCalls).toBeFalsy();
   });
 });

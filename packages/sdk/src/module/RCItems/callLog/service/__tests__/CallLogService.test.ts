@@ -23,6 +23,7 @@ jest.mock('../../controller/CallLogController', () => {
       requestSync: jest.fn(),
       fetchData: jest.fn(),
       internalReset: jest.fn(),
+      fetchAllUniquePhoneNumberCalls: jest.fn(),
       buildFilterFunc: jest.fn(),
     },
     missedCallLogFetchController: {
@@ -146,6 +147,16 @@ describe('CallLogService', () => {
     it('clearAllCallLogs', async () => {
       await callLogService.clearAllCallLogs();
       expect(callLogController.allCallLogFetchController.clearAll).toBeCalled();
+    });
+  });
+
+  describe('fetchRecentCallLogs', () => {
+    it('fetchRecentCallLogs', async () => {
+      await callLogService.fetchRecentCallLogs();
+      expect(
+        callLogController.allCallLogFetchController
+          .fetchAllUniquePhoneNumberCalls,
+      ).toBeCalled();
     });
   });
 

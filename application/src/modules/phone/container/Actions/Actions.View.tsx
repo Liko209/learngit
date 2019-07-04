@@ -1,32 +1,40 @@
 import React, { ComponentType, Component } from 'react';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionsProps, ActionsViewProps } from './types';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { BUTTON_TYPE, ActionsProps, ActionsViewProps } from './types';
 import { More } from './More';
 import { Read } from './Read';
+import { Block } from './Block';
 import { Delete } from './Delete';
 import { Download } from './Download';
 import { ENTITY_TYPE } from '../constants';
-
-const MAX_BUTTON_COUNT = 0;
+import { Message } from './Message';
+import { Call } from './Call';
 
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get _actions() {
-    const { entity } = this.props;
+    const { entity, shouldShowBlock, person, showCall, isBlock } = this.props;
+
     return [
+      showCall && !isBlock && Call,
+      person !== null && Message,
       entity === ENTITY_TYPE.VOICEMAIL && Read,
       entity === ENTITY_TYPE.VOICEMAIL && Download,
+      shouldShowBlock && Block,
       Delete,
     ].filter(item => !!item);
   }
 
   getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
-    const { id, hookAfterClick, entity } = this.props;
+    const { id, hookAfterClick, entity, caller, person } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
           key={`${id}-${type}-${index}`}
-          entity={entity}
           hookAfterClick={hookAfterClick}
+          entity={entity}
+          caller={caller}
+          person={person}
           type={type}
           id={id}
         />
@@ -35,10 +43,12 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   getButtonsConfig = () => {
-    if (MAX_BUTTON_COUNT < this._actions.length) {
-      const buttons = this._actions.slice(0, MAX_BUTTON_COUNT);
+    const { maxButtonCount } = this.props;
+
+    if (maxButtonCount < this._actions.length) {
+      const buttons = this._actions.slice(0, maxButtonCount);
       const dropdownItems = this._actions.slice(
-        MAX_BUTTON_COUNT,
+        maxButtonCount,
         this._actions.length,
       );
       return {

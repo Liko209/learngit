@@ -120,9 +120,9 @@ class EntityBaseService<
 
   protected onLogout() {}
 
-  async batchGet(ids: IdType[]): Promise<T[]> {
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     if (this._entitySourceController) {
-      return await this._entitySourceController.batchGet(ids);
+      return await this._entitySourceController.batchGet(ids, order);
     }
 
     throw new Error('entitySourceController is null');

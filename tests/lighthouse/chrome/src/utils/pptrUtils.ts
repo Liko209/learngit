@@ -51,12 +51,12 @@ class PptrUtils {
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.collectGarbage');
 
-    await bluebird.delay(2000);
+    await bluebird.delay(5000);
 
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.collectGarbage');
 
-    await bluebird.delay(2000);
+    await bluebird.delay(5000);
 
     driver.setNextProtocolTimeout(Config.defaultProtocolTimeout);
     await driver.sendCommand('HeapProfiler.disable');

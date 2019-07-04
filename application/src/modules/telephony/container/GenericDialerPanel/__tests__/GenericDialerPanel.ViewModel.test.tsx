@@ -179,7 +179,7 @@ describe('GenericDialerPanelViewModel', () => {
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual(str);
         });
 
-        it('should not turning `shouldEnterContactSearch` to true', () => {
+        it('should not turning `shouldEnterContactSearch` to true [JPT-2311]', () => {
           const val = '1';
           genericDialerPanelViewModel.clickToInput(val);
           expect(
@@ -543,6 +543,12 @@ describe('GenericDialerPanelViewModel', () => {
       expect(
         genericDialerPanelViewModel._telephonyService.setCallerPhoneNumber,
       ).toBeCalledWith(val);
+    });
+  });
+
+  describe('shouldDisplayRecentCalls', () => {
+    it('should not display RecentCalls by default', () => {
+      expect(genericDialerPanelViewModel.shouldDisplayRecentCalls).toBeFalsy();
     });
   });
 });

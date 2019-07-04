@@ -106,6 +106,14 @@ class GenericDialerPanelViewModel extends StoreViewModel<
   }
 
   @computed
+  get shouldDisplayRecentCalls() {
+    return (
+      this._telephonyStore.isRecentCalls &&
+      this._telephonyStore.shouldDisplayRecentCalls
+    );
+  }
+
+  @computed
   get inputString() {
     return this._telephonyStore[this.props.inputStringProps];
   }
@@ -136,7 +144,8 @@ class GenericDialerPanelViewModel extends StoreViewModel<
   setCallerPhoneNumber = (str: string) =>
     this._telephonyService.setCallerPhoneNumber(str)
 
-  onAfterDialerOpen = () => this.props.onAfterMount();
+  onAfterDialerOpen = () =>
+    this.props.onAfterMount && this.props.onAfterMount()
 
   deleteInputString = (startPos: number, endPos: number) => {
     this._deleteInputString(false, startPos, endPos);

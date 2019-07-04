@@ -7,10 +7,10 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { ReadViewProps, BUTTON_TYPE } from './types';
+import { ReadViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
+import { JuiActionIconWrapper, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { catchError } from '@/common/catchError';
 
 type Props = ReadViewProps & WithTranslation;
@@ -34,13 +34,15 @@ class ReadViewComponent extends Component<Props> {
   }
 
   private _handleClick = () => {
-    const { isRead, hookAfterClick } = this.props;
+    const { isRead, hookAfterClick, type } = this.props;
     if (isRead) {
       this._handleUnread();
     } else {
       this._handleRead();
     }
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   get title() {

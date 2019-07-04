@@ -24,6 +24,7 @@ import {
   useScroll,
   PartialScrollPosition,
   useForceUpdate,
+  ScrollPosition,
 } from './hooks';
 import {
   createKeyMapper,
@@ -44,6 +45,8 @@ type JuiVirtualizedListHandles = {
   scrollToIndex: (index: number) => void;
   getVisibleRange: () => IndexRange;
   getPrevVisibleRange: () => IndexRange;
+  scrollToPosition: (scrollPosition: PartialScrollPosition) => void;
+  getScrollPosition: () => ScrollPosition;
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
@@ -232,17 +235,23 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Forward ref
   //
-  useImperativeHandle(forwardRef, () => ({
-    scrollToBottom,
-    isAtBottom: () => {
-      return prevAtBottomRef.current;
-    },
-    scrollToIndex: (index: number, options?: boolean) => {
-      jumpToPosition({ index, options });
-    },
-    getVisibleRange: computeVisibleRange,
-    getPrevVisibleRange: () => prevVisibleRange,
-  }));
+  useImperativeHandle(
+    forwardRef,
+    () => ({
+      scrollToBottom,
+      scrollToPosition: jumpToPosition,
+      getScrollPosition: () => scrollPosition,
+      isAtBottom: () => {
+        return prevAtBottomRef.current;
+      },
+      scrollToIndex: (index: number, options?: boolean) => {
+        jumpToPosition({ index, options });
+      },
+      getVisibleRange: computeVisibleRange,
+      getPrevVisibleRange: () => prevVisibleRange,
+    }),
+    [computeVisibleRange, jumpToPosition],
+  );
 
   //
   // HtmlElement ref

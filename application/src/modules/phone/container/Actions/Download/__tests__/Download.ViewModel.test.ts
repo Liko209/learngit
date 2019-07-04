@@ -9,9 +9,9 @@ import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ATTACHMENT_TYPE } from 'sdk/module/RCItems/constants';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { URI_CONTENT_DISPOSITION_ATTACHMENT } from '../constants';
 import { DownloadViewModel } from '../Download.ViewModel';
-import { BUTTON_TYPE } from '../types';
 
 const mockEntityData = {
   attachments: [

@@ -29,7 +29,7 @@ export type GenericDialerPanelProps = {
   CallActionBtn: React.ComponentType<any>;
   displayCallerIdSelector: boolean;
   onContactSelected: (phoneNumber: string) => void;
-  onAfterMount: () => void;
+  onAfterMount?: () => void;
   Back?: React.ComponentType<any>;
 };
 
@@ -53,6 +53,7 @@ export type GenericDialerPanelViewProps = {
   onFocus: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
+  shouldDisplayRecentCalls: boolean;
 } & Pick<
   GenericDialerPanelProps,
   | 'onContactSelected'

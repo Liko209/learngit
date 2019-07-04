@@ -17,14 +17,22 @@ const ACTIONS = [Minimize];
 
 @observer
 class DialerTitleBarViewComponent extends React.Component<Props> {
+  getTitle = () => {
+    const { isForward, isDialer, t, timing } = this.props;
+
+    switch (true) {
+      case isForward:
+        return t('telephony.forwardCall');
+
+      case isDialer:
+        return t('dialer.newCall');
+
+      default:
+        return timing;
+    }
+  }
   render() {
-    const { timing, isDialer, t } = this.props;
-    return (
-      <JuiTitleBar
-        label={isDialer ? t('dialer.newCall') : timing}
-        Actions={ACTIONS}
-      />
-    );
+    return <JuiTitleBar label={this.getTitle()} Actions={ACTIONS} />;
   }
 }
 

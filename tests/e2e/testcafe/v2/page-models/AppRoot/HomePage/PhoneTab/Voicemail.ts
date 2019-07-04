@@ -92,6 +92,23 @@ class VoicemailItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreMenuButton);
   }
 
+  get messageButton() {
+    return this.getSelectorByAutomationId('voicemail-message-button', this.self);
+  }
+
+  async ClickMessageButton() {
+    await this.t.hover(this.self).click(this.messageButton);
+  }
+
+  get callbackButton () {
+    return this.getSelectorByAutomationId('voicemail-call-button', this.self);
+  }
+
+  async ClickCallbackButton() {
+    await this.t.hover(this.self).click(this.callbackButton);
+  }
+
+
   get readToggleButton() {
     return this.getSelectorByAutomationId('voicemail-read-button');
   }
@@ -111,6 +128,31 @@ class VoicemailItem extends BaseWebComponent {
   async clickDeleteButton() {
     await this.t.click(this.deleteButton);
   }
+
+  get blockToggle() {
+    return this.getSelectorByAutomationId('voicemail-block-button');
+  }
+
+  get blockButton() 
+  {
+    return this.getSelectorByIcon('blocked', this.blockToggle).parent('li');
+  }
+
+  get unblockButton() 
+  {
+    return this.getSelectorByIcon('unblocked', this.blockToggle).parent('li');
+  }
+
+
+  async clickBlockButton() {
+    return this.t.click(this.blockButton);
+  }
+
+  async clickUnblockButton() {
+    return this.t.click(this.unblockButton);
+  }
+
+
 }
 
 export class DeleteVoicemailDialog extends BaseWebComponent {

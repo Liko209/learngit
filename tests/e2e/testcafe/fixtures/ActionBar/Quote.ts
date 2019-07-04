@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-06-25 11:20:27 
+ * @Author: Potar.He
+ * @Date: 2019-06-25 11:20:27
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-06-25 19:00:56
  */
@@ -32,8 +32,8 @@ test.meta(<ITestMeta>{
   await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const userName = await h(t).glip(loginUser).getPersonPartialData('display_name');
 
-  const quoteAddEmpty = `${userName} wrote:${originalText}\n`
-  const quoteAddText = `${userName} wrote:${originalText}\n${addText}`
+  const quoteAddEmpty = `${userName} wrote:${originalText}`;
+  const quoteAddText = `${userName} wrote:${originalText}\n${addText}`;
 
   let chat = <IGroup>{
     type: 'DirectMessage',
