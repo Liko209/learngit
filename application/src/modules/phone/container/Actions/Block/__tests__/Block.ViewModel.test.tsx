@@ -10,7 +10,6 @@ import { testable, test } from 'shield';
 import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';
-import { Caller } from 'sdk/module/RCItems/types';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { BlockViewModel } from '../Block.ViewModel';
@@ -40,10 +39,6 @@ const checkNotification = (message: string) => ({
   type: 'error',
 });
 
-const mockCaller = {
-  phoneNumber: '+1234567890'
-} as Caller;
-
 const phoneNumber = '+1234567890';
 
 describe('BlockViewModel', () => {
@@ -56,7 +51,6 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
-        caller: mockCaller,
       });
       expect(vm.isBlocked).toBeUndefined();
       await when(
@@ -78,9 +72,8 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
-        caller: mockCaller,
       });
-      await vm.fetchNumberStatus(mockCaller);
+      await vm.fetchNumberStatus();
       expect(vm.isBlocked).toEqual(true);
     }
 
@@ -91,9 +84,8 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
-        caller: mockCaller,
       });
-      await vm.fetchNumberStatus(mockCaller);
+      await vm.fetchNumberStatus();
       expect(vm.isBlocked).toEqual(false);
     }
   }
@@ -114,11 +106,10 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
-        caller: mockCaller
       });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(phoneNumber);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForNetworkIssue'),
       );
@@ -137,11 +128,10 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
-        caller: mockCaller,
       });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(phoneNumber);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForServerIssue'),
       );
@@ -164,11 +154,10 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
-        caller: mockCaller,
       });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([phoneNumber]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForNetworkIssue'),
       );
@@ -187,11 +176,10 @@ describe('BlockViewModel', () => {
         phoneNumber,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
-        caller: mockCaller,
       });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([phoneNumber]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForServerIssue'),
       );

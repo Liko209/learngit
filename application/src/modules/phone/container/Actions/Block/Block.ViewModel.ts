@@ -19,7 +19,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
   constructor(props: BlockProps) {
     super(props);
     this.reaction(
-      () => this.props.caller,
+      () => this.props.phoneNumber,
       async () => {
         await this.fetchNumberStatus();
       },

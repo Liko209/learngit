@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Caller } from 'sdk/module/RCItems/types';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
 
 type BlockProps = {
-  caller: Caller;
   phoneNumber: string;
 };
 
