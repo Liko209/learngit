@@ -18,10 +18,8 @@ import { DeleteAll } from '../Actions/DeleteAll';
 const CallHistoryWrapper = (
   props: { height: number; clearUMI: () => void } & WithTranslation,
 ) => {
-  const clearUmi = (index: number) => {
-    if (index === CallHistoryTypes.Missed) {
-      props.clearUMI();
-    }
+  const clearUmi = () => {
+    props.clearUMI();
   };
 
   return (
