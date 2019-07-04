@@ -10,7 +10,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import CallLogModel from '@/store/models/CallLog';
 import { CallLogItemProps, Handler } from './types';
-import { BREAK_POINT_MAP } from '../VoicemailItem/types';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { getHourMinuteSeconds } from '@/utils/date';
@@ -20,12 +19,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { i18nP } from '@/utils/i18nT';
-
-const callLogDefaultResponsiveInfo = {
-  buttonToShow: 3,
-  showCallInfo: true,
-  dateFormat: 'full',
-};
+import { callLogDefaultResponsiveInfo, kHandlers } from './config';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -128,39 +122,6 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   @computed
   get callLogResponsiveMap() {
-    const kHandlers: Handler[] = [];
-
-    kHandlers.push({
-      checker: (width: number) => width >= BREAK_POINT_MAP.FULL,
-      info: callLogDefaultResponsiveInfo,
-    });
-    kHandlers.push({
-      checker: (width: number) =>
-        width < BREAK_POINT_MAP.FULL && width >= BREAK_POINT_MAP.SMALL,
-      info: {
-        buttonToShow: 2,
-        showCallInfo: true,
-        dateFormat: 'full',
-      },
-    });
-    kHandlers.push({
-      checker: (width: number) =>
-        width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.SMALL,
-      info: {
-        buttonToShow: 1,
-        showCallInfo: true,
-        dateFormat: 'full',
-      },
-    });
-    kHandlers.push({
-      checker: (width: number) => width <= BREAK_POINT_MAP.SHORT,
-      info: {
-        buttonToShow: 1,
-        showCallInfo: false,
-        dateFormat: 'short',
-      },
-    });
-
     return this._getResponsiveMap(kHandlers);
   }
 

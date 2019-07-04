@@ -26,22 +26,17 @@ import {
   VoicemailViewProps,
   VoicemailProps,
   JuiAudioStatus,
-  JuiAudioMode,
-  BREAK_POINT_MAP,
   Handler,
 } from './types';
+import {
+  voiceMailDefaultResponsiveInfo,
+  responsiveByBreakPoint,
+} from './config';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
 
 const FLASH_TOAST_DURATION = 3000;
-
-const voiceMailDefaultResponsiveInfo = {
-  audioMode: JuiAudioMode.FULL,
-  buttonToShow: 3,
-  showTranscriptionText: true,
-  dateFormat: 'full',
-};
 
 class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   implements VoicemailViewProps {
@@ -102,43 +97,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get voiceMailResponsiveMap() {
-    const kHandlers: Handler[] = [];
-
-    kHandlers.push({
-      checker: (width: number) => width >= BREAK_POINT_MAP.FULL,
-      info: voiceMailDefaultResponsiveInfo,
-    });
-    kHandlers.push({
-      checker: (width: number) =>
-        width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL,
-      info: {
-        audioMode: JuiAudioMode.FULL,
-        buttonToShow: 2,
-        showTranscriptionText: false,
-        dateFormat: 'full',
-      },
-    });
-    kHandlers.push({
-      checker: (width: number) =>
-        width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND,
-      info: {
-        audioMode: JuiAudioMode.MINI,
-        buttonToShow: 2,
-        showTranscriptionText: false,
-        dateFormat: 'full',
-      },
-    });
-    kHandlers.push({
-      checker: (width: number) => width <= BREAK_POINT_MAP.SHORT,
-      info: {
-        audioMode: JuiAudioMode.TINY,
-        buttonToShow: 1,
-        showTranscriptionText: false,
-        dateFormat: 'short',
-      },
-    });
-
-    return this._getResponsiveMap(kHandlers);
+    return this._getResponsiveMap(responsiveByBreakPoint);
   }
 
   get voicemailService() {

@@ -77,7 +77,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class voiceMailResponsiveMap {
     @test(
-      'should call return correct responsive obj if window is in different width',
+      'should call return correct responsive obj if window is in different width [JPT-2393]',
     )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({})

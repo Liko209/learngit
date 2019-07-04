@@ -237,7 +237,9 @@ describe('CallLogItemViewModel', () => {
 
   @testable
   class callLogResponsiveMap {
-    @test('should call _getResponsiveMap if window is in different width')
+    @test(
+      'should call _getResponsiveMap if window is in different width [JPT-2400]',
+    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t1() {
       const vm = new CallLogItemViewModel({ id: 'id' });
