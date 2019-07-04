@@ -8,8 +8,7 @@ import { jumpToPost } from '@/common/jumpToPost';
 jest.mock('@/common/PortalManager');
 jest.mock('@/common/jumpToPost');
 import { test, testable } from 'shield';
-import { mockService } from 'shield/sdk';
-import { PostService } from 'sdk/module/post';
+import { mockEntity } from 'shield/application';
 import { ViewInPostActionViewModel } from '../ViewInPostAction.ViewModel';
 import {
   JServerError,
@@ -46,12 +45,13 @@ describe('ViewInPostAction.ViewModel', () => {
     @test(
       'should call portalManager.dismissAll() than call jumpToPost when found post',
     )
-    @mockService(PostService, 'getLatestPostIdByItem', () => 1)
+    @mockEntity({ getDirectRelatedPostInGroup: () => 123 })
     async t1(done: any) {
       portalManager.dismissAll = jest.fn();
       const vm = new ViewInPostActionViewModel({
         groupId: 123,
         fileId: 1,
+        asyncOperationDecorator: (x: any) => x,
       });
       vm.viewInPost();
       setImmediate(() => {
@@ -62,12 +62,13 @@ describe('ViewInPostAction.ViewModel', () => {
     }
 
     @test('should not jumpToPost when cant find corresponding post')
-    @mockService(PostService, 'getLatestPostIdByItem', () => null)
+    @mockEntity({ getDirectRelatedPostInGroup: () => null })
     async t2(done: any) {
       portalManager.dismissAll = jest.fn();
       const vm = new ViewInPostActionViewModel({
         groupId: 123,
         fileId: 1,
+        asyncOperationDecorator: x => x,
       });
       vm.viewInPost();
       setImmediate(() => {
@@ -81,35 +82,43 @@ describe('ViewInPostAction.ViewModel', () => {
   @testable
   class errorHandler {
     @test('should show toast when backend error happen')
-    @mockService(PostService, 'getLatestPostIdByItem', () => {
-      throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+    @mockEntity({
+      getDirectRelatedPostInGroup: () => {
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
+      },
     })
-    async t1() {
+    async t1(done) {
       Notification.flashToast = jest.fn();
       const vm = new ViewInPostActionViewModel({
         fileId: 123,
         groupId: 123,
+        asyncOperationDecorator: x => x,
       } as any);
       await vm.viewInPost();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.viewInPostFailedWithServerIssue'),
       );
+      done();
     }
 
     @test('should show toast when network error happen [JPT-2044]')
-    @mockService(PostService, 'getLatestPostIdByItem', () => {
-      throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+    @mockEntity({
+      getDirectRelatedPostInGroup: () => {
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+      },
     })
-    async t2() {
+    async t2(done) {
       Notification.flashToast = jest.fn();
       const vm = new ViewInPostActionViewModel({
         fileId: 123,
         groupId: 123,
+        asyncOperationDecorator: x => x,
       } as any);
       await vm.viewInPost();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.viewInPostFailedWithNetworkIssue'),
       );
+      done();
     }
   }
 });
