@@ -79,7 +79,7 @@ describe('PostController', () => {
 
       const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
-      expect(buildEntitySourceController).toBeCalledTimes(1);
+      expect(buildEntitySourceController).toBeCalledTimes(2);
       expect(buildPartialModifyController).toBeCalledTimes(1);
       expect(buildRequestController).toBeCalledTimes(1);
     });
