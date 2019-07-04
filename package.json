@@ -21,14 +21,14 @@
     "build:ui": "cd packages/jui && npm run build-storybook",
     "build:release": "cd application && JUPITER_ENV=production npm run build",
     "test": "node ./scripts/test.js",
-    "juiTest": "node ./scripts/dirNotChanged.js jui || (cd packages/jui && npm run test)",
     "rcuiTest": "node ./scripts/dirNotChanged.js rcui || (cd packages/rcui && npm run test)",
     "build:public": "cd application && JUPITER_ENV=public npm run build",
-    "test:changed": "npm run test -- --changedSince=`node ./scripts/getSinceBranch.js` && npm run juiTest && npm run rcuiTest",
+    "test:changed": "npm run test -- --changedSince=`node ./scripts/getSinceBranch.js` && npm run rcuiTest",
     "test:staged": "npm run test:cover -- --findRelatedTests",
     "test:cover": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",
     "test:dev": "npm run test -- --coverage --watch --bail",
+    "update-snapshot": "npm run test snapshot -- --updateSnapshot",
     "lint": "tslint",
     "lint-all": "concurrently --kill-others-on-fail -r \"tslint -p application/tsconfig.dev.json\"  \"tslint -p packages/foundation/tsconfig.dev.json\" \"tslint -p packages/sdk/tsconfig.dev.json\" \"tslint -p packages/jui/tsconfig.dev.json\" \"tslint -p packages/voip/tsconfig.dev.json\"",
     "publish": "npm run clean:build && npm run build && lerna publish --silent",
@@ -47,7 +47,7 @@
     "make-pseudo": "node ./scripts/make-pseudo.js"
   },
   "devDependencies": {
-    "@jest-runner/electron": "1.1.1",
+    "@jest-runner/electron": "2.0.1",
     "@types/enzyme": "3.9.0",
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.11",
@@ -99,7 +99,10 @@
     "tslint": "5.13.0",
     "tslint-config-airbnb": "5.11.1",
     "tslint-react": "3.6.0",
-    "typescript": "3.4.2"
+    "typescript": "3.4.2",
+    "babel-plugin-macros": "2.5.1",
+    "babel-plugin-require-context-hook": "1.0.0",
+    "jest-styled-components": "6.3.1"
   },
   "husky": {
     "hooks": {

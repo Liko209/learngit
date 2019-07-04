@@ -3,11 +3,10 @@
  * @Date: 2019-04-01 10:42:57
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _, { differenceBy } from 'lodash';
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import { differenceBy } from 'lodash';
 import { JuiDownshift } from '..';
 import { JuiSearchItem } from '../../../pattern/ContactSearch';
 import { JuiChip } from '../../Chip';
@@ -26,6 +25,7 @@ const suggestions = [
   { id: 14, label: 'Armenia' },
   { id: 3, label: 'Bahamas' },
   { id: 4, label: 'Bahrain' },
+  ..._.range(15, 100000).map((id: number) => ({ id, label: `Item-${id}` })),
 ];
 
 const getKnobs = () => {
@@ -46,11 +46,11 @@ const getItemById = (suggestions: Item[], id: number) =>
   suggestions.find((suggestion: Item) => suggestion.id === id);
 
 const SearchItem = (props: any) => {
-  const { itemId, ...rest } = props;
+  const { itemId, isHighlighted, ...rest } = props;
   const item = getItemById(suggestions, itemId);
 
   return item ? (
-    <JuiSearchItem selected={props.isHighlighted} {...rest}>
+    <JuiSearchItem selected={isHighlighted} {...rest}>
       {item.label}
     </JuiSearchItem>
   ) : null;
@@ -67,13 +67,14 @@ const Chip = (props: any) => {
 };
 
 const MultipleDownshift = () => {
-  const inputValue = '';
+  const [inputValue, setInputValue] = useState('');
   const [suggestionItems, setSuggestionItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const handleInputChange = (value: string) => {
     const inputValue = value.trim().toLowerCase();
+    setInputValue(inputValue);
+
     const inputLength = inputValue.length;
-    let count = 0;
     let filterSuggestions: any = [];
 
     if (inputLength === 0) {
@@ -82,18 +83,15 @@ const MultipleDownshift = () => {
     filterSuggestions = differenceBy(suggestions, selectedItems, 'id');
     filterSuggestions = filterSuggestions.filter((suggestion: any) => {
       const keep =
-        count < 10 &&
         suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
-      if (keep) {
-        count += 1;
-      }
       return keep;
     });
     setSuggestionItems(filterSuggestions);
   };
   const handleSelectChange = (selectedItems: Item[]) => {
     setSelectedItems(selectedItems);
+    setInputValue('');
   };
   return (
     <JuiDownshift

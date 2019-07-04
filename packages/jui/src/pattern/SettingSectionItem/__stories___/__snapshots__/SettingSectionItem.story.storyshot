@@ -1,10 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingSectionItem 1`] = `
-.c7.c7 {
-  background-color: #e0e0e0;
-}
-
 .c2.c2 {
   width: 100%;
   display: -webkit-box;
@@ -96,6 +92,10 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
   flex: 1;
   line-height: 0;
   padding: 20px 0px;
+}
+
+.c7.c7 {
+  background-color: #e0e0e0;
 }
 
 .c0.c0 {

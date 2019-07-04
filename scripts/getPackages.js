@@ -3,8 +3,6 @@
  * @Date: 2018-08-30 08:44:43
  * Copyright © RingCentral. All rights reserved.
  */
-
-
 const fs = require('fs');
 const path = require('path');
 
