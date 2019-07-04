@@ -185,7 +185,7 @@ describe('FileViewerViewModel', () => {
       done();
     });
 
-    it('should set sender and createdAt to null when cannot get post', async (done: any) => {
+    it('should set sender and createdAt to null when cannot get post [JPT-2399]', async (done: any) => {
       const fileItem = {
         latestVersion: { pages: [1, 2] },
         getDirectRelatedPostInGroup: jest.fn(() => null),
