@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/PhoneTab/*/BlockAndUnblock.ts"],
-    "browsers": ["selenium:chrome"]
+  "fixtures": ["./fixtures/Logout.ts"],
+  "browsers": ["selenium:chrome"]
   }
 }
