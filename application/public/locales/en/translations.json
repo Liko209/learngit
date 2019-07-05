@@ -881,6 +881,10 @@
         "label": "Speaker source",
         "description": "Update your speaker source for RingCentral voice calls"
       },
+      "ringerSource": {
+        "label": "Ringer source",
+        "description": "Update your ringer source for RingCentral voice calls"
+      },
       "volume": {
         "label": "Volume control",
         "description": "Update the volume"
@@ -889,6 +893,8 @@
     "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
+    "allDevices": "All audio sources",
+    "off": "Off",
     "microphone": "Microphone",
     "builtInMicrophone": "Built-in microphone",
     "builtInSpeaker": "Built-in speaker",
