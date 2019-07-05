@@ -9,13 +9,13 @@ type Props = DialerPanelViewProps & WithTranslation;
 @observer
 class DialerPanelViewComponent extends React.Component<Props> {
   render() {
-    const { makeCall, onAfterDialerOpen } = this.props;
+    const { makeCall, onAfterDialerOpen, displayCallerIdSelector } = this.props;
     return (
       <GenericDialerPanel
         inputStringProps="inputString"
         onInputEnterKeyDown={makeCall}
         CallActionBtn={DialBtn}
-        displayCallerIdSelector={true}
+        displayCallerIdSelector={displayCallerIdSelector}
         onContactSelected={makeCall}
         onAfterMount={onAfterDialerOpen}
       />
