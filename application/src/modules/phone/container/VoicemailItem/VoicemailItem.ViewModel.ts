@@ -65,8 +65,8 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       () => this.attachment,
       async (audio?: Audio) => {
         const phoneStore = this._phoneStore;
-        if (audio && !phoneStore.audioCache.get(this._id)) {
-          phoneStore.addAudio(this._id, {
+        if (audio && !phoneStore.audioCache.get(this.props.id)) {
+          phoneStore.addAudio(this.props.id, {
             ...audio,
             downloadUrl: '',
             startTime: 0,
@@ -77,11 +77,6 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         fireImmediately: true,
       },
     );
-  }
-
-  @computed
-  get _id() {
-    return this.props.id;
   }
 
   private _getResponsiveMap(handler: Handler[]) {
@@ -110,7 +105,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   get voicemail() {
     return getEntity<Voicemail, VoicemailModel>(
       ENTITY_NAME.VOICE_MAIL,
-      this._id,
+      this.props.id,
     );
   }
 
@@ -156,7 +151,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get selected() {
-    return this._phoneStore.selectedVoicemailId === this._id;
+    return this._phoneStore.selectedVoicemailId === this.props.id;
   }
 
   @computed
@@ -166,7 +161,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @action
   onChange = (event: React.ChangeEvent, newExpanded: boolean) => {
-    this._phoneStore.setVoicemailId(newExpanded ? this._id : null);
+    this._phoneStore.setVoicemailId(newExpanded ? this.props.id : null);
   }
 
   @action
@@ -174,9 +169,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     this.shouldPause = false;
 
     if (!this.selected) {
-      this._phoneStore.setVoicemailId(this._id);
+      this._phoneStore.setVoicemailId(this.props.id);
     }
-    this.voicemailService.updateReadStatus(this._id, READ_STATUS.READ);
+    this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
   }
 
   @action
@@ -195,7 +190,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         const ret = await this.voicemailService.buildDownloadUrl(
           this.audio.uri,
         );
-        this._phoneStore.updateAudio(this._id, {
+        this._phoneStore.updateAudio(this.props.id, {
           downloadUrl: ret,
         });
       }
@@ -217,7 +212,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @action
   updateStartTime = (timestamp: number) => {
-    this._phoneStore.updateAudio(this._id, {
+    this._phoneStore.updateAudio(this.props.id, {
       startTime: timestamp,
     });
   }

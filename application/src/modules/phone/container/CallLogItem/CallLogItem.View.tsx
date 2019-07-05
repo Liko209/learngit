@@ -14,7 +14,7 @@ import {
   StyledActionWrapper,
 } from 'jui/pattern/Phone/VoicemailItem';
 import { ContactInfo } from '../ContactInfo';
-import { CallLogItemViewProps } from './types';
+import { CallLogItemViewProps, CallLogItemProps } from './types';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 import {
   CallLogStatus,
@@ -24,17 +24,15 @@ import { Actions } from '../Actions';
 import { ENTITY_TYPE } from '../constants';
 import { getCreateTime } from '@/utils/date';
 
-type Props = CallLogItemViewProps & WithTranslation;
+type Props = CallLogItemViewProps & WithTranslation & CallLogItemProps;
 
 type State = {
-  isHover: boolean;
   showCall: boolean;
 };
 
 @observer
 class CallLogItemViewComponent extends Component<Props, State> {
   state = {
-    isHover: false,
     showCall: false,
   };
 
@@ -46,14 +44,6 @@ class CallLogItemViewComponent extends Component<Props, State> {
         showCall,
       });
     }
-  }
-
-  handleMouseOver = () => {
-    this.setState({ isHover: true });
-  }
-
-  handleMouseLeave = () => {
-    this.setState({ isHover: false });
   }
 
   render() {
@@ -70,9 +60,12 @@ class CallLogItemViewComponent extends Component<Props, State> {
       isMissedCall,
       direction,
       canEditBlockNumbers,
+      isHover,
+      onMouseOver,
+      onMouseLeave,
       callLogResponsiveMap,
     } = this.props;
-    const { isHover, showCall } = this.state;
+    const { showCall } = this.state;
 
     return (
       <StyleVoicemailItem
@@ -83,8 +76,8 @@ class CallLogItemViewComponent extends Component<Props, State> {
         <VoicemailSummary
           isUnread={isUnread}
           expanded={false}
-          onMouseOver={this.handleMouseOver}
-          onMouseLeave={this.handleMouseLeave}
+          onMouseOver={onMouseOver}
+          onMouseLeave={onMouseLeave}
         >
           <StyledContactWrapper>
             <ContactInfo
@@ -111,16 +104,15 @@ class CallLogItemViewComponent extends Component<Props, State> {
                 caller={caller}
                 entity={ENTITY_TYPE.CALL_LOG}
                 maxButtonCount={callLogResponsiveMap.buttonToShow}
-                hookAfterClick={this.handleMouseLeave}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}
               />
             </StyledActionWrapper>
           ) : (
-            <StyledTime>
-              {getCreateTime(startTime, callLogResponsiveMap.dateFormat)}
-            </StyledTime>
-          )}
+              <StyledTime>
+                {getCreateTime(startTime, callLogResponsiveMap.dateFormat)}
+              </StyledTime>
+            )}
         </VoicemailSummary>
       </StyleVoicemailItem>
     );

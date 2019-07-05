@@ -50,11 +50,11 @@ const deleteVoicemailDialogConfig = {
 describe('Delete', () => {
   @testable
   class init {
-    @test('should render delete voicemail button when button is icon type')
+    @test('should render delete voicemail button when button is icon type [JPT-2464]')
     t1() {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.ICON} entity={ENTITY_TYPE.VOICEMAIL} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('delete');
+      expect(buttonProps.children).toBe('delete-call');
       expect(buttonProps.tooltipTitle).toBe('common.delete');
       expect(buttonProps.ariaLabel).toBe('voicemail.deleteVoicemail');
     }
@@ -65,15 +65,15 @@ describe('Delete', () => {
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
       expect(button.text()).toBe('common.delete');
-      expect(buttonProps.icon).toBe('delete');
+      expect(buttonProps.icon).toBe('delete-call');
       expect(buttonProps['aria-label']).toBe('voicemail.deleteVoicemail');
     }
 
-    @test('should render delete call log button when button is icon type')
+    @test('should render delete call log button when button is icon type [JPT-2466]')
     t3() {
       const wrapper = mountWithTheme(<Delete id={1234} type={BUTTON_TYPE.ICON} entity={ENTITY_TYPE.CALL_LOG} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('delete');
+      expect(buttonProps.children).toBe('delete-call');
       expect(buttonProps.tooltipTitle).toBe('common.delete');
       expect(buttonProps.ariaLabel).toBe('calllog.deleteCallLog');
     }
@@ -84,7 +84,7 @@ describe('Delete', () => {
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
       expect(button.text()).toBe('common.delete');
-      expect(buttonProps.icon).toBe('delete');
+      expect(buttonProps.icon).toBe('delete-call');
       expect(buttonProps['aria-label']).toBe('calllog.deleteCallLog');
     }
   }

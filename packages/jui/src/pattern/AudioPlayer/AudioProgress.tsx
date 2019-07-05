@@ -12,7 +12,7 @@ import { JuiAudioMode, JuiAudioStatus, JuiAudioProgressProps } from './types';
 
 const StyledClock = styled.span`
   ${typography('caption1')};
-  color: ${palette('grey', '500')};
+  color: ${palette('grey', '600')};
 `;
 
 const StyledSlider = styled(RuiSlider)`

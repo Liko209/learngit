@@ -59,7 +59,7 @@ describe('Block', () => {
   @testable
   class init {
     @test(
-      'should render correct when button is icon type under block status [JPT-2408-Step1]',
+      'should render correct when button is icon type under block status [JPT-2408-Step1/JPT-2462]',
     )
     t1() {
       const wrapper = mountWithTheme(
@@ -72,7 +72,7 @@ describe('Block', () => {
     }
 
     @test(
-      'should render correct when button is icon type under unblock status [JPT-2409-Step1]',
+      'should render correct when button is icon type under unblock status [JPT-2409-Step1/JPT-2462]',
     )
     t2() {
       const wrapper = mountWithTheme(

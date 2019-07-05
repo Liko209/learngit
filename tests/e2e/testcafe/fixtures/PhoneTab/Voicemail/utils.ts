@@ -99,7 +99,7 @@ export async function addOneVoicemailFromGuest(t: TestController, caller: IUser,
   export async function addOneVoicemailFromExt(t: TestController, caller: IUser, callee: IUser, app) {
     const voicemailPage = app.homePage.phoneTab.voicemailPage;
     const telephoneDialog = app.homePage.telephonyDialog;
-  
+
       let callerSession: WebphoneSession;
       await h(t).withLog('When I login webphone with {number}#{extension}', async (step) => {
         step.initMetadata({
@@ -108,19 +108,19 @@ export async function addOneVoicemailFromGuest(t: TestController, caller: IUser,
         })
         callerSession = await h(t).newWebphoneSession(caller);
       });
-  
+
       await h(t).withLog('and caller session makeCall to callee', async () => {
         await callerSession.makeCall(`${callee.company.number}#${callee.extension}`);
       });
-  
+
       await h(t).withLog('Then the telephone dialog should be popup', async () => {
         await telephoneDialog.ensureLoaded();
       });
-  
+
       await h(t).withLog('When callee click "send to voicemail" button', async () => {
         await telephoneDialog.clickSendToVoiceMailButton();
       });
-  
+
       const waitTime = 20e3;
       await h(t).withLog('and caller wait {time} seconds and hangup the call', async (step) => {
         step.setMetadata('time', (waitTime / 1000).toString());
@@ -128,15 +128,15 @@ export async function addOneVoicemailFromGuest(t: TestController, caller: IUser,
         await callerSession.hangup();
         await callerSession.waitForStatus('terminated');
       });
-  
+
       await h(t).withLog('And refresh page', async () => {
         await t.wait(5e3);
         await h(t).reload();
         await app.homePage.ensureLoaded();
       });
-  
-      await h(t).withLog('Then the voicemail page has one record', async (step) => {
-        await t.expect(voicemailPage.items.count).eql(1, { timeout: 60e3 });
+
+      await h(t).withLog('Then the voicemail page has one or more than one record', async (step) => {
+        await t.expect(voicemailPage.items.count).gte(1, { timeout: 60e3 });
       });
     }
-  
+
