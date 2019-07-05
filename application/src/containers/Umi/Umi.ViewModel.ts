@@ -57,7 +57,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       getSingleEntity(
         ENTITY_NAME.USER_SETTING,
         MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
-      ) === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+      ).value === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
     );
   }
 

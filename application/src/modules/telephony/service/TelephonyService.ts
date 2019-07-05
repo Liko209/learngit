@@ -46,6 +46,7 @@ import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
 import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
+import { showRCDownloadDialog } from './utils';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -57,7 +58,7 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
@@ -328,7 +329,7 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
   }
 
-  makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -341,7 +342,7 @@ class TelephonyService {
         RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
-    this._clientService.invokeApp(url);
+    this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
@@ -685,16 +686,22 @@ class TelephonyService {
 
   deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
     clearAll: boolean = false,
+    start?: number,
+    end?: number,
   ) => {
+    if (!clearAll && (typeof start !== 'number' || typeof end !== 'number')) {
+      throw new Error('Must pass the caret position');
+    }
     runInAction(() => {
       if (clearAll) {
         this._telephonyStore[prop] = '';
         return;
       }
-      this._telephonyStore[prop] = this._telephonyStore[prop].slice(
-        0,
-        this._telephonyStore[prop].length - 1,
-      );
+      this._telephonyStore[prop] = this._telephonyStore[prop]
+        .split('')
+        .filter((v, idx) => idx < (start as number) || idx > (end as number))
+        .join('');
+
       return;
     });
   }
