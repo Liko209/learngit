@@ -3,25 +3,9 @@
  * @Date: 2019-05-22 15:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  doGetCaretPosition,
-  focusCampo,
-  sleep,
-  toFirstLetterUpperCase,
-} from '../helpers';
+import { focusCampo, sleep, toFirstLetterUpperCase } from '../helpers';
 
 describe('helpers', () => {
-  describe('doGetCaretPosition', () => {
-    it('should return 0', () => {
-      expect(
-        doGetCaretPosition({
-          selectionDirection: 'backward',
-          selectionStart: 0,
-        }),
-      ).toBe(0);
-    });
-  });
-
   describe('focusCampo', () => {
     it('should not blur', () => {
       const mockedInput = {

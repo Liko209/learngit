@@ -19,18 +19,27 @@ const StyledEmptyPage = styled.div<{ pageHeight: number | string }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   width: 100%;
   min-width: ${width(84)};
   height: ${({ pageHeight }) =>
     typeof pageHeight === 'number' ? `${pageHeight}px` : pageHeight};
-  padding: ${spacing(0, 8)};
+  padding: ${spacing(4, 8)};
+  overflow: auto;
+
+  > :first-child {
+    margin-top: auto;
+  }
+
+  > :last-child {
+    margin-bottom: auto;
+  }
 `;
 
 const StyledEmptyPageImage = styled.img`
   margin-bottom: ${height(7)};
   width: ${width(67)};
   height: ${height(53)};
+  flex-shrink: 0;
 `;
 
 const StyledEmptyPageMessage = styled.span`

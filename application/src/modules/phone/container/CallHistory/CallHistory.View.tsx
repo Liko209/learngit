@@ -28,7 +28,11 @@ const useFilter: IUseFilter = (initial: string) => {
 };
 
 const CallHistoryWrapper = (
-  props: { height: number; clearUMI: () => void } & WithTranslation,
+  props: {
+    height: number;
+    width: number;
+    clearUMI: () => void;
+  } & WithTranslation,
 ) => {
   const { t, clearUMI } = props;
 
@@ -68,7 +72,7 @@ const CallHistoryWrapper = (
                   title={props.t(title)}
                   automationId={automationID}
                 >
-                  <Component height={props.height} filterValue={filterValue} />
+                  <Component width={props.width} height={props.height} filterValue={filterValue} />
                 </JuiTab>
               );
             },
@@ -88,13 +92,14 @@ class CallHistoryComp extends Component<
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {({ height, width }: { width: number; height: number }) => (
           <Observer>
             {() => (
               <CallHistoryWrapper
                 clearUMI={this.props.clearUMI}
                 height={height}
+                width={width}
                 {...this.props}
               />
             )}

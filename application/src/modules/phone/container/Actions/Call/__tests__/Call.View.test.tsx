@@ -8,7 +8,7 @@ import { test, testable } from 'shield';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { mountWithTheme } from 'shield/utils';
 import { container } from 'framework';
-
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Call } from '../Call';
 
 const telephonyService = {
@@ -27,6 +27,7 @@ describe('message', () => {
           caller={{
             phoneNumber: '123',
           }}
+          type={BUTTON_TYPE.ICON}
         />,
       );
       wrapper.find(JuiIconButton).simulate('click');

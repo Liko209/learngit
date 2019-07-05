@@ -1,41 +1,5 @@
 import { isFunction } from 'lodash';
 
-/*
- ** Returns the caret (cursor) position of the specified text field.
- ** Return value range is 0-inputField.value.length.
- */
-export function doGetCaretPosition(inputField: HTMLInputElement | any) {
-  // Initialize
-  let iCaretPos = 0;
-
-  // IE Support
-  if ((document as any).selection) {
-    // Set focus on the element
-    inputField.focus();
-
-    // To get cursor position, get empty selection range
-    const oSel = (document as any).selection.createRange();
-
-    // Move selection start to 0 position
-    oSel.moveStart('character', -inputField.value.length);
-
-    // The caret position is selection length
-    iCaretPos = oSel.text.length;
-  } else if (
-    // Firefox support
-    inputField.selectionStart ||
-    inputField.selectionStart === '0'
-  ) {
-    iCaretPos =
-      inputField.selectionDirection === 'backward'
-        ? inputField.selectionStart
-        : inputField.selectionEnd;
-  }
-
-  // Return results
-  return iCaretPos;
-}
-
 /**
  * Moves the caret (cursor) position to the end of the specified text field.
  * HACK: `HTMLInputElement | any` to fix `createTextRange` missing in standard HTML spec

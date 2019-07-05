@@ -190,23 +190,6 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
   color: rgba(0,0,0,0.12);
 }
 
-.c16.c16 .c3,
-.c16.c16 .c3 svg {
-  font-size: 24px;
-}
-
-.c16.c16:hover .c3 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c16.c16:active .c3 {
-  color: #fff;
-}
-
-.c16.c16.c16.c16.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c2.c2 {
   padding: 0;
   width: 40px;

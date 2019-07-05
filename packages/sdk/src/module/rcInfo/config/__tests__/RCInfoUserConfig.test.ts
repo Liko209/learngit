@@ -105,7 +105,7 @@ describe('RCInfoUserConfig', () => {
         setName: 'setBlockNumbers',
       } as any,
     ],
-  ])(' %s ', async (key: string, { getName, setName }: any) => {
+  ])(' %s ', (key: string, { getName, setName }: any) => {
     it('should set right data', async () => {
       const data: any = {};
       await rcInfoUserConfig[setName](data);

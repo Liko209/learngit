@@ -14,7 +14,6 @@ import { SERVICE } from '../../../../service/eventKey';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
-jest.mock('foundation');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../config/AuthUserConfig');
 jest.mock('../../../../api/ringcentral/RCAuthApi');

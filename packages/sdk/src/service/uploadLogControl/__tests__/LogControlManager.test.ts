@@ -7,11 +7,22 @@
 import axios from 'axios';
 import { logManager, mainLogger } from 'foundation/src/log/index';
 import { notificationCenter } from 'sdk/service';
-import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
-import { LogControlManager } from '../logControlManager';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../eventKey';
+import { LogControlManager } from '../LogControlManager';
 import { configManager } from '../config';
 import { ServiceLoader } from '../../../module/serviceLoader';
+import { HealthStatusItemProvider } from '../HealthStatusItemProvider';
 import { ZipItemLevel } from '../types';
+
+jest.mock('../HealthStatusItemProvider', () => {
+  const mockHealthStatusItemProvider = {
+    registerHealthStatusItem: jest.fn(),
+    unRegisterHealthStatusItem: jest.fn(),
+  };
+  return {
+    HealthStatusItemProvider: () => mockHealthStatusItemProvider,
+  };
+});
 
 jest.mock('../utils', () => {
   return {

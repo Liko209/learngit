@@ -209,7 +209,7 @@ describe('GenericDialerPanelViewModel', () => {
               value,
             },
           });
-          genericDialerPanelViewModel.deleteInputString();
+          genericDialerPanelViewModel.deleteAllInputString();
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual('');
         });
       });
@@ -420,7 +420,7 @@ describe('GenericDialerPanelViewModel', () => {
               value,
             },
           });
-          genericDialerPanelViewModel.deleteInputString();
+          genericDialerPanelViewModel.deleteAllInputString();
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual('');
         });
       });

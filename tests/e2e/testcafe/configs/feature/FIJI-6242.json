@@ -1,10 +1,11 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ActionBar/PinAndUnpin.ts"
+      "./telephony/**/*.ts"
     ],
     "browsers": [
       "selenium:chrome"
-    ]
+    ],
+    "include_tags": ["P1", "P0"]
   }
 }

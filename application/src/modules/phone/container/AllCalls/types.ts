@@ -31,6 +31,7 @@ type AllCallsProps = {
   type: CallLogType;
   height: number;
   filterValue: string;
+  width: number;
 };
 
 type AllCallsViewProps = {

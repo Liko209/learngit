@@ -86,6 +86,6 @@ describe('RecentCallItemViewModel', () => {
       return {};
     });
     vm = new RecentCallItemViewModel();
-    expect(vm.startTime).toEqual('Wed');
+    expect(vm.startTime).toEqual('6/28/2019');
   });
 });

@@ -25,15 +25,11 @@ import {
   JuiCustomReply,
 } from '..';
 
-const knobs = {
-  open: () => boolean('open', false),
-  img: () => boolean('open', false),
-};
-
 const Avatar = () => <JuiAvatar size="large" src={avatarImg} />;
 
 const MinimizeAction = () => (
   <JuiIconButton
+    key="minimize"
     size="small"
     tooltipTitle="Minimize"
     variant="plain"
@@ -44,6 +40,7 @@ const MinimizeAction = () => (
 
 const DetachOrAttachAction = () => (
   <JuiIconButton
+    key="detach12"
     size="small"
     tooltipTitle="Detach"
     variant="plain"
@@ -56,6 +53,7 @@ const Actions = [DetachOrAttachAction, MinimizeAction];
 
 const Back = () => (
   <JuiIconButton
+    key="back"
     size="large"
     tooltipTitle="Back"
     variant="plain"
@@ -75,6 +73,7 @@ const OnMyWay = () => (
 
 const CallBack = () => (
   <JuiPreDefineMessage
+    key="callback"
     text="Call me back in..."
     automationId="reply-with-will-call-back"
   >
