@@ -15,6 +15,7 @@ import { parseState } from './mocks/server/glip/utils';
 import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
+import { IResponse } from './types';
 
 type Processor<ResData, ReqData, T> = (
   reqRes: IRequestResponse<ReqData, ResData>,
@@ -24,7 +25,7 @@ blockExternalRequest();
 type ItContext = {
   currentUserId: () => number;
   currentCompanyId: () => number;
-  mockResponse: <
+  mockJsonResponse: <
     ResData = any,
     ReqData = any,
     T extends Processor<ResData, ReqData, any> = Processor<
@@ -36,6 +37,14 @@ type ItContext = {
     requestResponse: IRequestResponse<ReqData, ResData>,
     processor?: T,
   ) => ReturnType<T>;
+  mockResponse(
+    options: {
+      host: string;
+      method: string;
+      path: string;
+    },
+    response: IResponse,
+  ): any;
   data: {
     template: {
       BASIC: InitialData;
@@ -154,7 +163,7 @@ export function itForSdk(
     mockGlipServer.applyGlipData(glipData);
   };
 
-  function mockResponse<ReqData, ResData>(
+  function mockJsonResponse<ReqData, ResData>(
     requestResponse: IRequestResponse<ReqData, ResData>,
     processor?: (reqRes: IRequestResponse<ReqData, ResData>) => any,
   ): any {
@@ -173,8 +182,38 @@ export function itForSdk(
     return returnValue;
   }
 
+  function mockResponse(
+    options: {
+      host: string;
+      method: string;
+      path: string;
+    },
+    response: IResponse,
+  ): any {
+    if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
+      const requestResponsePool: IRequestResponse[] = [];
+      jest
+        .spyOn(proxyServer, 'getRequestResponsePool')
+        .mockImplementation(() => requestResponsePool);
+    }
+    const requestResponse = {
+      // todo
+      response: response as any,
+      request: {
+        method: options.method,
+      },
+      hostAlias: options.host,
+      method: options.method,
+      path: options.path,
+    } as IRequestResponse;
+    const pool = proxyServer.getRequestResponsePool();
+    pool.push(requestResponse);
+    return response;
+  }
+
   // provide for it case to mock data.
   const itCtx: ItContext = {
+    mockJsonResponse,
     mockResponse,
     currentUserId: () => userId,
     currentCompanyId: () => companyId,

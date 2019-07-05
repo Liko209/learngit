@@ -3,7 +3,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
 
-itForSdk('Group Integration test', ({ server, data, sdk, mockResponse }) => {
+itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockResponse }) => {
   let groupService: GroupService;
 
   data.useInitialData(data.template.STANDARD);

@@ -10,7 +10,6 @@ import { Item } from 'sdk/module/item/entity';
 import { Person } from 'sdk/module/person/entity';
 import { Post } from 'sdk/module/post/entity';
 import { Profile } from 'sdk/module/profile/entity';
-import { RouterHandler } from '../types';
 
 export type GlipBase = {
   _id: number;
@@ -142,19 +141,5 @@ export type GlipData = {
   groupState: GlipGroupState[];
   profile: GlipProfile;
 };
-
-export type HttpVerb = 'get' | 'post' | 'put' | 'delete';
-export type Handler = (
-  request: IRequest,
-  routeParams: object,
-) => Promise<IResponse> | IResponse;
-export type VerbHandler = { [key in HttpVerb]: Handler };
-export interface IApi {
-  [key: string]: Partial<VerbHandler>;
-}
-
-export interface IResponseAdapter {
-  adapt: (handler: Handler) => RouterHandler;
-}
 
 export type IFactory<T = any> = Factory.Factory<T>;

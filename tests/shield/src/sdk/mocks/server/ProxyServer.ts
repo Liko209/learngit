@@ -1,4 +1,5 @@
-import { IMockServer, RouterHandler } from './types';
+import { IMockServer, IResponseAdapter } from '../../types';
+import { ResponseAdapter } from './ResponseAdapter';
 import {
   IRequest,
   INetworkRequestExecutorListener,
@@ -34,6 +35,7 @@ export class ProxyServer implements IMockServer {
       );
     });
   }
+  adapter: IResponseAdapter = new ResponseAdapter();
 
   getRequestResponsePool(): IRequestResponse[] {
     return [];
@@ -78,9 +80,11 @@ export class ProxyServer implements IMockServer {
         NETWORK_HANDLE_TYPE.UPLOAD,
       ].includes(request.handlerType.name)
     ) {
-      InstanceManager.get(MockGlipServer).handle(request, listener);
-    } else {
-      InstanceManager.get(CommonFileServer).handle(request, listener);
+      const router = InstanceManager.get(MockGlipServer).getRouter();
+      if (router.match(request)) {
+        return this.adapter.adapt(router.dispatch)(request, listener);
+      }
     }
+    InstanceManager.get(CommonFileServer).handle(request, listener);
   }
 }
