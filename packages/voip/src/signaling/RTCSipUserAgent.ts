@@ -33,7 +33,6 @@ enum WEBPHONE_REGISTER_EVENT {
 
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
-  private _connectionTimer: NodeJS.Timeout | null = null;
   private _switchBackTimer: NodeJS.Timeout | null = null;
 
   constructor() {
@@ -52,12 +51,16 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
 
   private _destroy() {
     rtcLogger.debug(LOG_TAG, 'Destroy User Agent ...');
-    this._clearConnectionTimer();
     this._webphone.userAgent.removeAllListeners();
     if (this._webphone.userAgent.transport) {
       this._webphone.userAgent.transport.removeAllListeners();
+      if (this._webphone.userAgent.transport.reconnectTimer) {
+        clearTimeout(this._webphone.userAgent.transport.reconnectTimer);
+      }
+      this._webphone.userAgent.transport.disconnect({ force: true });
     }
     this._webphone.userAgent.stop();
+    delete this._webphone;
     this._webphone = null;
   }
 
@@ -96,7 +99,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     };
     this._webphone = new WebPhone.default(provisionData, options);
     this._initListener();
-    this._startConnectionTimer();
   }
 
   public makeCall(phoneNumber: string, options: RTCCallOptions): any {
@@ -115,7 +117,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
 
   public reRegister(forceToMain: boolean) {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
-    this._clearConnectionTimer();
     if (!this._webphone) {
       return;
     }
@@ -140,7 +141,20 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._webphone.userAgent.on(
       WEBPHONE_REGISTER_EVENT.REG_FAILED,
       (response: any, cause: any) => {
-        this.emit(UA_EVENT.REG_FAILED, response, cause);
+        if (!response) {
+          return;
+        }
+        const message = response.data || response;
+        if (
+          message &&
+          typeof message === 'string' &&
+          this._webphone &&
+          this._webphone.userAgent &&
+          this._webphone.userAgent.transport &&
+          !this._webphone.userAgent.transport.isSipErrorCode(message)
+        ) {
+          this.emit(UA_EVENT.REG_FAILED, response, cause);
+        }
       },
     );
     this._webphone.userAgent.on(
@@ -167,7 +181,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       () => {
         if (this._webphone.userAgent.transport.noAvailableServers()) {
           rtcLogger.warn(LOG_TAG, 'Transport error');
-          this._clearConnectionTimer();
           this.emit(UA_EVENT.TRANSPORT_ERROR);
         }
       },
@@ -176,7 +189,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       WEBPHONE_REGISTER_EVENT.TRANSPORT_CONNECTED,
       () => {
         rtcLogger.debug(LOG_TAG, 'Transport connected');
-        this._clearConnectionTimer();
       },
     );
     this._webphone.userAgent.transport.on(
@@ -211,21 +223,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       `Switch back to main proxy signal from web phone. Schedule switch back in ${timeout /
         1000} sec`,
     );
-  }
-
-  private _startConnectionTimer() {
-    this._connectionTimer = setTimeout(() => {
-      rtcLogger.error(LOG_TAG, 'Connection time out');
-      this._webphone.userAgent.transport.disconnect({ force: true });
-    },                                 5000);
-  }
-
-  private _clearConnectionTimer() {
-    if (this._connectionTimer) {
-      rtcLogger.debug(LOG_TAG, 'Clear connection timeout');
-      clearTimeout(this._connectionTimer);
-    }
-    this._connectionTimer = null;
   }
 }
 

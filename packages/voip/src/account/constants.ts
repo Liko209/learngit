@@ -21,9 +21,6 @@ export const kRTCProvisioningOptions = {
     enabled: true,
   },
   logLevel: 10,
-  maxReconnectionAttempts: '0',
-  reconnectionTimeout: '5',
-  connectionTimeout: '5',
   enableQos: true,
 };
 
