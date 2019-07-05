@@ -182,7 +182,7 @@ const MIN_ATMENTION_PATTERN_LENGTH = 20;
 const MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH = 20;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
-const EMOJI_REGEX = /\s<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
+const EMOJI_REGEX = /\s?<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
@@ -203,6 +203,12 @@ const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
   `(^|\\s)?(:${Object.keys(customEmojiMap).join(':|:')}:)`;
 
 const EMOJI_ONE_PATH = '/emoji/emojione/png/{{unicode}}.png?v=2.2.7';
+
+const EMOJI_SKIN_TONE_CODES = ['1F3FB', '1F3FC', '1F3FD', '1F3FE', '1F3FF'];
+const EMOJI_SIZE_MAP = {
+  large: 30,
+  small: 20,
+};
 
 // modified from Markdown.global_url_regex
 // tslint:disable-next-line:max-line-length
@@ -274,4 +280,6 @@ export {
   URL_REGEX,
   VALID_PHONE_REG,
   EMOJI_ONE_REGEX_SIMPLE,
+  EMOJI_SKIN_TONE_CODES,
+  EMOJI_SIZE_MAP,
 };

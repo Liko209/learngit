@@ -7,6 +7,7 @@ Array [
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -216,7 +217,7 @@ Array [
 
 .c14.c14 .c2,
 .c14.c14 .c2 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c14.c14:hover .c2 {
@@ -228,23 +229,6 @@ Array [
 }
 
 .c14.c14.c14.c14.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c2,
-.c15.c15 .c2 svg {
-  font-size: 20px;
-}
-
-.c15.c15:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c15.c15:active .c2 {
-  color: #fff;
-}
-
-.c15.c15.c15.c15.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -291,7 +275,10 @@ Array [
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -302,6 +289,7 @@ Array [
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {
@@ -511,7 +499,7 @@ Array [
 
 .c14.c14 .c2,
 .c14.c14 .c2 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c14.c14:hover .c2 {
@@ -523,23 +511,6 @@ Array [
 }
 
 .c14.c14.c14.c14.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c2,
-.c15.c15 .c2 svg {
-  font-size: 20px;
-}
-
-.c15.c15:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c15.c15:active .c2 {
-  color: #fff;
-}
-
-.c15.c15.c15.c15.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -586,7 +557,10 @@ Array [
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>

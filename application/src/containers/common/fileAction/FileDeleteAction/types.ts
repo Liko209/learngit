@@ -7,10 +7,13 @@
 import { WithTranslation } from 'react-i18next';
 import { FileActionProps } from '../common/types';
 
-export type FileDeleteActionProps = FileActionProps;
+export type FileDeleteActionProps = FileActionProps & {
+  beforeDelete?: () => void;
+};
 
 export type FileDeleteActionViewProps = {
   canDelete: boolean;
   fileName: string;
   handleDeleteFile: Function;
-} & WithTranslation;
+} & FileDeleteActionProps &
+  WithTranslation;

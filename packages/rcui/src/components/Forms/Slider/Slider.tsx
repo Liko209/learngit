@@ -64,11 +64,11 @@ const StyledSliderWrapper = styled.div`
   align-items: center;
 
   ${StyledChildWrapper}:first-child {
-    margin-right: ${spacing('s')};
+    margin-right: ${spacing(4)};
   }
 
   ${StyledChildWrapper}:last-child {
-    margin-left: ${spacing('s')};
+    margin-left: ${spacing(4)};
   }
 
   ${StyledChildWrapper}:first-child, ${StyledChildWrapper}:last-child {

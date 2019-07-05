@@ -1,4 +1,5 @@
 const name2icon = {
+  filter: 'filter',
   voicemail: 'voicemail',
   transcription: 'transcription',
   answer: 'answer',
@@ -53,7 +54,7 @@ const name2icon = {
   team: 'team',
   work: 'work',
   email: 'email',
-  chat_bubble: 'chat',
+  chat_bubble: 'chat_bubble',
   download: 'download',
   unfold_more: 'unfold_more',
   unfold_less: 'unfold_less',
@@ -141,6 +142,8 @@ const name2icon = {
   incall: 'incall',
   outcall: 'outcall',
   missedcall: 'missedcall',
+  blocked: 'blocked',
+  unblocked: 'unblocked',
   read: 'read',
   unread: 'unread',
   dial: 'dial',

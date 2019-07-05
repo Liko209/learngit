@@ -8,10 +8,11 @@ import { RCMessage } from 'sdk/module/RCItems';
 
 type ContactInfoProps = {
   caller?: Caller;
-  readStatus: RCMessage['readStatus'];
+  readStatus?: RCMessage['readStatus'];
   didOpenMiniProfile?: Function;
   direction?: RCMessage['direction'];
   isMissedCall?: boolean;
+  disableOpenMiniProfile?: boolean;
 };
 
 type ContactInfoViewProps = {
@@ -22,6 +23,6 @@ type ContactInfoViewProps = {
   isUnread: boolean;
   didOpenMiniProfile?: Function;
   isUnknownCaller: boolean;
-};
+} & ContactInfoProps;
 
 export { ContactInfoProps, ContactInfoViewProps };

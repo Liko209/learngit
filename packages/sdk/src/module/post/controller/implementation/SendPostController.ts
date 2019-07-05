@@ -26,6 +26,7 @@ import { AccountService } from '../../../account/service';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { PostDataController } from '../PostDataController';
 
 type PostData = {
   id: number;
@@ -38,6 +39,7 @@ class SendPostController implements ISendPostController {
   constructor(
     public postActionController: PostActionController,
     public preInsertController: IPreInsertController,
+    public postDataController: PostDataController,
   ) {
     this._helper = new SendPostControllerHelper();
     this._postItemController = new PostItemController(
@@ -187,6 +189,7 @@ class SendPostController implements ISendPostController {
       id: originalPost.id,
       data: post,
     };
+
     const result = [obj];
     const replacePosts = new Map<number, Post>();
     replacePosts.set(originalPost.id, post);
@@ -197,15 +200,9 @@ class SendPostController implements ISendPostController {
     );
     const dao = daoManager.getDao(PostDao);
 
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
-    await groupConfigService.deletePostId(post.group_id, originalPost.id);
-
-    // 1. change status
-    // 2. delete from db
-    await this.preInsertController.delete(originalPost);
+    await this.postDataController.deletePreInsertPosts([originalPost]);
     await dao.put(post);
+
     return result;
   }
 

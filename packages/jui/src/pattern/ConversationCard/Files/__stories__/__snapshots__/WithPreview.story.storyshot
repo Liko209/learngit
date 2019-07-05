@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c14 {
@@ -45,6 +46,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c11.c11 > *:nth-child(n + 2) {
@@ -247,7 +252,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c24.c24 .c13,
 .c24.c24 .c13 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c24.c24:hover .c13 {
@@ -259,23 +264,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 }
 
 .c24.c24.c24.c24.disabled .c13 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c25.c25 .c13,
-.c25.c25 .c13 svg {
-  font-size: 20px;
-}
-
-.c25.c25:hover .c13 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c25.c25:active .c13 {
-  color: #fff;
-}
-
-.c25.c25.c25.c25.disabled .c13 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -292,6 +280,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c1 {
   height: 200px;
+  cursor: default;
   background-color: #bfbfbf;
   opacity: 0.36;
 }
@@ -369,6 +358,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -451,7 +441,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -466,6 +459,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -548,7 +542,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -563,6 +560,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -645,7 +643,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -660,6 +661,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
   >
     <div
       className="MuiCardMedia-root c1 "
+      data-test-automation-id="fileCardMedia"
       style={
         Object {
           "backgroundImage": "url(\\"test-file-stub\\")",
@@ -742,7 +744,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
                     className="c14"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>

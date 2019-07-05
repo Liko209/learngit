@@ -10,10 +10,12 @@ import { Raw } from '../../../../framework/model';
 import { Person } from '../../entity';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../controller/PersonController');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
+jest.mock('sdk/module/sync/config');
 
 describe('PersonService', () => {
   it('should call controller with correct parameter', async () => {});
@@ -70,6 +72,53 @@ describe('PersonService', () => {
         SYNC_SOURCE.INDEX,
         undefined,
       );
+    });
+  });
+
+  describe('handleSocketIOData', () => {
+    it('should call controller with correct parameter', async () => {
+      const persons: Raw<Person>[] = [];
+      await personService.handleSocketIOData(persons);
+      expect(personController.handleIncomingData).toBeCalledWith(
+        persons,
+        SYNC_SOURCE.SOCKET,
+      );
+    });
+  });
+
+  describe('canRequest()', () => {
+    it('should return true', () => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.SYNC_SERVICE) {
+            return {
+              getUserConfig: jest.fn().mockReturnValue({
+                getFetchedRemaining: jest.fn().mockReturnValue(true),
+              }),
+            };
+          }
+          return null;
+        });
+      const result = personService['canRequest']();
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false', () => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.SYNC_SERVICE) {
+            return {
+              getUserConfig: jest.fn().mockReturnValue({
+                getFetchedRemaining: jest.fn().mockReturnValue(false),
+              }),
+            };
+          }
+          return null;
+        });
+      const result = personService['canRequest']();
+      expect(result).toBeFalsy();
     });
   });
 
@@ -146,7 +195,7 @@ describe('PersonService', () => {
   });
 
   describe('getById', () => {
-    it('shoule receive null when id is not correct person id', async () => {
+    it('should receive null when id is not correct person id', async () => {
       try {
         await personService.getById(1);
       } catch (e) {

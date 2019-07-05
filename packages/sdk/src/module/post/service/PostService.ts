@@ -24,10 +24,14 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { ChangeModel } from 'sdk/module/sync/types';
 import { PostNotificationController } from '../controller/PostNotificationController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
-  constructor(private _groupService: IGroupService) {
+  constructor(
+    private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
+  ) {
     super({ isSupportedCache: false }, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -53,7 +57,10 @@ class PostService extends EntityBaseService<Post> {
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController(this._groupService);
+      this.postController = new PostController(
+        this._groupService,
+        this._groupConfigService,
+      );
     }
     return this.postController;
   }
@@ -127,7 +134,7 @@ class PostService extends EntityBaseService<Post> {
 
   async getRemotePostsByGroupId(
     params: IRemotePostRequest,
-  ): Promise<IPostResult | null> {
+  ): Promise<{ posts: Post[]; items: any[]; hasMore: boolean } | null> {
     return this.getPostController()
       .getPostFetchController()
       .getRemotePostsByGroupId(params);
@@ -178,25 +185,25 @@ class PostService extends EntityBaseService<Post> {
   async searchPosts(params: ContentSearchParams) {
     return await this.getPostController()
       .getPostSearchController()
-      .searchPosts(params);
+      .startSearch(params);
   }
 
-  async scrollSearchPosts(requestId: number) {
+  async scrollSearchPosts(key: string) {
     return await this.getPostController()
       .getPostSearchController()
-      .scrollSearchPosts(requestId);
+      .scrollSearch(key);
   }
 
-  async endPostSearch() {
+  async endPostSearch(key: string) {
     return await this.getPostController()
       .getPostSearchController()
-      .endPostSearch();
+      .endSearch(key);
   }
 
-  async getSearchContentsCount(params: ContentSearchParams) {
+  async getLatestPostIdByItem(groupId: number, itemId: number) {
     return await this.getPostController()
-      .getPostSearchController()
-      .getContentsCount(params);
+      .getPostItemController()
+      .getLatestPostIdByItem(groupId, itemId);
   }
 
   private get _postDataController() {

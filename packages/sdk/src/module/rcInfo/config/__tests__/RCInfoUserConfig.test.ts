@@ -98,7 +98,14 @@ describe('RCInfoUserConfig', () => {
         setName: 'setForwardingNumbers',
       } as any,
     ],
-  ])(' %s ', async (key: string, { getName, setName }: any) => {
+    [
+      RC_INFO_KEYS.BLOCK_NUMBER,
+      {
+        getName: 'getBlockNumbers',
+        setName: 'setBlockNumbers',
+      } as any,
+    ],
+  ])(' %s ', (key: string, { getName, setName }: any) => {
     it('should set right data', async () => {
       const data: any = {};
       await rcInfoUserConfig[setName](data);

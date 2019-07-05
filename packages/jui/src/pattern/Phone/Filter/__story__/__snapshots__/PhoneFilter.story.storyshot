@@ -1,0 +1,129 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/Phone PhoneFilter: Pattern/Phone PhoneFilter 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  cursor: default;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  position: relative;
+  height: 32px;
+  min-height: 32px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 0 16px;
+}
+
+.c1:hover {
+  background-color: #fafafa;
+}
+
+.c5.c5 {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  color: #212121;
+}
+
+.c2 {
+  color: #9e9e9e;
+  width: 20px;
+  height: 20px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 0 8px 0 0;
+}
+
+.c0 {
+  width: 160px;
+  padding: 0px 12px;
+  border-color: #e0e0e0;
+}
+
+.c0 input {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0 .c6 {
+  margin-left: 8px;
+}
+
+.c0 .c6:active {
+  outline: none;
+}
+
+<div>
+  <div
+    className="c0 c1"
+  >
+    <span
+      className="c2 filter icon c3"
+    >
+      <svg
+        className="c4"
+        role="img"
+        size="medium"
+      >
+        <use
+          href="#icon-filter"
+          xlinkHref="#icon-filter"
+        />
+      </svg>
+    </span>
+    <div
+      className="MuiInputBase-root c5"
+      onClick={[Function]}
+    >
+      <input
+        className="MuiInputBase-input"
+        maxLength={60}
+        onBlur={[Function]}
+        onChange={[Function]}
+        onFocus={[Function]}
+        placeholder="Filter Voicemail"
+        type="text"
+        value=""
+      />
+    </div>
+  </div>
+  <p>
+    Input Value: 
+    
+  </p>
+</div>
+`;

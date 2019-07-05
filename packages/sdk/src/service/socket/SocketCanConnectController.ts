@@ -7,14 +7,10 @@ import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
 import { AccountService } from '../../module/account/service';
-import { mainLogger } from 'foundation';
+import { mainLogger, getSpartaRandomTime } from 'foundation';
 import { SyncService } from '../../module/sync/service';
 import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
-const NEXT_RECONNECT_TIME = 500;
-const MAX_RECONNECT_INTERVAL_TIME = 10 * 60 * 1000;
-const MAX_TRY_INDEX: number = 11;
-const ONE_HOUR = 60 * 60 * 1000;
 const INTERVAL = 3000;
 
 const TAG = '[Socket SocketCanConnectController]';
@@ -27,17 +23,17 @@ export type CanReconnectAPIType = {
 };
 
 class SocketCanConnectController {
-  private _reconnectIntervalTime = NEXT_RECONNECT_TIME;
   private _canConnectTimeOutId?: NodeJS.Timeout;
 
   private _managerId: number = 0;
+  private _retryCount: number = 0;
   private _isDoingCanConnect: boolean = false;
   constructor(id: number) {
     this._managerId = id;
   }
 
   async doCanConnectApi(options: CanReconnectAPIType) {
-    this._reconnectIntervalTime = NEXT_RECONNECT_TIME;
+    this._retryCount = 0;
     this._isDoingCanConnect = true;
     const time = this._getStartedTime(options.nthCount, options.interval);
     mainLogger.log(TAG, `start checkCanConnectToServer ${time} later`);
@@ -111,22 +107,10 @@ class SocketCanConnectController {
     callback: (id: number) => void,
     forceOnline: boolean,
   ) {
-    this._reconnectIntervalTime = this._reconnectIntervalTime * 2;
-    if (this._reconnectIntervalTime >= MAX_RECONNECT_INTERVAL_TIME) {
-      this._reconnectIntervalTime = MAX_RECONNECT_INTERVAL_TIME;
-    }
-    mainLogger.log(
-      TAG,
-      ' handleRequestFail:',
-      e,
-      ' retry after:',
-      this._reconnectIntervalTime,
-    );
-    this._tryToCheckCanConnectAfterTime(
-      callback,
-      forceOnline,
-      this._reconnectIntervalTime,
-    );
+    this._retryCount = this._retryCount + 1;
+    const delayTime = getSpartaRandomTime(this._retryCount, true);
+    mainLogger.log(TAG, ' handleRequestFail:', e, ' retry after:', delayTime);
+    this._tryToCheckCanConnectAfterTime(callback, forceOnline, delayTime);
     // may need to handle 401 error to force user logout
   }
 
@@ -210,11 +194,7 @@ class SocketCanConnectController {
     if (nthCount === 0) {
       return interval > INTERVAL ? 0 : INTERVAL - interval;
     }
-    const index = nthCount > MAX_TRY_INDEX ? MAX_TRY_INDEX : nthCount;
-    const min = Math.pow(2, index) * 1000;
-    const max =
-      index === MAX_TRY_INDEX ? ONE_HOUR : Math.pow(2, index + 1) * 1000;
-    return Math.floor(Math.random() * (max - min) + min);
+    return getSpartaRandomTime(nthCount, true);
   }
 }
 

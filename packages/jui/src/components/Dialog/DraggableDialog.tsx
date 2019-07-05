@@ -39,7 +39,7 @@ const PaperComponent = ({
   return (
     <Draggable
       bounds="body"
-      defaultPosition={{ x, y }}
+      defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
       ref={dragRef}
       onStart={onStart}
       onStop={onStop}
@@ -68,7 +68,6 @@ const StyledDraggableDialog = styled(JuiDialog)`
     z-index: ${({ theme }) => theme.zIndex.modal};
     top: 0;
     left: 0;
-    max-height: 100%;
     overflow: hidden;
   }
   && .paper {

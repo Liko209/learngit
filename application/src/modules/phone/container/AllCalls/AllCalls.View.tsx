@@ -14,9 +14,15 @@ import { DataList } from '@/modules/common/container/DataList';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { CallLogItem } from '../CallLogItem';
 import {
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+} from 'jui/pattern/RightShelf';
+
+import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
   CALL_HISTORY_USED_HEIGHT,
+  LOADING_DELAY,
 } from '../Voicemail/config';
 import noCallLogImage from '../images/no-call.svg';
 
@@ -26,8 +32,8 @@ type Props = WithTranslation & AllCallsViewProps;
 class AllCallsViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
-    loadingRenderer: <div />, // TODO add loading
-    loadingMoreRenderer: <div />, // TODO add loading more
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
@@ -51,13 +57,14 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
+          width={width}
         />
       );
     });
@@ -83,7 +90,7 @@ class AllCallsViewComponent extends Component<Props> {
     const { listHandler, isError, onErrorReload } = this.props;
 
     return (
-      <PhoneWrapper>
+      <PhoneWrapper pageHeight={this._height}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (

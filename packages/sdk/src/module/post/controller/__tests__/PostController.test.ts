@@ -16,9 +16,10 @@ import {
 } from '../../../../framework/controller';
 
 import { SendPostController } from '../implementation/SendPostController';
-import { PostSearchController } from '../implementation/PostSearchController';
 import { ProgressService } from '../../../progress';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { PostSearchManagerController } from '../implementation/PostSearchManagerController';
+import { PostItemController } from '../implementation/PostItemController';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
@@ -78,7 +79,7 @@ describe('PostController', () => {
 
       const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
-      expect(buildEntitySourceController).toBeCalledTimes(1);
+      expect(buildEntitySourceController).toBeCalledTimes(2);
       expect(buildPartialModifyController).toBeCalledTimes(1);
       expect(buildRequestController).toBeCalledTimes(1);
     });
@@ -99,7 +100,15 @@ describe('PostController', () => {
     it('getPostSearchController should not be null/undefined', () => {
       const postController = new PostController();
       const result = postController.getPostSearchController();
-      expect(result instanceof PostSearchController).toBe(true);
+      expect(result instanceof PostSearchManagerController).toBe(true);
+    });
+  });
+
+  describe('getPostItemController', () => {
+    it('getPostItemController should not be null/undefined', () => {
+      const postController = new PostController();
+      const result = postController.getPostItemController();
+      expect(result instanceof PostItemController).toBe(true);
     });
   });
 });

@@ -6,16 +6,17 @@
 import { container } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
-import { postTimestamp } from '@/utils/date';
 import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import {
   ToastMessageAlign,
   ToastType,
@@ -24,9 +25,13 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 import {
   VoicemailViewProps,
   VoicemailProps,
-  JuiAudioMode,
   JuiAudioStatus,
+  Handler,
 } from './types';
+import {
+  voiceMailDefaultResponsiveInfo,
+  responsiveByBreakPoint,
+} from './config';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
@@ -36,11 +41,18 @@ const FLASH_TOAST_DURATION = 3000;
 class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   implements VoicemailViewProps {
   private _phoneStore: PhoneStore = container.get(PhoneStore);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
+
   // in order to handle incoming call
   @observable shouldPause: boolean = false;
+  @observable canEditBlockNumbers: boolean = false;
 
   constructor(props: VoicemailProps) {
     super(props);
+
+    this._fetchBlockPermission();
 
     this.reaction(
       () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
@@ -70,6 +82,22 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @computed
   get _id() {
     return this.props.id;
+  }
+
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
+    }
+    return voiceMailDefaultResponsiveInfo;
+  }
+
+  @computed
+  get voiceMailResponsiveMap() {
+    return this._getResponsiveMap(responsiveByBreakPoint);
   }
 
   get voicemailService() {
@@ -132,13 +160,8 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   }
 
   @computed
-  get mode() {
-    if (!this.audio) {
-      return;
-    }
-    return this.selected && this.audio.startTime > 0
-      ? JuiAudioMode.FULL
-      : JuiAudioMode.MINI;
+  get isAudioActive() {
+    return this.selected && this.audio && this.audio.startTime > 0;
   }
 
   @action
@@ -201,8 +224,17 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get createTime() {
-    const { creationTime } = this.voicemail;
-    return postTimestamp(creationTime);
+    return this.voicemail.creationTime;
+  }
+
+  private async _fetchBlockPermission() {
+    this.canEditBlockNumbers = await this._rcInfoService.isRCFeaturePermissionEnabled(
+      ERCServiceFeaturePermission.EDIT_BLOCKED_PHONE_NUMBER,
+    );
+  }
+
+  shouldShowCall = async () => {
+    return this._rcInfoService.isVoipCallingAvailable();
   }
 }
 

@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/Voicemail VoicemailItem: Pattern/Voicemail Voicemail
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c4 {

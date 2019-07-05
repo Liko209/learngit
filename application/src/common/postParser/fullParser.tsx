@@ -52,12 +52,11 @@ const parsersConfig = [
       fullText.includes(' <at_mention id='),
     getParserOption: ({
       keyword,
-      html,
       atMentions = {},
     }: PostParserOptions): AtMentionParserOption => {
       const opts: AtMentionParserOption = atMentions;
       opts.innerContentParser = (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text;
+        keyword ? postParser(text, { keyword }) : text;
       return opts;
     },
   },
@@ -80,7 +79,7 @@ const parsersConfig = [
       const opts: FileNameParserOption =
         fileName instanceof Object ? fileName : {};
       opts.innerContentParser = (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text;
+        keyword ? postParser(text, { keyword }) : text;
       return opts;
     },
   },
@@ -90,7 +89,7 @@ const parsersConfig = [
       options.url && fullText.includes('.'),
     getParserOption: ({ keyword }: PostParserOptions): URLParserOption => ({
       innerContentParser: (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text,
+        keyword ? postParser(text, { keyword }) : text,
     }),
   },
   {
@@ -104,7 +103,7 @@ const parsersConfig = [
       keyword,
       innerContentParser: (text: string) =>
         phoneNumber && /\d/g.test(text)
-          ? _postParser(text, { phoneNumber: true })
+          ? postParser(text, { phoneNumber: true })
           : text,
     }),
   },
@@ -129,7 +128,7 @@ const parsersConfig = [
       keyword,
     }: PostParserOptions): PhoneNumberParserOption => ({
       innerContentParser: (text: string) =>
-        keyword ? _postParser(text, { keyword }) : text,
+        keyword ? postParser(text, { keyword }) : text,
     }),
   },
 ];
@@ -146,13 +145,7 @@ const _transformEmoji = (
       EmojiConvertType.UNICODE,
     );
   }
-  if (new RegExp(EMOJI_ASCII_REGEX_SIMPLE).test(fullText)) {
-    _fullText = EmojiTransformer.replace(
-      _fullText,
-      emojiOptions,
-      EmojiConvertType.ASCII,
-    );
-  }
+
   if (
     !emojiOptions.unicodeOnly &&
     emojiOptions.customEmojiMap &&
@@ -170,6 +163,14 @@ const _transformEmoji = (
       _fullText,
       emojiOptions,
       EmojiConvertType.EMOJI_ONE,
+    );
+  }
+
+  if (new RegExp(EMOJI_ASCII_REGEX_SIMPLE).test(fullText)) {
+    _fullText = EmojiTransformer.replace(
+      _fullText,
+      emojiOptions,
+      EmojiConvertType.ASCII,
     );
   }
   return _fullText;
@@ -193,7 +194,7 @@ const _parseMarkdown = (markdownText: string, options: PostParserOptions) => {
     innerOptions.keyword = options.keyword;
     innerOptions.emoji = options.emoji;
 
-    return _postParser(text, innerOptions);
+    return postParser(text, innerOptions);
   };
   opts.withGlipdown = !(
     typeof html === 'object' && html.withGlipdown === false
@@ -202,7 +203,7 @@ const _parseMarkdown = (markdownText: string, options: PostParserOptions) => {
   return htmlParser.setContent(markdownText).parse();
 };
 
-const _postParser: FullParser = (
+const postParser: FullParser = (
   fullText: string,
   options: PostParserOptions = {},
 ) => {
@@ -220,11 +221,7 @@ const _postParser: FullParser = (
     } = options;
     const atMentionRegex = new RegExp(AT_MENTION_GROUPED_REGEXP);
     let transformedText = fullText;
-    // transform all kinds of emojis to one certain pattern at the very beginning for better performance
-    if (emoji && !emojiTransformed) {
-      transformedText = _transformEmoji(transformedText, emoji);
-      options.emojiTransformed = true;
-    }
+
     if (
       atMentions &&
       !atMentionTransformed &&
@@ -235,6 +232,13 @@ const _postParser: FullParser = (
       transformedText = AtMentionTransformer.replace(transformedText);
       options.atMentionTransformed = true;
     }
+
+    // transform all kinds of emojis to one certain pattern at the very beginning for better performance
+    if (emoji && !emojiTransformed) {
+      transformedText = _transformEmoji(transformedText, emoji);
+      options.emojiTransformed = true;
+    }
+
     if (html) {
       return _parseMarkdown(transformedText, options);
     }
@@ -256,14 +260,11 @@ const _postParser: FullParser = (
   }
 };
 
-const postParser = moize(_postParser, {
+const moizePostParser = moize(postParser, {
   maxSize: 1000,
   transformArgs: ([text, options]) => {
     return [text, JSON.stringify(options)];
   },
-  // onCacheHit: cache => {
-  //   console.log('use cache', cache.keys);
-  // },
 });
 
-export { postParser };
+export { moizePostParser, postParser };

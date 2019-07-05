@@ -14,7 +14,6 @@ import { ConversationPost } from '../../ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { JuiLozengeButton } from 'jui/components/Buttons';
-import { JuiSizeMeasurer } from 'jui/components/SizeMeasurer';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
@@ -39,6 +38,7 @@ import { getGlobalValue } from '@/store/utils';
 import { goToConversation } from '@/common/goToConversation';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { ERROR_TYPES } from '@/common/catchError';
+import { JuiAutoSizer } from 'jui/components/AutoSizer/AutoSizer';
 import { MESSAGE_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
@@ -155,8 +155,8 @@ class StreamViewComponent extends Component<Props> {
     }
   }
 
-  private _renderPost(streamItem: StreamItem & { value: number[] }) {
-    const postId = streamItem.value[0];
+  private _renderPost(streamItem: StreamItem & { value: number }) {
+    const postId = streamItem.value;
     return (
       <ConversationPost
         id={postId}
@@ -190,17 +190,18 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _RENDERER_MAP = {
+    [StreamItemType.POST]: this._renderPost,
+    [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
+    [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
+    [StreamItemType.INITIAL_POST]: this._renderInitialPost,
+  };
+
   private _renderStreamItem = (
     streamItem: StreamItem,
     index: number,
   ): JSX.Element => {
-    const RENDERER_MAP = {
-      [StreamItemType.POST]: this._renderPost,
-      [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
-      [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
-      [StreamItemType.INITIAL_POST]: this._renderInitialPost,
-    };
-    const streamItemRenderer = RENDERER_MAP[streamItem.type];
+    const streamItemRenderer = this._RENDERER_MAP[streamItem.type];
     return streamItemRenderer.call(this, streamItem, index);
   }
 
@@ -306,10 +307,9 @@ class StreamViewComponent extends Component<Props> {
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
     if (firstPostItem) {
-      const isHistoryRead = firstPostItem.value.some(
-        (i: number) =>
-          0 <= i && (i <= historyReadThrough || i <= firstHistoryUnreadPostId),
-      );
+      const i = firstPostItem.value;
+      const isHistoryRead =
+        0 <= i && (i <= historyReadThrough || i <= firstHistoryUnreadPostId);
       if (isHistoryRead) {
         this.handleFirstUnreadViewed();
       } else {
@@ -351,7 +351,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _findStreamItemIndexByPostId = (id: number) => {
     return this.props.items.findIndex((item: StreamItemPost) => {
-      return item.type === StreamItemType.POST && item.value.includes(id);
+      return item.type === StreamItemType.POST && item.value === id;
     });
   }
 
@@ -419,6 +419,14 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  private _defaultLoading() {
+    return <DefaultLoadingWithDelay delay={100} />;
+  }
+
+  private _defaultLoadingMore() {
+    return <DefaultLoadingMore />;
+  }
+
   render() {
     const { loadMore, hasMore, items, loadingStatus } = this.props;
 
@@ -426,26 +434,22 @@ class StreamViewComponent extends Component<Props> {
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
 
-    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
-    const defaultLoadingMore = <DefaultLoadingMore />;
-
     return (
-      <JuiSizeMeasurer>
-        {({ ref, height }) => (
-          // MobX only tracks data accessed for observer components
-          // if they are directly accessed by render, for render
-          // callback, we can wrap it with <Observer>
-          // See: https://tinyurl.com/y3nfuybu
-          <Observer>
-            {() => (
-              <JuiStream ref={ref}>
-                {loadingStatus === STATUS.FAILED ? (
+      <JuiStream>
+        <JuiAutoSizer>
+          {({ height }) => (
+            <Observer>
+              {() =>
+                // MobX only tracks data accessed for observer components
+                // if they are directly accessed by render, for render
+                // callback, we can wrap it with <Observer>
+                // See: https://tinyurl.com/y3nfuybu
+                loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
                   <>
                     {this._renderJumpToFirstUnreadButton()}
                     <JuiInfiniteList
-                      fixedWrapper={true}
                       contentStyle={this._contentStyleGen(height)}
                       ref={this._listRef}
                       height={height}
@@ -455,21 +459,21 @@ class StreamViewComponent extends Component<Props> {
                       minRowHeight={MINSTREAMITEMHEIGHT} // extract to const
                       loadInitialData={this._loadInitialPosts}
                       loadMore={loadMore}
-                      loadingRenderer={defaultLoading}
+                      loadingRenderer={this._defaultLoading}
                       hasMore={hasMore}
-                      loadingMoreRenderer={defaultLoadingMore}
+                      loadingMoreRenderer={this._defaultLoadingMore}
                       onVisibleRangeChange={this._handleVisibilityChanged}
                       onBottomStatusChange={this._bottomStatusChangeHandler}
                     >
                       {this._renderStreamItems()}
                     </JuiInfiniteList>
                   </>
-                )}
-              </JuiStream>
-            )}
-          </Observer>
-        )}
-      </JuiSizeMeasurer>
+                )
+              }
+            </Observer>
+          )}
+        </JuiAutoSizer>
+      </JuiStream>
     );
   }
 

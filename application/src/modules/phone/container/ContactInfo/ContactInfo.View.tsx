@@ -24,7 +24,10 @@ type State = {
 @observer
 class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
   openMiniProfile = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const { personId, didOpenMiniProfile } = this.props;
+    const { personId, didOpenMiniProfile, disableOpenMiniProfile } = this.props;
+    if (disableOpenMiniProfile) {
+      return;
+    }
     event.stopPropagation();
     if (!personId) {
       return;

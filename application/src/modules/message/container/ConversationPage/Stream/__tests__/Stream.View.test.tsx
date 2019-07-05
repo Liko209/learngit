@@ -2,14 +2,11 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import i18next from 'i18next';
 import { ThemeProvider } from 'styled-components';
-import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
-import { ConversationInitialPost } from '@/modules/message/container/ConversationInitialPost';
-import {
-  JuiInfiniteList,
-} from 'jui/components/VirtualizedList';
+import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
+import { ConversationInitialPost } from '../../../ConversationInitialPost';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
@@ -19,9 +16,8 @@ import { StreamItemType, StreamViewProps, STATUS } from '../types';
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
 
-jest.mock('jui/components/AutoSizer', () => {
-  return ({ children }: AutoSizerProps) => children({ height: 200 });
-});
+jest.mock('jui/components/AutoSizer/AutoSizer');
+jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('sdk/module/post');
 jest.mock('../../../ConversationSheet', () => ({}));
 
@@ -64,6 +60,7 @@ const baseProps = {
   resetJumpToPostId: () => {},
   resetAll: (id: number) => {},
   refresh: () => {},
+  updateConversationStatus: () => {},
 };
 
 function mountStreamWithUnreadButton({
@@ -176,6 +173,7 @@ describe('StreamView', () => {
       });
     });
 
+    // TODO refactoring: Move those cases to ViewModel
     describe('hasHistoryUnread=true', () => {
       it('should not render jumpToFirstUnreadButton when first history unread in current page and was viewed [JPT-206][JPT-232]', () => {
         const {

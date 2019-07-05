@@ -109,7 +109,10 @@ class ContactSearchListViewComponent extends Component<
     const hasResult = !!displayedSearchResult.length;
 
     return (
-      <ContactSearchListContainer ref={this._containerRef}>
+      <ContactSearchListContainer
+        ref={this._containerRef}
+        className="contact-search-list-container"
+      >
         {hasResult ? (
           <HotKeys
             keyMap={{
@@ -124,8 +127,6 @@ class ContactSearchListViewComponent extends Component<
                 minRowHeight={ROW_HEIGHT}
                 loadMore={loadMore}
                 loadInitialData={loadInitialData}
-                loadingMoreRenderer={<></>}
-                loadingRenderer={<></>}
                 hasMore={hasMore}
                 initialScrollToIndex={focusIndex === -1 ? 0 : focusIndex}
                 ref={this._listRef}

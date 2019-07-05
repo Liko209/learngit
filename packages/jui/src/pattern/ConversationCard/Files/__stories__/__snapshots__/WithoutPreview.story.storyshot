@@ -6,6 +6,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
+  cursor: default;
 }
 
 .c9 {
@@ -45,6 +46,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c6.c6 > *:nth-child(n + 2) {
@@ -247,7 +252,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c19.c19 .c8,
 .c19.c19 .c8 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c19.c19:hover .c8 {
@@ -259,23 +264,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 }
 
 .c19.c19.c19.c19.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c20.c20 .c8,
-.c20.c20 .c8 svg {
-  font-size: 20px;
-}
-
-.c20.c20:hover .c8 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c20.c20:active .c8 {
-  color: #fff;
-}
-
-.c20.c20.c20.c20.disabled .c8 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -448,7 +436,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -537,7 +528,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -626,7 +620,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -715,7 +712,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
                 className="c9"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>

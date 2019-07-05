@@ -1,0 +1,18 @@
+{
+    "on_merge": {
+      "fixtures": [
+        "./fixtures/MessageInput/Draft.ts",
+        "./fixtures/ConversationList/UnreadToggle.ts"
+      ],
+      "include_tags": [
+        "JPT-203",
+        "JPT-1380",
+        "JPT-140",
+        "JPT-149"
+      ],
+      "browsers": [
+        "selenium:chrome"
+      ]
+    }
+  }
+  

@@ -33,7 +33,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://xmnup.asialab.glip.net',
     AUTH_URL: 'https://login-xmnup.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'xmnup',
   },
   'GLP-CI1-XMN': {
@@ -44,7 +44,7 @@ const ENV_OPTS = {
     GLIP_SERVER_BASE_URL: 'https://glpci1xmn.asialab.glip.net',
     AUTH_URL: 'https://login-glpci1xmn.lab.nordigy.ru/api/login',
     JUPITER_APP_KEY: 'YCWFuqW8T7-GtSTb6KBS6g',
-    WEBPHONE_BASE_URL: 'http://xia01-i01-stg01.lab.rcch.ringcentral.com',
+    WEBPHONE_BASE_URL: 'https://jupiter-webphone.lab.rcch.ringcentral.com',
     WEBPHONE_ENV: 'glpci1xmn',
   },
 }[SITE_ENV];
@@ -133,6 +133,7 @@ enum BrandTire {
   "RC_WITH_GUESS_DID" = "kamino(RC_WITH_GUESS_DID,Jupiter,1210,4488)",
   "SORTED_LAST_NAME" = "kamino(Sorted_Last_Name,Jupiter,1210,4488)",
   "RC_WITH_PHONE" = "kamino(1C4EWithPhoneAndNumber,Jupiter,1210,4488)",
+  "RC_EMPTY_ONE_TIME" = "kamino(One-Time-Empty-Account,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

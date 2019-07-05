@@ -160,4 +160,60 @@ describe('RCInfoApi', () => {
       });
     });
   });
+
+  describe('getForwardingNumbers()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.getForwardingNumbers('mockRequest' as any);
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/extension/~/forwarding-number',
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        params: 'mockRequest',
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('getBlockNumberList()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.getBlockNumberList('mockRequest' as any);
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/extension/~/caller-blocking/phone-numbers',
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        params: 'mockRequest',
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('deleteBlockNumbers()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.deleteBlockNumbers(['123', '456']);
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path:
+          '/v1.0/account/~/extension/~/caller-blocking/phone-numbers/123,456',
+        method: 'delete',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
+
+  describe('addBlockNumbers()', () => {
+    it('should be called with correct params', () => {
+      RCInfoApi.addBlockNumbers('mockRequest' as any);
+      expect(RCInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '/v1.0/account/~/extension/~/caller-blocking/phone-numbers',
+        method: 'post',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+        data: 'mockRequest',
+        HAPriority: HA_PRIORITY.HIGH,
+      });
+    });
+  });
 });

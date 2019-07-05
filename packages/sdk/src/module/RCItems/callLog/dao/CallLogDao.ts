@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao, daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { BaseDao, daoManager } from 'sdk/dao';
 import { CallLog } from '../entity';
 import { IDatabase } from 'foundation';
 import { CallLogViewDao } from './CallLogViewDao';
-import { CALL_LOG_SOURCE } from '../constants';
 import { Nullable } from 'sdk/types';
 import _ from 'lodash';
 import { CALL_DIRECTION } from '../../constants';
-import { Caller } from '../../types';
+import { Caller, FetchDataOptions } from '../../types';
+import { CALL_LOG_SOURCE } from '../constants';
 
 class CallLogDao extends BaseDao<CallLog, string> {
   static COLLECTION_NAME = 'callLog';
@@ -91,18 +91,13 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   async queryCallLogs(
-    source: CALL_LOG_SOURCE,
-    anchorId?: string,
-    direction = QUERY_DIRECTION.OLDER,
-    limit: number = Infinity,
+    options: FetchDataOptions<CallLog, string>,
   ): Promise<CallLog[]> {
-    return this._viewDao.queryCallLogs(
-      this._fetchCallLogsFunc,
-      source,
-      anchorId,
-      direction,
-      limit,
-    );
+    return this._viewDao.queryCallLogs(this._fetchCallLogsFunc, options);
+  }
+
+  async queryAllUniquePhoneNumberCalls(source: CALL_LOG_SOURCE) {
+    return this._viewDao.getAllUniquePhoneNumberCalls(source);
   }
 
   async doInTransaction(func: () => {}): Promise<void> {

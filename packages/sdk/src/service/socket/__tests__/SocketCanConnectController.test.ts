@@ -11,12 +11,14 @@ import { AccountUserConfig } from '../../../module/account/config/AccountUserCon
 import { AuthUserConfig } from '../../../module/account/config/AuthUserConfig';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { getSpartaRandomTime } from 'foundation/src/utils/algorithm/SpartaRandomTime';
 
 jest.mock('../../../api/glip/user');
 jest.mock('../../../module/presence/service/PresenceService');
 jest.mock('../../../module/account/config/AccountUserConfig');
 jest.mock('../../../module/account/config/AuthUserConfig');
 jest.mock('../../../module/sync/config/SyncUserConfig');
+jest.mock('foundation/src/utils/algorithm/SpartaRandomTime');
 
 let presenceService: PresenceService;
 
@@ -145,24 +147,21 @@ describe('SocketCanConnectController', () => {
   });
 
   describe('_onCanConnectApiFailure', () => {
-    it('should double reconnect interval time if it less than 10 minutes', async () => {
+    it('should retry after SpartaRandomTime', async () => {
       const controller = getController();
       jest
         .spyOn(controller, '_tryToCheckCanConnectAfterTime')
         .mockResolvedValueOnce();
-      await controller._onCanConnectApiFailure();
-      expect(controller._reconnectIntervalTime).toBeLessThan(60 * 1000);
-      expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalled();
-    });
-    it('should equal to 10 minutes if double reconnect interval time is larger or equal to 10 minutes', async () => {
-      const controller = getController();
-      controller._reconnectIntervalTime = 60 * 61 * 1000;
-      jest
-        .spyOn(controller, '_tryToCheckCanConnectAfterTime')
-        .mockResolvedValueOnce();
-      await controller._onCanConnectApiFailure();
-      expect(controller._reconnectIntervalTime).toEqual(10 * 60 * 1000);
-      expect(controller._tryToCheckCanConnectAfterTime).toHaveBeenCalled();
+      controller['_retryCount'] = 1;
+      const callback = () => {};
+      getSpartaRandomTime.mockReturnValueOnce(3);
+      await controller['_onCanConnectApiFailure'](null, callback, true);
+      expect(getSpartaRandomTime).toHaveBeenCalledWith(2, true);
+      expect(controller['_tryToCheckCanConnectAfterTime']).toHaveBeenCalledWith(
+        callback,
+        true,
+        3,
+      );
     });
   });
 
@@ -255,17 +254,11 @@ describe('SocketCanConnectController', () => {
       const result = controller['_getStartedTime'](0, 6666);
       expect(result).toEqual(0);
     });
-    it('should between 2 and 4', () => {
+    it('should return sparta random time when nthCount is larger than 1', () => {
       const controller = getController();
+      getSpartaRandomTime.mockReturnValueOnce(10000);
       const result = controller['_getStartedTime'](1, 0);
-      expect(2000 <= result && result <= 4000).toBeTruthy();
-    });
-    it('should not over 60 * 60 * 1000', () => {
-      const controller = getController();
-      const result = controller['_getStartedTime'](20, 0);
-      expect(
-        result > Math.pow(2, 11) * 1000 && result < 60 * 60 * 1000,
-      ).toBeTruthy();
+      expect(result).toEqual(10000);
     });
     it('should return 3000 - interval when nthCount is 0 and interval is less than 3000', () => {
       const controller = getController();

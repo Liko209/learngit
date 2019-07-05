@@ -9,3 +9,15 @@ export const ANALYTICS_KEY = {
   VOICEMAIL_ACTION_PLAY: 'Play',
   VOICEMAIL_ACTION_PAUSE: 'Pause',
 };
+
+export enum ENTITY_TYPE {
+  CALL_LOG = 'calllog',
+  VOICEMAIL = 'voicemail',
+}
+
+export const SOURCE = {
+  [ENTITY_TYPE.CALL_LOG]: 'callHistory',
+  [ENTITY_TYPE.VOICEMAIL]: 'voicemailList',
+};
+
+export const MAX_BUTTON_COUNT = 2;

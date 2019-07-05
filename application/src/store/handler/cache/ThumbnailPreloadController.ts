@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import { ThumbnailPreloadProcessor } from './ThumbnailPreloadProcessor';
 import notificationCenter, {
   NotificationEntityPayload,
@@ -17,8 +20,8 @@ import { ItemFile } from 'sdk/module/item/entity';
 import { EVENT_TYPES } from 'sdk/service/constants';
 
 class ThumbnailPreloadController {
-  private _sequenceProcessorHandler: SequenceProcessorHandler = new SequenceProcessorHandler(
-    'Thumbnail Sequence Processor',
+  private _sequenceProcessorHandler: SequenceProcessorHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+    { name: 'Thumbnail Sequence Processor' },
   );
 
   private _itemsObserver: Map<number, number> = new Map();

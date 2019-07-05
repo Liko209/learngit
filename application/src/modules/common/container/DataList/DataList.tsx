@@ -8,9 +8,10 @@ import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import {
   JuiInfiniteListProps,
   JuiInfiniteList,
+  JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { observer } from 'mobx-react';
 
 type DataListProps = {
@@ -18,6 +19,7 @@ type DataListProps = {
   initialDataCount: number;
   InfiniteListProps: Pick<
     JuiInfiniteListProps,
+    | 'initialScrollToIndex'
     | 'height'
     | 'minRowHeight'
     | 'overscan'
@@ -26,7 +28,7 @@ type DataListProps = {
     | 'noRowsRenderer'
     | 'loadMoreStrategy'
     | 'stickToLastPosition'
-  >;
+  > & { ref?: React.RefObject<JuiVirtualizedListHandles> };
   children: JSX.Element[];
   reverse?: boolean;
 };
@@ -51,11 +53,6 @@ class DataList extends React.Component<DataListProps> {
     );
   }
 
-  @action
-  private _hasMore = (direction: 'up' | 'down') => {
-    return this.props.listHandler.hasMore(this._transformDirection(direction));
-  }
-
   private _transformDirection(direction: 'up' | 'down') {
     if (this.props.reverse) {
       return direction === 'up' ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
@@ -69,13 +66,26 @@ class DataList extends React.Component<DataListProps> {
     }
   }
 
+  @computed
+  get hasMore() {
+    const hasMoreUp = this.props.listHandler.hasMore(
+      this._transformDirection('up'),
+    );
+    const hasMoreDown = this.props.listHandler.hasMore(
+      this._transformDirection('down'),
+    );
+    return (direction: 'up' | 'down') =>
+      direction === 'up' ? hasMoreUp : hasMoreDown;
+  }
+
   render() {
     const { children, InfiniteListProps } = this.props;
+
     return (
       <JuiInfiniteList
         loadInitialData={this._loadInitialData}
         loadMore={this.loadMore}
-        hasMore={this._hasMore}
+        hasMore={this.hasMore}
         {...InfiniteListProps}
       >
         {children}

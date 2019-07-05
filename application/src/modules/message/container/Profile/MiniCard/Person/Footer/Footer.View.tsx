@@ -58,7 +58,7 @@ class ProfileMiniCardPersonFooter extends Component<
           name: person.userDisplayName,
         })}
       >
-        chat_bubble
+        chat
       </JuiIconButton>
     );
 
