@@ -58,7 +58,10 @@ test.meta(<ITestMeta>{
   const callHistoryId = await callHistoryItem.id;
   await h(t).withLog('When I open call history {id} More menu and click Delete button', async (step) => {
     step.setMetadata('id', callHistoryId)
-    await callHistoryItem.openMoreMenu();
+    await callHistoryItem.hoverSelf();
+    if (!await callHistoryItem.deleteButton.exists) {
+      await callHistoryItem.openMoreMenu();
+    }
     await callHistoryItem.clickDeleteButton();
   });
 
@@ -77,7 +80,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I open call history {id} More menu and click Delete button', async (step) => {
     step.setMetadata('id', callHistoryId)
-    await callHistoryItem.openMoreMenu();
+    await callHistoryItem.hoverSelf();
+    if (!await callHistoryItem.deleteButton.exists) {
+      await callHistoryItem.openMoreMenu();
+    }
     await callHistoryItem.clickDeleteButton();
   });
 
