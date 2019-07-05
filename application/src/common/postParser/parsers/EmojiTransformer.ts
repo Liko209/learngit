@@ -27,80 +27,99 @@ import data from 'emoji-mart/data/all.json';
 
 class EmojiTransformer {
   static emojiDataMap = {};
+
+  static replaceMatch(
+    _match: string,
+    pre = '',
+    emoji: string,
+    convertType: EmojiConvertType,
+    enlarge: boolean,
+    options: EmojiTransformerOption,
+  ) {
+    const { customEmojiMap = {}, unicodeOnly, hostName } = options;
+    const id = b64EncodeUnicode((unicodeOnly ? 'u' : '') + emoji + enlarge);
+    if (this.emojiDataMap[id]) {
+      return pre + this.getReplacePattern(id);
+    }
+    const obj = customEmojiMap[emoji.slice(1, -1)];
+
+    if (
+      !unicodeOnly &&
+      convertType === EmojiConvertType.CUSTOM &&
+      obj &&
+      typeof obj === 'object' &&
+      obj.data
+    ) {
+      const data = {
+        className: this._getClassName(enlarge),
+        src: obj.data,
+        isCustomEmoji: true,
+        isEnlarged: enlarge,
+      };
+      return pre + this.getReplacePattern(id, data);
+    }
+    if (convertType === EmojiConvertType.CUSTOM) {
+      return _match;
+    }
+
+    const key =
+      convertType === EmojiConvertType.ASCII
+        ? emoji.replace(regExpSpecial, (match: string) => mapSpecial[match])
+        : emoji;
+    const mapMap = {
+      [EmojiConvertType.UNICODE]: convertMapUnicode,
+      [EmojiConvertType.ASCII]: convertMapAscii,
+      [EmojiConvertType.EMOJI_ONE]: mapEmojiOne,
+    };
+    const mapValue = mapMap[convertType][key];
+    if (!mapValue) {
+      return _match;
+    }
+
+    const shortName = mapUnicodeToShort[mapValue];
+    const unicode =
+      mapValue instanceof Object
+        ? mapValue.fname
+        : shortName
+        ? mapEmojiOne[shortName].fname
+        : mapValue;
+    const code = this._convertFromCodePoint(unicode);
+    const skinTone = this._hasSkinTone(unicode);
+
+    if (unicodeOnly || !hostName) {
+      return pre + code;
+    }
+    const emojiName = this._transferUnicodeToEmojiData(unicode);
+
+    const data = {
+      className: this._getClassName(enlarge),
+      alt: code,
+      title: emoji,
+      src: this._getSrc(unicode, hostName),
+      isCustomEmoji: false,
+      name: emojiName ? emojiName.id : '',
+      tone: skinTone,
+      isEnlarged: enlarge,
+    };
+    return pre + this.getReplacePattern(id, data);
+  }
+
   static replace(
     originalStr: string,
     options: EmojiTransformerOption,
     convertType: EmojiConvertType = 0,
   ) {
-    const { customEmojiMap = {}, unicodeOnly, hostName } = options;
     const reg = this.getRegexp(options, convertType);
     return originalStr.replace(reg, (_match: string, pre = '', emoji) => {
       const enlarge = emoji.length === originalStr.trim().length;
-      const id = b64EncodeUnicode((unicodeOnly ? 'u' : '') + emoji + enlarge);
-      if (this.emojiDataMap[id]) {
-        return pre + this.getReplacePattern(id);
-      }
-      const obj = customEmojiMap[emoji.slice(1, -1)];
-
-      if (
-        !unicodeOnly &&
-        convertType === EmojiConvertType.CUSTOM &&
-        obj &&
-        typeof obj === 'object' &&
-        obj.data
-      ) {
-        const data = {
-          className: this._getClassName(enlarge),
-          src: obj.data,
-          isCustomEmoji: true,
-          isEnlarged: enlarge,
-        };
-        return pre + this.getReplacePattern(id, data);
-      }
-      if (convertType === EmojiConvertType.CUSTOM) {
-        return _match;
-      }
-
-      const key =
-        convertType === EmojiConvertType.ASCII
-          ? emoji.replace(regExpSpecial, (match: string) => mapSpecial[match])
-          : emoji;
-      const mapMap = {
-        [EmojiConvertType.UNICODE]: convertMapUnicode,
-        [EmojiConvertType.ASCII]: convertMapAscii,
-        [EmojiConvertType.EMOJI_ONE]: mapEmojiOne,
-      };
-      const mapValue = mapMap[convertType][key];
-      if (!mapValue) {
-        return _match;
-      }
-
-      const shortName = mapUnicodeToShort[mapValue];
-      const unicode =
-        mapValue instanceof Object
-          ? mapValue.fname
-          : shortName
-          ? mapEmojiOne[shortName].fname
-          : mapValue;
-      const code = this._convertFromCodePoint(unicode);
-      const skinTone = this._hasSkinTone(unicode);
-
-      if (unicodeOnly || !hostName) {
-        return pre + code;
-      }
-      const emojiName = this._transferUnicodeToEmojiData(unicode);
-
-      const data = {
-        className: this._getClassName(enlarge),
-        alt: code,
-        title: emoji,
-        src: this._getSrc(unicode, hostName),
-        isCustomEmoji: false,
-        name: emojiName ? emojiName.id : '',
-        tone: skinTone,
-        isEnlarged: enlarge,
-      };
-      return pre + this.getReplacePattern(id, data);
+      return this.replaceMatch(
+        _match,
+        pre,
+        emoji,
+        convertType,
+        enlarge,
+        options,
+      );
     });
   }
 
@@ -172,12 +191,9 @@ class EmojiTransformer {
   }
 }
 
-EmojiTransformer.replace = moize(EmojiTransformer.replace, {
-  maxSize: 100,
-  transformArgs: ([originalStr, options, convertType]) => [
-    originalStr,
-    convertType,
-    options.unicodeOnly,
+EmojiTransformer.replaceMatch = moize(EmojiTransformer.replaceMatch, {
+  transformArgs: ([_match, pre, emoji, convertType, enlarge, options]) => [
+    `${_match} ${convertType} ${enlarge} ${options.unicodeOnly}`,
   ],
 });
 

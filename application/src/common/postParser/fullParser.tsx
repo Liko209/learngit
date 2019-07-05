@@ -261,9 +261,17 @@ const postParser: FullParser = (
 };
 
 const moizePostParser = moize(postParser, {
-  maxSize: 1000,
+  maxSize: 300,
+  maxAge: 300e3,
+  updateExpire: true,
   transformArgs: ([text, options]) => {
-    return [text, JSON.stringify(options)];
+    return [
+      `${text} ${options.keyword} ${options.html} ${
+        options.phoneNumber
+      } ${Object.values(options.atMentions.map)
+        .map(({ name }) => name)
+        .join(',')}`,
+    ];
   },
 });
 
