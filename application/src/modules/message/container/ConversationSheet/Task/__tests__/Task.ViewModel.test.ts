@@ -3,7 +3,8 @@
  * @Date: 2018-11-15 10:10:26
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '@/store/utils';
+import { test, testable } from 'shield';
+import { mockEntity } from 'shield/application';
 import { TaskViewModel } from '../Task.ViewModel';
 import * as date from '../../../../../../utils/date';
 jest.mock('@/store/utils');
@@ -14,81 +15,200 @@ const mockData = {
   attachmentIds: [123],
 };
 
-const taskViewModel = new TaskViewModel({
-  postId: 1,
-  ids: [1],
-});
+function getTextByLen(length: number) {
+  return Array(length + 1).join('1');
+}
 
 describe('taskUpdateViewModel', () => {
-  beforeEach(() => {
-    jest.restoreAllMocks();
-  });
+  @testable
+  class attachmentIds {
+    @test('should be return attachmentIds when get attachmentIds')
+    @mockEntity(mockData)
+    t1() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.attachmentIds).toEqual([123]);
+    }
+  }
 
-  it('computed attachmentIds', () => {
-    (getEntity as jest.Mock).mockReturnValue(mockData);
-    expect(taskViewModel.attachmentIds).toEqual([123]);
-  });
+  @testable
+  class task {
+    @test('should be return task when get task')
+    @mockEntity(mockData)
+    t1() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.task).toBe(mockData);
+    }
+  }
 
-  it('computed task', () => {
-    (getEntity as jest.Mock).mockReturnValue(mockData);
-    expect(taskViewModel.task).toBe(mockData);
-  });
+  @testable
+  class hasTime {
+    @test('should be false if not start or due')
+    @mockEntity.multi([
+      {
+        start: null,
+        due: null,
+      },
+      {
+        start: 123123,
+        due: null,
+      },
+      {
+        start: null,
+        due: 123123,
+      },
+    ])
+    t1() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.hasTime).toBeFalsy();
+      expect(taskViewModel.hasTime).toBeFalsy();
+      expect(taskViewModel.hasTime).toBeFalsy();
+    }
 
-  it('Should be false if not start or due', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      start: null,
-      due: null,
-    });
-    expect(taskViewModel.hasTime).toBeFalsy();
-    (getEntity as jest.Mock).mockReturnValue({
+    @test('should be true if start and due existed')
+    @mockEntity({
       start: 123123,
-      due: null,
-    });
-    expect(taskViewModel.hasTime).toBeFalsy();
-    (getEntity as jest.Mock).mockReturnValue({
-      start: null,
       due: 123123,
-    });
-    expect(taskViewModel.hasTime).toBeFalsy();
-  });
+    })
+    t2() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.hasTime).toBeTruthy();
+    }
+  }
 
-  it('Should be true if start and due existed', () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      start: 123123,
-      due: 123123,
-    });
-    expect(taskViewModel.hasTime).toBeTruthy();
-  });
-
-  it('Should be empty string if start not existed', async (done: jest.DoneCallback) => {
-    (getEntity as jest.Mock).mockReturnValue({
+  @testable
+  class startTime {
+    @test('should be empty string if start not existed')
+    @mockEntity({
       start: null,
-    });
-    expect(await taskViewModel.startTime.fetch()).toBe('');
-    done();
-  });
-  it('Should be date if start existed', async (done: jest.DoneCallback) => {
-    (getEntity as jest.Mock).mockReturnValue({
+    })
+    async t1(done: jest.DoneCallback) {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(await taskViewModel.startTime.fetch()).toBe('');
+      done();
+    }
+
+    @test('should be date if start existed')
+    @mockEntity({
       start: 1547003419176,
-    });
-    jest.spyOn(date, 'recentlyTwoDayAndOther').mockReturnValue('Mon 8:58 AM');
-    expect(await taskViewModel.startTime.fetch()).not.toBe('');
-    done();
-  });
+    })
+    async t2(done: jest.DoneCallback) {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      jest.spyOn(date, 'recentlyTwoDayAndOther').mockReturnValue('Mon 8:58 AM');
+      expect(await taskViewModel.startTime.fetch()).not.toBe('');
+      done();
+    }
+  }
 
-  it('Should be empty string if due not existed', async (done: jest.DoneCallback) => {
-    (getEntity as jest.Mock).mockReturnValue({
+  @testable
+  class endTime {
+    @test('should be empty string if due not existed')
+    @mockEntity({
       due: null,
-    });
-    expect(await taskViewModel.endTime.fetch()).toBe('');
-    done();
-  });
+    })
+    async t1(done: jest.DoneCallback) {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(await taskViewModel.endTime.fetch()).toBe('');
+      done();
+    }
 
-  it('Should be date if due existed', async (done: jest.DoneCallback) => {
-    (getEntity as jest.Mock).mockReturnValue({
+    @test('should be date if start existed')
+    @mockEntity({
       due: 1547003419176,
-    });
-    expect(await taskViewModel.endTime.fetch()).not.toBe('');
-    done();
-  });
+    })
+    async t2(done: jest.DoneCallback) {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(await taskViewModel.endTime.fetch()).not.toBe('');
+      done();
+    }
+  }
+
+  @testable
+  class notes {
+    @test('should be truncated if char > 300 [JPT-357]')
+    @mockEntity({
+      notes: getTextByLen(301),
+    })
+    t1() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.notes.indexOf('...') > -1).toBeTruthy();
+    }
+
+    @test('should not truncated if char <= 300 [JPT-357]')
+    @mockEntity.multi([
+      {
+        notes: getTextByLen(300),
+      },
+      {
+        notes: getTextByLen(299),
+      },
+    ])
+    t2() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.notes.indexOf('...') < 0).toBeTruthy();
+      expect(taskViewModel.notes.indexOf('...') < 0).toBeTruthy();
+    }
+  }
+
+  @testable
+  class section {
+    @test('should be truncated if char > 300 [JPT-357]')
+    @mockEntity({
+      section: getTextByLen(301),
+    })
+    t1() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.section.indexOf('...') > -1).toBeTruthy();
+    }
+
+    @test('should not truncated if char <= 300 [JPT-357]')
+    @mockEntity.multi([
+      {
+        section: getTextByLen(300),
+      },
+      {
+        section: getTextByLen(299),
+      },
+    ])
+    t2() {
+      const taskViewModel = new TaskViewModel({
+        postId: 1,
+        ids: [1],
+      });
+      expect(taskViewModel.section.indexOf('...') < 0).toBeTruthy();
+      expect(taskViewModel.section.indexOf('...') < 0).toBeTruthy();
+    }
+  }
 });

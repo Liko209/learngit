@@ -5,19 +5,6 @@
  */
 'use strict';
 if (process.env.NODE_ENV === 'test') {
-  // Mobx UT setup
-  const mobx = require('mobx');
-  const _configure = mobx.configure;
-  mobx.configure = options =>
-    _configure(
-      Object.assign({}, options, {
-        computedRequiresReaction: false,
-      }),
-    );
-  mobx.configure();
-
-  const moment = require('moment-timezone');
-  moment.tz.setDefault('Asia/Shanghai');
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
   // We don't polyfill it in the browser--this is user's responsibility.
   require('raf').polyfill(global);
@@ -29,6 +16,21 @@ if (process.env.NODE_ENV === 'test') {
   });
   Object.defineProperty(window, 'IDBKeyRange', {
     value: require('fake-indexeddb/lib/FDBKeyRange'),
+  });
+  Object.defineProperty(window, 'IDBIndex', {
+    value: require('fake-indexeddb/lib/FDBIndex'),
+  });
+  Object.defineProperty(window, 'IDBCursor', {
+    value: require('fake-indexeddb/lib/FDBCursor'),
+  });
+  Object.defineProperty(window, 'IDBObjectStore', {
+    value: require('fake-indexeddb/lib/FDBObjectStore'),
+  });
+  Object.defineProperty(window, 'IDBTransaction', {
+    value: require('fake-indexeddb/lib/FDBTransaction'),
+  });
+  Object.defineProperty(window, 'IDBDatabase', {
+    value: require('fake-indexeddb/lib/FDBDatabase'),
   });
 
   // Create a localStorage and sessionStorage at window
@@ -59,17 +61,6 @@ if (process.env.NODE_ENV === 'test') {
     value: new FakeStorage(),
   });
 
-  // mock console for jest
-  global.console = {
-    ...global.console,
-    error: message => {
-      throw message instanceof Error ? message : new Error(message);
-    },
-    warn: message => {
-      throw message;
-    },
-  };
-
   global.fetch = require('jest-fetch-mock');
 }
 
@@ -80,3 +71,7 @@ if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
   // Avoid memory leak by adding too many listeners
   process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
 }
+
+// polyfill require.context
+import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
+registerRequireContextHook();

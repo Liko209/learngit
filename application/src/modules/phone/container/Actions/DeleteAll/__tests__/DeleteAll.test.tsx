@@ -28,7 +28,7 @@ const deleteDialogConfig = {
       calllog.doYouWanttoDeleteAllCallLog
     </JuiDialogContentText>
   ),
-  okText: 'common.dialog.delete',
+  okText: 'common.dialog.deleteAll',
   okType: 'negative',
   title: 'calllog.deleteAllCallHistory',
 };

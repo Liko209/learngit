@@ -227,7 +227,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
 
 .c21.c21 .c9,
 .c21.c21 .c9 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c21.c21:hover .c9 {
@@ -239,23 +239,6 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
 }
 
 .c21.c21.c21.c21.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c22.c22 .c9,
-.c22.c22 .c9 svg {
-  font-size: 20px;
-}
-
-.c22.c22:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c22.c22:active .c9 {
-  color: #fff;
-}
-
-.c22.c22.c22.c22.disabled .c9 {
   color: rgba(0,0,0,0.12);
 }
 

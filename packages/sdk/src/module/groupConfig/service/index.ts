@@ -5,3 +5,4 @@
  */
 
 export { GroupConfigService } from './GroupConfigService';
+export { IGroupConfigService } from './IGroupConfigService';

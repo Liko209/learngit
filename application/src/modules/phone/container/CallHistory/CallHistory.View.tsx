@@ -16,12 +16,14 @@ import { More } from '../Actions/More';
 import { DeleteAll } from '../Actions/DeleteAll';
 
 const CallHistoryWrapper = (
-  props: { height: number; clearUMI: () => void } & WithTranslation,
+  props: {
+    height: number;
+    width: number;
+    clearUMI: () => void;
+  } & WithTranslation,
 ) => {
-  const clearUmi = (index: number) => {
-    if (index === CallHistoryTypes.Missed) {
-      props.clearUMI();
-    }
+  const clearUmi = () => {
+    props.clearUMI();
   };
 
   return (
@@ -51,7 +53,7 @@ const CallHistoryWrapper = (
                   title={props.t(title)}
                   automationId={automationID}
                 >
-                  <Component height={props.height} />
+                  <Component width={props.width} height={props.height} />
                 </JuiTab>
               );
             },
@@ -71,13 +73,14 @@ class CallHistoryComp extends Component<
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {({ height, width }: { width: number; height: number }) => (
           <Observer>
             {() => (
               <CallHistoryWrapper
                 clearUMI={this.props.clearUMI}
                 height={height}
+                width={width}
                 {...this.props}
               />
             )}

@@ -35,7 +35,9 @@ const DELAY_DEBOUNCE = 300;
 type Props = VoicemailViewProps & WithTranslation;
 
 @observer
-class VoicemailWrapper extends Component<Props & { height: number }> {
+class VoicemailWrapper extends Component<
+  Props & { height: number; width: number }
+> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
@@ -83,9 +85,9 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
   private _onFilterChange = debounce(this.props.onFilterChange, DELAY_DEBOUNCE);
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: number) => {
-      return <VoicemailItem key={itemId} id={itemId} />;
+      return <VoicemailItem width={width} key={itemId} id={itemId} />;
     });
   }
 
@@ -129,10 +131,18 @@ class VoicemailComp extends Component<Props> {
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {({
+          width: width,
+          height: height,
+        }: {
+          width: number;
+          height: number;
+        }) => (
           <Observer>
-            {() => <VoicemailWrapper height={height} {...this.props} />}
+            {() => (
+              <VoicemailWrapper height={height} width={width} {...this.props} />
+            )}
           </Observer>
         )}
       </ReactResizeDetector>

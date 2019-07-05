@@ -414,6 +414,14 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('getVoipState', () => {
+    it('should call rtc to get voip state', () => {
+      const spy = jest.spyOn(rtcAccount, 'state');
+      accountController.getVoipState();
+      expect(spy).toBeCalled();
+    });
+  });
+
   describe('_addControllerToList', () => {
     it('should add controller to list', () => {
       const spy = jest.spyOn(callControllerList, 'set');

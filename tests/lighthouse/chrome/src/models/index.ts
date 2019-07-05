@@ -12,6 +12,7 @@ import {
   LoadingTimeSummaryDto, LoadingTimeItemDto,
   LoadingTimeReleaseSummaryDto, LoadingTimeDevelopSummaryDto
 } from "./loadingTime";
+import { MemoryDto, MemorySummaryDto } from "./memory";
 import { Config } from "../config";
 import { LogUtils } from "../utils/logUtils";
 
@@ -51,7 +52,9 @@ const initModel = async () => {
     FpsDto,
     VersionDto,
     LoadingTimeReleaseSummaryDto,
-    LoadingTimeDevelopSummaryDto
+    LoadingTimeDevelopSummaryDto,
+    MemoryDto,
+    MemorySummaryDto
   ];
 
   sequelize.addModels(models);
@@ -83,5 +86,7 @@ export {
   FpsDto,
   VersionDto,
   LoadingTimeReleaseSummaryDto,
-  LoadingTimeDevelopSummaryDto
+  LoadingTimeDevelopSummaryDto,
+  MemoryDto,
+  MemorySummaryDto
 };

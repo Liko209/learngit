@@ -5,10 +5,14 @@
  */
 export {
   DialingPlan,
+  ISpecialServiceRequest,
   DialingPlanCountryRecord,
+  IDialingPlanRequest,
   DialingCountryInfo,
   IExtensionPhoneNumberList,
+  IPhoneNumberRequest,
   IPhoneNumberRecord,
+  IForwardingNumberRequest,
 } from './common';
 export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';
@@ -28,3 +32,4 @@ export {
   RCAuthCodeInfo,
 } from './common';
 export * from './RCEventSubscription';
+export * from './BlockNumber';

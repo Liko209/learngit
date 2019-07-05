@@ -413,7 +413,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
-  get messageInputTips(){
+  get messageInputTips() {
     this.warnFlakySelector();
     return this.self.find('div').find('div').find('div');
   }
@@ -426,7 +426,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
-  async existBlankLine(index:number){
+  async existBlankLine(index: number) {
     await this.t.expect(this.messageInputArea.child('p').nth(index).child('br').exists).ok();
   }
 
@@ -458,6 +458,11 @@ export class ConversationPage extends BaseConversationPage {
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
   }
+
+  async clearMessageInputField() {
+    await this.t.click(this.messageInputArea).selectText(this.messageInputArea).pressKey('delete');
+  }
+
   async upArrowToEditLastMsg() {
     await this.t
       .click(this.messageInputArea)
@@ -1023,6 +1028,11 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
+  get footer() {
+    return this.self.find('footer');
+  }
+
+  /** event */
   get eventLocation() {
     return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
@@ -1035,8 +1045,12 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
-  get eventShowOld() {
+  get eventShowOrHideOld() {
     return this.getSelectorByAutomationIdUnderSelf('event-show-old');
+  }
+
+  get eventOldDue() {
+    return this.getSelectorByAutomationIdUnderSelf('event-old-time');
   }
 
   get eventOldLocation() {

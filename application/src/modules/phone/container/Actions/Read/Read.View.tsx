@@ -7,10 +7,8 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { ReadViewProps, BUTTON_TYPE } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
+import { ReadViewProps } from './types';
+import { BUTTON_TYPE, ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { catchError } from '@/common/catchError';
 
 type Props = ReadViewProps & WithTranslation;
@@ -34,13 +32,15 @@ class ReadViewComponent extends Component<Props> {
   }
 
   private _handleClick = () => {
-    const { isRead, hookAfterClick } = this.props;
+    const { isRead, hookAfterClick, type } = this.props;
     if (isRead) {
       this._handleUnread();
     } else {
       this._handleRead();
     }
-    hookAfterClick && hookAfterClick();
+    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
+      hookAfterClick();
+    }
   }
 
   get title() {
@@ -56,35 +56,17 @@ class ReadViewComponent extends Component<Props> {
   }
 
   render() {
-    const { type, isRead } = this.props;
-    if (type === BUTTON_TYPE.ICON) {
-      return (
-        <JuiActionIconWrapper>
-          <JuiIconButton
-            color="common.white"
-            variant="round"
-            autoFocus={false}
-            size="small"
-            key="voicemail-read"
-            onClick={this._handleClick}
-            data-test-automation-id="voicemail-read-button"
-            tooltipTitle={this.title}
-            ariaLabel={this.screenreaderText}
-          >
-            {isRead ? 'unread' : 'read'}
-          </JuiIconButton>
-        </JuiActionIconWrapper>
-      );
-    }
+    const { type, isRead, entity } = this.props;
     return (
-      <JuiMenuItem
-        onClick={this._handleClick}
+      <ActionButton
+        key="voicemail-read"
         icon={isRead ? 'read' : 'unread'}
-        data-test-automation-id="voicemail-read-button"
-        aria-label={this.screenreaderText}
-      >
-        {this.title}
-      </JuiMenuItem>
+        type={type}
+        tooltip={this.title}
+        onClick={this._handleClick}
+        screenReader={this.screenreaderText}
+        automationId={`${entity}-read-button`}
+      />
     );
   }
 }

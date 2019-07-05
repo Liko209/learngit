@@ -68,7 +68,6 @@ const StyledDraggableDialog = styled(JuiDialog)`
     z-index: ${({ theme }) => theme.zIndex.modal};
     top: 0;
     left: 0;
-    max-height: 100%;
     overflow: hidden;
   }
   && .paper {

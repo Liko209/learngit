@@ -43,3 +43,8 @@ export type SearchRequestInfo = {
   contentTypesRequestId?: number;
   contentTypesResolver?: any;
 };
+
+export type ProcessorInfo = {
+  groupId: number;
+  itemId: number;
+};

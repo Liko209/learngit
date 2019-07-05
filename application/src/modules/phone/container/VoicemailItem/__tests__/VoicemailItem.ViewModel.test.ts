@@ -15,6 +15,7 @@ import { ServiceConfig } from 'sdk/module/serviceLoader';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
+import { RCInfoService } from 'sdk/module/rcInfo';
 import {
   ToastMessageAlign,
   ToastType,
@@ -24,7 +25,7 @@ import { postTimestamp } from '@/utils/date';
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioMode, JuiAudioStatus } from '../types';
+import { JuiAudioStatus, JuiAudioMode } from '../types';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
@@ -41,6 +42,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class caller {
     @test('should be return caller if voicemail has from')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       from: {},
     })
@@ -49,10 +51,10 @@ describe('VoicemailItemViewModel', () => {
       expect(vm.caller).toEqual({});
     }
   }
-
   @testable
   class isUnread {
     @test('should be return true if is unread')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })
@@ -62,6 +64,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be return false if is read')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
@@ -72,8 +75,55 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
+  class voiceMailResponsiveMap {
+    @test(
+      'should call return correct responsive obj if window is in different width [JPT-2393]',
+    )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    @mockEntity({})
+    t1() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 1000 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 3,
+        showTranscriptionText: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t2() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 750 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+
+    t3() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 450 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.MINI,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+    t4() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 400 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.TINY,
+        buttonToShow: 1,
+        showTranscriptionText: false,
+        dateFormat: 'short',
+      });
+    }
+  }
+  @testable
   class attachment {
     @test('should be undefined if not attachment')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({})
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
@@ -81,6 +131,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should get audio if has attachments and type is AUDIO_RECORDING')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -98,6 +149,7 @@ describe('VoicemailItemViewModel', () => {
     @test(
       'should get undefined if has attachments and type not AUDIO_RECORDING',
     )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -114,6 +166,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class audio {
     @test('should get audio if attachment is audio')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -141,6 +194,7 @@ describe('VoicemailItemViewModel', () => {
     beforeEach() {}
 
     @test('should be true if phone store voicemailId equal vm id')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
@@ -149,6 +203,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be false if phone store voicemailId not equal vm id')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t2() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       const phoneStore = container.get(PhoneStore);
@@ -160,6 +215,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class isAudioActive {
     @test('should be false if not has audio')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [],
     })
@@ -169,6 +225,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be true if selected and startTime > 0')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -189,6 +246,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be false if startTime === 0')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -206,6 +264,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be false if not selected')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [
         {
@@ -231,6 +290,7 @@ describe('VoicemailItemViewModel', () => {
     beforeEach() {}
 
     @test('should be set voicemailId if expansion is true')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       vm.onChange({} as any, true);
@@ -239,6 +299,7 @@ describe('VoicemailItemViewModel', () => {
     }
 
     @test('should be set voicemailId null if expansion is false')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t2() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       vm.onChange({} as any, false);
@@ -264,6 +325,7 @@ describe('VoicemailItemViewModel', () => {
       'buildDownloadUrl',
       'www.google.com?token=token',
     )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     async t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
       await vm.onBeforeAction(JuiAudioStatus.PLAY);
@@ -307,6 +369,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class onError {
     @test('should call flash toast if load error [JPT-2225]')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [],
     })
@@ -354,6 +417,7 @@ describe('VoicemailItemViewModel', () => {
   @testable
   class shouldPause {
     @test('should be true if has incoming call [JPT-2222]')
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     @mockEntity({
       attachments: [],
     })
@@ -370,15 +434,24 @@ describe('VoicemailItemViewModel', () => {
   }
 
   @testable
-  class createTime {
-    @test('should be call postTimestamp if get createTime [JPT-2144]')
+  class shouldShowCall {
+    @test('should be true if has call permission [JPT-2384]')
+    @mockService(RCInfoService, [
+      {
+        method: 'isRCFeaturePermissionEnabled',
+        data: true,
+      },
+      {
+        method: 'isVoipCallingAvailable',
+        data: false,
+      },
+    ])
     @mockEntity({
-      creationTime: 'creationTime',
+      attachments: [],
     })
-    t1() {
+    async t1() {
       const vm = new VoicemailItemViewModel({ id: 1 });
-      vm.createTime;
-      expect(postTimestamp).toHaveBeenCalledWith('creationTime');
+      expect(await vm.shouldShowCall()).toBeFalsy();
     }
   }
 });

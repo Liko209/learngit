@@ -17,8 +17,8 @@ const StyledClock = styled.span`
 
 const StyledSlider = styled(RuiSlider)`
   && {
-    margin: ${spacing(0, 4)};
-    width: ${width(30)};
+    margin: ${spacing(0, 2.5)};
+    width: ${width(22.5)};
   }
 
   > div > div {

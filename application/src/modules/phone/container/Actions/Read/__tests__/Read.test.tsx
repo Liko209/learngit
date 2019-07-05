@@ -14,9 +14,8 @@ import { Notification } from '@/containers/Notification';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Read } from '../Read';
-import { BUTTON_TYPE } from '../types';
-import { ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('@/containers/Notification');
 
@@ -40,31 +39,31 @@ const checkNotification = (message: string) => ({
 describe('Read', () => {
   @testable
   class init {
-    @test('should render current when button is icon type under read status')
+    @test('should render correct when button is icon type under read status')
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
     t1() {
       const wrapper = mountWithTheme(<Read id={1234} type={BUTTON_TYPE.ICON} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('unread');
+      expect(buttonProps.children).toBe('read');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markUnread');
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsReadMarkItAsUnread');
     }
 
-    @test('should render current when button is icon type under unread status')
+    @test('should render correct when button is icon type under unread status')
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })
     t2() {
       const wrapper = mountWithTheme(<Read id={1234} type={BUTTON_TYPE.ICON} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('read');
+      expect(buttonProps.children).toBe('unread');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markRead');
       expect(buttonProps.ariaLabel).toBe('voicemail.messageIsUnreadMarkItAsRead');
     }
 
-    @test('should render current when button is menu item type under read status')
+    @test('should render correct when button is menu item type under read status')
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
@@ -77,7 +76,7 @@ describe('Read', () => {
       expect(buttonProps['aria-label']).toBe('voicemail.messageIsReadMarkItAsUnread');
     }
 
-    @test('should render current when button is menu item type under unread status')
+    @test('should render correct when button is menu item type under unread status')
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })

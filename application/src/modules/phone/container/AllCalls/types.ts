@@ -29,6 +29,7 @@ type FetchAllCallsData = (
 type AllCallsProps = {
   type: CallLogType;
   height: number;
+  width: number;
 };
 
 type AllCallsViewProps = {

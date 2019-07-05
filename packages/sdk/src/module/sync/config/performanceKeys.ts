@@ -12,4 +12,5 @@ export enum SYNC_PERFORMANCE_KEYS {
   HANDLE_INITIAL_INCOMING = 'handle_initial_incoming_',
   HANDLE_INDEX_INCOMING = 'handle_index_incoming_',
   HANDLE_REMAINING_INCOMING = 'handle_remaining_incoming_',
+  HANDLE_SOCKET_INCOMING = 'handle_socket_incoming_',
 }

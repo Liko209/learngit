@@ -7,7 +7,7 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
-import { Audio } from '../../types';
+import { Audio, Checker } from '../../types';
 
 type VoicemailViewProps = {
   selected: boolean;
@@ -16,6 +16,7 @@ type VoicemailViewProps = {
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   audio?: Audio;
   onError: () => void;
   onBeforePlay: () => void;
@@ -25,10 +26,42 @@ type VoicemailViewProps = {
   shouldPause: boolean;
   createTime: string;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 };
 
 type VoicemailProps = {
+  width: number;
   id: number;
 };
 
-export { VoicemailViewProps, VoicemailProps, JuiAudioMode, JuiAudioStatus };
+type CommonResponsiveObject = {
+  buttonToShow: number;
+  dateFormat: string;
+};
+
+type ResponsiveObject = CommonResponsiveObject & {
+  audioMode: JuiAudioMode;
+  showTranscriptionText: boolean;
+};
+
+type Handler = {
+  checker: Checker;
+  info: ResponsiveObject;
+};
+enum BREAK_POINT_MAP {
+  FULL = 832,
+  EXPAND = 640,
+  SMALL = 480,
+  SHORT = 400,
+}
+
+export {
+  Handler,
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioMode,
+  JuiAudioStatus,
+  ResponsiveObject,
+  BREAK_POINT_MAP,
+  CommonResponsiveObject,
+};

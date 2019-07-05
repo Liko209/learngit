@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RecentCallItemView render should render each record item [JPT-2316, JPT-2317] 1`] = `
+<Styled(JuiListItem)
+  onClick={[Function]}
+  tabIndex={0}
+>
+  <styled.div>
+    <Container(ContactInfoViewComponent)
+      caller={
+        Object {
+          "location": "abc",
+          "name": "Shining",
+          "phoneNumber": "00000",
+        }
+      }
+      direction="Inbound"
+      disableOpenMiniProfile={true}
+      isMissedCall={true}
+    />
+  </styled.div>
+  <styled.div>
+    <JuiIconography
+      iconColor={
+        Array [
+          "accent",
+          "tomato",
+        ]
+      }
+      iconSize="medium"
+    >
+      missedcall
+    </JuiIconography>
+  </styled.div>
+  <styled.div>
+    2019-06-28T02:09:28.595Z
+  </styled.div>
+</Styled(JuiListItem)>
+`;
