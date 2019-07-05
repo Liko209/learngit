@@ -116,10 +116,8 @@ class EmojiTransformer {
   }
 
   static getRegexp(
-    // options: EmojiTransformerOption,
     convertType: EmojiConvertType,
   ) {
-    // const { customEmojiMap = {} } = options;
     const regexpMap = {
       [EmojiConvertType.UNICODE]: EMOJI_UNICODE_REGEX,
       [EmojiConvertType.ASCII]: EMOJI_ASCII_REGEX_SIMPLE,
