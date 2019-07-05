@@ -90,6 +90,7 @@ exports[`Storyshots Pattern/Phone PhoneFilter: Pattern/Phone PhoneFilter 1`] = `
 <div>
   <div
     className="c0 c1"
+    data-test-automation-id="phoneFilter"
   >
     <span
       className="c2 filter icon c3"

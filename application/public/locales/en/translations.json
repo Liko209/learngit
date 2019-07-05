@@ -720,6 +720,8 @@
     }
   },
   "calllog": {
+    "inputFilter": "Filter call history",
+    "clearFilter": "Clear call history filter",
     "deleteCallLog": "Delete call log",
     "deleteCallHistory": "Delete call history",
     "deleteAllCallHistory": "Delete all call history",
