@@ -11,6 +11,8 @@ type ViewerContextType = {
   closeViewer?: () => {};
   onTransitionExited?: () => {};
   onTransitionEntered?: () => {};
+  onContentLoad?: () => {};
+  onContentError?: () => {};
   isAnimating: boolean;
   setDeleteItem: (value: boolean) => void;
   deleteItem?: boolean;

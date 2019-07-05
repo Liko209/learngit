@@ -791,7 +791,7 @@ export class GlipSdk {
     return await this.createAudioConference(data);
   }
 
-  async getPostItemsByTypeId(postId: string | number, typeId: number | string): Promise<string[]> {
+  async getPostItemsByTypeId(postId: string | number, typeId: number | string) {
     const items = await this.getPost(postId).then(res => res.data.items);
     return items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
   }

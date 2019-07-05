@@ -75,7 +75,12 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   }
 
   private _doFuzzySearchPersons = ({ searchTerm }: { searchTerm?: string }) => {
-    const term = searchTerm ? searchTerm.trim() : '';
+    const term = searchTerm ? searchTerm : '';
+    if (term.indexOf(' ') > -1) {
+      this.open = false;
+      return;
+    }
+
     // @ts-ignore
     const res = emojiIndex.search(term) as EmojiData[];
     if (res) {

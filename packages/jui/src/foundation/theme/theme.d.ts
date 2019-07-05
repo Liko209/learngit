@@ -7,15 +7,11 @@ import { ThemeProps as StyledThemeProps } from 'styled-components';
 import {
   Theme as RcuiTheme,
   Palette as RcuiPalette,
-} from 'rcui/foundation/styles/theme';
-
-import {
   Typography,
   Opacity,
   Radius,
   Spacing,
   ZIndex,
-  size,
 } from 'rcui/foundation/styles/theme';
 
 export {
@@ -24,7 +20,6 @@ export {
   Radius,
   Spacing,
   ZIndex,
-  size,
 } from 'rcui/foundation/styles/theme';
 
 export type Shape = {
@@ -33,6 +28,11 @@ export type Shape = {
   border2: string;
   border3: string;
   border4: string;
+};
+
+export type Size = {
+  width: number;
+  height: number;
 };
 
 export type Palette = RcuiPalette & {
@@ -74,5 +74,6 @@ export type Palette = RcuiPalette & {
 export type Theme = RcuiTheme & {
   palette: Palette;
   shape: Shape;
+  size: Size;
 };
 export type ThemeProps = StyledThemeProps<Theme>;

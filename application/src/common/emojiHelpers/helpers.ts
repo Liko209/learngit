@@ -53,32 +53,32 @@ const convertMapAscii = convertKeys(mapAscii);
 const convertMapUnicode = convertKeys(mapUnicode);
 
 // :+1_tone5:
-const convertMapEmojiOne = convertKeys(mapEmojiOne);
+// const convertMapEmojiOne = convertKeys(mapEmojiOne);
 
 // Regular expression for colon (EmojiOne, Custom)
 // because safari 10 compatibility, https://stackoverflow.com/questions/3569104/positive-look-behind-in-javascript-regular-expression
 // const regExpColon = /:(\S*?)(?=:)/g; // /(?<=:)(\S+?)(?=:)/g; /(?<=:)([^:]\S*?)(?=:)/g;
 
 // EmojiOne keys regular expression
-const regExpEmojiOne = new RegExp(
-  `${Object.keys(convertMapEmojiOne).join('|')}`,
-  'g',
-);
+// const regExpEmojiOne = new RegExp(
+//   `${Object.keys(convertMapEmojiOne).join('|')}`,
+//   'g',
+// );
 
 // Ascii keys regular expression
 // Refer to the emojione.js code regAscii regular expressions for backend
-const regExpAscii = new RegExp(
-  `(^|\\s)${Object.keys(convertMapAscii).join(
-    '(?=\\s|$|[!,.?])|(^|\\s)',
-  )}(?=\\s|$|[!,.?])`,
-  'g',
-);
+// const regExpAscii = new RegExp(
+//   `(^|\\s)${Object.keys(convertMapAscii).join(
+//     '(?=\\s|$|[!,.?])|(^|\\s)',
+//   )}(?=\\s|$|[!,.?])`,
+//   'g',
+// );
 
 // Unicode keys regular expression
-const regExpUnicode = new RegExp(
-  `${Object.keys(convertMapUnicode).join('|')}`,
-  'g',
-);
+// const regExpUnicode = new RegExp(
+//   `${Object.keys(convertMapUnicode).join('|')}`,
+//   'g',
+// );
 
 // {
 
@@ -165,10 +165,10 @@ export {
   regExpSpecial,
   convertMapAscii,
   convertMapUnicode,
-  convertMapEmojiOne,
-  regExpAscii,
-  regExpUnicode,
-  regExpEmojiOne,
+  // convertMapEmojiOne,
+  // regExpAscii,
+  // regExpUnicode,
+  // regExpEmojiOne,
   mapUnicodeToShort,
   getEmojiDataFromUnicode,
 };

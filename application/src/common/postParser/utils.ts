@@ -8,7 +8,7 @@ import {
   CustomEmojiMap,
   convertMapUnicode,
   convertMapAscii,
-  convertMapEmojiOne,
+  // convertMapEmojiOne,
   regExpUnescape,
   mapUnescape,
 } from '@/common/emojiHelpers';
@@ -196,7 +196,7 @@ const EMOJI_ASCII_REGEX = `(^|\\s)${Object.keys(convertMapAscii).join(
 const EMOJI_ASCII_REGEX_SIMPLE =
   "(^|\\s)([<3\\/:'\\)\\-=\\]>;\\*\\^\\(xp\\[@\\.\\$#%O08_LÞþbdo]{2,})(?=\\s|$)";
 
-const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
+// const EMOJI_ONE_REGEX = `${Object.keys(convertMapEmojiOne).join('|')}`;
 const EMOJI_ONE_REGEX_SIMPLE = '(^|\\s)?(:[a-z0-9\\+\\-\\_]+:)';
 
 const EMOJI_CUSTOM_REGEX = (customEmojiMap: CustomEmojiMap) =>
@@ -275,7 +275,7 @@ export {
   EMOJI_UNICODE_REGEX,
   EMOJI_ASCII_REGEX_SIMPLE,
   EMOJI_ASCII_REGEX,
-  EMOJI_ONE_REGEX,
+  // EMOJI_ONE_REGEX,
   EMOJI_CUSTOM_REGEX,
   URL_REGEX,
   VALID_PHONE_REG,
