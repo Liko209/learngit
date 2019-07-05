@@ -53,10 +53,12 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onUnregisterAction() {
-    if (this._userAgent) {
-      this._userAgent.unregister();
-    }
     this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
+    setImmediate(() => {
+      if (this._userAgent) {
+        this._userAgent.unregister();
+      }
+    });
   }
 
   public onReceiveIncomingInviteAction(callSession: any) {
