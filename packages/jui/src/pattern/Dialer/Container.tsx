@@ -50,6 +50,7 @@ const StyledKeypadActionsContainer = styled('div')`
     flex-direction: column;
     position: relative;
     cursor: default;
+    min-height: 0;
   }
 `;
 
@@ -179,6 +180,7 @@ const ContactSearchContainer = styled.div<{ addMargin: boolean }>`
     height: 100%;
     width: 100%;
     flex: 1;
+    min-height: 0;
     & > .contact-search-list-container {
       margin-top: ${({ addMargin }) => (addMargin ? spacing(11) : 0)};
       height: ${({ addMargin, theme }) =>
