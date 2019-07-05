@@ -31,7 +31,7 @@ class ImageDownloader implements IImageDownloader {
 
   public download(
     itemInfo: DownloadItemInfo,
-    downloadListener: IImageDownloadedListener,
+    downloadListener?: IImageDownloadedListener,
   ) {
     if (!itemInfo.url) {
       this._logger.info('ignore download due to empty url');

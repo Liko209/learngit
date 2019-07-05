@@ -12,6 +12,7 @@ import {
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange } from './types';
+import { useMountState } from './hooks';
 
 type JuiInfiniteListProps = {
   height?: number;
@@ -71,18 +72,19 @@ const JuiInfiniteList = (
     ref = forwardRef;
   }
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+  const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
     async (direction: 'up' | 'down', count: number) => {
       enableStickToBottom(false);
       await loadMore(direction, count);
-      enableStickToBottom(true);
+      isMountedRef.current && enableStickToBottom(true);
     },
     [loadMore, enableStickToBottom],
   );
 
   if (!height) {
-    return loadingRenderer && loadingRenderer();
+    return null;
   }
 
   return (
