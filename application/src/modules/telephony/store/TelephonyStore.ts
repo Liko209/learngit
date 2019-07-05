@@ -103,6 +103,9 @@ class TelephonyStore {
   dialerInputFocused: boolean = false;
 
   @observable
+  hasFetchedDataToLocal: boolean = false;
+
+  @observable
   chosenCallerPhoneNumber: string;
 
   @observable
@@ -292,11 +295,6 @@ class TelephonyStore {
   @action
   private _clearForwardString = () => {
     this.forwardString = '';
-  }
-
-  @action
-  updateDefaultChosenNumber = (defaultCallerPhoneNumber: string) => {
-    this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
   }
 
   @action

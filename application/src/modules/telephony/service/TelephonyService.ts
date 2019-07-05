@@ -25,7 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action, when } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -291,8 +291,11 @@ class TelephonyService {
         if (!callerPhoneNumberList) {
           return;
         }
+        if (!this._telephonyStore.hasFetchedDataToLocal) {
+          this._telephonyStore.hasFetchedDataToLocal = await this._rcInfoService.hasSetCallerId();
+        }
         if (defaultPhoneNumber) {
-          this._telephonyStore.updateDefaultChosenNumber(defaultPhoneNumber);
+          this._telephonyStore.defaultCallerPhoneNumber = defaultPhoneNumber;
         }
       },
       { fireImmediately: true },
@@ -310,17 +313,19 @@ class TelephonyService {
       { fireImmediately: true },
     );
 
-    this._defaultCallerPhoneNumberDisposer = reaction(
-      () => this._telephonyStore.defaultCallerPhoneNumber,
-      async (value, reaction) => {
-        const result = await this._rcInfoService.hasSetCallerId();
+    this._defaultCallerPhoneNumberDisposer = when(
+      () => {
         if (
-          result &&
-          this._telephonyStore.defaultCallerPhoneNumber &&
-          !this._telephonyStore.chosenCallerPhoneNumber
+          this._telephonyStore.hasFetchedDataToLocal &&
+          this._telephonyStore.defaultCallerPhoneNumber
         ) {
+          return true;
+        }
+        return false;
+      },
+      async () => {
+        if (!this._telephonyStore.chosenCallerPhoneNumber) {
           this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
-          reaction.dispose();
         }
       },
     );
