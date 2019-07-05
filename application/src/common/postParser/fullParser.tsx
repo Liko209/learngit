@@ -146,12 +146,7 @@ const _transformEmoji = (
     );
   }
 
-  if (
-    !emojiOptions.unicodeOnly &&
-    emojiOptions.customEmojiMap &&
-    Object.keys(emojiOptions.customEmojiMap).length &&
-    /:.+:/.test(fullText)
-  ) {
+  if (!emojiOptions.unicodeOnly && /:.+:/.test(fullText)) {
     _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,

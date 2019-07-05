@@ -24,6 +24,10 @@ import {
   EMOJI_SKIN_TONE_CODES,
 } from '../utils';
 import data from 'emoji-mart/data/all.json';
+import { getGlobalValue, getEntity } from '@/store/utils';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
+import { Company } from 'sdk/module/company/entity';
+import CompanyModel from '@/store/models/Company';
 
 class EmojiTransformer {
   static emojiDataMap = {};
@@ -32,15 +36,15 @@ class EmojiTransformer {
     options: EmojiTransformerOption,
     convertType: EmojiConvertType = 0,
   ) {
-    const { customEmojiMap = {}, unicodeOnly, hostName } = options;
-    const reg = this.getRegexp(options, convertType);
+    const { unicodeOnly } = options;
+    const reg = this.getRegexp(convertType);
     return originalStr.replace(reg, (_match: string, pre = '', emoji) => {
       const enlarge = emoji.length === originalStr.trim().length;
       const id = b64EncodeUnicode((unicodeOnly ? 'u' : '') + emoji + enlarge);
       if (this.emojiDataMap[id]) {
         return pre + this.getReplacePattern(id);
       }
-      const obj = customEmojiMap[emoji.slice(1, -1)];
+      const obj = this.customEmojiMap[emoji.slice(1, -1)];
 
       if (
         !unicodeOnly &&
@@ -85,7 +89,7 @@ class EmojiTransformer {
       const code = this._convertFromCodePoint(unicode);
       const skinTone = this._hasSkinTone(unicode);
 
-      if (unicodeOnly || !hostName) {
+      if (unicodeOnly) {
         return pre + code;
       }
       const emojiName = this._transferUnicodeToEmojiData(unicode);
@@ -94,7 +98,7 @@ class EmojiTransformer {
         className: this._getClassName(enlarge),
         alt: code,
         title: emoji,
-        src: this._getSrc(unicode, hostName),
+        src: this._getSrc(unicode),
         isCustomEmoji: false,
         name: emojiName ? emojiName.id : '',
         tone: skinTone,
@@ -112,14 +116,14 @@ class EmojiTransformer {
   }
 
   static getRegexp(
-    options: EmojiTransformerOption,
+    // options: EmojiTransformerOption,
     convertType: EmojiConvertType,
   ) {
-    const { customEmojiMap = {} } = options;
+    // const { customEmojiMap = {} } = options;
     const regexpMap = {
       [EmojiConvertType.UNICODE]: EMOJI_UNICODE_REGEX,
       [EmojiConvertType.ASCII]: EMOJI_ASCII_REGEX_SIMPLE,
-      [EmojiConvertType.CUSTOM]: EMOJI_CUSTOM_REGEX(customEmojiMap),
+      [EmojiConvertType.CUSTOM]: EMOJI_CUSTOM_REGEX(this.customEmojiMap),
       [EmojiConvertType.EMOJI_ONE]: EMOJI_ONE_REGEX_SIMPLE,
     };
     return new RegExp(regexpMap[convertType], 'gi');
@@ -164,11 +168,23 @@ class EmojiTransformer {
     return enlarge ? 'emoji enlarge-emoji' : 'emoji';
   }
 
-  private static _getSrc(unicode: string, hostName?: string) {
+  private static _getSrc(unicode: string) {
+    const hostName = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
     if (!hostName) {
       return '';
     }
     return hostName + EMOJI_ONE_PATH.replace('{{unicode}}', unicode);
+  }
+
+  static get customEmojiMap() {
+    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
+    if (currentCompanyId <= 0) {
+      return {};
+    }
+    const company =
+      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
+      {};
+    return company.customEmoji || {};
   }
 }
 
