@@ -9,7 +9,12 @@ import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
-import { opusModifier, isFireFox, randomBetween } from '../utils/utils';
+import {
+  opusModifier,
+  isFireFox,
+  randomBetween,
+  isSafari,
+} from '../utils/utils';
 import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
 import {
@@ -80,6 +85,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
         options.enableMidLinesInSDP = false;
       }
     }
+    options.enableQos = !isFireFox() && !isSafari();
     options.connector = (
       level: any,
       category: any,
