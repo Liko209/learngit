@@ -696,16 +696,22 @@ class TelephonyService {
 
   deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
     clearAll: boolean = false,
+    start?: number,
+    end?: number,
   ) => {
+    if (!clearAll && (typeof start !== 'number' || typeof end !== 'number')) {
+      throw new Error('Must pass the caret position');
+    }
     runInAction(() => {
       if (clearAll) {
         this._telephonyStore[prop] = '';
         return;
       }
-      this._telephonyStore[prop] = this._telephonyStore[prop].slice(
-        0,
-        this._telephonyStore[prop].length - 1,
-      );
+      this._telephonyStore[prop] = this._telephonyStore[prop]
+        .split('')
+        .filter((v, idx) => idx < (start as number) || idx > (end as number))
+        .join('');
+
       return;
     });
   }
