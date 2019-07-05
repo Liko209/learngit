@@ -101,11 +101,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
         label: member.displayName,
         email: member.entity.email,
       }));
-      this.suggestions = differenceBy(
-        members.slice(0, 20),
-        this.selectedItems,
-        'id',
-      );
+      this.suggestions = differenceBy(members, this.selectedItems, 'id');
     });
   }
 }

@@ -8,6 +8,8 @@ type Props = {};
 
 type ViewProps = {
   quitForward: () => void;
+  forward: (val: string) => void;
+  makeForwardCall: () => void;
 };
 
 export { Props, ViewProps };

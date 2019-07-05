@@ -56,6 +56,10 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     }
   }
 
+  getPreInsertId(uniqueId: string): number {
+    return this._preInsertIdController.getPreInsertId(uniqueId);
+  }
+
   private _deleteEntity(entity: T): number | undefined {
     const preInsertKey = this._getPreInsertKey(entity);
     if (preInsertKey && this.isInPreInsert(preInsertKey)) {

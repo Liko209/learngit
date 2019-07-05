@@ -16,6 +16,7 @@ type EmojiProps = {
     | 'facebook'
     | undefined;
   defaultProps?: any;
+  tooltip?: string;
 };
 
 type EmojiViewProps = {

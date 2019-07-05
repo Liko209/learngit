@@ -248,6 +248,14 @@ describe('TelephonyService', () => {
     });
   });
 
+  describe('getVoipState', () => {
+    it('should call account controller to get voip state', () => {
+      const spy = jest.spyOn(accountController, 'getVoipState');
+      telephonyService.getVoipState();
+      expect(spy).toBeCalled();
+    });
+  });
+
   describe('onStart', () => {
     it('should call registerModuleSetting', () => {
       telephonyService['_phoneSetting'] = mockSetting;

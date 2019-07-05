@@ -43,7 +43,7 @@ test.meta(<ITestMeta>{
     });
     await h(t).glip(callee).init();
     await h(t).glip(callee).setDefaultPhoneApp('glip');
-    await h(t).platform(callee).resetBlockPhoneNumber();
+    await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
   });
 
   const app = new AppRoot(t);

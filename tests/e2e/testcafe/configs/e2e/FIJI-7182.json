@@ -1,0 +1,19 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/MessageInput/Draft.ts",
+      "./fixtures/ContentPanel/Link.ts",
+      "fixtures/ContentPanel/Event.ts"
+    ],
+    "include_tags": [
+      "JPT-216",
+      "JPT-296",
+      "JPT-139",
+      "JPT-1372",
+      "JPT-1935"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

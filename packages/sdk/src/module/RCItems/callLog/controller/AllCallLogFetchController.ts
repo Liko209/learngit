@@ -8,8 +8,8 @@ import { AbstractFetchController } from './AbstractFetchController';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
-import { mainLogger } from 'foundation';
-import { CALL_RESULT, LOCAL_INFO_TYPE } from '../constants';
+import { mainLogger, PerformanceTracer } from 'foundation';
+import { CALL_RESULT, LOCAL_INFO_TYPE, CALL_LOG_SOURCE } from '../constants';
 import _ from 'lodash';
 import { SYNC_TYPE } from '../../sync';
 import { RCItemApi } from 'sdk/api';
@@ -17,6 +17,9 @@ import { CallLogBadgeController } from './CallLogBadgeController';
 import { CallLogUserConfig } from '../config/CallLogUserConfig';
 import { notificationCenter } from 'sdk/service';
 import { CALL_DIRECTION } from '../../constants';
+import { CallLogDao } from '../dao';
+import { daoManager } from 'sdk/dao';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const SYNC_NAME = 'AllCallLogFetchController';
 
@@ -100,6 +103,19 @@ class AllCallLogFetchController extends AbstractFetchController {
       recordCount,
       syncToken,
     });
+  }
+
+  async fetchAllUniquePhoneNumberCalls() {
+    const performanceTracer = PerformanceTracer.start();
+    const dao = daoManager.getDao(CallLogDao);
+    const result = await dao.queryAllUniquePhoneNumberCalls(
+      CALL_LOG_SOURCE.ALL,
+    );
+    performanceTracer.end({
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.FETCH_RECENT_CALL_LOGS,
+      count: result.size,
+    });
+    return result;
   }
 }
 

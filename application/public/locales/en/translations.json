@@ -14,7 +14,8 @@
       "save": "Save",
       "send": "Send",
       "delete": "Delete",
-      "close": "Close"
+      "close": "Close",
+      "deleteAll": "Delete all"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -183,6 +184,7 @@
           "dark": "Dark Skin Tone"
         }
       },
+      "emojiTooltip": "Emoji",
       "emojiDefaultTitle": "Pick your emoji",
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
@@ -582,7 +584,9 @@
       "back": "Back",
       "forward": "Forward",
       "customForward": "Custom...",
-      "flip": "Flip"
+      "flip": "Flip",
+      "recentCall": "Recent calls",
+      "backToDialer": "Back to dialer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -670,7 +674,8 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "noCallLogAvailable": "There is not call log yet"
   },
   "phone": {
     "tab": {

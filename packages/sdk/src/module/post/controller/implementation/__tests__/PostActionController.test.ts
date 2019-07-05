@@ -18,6 +18,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { ItemService } from '../../../../../module/item/service';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import { PostDataController } from '../../PostDataController';
 
 jest.mock('../../../../../module/item/service');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
@@ -28,29 +29,7 @@ jest.mock('../../../../../service');
 jest.mock('../../../../groupConfig');
 jest.mock('../../../../groupConfig/dao');
 jest.mock('../../../../item/service');
-
-class TestPreInsertController<T extends ExtendedBaseModel>
-  implements IPreInsertController {
-  async insert(entity: T): Promise<void> {
-    return;
-  }
-
-  delete(entity: T): void {
-    return;
-  }
-
-  async bulkDelete(entities: T[]): Promise<void> {
-    return;
-  }
-
-  updateStatus(entity: T, status: PROGRESS_STATUS): void {
-    return;
-  }
-
-  isInPreInsert(version: number): boolean {
-    return false;
-  }
-}
+jest.mock('../../PostDataController');
 
 class TestPartialModifyController implements IPartialModifyController<Post> {
   updatePartially = jest.fn();
@@ -68,9 +47,9 @@ describe('PostController', () => {
   let postActionController: PostActionController;
   let testPartialModifyController: TestPartialModifyController;
   let testRequestController: TestRequestController;
-  let testTestPreInsertController: TestPreInsertController<Post>;
   let entitySourceController: EntitySourceController<Post>;
   let itemService: ItemService;
+  let postDataController: PostDataController;
   const postDao = new PostDao(null);
   const progressService: ProgressService = new ProgressService();
   const groupConfigService: GroupConfigService = new GroupConfigService();
@@ -80,11 +59,11 @@ describe('PostController', () => {
     entitySourceController = new EntitySourceController<Post>(null, null, null);
     testPartialModifyController = new TestPartialModifyController();
     testRequestController = new TestRequestController();
-    testTestPreInsertController = new TestPreInsertController();
+    postDataController = new PostDataController();
     postActionController = new PostActionController(
+      postDataController,
       testPartialModifyController,
       testRequestController,
-      testTestPreInsertController,
       entitySourceController,
     );
   });
@@ -136,7 +115,9 @@ describe('PostController', () => {
     it('should call _deletePreInsertedPost when id < 0', async () => {
       postDao.get.mockResolvedValueOnce({ _id: -4, group_id: 10, text: '444' });
       const result = await postActionController.deletePost(-4);
-      expect(groupConfigService.deletePostId).toBeCalledTimes(1);
+      expect(postDataController.deletePreInsertPosts).toHaveBeenLastCalledWith([
+        { _id: -4, group_id: 10, text: '444' },
+      ]);
       expect(result).toBeTruthy();
     });
 
@@ -149,8 +130,6 @@ describe('PostController', () => {
   describe('removeItemFromPost', () => {
     beforeEach(() => {
       daoManager.getDao.mockReturnValueOnce(postDao);
-
-      testTestPreInsertController.delete = jest.fn();
 
       ServiceLoader.getInstance = jest
         .fn()
@@ -214,15 +193,16 @@ describe('PostController', () => {
         deactivated: true,
         item_ids: [],
       };
-      postDao.get.mockResolvedValueOnce(inValidLocalPost);
+      postDao.get.mockResolvedValueOnce(newInValidLocalPost);
       entitySourceController.getEntityLocally = jest
         .fn()
         .mockResolvedValue(inValidLocalPost);
       setUpPartialUpdate(inValidLocalPost.id, partialPost, newInValidLocalPost);
 
       await postActionController.removeItemFromPost(inValidLocalPost.id, -1);
-      expect(groupConfigService.deletePostId).toBeCalled();
-      expect(testTestPreInsertController.delete).toBeCalled();
+      expect(postDataController.deletePreInsertPosts).toHaveBeenCalledWith([
+        newInValidLocalPost,
+      ]);
       expect(itemService.deleteItem).toBeCalledWith(-1);
     });
 
