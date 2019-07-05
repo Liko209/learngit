@@ -63,7 +63,16 @@ const JuiDelayPlaceholder = (props: SizeType) => (
   </Jui.ImageCard>
 );
 
-class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
+type State = {
+  url: string;
+  originURL: string;
+  loaded: boolean;
+  retryCount: number;
+};
+
+const MAX_RETRY_COUNT = 100;
+
+class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   static SQUARE_SIZE = 180;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
@@ -77,14 +86,27 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   };
   private _imageRef: RefObject<any> = createRef();
   private _mounted: boolean = false;
-  private _loaded: boolean = false;
-  private _updating: boolean = false;
+  state: State;
 
-  componentDidUpdate(prevProps: JuiPreviewImageProps) {
-    if (prevProps.url !== this.props.url) {
-      this._updating = true;
-      this.forceUpdate();
+  constructor(props: JuiPreviewImageProps) {
+    super(props);
+    this.state = {
+      url: props.url,
+      originURL: props.url,
+      loaded: false,
+      retryCount: 0,
+    };
+  }
+
+  static getDerivedStateFromProps(
+    nextProps: JuiPreviewImageProps,
+    prevState: State,
+  ) {
+    const newURL = nextProps.url;
+    if (newURL !== prevState.originURL) {
+      return { url: newURL, originURL: newURL, loaded: false, retryCount: 0 };
     }
+    return null;
   }
 
   private _handleImageLoad = () => {
@@ -99,16 +121,31 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     } else {
       this._imageInfo = getThumbnailSize(width, height);
     }
-    this._loaded = true;
-    this._updating = false;
     didLoad && didLoad(this.props.futureCallback);
     if (this._mounted) {
-      this.forceUpdate();
+      this.setState({ loaded: true });
     }
   }
 
+  private _tryToReloadImage = () => {
+    const { loaded, originURL, retryCount } = this.state;
+    if (!loaded && retryCount < MAX_RETRY_COUNT) {
+      // force to use new URL to trigger image-reload
+      const newURL = `${originURL}&timestamp=${Date.now()}`;
+      this.setState({ url: newURL });
+    }
+  }
+
+  private _handleImageLoadError = () => {
+    const { retryCount } = this.state;
+    this.setState(
+      { loaded: false, retryCount: retryCount + 1 },
+      this._tryToReloadImage,
+    );
+  }
+
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
-    if (!this._loaded) return { display: 'none' };
+    if (!this.state.loaded) return { display: 'none' };
 
     const { justifyHeight, justifyWidth } = this._imageInfo;
 
@@ -120,7 +157,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
 
   private _handleImageClick = (ev: React.MouseEvent) => {
     this.props.handleImageClick &&
-      this.props.handleImageClick(ev, this._loaded);
+      this.props.handleImageClick(ev, this.state.loaded);
   }
 
   private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
@@ -134,23 +171,25 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, url, placeholder } = this.props;
+    const { Actions, fileName, forceSize, placeholder } = this.props;
+    const { loaded, url } = this.state;
     const { width, height } =
-      this._loaded && !forceSize ? this._imageInfo : this.props;
+      loaded && !forceSize ? this._imageInfo : this.props;
     const imageStyle = this._getImageStyle(width, height);
     return (
       <>
-        {!this._loaded && placeholder}
-        {(!this._loaded || this._updating) && url && (
+        {!loaded && placeholder}
+        {!loaded && url && (
           <StyledImg
             style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
+            onError={this._handleImageLoadError}
             onClick={this._handleImageClick}
           />
         )}
-        {this._loaded && (
+        {loaded && (
           <Jui.ImageCard
             width={width}
             height={height}

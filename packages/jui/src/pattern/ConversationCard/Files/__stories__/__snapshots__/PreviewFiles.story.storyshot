@@ -397,6 +397,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -408,6 +409,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -419,6 +421,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -1286,6 +1289,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1435,6 +1439,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1584,6 +1589,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1733,6 +1739,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
