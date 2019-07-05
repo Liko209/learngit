@@ -848,7 +848,8 @@
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
+          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
         },
         "regionSetting": {
           "label": "Region",
