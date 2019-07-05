@@ -6,7 +6,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { storiesOf } from '@storybook/react';
-import { JuiBadge } from '../index';
+import { RuiBadge } from '../index';
 
 const Wrapper = styled.div`
   margin-left: 20px;
@@ -16,42 +16,42 @@ storiesOf('Components/Badges', module)
   .add('Simple Badge', () => (
     <div>
       <div>
-        <JuiBadge badgeContent={1} color="primary">
+        <RuiBadge badgeContent={1} color="primary">
           <button>primary</button>
-        </JuiBadge>
+        </RuiBadge>
       </div>
       <br />
       <div>
-        <JuiBadge badgeContent={10} color="secondary">
+        <RuiBadge badgeContent={10} color="secondary">
           <button>secondary</button>
-        </JuiBadge>
+        </RuiBadge>
       </div>
     </div>
   ))
   .add('Placement', () => (
     <Wrapper>
       <div>
-        <JuiBadge badgeContent={1} color="primary" placement="top-left">
+        <RuiBadge badgeContent={1} color="primary" placement="top-left">
           <button>top-left</button>
-        </JuiBadge>
-        <JuiBadge badgeContent={1} color="primary">
+        </RuiBadge>
+        <RuiBadge badgeContent={1} color="primary">
           <button>top-right</button>
-        </JuiBadge>
+        </RuiBadge>
       </div>
       <div>
-        <JuiBadge badgeContent={1} color="primary" placement="bottom-left">
+        <RuiBadge badgeContent={1} color="primary" placement="bottom-left">
           <button>bottom-left</button>
-        </JuiBadge>
-        <JuiBadge badgeContent={1} color="primary" placement="bottom-right">
+        </RuiBadge>
+        <RuiBadge badgeContent={1} color="primary" placement="bottom-right">
           <button>bottom-right</button>
-        </JuiBadge>
+        </RuiBadge>
       </div>
     </Wrapper>
   ))
   .add('Customized Badge', () => (
     <div>
-      <JuiBadge badgeContent={<input type="checkbox" />}>
+      <RuiBadge badgeContent={<input type="checkbox" />}>
         <button>I have special badge</button>
-      </JuiBadge>
+      </RuiBadge>
     </div>
   ));

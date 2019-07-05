@@ -56,10 +56,6 @@ export type Opacity = typeof opacity;
 export type Radius = typeof radius;
 export type Spacing = typeof spacing & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
-export type size = {
-  width: number;
-  height: number;
-};
 
 export { Transitions, Shadows };
 
@@ -70,7 +66,6 @@ export type Theme = {
   radius: Radius;
   spacing: Spacing;
   zIndex: ZIndex;
-  size: size;
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;
