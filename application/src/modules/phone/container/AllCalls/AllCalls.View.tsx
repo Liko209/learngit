@@ -93,10 +93,10 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { listHandler, isError, onErrorReload } = this.props;
+    const { listHandler, isError, onErrorReload, type } = this.props;
 
     return (
-      <PhoneWrapper pageHeight={this._height}>
+      <PhoneWrapper pageHeight={this._height} data-type={type}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (
