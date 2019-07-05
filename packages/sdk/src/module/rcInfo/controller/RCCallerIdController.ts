@@ -3,11 +3,23 @@
  * @Date: 2019-05-10 13:32:59
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { AccountService } from 'sdk/module/account';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import {
+  IExtensionCallerFeatureRequest,
+  IExtensionCallerId,
+  IExtensionCallerFeature,
+} from 'sdk/api/ringcentral/types/common';
+import { RCInfoApi } from 'sdk/api';
+import { CALLER_ID_FEATURE_NAME } from '../config/constants';
+import { RC_INFO } from 'sdk/service';
+import { PartialModifyController } from 'sdk/framework/controller/impl/PartialModifyController';
+import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
+import { IPartialEntitySourceController } from 'sdk/framework/controller/interface/IPartialEntitySourceController';
 
 const CALLER_ID_ORDER = {
   [PhoneNumberType.DirectNumber]: 0,
@@ -36,7 +48,32 @@ const CALLER_ID_FILTER_TYPE = [
 const BLOCKED_NUMBER_CALLER_ID = 0;
 
 class RCCallerIdController {
-  constructor(private _rcInfoFetchController: RCInfoFetchController) {}
+  private _partialModifyController: IPartialModifyController<
+    IExtensionCallerId,
+    string
+  >;
+  constructor(private _rcInfoFetchController: RCInfoFetchController) {
+    this._initPartialController();
+  }
+  private _initPartialController() {
+    const entitySourceController: IPartialEntitySourceController<
+      IExtensionCallerId,
+      string
+    > = {
+      getEntityNotificationKey: () => {
+        return RC_INFO.EXTENSION_CALLER_ID;
+      },
+      get: async (id: string) => {
+        return await this._rcInfoFetchController.getExtensionCallerId();
+      },
+      update: async (item: IExtensionCallerId) => {
+        await this._rcInfoFetchController.setExtensionCallerId(item);
+      },
+    };
+    this._partialModifyController = new PartialModifyController(
+      entitySourceController,
+    );
+  }
 
   async getCallerIdList() {
     let result: PhoneNumberModel[] = [];
@@ -119,6 +156,80 @@ class RCCallerIdController {
 
   private _recordsSortFn(a: PhoneNumberModel, b: PhoneNumberModel) {
     return CALLER_ID_ORDER[a.usageType] - CALLER_ID_ORDER[b.usageType];
+  }
+  private _getCallerIdRequest(callerId: number) {
+    const params: IExtensionCallerFeatureRequest = {
+      feature: CALLER_ID_FEATURE_NAME,
+      callerId: {},
+    };
+    if (callerId === BLOCKED_NUMBER_CALLER_ID) {
+      params.callerId = {
+        type: PhoneNumberType.Blocked,
+      };
+    } else {
+      params.callerId = {
+        phoneInfo: { id: callerId.toString() },
+      };
+    }
+    return params;
+  }
+
+  async setDefaultCallerId(callerId: number) {
+    const params = this._getCallerIdRequest(callerId);
+    const preHandlePartial = (
+      partialModel: Partial<IExtensionCallerId>,
+      originalModel: IExtensionCallerId,
+    ): Partial<IExtensionCallerId> => {
+      let newData = _.cloneDeep(originalModel.byFeature);
+      newData = newData.map(item => {
+        if (item.feature === CALLER_ID_FEATURE_NAME) {
+          return params as IExtensionCallerFeature;
+        }
+        return item;
+      });
+      partialModel.byFeature = newData;
+      return partialModel;
+    };
+    await this._partialModifyController.updatePartially(
+      RC_INFO.EXTENSION_CALLER_ID,
+      preHandlePartial,
+      async (newData: IExtensionCallerId) => {
+        return await RCInfoApi.setExtensionCallerId({
+          byFeature: [params],
+        });
+      },
+    );
+  }
+
+  async getExtensionCallerId() {
+    const response = await this._rcInfoFetchController.getExtensionCallerId();
+    if (response) {
+      const callerInfo = response.byFeature.find(
+        item => item.feature === CALLER_ID_FEATURE_NAME,
+      );
+      if (callerInfo) {
+        if (_.get(callerInfo, 'callerId.type') === PhoneNumberType.Blocked) {
+          return BLOCKED_NUMBER_CALLER_ID;
+        }
+        const id = _.get(callerInfo, 'callerId.phoneInfo.id');
+        return id && _.toNumber(id);
+      }
+    }
+    return null;
+  }
+
+  async hasSetCallerId() {
+    const result = await this._rcInfoFetchController.getExtensionCallerId();
+    return !!result;
+  }
+
+  async getDefaultCallerId() {
+    const defaultCallerNumberId = await this.getExtensionCallerId();
+    return (
+      (defaultCallerNumberId !== null &&
+        (await this.getCallerById(defaultCallerNumberId))) ||
+      ((await this.getFirstDidCaller()) || (await this.getCompanyMainCaller()))
+    );
   }
 }
 export { RCCallerIdController };

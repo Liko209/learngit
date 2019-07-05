@@ -4,10 +4,7 @@
   "main": "src",
   "scripts": {
     "storybook": "STORYBOOK_DISPLAY_WARNING=true DISPLAY_WARNING=true start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "update-snapshot": "jest --updateSnapshot src/__tests__/snapshot/storyshots.test.jsx"
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@material-ui/core": "3.9.3",

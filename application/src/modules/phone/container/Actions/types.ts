@@ -16,6 +16,7 @@ type ActionsViewProps = {
   shouldShowBlock: boolean;
   person: PersonModel | null;
   isBlock: boolean;
+  phoneNumber: string | null;
 };
 
 export { ActionsProps, ActionsViewProps, ENTITY_TYPE };

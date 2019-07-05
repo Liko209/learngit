@@ -61,6 +61,7 @@ type JuiAudioActionMap = {
 };
 
 type JuiAudioPlayerProps = {
+  responsiveSize?: any;
   src: string;
   duration: number;
   actionTips: JuiAudioActionMap;

@@ -18,6 +18,8 @@ describe('SearchService', () => {
   let settingService: SettingService;
   function setUp() {
     settingController = {
+      init: jest.fn(),
+      dispose: jest.fn(),
       registerModuleSetting: jest.fn(),
       unRegisterModuleSetting: jest.fn(),
     } as any;
@@ -36,6 +38,18 @@ describe('SearchService', () => {
     it('should proxy settingController.registerModuleSetting', () => {
       settingService.registerModuleSetting({} as any);
       expect(settingController.registerModuleSetting).toBeCalledWith({});
+    });
+  });
+  describe('onStarted', () => {
+    it('should call init when setting controller is not null', () => {
+      settingService.onStarted();
+      expect(settingController.init).toBeCalled();
+    });
+  });
+  describe('onStopped', () => {
+    it('should call init when setting controller is not null', () => {
+      settingService.onStopped();
+      expect(settingController.dispose).toBeCalled();
     });
   });
 

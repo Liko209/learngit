@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ImageViewer/Viewer.ts"
+    ],
+    "include_tags": [
+      "JPT-1351"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

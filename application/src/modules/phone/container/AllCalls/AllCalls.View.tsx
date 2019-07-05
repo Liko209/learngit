@@ -57,13 +57,14 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
+          width={width}
         />
       );
     });

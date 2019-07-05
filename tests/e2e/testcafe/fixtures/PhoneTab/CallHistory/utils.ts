@@ -39,12 +39,6 @@ export async function ensuredOneCallLog(t: TestController, caller: IUser, callee
       await callerSession.waitForStatus('terminated');
     });
 
-    await h(t).withLog('And refresh page', async () => {
-      await t.wait(5e3);
-      await h(t).reload();
-      await app.homePage.ensureLoaded();
-    });
-
     await h(t).withLog('Then the call history page has one record', async (step) => {
       await t.expect(callHistoryPage.items.count).eql(1, { timeout: 60e3 });
     });
@@ -78,15 +72,8 @@ export async function addOneCallLogFromGuest(t: TestController, caller: IUser, c
       await t.wait(waitTime);
       await callerSession.hangup();
       await callerSession.waitForStatus('terminated');
-    });
-
-    await h(t).withLog('And refresh page', async () => {
-      await t.wait(5e3);
-      await h(t).reload();
-      await app.homePage.ensureLoaded();
       await t.expect(callHistoryPage.items.count).gte(1, { timeout: 10e3 });
     });
-
   }
 
 

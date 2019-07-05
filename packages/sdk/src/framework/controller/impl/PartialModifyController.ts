@@ -7,7 +7,7 @@
 import { IdModel, Raw, ModelIdType } from '../../model';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { IEntitySourceController } from '../interface/IEntitySourceController';
+import { IPartialEntitySourceController } from '../interface/IPartialEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
@@ -17,7 +17,7 @@ class PartialModifyController<
   IdType extends ModelIdType = number
 > implements IPartialModifyController<T, IdType> {
   constructor(
-    public entitySourceController: IEntitySourceController<T, IdType>,
+    public entitySourceController: IPartialEntitySourceController<T, IdType>,
   ) {}
 
   async updatePartially(
@@ -96,16 +96,16 @@ class PartialModifyController<
   }
 
   private _doDefaultPartialNotify(
-    updatedEntities: T[],
-    partialEntities: Partial<Raw<T>>[],
+    updatedEntity: T,
+    partialEntity: Partial<Raw<T>>,
   ) {
     const eventKey: string = this.entitySourceController.getEntityNotificationKey();
     if (eventKey.length > 0) {
       mainLogger.info(`_doDefaultPartialNotify: eventKey= ${eventKey}`);
       notificationCenter.emitEntityUpdate<T, IdType>(
         eventKey,
-        updatedEntities,
-        partialEntities,
+        [updatedEntity],
+        [partialEntity],
       );
     } else {
       mainLogger.warn('_doDefaultPartialNotify: no dao class');
@@ -184,20 +184,12 @@ class PartialModifyController<
       partialEntities: Partial<Raw<T>>[],
     ) => void,
   ): Promise<void> {
-    const originalEntities: T[] = [originalEntity];
-    const updatedEntities: T[] = [updatedEntity];
-    const partialEntities: Partial<Raw<T>>[] = [partialEntity];
-
-    const transformedModels: T[] = partialEntities.map(
-      (item: Partial<Raw<T>>) => {
-        return transform(item);
-      },
-    );
-    await this.entitySourceController.bulkUpdate(transformedModels);
+    const transformedModel = transform<T>(partialEntity);
+    await this.entitySourceController.update(transformedModel);
     if (doPartialNotify) {
-      doPartialNotify(originalEntities, updatedEntities, partialEntities);
+      doPartialNotify([originalEntity], [updatedEntity], [partialEntity]);
     } else {
-      this._doDefaultPartialNotify(updatedEntities, partialEntities);
+      this._doDefaultPartialNotify(updatedEntity, partialEntity);
     }
   }
 }

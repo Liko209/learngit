@@ -11,6 +11,7 @@ import { PostParser } from './PostParser';
 import { EMOJI_REGEX, EMOJI_SIZE_MAP } from '../utils';
 import { EmojiTransformer } from './EmojiTransformer';
 import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
 
 class EmojiParser extends PostParser implements IPostParser {
   type = ParserType.EMOJI;
@@ -36,6 +37,7 @@ class EmojiParser extends PostParser implements IPostParser {
           skin={tone + DEFAULT_TONE_INDEX || DEFAULT_TONE_INDEX}
           set={EMOJI_SET}
           size={isEnlarged ? EMOJI_SIZE_MAP.large : EMOJI_SIZE_MAP.small}
+          backgroundImageFn={backgroundImageFn}
         >
           {emojiData.alt ? emojiData.alt : `:${name}:`}
         </Emoji>

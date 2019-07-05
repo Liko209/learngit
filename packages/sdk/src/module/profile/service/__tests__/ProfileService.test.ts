@@ -190,13 +190,6 @@ describe('ProfileService', () => {
     });
   });
 
-  describe('getDefaultCallId', () => {
-    it('should call profile data controller', async () => {
-      await profileService.getDefaultCaller();
-      expect(mockProfileDataController.getDefaultCaller).toBeCalled();
-    });
-  });
-
   describe('onStart', () => {
     it('should call registerModuleSetting', () => {
       profileService['_profileSetting'] = mockProfileSetting;

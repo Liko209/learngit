@@ -9,16 +9,17 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import CallLogModel from '@/store/models/CallLog';
-import { CallLogItemProps } from './types';
+import { CallLogItemProps, Handler } from './types';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
-import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
+import { getHourMinuteSeconds } from '@/utils/date';
 import { Profile } from 'sdk/module/profile/entity';
 import ProfileModel from '@/store/models/Profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { i18nP } from '@/utils/i18nT';
+import { callLogDefaultResponsiveInfo, kHandlers } from './config';
 
 class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
@@ -105,7 +106,23 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   @computed
   get startTime() {
-    return postTimestamp(this.data.startTime);
+    return this.data.startTime;
+  }
+
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
+    }
+    return callLogDefaultResponsiveInfo;
+  }
+
+  @computed
+  get callLogResponsiveMap() {
+    return this._getResponsiveMap(kHandlers);
   }
 
   private async _fetchBlockPermission() {

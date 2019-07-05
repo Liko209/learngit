@@ -176,6 +176,7 @@ const KeypadHeaderContainer = styled.div`
 const ContactSearchContainer = styled.div<{ addMargin: boolean }>`
   && {
     position: relative;
+    height: 100%;
     width: 100%;
     flex: 1;
     & > .contact-search-list-container {

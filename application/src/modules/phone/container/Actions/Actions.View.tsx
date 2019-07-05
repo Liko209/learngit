@@ -26,12 +26,13 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
-    const { id, hookAfterClick, entity, caller, person } = this.props;
+    const { id, hookAfterClick, entity, caller, person, phoneNumber } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
           key={`${id}-${type}-${index}`}
           hookAfterClick={hookAfterClick}
+          phoneNumber={phoneNumber}
           entity={entity}
           caller={caller}
           person={person}
