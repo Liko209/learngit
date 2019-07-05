@@ -530,8 +530,10 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(ua.unregister).toBeCalled();
-      done();
+      setImmediate(() => {
+        expect(ua.unregister).toBeCalled();
+        done();
+      });
     });
   });
 

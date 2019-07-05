@@ -14,8 +14,11 @@ type RTCSipProvisionInfo = {
     username: string;
     authorizationId: string;
     outboundProxy: string;
+    outboundProxyBackup?: string;
+    switchBackInterval?: number;
   }[];
   sipFlags: RTCSipFlags;
+  sipErrorCodes?: string[];
 };
 
 type RTCRegisterAsyncTask = {

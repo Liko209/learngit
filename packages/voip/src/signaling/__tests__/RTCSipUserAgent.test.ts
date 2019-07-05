@@ -16,6 +16,11 @@ class MockUserAgent extends EventEmitter2 {
     super();
     this.transport = new EventEmitter2();
     this.transport.disconnect = jest.fn();
+    this.transport.isSipErrorCode = jest
+      .fn()
+      .mockImplementation((message: string) => {
+        return false;
+      });
     let modifiers: any = [];
     if (mockOptions && mockOptions.modifiers) {
       modifiers = mockOptions.modifiers;
@@ -73,19 +78,16 @@ describe('RTCSipUserAgent', () => {
     expect(eventReceiver.registerSuccess).toBeCalled();
   });
 
-  it('should emit registerFailed event withe cause and response when webphone tells register is failed. [JPT-600]', () => {
+  it('should emit registerFailed event with cause and response when webphone tells register is failed. [JPT-600]', () => {
     const userAgent = new RTCSipUserAgent();
     userAgent._createWebPhone(provisionData, options);
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.emit(
       'registrationFailed',
-      { text: 'mockFailed' },
+      { data: '500' },
       500,
     );
-    expect(eventReceiver.registerFailed).toBeCalledWith(
-      { text: 'mockFailed' },
-      500,
-    );
+    expect(eventReceiver.registerFailed).toBeCalledWith({ data: '500' }, 500);
   });
 
   it('should emit switchBackProxy when webphone notify switchBackProxy in [1, 3] min. [JPT-2305]', () => {

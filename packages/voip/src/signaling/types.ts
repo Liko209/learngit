@@ -58,9 +58,6 @@ type ProvisionDataOptions = {
   connector?: any;
   audioHelper?: string;
   onSession?: string;
-  maxReconnectionAttempts?: number;
-  reconnectionTimeout?: number;
-  connectionTimeout?: number;
   modifiers?: any;
   enableMidLinesInSDP?: boolean;
   enableQos?: boolean;
