@@ -64,8 +64,12 @@ describe('TitleViewModel', () => {
     });
 
     it('should get sender when item.getDirectRelatedPostInGroup return post', async (done: any) => {
+      const createdAt = 123123;
       const fileItem = {
-        getDirectRelatedPostInGroup: jest.fn(() => ({ creator_id: 123 })),
+        getDirectRelatedPostInGroup: jest.fn(() => ({
+          creator_id: 123,
+          created_at: createdAt,
+        })),
       };
       const spy = jest.spyOn(storeUtils, 'getEntity').mockReturnValue(fileItem);
       const vm = getVM();
@@ -73,6 +77,7 @@ describe('TitleViewModel', () => {
       await vm.updateSenderInfo();
 
       expect(spy).toBeCalledWith(ENTITY_NAME.PERSON, 123);
+      expect(vm.createdAt).toBe(createdAt);
 
       spy.mockRestore();
       done();
