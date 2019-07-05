@@ -12,6 +12,7 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import { Caller } from 'sdk/module/RCItems/types';
 import { BlockViewModel } from '../Block.ViewModel';
 
 jest.mock('@/containers/Notification');
@@ -40,6 +41,7 @@ const checkNotification = (message: string) => ({
 });
 
 const phoneNumber = '+1234567890';
+const caller = { phoneNumber } as Caller;
 
 describe('BlockViewModel', () => {
   @testable
@@ -49,6 +51,7 @@ describe('BlockViewModel', () => {
     async t1(done: jest.DoneCallback) {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
       });
@@ -70,6 +73,7 @@ describe('BlockViewModel', () => {
     async t1() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
       });
@@ -82,6 +86,7 @@ describe('BlockViewModel', () => {
     async t2() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.MENU_ITEM,
       });
@@ -104,6 +109,7 @@ describe('BlockViewModel', () => {
     async t1() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
       });
@@ -126,6 +132,7 @@ describe('BlockViewModel', () => {
     async t2() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
       });
@@ -152,6 +159,7 @@ describe('BlockViewModel', () => {
     async t1() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
       });
@@ -174,6 +182,7 @@ describe('BlockViewModel', () => {
     async t2() {
       const vm = new BlockViewModel({
         phoneNumber,
+        caller,
         id: 2031622,
         type: BUTTON_TYPE.ICON,
       });

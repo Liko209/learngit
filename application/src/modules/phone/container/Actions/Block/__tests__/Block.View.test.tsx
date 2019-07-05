@@ -43,11 +43,16 @@ const checkNotification = (message: string) => ({
   type: 'success',
 });
 
+const phoneNumber = '+1234567890';
+
 const mockProps = {
+  phoneNumber,
   id: 1234,
   block: () => jest.fn().mockReturnValue(true),
   unblock: () => jest.fn().mockReturnValue(true),
-  caller: {} as Caller,
+  caller: {
+    phoneNumber
+  } as Caller,
 };
 
 describe('Block', () => {
@@ -156,8 +161,8 @@ describe('Block', () => {
         <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />,
       );
       await wrapper.instance().onBlockConfirm({
-        startLoading() {},
-        stopLoading() {},
+        startLoading() { },
+        stopLoading() { },
       });
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.numberHasBeenBlocked'),
