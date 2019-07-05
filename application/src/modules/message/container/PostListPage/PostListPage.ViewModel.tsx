@@ -7,12 +7,8 @@
 import { AbstractViewModel } from '@/base';
 import { POST_LIST_TYPE, PostListPageProps } from './types';
 import { computed, observable } from 'mobx';
-import { getSingleEntity, getEntity } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { MyState } from 'sdk/module/state/entity';
-import { Profile } from 'sdk/module/profile/entity';
-import MyStateModel from '@/store/models/MyState';
-import ProfileModel from '@/store/models/Profile';
 import storeManager from '@/store';
 
 import _ from 'lodash';
@@ -23,43 +19,55 @@ import { Post } from 'sdk/module/post/entity';
 import { ISortableModelWithData } from '@/store/base/fetch/types';
 import PostModel from '@/store/models/Post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
-type DataMap = {
-  [key: string]: {
-    caption: string;
-    idListProvider: () => number[] | undefined;
-  };
-};
+import SingleEntityMapStore from '@/store/base/SingleEntityMapStore';
 
 class PostListPageViewModel extends AbstractViewModel {
-  private _dataMap: DataMap = {
-    [POST_LIST_TYPE.mentions]: {
-      caption: 'message.@mentionsTitle',
-      idListProvider: () => {
-        const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
-          ENTITY_NAME.MY_STATE,
-          'atMentionPostIds',
-        );
-        if (Array.isArray(atMentionPostIds)) {
-          return atMentionPostIds.sort((a: number, b: number) => b - a);
-        }
-        return undefined;
+  @computed
+  get atMentionPostIds() {
+    const store = storeManager.getEntityMapStore(
+      ENTITY_NAME.MY_STATE,
+    ) as SingleEntityMapStore<any, any>;
+
+    const isMocked = store.get('isMocked');
+    if (isMocked) {
+      return undefined;
+    }
+    const atMentionPostIds = store.get('atMentionPostIds');
+    if (Array.isArray(atMentionPostIds)) {
+      return atMentionPostIds.sort((a: number, b: number) => b - a);
+    }
+    return [];
+  }
+
+  @computed
+  get favoritePostIds() {
+    const store = storeManager.getEntityMapStore(
+      ENTITY_NAME.PROFILE,
+    ) as SingleEntityMapStore<any, any>;
+    const isMocked = store.get('isMocked');
+    if (isMocked) {
+      return undefined;
+    }
+    const favoritePostIds = store.get('favoritePostIds');
+    if (Array.isArray(favoritePostIds)) {
+      return favoritePostIds;
+    }
+    return [];
+  }
+
+  @computed
+  private get _dataMap() {
+    return {
+      [POST_LIST_TYPE.mentions]: {
+        caption: 'message.@mentionsTitle',
+        idListProvider: this.atMentionPostIds,
       },
-    },
-    [POST_LIST_TYPE.bookmarks]: {
-      caption: 'message.bookmarksTitle',
-      idListProvider: () => {
-        const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
-          ENTITY_NAME.PROFILE,
-          'favoritePostIds',
-        );
-        if (Array.isArray(favoritePostIds)) {
-          return favoritePostIds;
-        }
-        return undefined;
+      [POST_LIST_TYPE.bookmarks]: {
+        caption: 'message.bookmarksTitle',
+        idListProvider: this.favoritePostIds,
       },
-    },
-  };
+    };
+  }
 
   @observable
   private _type: POST_LIST_TYPE;
@@ -80,7 +88,7 @@ class PostListPageViewModel extends AbstractViewModel {
   @computed
   get ids(): number[] | undefined {
     if (this._type && this._dataMap[this._type]) {
-      return this._dataMap[this._type].idListProvider();
+      return this._dataMap[this._type].idListProvider;
     }
     return undefined;
   }

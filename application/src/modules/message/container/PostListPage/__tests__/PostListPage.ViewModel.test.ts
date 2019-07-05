@@ -16,19 +16,30 @@ const postService = new PostService();
 
 describe('PostListPage.ViewModel', () => {
   describe('idsProviders', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
     it('should provide ids list in correct order for mentions, show these posts in the order of recency in mentions page [JPT-392]', () => {
       const sourceArr = [4, 5, 3, 1, 2, 7, 6];
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValueOnce(sourceArr);
+      jest
+        .spyOn(storeManager, 'getEntityMapStore')
+        .mockImplementation(
+          () => new Map([['atMentionPostIds', sourceArr], ['isMocked', false]]),
+        );
       const vm = new PostListPageViewModel();
-      const ids = vm._dataMap[POST_LIST_TYPE.mentions].idListProvider();
+      const ids = vm._dataMap[POST_LIST_TYPE.mentions].idListProvider;
       expect(ids).toStrictEqual([7, 6, 5, 4, 3, 2, 1]);
     });
 
     it('should provide ids list in correct order for bookmarks, show these posts by the time the items got bookmarked in bookmarks page [JPT-1226]', () => {
       const sourceArr = [4, 5, 3, 1, 2, 7, 6];
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValueOnce(sourceArr);
+      jest
+        .spyOn(storeManager, 'getEntityMapStore')
+        .mockImplementation(
+          () => new Map([['favoritePostIds', sourceArr], ['isMocked', false]]),
+        );
       const vm = new PostListPageViewModel();
-      const ids = vm._dataMap[POST_LIST_TYPE.bookmarks].idListProvider();
+      const ids = vm._dataMap[POST_LIST_TYPE.bookmarks].idListProvider;
       expect(ids).toStrictEqual([4, 5, 3, 1, 2, 7, 6]);
     });
   });
@@ -109,8 +120,14 @@ describe('PostListPage.ViewModel', () => {
         });
         vm._type = 'bookmarks';
         jest
-          .spyOn(vm._dataMap.bookmarks, 'idListProvider')
-          .mockReturnValue(new Array(ids));
+          .spyOn(storeManager, 'getEntityMapStore')
+          .mockImplementation(
+            () =>
+              new Map([
+                ['favoritePostIds', new Array(ids)],
+                ['isMocked', false],
+              ]),
+          );
         const result = await vm._getOnePageData(0, pageSize);
         expect(result).toEqual({ data: new Array(data), hasMore });
       },
@@ -133,8 +150,14 @@ describe('PostListPage.ViewModel', () => {
         .mockImplementation(() => Promise.resolve());
       vm._type = 'bookmarks';
       jest
-        .spyOn(vm._dataMap.bookmarks, 'idListProvider')
-        .mockReturnValue([0, 1, 2, 3, 4, 5, 6]);
+        .spyOn(storeManager, 'getEntityMapStore')
+        .mockImplementation(
+          () =>
+            new Map([
+              ['favoritePostIds', [0, 1, 2, 3, 4, 5, 6]],
+              ['isMocked', false],
+            ]),
+        );
       await vm.postFetcher(QUERY_DIRECTION.BOTH, 20, { id: 4 });
       expect(vm._getOnePageData).toBeCalledWith(5, 20);
     });

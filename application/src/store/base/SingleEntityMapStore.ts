@@ -17,7 +17,9 @@ export default class SingleEntityMapStore<
   IdType extends ModelIdType = number
 > extends BaseStore {
   @observable
-  data: ObservableMap = new ObservableMap<keyof Entity, any>();
+  data: ObservableMap = new ObservableMap<keyof Entity, any>({
+    isMocked: true,
+  });
   init: boolean;
   getService: Function;
   service: EntityBaseService<T, IdType>;
@@ -57,6 +59,7 @@ export default class SingleEntityMapStore<
 
   @action
   batchSet(data: T) {
+    this.data.set('isMocked', false);
     if (!Object.keys(data).length) {
       return;
     }
