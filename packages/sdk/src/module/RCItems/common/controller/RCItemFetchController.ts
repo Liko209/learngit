@@ -71,9 +71,9 @@ abstract class RCItemFetchController<
           }
           // match phoneNumber
           if (term.validNumber) {
-            return (
+            return Boolean(
               (extensionNumber && extensionNumber.includes(term.validNumber)) ||
-              (phoneNumber && phoneNumber.includes(term.validNumber))
+                (phoneNumber && phoneNumber.includes(term.validNumber)),
             );
           }
           return false;

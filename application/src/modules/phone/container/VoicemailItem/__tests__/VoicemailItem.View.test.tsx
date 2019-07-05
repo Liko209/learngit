@@ -143,11 +143,12 @@ describe('VoicemailItem.View', () => {
   @testable
   class playerMode {
     @test(
-      'should player progress show when playing and hide after pause. [JPT-2377]',
+      'should player progress show when hover and playing, and still show after pause, finally hide after not hover. [JPT-2377]',
     )
     t1() {
       const props = {
-        isAudioActive: false,
+        isAudioActive: true,
+        isHover: true,
         voiceMailResponsiveMap: {
           audioMode: JuiAudioMode.FULL,
           buttonToShow: 3,
@@ -160,11 +161,13 @@ describe('VoicemailItem.View', () => {
       });
       const instance: any = wrapper.instance();
 
-      expect(instance.playerMode).toBe(JuiAudioMode.MINI);
-
-      wrapper.setProps({ isAudioActive: true });
-
       expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+
+      wrapper.setProps({ isAudioActive: false });
+      expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+
+      wrapper.setProps({ isHover: false });
+      expect(instance.playerMode).toBe(JuiAudioMode.MINI);
     }
 
     @test(
@@ -173,6 +176,7 @@ describe('VoicemailItem.View', () => {
     t2() {
       const props = {
         isAudioActive: false,
+        isHover: true,
         voiceMailResponsiveMap: {
           audioMode: JuiAudioMode.FULL,
           buttonToShow: 3,
@@ -180,7 +184,7 @@ describe('VoicemailItem.View', () => {
         },
       };
 
-      const wrapper = shallow(<VoicemailItemView {...props} isHover={true} />, {
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
       const instance: any = wrapper.instance();

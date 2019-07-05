@@ -9,6 +9,7 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
 import {
+  ActiveVoicemailId,
   FetchVoicemailData,
   VoicemailFilterFunc,
   VoicemailFilterOptions,
@@ -28,6 +29,14 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
 
   @observable
   _filterFunc: VoicemailFilterFunc = null;
+
+  @observable
+  activeVoicemailId: ActiveVoicemailId = null;
+
+  @action
+  onVoicemailPlay = (id: ActiveVoicemailId) => {
+    this.activeVoicemailId = id;
+  }
 
   constructor(props: any) {
     super(props);
