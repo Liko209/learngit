@@ -20,7 +20,7 @@ import {
 } from './types';
 
 const StyledPhoneFilter = styled(JuiOutlineTextField)`
-  width: ${width(40)};
+  width: ${width(50)};
   padding: ${spacing(0, 3)};
   border-color: ${grey('300')};
 
