@@ -508,3 +508,61 @@ test.meta(<ITestMeta>{
     await t.expect(telephonyDialog.dialerInput.focused).ok();
   });
 });
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-2487'],
+  priority: ['P2'],
+  maintainers: ['Naya.Fang'],
+  keywords: ['Dialer']
+})('Can enter the search contact mode after edited the content of the custom forward ', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneSettingPage;
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+  await h(t).withLog('When I receive an inbound call', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog('Then telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  await h(t).withLog('And I click the call actions button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+  await h(t).withLog('And I hover forward options', async () => {
+    await telephonyDialog.hoverForwardButton();
+  });
+  await h(t).withLog('And I click custom forward button', async () => {
+    await telephonyDialog.clickCustomForwardButton();
+  });
+  await h(t).withLog('And I click "11" on the keypad', async () => {
+    await telephonyDialog.tapKeypad('11');
+  });
+  await h(t).withLog('And callerUser hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+  await t.wait(2000)
+  await h(t).withLog('And I click the Dialpad button', async () => {
+    await app.homePage.openDialer();
+  });
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  const { extension } = caller;
+  const searchStr = extension.replace('+','');
+  await h(t).withLog(`When I enter "${searchStr}" into input field via keyboard`, async () => {
+    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+  });
+  await t.wait(2000)
+  await h(t).withLog(`Then should display the search results`, async ()=>{
+    await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
+  });
+});
