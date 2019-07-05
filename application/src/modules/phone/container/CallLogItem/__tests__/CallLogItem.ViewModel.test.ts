@@ -264,7 +264,7 @@ describe('CallLogItemViewModel', () => {
       expect(vm.callLogResponsiveMap).toEqual({
         buttonToShow: 1,
         showCallInfo: true,
-        dateFormat: 'full',
+        dateFormat: 'short',
       });
     }
     t4() {
