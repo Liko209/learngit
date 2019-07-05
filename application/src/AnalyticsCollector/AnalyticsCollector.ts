@@ -12,6 +12,8 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
+import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+
 class AnalyticsCollector {
   constructor() {
     dataAnalysis.setProduction(config.isProductionAccount());
@@ -112,6 +114,13 @@ class AnalyticsCollector {
   unblockNumber(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_unblockNumber', {
       source,
+    });
+  }
+
+  // [FIJI-6851] [FIJI-4798] Segment - Add event - click action button
+  phoneActions(tab: PHONE_TAB, actions: PHONE_ITEM_ACTIONS) {
+    dataAnalysis.track(`Jup_Web/DT_phone_${tab}Actions`, {
+      actions,
     });
   }
 

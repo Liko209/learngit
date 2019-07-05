@@ -145,6 +145,10 @@ class CallHistoryItem extends BaseWebComponent {
 
 
 
+  get deleteToggle() {
+    return this.getSelectorByAutomationId('calllog-delete-button');
+  }
+
   get blockToggle() {
     return this.getSelectorByAutomationId('calllog-block-button');
   }

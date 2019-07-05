@@ -8,7 +8,6 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
-import { StoreViewModel } from '@/store/ViewModel';
 import {
   FetchVoicemailData,
   VoicemailFilterFunc,
@@ -17,8 +16,9 @@ import {
   VoicemailViewProps,
 } from './types';
 import { VoicemailListHandler } from './VoicemailListHandler';
+import { HoverControllerViewModel } from '../HoverController';
 
-class VoicemailViewModel extends StoreViewModel<VoicemailProps>
+class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   implements VoicemailViewProps {
   @observable
   isError = false;

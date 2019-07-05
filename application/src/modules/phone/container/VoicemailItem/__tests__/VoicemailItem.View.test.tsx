@@ -180,12 +180,10 @@ describe('VoicemailItem.View', () => {
         },
       };
 
-      const wrapper = shallow(<VoicemailItemView {...props} />, {
+      const wrapper = shallow(<VoicemailItemView {...props} isHover={true} />, {
         disableLifecycleMethods: true,
       });
       const instance: any = wrapper.instance();
-
-      wrapper.setState({ isHover: true });
 
       expect(instance.playerMode).toBe(JuiAudioMode.FULL);
 
