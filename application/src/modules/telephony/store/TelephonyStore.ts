@@ -295,15 +295,8 @@ class TelephonyStore {
   }
 
   @action
-  updateDefaultChosenNumber = (defaultCallerPhoneNumber?: string) => {
-    if (defaultCallerPhoneNumber !== undefined) {
-      this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
-    } else if (
-      Array.isArray(this.callerPhoneNumberList) &&
-      this.callerPhoneNumberList.length
-    ) {
-      this.defaultCallerPhoneNumber = this.callerPhoneNumberList[0].phoneNumber;
-    }
+  updateDefaultChosenNumber = (defaultCallerPhoneNumber: string) => {
+    this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
   }
 
   @action

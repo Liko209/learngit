@@ -78,6 +78,13 @@ describe('RCInfoUserConfig', () => {
       } as any,
     ],
     [
+      RC_INFO_KEYS.EXTENSION_CALLER_ID,
+      {
+        getName: 'getExtensionCallerId',
+        setName: 'setExtensionCallerId',
+      } as any,
+    ],
+    [
       RC_INFO_KEYS.DIALING_PLAN,
       {
         getName: 'getDialingPlan',

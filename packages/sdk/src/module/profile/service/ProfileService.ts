@@ -153,12 +153,6 @@ class ProfileService extends EntityBaseService<Profile>
       .updateSettingOptions(options);
   }
 
-  async getDefaultCaller() {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getDefaultCaller();
-  }
-
   private get profileSetting() {
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(

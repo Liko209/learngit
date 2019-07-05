@@ -6,10 +6,12 @@
 
 import { RCInfoService } from '../RCInfoService';
 import { RCInfoController } from '../../controller/RCInfoController';
-import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CompanyService } from 'sdk/module/company';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { AccountService } from 'sdk/module/account';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 jest.mock('sdk/module/setting/service/SettingService', () => {
   const mock: SettingService = {
@@ -25,8 +27,8 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
+jest.mock('sdk/module/account');
 jest.mock('../../controller/BlockNumberController');
-jest.mock('../../../../module/account/config');
 jest.mock('sdk/module/company');
 
 function clearMocks() {
@@ -38,11 +40,15 @@ function clearMocks() {
 describe('RCInfoService', () => {
   let rcInfoService: RCInfoService;
   let rcInfoController: RCInfoController;
-  let userConfig: AccountUserConfig;
   let mockSettingService: SettingService;
+  let mockAccountService: AccountService;
   let companyService: CompanyService;
 
   function setup() {
+    mockAccountService = new AccountService(null);
+    mockAccountService.userConfig = {
+      getAccountType: jest.fn(),
+    };
     companyService = new CompanyService();
     ServiceLoader.getInstance = jest
       .fn()
@@ -53,7 +59,9 @@ describe('RCInfoService', () => {
         if (serviceName === ServiceConfig.SETTING_SERVICE) {
           return mockSettingService;
         }
-        return;
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return mockAccountService;
+        }
       });
   }
 
@@ -200,6 +208,33 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDefaultCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().getDefaultCallerId,
+      ).toBeCalled();
+    });
+  });
+
+  describe('setDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.setDefaultCallerId(1);
+      expect(
+        rcInfoController.getRCCallerIdController().setDefaultCallerId,
+      ).toBeCalledWith(1);
+    });
+  });
+
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.hasSetCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().hasSetCallerId,
+      ).toBeCalled();
+    });
+  });
+
   describe('isRCFeaturePermissionEnabled()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isRCFeaturePermissionEnabled(1);
@@ -290,6 +325,29 @@ describe('RCInfoService', () => {
       await rcInfoService.loadRegionInfo();
       expect(regionInfoController.loadRegionInfo).not.toHaveBeenCalled();
       expect(rcInfoService.isVoipCallingAvailable).toHaveBeenCalled();
+    });
+  });
+
+  describe('isVoipCallingAvailable', () => {
+    it('should return false when user is not rc account and not permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(false);
+      const result = await rcInfoService.isVoipCallingAvailable();
+      expect(result).toBeFalsy();
+    });
+    it('should return true when user is rc account and has permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(true);
+      const result = await rcInfoService.isVoipCallingAvailable();
+      expect(result).toBeTruthy();
     });
   });
 

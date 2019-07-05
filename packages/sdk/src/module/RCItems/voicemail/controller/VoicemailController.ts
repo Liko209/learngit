@@ -52,7 +52,9 @@ class VoicemailController {
   }
 
   private _buildPartialModifyController() {
-    return new PartialModifyController(this._entitySourceController);
+    return new PartialModifyController<Voicemail, number>(
+      this._entitySourceController,
+    );
   }
 }
 
