@@ -23,6 +23,8 @@ class ViewerView extends Component<ViewerViewProps, any> {
         closeViewer: this.closeViewer,
         onTransitionExited: this.onTransitionExited,
         onTransitionEntered: this.onTransitionEntered,
+        onContentLoad: props.onContentLoad,
+        onContentError: props.onContentError,
         isAnimating: true,
         setDeleteItem: this.setDeleteItem,
         setLoading: this.setLoading,

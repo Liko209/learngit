@@ -3,17 +3,29 @@
  * @Date: 2019-05-27 10:39:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { PhoneWrapper } from 'jui/pattern/Phone/PhoneWrapper';
 import { PhoneHeader } from 'jui/pattern/Phone/PhoneHeader';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer, Observer } from 'mobx-react';
+import { debounce } from 'lodash';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
-import { CallHistoryTypes, CallHistoryViewProps } from './types';
+import { JuiPhoneFilter } from 'jui/pattern/Phone/Filter';
+import { CallHistoryTypes, CallHistoryViewProps, IUseFilter } from './types';
 import { TabConfig, TAB_CONFIG } from './config';
 import ReactResizeDetector from 'react-resize-detector';
 import { More } from '../Actions/More';
 import { DeleteAll } from '../Actions/DeleteAll';
+
+const DELAY_DEBOUNCE = 300;
+
+const useFilter: IUseFilter = (initial: string) => {
+  const [value, setValue] = useState(initial);
+
+  const setFilterValue = debounce(setValue, DELAY_DEBOUNCE);
+
+  return [value, setFilterValue];
+};
 
 const CallHistoryWrapper = (
   props: {
@@ -22,9 +34,9 @@ const CallHistoryWrapper = (
     clearUMI: () => void;
   } & WithTranslation,
 ) => {
-  const clearUmi = () => {
-    props.clearUMI();
-  };
+  const { t, clearUMI } = props;
+
+  const [filterValue, setFilterValue] = useFilter('');
 
   return (
     <>
@@ -36,13 +48,20 @@ const CallHistoryWrapper = (
             <DeleteAll />
           </More>
         }
+        Right={
+          <JuiPhoneFilter
+            placeholder={t('calllog.inputFilter')}
+            clearButtonLabel={t('calllog.clearFilter')}
+            onChange={setFilterValue}
+          />
+        }
       />
       <PhoneWrapper>
         <JuiTabs
           position="center"
           forceFlex={true}
           defaultActiveIndex={CallHistoryTypes.All}
-          onChangeTab={clearUmi}
+          onChangeTab={clearUMI}
         >
           {TAB_CONFIG.map(
             ({ title, container, automationID }: TabConfig, index: number) => {
@@ -53,7 +72,7 @@ const CallHistoryWrapper = (
                   title={props.t(title)}
                   automationId={automationID}
                 >
-                  <Component width={props.width} height={props.height} />
+                  <Component width={props.width} height={props.height} filterValue={filterValue} />
                 </JuiTab>
               );
             },

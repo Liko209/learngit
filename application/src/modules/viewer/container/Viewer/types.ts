@@ -39,6 +39,8 @@ type ViewerViewProps = ViewerProps & {
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
   deleteItem?: boolean;
   directRelatedPost: Post;
+  onContentLoad?: () => {};
+  onContentError?: () => {};
 };
 
 export { ViewerProps, ViewerViewProps };
