@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import 'emoji-mart/css/emoji-mart.css';
-import { Picker, EmojiData } from 'emoji-mart';
+import { Picker, EmojiData, EmojiSet, EmojiSheetSize } from 'emoji-mart';
 import React, { MouseEvent } from 'react';
 import { JuiIconButton, JuiToggleButton } from '../../components/Buttons';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -20,15 +20,8 @@ type Props = {
   handlerIcon: string;
   handleEmojiClick: (emoji: EmojiData, cb?: Function) => void;
   title?: string;
-  sheetSize: 16 | 20 | 32 | 64 | undefined;
-  set:
-    | 'apple'
-    | 'google'
-    | 'twitter'
-    | 'emojione'
-    | 'messenger'
-    | 'facebook'
-    | undefined;
+  sheetSize?: EmojiSheetSize;
+  set?: EmojiSet;
   defaultSelector?: string;
   toggleButtonLabel?: string;
   handleKeepOpenChange?: () => void;
@@ -86,12 +79,21 @@ const StyledEmojiWrapper = styled.div`
   }
 `;
 let emojiMartContainer: HTMLCollectionOf<Element>;
+
 type State = {
   open: boolean;
   anchorEl: EventTarget & Element | null;
   isToggleWrapShow: boolean;
 };
+
 type EmojiProps = Props & ThemeProps;
+
+const EMOJI_DASE_PATH = '/emoji';
+
+function backgroundImageFn(set: EmojiSet, sheetSize: EmojiSheetSize) {
+  return `${EMOJI_DASE_PATH}/${set}/${sheetSize}.png`;
+}
+
 class JuiEmoji extends React.PureComponent<EmojiProps, State> {
   constructor(props: EmojiProps) {
     super(props);
@@ -229,6 +231,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
               emojisToShowFilter={(emoji: any) => {
                 return this.isIndexOf(ExcludeList, emoji.short_names);
               }}
+              backgroundImageFn={backgroundImageFn}
             />
             <StyledCutomizedComponentContainer
               isToggleWrapShow={this.state.isToggleWrapShow}
@@ -252,4 +255,4 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
   }
 }
 const JuiEmojiWithTheme = withTheme(JuiEmoji);
-export { JuiEmoji, JuiEmojiWithTheme };
+export { JuiEmoji, backgroundImageFn, JuiEmojiWithTheme };
