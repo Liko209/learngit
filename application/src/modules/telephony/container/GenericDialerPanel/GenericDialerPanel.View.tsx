@@ -136,15 +136,10 @@ class GenericDialerPanelViewComponent extends React.Component<
   }
 
   private _renderDialer = () => {
-    const {
-      playAudio,
-      dialerInputFocused,
-      displayCallerIdSelector,
-    } = this.props;
+    const { playAudio, dialerInputFocused } = this.props;
 
     return (
       <>
-        {displayCallerIdSelector && this._renderCallerIdSelector()}
         <DialPad
           makeMouseEffect={this._clickToInput}
           makeKeyboardEffect={playAudio}
@@ -156,18 +151,19 @@ class GenericDialerPanelViewComponent extends React.Component<
 
   private _renderContactSearch = () => {
     const {
-      displayCallerIdSelector,
       onContactSelected,
       inputStringProps,
+      displayCallerIdSelector,
     } = this.props;
     return (
-      <ContactSearchContainer>
-        {displayCallerIdSelector && this._renderCallerIdSelector()}
-        <ContactSearchList
-          onContactSelected={onContactSelected}
-          inputStringProps={inputStringProps}
-        />
-      </ContactSearchContainer>
+      <>
+        <ContactSearchContainer addMargin={displayCallerIdSelector}>
+          <ContactSearchList
+            onContactSelected={onContactSelected}
+            inputStringProps={inputStringProps}
+          />
+        </ContactSearchContainer>
+      </>
     );
   }
 
@@ -207,6 +203,7 @@ class GenericDialerPanelViewComponent extends React.Component<
       onBlur,
       deleteLastInputString,
       shouldEnterContactSearch,
+      displayCallerIdSelector,
       shouldDisplayRecentCalls,
       CallActionBtn,
       Back,
@@ -245,6 +242,9 @@ class GenericDialerPanelViewComponent extends React.Component<
           keypadFullSize={shouldEnterContactSearch || shouldDisplayRecentCalls}
           CallAction={callActionBtn}
           onFocus={this._focusInput}
+          CallerIdSelector={
+            displayCallerIdSelector ? this._renderCallerIdSelector() : null
+          }
           KeypadActions={this._renderKeypadActions()}
         />
       </>

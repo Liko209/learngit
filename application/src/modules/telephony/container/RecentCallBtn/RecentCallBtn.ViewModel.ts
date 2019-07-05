@@ -19,15 +19,12 @@ class RecentCallBtnViewModel extends StoreViewModel<Props>
 
   @computed
   get shouldShowRecentCallOrBackBtn() {
-    return this._telephonyStore.shouldDisplayRecentCalls;
+    return this._telephonyStore.isRecentCalls;
   }
 
   @computed
   get shouldShowRecentCallBtn() {
-    return !(
-      this._telephonyStore.hasActiveInBoundCall ||
-      this._telephonyStore.hasActiveOutBoundCall
-    );
+    return this._telephonyStore.shouldDisplayRecentCalls;
   }
 
   @action

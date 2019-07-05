@@ -15,9 +15,10 @@ describe('DialerTitleBar', () => {
     it('should have label: New Call', () => {
       const props = {
         isDialer: true,
-        t: (str) => (str === 'dialer.newCall' ? newCall : null),
+        t: (str: string) => (str === 'dialer.newCall' ? newCall : null),
         tReady: true,
         timing: 'Connecting',
+        title: newCall,
       };
       const wrapper = shallow(<DialerTitleBarView {...props} />);
       expect(wrapper.find(JuiTitleBar).length).toBe(1);

@@ -280,7 +280,7 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiLabelWithContent label={'files'}>
               <JuiFileWrapper>
                 <JuiExpandImage
-                  Actions={(() => ({})) as any}
+                  Actions={<div />}
                   previewUrl=""
                   icon={'doc'}
                   fileName={'filename'}

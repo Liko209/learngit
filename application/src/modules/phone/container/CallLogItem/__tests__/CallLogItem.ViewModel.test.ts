@@ -236,16 +236,44 @@ describe('CallLogItemViewModel', () => {
   }
 
   @testable
-  class startTime {
-    @test('should be call postTimestamp if get startTime [JPT-2144]')
+  class callLogResponsiveMap {
+    @test(
+      'should call _getResponsiveMap if window is in different width [JPT-2400]',
+    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      startTime: 'startTime',
-    })
     t1() {
       const vm = new CallLogItemViewModel({ id: 'id' });
-      vm.startTime;
-      expect(postTimestamp).toHaveBeenCalledWith('startTime');
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 3,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t2() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 750 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 2,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t3() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 450 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: true,
+        dateFormat: 'full',
+      });
+    }
+    t4() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 400 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: false,
+        dateFormat: 'short',
+      });
     }
   }
 

@@ -407,6 +407,13 @@ class PostDataController {
                   editedNewestPostCreationTime = post.created_at;
                 }
               }
+
+              mainLogger.info(
+                LOG_INDEX_DATA_POST,
+                `oldestPost.id ${
+                  oldestPost.id
+                } editedNewestPostCreationTime:${editedNewestPostCreationTime} groupId:${groupId}`,
+              );
             });
             posts.forEach((post: Post) => {
               if (post.created_at <= editedNewestPostCreationTime) {
@@ -425,7 +432,7 @@ class PostDataController {
               deletePostIds.concat(deletePosts.map((post: Post) => post.id));
             }
           }
-          const postIds = posts && posts.map(post => post._id);
+          const postIds = posts && posts.map(post => post.id);
           mainLogger.info(
             LOG_INDEX_DATA_POST,
             `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}, postIds:${postIds}`,

@@ -3,7 +3,9 @@
  * @Date: 2019-03-07 16:40:22
  * Copyright © RingCentral. All rights reserved.
  */
-const createKeyMapper = (children: JSX.Element[]) => {
+import { VirtualizedListChild } from '../types';
+
+const createKeyMapper = (children: VirtualizedListChild[]) => {
   return (i: number) => {
     let result: number | string = '';
     const child = children[i];

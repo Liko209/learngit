@@ -8,6 +8,7 @@ import { AbstractService } from './AbstractService';
 import { IdModel, ModelIdType } from '../model';
 import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
+import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
 import { BaseDao } from '../../framework/dao';
 import NetworkClient from '../../api/NetworkClient';
@@ -40,7 +41,7 @@ class EntityBaseService<
   private _entityCacheController: IEntityCacheController<T, IdType>;
   private _checkTypeFunc: (id: IdType) => boolean;
   private _entityNotificationController: IEntityNotificationController<T>;
-
+  private _healthModuleController: IHealthModuleController;
   constructor(
     public entityOptions: {
       isSupportedCache: boolean;
@@ -102,6 +103,7 @@ class EntityBaseService<
     if (this._subscribeController) {
       this._subscribeController.subscribe();
     }
+    this._healthModuleController && this._healthModuleController.init();
   }
   protected onStopped() {
     notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
@@ -109,7 +111,7 @@ class EntityBaseService<
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
-
+    this._healthModuleController && this._healthModuleController.dispose();
     delete this._subscribeController;
     delete this._entitySourceController;
     delete this._entityCacheController;
@@ -223,6 +225,10 @@ class EntityBaseService<
     settingId: number,
   ): Promise<BaseSettingEntity | undefined> {
     return undefined;
+  }
+
+  setHealthModuleController(controller: IHealthModuleController) {
+    this._healthModuleController = controller;
   }
 }
 

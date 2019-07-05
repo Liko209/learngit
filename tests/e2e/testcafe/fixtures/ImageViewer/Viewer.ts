@@ -506,7 +506,7 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
     await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitForPostToSend();
     postId = await conversationPage.nthPostItem(-1).postId;
-    fileId = await h(t).glip(loginUser).getFilesIdsFromPostId(postId);
+    fileId = await h(t).glip(loginUser).getFilesIdsFromPostId(postId)[0];
     senderName = await conversationPage.nthPostItem(-1).name.textContent;
   });
 

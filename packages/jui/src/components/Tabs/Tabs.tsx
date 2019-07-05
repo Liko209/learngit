@@ -93,8 +93,7 @@ class JuiTabs extends PureComponent<Props, States> {
     if (indexSelected > Children.count(props.children) - 1) {
       indexSelected = 0;
     }
-    const { onChangeTab } = props;
-    onChangeTab && onChangeTab(indexSelected);
+
     this.state = {
       indexSelected,
       indexLazyLoadComponents: [indexSelected],

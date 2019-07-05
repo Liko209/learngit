@@ -69,7 +69,6 @@ export async function addOneVoicemailFromGuest(t: TestController, caller: IUser,
 
     await h(t).withLog('and caller session makeCall to callee', async () => {
       await t.wait(5e3);
-      console.log(`${callee.company.number}#${callee.extension}`)
       await callerSession.makeCall(`${callee.company.number}#${callee.extension}`);
     });
 
