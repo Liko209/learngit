@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../helpers';
+import * as assert from 'assert';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -39,6 +40,22 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get hangupButton() {
     return this.getSelectorByAutomationId('telephony-end-btn');
+  }
+
+  get recentCallButton() {
+    return this.getSelectorByAutomationId('recentCallBtn');
+  }
+
+  get backToDialpadButton() {
+    return this.getSelectorByAutomationId('telephony-dialpad-btn', this.self);
+  }
+
+  get callLogList() {
+    return this.getSelectorByAutomationId('virtualized-list');
+  }
+
+  get callLogItem() {
+    return this.getSelectorByAutomationId('virtualized-list').find('div').nth(1).find('div');
   }
 
   async clickHangupButton() {
@@ -294,6 +311,60 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async hoverMinimizeButton() {
     await this.t.hover(this.minimizeButton);
+  }
+
+  async hoverRecentCallButton() {
+    await this.t.hover(this.recentCallButton);
+  }
+
+  async clickRecentCallButton() {
+    await this.t.click(this.recentCallButton);
+  }
+
+  async hoverBackToDialpadButton() {
+    await this.t.hover(this.backToDialpadButton);
+  }
+
+  async clickCallLogItem(n: number) {
+    await this.t.click(this.callLogItem.nth(n));
+  }
+
+  async scrollToY(y: number) {
+    const scrollDivElement = this.callLogList;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.callLogList.scrollTop).eql(y);
+  }
+
+  async scrollToBottom(retryTime = 3) { // retry until scroll bar at the end
+    let initHeight = 0;
+    for (const i of _.range(retryTime)) {
+      const scrollHeight = await this.callLogList.scrollHeight;
+      if (initHeight == scrollHeight) {
+        break
+      }
+      initHeight = scrollHeight;
+      const clientHeight = await this.callLogList.clientHeight;
+      await this.scrollToY(scrollHeight - clientHeight);
+    }
+  }
+
+  async expectStreamScrollToBottom() {
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.callLogList.scrollTop;
+      const scrollHeight = await this.callLogList.scrollHeight;
+      const clientHeight = await this.callLogList.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    });
+  }
+
+  async selectItemByKeyboard() {
+    await this.t.click(this.callLogList).pressKey('down');
   }
 
   async hoverDeleteButton() {
