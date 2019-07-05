@@ -103,7 +103,6 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 const LOG_TAG = 'SectionGroupHandler';
 const DEFAULT_LEFT_RAIL_GROUP: number = 20;
-const MAX_LEFT_RAIL_WITH_OPEN_GROUP: number = 81;
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _handlersMap: {} = {};
@@ -526,7 +525,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
-        limit: MAX_LEFT_RAIL_WITH_OPEN_GROUP,
       },
     );
   }
@@ -560,7 +558,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
-      limit: MAX_LEFT_RAIL_WITH_OPEN_GROUP,
     });
   }
 
