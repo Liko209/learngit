@@ -81,6 +81,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
   const iconRightProps = {
     tabIndex: 0,
     'aria-label': clearButtonLabel,
+    'data-test-automation-id': 'close',
   };
 
   const inputProps = {
@@ -100,6 +101,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
       IconRightProps={iconRightProps}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
+      data-test-automation-id="phoneFilter"
       {...iconState}
     />
   );

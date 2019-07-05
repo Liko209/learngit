@@ -19,6 +19,26 @@ export class CallHistoryPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
+  get filter() {
+    return this.getSelectorByAutomationId('phoneFilter');
+  }
+
+  get filterInput() {
+    return this.getSelectorByAutomationId('phoneFilter').find('input');
+  }
+
+  get filterInputClear() {
+    return this.getSelectorByAutomationId('close', this.filter);
+  }
+
+  get missedCallTab() {
+    return this.getSelectorByAutomationId('CallHistoryMissedCalls');
+  }
+
+  get allCallTab() {
+    return this.getSelectorByAutomationId('CallHistoryAllCalls');
+  }
+
   get scrollDiv() {
     return this.getSelectorByAutomationId('virtualized-list');
   }
@@ -29,6 +49,14 @@ export class CallHistoryPage extends BaseWebComponent {
 
   callhistoryItemByNth(n: number) {
     return this.getComponent(CallHistoryItem, this.items.nth(n));
+  }
+
+  get allCallsItems() {
+    return this.getSelector('[data-type="1"]').find('[data-test-automation-class="call-history-item"]');
+  }
+
+  get missedCallsItems() {
+    return this.getSelector('[data-type="2"]').find('[data-test-automation-class="call-history-item"]');
   }
 
   get items() {
