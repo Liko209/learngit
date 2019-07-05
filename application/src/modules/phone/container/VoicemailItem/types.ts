@@ -9,6 +9,7 @@ import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
 import { HoverControllerBaseViewProps } from '../HoverController';
 import { Audio, Checker } from '../../types';
+import { ActiveVoicemailId } from '../Voicemail/types';
 
 type VoicemailViewProps = {
   selected: boolean;
@@ -32,6 +33,8 @@ type VoicemailViewProps = {
 type VoicemailProps = HoverControllerBaseViewProps & {
   width: number;
   id: number;
+  activeVoicemailId: ActiveVoicemailId;
+  onVoicemailPlay(id: ActiveVoicemailId): void;
 };
 
 type CommonResponsiveObject = {

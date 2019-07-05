@@ -193,21 +193,17 @@ describe('VoicemailItemViewModel', () => {
     })
     beforeEach() {}
 
-    @test('should be true if phone store voicemailId equal vm id')
+    @test('should be true if active voicemail id equal vm id')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(1);
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
       expect(vm.selected).toBeTruthy();
     }
 
-    @test('should be false if phone store voicemailId not equal vm id')
+    @test('should be false if active voicemail id not equal vm id')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(2);
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 2 });
       expect(vm.selected).toBeFalsy();
     }
   }
@@ -236,9 +232,8 @@ describe('VoicemailItemViewModel', () => {
       ],
     })
     t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
       const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(1);
       phoneStore.updateAudio(1, {
         startTime: 1,
       });
@@ -327,7 +322,11 @@ describe('VoicemailItemViewModel', () => {
     )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     async t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const props = {
+        id: 1,
+        onVoicemailPlay: () => {},
+      };
+      const vm = new VoicemailItemViewModel(props);
       await vm.onBeforeAction(JuiAudioStatus.PLAY);
       when(
         () => !!vm.audio,
@@ -358,10 +357,14 @@ describe('VoicemailItemViewModel', () => {
     })
     @mockService(voicemailService, 'updateReadStatus')
     t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const props = {
+        id: 1,
+        onVoicemailPlay: jest.fn(),
+      };
+      const vm = new VoicemailItemViewModel(props);
       const phoneStore = container.get(PhoneStore);
       vm.onBeforePlay();
-      expect(phoneStore.voicemailId).toBe(1);
+      expect(props.onVoicemailPlay).toBeCalledWith(1);
       expect(voicemailService.updateReadStatus).toHaveBeenCalled();
     }
   }

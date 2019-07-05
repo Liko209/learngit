@@ -151,7 +151,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get selected() {
-    return this._phoneStore.selectedVoicemailId === this.props.id;
+    return this.props.activeVoicemailId === this.props.id;
   }
 
   @computed
@@ -169,7 +169,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     this.shouldPause = false;
 
     if (!this.selected) {
-      this._phoneStore.setVoicemailId(this.props.id);
+      this.props.onVoicemailPlay(this.props.id);
     }
     this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
   }
@@ -180,6 +180,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE,
       );
+
+      this.props.onVoicemailPlay(null);
+
       return;
     }
     if (status === JuiAudioStatus.PLAY) {

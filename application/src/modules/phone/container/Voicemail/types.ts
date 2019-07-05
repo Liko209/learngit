@@ -14,10 +14,14 @@ import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
 
 type VoicemailProps = {};
 
+type ActiveVoicemailId = number | null;
+
 type VoicemailViewProps = {
   isError: boolean;
   filterValue: string;
+  activeVoicemailId: ActiveVoicemailId;
   onFilterChange: IJuiChangePhoneFilter;
+  onVoicemailPlay: (id: ActiveVoicemailId) => void;
   onErrorReload: () => void;
   listHandler: FetchSortableDataListHandler<Voicemail>;
 };
@@ -33,6 +37,7 @@ type VoicemailFilterOptions = FetchDataOptions<Voicemail>;
 type VoicemailFilterFunc = null | ((data: Voicemail) => boolean);
 
 export {
+  ActiveVoicemailId,
   FetchVoicemailData,
   VoicemailFilterFunc,
   VoicemailFilterOptions,
