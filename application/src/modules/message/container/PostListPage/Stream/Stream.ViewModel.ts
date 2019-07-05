@@ -53,6 +53,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @observable
   fetchInitialPosts = () => Promise.resolve()
 
+  @observable
+  shouldShowErrorPage: boolean = false;
+
   @computed
   get ids() {
     return this._sortableListHandler.sortableListStore.getIds;
@@ -72,13 +75,22 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         pageSize: number,
         anchor?: ISortableModelWithData<Post>,
       ) => {
-        const { data, hasMore } = await this.props.postFetcher(
-          direction,
-          pageSize,
-          anchor,
-        );
-        addOrderIndicatorForPosts(data, this._postIds);
-        return { data, hasMore };
+        let result;
+        try {
+          const { data, hasMore } = await this.props.postFetcher(
+            direction,
+            pageSize,
+            anchor,
+          );
+          addOrderIndicatorForPosts(data, this._postIds);
+          result = { data, hasMore };
+        } catch (error) {
+          if (this._initial) {
+            this.shouldShowErrorPage = true;
+          }
+          result = { data: [], hasMore: true };
+        }
+        return result;
       },
     };
   }
@@ -94,7 +106,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   async onReceiveProps(props: StreamProps) {
     const { postIds, selfProvide } = props;
-
     const shouldRunInitial =
       (selfProvide && this._initial) ||
       (!selfProvide && !this._postIds.length && postIds.length);
@@ -103,7 +114,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.fetchInitialPosts = this._fetchInitialPosts;
       return;
     }
-
+    if (!postIds.length) {
+      this._sortableListHandler.setHasMore(false, QUERY_DIRECTION.NEWER);
+    }
     if (this._postIds.length !== postIds.length) {
       const added = _(postIds)
         .difference(this._postIds)
@@ -135,6 +148,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         });
       }
     }
+  }
+
+  @action
+  tryAgain = () => {
+    this._initial = true;
+    this.shouldShowErrorPage = false;
   }
 
   @action

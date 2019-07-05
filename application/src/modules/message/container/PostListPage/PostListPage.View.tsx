@@ -45,6 +45,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
                   />
                   {ids ? (
                     <Stream
+                      type={kind}
                       postIds={ids}
                       key={kind}
                       postFetcher={postFetcher}
