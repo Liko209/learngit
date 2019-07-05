@@ -45,6 +45,7 @@ import storeManager from '@/store';
 import { SettingEntityIds } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
+import { showRCDownloadDialog } from './utils';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -56,7 +57,7 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
@@ -339,7 +340,7 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
   }
 
-  makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -352,7 +353,7 @@ class TelephonyService {
         RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
-    this._clientService.invokeApp(url);
+    this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
