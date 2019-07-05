@@ -57,7 +57,7 @@ const StyledCallLogStatusWrapper = styled.div`
   max-width: 25%;
   width: 25%;
   && li:first-child {
-    margin-left: 25%;
+    margin-left: 20%;
   }
 `;
 
