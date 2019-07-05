@@ -756,7 +756,8 @@
   "setting": {
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
-      "network": "We weren't able to save your settings. Check your network connection, then try again."
+      "network": "We weren't able to save your settings. Check your network connection, then try again.",
+      "forLink": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
     },
     "Settings": "Settings",
     "teamSettings": "Settings",
@@ -848,8 +849,7 @@
         },
         "extensions": {
           "label": "Extension settings",
-          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)",
-          "errorText": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
+          "description": "Customize your RingCentral extension settings (call routing, voicemail greetings and more)"
         },
         "regionSetting": {
           "label": "Region",

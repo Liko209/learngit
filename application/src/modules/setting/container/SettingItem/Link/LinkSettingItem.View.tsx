@@ -31,8 +31,8 @@ class LinkSettingItemViewComponent extends Component<Props> {
   }
 
   @catchError.flash({
-    network: 'setting.phone.general.extensions.errorText',
-    server: 'setting.phone.general.extensions.errorText',
+    network: 'setting.errorText.forLink',
+    server: 'setting.errorText.forLink',
   })
   private _getUrl = () => {
     return this.props.getUrl();
