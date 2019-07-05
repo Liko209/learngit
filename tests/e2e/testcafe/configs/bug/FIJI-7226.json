@@ -1,6 +1,6 @@
 {
   "on_merge": {
-  "fixtures": ["./fixtures/ContentPanel/*.ts", "./fixtures/Search/HighLight.ts"],
+  "fixtures": ["./fixtures/ContentPanel/*.ts"],
   "browsers": ["selenium:chrome"]
   }
 }
