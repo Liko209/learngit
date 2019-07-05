@@ -67,7 +67,7 @@ exports[`Storyshots Pattern/Phone PhoneFilter: Pattern/Phone PhoneFilter 1`] = `
 }
 
 .c0 {
-  width: 160px;
+  width: 200px;
   padding: 0px 12px;
   border-color: #e0e0e0;
 }
