@@ -22,6 +22,7 @@ test.meta(<ITestMeta>{
   keywords: ['ContentPanel/ViewInPost']
 })(`Able to go to post from image/file viewer by clicking view in post`, async (t) => {
   const imagePath = '../../sources/1.png';
+  const image2Path = '../../sources/2.png';
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -43,18 +44,35 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  let postId = '';
   await h(t).withLog('And I open the team and upload a image', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(imagePath);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
+    postId = await app.homePage.messageTab.conversationPage.nthPostItem(-1).postId;
   });
 
-  let postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
+  await h(t).withLog('And I send messages', async () => {
+    for (let i = 0; i !== 10; ++i){
+      await conversationPage.sendMessage(`message${i}`);
+    }
+  });
+
+  await h(t).withLog('And I send another image', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(image2Path);
+    await conversationPage.sendMessage(message);
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  })
+
   const viewerDialog = app.homePage.viewerDialog;
-  await h(t).withLog('When I open image viewer', async () => {
-        await t.click(postItem.img);
-        await viewerDialog.ensureLoaded();
+  const rightRail = app.homePage.messageTab.rightRail;
+  let imageItem = rightRail.imagesTab.nthItem(-1);
+  await h(t).withLog('When I open image viewer from right rail', async () => {
+      await rightRail.imagesEntry.enter()
+      await rightRail.imagesEntry.shouldBeOpened();
+      await t.click(imageItem.imageThumbnail)
+      await viewerDialog.ensureLoaded();
   })
 
   const moreActionOnViewer = app.homePage.moreActionOnViewer;
@@ -64,8 +82,10 @@ test.meta(<ITestMeta>{
     await moreActionOnViewer.clickViewInPost();
   })
 
+  const postItem = app.homePage.messageTab.conversationPage.postItemById(postId);
   await h(t).withLog('Then viewer should be closed and jump to corresponding post', async () => {
     await t.expect(viewerDialog.exists).notOk();
-    postItem.shouldBeHighLight();
+    await postItem.shouldBeHighLight();
+    await conversationPage.postCardByIdShouldBeOnTheTop(postId);
   })
 });
