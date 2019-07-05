@@ -6,15 +6,8 @@
 type EmojiProps = {
   handleEmojiClick?: any;
   title?: string;
-  sheetSize: 16 | 20 | 32 | 64 | undefined;
-  set:
-    | 'apple'
-    | 'google'
-    | 'twitter'
-    | 'emojione'
-    | 'messenger'
-    | 'facebook'
-    | undefined;
+  sheetSize?: 16 | 20 | 32 | 64;
+  set?: 'apple' | 'google' | 'twitter' | 'emojione' | 'messenger' | 'facebook';
   defaultProps?: any;
   tooltip?: string;
 };

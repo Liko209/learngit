@@ -200,8 +200,8 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
 }
 
 .c7.c7 {
-  margin: 0px 16px;
-  width: 120px;
+  margin: 0px 10px;
+  width: 90px;
 }
 
 .c7 > div > div {

@@ -31,8 +31,6 @@ test.meta(<ITestMeta>{
   const text = 'This number will not be able to reach you if blocked. Do you want to block it?';
   const cancelButtonText = 'Cancel';
   const blockButtonText = 'Block';
-  const blocknumber = '#icon-blocked';
-  const unblocknumber = '#icon-unblocked';
   const alertText1 = 'The number has been blocked';
   const alertText2 = 'The number has been unblocked';
 
@@ -43,7 +41,7 @@ test.meta(<ITestMeta>{
     });
     await h(t).glip(callee).init();
     await h(t).glip(callee).setDefaultPhoneApp('glip');
-    await h(t).platform(callee).resetBlockPhoneNumber();
+    await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
   });
 
   const app = new AppRoot(t);
@@ -147,9 +145,13 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Block button changed to Unblock button', async (step) => {
     step.setMetadata('id', callhistoryId);
-    await callhistoryItem.openMoreMenu();
+
+    await callhistoryItem.hoverSelf();
+    if (!await callhistoryItem.blockToggle.exists) {
+      await callhistoryItem.openMoreMenu();
+      await t.expect(callhistoryItem.unblockButton.exists).ok();
+    }
     await t.expect(callhistoryItem.unblockButton.exists).ok();
-    await callhistoryItem.openMoreMenu();
   });
 
   await h(t).withLog('When I hover call history {id} and click "Unblock number" button', async (step) => {
@@ -167,7 +169,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Block button changed to Unblock button', async (step) => {
     step.setMetadata('id', callhistoryId);
-    await callhistoryItem.openMoreMenu();
+    await callhistoryItem.hoverSelf();
+    if (!await callhistoryItem.blockToggle.exists) {
+      await callhistoryItem.openMoreMenu();
+      await t.expect(callhistoryItem.blockButton.exists).ok();
+    }
     await t.expect(callhistoryItem.blockButton.exists).ok();
   });
 });

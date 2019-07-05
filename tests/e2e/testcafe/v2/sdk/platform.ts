@@ -237,7 +237,7 @@ export class RcPlatformSdk {
   }
 
   /** block and unblock phone number */
-  async getBlockPhoneNumbers() {
+  async getBlockOrAllowPhoneNumbers() {
     const url = `/restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers`;
     return await this.retryRequestOnException(async () => {
       return await this.sdk.get(url);
@@ -251,13 +251,28 @@ export class RcPlatformSdk {
     });
   }
 
-  async resetBlockPhoneNumber() {
+  async deleteBlockOrAllowPhoneNumber(blockedNumberId: string) {
+    const url = `/restapi/v1.0/account/~/extension/~/caller-blocking/phone-numbers/${blockedNumberId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.delete(url);
+    });
+  }
+
+  async deleteALlBlockOrAllowPhoneNumber() {
     let ids;
-    await this.getBlockPhoneNumbers().then(res => {
-      ids = res.data.records.filter(item => item.status == 'Blocked').map(res => res.id);
+    await this.getBlockOrAllowPhoneNumbers().then(res => {
+      ids = res.data.records.map(res => res.id);
     });
     for (const id of ids) {
-      await this.updateBlockOrAllowPhoneNumber(id, { status: 'Allowed' });
+      await this.deleteBlockOrAllowPhoneNumber(id);
     }
   }
+
+  /** call log */
+  async deleteUserAllCallLog() {
+    const url = `/restapi/v1.0/account/~/extension/~/call-log`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.delete(url);
+    });
+  };
 }

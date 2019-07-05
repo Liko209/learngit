@@ -11,6 +11,7 @@ export * from './telephony';
 export * from './error';
 export * from './analysis';
 export * from './utils';
+export * from './health';
 export * from './performance';
 export * from './firebase';
 

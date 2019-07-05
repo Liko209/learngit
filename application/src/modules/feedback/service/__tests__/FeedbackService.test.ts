@@ -6,7 +6,7 @@
 
 import * as filestack from 'filestack-js';
 import { FeedbackService } from '../FeedbackService';
-import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
+import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManager';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../../FeedbackApi';
@@ -18,7 +18,7 @@ import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 jest.mock('@/utils/error');
 jest.mock('../../FeedbackApi');
 jest.mock('@sentry/browser');
-jest.mock('sdk/service/uploadLogControl/logControlManager', () => {
+jest.mock('sdk/service/uploadLogControl/LogControlManager', () => {
   const mockLogMng = {
     getZipLog: jest.fn().mockReturnValue([]),
   };

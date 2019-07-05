@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const MY_LAST_POST_VALID_PERIOD = 30 * 24 * 3600 * 1000; // 30 days
+const LAST_ACCESS_VALID_PERIOD = 30 * 24 * 3600 * 1000; // 30 days
 
-export { MY_LAST_POST_VALID_PERIOD };
+export { LAST_ACCESS_VALID_PERIOD };

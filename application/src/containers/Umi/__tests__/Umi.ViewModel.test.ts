@@ -13,7 +13,9 @@ jest.mock('framework');
 
 describe('UmiViewModel', () => {
   let viewModel: UmiViewModel;
-  let currentSetting = NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
+  let currentSetting = {
+    value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
+  };
   beforeEach(() => {
     const props: UmiProps = {
       type: UMI_SECTION_TYPE.FAVORITE,
@@ -115,7 +117,9 @@ describe('UmiViewModel', () => {
       });
     });
     it('should get correct unread when id is valid and unreadCount > 0 and umi setting is unset', () => {
-      jest.spyOn(utils, 'getSingleEntity').mockReturnValue(undefined);
+      jest
+        .spyOn(utils, 'getSingleEntity')
+        .mockReturnValue({ value: undefined });
       viewModel['props'].id = 123;
       const mockState = {
         unreadCount: 12,

@@ -5,6 +5,7 @@
  */
 
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { ENTITY_TYPE } from '../../constants';
 
 type ReadProps = {
   id: number;
@@ -12,9 +13,10 @@ type ReadProps = {
 };
 
 type ReadViewProps = {
+  type: BUTTON_TYPE;
   isRead: boolean;
   read: () => void;
-  type: BUTTON_TYPE;
+  entity: ENTITY_TYPE;
   hookAfterClick: () => void;
 };
 

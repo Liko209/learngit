@@ -7,14 +7,15 @@ import React, { Component } from 'react';
 import { PinnedItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { JuiPinnedItem } from 'jui/pattern/RightShelf/PinnedItem';
-import {
-  postParser,
-} from '@/common/postParser';
+import { postParser } from '@/common/postParser';
 
 @observer
 class PinnedItemView extends Component<PinnedItemViewProps> {
   render() {
-    const { id, icon, text, isFile } = this.props;
+    const { id, icon, text, isFile, deleted } = this.props;
+    if (deleted) {
+      return null;
+    }
     return (
       <JuiPinnedItem
         id={id}

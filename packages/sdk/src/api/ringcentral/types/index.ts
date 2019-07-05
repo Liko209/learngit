@@ -13,6 +13,8 @@ export {
   IPhoneNumberRequest,
   IPhoneNumberRecord,
   IForwardingNumberRequest,
+  IExtensionCallerId,
+  IExtensionCallerIdRequest,
 } from './common';
 export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';

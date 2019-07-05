@@ -9,6 +9,7 @@ import portalManager, { EventKey } from '../PortalManager';
 describe('portalManager', () => {
   beforeEach(() => {
     portalManager.portals = new Map();
+    portalManager.profilePortalStatus = new Set();
     jest.restoreAllMocks();
   });
 
@@ -82,5 +83,34 @@ describe('portalManager wrapper()', () => {
     obj.show();
     obj.show();
     expect(portalManager.register).toHaveBeenCalledTimes(1);
+  });
+
+  it('If call addShowStatus profilePortalIsShow should be true', async () => {
+    portalManager.addShowStatus();
+    expect(portalManager.profilePortalStatus.size).toEqual(1);
+    expect(portalManager.profilePortalIsShow).toBeTruthy;
+  });
+
+  it('If call addShouldCloseStatus When profilePortalStatus is false profilePortalShouldClose should be false', async () => {
+    portalManager.clear();
+    portalManager.addShouldCloseStatus();
+    expect(portalManager.profilePortalStatus.size).toEqual(0);
+    expect(portalManager.profilePortalShouldClose).toBeFalsy;
+  });
+
+  it('If call addShouldCloseStatus When profilePortalStatus is true profilePortalShouldClose should be true', async () => {
+    portalManager.addShowStatus();
+    portalManager.addShouldCloseStatus();
+    expect(portalManager.profilePortalStatus.size).toEqual(2);
+    expect(portalManager.profilePortalShouldClose).toBeTruthy;
+  });
+
+  it('If call clear profilePortalStatus should be empty', async () => {
+    portalManager.addShowStatus();
+    portalManager.addShouldCloseStatus();
+    portalManager.clear();
+    expect(portalManager.profilePortalStatus.size).toEqual(0);
+    expect(portalManager.profilePortalShouldClose).toBeFalsy;
+    expect(portalManager.profilePortalIsShow).toBeFalsy;
   });
 });

@@ -25,11 +25,9 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import { reaction, IReactionDisposer, runInAction, action, when } from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
-import { Profile } from 'sdk/module/profile/entity';
-import ProfileModel from '@/store/models/Profile';
-import { getSingleEntity, getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { AccountService } from 'sdk/module/account';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
@@ -42,9 +40,13 @@ import { IClientService, CLIENT_SERVICE } from '@/modules/common/interface';
 import i18next from 'i18next';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import storeManager from '@/store';
-import { SettingEntityIds } from 'sdk/module/setting';
+import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
+import SettingModel from '@/store/models/UserSetting';
+import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
+import { IPhoneNumberRecord } from 'sdk/api';
+import { showRCDownloadDialog } from './utils';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -56,7 +58,7 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(CLIENT_SERVICE) private _clientService: IClientService;
   // prettier-ignore
-  private _serverTelephonyService = ServiceLoader.getInstance <ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
     ServiceConfig.RC_INFO_SERVICE,
   );
@@ -269,40 +271,28 @@ class TelephonyService {
 
     this._callerPhoneNumberDisposer = reaction(
       () => {
-        const defaultNumberId = getSingleEntity<Profile, ProfileModel>(
-          ENTITY_NAME.PROFILE,
-          'defaultNumberId',
-        );
+        // prettier-ignore
+        const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
+          ENTITY_NAME.USER_SETTING,
+          SETTING_ITEM__PHONE_CALLER_ID,
+        ).value;
         return {
-          defaultNumberId,
+          defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,
           callerPhoneNumberList: this._telephonyStore.callerPhoneNumberList,
         };
       },
       async ({
-        defaultNumberId,
+        defaultPhoneNumber,
         callerPhoneNumberList,
       }: {
-        defaultNumberId: number;
+        defaultPhoneNumber: string;
         callerPhoneNumberList: PhoneNumberModel[];
       }) => {
         if (!callerPhoneNumberList) {
           return;
         }
-        if (
-          typeof defaultNumberId !== 'number' &&
-          callerPhoneNumberList &&
-          callerPhoneNumberList.length
-        ) {
-          this._telephonyStore.updateDefaultChosenNumber();
-          return;
-        }
-        const defaultPhoneNumber = callerPhoneNumberList.find(
-          callerPhoneNumber => callerPhoneNumber.id === defaultNumberId,
-        );
         if (defaultPhoneNumber) {
-          this._telephonyStore.updateDefaultChosenNumber(
-            defaultPhoneNumber.phoneNumber,
-          );
+          this._telephonyStore.updateDefaultChosenNumber(defaultPhoneNumber);
         }
       },
       { fireImmediately: true },
@@ -320,18 +310,18 @@ class TelephonyService {
       { fireImmediately: true },
     );
 
-    this._defaultCallerPhoneNumberDisposer = when(
-      () => {
+    this._defaultCallerPhoneNumberDisposer = reaction(
+      () => this._telephonyStore.defaultCallerPhoneNumber,
+      async (value, reaction) => {
+        const result = await this._rcInfoService.hasSetCallerId();
         if (
+          result &&
           this._telephonyStore.defaultCallerPhoneNumber &&
           !this._telephonyStore.chosenCallerPhoneNumber
         ) {
-          return true;
+          this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
+          reaction.dispose();
         }
-        return false;
-      },
-      () => {
-        this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
       },
     );
 
@@ -339,7 +329,7 @@ class TelephonyService {
     this._getCallerPhoneNumberList();
   }
 
-  makeRCPhoneCall(phoneNumber: string) {
+  async makeRCPhoneCall(phoneNumber: string) {
     const buildURL = (phoneNumber: string) => {
       enum RCPhoneCallURL {
         'RC' = 'rcmobile',
@@ -352,7 +342,7 @@ class TelephonyService {
         RCPhoneCallURL['RC']}://call?number=${encodeURIComponent(phoneNumber)}`;
     };
     const url = buildURL(phoneNumber);
-    this._clientService.invokeApp(url);
+    this._clientService.invokeApp(url, { fallback: showRCDownloadDialog });
     if (this._telephonyStore.callDisconnected) {
       this._telephonyStore.closeDialer();
     }
@@ -696,16 +686,22 @@ class TelephonyService {
 
   deleteInputStringFactory = (prop: 'forwardString' | 'inputString') => (
     clearAll: boolean = false,
+    start?: number,
+    end?: number,
   ) => {
+    if (!clearAll && (typeof start !== 'number' || typeof end !== 'number')) {
+      throw new Error('Must pass the caret position');
+    }
     runInAction(() => {
       if (clearAll) {
         this._telephonyStore[prop] = '';
         return;
       }
-      this._telephonyStore[prop] = this._telephonyStore[prop].slice(
-        0,
-        this._telephonyStore[prop].length - 1,
-      );
+      this._telephonyStore[prop] = this._telephonyStore[prop]
+        .split('')
+        .filter((v, idx) => idx < (start as number) || idx > (end as number))
+        .join('');
+
       return;
     });
   }

@@ -20,6 +20,8 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
+import { HealthModuleController } from 'sdk/framework/controller/impl/HealthModuleController';
+import { MODULE_NAME, MODULE_IDENTIFY } from '../constants';
 
 class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
@@ -32,6 +34,12 @@ class TelephonyService extends EntityBaseService<Call>
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGOUT]: this.handleLogOut,
+      }),
+    );
+
+    this.setHealthModuleController(
+      new HealthModuleController(MODULE_IDENTIFY, MODULE_NAME, {
+        VoIP: () => ({ state: this.getVoipState() }),
       }),
     );
     this._init();
@@ -191,6 +199,11 @@ class TelephonyService extends EntityBaseService<Call>
 
   getRingerDevicesList = () => {
     return this.telephonyController.getRingerDevicesList();
+  }
+
+  getVoipState = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController ? accountController.getVoipState() : '';
   }
 
   get phoneSetting() {

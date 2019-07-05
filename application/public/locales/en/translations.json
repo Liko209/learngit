@@ -14,7 +14,8 @@
       "save": "Save",
       "send": "Send",
       "delete": "Delete",
-      "close": "Close"
+      "close": "Close",
+      "deleteAll": "Delete all"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -149,6 +150,9 @@
     "bookmarkPosts": "Bookmarks",
     "@mentionsTitle": "@Mentions",
     "bookmarksTitle": "Bookmarks",
+    "noMentionPosts": "There are currently no posts that @mention you directly.",
+    "noBookmarkPosts": "You have no bookmarks yet. Hover on a post and click on the Bookmark icon to mark and save it for later reference.",
+    "loadingError": "Oops! Something went wrong, please try again.",
     "favoriteGroups": "favorites",
     "directGroups": "direct messages",
     "teamGroups": "teams",
@@ -609,6 +613,10 @@
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
+      "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
+      "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
+      "RCPhoneIsNotInstalledOK": "Download RingCentral Phone",
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
       "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
@@ -712,6 +720,8 @@
     }
   },
   "calllog": {
+    "inputFilter": "Filter call history",
+    "clearFilter": "Clear call history filter",
     "deleteCallLog": "Delete call log",
     "deleteCallHistory": "Delete call history",
     "deleteAllCallHistory": "Delete all call history",

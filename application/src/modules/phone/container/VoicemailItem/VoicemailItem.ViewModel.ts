@@ -11,7 +11,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
-import { postTimestamp } from '@/utils/date';
 import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -23,7 +22,16 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { VoicemailViewProps, VoicemailProps, JuiAudioStatus } from './types';
+import {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioStatus,
+  Handler,
+} from './types';
+import {
+  voiceMailDefaultResponsiveInfo,
+  responsiveByBreakPoint,
+} from './config';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
@@ -74,6 +82,22 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @computed
   get _id() {
     return this.props.id;
+  }
+
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
+    }
+    return voiceMailDefaultResponsiveInfo;
+  }
+
+  @computed
+  get voiceMailResponsiveMap() {
+    return this._getResponsiveMap(responsiveByBreakPoint);
   }
 
   get voicemailService() {
@@ -200,8 +224,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get createTime() {
-    const { creationTime } = this.voicemail;
-    return postTimestamp(creationTime);
+    return this.voicemail.creationTime;
   }
 
   private async _fetchBlockPermission() {

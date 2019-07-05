@@ -72,8 +72,6 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
         <MemberList
           id={id}
           searchInput={searchInput}
-          width={width}
-          height={preferHeight}
           setShowEmpty={setShowEmpty}
           loadInitialData={this.props.loadInitialData}
           loadMore={this.props.loadMore}

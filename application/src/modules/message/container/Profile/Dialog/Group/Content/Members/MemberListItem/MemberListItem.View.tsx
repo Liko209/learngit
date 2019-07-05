@@ -8,6 +8,9 @@ import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { ANALYTICS_KEY } from '../constants';
+
 import {
   JuiProfileDialogContentMemberListItem,
   JuiProfileDialogContentMemberListItemName,
@@ -16,10 +19,12 @@ import {
   JuiProfileDialogContentMemberListItemRightWrapper,
 } from 'jui/pattern/Profile/Dialog';
 import { Menu } from '../Menu';
+
 import { MembersViewProps } from './types';
 type State = {
   isHover: boolean;
 };
+
 @observer
 class MemberListItem extends React.Component<
   WithTranslation & MembersViewProps,
@@ -44,6 +49,24 @@ class MemberListItem extends React.Component<
     this.setState({
       isHover: false,
     });
+  }
+
+  onClickAvatar = async (event: React.MouseEvent) => {
+    const { pid } = this.props;
+    event.stopPropagation();
+    const anchor = event.currentTarget as HTMLElement;
+    const {
+      ProfileMiniCard,
+    } = await import('@/modules/message/container/MiniCard/Profile');
+
+    const profileMiniCard = new ProfileMiniCard();
+
+    profileMiniCard.show({
+      anchor,
+      id: pid,
+    });
+
+    analyticsCollector.openMiniProfile(ANALYTICS_KEY);
   }
 
   render() {
@@ -76,7 +99,7 @@ class MemberListItem extends React.Component<
         onMouseOver={this._handleMouseEnter}
         onMouseLeave={this._handleMouseLeave}
       >
-        <Avatar uid={pid} presence={presence} />
+        <Avatar uid={pid} presence={presence} onClick={this.onClickAvatar} />
         <ListItemName data-test-automation-id="profileDialogMemberListItemPersonName">
           {person.userDisplayName}
         </ListItemName>

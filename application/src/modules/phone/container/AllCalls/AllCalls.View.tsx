@@ -25,6 +25,7 @@ import {
   LOADING_DELAY,
 } from '../Voicemail/config';
 import noCallLogImage from '../images/no-call.svg';
+import noResultImage from '../images/no-result.svg';
 
 type Props = WithTranslation & AllCallsViewProps;
 
@@ -44,26 +45,33 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private get _noRowsRenderer() {
-    const { t } = this.props;
+    const { t, filterValue } = this.props;
+
+    const message = filterValue
+      ? t('phone.noMatchesFound')
+      : t('phone.noCallLogAvailable');
+
+    const image = filterValue ? noResultImage : noCallLogImage;
 
     return (
       <JuiEmptyPage
         data-test-automation-id="callHistoryEmptyPage"
-        image={noCallLogImage}
-        message={t('phone.noCallLogAvailable')}
+        image={image}
+        message={message}
         height={this._height}
       />
     );
   }
 
   private _renderItems() {
-    const { listHandler } = this.props;
+    const { listHandler, width } = this.props;
     return listHandler.sortableListStore.getIds.map((itemId: string) => {
       return (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
+          width={width}
         />
       );
     });
@@ -86,10 +94,10 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { listHandler, isError, onErrorReload } = this.props;
+    const { listHandler, isError, onErrorReload, type } = this.props;
 
     return (
-      <PhoneWrapper pageHeight={this._height}>
+      <PhoneWrapper pageHeight={this._height} data-type={type}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (

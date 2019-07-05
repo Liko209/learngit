@@ -196,12 +196,12 @@ class GenericDialerPanelViewComponent extends React.Component<
       dialerInputFocused,
       inputString,
       onKeyDown,
-      deleteInputString,
+      deleteAllInputString,
       t,
       onChange,
       onFocus,
       onBlur,
-      deleteLastInputString,
+      deleteInputString,
       shouldEnterContactSearch,
       displayCallerIdSelector,
       shouldDisplayRecentCalls,
@@ -226,7 +226,7 @@ class GenericDialerPanelViewComponent extends React.Component<
             focus={dialerInputFocused}
             placeholder={t('telephony.dialerPlaceholder')}
             ariaLabelForDelete={t('telephony.delete')}
-            deleteLastInputString={deleteLastInputString}
+            deleteAllInputString={deleteAllInputString}
             deleteInputString={deleteInputString}
             onKeyDown={onKeyDown}
             dialerValue={inputString}

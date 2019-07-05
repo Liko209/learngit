@@ -9,6 +9,7 @@ import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
 
 type BlockProps = {
+  phoneNumber: string;
   caller: Caller;
 };
 
