@@ -793,13 +793,12 @@ export class GlipSdk {
 
   async getPostItemsByTypeId(postId: string | number, typeId: number | string): Promise<string[]> {
     const items = await this.getPost(postId).then(res => res.data.items);
-    const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
-    return ids;
+    return items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
   }
 
   /* file and image */
   async getFilesIdsFromPostId(postId: string | number) {
-    return this.getPostItemsByTypeId(postId, 10);
+    return await this.getPostItemsByTypeId(postId, 10);
   }
 
   getFile(fileId: string | number) {
