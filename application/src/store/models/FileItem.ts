@@ -8,6 +8,9 @@ import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Thumbs } from 'sdk/module/item/module/base/entity/Item';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PostService } from 'sdk/module/post';
+import moize from 'moize';
 
 enum FileType {
   image = 0,
@@ -107,6 +110,19 @@ export default class FileItemModel extends ItemModel {
   get latestVersion(): ItemVersions | undefined {
     return this.versions && this.versions.find(item => !item.deactivated);
   }
+
+  getDirectRelatedPostInGroup(groupId: number) {
+    return this._getDirectRelatedPostInGroup(groupId, this.modifiedAt);
+  }
+
+  private _getDirectRelatedPostInGroup = moize.promise(
+    (groupId: number, modifiedAt) => {
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      return postService.getLatestPostIdByItem(groupId, this.id);
+    },
+  );
 
   static fromJS(data: Item) {
     return new FileItemModel(data);

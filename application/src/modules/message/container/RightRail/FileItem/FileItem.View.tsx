@@ -32,8 +32,8 @@ import { postParser } from '@/common/postParser';
 class FileItemView extends Component<FileItemViewProps> {
   _viewerService: IViewerService = container.get(VIEWER_SERVICE);
 
-  private _handleFileClick = (item: FileItemModel) => () => {
-    this._viewerService.open(item.id);
+  private _handleFileClick = ({ id }: FileItemModel) => () => {
+    this._viewerService.open({ groupId: this.props.groupId, itemId: id });
   }
   private _renderItem = () => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;

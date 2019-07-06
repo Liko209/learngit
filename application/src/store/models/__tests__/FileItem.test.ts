@@ -5,6 +5,11 @@
  */
 
 import FileItemModel from '../FileItem';
+import { test, testable } from 'shield';
+import { PostService } from 'sdk/module/post';
+import { mockService } from 'shield/sdk';
+import { ServiceConfig } from 'sdk/module/serviceLoader';
+
 describe('FileItemModel', () => {
   describe('new FileItem', () => {
     const fileItemModel = FileItemModel.fromJS({
@@ -217,4 +222,40 @@ describe('FileItemModel', () => {
       expect(fileItemModel.latestVersion).toEqual(v3);
     });
   });
+
+  const postService = {
+    name: ServiceConfig.POST_SERVICE,
+    getLatestPostIdByItem() {},
+  };
+  @testable
+  class getDirectRelatedPostInGroup {
+    @test('should get result of postService.getLatestPostIdByItem when called')
+    @mockService(PostService, 'getLatestPostIdByItem', () =>
+      Promise.resolve(123),
+    )
+    async t1(done: any) {
+      const fileItemModel = FileItemModel.fromJS({ id: 1, versions: [] });
+      const result = await fileItemModel.getDirectRelatedPostInGroup(1);
+      expect(result).toBe(123);
+      done();
+    }
+
+    @test('should cache result according to modifiedAt when used')
+    @mockService.resolve(postService, 'getLatestPostIdByItem', 123)
+    async t2(done: any) {
+      const fileItemModel = FileItemModel.fromJS({
+        id: 1,
+        versions: [],
+        modified_at: 1,
+      });
+      await fileItemModel.getDirectRelatedPostInGroup(1);
+      const result = await fileItemModel.getDirectRelatedPostInGroup(1);
+      expect(result).toBe(123);
+      expect(postService.getLatestPostIdByItem).toBeCalledTimes(1);
+      fileItemModel.modifiedAt = 2;
+      await fileItemModel.getDirectRelatedPostInGroup(1);
+      expect(postService.getLatestPostIdByItem).toBeCalledTimes(2);
+      done();
+    }
+  }
 });

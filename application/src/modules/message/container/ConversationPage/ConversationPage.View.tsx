@@ -35,7 +35,7 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import PostModel from '../../../../store/models/Post';
-import { Post } from '../../../../../../packages/sdk/src/module/post/entity/Post';
+import { Post } from 'sdk/module/post/entity/Post';
 import { StreamItem } from './Stream/types';
 import storeManager from '@/store/base/StoreManager';
 import { jumpToPost } from '@/common/jumpToPost';

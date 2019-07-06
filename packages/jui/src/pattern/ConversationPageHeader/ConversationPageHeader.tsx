@@ -113,7 +113,6 @@ class JuiConversationPageHeader
     const titleElement = (
       <TitleWrapper
         tooltipTitle={title}
-        variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
       >

@@ -42,7 +42,6 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c5 {
@@ -351,7 +350,6 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {

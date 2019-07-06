@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-03-17 15:56:18
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 20:08:30
+ * @Last Modified by:
+ * @Last Modified time: 2019-07-05 15:01:28
  */
 
 import { formalName } from '../../libs/filter';
@@ -656,5 +656,4 @@ test.meta(<ITestMeta>{
   await h(t).withLog("And hide send time", async () => {
     await t.expect(viewerDialog.sendTime.visible).notOk();
   });
-
-})
+});
