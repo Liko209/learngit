@@ -4,16 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed, observable } from 'mobx';
-
+import _ from 'lodash';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import { goToConversationWithLoading } from '@/common/goToConversation';
+import {
+  goToConversationWithLoading,
+  goToConversation,
+  getConversationId,
+} from '@/common/goToConversation';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { Group } from 'sdk/module/group';
+import GroupService, { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/src/utils';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -28,7 +33,8 @@ class NewMessageViewModel extends StoreViewModel {
   errorEmail: string;
   @observable
   errorUnknown: boolean = false;
-
+  @observable
+  isDirectMessage: boolean = false;
   @computed
   get disabledOkBtn() {
     return this.members.length === 0;
@@ -49,34 +55,68 @@ class NewMessageViewModel extends StoreViewModel {
     this.emailErrorMsg = '';
     this.emailError = false;
   }
+  @action
+  handleCheckboxChange = (value: boolean) => {
+    this.isDirectMessage = value;
+  }
 
   @action
   newMessage = async (message: string) => {
-    goToConversationWithLoading({
-      id: Array.from(this.members) as number[],
-      async beforeJump(conversationId: number) {
-        if (message && conversationId) {
-          const postService = ServiceLoader.getInstance<PostService>(
-            ServiceConfig.POST_SERVICE,
-          );
-          await postService.sendPost({
-            groupId: conversationId,
-            text: message,
-          });
+    try {
+      let ids = this.members.filter(id => _.isNumber(id)) as number[];
+      if (this.isDirectMessage) {
+        const personPromises: any = [];
+        const groupIds: number[] = [];
+        ids.map(id => {
+          if (GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)) {
+            personPromises.push(getConversationId(id));
+          } else {
+            groupIds.push(id);
+          }
+        });
+        const conversationIds = (await Promise.all(personPromises)) as number[];
+        ids = [...conversationIds, ...groupIds];
 
-          // track analysis
-          const group = getEntity<Group, GroupModel>(
-            ENTITY_NAME.GROUP,
-            conversationId,
-          );
-          analyticsCollector.sendPost(
-            'send new message',
-            'text',
-            group.analysisType,
-          );
-        }
-      },
-    });
+        const postService = ServiceLoader.getInstance<PostService>(
+          ServiceConfig.POST_SERVICE,
+        );
+        const promise = ids.map((id: number) => {
+          return postService.sendPost({ groupId: id, text: message });
+        });
+        await Promise.all(promise);
+        groupIds[0] && goToConversation({ conversationId: groupIds[0] });
+      } else {
+        const groupService = ServiceLoader.getInstance<GroupService>(
+          ServiceConfig.GROUP_SERVICE,
+        );
+        const personIds = await groupService.getPersonIdsBySelectedItem(ids);
+        goToConversationWithLoading({
+          id: Array.from(personIds) as number[],
+          async beforeJump(conversationId: number) {
+            if (message && conversationId) {
+              const postService = ServiceLoader.getInstance<PostService>(
+                ServiceConfig.POST_SERVICE,
+              );
+              await postService.sendPost({
+                groupId: conversationId,
+                text: message,
+              });
+
+              // track analysis
+              const group = getEntity<Group, GroupModel>(
+                ENTITY_NAME.GROUP,
+                conversationId,
+              );
+              analyticsCollector.sendPost(
+                'send new message',
+                'text',
+                group.analysisType,
+              );
+            }
+          },
+        });
+      }
+    } catch (error) {}
   }
 }
 

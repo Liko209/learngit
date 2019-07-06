@@ -12,7 +12,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -21,7 +21,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-
+import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 type State = {
   message: string;
 };
@@ -130,7 +130,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         }
         cancelText={t('common.dialog.cancel')}
       >
-        <ContactSearch
+        <ContactAndGroupSearch
           onSelectChange={handleSearchContactChange}
           label={t('people.team.Members')}
           placeholder={t('people.team.SearchContactPlaceholder')}
@@ -150,6 +150,11 @@ class NewMessageComponent extends React.Component<Props, State> {
           }}
           onChange={this.handleMessageChange}
           data-test-automation-id="newMessageTextarea"
+        />
+        <JuiCheckboxLabel
+          checked={this.props.isDirectMessage}
+          label="Direct Message: Will send messages directly instead of create a group"
+          handleChange={this.props.handleCheckboxChange}
         />
         <StyledTextWithLink>
           <JuiTextWithLink

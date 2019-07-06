@@ -74,15 +74,15 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
     if (this.groupMembers.length) {
       Object.assign(params, { arrangeIds: this.groupMembers });
     }
-    const { sortableModel } = await searchService.doFuzzySearchPersonsAndGroups(
-      params,
-    );
+    const {
+      sortableModels,
+    } = await searchService.doFuzzySearchPersonsAndGroups(params);
     const { hasMembers } = this.props;
     const existMembers = hasMembers
       ? [...this.existMembers, ...hasMembers]
       : this.existMembers;
 
-    const filterMembers = differenceBy(sortableModel, existMembers, 'id');
+    const filterMembers = differenceBy(sortableModels, existMembers, 'id');
     return filterMembers;
   }
 
@@ -98,7 +98,7 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
       members = data.map(member => ({
         id: member.id,
         label: member.displayName,
-        email: (member.entity && member.entity.email) || '',
+        email: member.entity && member.entity.email,
       }));
       this.suggestions = differenceBy(members, this.selectedItems, 'id');
     });

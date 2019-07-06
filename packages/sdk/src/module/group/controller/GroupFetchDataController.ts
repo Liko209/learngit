@@ -25,7 +25,7 @@ import {
   extractHiddenGroupIdsWithoutUnread,
 } from '../../profile';
 import { transform } from '../../../service/utils';
-import { uniqueArray } from '../../../utils';
+import { uniqueArray, GlipTypeUtil } from '../../../utils';
 import TypeDictionary from '../../../utils/glip-type-dictionary/types';
 import { compareName } from '../../../utils/helper';
 import { isValidEmailAddress } from '../../../utils/regexUtils';
@@ -120,6 +120,29 @@ export class GroupFetchDataController {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
       return groups.filter((group: Group) => group !== null) as Group[];
+    }
+    return [];
+  }
+
+  async getPersonIdsBySelectedItem(
+    ids: (number | string)[],
+  ): Promise<(number | string)[]> {
+    if (ids.length) {
+      let personIds = ids.filter(
+        (id: string | number) =>
+          _.isString(id) ||
+          GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON),
+      );
+      const groupIds = _.difference(ids, personIds) as number[];
+      if (groupIds) {
+        const groups = await this.getGroupsByIds(groupIds);
+        groups.map(group => {
+          if (group.members.length) {
+            personIds = [...personIds, ...group.members];
+          }
+        });
+      }
+      return Array.from(new Set(personIds));
     }
     return [];
   }

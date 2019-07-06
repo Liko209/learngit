@@ -82,9 +82,12 @@ class CreateTeamViewModel extends AbstractViewModel {
     const creatorId = userConfig.getGlipUserId();
     try {
       this.loading = true;
+      const personIds = await groupService.getPersonIdsBySelectedItem(
+        memberIds,
+      );
       const result = await groupService.createTeam(
         creatorId,
-        memberIds,
+        personIds,
         options,
       );
       this.loading = false;

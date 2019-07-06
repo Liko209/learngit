@@ -19,7 +19,7 @@ import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
@@ -249,7 +249,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
             helperText={nameError && t(errorMsg)}
             onChange={handleNameChange}
           />
-          <ContactSearch
+          <ContactAndGroupSearch
             onSelectChange={handleSearchContactChange}
             label={t('people.team.Members')}
             placeholder={t('people.team.SearchContactPlaceholder')}

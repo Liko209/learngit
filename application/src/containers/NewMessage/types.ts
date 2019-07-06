@@ -17,7 +17,9 @@ type ViewProps = {
   serverError: boolean;
   members: (number | string)[];
   errorEmail: string;
+  isDirectMessage: boolean;
   handleSearchContactChange: (items: any) => void;
+  handleCheckboxChange: (event: React.ChangeEvent<{}>, value: boolean) => void;
 } & RouteComponentProps;
 
 export { ViewProps };

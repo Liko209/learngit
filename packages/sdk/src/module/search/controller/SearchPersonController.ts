@@ -10,7 +10,7 @@ import { GroupService } from '../../group';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { Group } from 'sdk/module/group';
-import { SortableModel } from '../../../framework/model';
+import { SortableModel, IdModel } from 'sdk/framework/model';
 import { PerformanceTracer } from 'foundation';
 import { AccountService } from '../../account/service';
 import {
@@ -32,6 +32,8 @@ import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
+import { IPermissionService } from 'sdk/module/permission/service/IPermissionService';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -99,6 +101,46 @@ class SearchPersonController {
       terms: result.terms.searchKeyTerms,
       sortableModels: result.sortableModels,
     };
+  }
+
+  async doFuzzySearchPersonsAndGroups(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<IdModel>[];
+  }> {
+    const result: {
+      terms: string[];
+      sortableModels: SortableModel<IdModel>[];
+    } = {
+      terms: [],
+      sortableModels: [],
+    };
+    const persons = await this.doFuzzySearchPersons(options);
+    result.terms = persons.terms;
+    result.sortableModels = persons.sortableModels;
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const canMentionTeam = await permissionService.hasPermission(
+      UserPermissionType.CAN_MENTION_TEAM,
+    );
+    if (canMentionTeam && options.searchKey) {
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
+      const groups = await groupService.doFuzzySearchALlGroups(
+        options.searchKey,
+        false,
+        true,
+        true,
+      );
+      result.sortableModels = [
+        ...result.sortableModels,
+        ...groups.sortableModels,
+      ];
+    }
+    return result;
   }
 
   private async _doFuzzySearchPersons(
