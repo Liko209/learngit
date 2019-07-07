@@ -7,12 +7,13 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
+import { HoverControllerBaseViewProps } from '../HoverController';
 import { Audio, Checker } from '../../types';
+import { ActiveVoicemailId } from '../Voicemail/types';
 
 type VoicemailViewProps = {
   selected: boolean;
   onChange: (event: React.ChangeEvent, expanded: boolean) => void;
-  // id: number;
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
@@ -29,9 +30,11 @@ type VoicemailViewProps = {
   shouldShowCall: () => Promise<boolean>;
 };
 
-type VoicemailProps = {
+type VoicemailProps = HoverControllerBaseViewProps & {
   width: number;
   id: number;
+  activeVoicemailId: ActiveVoicemailId;
+  onVoicemailPlay(id: ActiveVoicemailId): void;
 };
 
 type CommonResponsiveObject = {

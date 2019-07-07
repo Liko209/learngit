@@ -26,15 +26,4 @@ describe('FileActionViewModel', () => {
       expect(vm.fileName).toEqual('12');
     });
   });
-  describe('post()', () => {
-    it('should be return post data when has postId', () => {
-      const vm = new FileActionViewModel({ postId: 1, fileId: 2 });
-      vm.post;
-      expect(getEntity).toBeCalled();
-    });
-    it('should be return null when has postId', () => {
-      const vm = new FileActionViewModel();
-      expect(vm.post).toEqual(null);
-    });
-  });
 });

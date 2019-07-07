@@ -6,9 +6,9 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiMenuItem } from 'jui/components/Menus';
-import { JuiActionIconWrapper, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { PHONE_ITEM_ACTIONS } from '@/AnalyticsCollector/constants';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { DownloadViewProps } from './types';
 
 type Props = DownloadViewProps & WithTranslation;
@@ -18,7 +18,8 @@ const DOWNLOAD_ID = 'downloadTag';
 @observer
 class DownloadViewComponent extends Component<Props> {
   _handleClick = async () => {
-    const { getUri, hookAfterClick, type } = this.props;
+    const { getUri, tabName } = this.props;
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.DOWNLOAD);
     const downloadLink = await getUri();
     const aLinkDom = document.getElementById(DOWNLOAD_ID);
     if (!aLinkDom) {
@@ -26,44 +27,22 @@ class DownloadViewComponent extends Component<Props> {
     }
     aLinkDom.setAttribute('href', downloadLink);
     aLinkDom.click();
-    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
-      hookAfterClick();
-    }
   }
 
   render() {
-    const { t, type } = this.props;
-    if (type === BUTTON_TYPE.ICON) {
-      return (
-        <JuiActionIconWrapper>
-          <a id={DOWNLOAD_ID} download={true} />
-          <JuiIconButton
-            color="common.white"
-            variant="round"
-            autoFocus={false}
-            size="small"
-            key="voicemail-download"
-            data-test-automation-id="voicemail-download-button"
-            ariaLabel={t('voicemail.downloadVoicemail')}
-            tooltipTitle={t('common.download')}
-            onClick={this._handleClick}
-          >
-            download
-          </JuiIconButton>
-        </JuiActionIconWrapper>
-      );
-    }
+    const { t, type, entity } = this.props;
     return (
       <>
         <a id={DOWNLOAD_ID} download={true} />
-        <JuiMenuItem
-          icon="download"
-          data-test-automation-id="voicemail-download-button"
-          aria-label={t('voicemail.downloadVoicemail')}
+        <ActionButton
+          key="voicemail-download"
+          icon="download-call"
+          type={type}
           onClick={this._handleClick}
-        >
-          {t('voicemail.downloadVoicemail')}
-        </JuiMenuItem>
+          screenReader={t('voicemail.downloadVoicemail')}
+          tooltip={t('common.download')}
+          automationId={`${entity}-download-button`}
+        />
       </>
     );
   }

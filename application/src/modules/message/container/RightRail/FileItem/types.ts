@@ -7,6 +7,6 @@ import { FileProps, FileViewProps } from '../common/File/File.types';
 
 type FileItemProps = FileProps;
 
-type FileItemViewProps = FileViewProps;
+type FileItemViewProps = FileViewProps & FileItemProps;
 
 export { FileItemProps, FileItemViewProps };

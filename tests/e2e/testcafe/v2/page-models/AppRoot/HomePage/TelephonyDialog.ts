@@ -207,6 +207,13 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.buttonOfIcon('deletenumber');
   }
 
+  //contact search
+
+  get contactSearchAvatar()
+  {
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-avatar');
+  }
+
   // park
   get parkActionMenuItem() {
     return this.getSelectorByAutomationId('telephony-park-menu-item');
@@ -506,21 +513,53 @@ class CallerIdList extends BaseWebComponent {
   }
 }
 
-class ContactSearchList extends BaseWebComponent {
+export class ContactSearchList extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('telephony-contact-search-list');
   }
 
+    /* scroll */
+  get scrollDiv() {
+      return this.getSelectorByAutomationId('virtualized-list', this.self);
+  }
+
+  async scrollToY(y: number) {
+    const scrollDivElement = this.scrollDiv;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async scrollToMiddle() {
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      const middleHeight = (scrollHeight - clientHeight) / 2;
+      await this.scrollToY(middleHeight);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.scrollDiv.scrollTop).eql(y);
+  }
+
   get searchResults() {
-    return this.self.find('li').filter('[data-test-automation-id="telephony-contact-search-list_item"]');
+    return this.getSelectorByAutomationId("telephony-contact-search-list_item", this.self);
   }
 
   async selectNth(n: number) {
-    await this.t.click(this.searchResults.nth(n))
+    await this.t.click(this.searchResults.nth(n));
+  }
+
+  get directDialIcon(){
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0));
+  }
+
+  get hasDirectDialIcon(){
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
   }
 
   get hasDirectDial() {
-    return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
+    return !!(this.searchResults[0] && this.searchResults.nth(0).find('div:nth-child(2)>button').exists);
   }
 }
 

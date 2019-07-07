@@ -31,21 +31,22 @@ import _ from 'lodash';
 class FileViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
   private _itemId: number;
+  private _groupId: number;
   private _dismiss: Function;
-  @observable
-  private _currentScale: number = 1;
-  @observable
-  private _currentVersion: ItemVersions;
-  @observable
-  private _currentPageIdx: number = 0;
+  @observable private _currentScale: number = 1;
+  @observable private _currentVersion: ItemVersions;
+  @observable private _currentPageIdx: number = 0;
+  @observable private _textFieldValue: number = 1;
+  @observable _sender: PersonModel | null;
+  @observable _createdAt: number | null;
 
-  @observable
-  private _textFieldValue: number = 1;
-
-  constructor(itemId: number, dismiss: Function) {
+  constructor(itemId: number, groupId: number, dismiss: Function) {
     super();
     this._itemId = itemId;
+    this._groupId = groupId;
     this._dismiss = dismiss;
+    this._sender = null;
+    this._createdAt = null;
     this.reaction(
       () => this._item.deactivated,
       async (deactivated: boolean) => {
@@ -67,19 +68,28 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
         fireImmediately: true,
       },
     );
+    this.autorun(this.updateSenderInfo);
+  }
+
+  updateSenderInfo = async () => {
+    const post = await this._item.getDirectRelatedPostInGroup(this._groupId);
+
+    if (post) {
+      this._sender = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        post.creator_id,
+      );
+      this._createdAt = post.created_at;
+      return;
+    }
+    this._sender = null;
+    this._createdAt = null;
+    return;
   }
 
   @computed
   private get _item() {
     return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._itemId);
-  }
-
-  @computed
-  private get _person() {
-    const { newestCreatorId } = this._item;
-    return newestCreatorId
-      ? getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, newestCreatorId)
-      : undefined;
   }
 
   viewerDestroyer() {
@@ -117,13 +127,17 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   @computed
   get title() {
     let userDisplayName = '';
+    let createdAt = '';
     let uid;
-    if (this._person) {
-      userDisplayName = this._person.userDisplayName;
-      uid = this._person.id;
+    if (this._sender) {
+      userDisplayName = this._sender.userDisplayName;
+      uid = this._sender.id;
     }
-    const { createdAt } = this._item;
-
+    if (this._createdAt) {
+      createdAt = dateFormatter.dateAndTimeWithoutWeekday(
+        moment(this._createdAt),
+      );
+    }
     const { name, downloadUrl, id } = this._item;
     const { pages = [] } = this._currentVersion;
     return {
@@ -131,12 +145,13 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
       userDisplayName,
       name,
       downloadUrl,
+      createdAt,
       handleTextFieldChange: this.handleTextFieldChange,
-      createdAt: dateFormatter.dateAndTimeWithoutWeekday(moment(createdAt)),
       textFieldValue: this._textFieldValue,
       currentPageIdx: this._currentPageIdx + 1,
       pageTotal: pages.length,
       fileId: id,
+      groupId: this._groupId,
     };
   }
 

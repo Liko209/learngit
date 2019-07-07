@@ -30,7 +30,7 @@ class CallViewComponent extends Component<Props> {
     return (
       <ActionButton
         key="call-button"
-        icon="answer"
+        icon="phone"
         type={type}
         tooltip={this.title}
         onClick={doCall}

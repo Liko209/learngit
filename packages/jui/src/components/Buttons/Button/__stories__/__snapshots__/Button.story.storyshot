@@ -119,7 +119,6 @@ exports[`Storyshots Components/Buttons Fab Button: Components/Buttons Fab Button
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {
