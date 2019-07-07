@@ -7,7 +7,9 @@ import { RcInfoSettings } from '../RcInfoSettings';
 import { SettingEntityIds } from '../../../setting';
 import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
 import { RegionSettingHandler } from '../RegionSettingHandler';
-
+import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
+import { RCInfoService } from '../../service';
+jest.mock('../CallerIdSettingHandler');
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -31,6 +33,9 @@ describe('RcInfoSetting ', () => {
     it('should return handlerMap correctly', async () => {
       const moduleSetting = new RcInfoSettings({} as any);
       const handlerMap = moduleSetting.getHandlerMap();
+      expect(handlerMap[SettingEntityIds.Phone_CallerId]).toBeInstanceOf(
+        CallerIdSettingHandler,
+      );
       expect(handlerMap[SettingEntityIds.Phone_Extension]).toBeInstanceOf(
         ExtensionSettingHandler,
       );
