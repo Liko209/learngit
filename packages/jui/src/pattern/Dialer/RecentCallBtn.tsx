@@ -26,18 +26,16 @@ const JuiRecentCallBtn = ({
   handleClick,
   automationId,
   ...rest
-}: JuiRecentCallBtnProps) => {
-  return (
+}: JuiRecentCallBtnProps) => (
     <StyleContainer>
       <JuiFabButton
-        size='medium'
+        size="medium"
         data-test-automation-id={automationId}
         disableRipple
         onClick={handleClick}
         {...rest}
       />
     </StyleContainer>
-  );
-};
+);
 
 export { JuiRecentCallBtn };

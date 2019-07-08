@@ -47,7 +47,9 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
   }
 
   render() {
-    const { type, height, listHandler, t } = this.props;
+    const {
+      type, height, listHandler, t,
+    } = this.props;
     const { size, total } = listHandler;
     const { subheader } = getTabConfig(type);
     const listHeight = Math.max(height - HEADER_HEIGHT, 0);

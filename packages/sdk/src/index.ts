@@ -20,13 +20,13 @@ export { LogControlManager } from './service/uploadLogControl';
 
 registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
-registerConfigs.constants.forEach(config =>
-  container.registerConstantValue(config),
-);
+registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
 const sdk: Sdk = container.get(Sdk.name);
 export { sdk as Sdk };
-export { sdk, service, utils, dao, api, error };
+export {
+  sdk, service, utils, dao, api, error,
+};
 export {
   mainLogger,
   ILogger,

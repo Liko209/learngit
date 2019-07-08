@@ -90,10 +90,9 @@ class ContentSearchResultViewModel
   @computed
   private get _searchParams(): ContentSearchParams {
     return Object.keys(this.searchOptions).reduce(
-      (acc, key) =>
-        this.searchOptions[key] === null
-          ? acc
-          : { ...acc, [key]: this.searchOptions[key] },
+      (acc, key) => (this.searchOptions[key] === null
+        ? acc
+        : { ...acc, [key]: this.searchOptions[key] }),
       {},
     );
   }
@@ -131,8 +130,7 @@ class ContentSearchResultViewModel
     return { hasMore, data: posts };
   }
 
-  onSearchEnd = async () =>
-    await this._postService.endPostSearch(this.searchOptions.q!)
+  onSearchEnd = async () => await this._postService.endPostSearch(this.searchOptions.q!)
 
   @action
   private _onSearchInit() {

@@ -74,17 +74,19 @@ class AttachmentView extends Component<Props> {
   };
   /* eslint-disable react/no-array-index-key */
   render() {
-    const { onFileChanged, tooltip, menus, fileMenu, title } = this.props;
+    const {
+      onFileChanged, tooltip, menus, fileMenu, title,
+    } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
 
     return (
       <Fragment>
         <JuiIconButton
-          data-test-automation-id='conversation-chatbar-attachment-button'
+          data-test-automation-id="conversation-chatbar-attachment-button"
           tooltipTitle={tooltip}
           onClick={this._handleClickEvent}
-          size='medium'
+          size="medium"
         >
           attachment
         </JuiIconButton>
@@ -99,7 +101,7 @@ class AttachmentView extends Component<Props> {
               vertical: 'center',
               horizontal: 'left',
             }}
-            data-test-automation-id='conversation-chatbar-attachment-menu'
+            data-test-automation-id="conversation-chatbar-attachment-menu"
             anchorEl={anchorEl}
             MenuListProps={{
               classes: {
@@ -124,7 +126,7 @@ class AttachmentView extends Component<Props> {
                 <JuiMenuItem
                   disableGutters
                   icon={fileMenu.icon}
-                  data-test-automation-id='chatbar-attchment-selectfile'
+                  data-test-automation-id="chatbar-attchment-selectfile"
                   onClick={this._hideMenuAndShowDialog}
                 >
                   {fileMenu.label}

@@ -4,12 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-// import createDependencies from './createDependenciesDoc';
 import { RenderFunction } from '@storybook/react';
-import { StyledComponentClass } from 'styled-components';
-import { Dependencies } from '../styled-components';
-import { Theme } from '../theme/theme';
 
-export const alignCenterDecorator = (story: RenderFunction) => {
-  return <div style={{ textAlign: 'center' }}>{story()}</div>;
-};
+export const alignCenterDecorator = (story: RenderFunction) => <div style={{ textAlign: 'center' }}>{story()}</div>;

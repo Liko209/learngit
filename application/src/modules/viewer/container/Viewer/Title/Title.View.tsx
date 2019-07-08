@@ -37,22 +37,20 @@ import { FileActionMenu } from '@/containers/common/fileAction';
 @observer
 class ViewerTitleViewComponent extends Component<
   WithTranslation & ViewerTitleViewProps
-> {
+  > {
   static contextType = DialogContext;
 
   dismiss = this.context;
 
   createAsyncOperationDecorator = (setLoading: Function) => (
     op: () => Promise<any>,
-  ) => {
-    return async () => {
-      setLoading(true);
-      try {
-        return await op();
-      } finally {
-        setLoading(false);
-      }
-    };
+  ) => async () => {
+    setLoading(true);
+    try {
+      return await op();
+    } finally {
+      setLoading(false);
+    }
   };
 
   render() {
@@ -72,12 +70,12 @@ class ViewerTitleViewComponent extends Component<
           <JuiTransition
             appear
             show={viewerContext.show}
-            duration='standard'
-            easing='sharp'
+            duration="standard"
+            easing="sharp"
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader data-test-automation-id='ViewerHeader'>
+              <JuiDialogHeader data-test-automation-id="ViewerHeader">
                 <ReactResizeDetector handleWidth />
                 <JuiDialogHeaderMeta>
                   {sender && createdAt && (
@@ -99,7 +97,7 @@ class ViewerTitleViewComponent extends Component<
                   )}
                 </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle
-                  variant='responsive'
+                  variant="responsive"
                   data-test-automation-id={'previewerTitle'}
                 >
                   <JuiDialogHeaderTitleMainTitle>
@@ -114,9 +112,9 @@ class ViewerTitleViewComponent extends Component<
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
                   <JuiButtonBar overlapSize={2}>
-                    <Download url={downloadUrl} variant='round' />
+                    <Download url={downloadUrl} variant="round" />
                     <FileActionMenu
-                      variant='round'
+                      variant="round"
                       groupId={groupId}
                       showViewInPostAction
                       fileId={item.id}
@@ -139,7 +137,7 @@ class ViewerTitleViewComponent extends Component<
                   </JuiButtonBar>
                 </JuiDialogHeaderActions>
               </JuiDialogHeader>
-              <JuiDivider key='divider-filters' />
+              <JuiDivider key="divider-filters" />
             </div>
           </JuiTransition>
         )}

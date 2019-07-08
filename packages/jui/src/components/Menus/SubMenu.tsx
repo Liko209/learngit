@@ -45,7 +45,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
     return (
       <StyledSubMenuItem {...rest}>
         {title}
-        <JuiIconography iconSize='medium' iconColor={['grey', '600']}>
+        <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
           arrow_right
         </JuiIconography>
       </StyledSubMenuItem>
@@ -59,7 +59,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
       open={open}
       anchorEl={anchorEl}
       Anchor={Anchor}
-      placement='right-start'
+      placement="right-start"
       onMouseEnter={openPopper}
       onMouseLeave={closePopper}
       onClose={closePopper}

@@ -22,7 +22,7 @@ import { DialogContext } from '@/containers/Dialog';
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithTranslation & ProfileDialogGroupTitleViewProps
-> {
+  > {
   static contextType = DialogContext;
 
   dismiss = this.context;

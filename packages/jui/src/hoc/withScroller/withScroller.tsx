@@ -36,8 +36,8 @@ const StyledScroller = styled<{ stickTo: StickType }, 'div'>('div')`
 `;
 
 const ScrollerContext = React.createContext({
-  scrollToRow: (n: number) => {},
-  onListAsyncMounted: (el: React.RefObject<any>) => {},
+  scrollToRow: () => {},
+  onListAsyncMounted: () => {},
 });
 
 function withScroller(Comp: ComponentType<any>) {
@@ -139,4 +139,6 @@ function withScroller(Comp: ComponentType<any>) {
   };
 }
 
-export { withScroller, ScrollerProps, WithScrollerProps, ScrollerContext };
+export {
+  withScroller, ScrollerProps, WithScrollerProps, ScrollerContext,
+};

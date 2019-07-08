@@ -175,9 +175,7 @@ class CallLogBadgeController {
   private _registerBadge() {
     ServiceLoader.getInstance<BadgeService>(
       ServiceConfig.BADGE_SERVICE,
-    ).registerBadge(MISSED_CALL_BADGE_ID, () => {
-      return { id: MISSED_CALL_BADGE_ID, unreadCount: this._unreadMap.size };
-    });
+    ).registerBadge(MISSED_CALL_BADGE_ID, () => ({ id: MISSED_CALL_BADGE_ID, unreadCount: this._unreadMap.size }));
   }
 }
 

@@ -79,8 +79,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
               },
             }}
           >
-            {({ TransitionProps }) => {
-              return (
+            {({ TransitionProps }) => (
                 <Grow
                   {...TransitionProps}
                   timeout={noTransition ? 0 : 'auto'}
@@ -90,8 +89,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
                 >
                   <Paper>{children}</Paper>
                 </Grow>
-              );
-            }}
+            )}
           </JuiPopper>
         </div>
       </ClickAwayListener>

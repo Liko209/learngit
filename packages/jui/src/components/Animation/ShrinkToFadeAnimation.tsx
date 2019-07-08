@@ -30,21 +30,20 @@ const ANIMATION_FILL_MODE = 'forwards';
 function makeAnimationPromise(_domList: RefObject<HTMLDivElement>[]) {
   // listening to animation containers' `animationend` event
   const { promises, cancelPromises } = _domList
-    .map((ref) => {
+    .map(ref => {
       if (ref.current === null) {
         return [];
       }
       const el = ref.current as HTMLElement;
       let cb: (value?: any) => void = () => {};
-      const promise: Promise<any> = new Promise((resolve) => {
+      const promise: Promise<any> = new Promise(resolve => {
         cb = (e: AnimationEvent) => {
           resolve(e);
           e.stopPropagation();
         };
       });
 
-      const deRegister: () => void = () =>
-        el.removeEventListener(ANIMATION_END_EVT, cb);
+      const deRegister: () => void = () => el.removeEventListener(ANIMATION_END_EVT, cb);
 
       el.addEventListener(ANIMATION_END_EVT, cb);
       promise.then(deRegister);
@@ -110,7 +109,7 @@ const ShrinkToFadeAnimation = ({
 
     return () => {
       removeRef && removeRef();
-      cancelPromises.forEach((cb) => {
+      cancelPromises.forEach(cb => {
         cb && cb();
       });
     };
@@ -120,65 +119,65 @@ const ShrinkToFadeAnimation = ({
   0% {
     border-radius: 0;
     background-color: ${tinycolor(primary('600')({ theme }))
-      .setAlpha(0)
-      .toRgbString()};
+    .setAlpha(0)
+    .toRgbString()};
     box-shadow: outset ${palette('common', 'black', 0.2)({
-      theme,
-    })} 0px 0px ${SHADOW_SIZE};
+    theme,
+  })} 0px 0px ${SHADOW_SIZE};
   }
 
   16.6666% {
     background-color: ${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.01)
-      .toRgbString()};
+    .setAlpha(0.01)
+    .toRgbString()};
     border-radius: 0;
     box-shadow: inset ${palette('common', 'black', 0.2)({
-      theme,
-    })} 0px 0px ${SHADOW_SIZE};
+    theme,
+  })} 0px 0px ${SHADOW_SIZE};
   }
 
   33.3333% {
     background-color: ${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.1)
-      .toRgbString()};
+    .setAlpha(0.1)
+    .toRgbString()};
     border-radius: 20%;
     box-shadow: inset ${palette('common', 'black', 0.2)({
-      theme,
-    })} 0px 0px ${SHADOW_SIZE};
+    theme,
+  })} 0px 0px ${SHADOW_SIZE};
   }
 
   50% {
     border-radius: 40%;
     background-color: ${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.3)
-      .toRgbString()};
+    .setAlpha(0.3)
+    .toRgbString()};
     box-shadow: inset ${palette('common', 'black', 0.2)({
-      theme,
-    })} 0px 0px ${SHADOW_SIZE};
+    theme,
+  })} 0px 0px ${SHADOW_SIZE};
   }
 
   66.66666666666666% {
     border-radius: 60%;
     transform: ${`scale(${xScale}, ${yScale})`};
     background-color:${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.4)
-      .toRgbString()};
+    .setAlpha(0.4)
+    .toRgbString()};
   }
 
   83.333333% {
     border-radius: 80%;
     transform: ${`scale(${xScale}, ${yScale})`};
     background-color:${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.4)
-      .toRgbString()};
+    .setAlpha(0.4)
+    .toRgbString()};
   }
 
   100% {
     border-radius: 100%;
     transform: ${`scale(${xScale}, ${yScale})`};
     background-color: ${tinycolor(primary('600')({ theme }))
-      .setAlpha(0.6)
-      .toRgbString()};
+    .setAlpha(0.6)
+    .toRgbString()};
   }
 `;
 
@@ -233,22 +232,17 @@ const ShrinkToFadeAnimation = ({
   }
 `;
 
-  const fadeAnimation = () =>
-    css`${fade} ${fadeDuration} ${DEFAULT_TRANSFORMATION_BEZIER} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
+  const fadeAnimation = () => css`${fade} ${fadeDuration} ${DEFAULT_TRANSFORMATION_BEZIER} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
 
-  const roundAnimation = () =>
-    css`${round} ${roundDuration} ${DEFAULT_TRANSFORMATION_BEZIER} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
+  const roundAnimation = () => css`${round} ${roundDuration} ${DEFAULT_TRANSFORMATION_BEZIER} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
 
-  const transFormOrigin = () =>
-    css`
+  const transFormOrigin = () => css`
       ${translateX}px, ${translateY}px
     `;
 
-  const moveAnimation = () =>
-    css`${move} ${moveDuration} ${MOVE_TIMING_BEZIER} ${moveDelay} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
+  const moveAnimation = () => css`${move} ${moveDuration} ${MOVE_TIMING_BEZIER} ${moveDelay} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
 
-  const blinkAnimation = () =>
-    css`${blink} ${blinkDuration} ${BLINK_TIMING_BEZIER} ${blinkDelay} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
+  const blinkAnimation = () => css`${blink} ${blinkDuration} ${BLINK_TIMING_BEZIER} ${blinkDelay} ${ITERATION} ${ANIMATION_FILL_MODE} ${ANIMATION_DIRECTION}`;
 
   const FadeAnimationContainer = styled.div`
     && {

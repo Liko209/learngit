@@ -5,3 +5,4 @@ tests
 /application/**/__tests__/*
 /packages/**/__tests__/*
 /packages/jui/**/__stories__/*
+/application/src/containers/VersionInfo/commitInfo.ts

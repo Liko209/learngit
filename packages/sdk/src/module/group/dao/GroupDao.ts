@@ -25,8 +25,7 @@ class GroupDao extends BaseDao<Group> {
     mainLogger.debug(`queryGroup isTeam:${isTeam} excludeIds:${excludeIds}`);
     const query = this.createQuery()
       .filter(
-        (item: Group) =>
-          !item.is_archived &&
+        (item: Group) => !item.is_archived &&
           item.is_team === isTeam &&
           (currentUserId ? item.members.includes(currentUserId) : true),
       )
@@ -57,11 +56,7 @@ class GroupDao extends BaseDao<Group> {
     return this.createQuery()
       .equal('is_team', true)
       .filter(
-        (item: Group) =>
-          // !item.deactivated &&
-          // !item.is_archived &&
-          typeof item.set_abbreviation === 'string' &&
-          new RegExp(`${key}`, 'i').test(item.set_abbreviation),
+        (item: Group) => typeof item.set_abbreviation === 'string' && new RegExp(`${key}`, 'i').test(item.set_abbreviation),
       )
       .toArray();
   }
@@ -72,8 +67,7 @@ class GroupDao extends BaseDao<Group> {
     return this.createQuery()
       .equal('is_team', false)
       .filter(
-        (item: Group) =>
-          !item.is_archived &&
+        (item: Group) => !item.is_archived &&
           item.members &&
           item.members.sort().toString() === members.sort().toString(),
       )

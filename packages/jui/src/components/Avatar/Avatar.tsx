@@ -54,8 +54,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color }) =>
-      color ? palette('avatar', color) : grey('100')};
+    background-color: ${({ color }) => (color ? palette('avatar', color) : grey('100'))};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -84,10 +83,8 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     align-items: center;
     justify-content: center;
     font-size: ${spacing(12)};
-    color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
-    background-color: ${({ color }) =>
-      color ? palette('avatar', color) : primary('600')};
+    color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
+    background-color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
   }
   & span {
     display: flex;

@@ -33,11 +33,11 @@ class HoldViewComponent extends Component<Props> {
           color={held ? 'primary.600' : 'grey.900'}
           disableToolTip
           onClick={this._handleHold}
-          size='xxlarge'
+          size="xxlarge"
           disabled={disabled}
           awake={held}
           shouldPersistBg={held}
-          data-test-automation-id='telephony-hold-btn'
+          data-test-automation-id="telephony-hold-btn"
           aria-label={
             held
               ? t('telephony.accessibility.resume')

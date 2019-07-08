@@ -70,7 +70,7 @@ type ConversationCardHeaderProps = {
 };
 
 class JuiConversationCardHeader extends React.PureComponent<
-  ConversationCardHeaderProps
+ConversationCardHeaderProps
 > {
   leftSection: HTMLDivElement | null;
   constructor(props: ConversationCardHeaderProps) {
@@ -109,8 +109,7 @@ class JuiConversationCardHeader extends React.PureComponent<
       }
     });
     shareChildren.forEach(
-      shareChild =>
-        ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
+      shareChild => ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
     );
   }
 
@@ -128,18 +127,20 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   render() {
-    const { name, status, notification, from, time, children } = this.props;
+    const {
+      name, status, notification, from, time, children,
+    } = this.props;
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
-          <StyledName data-name='name'>{name}</StyledName>
+          <StyledName data-name="name">{name}</StyledName>
           {status ? (
-            <StyledStatus data-name='cardHeaderUserStatus'>
+            <StyledStatus data-name="cardHeaderUserStatus">
               {status}
             </StyledStatus>
           ) : null}
           {notification ? (
-            <StyledNotification data-name='cardHeaderNotification'>
+            <StyledNotification data-name="cardHeaderNotification">
               {notification}
             </StyledNotification>
           ) : null}
@@ -147,7 +148,7 @@ class JuiConversationCardHeader extends React.PureComponent<
         </StyledLeftSection>
         {(time || children) && (
           <RightSection>
-            {time && <StyledTime data-name='time'>{time}</StyledTime>}
+            {time && <StyledTime data-name="time">{time}</StyledTime>}
             {children}
           </RightSection>
         )}

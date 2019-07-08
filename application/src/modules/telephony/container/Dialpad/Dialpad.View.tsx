@@ -13,7 +13,7 @@ import { End } from '../End';
 
 type DialpadProps = ViewProps & WithTranslation;
 
-const Actions = [() => <Mute type='fab' />, () => <End size='medium' />];
+const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
 
 /* eslint-disable */
 class DialpadViewComponent extends React.Component<DialpadProps> {

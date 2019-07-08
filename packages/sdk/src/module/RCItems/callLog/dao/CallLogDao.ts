@@ -136,18 +136,14 @@ class CallLogDao extends BaseDao<CallLog, string> {
     return this._viewDao.queryNewestTimestamp();
   }
 
-  private _fetchCallLogsFunc = async (ids: string[]): Promise<CallLog[]> => {
-    return await this.batchGet(ids, true);
-  };
+  private _fetchCallLogsFunc = async (ids: string[]): Promise<CallLog[]> => await this.batchGet(ids, true);
 
   private async _putCallLogView(callLog: CallLog) {
     await this._viewDao.put(this._toCallLogView(callLog));
   }
 
   private async _bulkPutCallLogView(array: CallLog[]) {
-    const callLogViews = array.map((callLog: CallLog) => {
-      return this._toCallLogView(callLog);
-    });
+    const callLogViews = array.map((callLog: CallLog) => this._toCallLogView(callLog));
     await this._viewDao.bulkPut(callLogViews);
   }
 
@@ -199,9 +195,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
     array: Partial<CallLog>[],
     shouldDoPut: boolean,
   ) {
-    const callLogViews = array.map((callLog: CallLog) => {
-      return this._toPartialCallLogView(callLog);
-    });
+    const callLogViews = array.map((callLog: CallLog) => this._toPartialCallLogView(callLog));
 
     await this._viewDao.bulkUpdate(callLogViews, shouldDoPut);
   }

@@ -27,9 +27,7 @@ export class RCResponseParser implements IResponseParser {
       const errors = data.errors;
       if (errors) {
         if (Array.isArray(errors)) {
-          errors.some((error: any) => {
-            return this.extractErrorInfo(errorInfo, error);
-          });
+          errors.some((error: any) => this.extractErrorInfo(errorInfo, error));
         } else {
           this.extractErrorInfo(errorInfo, errors);
         }
@@ -57,8 +55,6 @@ export class RCResponseParser implements IResponseParser {
   }
 
   isKnownError(errorInfo: ErrorInfo): boolean {
-    return Object.values(ERROR_CODES_RC).some((code: string) => {
-      return errorInfo.errorCode === code;
-    });
+    return Object.values(ERROR_CODES_RC).some((code: string) => errorInfo.errorCode === code);
   }
 }

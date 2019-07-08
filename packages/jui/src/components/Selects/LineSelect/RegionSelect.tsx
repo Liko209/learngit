@@ -21,7 +21,7 @@ type JuiRegionSelectProps = {
   selectStyle?: React.CSSProperties;
   regionList: RegionType[];
   onChange?: React.ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >;
   automationId?: string;
 };
@@ -54,7 +54,9 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
     [],
   );
 
-  const { label, selectStyle, regionList = [], automationId } = props;
+  const {
+    label, selectStyle, regionList = [], automationId,
+  } = props;
 
   const renderValue = useCallback(
     (value: string) => {
@@ -80,7 +82,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
         <StyledRegionSelectWrap>
           <MuiListItemIcon>
             <JuiIconography
-              iconSize='large'
+              iconSize="large"
               symbol={selectRegion.regionIcon}
               desc={selectRegion.desc}
             />
@@ -104,7 +106,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
       {regionList.map((item: RegionType) => {
         const regionIcon = (
           <JuiIconography
-            iconSize='large'
+            iconSize="large"
             symbol={item.regionIcon}
             desc={item.desc}
           />

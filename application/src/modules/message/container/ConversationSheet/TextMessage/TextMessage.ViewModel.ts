@@ -26,19 +26,17 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   }
 
   @action
-  private _getContent = (keyword?: string) => {
-    return moizePostParser(this._post.text, {
-      keyword,
-      html: true,
-      atMentions: {
-        map: buildAtMentionMap(this._post),
-      },
-      emoji: {
-        unicodeOnly: false,
-      },
-      phoneNumber: true,
-    });
-  }
+  private _getContent = (keyword?: string) => moizePostParser(this._post.text, {
+    keyword,
+    html: true,
+    atMentions: {
+      map: buildAtMentionMap(this._post),
+    },
+    emoji: {
+      unicodeOnly: false,
+    },
+    phoneNumber: true,
+  })
 }
 
 export { TextMessageViewModel };

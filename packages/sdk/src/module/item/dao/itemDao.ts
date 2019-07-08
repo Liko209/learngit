@@ -189,9 +189,7 @@ class ItemDao extends BaseDao<Item> {
         const items = filterResult.get(typeId) as Item[];
         const viewDao = this._getItemViewDaoByTypeId(typeId);
         if (viewDao) {
-          const sanitizedItems = items.map((item: Item) =>
-            viewDao.toSanitizedItem(item),
-          );
+          const sanitizedItems = items.map((item: Item) => viewDao.toSanitizedItem(item));
           return viewDao.bulkPut(sanitizedItems);
         }
         return Promise.resolve();
@@ -224,9 +222,7 @@ class ItemDao extends BaseDao<Item> {
         const viewDao = this._getItemViewDaoByTypeId(typeId);
         if (viewDao) {
           const items = filterResult.get(typeId) as Item[];
-          const sanitizedItems = items.map((partialItem: Item) =>
-            viewDao.toPartialSanitizedItem(partialItem),
-          );
+          const sanitizedItems = items.map((partialItem: Item) => viewDao.toPartialSanitizedItem(partialItem));
           return viewDao.bulkUpdate(sanitizedItems);
         }
         return Promise.resolve();
@@ -242,9 +238,7 @@ class ItemDao extends BaseDao<Item> {
   }
 
   private async _bulkDeleteItemViews(itemIds: number[]) {
-    const idModels = itemIds.map((key: number) => {
-      return { id: key };
-    });
+    const idModels = itemIds.map((key: number) => ({ id: key }));
     const filterResult = this._filterItems<IdModel>(idModels, false);
     const typeIds = Array.from(filterResult.keys());
     await Promise.all(
@@ -253,9 +247,7 @@ class ItemDao extends BaseDao<Item> {
         if (viewDao) {
           const idModes = filterResult.get(typeId) as IdModel[];
           return viewDao.bulkDelete(
-            idModes.map((model: { id: number }) => {
-              return model.id;
-            }),
+            idModes.map((model: { id: number }) => model.id),
           );
         }
 

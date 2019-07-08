@@ -16,37 +16,36 @@ const blink = ({
 }: any) => keyframes`
   0%{
     color:${theme.palette.getContrastText(
-      palette(colorScope, colorName)({ theme }),
-    )}
+    palette(colorScope, colorName)({ theme }),
+  )}
   }
   30%{
     color:${theme.palette.getContrastText(
-      palette(colorScope, colorName)({ theme }),
-    )}
+    palette(colorScope, colorName)({ theme }),
+  )}
   }
   60%{
     color:${tinycolor(
-      theme.palette.getContrastText(palette(colorScope, colorName)({ theme })),
-    )
-      .setAlpha(0.5)
-      .toRgbString()}
+    theme.palette.getContrastText(palette(colorScope, colorName)({ theme })),
+  )
+    .setAlpha(0.5)
+    .toRgbString()}
   }
   80%{
     color:${tinycolor(
-      theme.palette.getContrastText(palette(colorScope, colorName)({ theme })),
-    )
-      .setAlpha(0.5)
-      .toRgbString()}
+    theme.palette.getContrastText(palette(colorScope, colorName)({ theme })),
+  )
+    .setAlpha(0.5)
+    .toRgbString()}
   }
   100%{
     color:${theme.palette.getContrastText(
-      palette(colorScope, colorName)({ theme }),
-    )}
+    palette(colorScope, colorName)({ theme }),
+  )}
   }
 `;
 
-const blinkAnimation = () =>
-  css`
+const blinkAnimation = () => css`
     ${blink} 1s ease-in-out;
   `;
 
@@ -78,12 +77,12 @@ const JuiDialpadBtn = ({
   return (
     <StyleContainer aria-label={ariaLabel}>
       <JuiFabButton
-        size='medium'
-        iconName='dialer'
+        size="medium"
+        iconName="dialer"
         disableRipple
         onClick={onClick}
         tooltipTitle={tooltipTitle}
-        data-test-automation-id='telephony-dialpad-btn'
+        data-test-automation-id="telephony-dialpad-btn"
         id={id}
       />
     </StyleContainer>

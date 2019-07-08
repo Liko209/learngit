@@ -3,7 +3,9 @@
  * @Date: 2019-05-29 16:29:36
  * Copyright © RingCentral. All rights reserved.
  */
-import { IPostParser, ParserType, Replacer, HTMLParserOption } from '../types';
+import {
+  IPostParser, ParserType, Replacer, HTMLParserOption,
+} from '../types';
 import { ParseContent } from '../ParseContent';
 import { PostParser } from './PostParser';
 import { HTMLUnescape, getTopLevelChildNodesFromHTML } from '../utils';
@@ -50,7 +52,9 @@ class HTMLParser extends PostParser implements IPostParser {
     const childNodes = getTopLevelChildNodesFromHTML(value);
     return _.flatten(
       childNodes.map(
-        ({ isTag, tag, attrs = {}, inner, substring = '' }, index) => {
+        ({
+          isTag, tag, attrs = {}, inner, substring = '',
+        }, index) => {
           if (isTag) {
             const tagName = tag as string;
             const children = this._parseElementNodeInnerHTML(

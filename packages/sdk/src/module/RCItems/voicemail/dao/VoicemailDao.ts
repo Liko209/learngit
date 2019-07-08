@@ -92,9 +92,7 @@ class VoicemailDao extends BaseDao<Voicemail> {
   }
 
   private async _bulkUpdateVoicemailViews(partialItems: Partial<Voicemail>[]) {
-    const viewVMs = partialItems.map(vm =>
-      this._voicemailViewDao.toPartialVoicemailView(vm),
-    );
+    const viewVMs = partialItems.map(vm => this._voicemailViewDao.toPartialVoicemailView(vm));
     this._voicemailViewDao.bulkUpdate(viewVMs);
   }
 
@@ -106,9 +104,7 @@ class VoicemailDao extends BaseDao<Voicemail> {
 
   private async _bulkPutVoicemailView(array: Voicemail[]) {
     await this._voicemailViewDao.bulkPut(
-      array.map((vm: Voicemail) => {
-        return this._voicemailViewDao.toVoicemailView(vm);
-      }),
+      array.map((vm: Voicemail) => this._voicemailViewDao.toVoicemailView(vm)),
     );
   }
 

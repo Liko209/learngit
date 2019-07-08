@@ -36,8 +36,8 @@ class PersonProvider implements IEntityDataProvider<Person> {
 }
 
 class GroupMemberDataProvider extends IdListPagingDataProvider<
-  Person,
-  PersonModel
+Person,
+PersonModel
 > {
   constructor(
     sortedGroupMembers: number[],
@@ -107,9 +107,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
         this._group.members,
       );
       const sortedMembers = groupMembers.sort(this._sortGroupMemberFunc);
-      sortedIds = sortedMembers.map((member: Person) => {
-        return member.id;
-      });
+      sortedIds = sortedMembers.map((member: Person) => member.id);
     }
 
     this._sortedGroupMemberIds = sortedIds;
@@ -136,29 +134,23 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _buildFoc() {
     const filterFunc = <T extends { id: number; deactivated: boolean }>(
       model: T,
-    ) => {
-      return model && !model.deactivated
+    ) => (model && !model.deactivated
         ? this._group.members.some((x: number) => x === model.id)
-        : false;
-    };
+        : false);
     const isMatchFunc = filterFunc;
 
-    const transformFun = (model: Person) => {
-      return {
-        id: model.id,
-        sortValue: model.id,
-      } as ISortableModelWithData<Person>;
-    };
+    const transformFun = (model: Person) => ({
+      id: model.id,
+      sortValue: model.id,
+    } as ISortableModelWithData<Person>);
 
     const sortMemberFunc = (
       lhs: ISortableModelWithData<Person>,
       rhs: ISortableModelWithData<Person>,
-    ): number => {
-      return (
-        this._sortedGroupMemberIds.indexOf(lhs.id) -
+    ): number => (
+      this._sortedGroupMemberIds.indexOf(lhs.id) -
         this._sortedGroupMemberIds.indexOf(rhs.id)
-      );
-    };
+    );
 
     this._groupMemberDataProvider = new GroupMemberDataProvider(
       this._sortedGroupMemberIds,

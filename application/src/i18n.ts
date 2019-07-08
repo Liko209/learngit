@@ -18,9 +18,7 @@ const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (
-    letters.find((l: string) => {
-      return firstLetter === l;
-    })
+    letters.find((l: string) => firstLetter === l)
   ) {
     correctWordForm = capitalize ? 'An' : 'an';
   } else {

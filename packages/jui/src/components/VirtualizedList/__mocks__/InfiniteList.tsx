@@ -5,6 +5,7 @@
  */
 import React from 'react';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const JuiInfiniteList = React.forwardRef(({ children }: any, ref: any) => (
   <div>{children}</div>
 ));

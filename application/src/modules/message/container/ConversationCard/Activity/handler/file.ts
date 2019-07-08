@@ -19,14 +19,14 @@ export default function ({
   if (ids.length === 1) {
     return version > 1
       ? buildVerbNounNumeralsText({
-          verb: 'uploaded',
-          noun: 'version',
-          numerals: version,
-        })
+        verb: 'uploaded',
+        noun: 'version',
+        numerals: version,
+      })
       : buildVerbArticleNounText({
-          verb: 'shared',
-          noun: 'file',
-        });
+        verb: 'shared',
+        noun: 'file',
+      });
   }
   return buildVerbNumeralsNounText({
     verb: 'shared',

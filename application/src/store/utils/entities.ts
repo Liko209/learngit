@@ -49,4 +49,6 @@ function hasValidEntity<
   return store.hasValid(id);
 }
 
-export { hasValidEntity, getEntity, getSingleEntity, getGlobalValue };
+export {
+  hasValidEntity, getEntity, getSingleEntity, getGlobalValue,
+};

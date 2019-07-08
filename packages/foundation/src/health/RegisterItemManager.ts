@@ -12,7 +12,7 @@ import { IRegisterItemManager, UniqueItem } from './types';
 const LOG_TAG = '[RegisterItemManager]';
 
 export class RegisterItemManager<T extends UniqueItem>
-  implements IRegisterItemManager<T> {
+implements IRegisterItemManager<T> {
   private _items: T[] = [];
 
   constructor(private _name: string) {}

@@ -26,11 +26,10 @@ export const parseSchema = (
       //     .replace('++', '')
       //     .replace('*', '')
       // );
-      const filter = (str: string) =>
-        str
-          .trim()
-          .replace('++', '')
-          .replace('*', '');
+      const filter = (str: string) => str
+        .trim()
+        .replace('++', '')
+        .replace('*', '');
       const { unique, indices = [] }: ITableSchemaDefinition = versions[
         version
       ][colName];

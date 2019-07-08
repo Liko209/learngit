@@ -25,7 +25,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
-  NOTIFICATION_OPTIONS
+NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_IncomingCalls;
 
@@ -39,12 +39,8 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
-      this.onSettingEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {

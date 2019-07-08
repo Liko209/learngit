@@ -8,7 +8,9 @@ import MuiListItemIcon, {
   ListItemIconProps as MuiListItemIconProps,
 } from '@material-ui/core/ListItemIcon';
 import styled from '../../foundation/styled-components';
-import { spacing, width, height, grey, shape } from '../../foundation/utils';
+import {
+  spacing, width, height, grey, shape,
+} from '../../foundation/utils';
 
 type JuiListItemIconProps = MuiListItemIconProps;
 

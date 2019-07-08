@@ -27,8 +27,8 @@ export const RecentSearchType = {
 };
 
 type Props = ListSearchResultViewProps &
-  WithTranslation &
-  ListSearchResultProps;
+WithTranslation &
+ListSearchResultProps;
 
 @observer
 class ListSearchResultViewComponent extends Component<Props> {

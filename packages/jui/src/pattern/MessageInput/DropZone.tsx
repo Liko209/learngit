@@ -23,7 +23,7 @@ type JuiDropZoneProps = {
 };
 
 class TargetBox extends PureComponent<
-  ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
+ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
 > {
   private _checkFolder = (event: React.DragEvent) => {
     const { items } = event.dataTransfer;
@@ -134,8 +134,8 @@ interface ITargetBoxCollectedProps {
 }
 
 const JuiDropZone = DropTarget<
-  ITargetBoxProps & JuiDropZoneProps,
-  ITargetBoxCollectedProps
+ITargetBoxProps & JuiDropZoneProps,
+ITargetBoxCollectedProps
 >(
   (props: ITargetBoxProps) => props.accepts,
   boxTarget,

@@ -15,10 +15,12 @@ function normalizeLineEndings(str: string) {
   return str.replace(/\r\n|\r/g, '\n');
 }
 
-const StyledEditorWrapper = styled('div')<{
+type StyledEditorWrapperProps = {
   maxHeight: number;
   initAnimation: boolean;
-}>`
+};
+
+const StyledEditorWrapper = styled('div')<StyledEditorWrapperProps>`
   max-height: ${({ maxHeight }) => maxHeight}px;
   transition: max-height ${({ initAnimation }) => (initAnimation ? 0.75 : 0)}s
     ease-in-out;
@@ -243,7 +245,9 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
   }
 
   render() {
-    const { isCollapse, shouldCollapse, maxLine, collapseTo } = this.props;
+    const {
+      isCollapse, shouldCollapse, maxLine, collapseTo,
+    } = this.props;
     const { initAnimation } = this.state;
     const height = this.calcHeight(
       isCollapse,
@@ -256,12 +260,12 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
         <StyledEditorWrapper
           maxHeight={height}
           initAnimation={initAnimation}
-          data-test-automation-id='codeSnippetBody'
+          data-test-automation-id="codeSnippetBody"
         >
           <StyledTextArea
             ref={this.textareaNode as any}
             defaultValue={this.props.value}
-            autoComplete='off'
+            autoComplete="off"
           />
           <OverrideDefaultStyle />
         </StyledEditorWrapper>

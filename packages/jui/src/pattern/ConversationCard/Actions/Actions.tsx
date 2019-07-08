@@ -19,14 +19,10 @@ const Wrapper = styled.span`
   height: ${height(4)};
 `;
 /* eslint-disable react/no-array-index-key */
-const JuiActions = ({ children }: Props) => {
-  return (
+const JuiActions = ({ children }: Props) => (
     <React.Fragment>
-      {React.Children.toArray(children).map((child, index) => {
-        return <Wrapper key={index}>{child}</Wrapper>;
-      })}
+      {React.Children.toArray(children).map((child, index) => <Wrapper key={index}>{child}</Wrapper>)}
     </React.Fragment>
-  );
-};
+);
 
 export { JuiActions };

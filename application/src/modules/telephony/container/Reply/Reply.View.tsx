@@ -60,16 +60,12 @@ class ReplyViewComponent extends React.Component<Props> {
       if (this._handleClickMap[`${pattern}${time}`]) {
         return this._handleClickMap[`${pattern}${time}`];
       }
-      this._handleClickMap[`${pattern}${time}`] = () => {
-        return replyWithPattern(pattern, time, timeUnit);
-      };
+      this._handleClickMap[`${pattern}${time}`] = () => replyWithPattern(pattern, time, timeUnit);
       return this._handleClickMap[`${pattern}${time}`];
     }
 
     if (this._handleClickMap[pattern]) return this._handleClickMap[pattern];
-    this._handleClickMap[pattern] = () => {
-      return replyWithPattern(pattern);
-    };
+    this._handleClickMap[pattern] = () => replyWithPattern(pattern);
     return this._handleClickMap[pattern];
   };
 
@@ -82,7 +78,7 @@ class ReplyViewComponent extends React.Component<Props> {
           `telephony.predefinedMessage.${predefinedMessage.inMeeting.label}`,
         )}
         handleClick={this._handleClick(predefinedMessage.inMeeting.pattern)}
-        automationId='reply-with-in-meeting'
+        automationId="reply-with-in-meeting"
       />
     );
   };
@@ -135,7 +131,7 @@ class ReplyViewComponent extends React.Component<Props> {
         text={t(
           `telephony.predefinedMessage.${predefinedMessage.willCallBack.label}`,
         )}
-        automationId='reply-with-will-call-back'
+        automationId="reply-with-will-call-back"
       >
         {this._preDefinedWillCallbackTimeMenuItems}
       </JuiPreDefineMessage>
@@ -198,7 +194,7 @@ class ReplyViewComponent extends React.Component<Props> {
     const { t, customReplyMessage = '' } = this.props;
     return (
       <JuiCustomReply
-        id='incoming-call-custom-reply-id'
+        id="incoming-call-custom-reply-id"
         fullWidth
         placeholder={t('telephony.customReplyMessagePlaceholder')}
         inputProps={{
@@ -212,7 +208,7 @@ class ReplyViewComponent extends React.Component<Props> {
         onMouseDown={this._handleMouseDown}
         onPaste={this._handlePaste}
         value={customReplyMessage}
-        data-test-automation-id='reply-with-custom-message'
+        data-test-automation-id="reply-with-custom-message"
       />
     );
   };
@@ -231,7 +227,7 @@ class ReplyViewComponent extends React.Component<Props> {
         uid={uid}
         showDefaultAvatar={!uid}
         imgProps={{ draggable: false }}
-        size='large'
+        size="large"
       />
     );
   };
@@ -240,13 +236,13 @@ class ReplyViewComponent extends React.Component<Props> {
     const { t, quitReply } = this.props;
     return (
       <JuiIconButton
-        variant='plain'
-        color='common.white'
+        variant="plain"
+        color="common.white"
         onClick={quitReply}
-        size='large'
+        size="large"
         tooltipTitle={t('telephony.action.back')}
         aria-label={t('telephony.action.back')}
-        data-test-automation-id='reply-back-button'
+        data-test-automation-id="reply-back-button"
       >
         previous
       </JuiIconButton>
@@ -254,7 +250,9 @@ class ReplyViewComponent extends React.Component<Props> {
   };
 
   render() {
-    const { t, replyCountdownTime, isExt, phone, name } = this.props;
+    const {
+      t, replyCountdownTime, isExt, phone, name,
+    } = this.props;
 
     return (
       <>

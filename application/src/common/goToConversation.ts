@@ -33,11 +33,11 @@ const DELAY_LOADING = 500;
 function goToConversation({
   conversationId,
   jumpToPostId,
-  replaceHistory
+  replaceHistory,
 }: BaseGoToConversationParams) {
   const args: [string, any?] = [String(conversationId)];
   const currentConversation = getGlobalValue(
-    GLOBAL_KEYS.CURRENT_CONVERSATION_ID
+    GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
   );
   if (replaceHistory || conversationId === currentConversation) {
     args.push('REPLACE');
@@ -52,7 +52,7 @@ function goToConversation({
 
 const getConversationId = async (id: number | number[]) => {
   const groupService = ServiceLoader.getInstance<GroupService>(
-    ServiceConfig.GROUP_SERVICE
+    ServiceConfig.GROUP_SERVICE,
   );
   const type = Array.isArray(id)
     ? TypeDictionary.TYPE_ID_PERSON
@@ -66,7 +66,7 @@ const getConversationId = async (id: number | number[]) => {
   if (type === TypeDictionary.TYPE_ID_PERSON) {
     try {
       const result = await groupService.getOrCreateGroupByMemberList(
-        Array.isArray(id) ? id : [id]
+        Array.isArray(id) ? id : [id],
       );
       return result.id;
     } catch (error) {
@@ -77,7 +77,9 @@ const getConversationId = async (id: number | number[]) => {
 };
 
 async function goToConversationWithLoading(params: GoToConversationParams) {
-  const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
+  const {
+    id, jumpToPostId, beforeJump, hasBeforeJumpFun,
+  } = params;
   let needReplaceHistory = false;
 
   const timer = setTimeout(() => {
@@ -102,7 +104,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     await goToConversation({
       conversationId,
       jumpToPostId,
-      replaceHistory: needReplaceHistory
+      replaceHistory: needReplaceHistory,
     });
     window[goToConversationCallBackName] = null;
     return true;
@@ -115,7 +117,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     history.replace('/messages/loading', {
       params: err.message === ERROR_CONVERSATION_NOT_FOUND ? undefined : params,
       error: true,
-      errorType: getErrorType(err)
+      errorType: getErrorType(err),
     });
     return false;
   }
@@ -126,5 +128,5 @@ export {
   goToConversation,
   getConversationId,
   GoToConversationParams,
-  DELAY_LOADING
+  DELAY_LOADING,
 };

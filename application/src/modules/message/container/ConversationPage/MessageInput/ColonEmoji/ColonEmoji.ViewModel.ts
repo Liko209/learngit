@@ -1,4 +1,6 @@
-import { action, observable, computed, comparer } from 'mobx';
+import {
+  action, observable, computed, comparer,
+} from 'mobx';
 import { ColonEmojiProps, ColonEmojiViewProps, MemberData } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import Keys from 'jui/pattern/MessageInput/keys';
@@ -10,9 +12,7 @@ import { emojiIndex, EmojiData } from 'emoji-mart';
 const DELAY = 300;
 const INIT_INDEX = 0;
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
-const canTriggerDefaultEventHandler = (vm: ColonEmojiViewModel) => {
-  return !(vm.members.length && vm.open);
-};
+const canTriggerDefaultEventHandler = (vm: ColonEmojiViewModel) => !(vm.members.length && vm.open);
 
 class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   implements ColonEmojiViewProps {
@@ -90,9 +90,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     }
   };
 
-  private _doUnderscoreTransfer = (colons: string) => {
-    return colons.split('-').join('_');
-  };
+  private _doUnderscoreTransfer = (colons: string) => colons.split('-').join('_');
 
   private _formatEmojiData(res: EmojiData[]) {
     const emojis: MemberData[] = [];
@@ -123,7 +121,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   }
   @action
   private _escapeHandler(vm: ColonEmojiViewModel) {
-    return function() {
+    return function () {
       if (vm.open) {
         vm.open = false;
       }
@@ -133,7 +131,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _upHandler(vm: ColonEmojiViewModel) {
-    return function() {
+    return function () {
       const size = vm.members.length;
       const currentIndex = (vm.currentIndex + size - 1) % size;
       vm.currentIndex = currentIndex < 0 ? vm.members.length : currentIndex;
@@ -143,7 +141,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _downHandler(vm: ColonEmojiViewModel) {
-    return function() {
+    return function () {
       const size = vm.members.length;
       const currentIndex = (vm.currentIndex + 1) % size;
       vm.currentIndex = currentIndex < 0 ? 0 : currentIndex;
@@ -153,7 +151,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _selectHandler(vm: ColonEmojiViewModel) {
-    return function() {
+    return function () {
       if (!vm.open || !vm.members.length) {
         return true;
       }
@@ -172,15 +170,13 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   }
 
   @action
-  selectHandler = (selectIndex: number) => {
-    return () => {
-      this.currentIndex = selectIndex;
-      const { pid } = this.props;
-      const query = pid ? `[data-id='${pid}'] .ql-container` : QUILL_QUERY;
-      this._selectHandler(this).apply({
-        quill: (document.querySelector(query) as any).__quill,
-      });
-    };
+  selectHandler = (selectIndex: number) => () => {
+    this.currentIndex = selectIndex;
+    const { pid } = this.props;
+    const query = pid ? `[data-id='${pid}'] .ql-container` : QUILL_QUERY;
+    this._selectHandler(this).apply({
+      quill: (document.querySelector(query) as any).__quill,
+    });
   };
 
   @action

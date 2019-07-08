@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
+import {
+  onBecomeObserved, onBecomeUnobserved, action, observable,
+} from 'mobx';
 import { service, mainLogger } from 'sdk';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';

@@ -9,8 +9,8 @@ const transform2Map = <
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 >(
-  entities: T[],
-) => {
+    entities: T[],
+  ) => {
   const map: Map<IdType, T> = new Map();
   entities.forEach((item: T) => {
     map.set(item.id, item);

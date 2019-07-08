@@ -34,12 +34,12 @@ class LinkSettingItemViewComponent extends Component<Props> {
     network: 'setting.errorText.forLink',
     server: 'setting.errorText.forLink',
   })
-  private _getUrl = () => {
-    return this.props.getUrl();
-  };
+  private _getUrl = () => this.props.getUrl();
 
   render() {
-    const { t, id, disabled, settingItem } = this.props;
+    const {
+      t, id, disabled, settingItem,
+    } = this.props;
 
     return (
       <JuiSettingSectionItem
@@ -50,7 +50,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
         description={t(settingItem.description || '')}
       >
         <JuiButton
-          color='primary'
+          color="primary"
           disabled={disabled}
           data-test-automation-id={`settingItemButton-${settingItem.automationId}`}
           onClick={this._handleClick}

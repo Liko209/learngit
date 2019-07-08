@@ -38,7 +38,7 @@ const ChipComponent = (props: any) => {
 
 const Chip = (props: any) => (
   <Translation>
-    {t => <ChipComponent {...props} t={t} deleteAutomationId='chip-remove' />}
+    {t => <ChipComponent {...props} t={t} deleteAutomationId="chip-remove" />}
   </Translation>
 );
 

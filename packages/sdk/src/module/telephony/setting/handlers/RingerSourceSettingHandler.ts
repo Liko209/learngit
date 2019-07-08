@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
@@ -23,7 +22,7 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
-  MediaDeviceInfo
+MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_RingerSource;
 
@@ -80,7 +79,7 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
     }
   };
 
-  private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
+  private _onDevicesChange = async () => {
     await this.getUserSettingEntity();
   };
 

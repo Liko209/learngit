@@ -15,31 +15,26 @@ type JuiDialogContentWithFillProps = MuiDialogContentProps & {
   noPaddingFix?: boolean;
 };
 
-const StyledDialogContent = styled(MuiDialogContent)<
-  JuiDialogContentWithFillProps
->`
+const StyledDialogContent = styled(MuiDialogContent)<JuiDialogContentWithFillProps>`
   && {
     padding: 0;
     display: flex;
     flex-direction: column;
   }
-  ${({ noPaddingFix }) =>
-    noPaddingFix
-      ? null
-      : css`
+  ${({ noPaddingFix }) => (noPaddingFix
+    ? null
+    : css`
           &:after {
             content: '';
             height: ${height(6)};
             display: block;
             flex-shrink: 0;
           }
-        `};
+        `)};
 `;
 
 const JuiDialogContentWithFill = memo(
-  ({ noPaddingFix, ...rest }: JuiDialogContentWithFillProps) => {
-    return <StyledDialogContent {...rest} />;
-  },
+  ({ noPaddingFix, ...rest }: JuiDialogContentWithFillProps) => <StyledDialogContent {...rest} />,
 );
 
 export { JuiDialogContentWithFill, JuiDialogContentWithFillProps };

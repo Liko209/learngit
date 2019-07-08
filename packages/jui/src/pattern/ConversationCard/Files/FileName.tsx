@@ -13,16 +13,12 @@ type FileNameProps = {
   opacity?: number;
 };
 
-const FileNameWrapper = styled('div')<{
-  statusColor?: ({ theme }: { theme: Theme }) => any;
-  opacity?: number;
-}>`
+const FileNameWrapper = styled('div')<FileNameProps>`
   display: flex;
   min-width: 0;
   align-items: center;
   font-weight: 400;
-  color: ${({ statusColor }) =>
-    statusColor ? statusColor : palette('grey', '700')};
+  color: ${({ statusColor }) => (statusColor ? statusColor : palette('grey', '700'))};
   ${ellipsis()};
   opacity: ${({ opacity }) => opacity};
   font-size: 0;
@@ -43,7 +39,7 @@ class FileName extends PureComponent<FileNameProps> {
       <FileNameWrapper
         statusColor={statusColor}
         opacity={opacity}
-        data-test-automation-id='file-name'
+        data-test-automation-id="file-name"
         {...rest}
       />
     );

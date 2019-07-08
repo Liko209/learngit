@@ -72,7 +72,7 @@ class HomeView extends Component<HomeViewProps> {
         <ToastWrapper />
         <Wrapper>
           <TopBar />
-          <Bottom id='app-main-section'>
+          <Bottom id="app-main-section">
             <LeftNav />
             <HomeRouter />
           </Bottom>

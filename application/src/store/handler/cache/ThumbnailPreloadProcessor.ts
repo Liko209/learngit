@@ -17,15 +17,15 @@ import FileItemModel from '@/store/models/FileItem';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(private _waiter: any) {}
-  onSuccess(item: DownloadItemInfo, width: number, height: number): void {
+  onSuccess(): void {
     this._waiter();
   }
 
-  onFailure(item: DownloadItemInfo, errorCode: number): void {
+  onFailure(): void {
     this._waiter();
   }
 
-  onCancel(item: DownloadItemInfo): void {
+  onCancel(): void {
     this._waiter();
   }
 }
@@ -52,7 +52,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
   }
 
   protected preload(item: DownloadItemInfo) {
-    return new Promise((resolve: any, reject: any) => {
+    return new Promise((resolve: any) => {
       Pal.instance
         .getImageDownloader()
         .download(item, new ImageDownloadedListener(resolve));

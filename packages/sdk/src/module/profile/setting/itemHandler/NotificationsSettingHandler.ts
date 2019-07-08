@@ -24,7 +24,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { mainLogger } from 'foundation';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
-  DesktopNotificationsSettingModel
+DesktopNotificationsSettingModel
 > {
   id = SettingEntityIds.Notification_Browser;
 
@@ -37,9 +37,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
     this.on<NotificationPermission>(
       APPLICATION.NOTIFICATION_PERMISSION_CHANGE,
       payload => this.onNotificationPermissionUpdate(payload),
@@ -115,7 +113,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     }
   }
   private async _getWantNotifications() {
-    const profile = await this._profileService.getProfile().catch(error => {
+    const profile = await this._profileService.getProfile().catch(() => {
       mainLogger.warn('_getWantNotifications failed');
     });
     let wantNotifications = true;

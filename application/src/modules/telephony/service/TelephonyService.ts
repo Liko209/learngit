@@ -17,7 +17,7 @@ import {
   CALL_ACTION_ERROR_CODE,
 } from 'sdk/module/telephony/types';
 import { RC_INFO, notificationCenter } from 'sdk/service';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
 import { mainLogger } from 'sdk';
@@ -25,7 +25,9 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
+import {
+  reaction, IReactionDisposer, runInAction, action,
+} from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -562,7 +564,6 @@ class TelephonyService {
 
     return await personService.matchContactByPhoneNumber(
       phone,
-      ContactType.GLIP_CONTACT,
     );
   };
 

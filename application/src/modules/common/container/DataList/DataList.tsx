@@ -18,16 +18,16 @@ type DataListProps = {
   listHandler: FetchSortableDataListHandler<any, any>;
   initialDataCount: number;
   InfiniteListProps: Pick<
-    JuiInfiniteListProps,
-    | 'initialScrollToIndex'
-    | 'height'
-    | 'minRowHeight'
-    | 'overscan'
-    | 'loadingRenderer'
-    | 'loadingMoreRenderer'
-    | 'noRowsRenderer'
-    | 'loadMoreStrategy'
-    | 'stickToLastPosition'
+  JuiInfiniteListProps,
+  | 'initialScrollToIndex'
+  | 'height'
+  | 'minRowHeight'
+  | 'overscan'
+  | 'loadingRenderer'
+  | 'loadingMoreRenderer'
+  | 'noRowsRenderer'
+  | 'loadMoreStrategy'
+  | 'stickToLastPosition'
   > & { ref?: React.RefObject<JuiVirtualizedListHandles> };
   children: JSX.Element[];
   reverse?: boolean;
@@ -48,8 +48,7 @@ class DataList extends React.Component<DataListProps> {
     const hasMoreDown = this.props.listHandler.hasMore(
       this._transformDirection('down'),
     );
-    return (direction: 'up' | 'down') =>
-      direction === 'up' ? hasMoreUp : hasMoreDown;
+    return (direction: 'up' | 'down') => (direction === 'up' ? hasMoreUp : hasMoreDown);
   }
   @action
   private _loadInitialData = async () => {

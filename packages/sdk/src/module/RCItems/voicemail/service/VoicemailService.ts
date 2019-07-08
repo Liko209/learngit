@@ -79,7 +79,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     );
   }
 
-  async downloadTranscription(id: number): Promise<string> {
+  async downloadTranscription(): Promise<string> {
     // todo
     return 'This is transcription.';
   }

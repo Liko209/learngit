@@ -26,11 +26,11 @@ class MuteViewComponent extends Component<Props> {
     if (type === 'fab') {
       return (
         <JuiFabButton
-          color='common.white'
+          color="common.white"
           onClick={this._handleMute}
-          size='medium'
+          size="medium"
           showShadow={false}
-          tooltipPlacement='top'
+          tooltipPlacement="top"
           iconName={isMute ? 'mic_off' : 'mic'}
           tooltipTitle={
             isMute ? t('telephony.action.unmute') : t('telephony.action.mute')
@@ -38,7 +38,7 @@ class MuteViewComponent extends Component<Props> {
           aria-label={
             isMute ? t('telephony.action.unmute') : t('telephony.action.mute')
           }
-          data-test-automation-id='telephony-mute-btn'
+          data-test-automation-id="telephony-mute-btn"
         />
       );
     }
@@ -48,12 +48,12 @@ class MuteViewComponent extends Component<Props> {
           color={isMute ? 'primary.600' : 'grey.900'}
           disableToolTip
           onClick={this._handleMute}
-          size='xxlarge'
+          size="xxlarge"
           aria-label={
             isMute ? t('telephony.action.unmute') : t('telephony.action.mute')
           }
           shouldPersistBg={isMute}
-          data-test-automation-id='telephony-mute-btn'
+          data-test-automation-id="telephony-mute-btn"
         >
           {isMute ? 'mic_off' : 'mic'}
         </JuiIconButton>

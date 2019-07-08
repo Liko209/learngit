@@ -60,8 +60,7 @@ class DexieDB implements IDatabase {
   ): Promise<void> {
     if (mode && collections && Array.isArray(collections)) {
       const tables = collections.map(
-        (c: IDatabaseCollection<any, DatabaseKeyType>) =>
-          (c as DexieCollection<any, DatabaseKeyType>).getTable(),
+        (c: IDatabaseCollection<any, DatabaseKeyType>) => (c as DexieCollection<any, DatabaseKeyType>).getTable(),
       );
       await this.db.transaction(mode as TransactionMode, tables, callback);
     } else {
@@ -71,13 +70,13 @@ class DexieDB implements IDatabase {
 
   private _initSchema(schema: ISchema) {
     const versions: ISchemaVersions = schema.schema;
-    Object.keys(versions).forEach((version) => {
+    Object.keys(versions).forEach(version => {
       const sch: ISchemaDefinition = versions[version];
       const dexieSchema = {};
       const callbacks = {};
-      Object.keys(sch).forEach((tb) => {
+      Object.keys(sch).forEach(tb => {
         const { unique, indices = [], onUpgrade }: ITableSchemaDefinition = sch[tb
-];
+        ];
         const def = `${unique}${
           indices.length ? `, ${indices.join(', ')}` : ''
         }`;
@@ -88,18 +87,14 @@ class DexieDB implements IDatabase {
       });
       const v = this.db.version(Number(version)).stores(dexieSchema);
       if (Object.keys(callbacks).length) {
-        v.upgrade((tx) => {
-          return Promise.all(
-            Object.entries(callbacks).map(
-              ([tb, onUpgrade]: [string, (item: any) => void]) => {
-                return tx
-                  .table(tb)
-                  .toCollection()
-                  .modify((item: any) => onUpgrade(item));
-              },
-            ),
-          );
-        });
+        v.upgrade(tx => Promise.all(
+          Object.entries(callbacks).map(
+            ([tb, onUpgrade]: [string, (item: any) => void]) => tx
+              .table(tb)
+              .toCollection()
+              .modify((item: any) => onUpgrade(item)),
+          ),
+        ));
       }
     });
   }
