@@ -7,6 +7,7 @@ import { Assembler } from './Assembler';
 
 import _ from 'lodash';
 import { AssemblerDelFunc, AssemblerAddFunc } from './types';
+
 export class PostCombiner extends Assembler {
   // private _LIMIT: number = 60000;
   onAdd: AssemblerAddFunc = ({
@@ -23,7 +24,7 @@ export class PostCombiner extends Assembler {
       added,
       ...rest,
     };
-  }
+  };
 
   onDelete: AssemblerDelFunc = ({ deleted, streamItemList, ...rest }) => {
     return {
@@ -31,5 +32,5 @@ export class PostCombiner extends Assembler {
       streamItemList,
       ...rest,
     };
-  }
+  };
 }

@@ -14,7 +14,7 @@ type Types = EmojiViewProps & EmojiProps;
 class EmojiView extends Component<Types> {
   handleKeepOpenChange = () => {
     this.props.setEmojiOpenStatus();
-  }
+  };
   private _getEmojiI18nTexts = () => {
     return {
       search: i18nP('message.emoji.i18n.search'),
@@ -44,7 +44,7 @@ class EmojiView extends Component<Types> {
         6: i18nP('message.emoji.i18n.skintones.dark'),
       },
     };
-  }
+  };
   render() {
     const {
       handleEmojiClick,
@@ -61,7 +61,7 @@ class EmojiView extends Component<Types> {
         set={set}
         sheetSize={sheetSize}
         title={title}
-        handlerIcon="emoji"
+        handlerIcon='emoji'
         handleEmojiClick={handleEmojiClick}
         handleKeepOpenChange={this.handleKeepOpenChange}
         isKeepOpen={emojiOpenStatus}

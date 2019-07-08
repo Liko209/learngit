@@ -17,8 +17,8 @@ import { EntitySourceController } from '../../../../framework/controller/impl/En
 import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
 import _ from 'lodash';
 import { notificationCenter, ENTITY } from '../../../../service';
-import GroupService from '../../../../module/group';
-import { GroupConfigService } from '../../../../module/groupConfig';
+import GroupService from '../../../group';
+import { GroupConfigService } from '../../../groupConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { AccountService } from 'sdk/module/account';
@@ -108,7 +108,7 @@ describe('PostDataController', () => {
         false,
         (posts: Post[], items: Item[]) => {},
       );
-      expect(itemService.handleIncomingData).toBeCalled();
+      expect(itemService.handleIncomingData).toHaveBeenCalled();
     });
   });
 
@@ -150,7 +150,9 @@ describe('PostDataController', () => {
       }
       postDao.queryPostIdsByGroupId.mockResolvedValue(deleteIds);
       let result = await postDataController.handleIndexPosts(posts, true);
-      expect(mockEntitySourceController.bulkDelete).toBeCalledWith(deleteIds);
+      expect(mockEntitySourceController.bulkDelete).toHaveBeenCalledWith(
+        deleteIds,
+      );
       result = _.orderBy(result, 'id', 'asc');
       expect(result).toEqual(posts);
     });
@@ -178,7 +180,7 @@ describe('PostDataController', () => {
         }
       });
       let result = await postDataController.handleIndexPosts(posts, true);
-      expect(mockEntitySourceController.bulkDelete).toBeCalledWith(
+      expect(mockEntitySourceController.bulkDelete).toHaveBeenCalledWith(
         deleteGroupOneIds.concat(deleteGroupTwoIds),
       );
       result = _.orderBy(result, 'id', 'asc');
@@ -194,7 +196,7 @@ describe('PostDataController', () => {
         posts.push({ id: i, group_id: 2 });
       }
       let result = await postDataController.handleIndexPosts(posts, true);
-      expect(mockEntitySourceController.bulkDelete).not.toBeCalled();
+      expect(mockEntitySourceController.bulkDelete).not.toHaveBeenCalled();
       result = _.orderBy(result, 'id', 'asc');
       expect(result).toEqual(posts);
     });

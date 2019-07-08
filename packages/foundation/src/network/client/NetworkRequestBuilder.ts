@@ -9,7 +9,6 @@ import SocketRequest from './socket/SocketRequest';
 import { generateUUID, generateIncrementId } from '../util';
 import { config } from '../../config';
 import NetworkManager from '../NetworkManager';
-import BaseRequest from '../BaseRequest';
 import {
   IHandleType,
   REQUEST_PRIORITY,
@@ -217,7 +216,7 @@ class NetworkRequestBuilder implements IRequest {
     return this;
   }
 
-  build(requestVia?: NETWORK_VIA): BaseRequest {
+  build(requestVia?: NETWORK_VIA): IRequest {
     const via = requestVia === undefined ? this.via : requestVia;
     switch (via) {
       case NETWORK_VIA.SOCKET:

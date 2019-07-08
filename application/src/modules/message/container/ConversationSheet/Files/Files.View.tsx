@@ -83,7 +83,7 @@ class FilesView extends React.Component<FilesViewProps> {
         future={future}
       />
     );
-  }
+  };
 
   private _getImageEl(ev: React.MouseEvent<HTMLElement>) {
     if (!ev.currentTarget) {
@@ -114,26 +114,26 @@ class FilesView extends React.Component<FilesViewProps> {
       mode,
       postId,
     );
-  }
+  };
 
   _handleFileClick = (item: FileItemModel) => (
     ev: React.MouseEvent<HTMLElement>,
   ) => {
     this._viewerService.open({ groupId: this.props.groupId, itemId: item.id });
-  }
+  };
 
   private _handleImageDidLoad = (id: number, callback: Function) => {
     UploadFileTracker.tracker().clear(this.props.ids);
     callback();
-  }
+  };
 
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
     (downloadUrl: string, fileId: number, postId: number) => {
       return [
-        <Download key="download-action" url={downloadUrl} />,
-        <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+        <Download key='download-action' url={downloadUrl} />,
+        <FileActionMenu key='more-action' fileId={fileId} postId={postId} />,
       ];
     },
   );

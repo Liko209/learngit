@@ -15,6 +15,7 @@ import {
 import { LogEntity, SessionManager } from 'foundation';
 import { ZipConsumer } from './ZipConsumer';
 import { createWorker } from './utils';
+
 const DEFAULT_LIMIT = 5;
 
 export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
@@ -57,7 +58,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
         content: uploadedContent,
       });
     return zipItems;
-  }
+  };
 
   produce() {
     return this.zips.shift() || null;
@@ -94,5 +95,5 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
       this.zips.shift();
     }
     this.zipConsumer.consume();
-  }
+  };
 }

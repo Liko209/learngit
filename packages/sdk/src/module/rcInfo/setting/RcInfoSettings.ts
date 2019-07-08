@@ -9,6 +9,7 @@ import { IRCInfoService } from '../service/IRCInfoService';
 import { BaseModuleSetting } from '../../setting';
 import { RegionSettingHandler } from './RegionSettingHandler';
 import { ExtensionSettingHandler } from './ExtensionSettingHandler';
+
 type HandlerMap = {
   [SettingEntityIds.Phone_Region]: RegionSettingHandler;
   [SettingEntityIds.Phone_Extension]: ExtensionSettingHandler;

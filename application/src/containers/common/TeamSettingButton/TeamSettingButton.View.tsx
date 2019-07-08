@@ -26,16 +26,16 @@ class TeamSettingButtonViewComponent extends Component<Props> {
     } else if (group.type === CONVERSATION_TYPES.NORMAL_GROUP) {
       GroupSettings.show({ id });
     }
-  }
+  };
 
   render() {
     const { size, t } = this.props;
     return (
       <JuiIconButton
         size={size}
-        color="grey.500"
-        data-test-automation-id="settingButton"
-        alwaysEnableTooltip={true}
+        color='grey.500'
+        data-test-automation-id='settingButton'
+        alwaysEnableTooltip
         onClick={this.onClickSettingButton}
         tooltipTitle={toTitleCase(t('setting.teamSettings'))}
       >

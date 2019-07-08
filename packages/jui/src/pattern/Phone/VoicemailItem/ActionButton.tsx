@@ -1,7 +1,7 @@
 import React from 'react';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiMenuItem } from '../../../components/Menus';
-import { JuiActionIconWrapper } from '../VoicemailItem/Actions';
+import { JuiActionIconWrapper } from './Actions';
 
 enum BUTTON_TYPE {
   ICON,
@@ -17,7 +17,7 @@ type ActionButtonProps = {
   onClick: () => void;
 };
 
-const ActionButton = function ({
+const ActionButton = function({
   icon,
   type,
   tooltip,
@@ -29,10 +29,10 @@ const ActionButton = function ({
     return (
       <JuiActionIconWrapper>
         <JuiIconButton
-          color="common.white"
-          variant="round"
+          color='common.white'
+          variant='round'
           autoFocus={false}
-          size="small"
+          size='small'
           data-test-automation-id={automationId}
           ariaLabel={screenReader}
           tooltipTitle={tooltip}

@@ -137,22 +137,27 @@ class GroupConfigController {
 
   async updateMyLastPostTime(posts: Post[]) {
     try {
-      const partialDatas = [];
+      const partialConfigs = [];
+      const groupConfigs = await Promise.all(
+        posts.map(post => this.entitySourceController.get(post.group_id)),
+      );
+
       for (const post of posts) {
-        const groupConfig = await this.entitySourceController.get(
-          post.group_id,
+        const groupConfig = groupConfigs.find(x =>
+          x ? x.id === post.group_id : false,
         );
         const lastPostTime =
           (groupConfig && groupConfig.my_last_post_time) || 0;
         if (post.created_at > lastPostTime) {
-          partialDatas.push({
+          partialConfigs.push({
             id: post.group_id,
             my_last_post_time: post.created_at,
           });
         }
       }
 
-      await this.entitySourceController.bulkUpdate(partialDatas);
+      partialConfigs.length &&
+        (await this.entitySourceController.bulkUpdate(partialConfigs));
     } catch (error) {
       mainLogger.tags(LOG_TAG).log('recordMyLastPostTime failed', error);
     }

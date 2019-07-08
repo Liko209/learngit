@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IToken } from '..';
+import { IToken } from './network';
 
 class Token implements IToken {
   timestamp: number;

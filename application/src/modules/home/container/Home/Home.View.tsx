@@ -25,10 +25,11 @@ import { AboutView } from '@/containers/About';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
+  private _homeStore: HomeStore = container.get(HomeStore);
+
   constructor(props: HomeViewProps) {
     super(props);
   }
-  private _homeStore: HomeStore = container.get(HomeStore);
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -60,7 +61,7 @@ class HomeView extends Component<HomeViewProps> {
 
       window.location.reload();
     }
-  }
+  };
 
   render() {
     const { showGlobalSearch } = this.props;
@@ -71,7 +72,7 @@ class HomeView extends Component<HomeViewProps> {
         <ToastWrapper />
         <Wrapper>
           <TopBar />
-          <Bottom id="app-main-section">
+          <Bottom id='app-main-section'>
             <LeftNav />
             <HomeRouter />
           </Bottom>

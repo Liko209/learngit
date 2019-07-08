@@ -14,7 +14,7 @@ class ViewInPostActionViewComponent extends Component<
   ViewInPostActionViewProps
 > {
   _Icon = (
-    <JuiIconography iconColor={['grey', '500']} iconSize="small">
+    <JuiIconography iconColor={['grey', '500']} iconSize='small'>
       chat_bubble
     </JuiIconography>
   );
@@ -22,7 +22,7 @@ class ViewInPostActionViewComponent extends Component<
   @action
   viewInPost = () => {
     this.props.viewInPost();
-  }
+  };
 
   render() {
     const { t } = this.props;

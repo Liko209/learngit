@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { InteractiveMessageItemService } from './InteractiveMessageItemService';
+
 export { InteractiveMessageItemService };

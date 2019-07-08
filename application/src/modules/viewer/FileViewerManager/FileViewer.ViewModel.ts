@@ -85,7 +85,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     this._sender = null;
     this._createdAt = null;
     return;
-  }
+  };
 
   @computed
   private get _item() {
@@ -117,12 +117,13 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { pages = [] } = this._currentVersion;
     let value = parseInt(e.target.value, 10);
+    /*eslint-disable */
     if (isNaN(value)) return;
     value = value > pages.length ? pages.length : value;
     value = value < 1 ? 1 : value;
     this._textFieldValue = value;
     this._currentPageIdx = value - 1;
-  }
+  };
 
   @computed
   get title() {
@@ -174,7 +175,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     if (pageIdx !== undefined && pageIdx !== this._currentPageIdx) {
       this._currentPageIdx = pageIdx;
     }
-  }
+  };
 
   private _onExceptions(toastMessage: string) {
     portalManager.dismissAll();

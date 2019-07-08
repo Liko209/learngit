@@ -25,7 +25,7 @@ function loadFileConfigs(env: string) {
   return Object.keys(configMap)
     .map(key => ({
       key,
-      config: _.merge(configMap[key]['default'], configMap[key][env] || {}),
+      config: _.merge(configMap[key].default, configMap[key][env] || {}),
     }))
     .reduce((preValue, { key, config }) => {
       return { ...preValue, ...{ [key]: config } };

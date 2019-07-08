@@ -3,7 +3,7 @@
  * @Date: 2019-01-08 14:24:54
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { container } from 'framework';
@@ -34,7 +34,7 @@ class FileItemView extends Component<FileItemViewProps> {
 
   private _handleFileClick = ({ id }: FileItemModel) => () => {
     this._viewerService.open({ groupId: this.props.groupId, itemId: id });
-  }
+  };
   private _renderItem = () => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;
     const fileInfo = file || {};
@@ -49,7 +49,7 @@ class FileItemView extends Component<FileItemViewProps> {
           >
             <Thumbnail
               id={id}
-              type="file"
+              type='file'
               onClick={
                 supportFileViewer && fileReadyForViewer
                   ? this._handleFileClick(file)
@@ -78,13 +78,13 @@ class FileItemView extends Component<FileItemViewProps> {
         </>
       );
     };
-  }
+  };
 
   render() {
     return (
       <JuiListItemWithHover
         render={this._renderItem()}
-        data-test-automation-id="rightRail-file-item"
+        data-test-automation-id='rightRail-file-item'
       />
     );
   }

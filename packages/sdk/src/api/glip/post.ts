@@ -7,6 +7,7 @@ import { Raw } from '../../framework/model';
 import { Post } from '../../module/post/entity';
 import { Item } from '../../module/item/entity';
 import { DEFAULT_RETRY_COUNT } from 'foundation';
+
 export interface IPostsModel {
   posts: Raw<Post>[];
   items: Raw<Item>[];

@@ -51,7 +51,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   };
 
   @observable
-  fetchInitialPosts = () => Promise.resolve()
+  fetchInitialPosts = () => Promise.resolve();
 
   @observable
   shouldShowErrorPage: boolean = false;
@@ -154,19 +154,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   tryAgain = () => {
     this._initial = true;
     this.shouldShowErrorPage = false;
-  }
+  };
 
   @action
   _fetchInitialPosts = async () => {
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
     await this._batchFetchPosts();
     this._initial = false;
-  }
+  };
 
   @action
   fetchNextPagePosts = async () => {
     await this._batchFetchPosts();
-  }
+  };
 
   @action
   private async _batchFetchPosts() {

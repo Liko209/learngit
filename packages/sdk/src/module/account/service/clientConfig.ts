@@ -2,9 +2,9 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 15:43:47
  */
-
+/* eslint-disable */
 import { BETA_CONFIG_KEYS } from '../constant';
-import { AccountService } from '../service';
+import { AccountService } from '.';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 enum EBETA_FLAG {

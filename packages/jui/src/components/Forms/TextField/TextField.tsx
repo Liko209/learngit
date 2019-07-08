@@ -54,7 +54,7 @@ class JuiTextField extends React.PureComponent<Props> {
       e.preventDefault();
     }
     onKeyDown && onKeyDown(e);
-  }
+  };
 
   render() {
     const { innerRef, ...textFieldRest } = this.props;

@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiSnackbarContent } from '../';
+import { JuiSnackbarContent } from '..';
 
 storiesOf('Components/Banners', module).add('JuiSnackbars', () => {
   return (

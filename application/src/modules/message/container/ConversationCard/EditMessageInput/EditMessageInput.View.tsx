@@ -3,7 +3,7 @@
  * @Date: 2018-12-08 21:00:36
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EditMessageInputViewProps } from './types';
@@ -69,11 +69,11 @@ class EditMessageInputViewComponent extends Component<Props, State> {
     if (this._messageInputRef.current) {
       this._messageInputRef.current.focusEditor();
     }
-  }
+  };
 
   blurHandler = () => {
     this._messageService.blurEditInputFocus();
-  }
+  };
 
   render() {
     const { draft, text, error, gid, t, id, saveDraft } = this.props;

@@ -32,9 +32,9 @@ class ContentLoader extends PureComponent<ThemeProps> {
       <Fragment>
         <Grid
           style={{ height: '100%' }}
-          container={true}
-          direction="column"
-          justify="space-between"
+          container
+          direction='column'
+          justify='space-between'
         >
           <Grid
             style={{
@@ -42,12 +42,12 @@ class ContentLoader extends PureComponent<ThemeProps> {
               height: `${16 * width}px`,
               borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
             }}
-            container={true}
-            direction="row"
-            justify="space-between"
+            container
+            direction='row'
+            justify='space-between'
           >
             <Grid
-              item={true}
+              item
               style={{
                 width: `${85 * width}px`,
                 height: `${16 * width}px`,
@@ -74,7 +74,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Grid>
             <Hidden only={['xs', 'sm']}>
               <Grid
-                item={true}
+                item
                 style={{
                   height: `${16 * width}px`,
                   flex: 1,
@@ -83,7 +83,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 <ReactContentLoader
                   height={16 * height}
                   width={136.5 * width}
-                  preserveAspectRatio="none"
+                  preserveAspectRatio='none'
                   style={{
                     width: '100%',
                     height: `${16 * height}px`,
@@ -92,8 +92,8 @@ class ContentLoader extends PureComponent<ThemeProps> {
                   <rect
                     x={0}
                     y={3 * height}
-                    width="100%"
-                    height="62.5%"
+                    width='100%'
+                    height='62.5%'
                     rx={width}
                     ry={height}
                   />
@@ -102,7 +102,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Hidden>
             <Hidden only={['xs']}>
               <Grid
-                item={true}
+                item
                 style={{
                   height: `${16 * width}px`,
                   width: `${67 * width}px`,
@@ -127,18 +127,18 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Hidden>
           </Grid>
           <Grid
-            container={true}
-            direction="row"
-            alignItems="stretch"
-            justify="space-between"
+            container
+            direction='row'
+            alignItems='stretch'
+            justify='space-between'
             style={{
               flex: 1,
             }}
           >
             <Grid
-              container={true}
-              direction="column"
-              justify="space-between"
+              container
+              direction='column'
+              justify='space-between'
               style={{
                 width: `${18 * width}px`,
                 backgroundColor: `${grey['50']}`,
@@ -221,9 +221,9 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 />
               </ReactContentLoader>
             </Grid>
-            <Hidden only="xs">
+            <Hidden only='xs'>
               <Grid
-                item={true}
+                item
                 style={{
                   width: `${67 * width}px`,
                   backgroundColor: `${grey['50']}`,
@@ -290,7 +290,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
               </Grid>
             </Hidden>
             <Grid
-              item={true}
+              item
               style={{
                 borderRight: '1px solid rgba(0, 0, 0, 0.12)',
                 position: 'relative',
@@ -303,7 +303,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Grid>
             <Hidden only={['xs', 'sm']}>
               <Grid
-                item={true}
+                item
                 style={{
                   width: `${67 * width}px`,
                   backgroundColor: `${grey['50']}`,

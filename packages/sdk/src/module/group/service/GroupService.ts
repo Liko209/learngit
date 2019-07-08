@@ -9,7 +9,7 @@ import { buildPartialModifyController } from '../../../framework/controller';
 import { PartialModifyController } from '../../../framework/controller/impl/PartialModifyController';
 import { Raw, SortableModel } from '../../../framework/model';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { GroupDao } from '../../../module/group/dao';
+import { GroupDao } from '../dao';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { ENTITY, SERVICE, SOCKET } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
@@ -30,7 +30,7 @@ import {
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
@@ -111,7 +111,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getHandleDataController()
       .handleData(groups, source, changeMap);
-  }
+  };
 
   handleGroupMostRecentPostChanged = async (
     payload: NotificationEntityUpdatePayload<Post>,
@@ -119,7 +119,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getHandleDataController()
       .handleGroupMostRecentPostChanged(payload);
-  }
+  };
 
   handleGroupFetchedPosts(groupId: number, posts: Post[]) {
     this.getGroupController()
@@ -131,7 +131,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getGroupActionController()
       .deleteAllTeamInformation(ids);
-  }
+  };
 
   isValid(group: Group): boolean {
     return group && !group.is_archived && !group.deactivated && !!group.members;
@@ -379,11 +379,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this.getGroupController()
       .getGroupActionController()
       .setAsTrue4HasMoreConfigByDirection(ids, direction);
-  }
+  };
 
   handleIncomingTyingEvent = (groupTyping: GroupTyping) => {
     this.getTypingIndicatorController().handleIncomingTyingEvent(groupTyping);
-  }
+  };
 
   // update partial group data, for last accessed time
   async updateGroupLastAccessedTime(params: {

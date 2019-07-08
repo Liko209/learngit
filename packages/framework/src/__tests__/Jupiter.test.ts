@@ -49,8 +49,8 @@ describe('Jupiter', () => {
 
       const afterBootstrap = jest.fn();
       await jupiter.bootstrapModule(MY_SERVICE, afterBootstrap);
-      expect(bootstrapFun).toBeCalled();
-      expect(afterBootstrap).toBeCalled();
+      expect(bootstrapFun).toHaveBeenCalled();
+      expect(afterBootstrap).toHaveBeenCalled();
       expect(container.isBound(MY_SERVICE)).toBeTruthy();
     });
   });
@@ -116,8 +116,8 @@ describe('Jupiter', () => {
 
       const afterUnregisterFun = jest.fn();
       await jupiter.unRegisterModule(moduleConfig, afterUnregisterFun);
-      expect(disposeFun).toBeCalled();
-      expect(afterUnregisterFun).toBeCalled();
+      expect(disposeFun).toHaveBeenCalled();
+      expect(afterUnregisterFun).toHaveBeenCalled();
       expect(container.isBound(MyModule)).toBeFalsy();
     });
 
@@ -135,12 +135,12 @@ describe('Jupiter', () => {
       const afterUnregisterFun = jest.fn();
       const afterUnregisterFun1 = jest.fn();
       await jupiter.unRegisterModule(moduleConfig, afterUnregisterFun);
-      expect(afterUnregisterFun).toBeCalled();
+      expect(afterUnregisterFun).toHaveBeenCalled();
       expect(container.isBound(MyModule)).toBeFalsy();
 
       await jupiter.unRegisterModule(moduleConfig, afterUnregisterFun1);
-      expect(disposeFun).toBeCalled();
-      expect(afterUnregisterFun1).not.toBeCalled();
+      expect(disposeFun).toHaveBeenCalled();
+      expect(afterUnregisterFun1).not.toHaveBeenCalled();
       expect(container.isBound(MyModule)).toBeFalsy();
     });
   });
@@ -183,7 +183,7 @@ describe('JupiterModule', () => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
-      expect(messageServiceCallback).toBeCalled();
+      expect(messageServiceCallback).toHaveBeenCalled();
 
       const messageNTelephonyServiceCallback = jest.fn();
       jupiter.onInitialized(
@@ -194,7 +194,7 @@ describe('JupiterModule', () => {
           messageNTelephonyServiceCallback();
         },
       );
-      expect(messageNTelephonyServiceCallback).toBeCalled();
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
     });
 
     it('should not execute callback when modules not all initialized', () => {
@@ -205,7 +205,7 @@ describe('JupiterModule', () => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
-      expect(messageServiceCallback).not.toBeCalled();
+      expect(messageServiceCallback).not.toHaveBeenCalled();
     });
 
     it('should add initial listener when modules not all initialized', () => {
@@ -259,16 +259,16 @@ describe('JupiterModule', () => {
         value: MessageService,
       });
       _jupiter.emitModuleInitial(MESSAGE_SERVICE);
-      expect(messageServiceCallback).toBeCalledTimes(1);
-      expect(messageServiceCallback1).toBeCalledTimes(1);
+      expect(messageServiceCallback).toHaveBeenCalledTimes(1);
+      expect(messageServiceCallback1).toHaveBeenCalledTimes(1);
 
       _jupiter.bindProvide({
         name: TELEPHONY_SERVICE,
         value: TelephonyService,
       });
       _jupiter.emitModuleInitial(TELEPHONY_SERVICE);
-      expect(messageNTelephonyServiceCallback).toBeCalledTimes(1);
-      expect(messageNTelephonyServiceCallback1).toBeCalledTimes(1);
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalledTimes(1);
+      expect(messageNTelephonyServiceCallback1).toHaveBeenCalledTimes(1);
     });
     it('should execute callback once when module are initialized', () => {
       _jupiter.bindProvide({
@@ -298,12 +298,12 @@ describe('JupiterModule', () => {
       );
 
       _jupiter.emitModuleInitial(MESSAGE_SERVICE);
-      expect(messageServiceCallback).toBeCalled();
-      expect(messageServiceCallback).toBeCalledTimes(1);
+      expect(messageServiceCallback).toHaveBeenCalled();
+      expect(messageServiceCallback).toHaveBeenCalledTimes(1);
 
       _jupiter.emitModuleInitial(TELEPHONY_SERVICE);
-      expect(messageNTelephonyServiceCallback).toBeCalled();
-      expect(messageNTelephonyServiceCallback).toBeCalledTimes(1);
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -326,7 +326,7 @@ describe('JupiterModule', () => {
       jupiter.onDisposed(MESSAGE_SERVICE, () => {
         messageServiceCallback();
       });
-      expect(messageServiceCallback).toBeCalled();
+      expect(messageServiceCallback).toHaveBeenCalled();
     });
 
     it('should not execute callback when modules not all unregister', () => {
@@ -351,13 +351,13 @@ describe('JupiterModule', () => {
       jupiter.onDisposed(MESSAGE_SERVICE, () => {
         messageServiceCallback();
       });
-      expect(messageServiceCallback).toBeCalled();
+      expect(messageServiceCallback).toHaveBeenCalled();
 
       const messageNTelephonyServiceCallback = jest.fn();
       jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {
         messageNTelephonyServiceCallback();
       });
-      expect(messageNTelephonyServiceCallback).not.toBeCalled();
+      expect(messageNTelephonyServiceCallback).not.toHaveBeenCalled();
     });
 
     it('should add dispose listener when modules not all unregister', () => {
@@ -415,7 +415,7 @@ describe('JupiterModule', () => {
       _jupiter.onDisposed(MESSAGE_SERVICE, () => {
         messageServiceCallback();
       });
-      expect(messageServiceCallback).toBeCalled();
+      expect(messageServiceCallback).toHaveBeenCalled();
 
       _jupiter.bindProvide({
         name: TELEPHONY_SERVICE,
@@ -430,7 +430,7 @@ describe('JupiterModule', () => {
         value: TelephonyService,
       });
       _jupiter.emitModuleDispose(TELEPHONY_SERVICE);
-      expect(messageNTelephonyServiceCallback).toBeCalled();
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
     });
     it('should execute callback once when module are disposed', () => {
       _jupiter.bindProvide({
@@ -463,10 +463,10 @@ describe('JupiterModule', () => {
       });
       _jupiter.emitModuleDispose(TELEPHONY_SERVICE);
 
-      expect(messageServiceCallback).toBeCalled();
-      expect(messageServiceCallback).toBeCalledTimes(1);
-      expect(messageNTelephonyServiceCallback).toBeCalled();
-      expect(messageNTelephonyServiceCallback).toBeCalledTimes(1);
+      expect(messageServiceCallback).toHaveBeenCalled();
+      expect(messageServiceCallback).toHaveBeenCalledTimes(1);
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
+      expect(messageNTelephonyServiceCallback).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -3,6 +3,7 @@
  * @Date: 2018-10-27 17:38:55
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React from 'react';
 import {
   JuiConversationInitialPostHeader,
@@ -32,7 +33,7 @@ class ConversationInitialPost extends React.Component<
     MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
       anchor: target as HTMLElement,
     });
-  }
+  };
 
   private get _name() {
     const { creator } = this.props;
@@ -93,7 +94,7 @@ class ConversationInitialPost extends React.Component<
   private get _handleShareFile() {
     const { t } = this.props;
     return (
-      <JuiButton variant="outlined" color="primary">
+      <JuiButton variant='outlined' color='primary'>
         {t('message.initialPost.shareFile')}
       </JuiButton>
     );
@@ -102,7 +103,7 @@ class ConversationInitialPost extends React.Component<
   private get _handleCreateTask() {
     const { t } = this.props;
     return (
-      <JuiButton variant="outlined" color="primary">
+      <JuiButton variant='outlined' color='primary'>
         {t('message.initialPost.createTask')}
       </JuiButton>
     );
@@ -111,7 +112,7 @@ class ConversationInitialPost extends React.Component<
   private get _handleIntegrateApps() {
     const { t } = this.props;
     return (
-      <JuiButton variant="outlined" color="primary">
+      <JuiButton variant='outlined' color='primary'>
         {t('message.initialPost.integrateApps')}
       </JuiButton>
     );

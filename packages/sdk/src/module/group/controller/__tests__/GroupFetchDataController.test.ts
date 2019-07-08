@@ -1009,9 +1009,7 @@ describe('GroupFetchDataController', () => {
 
       const res = await groupFetchDataController.getGroupEmail(group.id);
       expect(res).toBe(
-        `${
-          group.email_friendly_abbreviation
-        }@${companyReplyDomain}.${envDomain}`,
+        `${group.email_friendly_abbreviation}@${companyReplyDomain}.${envDomain}`,
       );
     });
 

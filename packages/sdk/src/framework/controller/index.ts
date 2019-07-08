@@ -6,7 +6,7 @@
 
 import { EntitySourceController } from './impl/EntitySourceController';
 import { daoManager, DeactivatedDao } from '../../dao';
-import { IDao } from '../../framework/dao';
+import { IDao } from '../dao';
 import { RequestController } from './impl/RequestController';
 import { PartialModifyController } from './impl/PartialModifyController';
 import { IdModel, ModelIdType } from '../model';

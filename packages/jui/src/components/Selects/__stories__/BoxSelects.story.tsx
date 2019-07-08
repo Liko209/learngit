@@ -9,7 +9,7 @@ import { storiesOf } from '@storybook/react';
 import { alignCenterDecorator } from '../../../foundation/utils/decorators';
 import { boolean, select } from '@storybook/addon-knobs';
 import { JuiBoxSelect } from '..';
-import { JuiMenuItem } from '../../../components/Menus';
+import { JuiMenuItem } from '../../Menus';
 
 type Menu = {
   id: number | string;
@@ -68,7 +68,7 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
   handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
     this.setState({ value });
-  }
+  };
 
   render() {
     const { disabled, heightSize } = this.props;
@@ -79,7 +79,7 @@ class TestBoxSelect extends React.Component<TestBoxSelectProps> {
         MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
         heightSize={heightSize}
         disabled={disabled}
-        label="Select Demo"
+        label='Select Demo'
         onChange={this.handleChange}
         automationId={'demo'}
       >

@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
 import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
-import { JuiLozengeButton, JuiLozengeButtonProps } from '../';
+import { JuiLozengeButton, JuiLozengeButtonProps } from '..';
 
 function getKnobs() {
   const content = text('content', '2 new messages');

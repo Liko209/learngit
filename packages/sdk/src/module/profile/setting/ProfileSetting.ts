@@ -25,6 +25,7 @@ import {
   EMAIL_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
 } from '../constants';
+
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
   [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
@@ -130,7 +131,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           id: SettingEntityIds.Notification_DailyDigest,
           setting_key: SETTING_KEYS.EMAIL_TODAY,
         },
-      ),
+      )
     };
   }
 }

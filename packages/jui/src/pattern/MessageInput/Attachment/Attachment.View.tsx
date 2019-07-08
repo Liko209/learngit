@@ -56,11 +56,11 @@ class AttachmentView extends Component<Props> {
   private _handleClickEvent = (evt: MouseEvent) => {
     evt.stopPropagation();
     this.setState({ anchorEl: evt.currentTarget });
-  }
+  };
 
   private _hideMenu = () => {
     this.setState({ anchorEl: null });
-  }
+  };
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
@@ -70,9 +70,9 @@ class AttachmentView extends Component<Props> {
       if (ref) {
         ref.showFileDialog();
       }
-    },         0);
-  }
-
+    }, 0);
+  };
+  /* eslint-disable react/no-array-index-key */
   render() {
     const { onFileChanged, tooltip, menus, fileMenu, title } = this.props;
     const { anchorEl } = this.state;
@@ -81,10 +81,10 @@ class AttachmentView extends Component<Props> {
     return (
       <Fragment>
         <JuiIconButton
-          data-test-automation-id="conversation-chatbar-attachment-button"
+          data-test-automation-id='conversation-chatbar-attachment-button'
           tooltipTitle={tooltip}
           onClick={this._handleClickEvent}
-          size="medium"
+          size='medium'
         >
           attachment
         </JuiIconButton>
@@ -99,7 +99,7 @@ class AttachmentView extends Component<Props> {
               vertical: 'center',
               horizontal: 'left',
             }}
-            data-test-automation-id="conversation-chatbar-attachment-menu"
+            data-test-automation-id='conversation-chatbar-attachment-menu'
             anchorEl={anchorEl}
             MenuListProps={{
               classes: {
@@ -108,12 +108,12 @@ class AttachmentView extends Component<Props> {
             }}
             open={open}
           >
-            <JuiMenuItem disabled={true} divider={true}>
+            <JuiMenuItem disabled divider>
               {title}
             </JuiMenuItem>
             <MenuList>
               {menus.map(({ icon, label }, idx) => (
-                <JuiMenuItem disabled={true} icon={icon} key={idx}>
+                <JuiMenuItem disabled icon={icon} key={idx}>
                   {label}
                 </JuiMenuItem>
               ))}
@@ -122,9 +122,9 @@ class AttachmentView extends Component<Props> {
             <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
-                  disableGutters={true}
+                  disableGutters
                   icon={fileMenu.icon}
-                  data-test-automation-id="chatbar-attchment-selectfile"
+                  data-test-automation-id='chatbar-attchment-selectfile'
                   onClick={this._hideMenuAndShowDialog}
                 >
                   {fileMenu.label}

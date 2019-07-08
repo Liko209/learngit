@@ -9,8 +9,12 @@ function compareCharacters(a: string, b: string) {
   if (a === b) {
     return 0;
   }
-  const priority = (char: string) =>
-    !char ? 0 : /[a-z]/i.test(char) ? 1 : /[0-9]/.test(char) ? 2 : 3;
+  const priority = (char: string) => {
+    if (!char) return 0;
+    if (/[a-z]/i.test(char)) return 1;
+    if (/[0-9]/.test(char)) return 2;
+    return 3;
+  };
   return (
     priority(a) - priority(b) || a.toLowerCase().localeCompare(b.toLowerCase())
   );
@@ -28,7 +32,7 @@ function compareName(nameOne: string, nameTwo: string) {
 }
 
 function isOnlyLetterOrNumbers(value: string) {
-  const REG_NUM_LETTER = /^[0-9A-Za-z\s\-~`!@#$%^&*()-_+=\[\]{};:"',<.>\/?，。？￥！……【】’“；《》（）]+$/;
+  const REG_NUM_LETTER = /^[0-9A-Za-z\s\-~`!@#$%^&*()-_+=[\]{};:"',<.>/?，。？￥！……【】’“；《》（）]+$/;
   return REG_NUM_LETTER.test(value);
 }
 
@@ -37,8 +41,8 @@ function toUpperCase(name: string | undefined) {
 }
 
 function handleOnlyLetterOrNumbers(firstName: string, lastName: string) {
-  const firstLetter = toUpperCase(firstName!);
-  const lastLetter = toUpperCase(lastName!);
+  const firstLetter = toUpperCase(firstName);
+  const lastLetter = toUpperCase(lastName);
   return `${firstLetter}${lastLetter}`;
 }
 
@@ -47,8 +51,8 @@ function handleOneOfName(firstName: string, lastName: string) {
     return '';
   }
   const names =
-    (!!firstName && firstName!.split(/\s+/)) ||
-    (!!lastName && lastName!.split(/\s+/));
+    (!!firstName && firstName.split(/\s+/)) ||
+    (!!lastName && lastName.split(/\s+/));
   const firstLetter = toUpperCase(names[0]);
   const lastLetter = toUpperCase(names[1]);
   return `${firstLetter}${lastLetter}`;

@@ -5,4 +5,5 @@
  */
 
 import { EventItemService } from './EventItemService';
+
 export { EventItemService };

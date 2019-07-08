@@ -41,7 +41,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     super(props);
     props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
     this.state = {
-      initialOptions: this.props.initialOptions,
       switched: false,
       imageInited: false,
     };
@@ -63,13 +62,13 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     ) {
       event.preventDefault();
     }
-  }
+  };
 
   _handlerScroll = (event: MouseEvent) => {
     if (event.ctrlKey) {
       event.preventDefault();
     }
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('keydown', this._handlerKeydown, {
@@ -97,7 +96,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         this.setState({ switched: true });
       }
     }
-  }
+  };
 
   switchNextImage = () => {
     if (this._canSwitchNext()) {
@@ -107,7 +106,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         this.setState({ switched: true });
       }
     }
-  }
+  };
 
   onCurrentItemDeleted = (nextItemId: number) => {
     const { t, deleteItem } = this.props;
@@ -127,7 +126,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       dismissible: false,
     });
     this.context();
-  }
+  };
 
   private _onZoomImageContentChange = () => {
     if (!this.state.imageInited) {
@@ -135,17 +134,17 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         imageInited: true,
       });
     }
-  }
+  };
 
   private _canSwitchPrevious = () => {
     const { hasPrevious, isLoadingMore } = this.props;
     return !isLoadingMore && hasPrevious;
-  }
+  };
 
   private _canSwitchNext = () => {
     const { hasNext, isLoadingMore } = this.props;
     return !isLoadingMore && hasNext;
-  }
+  };
 
   render() {
     const {
@@ -196,9 +195,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   }) => {
                     const imageStyle = {
                       opacity: value.isAnimating && value.show ? 0 : undefined,
-                      transform: `scale(${transform.scale}) translate(${
-                        transform.translateX
-                      }px, ${transform.translateY}px)`,
+                      transform: `scale(${transform.scale}) translate(${transform.translateX}px, ${transform.translateY}px)`,
                       cursor: canDrag ? 'move' : undefined,
                     };
                     return (
@@ -220,21 +217,21 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 </JuiDragZoom>
                 {hasPrevious && (
                   <JuiImageViewerPreviousButton
-                    className="buttonWrapper"
+                    className='buttonWrapper'
                     tooltipTitle={t('viewer.PreviousFile')}
                     aria-label={t('viewer.PreviousFile')}
                     onClick={this.switchPreImage}
-                    iconName="previous"
+                    iconName='previous'
                     iconColor={memoizeColor('grey', '900')}
                   />
                 )}
                 {hasNext && (
                   <JuiImageViewerForwardButton
-                    className="buttonWrapper"
+                    className='buttonWrapper'
                     tooltipTitle={t('viewer.NextFile')}
                     aria-label={t('viewer.NextFile')}
                     onClick={this.switchNextImage}
-                    iconName="forward"
+                    iconName='forward'
                     iconColor={memoizeColor('grey', '900')}
                   />
                 )}
@@ -250,8 +247,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 }
                 targetElement={this._imageRef.current}
                 show={value.show}
-                duration="standard"
-                easing="sharp"
+                duration='standard'
+                easing='sharp'
                 onEntered={value.onTransitionEntered}
                 onExited={value.onTransitionExited}
               />

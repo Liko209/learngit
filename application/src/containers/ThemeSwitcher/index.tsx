@@ -40,7 +40,7 @@ class ThemeSwitcher extends React.PureComponent<IProps, IState> {
       return null;
     }
     return themes.map(theme => (
-      <button id={theme} onClick={this.applyTheme(theme)}>
+      <button id={theme} onClick={this.applyTheme(theme)} type='button'>
         {theme}
       </button>
     ));

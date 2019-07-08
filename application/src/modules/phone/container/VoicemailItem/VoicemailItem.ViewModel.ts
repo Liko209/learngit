@@ -3,6 +3,8 @@
  * @Date: 2019-06-01 14:39:02
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { container } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -162,7 +164,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   @action
   onChange = (event: React.ChangeEvent, newExpanded: boolean) => {
     this._phoneStore.setVoicemailId(newExpanded ? this.props.id : null);
-  }
+  };
 
   @action
   onBeforePlay = async () => {
@@ -172,7 +174,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       this.props.onVoicemailPlay(this.props.id);
     }
     this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
-  }
+  };
 
   @action
   onBeforeAction = async (status: JuiAudioStatus) => {
@@ -199,7 +201,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       }
       return;
     }
-  }
+  };
 
   @action
   onError = () => {
@@ -211,14 +213,14 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       dismissible: false,
       messageAlign: ToastMessageAlign.LEFT,
     });
-  }
+  };
 
   @action
   updateStartTime = (timestamp: number) => {
     this._phoneStore.updateAudio(this.props.id, {
       startTime: timestamp,
     });
-  }
+  };
 
   @computed
   get createTime() {
@@ -233,7 +235,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   shouldShowCall = async () => {
     return this._rcInfoService.isVoipCallingAvailable();
-  }
+  };
 }
 
 export { VoicemailItemViewModel };

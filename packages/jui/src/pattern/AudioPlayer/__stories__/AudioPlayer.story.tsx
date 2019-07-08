@@ -26,7 +26,7 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
       <dt>mode tiny</dt>
       <dd>
         <JuiAudioPlayer
-          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
+          src='https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3'
           mode={JuiAudioMode.TINY}
           duration={188}
           startTime={0}
@@ -37,7 +37,7 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
       <dt>mode mini</dt>
       <dd>
         <JuiAudioPlayer
-          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
+          src='https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3'
           mode={JuiAudioMode.MINI}
           duration={188}
           startTime={0}
@@ -48,7 +48,7 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
       <dt>mode full</dt>
       <dd>
         <JuiAudioPlayer
-          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
+          src='https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3'
           duration={188}
           startTime={30}
           actionTips={actionTips}
@@ -58,8 +58,8 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
       <dt>highlight display</dt>
       <dd>
         <JuiAudioPlayer
-          isHighlight={true}
-          src="https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3"
+          isHighlight
+          src='https://mfile.bandari.net/mc-U52f5t5wDSe/Bandari/05Mist/04.Bandari.Net_Morning.mp3'
           duration={188}
           startTime={60}
           actionTips={actionTips}
@@ -69,7 +69,7 @@ storiesOf('Pattern', module).add('AudioPlayer', () => {
       <dt>reload display</dt>
       <dd>
         <JuiAudioPlayer
-          src="http://www.invalid.com/inexistence.mp3"
+          src='http://www.invalid.com/inexistence.mp3'
           duration={188}
           startTime={90}
           actionTips={actionTips}

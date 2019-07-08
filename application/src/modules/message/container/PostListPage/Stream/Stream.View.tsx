@@ -24,6 +24,7 @@ import noMentionImage from '../images/empty-@mention.svg';
 import noBookmarkImage from '../images/empty-bookmark.svg';
 import moize from 'moize';
 import { ErrorPage } from '@/modules/common/container/ErrorPage';
+
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
 const POST_PRELOAD_COUNT = 20;
@@ -71,7 +72,7 @@ class StreamViewComponent extends Component<Props> {
       return false;
     }
     return this.props.hasMoreDown;
-  }
+  };
 
   private _defaultLoading() {
     return <DefaultLoadingWithDelay delay={100} />;
@@ -132,7 +133,7 @@ class StreamViewComponent extends Component<Props> {
                 id={id}
                 key={id}
                 cardRef={this._jumpToPostRef}
-                mode="navigation"
+                mode='navigation'
               />
             ))}
           </JuiInfiniteList>

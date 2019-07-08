@@ -3,7 +3,7 @@
  * @Date: 2018-11-02 12:52:05
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../../foundation/styled-components';
 import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { Theme } from '../../../foundation/theme/theme';
@@ -35,7 +35,7 @@ const JuiFileNameLeft = styled.span`
   ${ellipsis()};
 `;
 
-class FileName extends React.Component<FileNameProps> {
+class FileName extends PureComponent<FileNameProps> {
   // truncation has been moved to FileNameParser in the postParser module
   render() {
     const { statusColor, opacity, ...rest } = this.props;
@@ -43,7 +43,7 @@ class FileName extends React.Component<FileNameProps> {
       <FileNameWrapper
         statusColor={statusColor}
         opacity={opacity}
-        data-test-automation-id="file-name"
+        data-test-automation-id='file-name'
         {...rest}
       />
     );

@@ -30,7 +30,7 @@ class DialerTitleBarViewComponent extends React.Component<Props> {
       default:
         return timing;
     }
-  }
+  };
   render() {
     return <JuiTitleBar label={this.getTitle()} Actions={ACTIONS} />;
   }

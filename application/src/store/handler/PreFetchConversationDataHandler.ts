@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 15:14:12
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { IPreFetchController } from './cache/interface/IPreFetchController';
 import { WINDOW } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -11,6 +10,7 @@ import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import pinnedPostCacheController from './cache/PinnedPostCacheController';
 import conversationPostCacheController from './cache/ConversationPostCacheController';
+
 class PreFetchConversationDataHandler {
   private _cachedGroupIds: Set<number>;
   private _preFetchControllers: IPreFetchController[] = [];

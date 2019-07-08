@@ -50,7 +50,7 @@ class MessageComponent extends Component<Props, State> {
     });
 
     this.accountService.startLoginGlip();
-  }
+  };
 
   render() {
     const { success, initializing } = this.state;
@@ -71,7 +71,7 @@ class MessageComponent extends Component<Props, State> {
             : 'message.initialization.failure',
         )}
         linkText={initializing ? '' : t('message.initialization.tryAgain')}
-        showTip={true}
+        showTip
         onClick={this.tryAgain}
       />
     );

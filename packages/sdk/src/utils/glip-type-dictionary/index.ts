@@ -3,7 +3,7 @@
  * @Date: 2018-06-14 23:06:34
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import TypeDictionary from './types';
 import GlipTypeUtil from './util';
 import _ from 'lodash';

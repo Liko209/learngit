@@ -1,6 +1,5 @@
-import { ENTITY_NAME, HANDLER_TYPE } from './constants';
-import { EVENT_TYPES } from 'sdk/service';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { HANDLER_TYPE } from './constants';
 
 export type Entity<IdType extends ModelIdType = number> = {
   id: IdType;

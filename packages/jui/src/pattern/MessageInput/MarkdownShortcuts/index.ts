@@ -204,7 +204,7 @@ export default class MarkdownShortcuts {
       {
         name: 'asterisk-ul',
         pattern: /^(\*|\+)\s$/g,
-        action: (text, selection, pattern) => {
+        action: (text, selection) => {
           setTimeout(() => {
             this.quill.formatLine(selection.index, 1, 'list', 'unordered');
             this.quill.deleteText(selection.index - 2, 2);
@@ -257,10 +257,10 @@ export default class MarkdownShortcuts {
     ];
 
     // Handler that looks for insert deltas that match specific characters
-    this.quill.on('text-change', (delta, oldContents, source) => {
+    this.quill.on('text-change', (delta) => {
       if (delta && delta.ops) {
         for (let i = 0; i < delta.ops.length; i += 1) {
-          if (delta.ops[i].hasOwnProperty('insert')) {
+          if (Object.prototype.hasOwnProperty.call(delta.ops[i], 'insert')) {
             if (delta.ops[i].insert === ' ') {
               this.onSpace();
             } else if (delta.ops[i].insert === '\n') {

@@ -3,7 +3,7 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ViewerViewProps } from './types';
@@ -46,27 +46,27 @@ class ViewerView extends Component<ViewerViewProps, any> {
         isAnimating: true,
       },
     });
-  }
+  };
 
   setDeleteItem = (value: boolean) => {
     this.setState({
       deleteItem: value,
     });
-  }
+  };
 
   setLoading = (value: boolean) => {
     this.setState({ loading: value });
-  }
+  };
 
   onTransitionEntered = () => {
     this.setState({
       contextValue: { ...this.state.contextValue, isAnimating: false },
     });
-  }
+  };
 
   onTransitionExited = () => {
     this.props.viewerDestroyer();
-  }
+  };
 
   async componentDidMount() {
     await this.props.init();
@@ -78,12 +78,12 @@ class ViewerView extends Component<ViewerViewProps, any> {
       <ViewerContext.Provider value={this.state.contextValue}>
         <Loading loading={this.state.loading}>
           <JuiViewerBackground
-            data-test-automation-id="Viewer"
+            data-test-automation-id='Viewer'
             show={this.state.contextValue.show}
           >
             <ViewerTitle {...rest} />
             <ViewerContent
-              data-test-automation-id="ViewerContent"
+              data-test-automation-id='ViewerContent'
               left={contentLeftRender({
                 ...rest,
                 deleteItem: this.state.deleteItem,

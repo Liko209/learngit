@@ -21,7 +21,7 @@ type JuiButtonBarProps = {
 const padding = (theme: Theme, overlapSize?: number) => {
   return overlapSize ? `${spacing(-overlapSize)({ theme })}` : '0';
 };
-
+/* eslint-disable react/prop-types */
 const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   display: flex;
   flex-direction: ${({ direction }) =>

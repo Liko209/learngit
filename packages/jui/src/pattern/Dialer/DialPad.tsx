@@ -98,7 +98,7 @@ export class DialPad extends React.Component<
       this._buffer = [...this._buffer, key];
       this.makeKeyboardEffect(key, false);
     }
-  }
+  };
 
   _onKeyUp = ({ key }: KeyboardEvent) => {
     if (!this.props.shouldHandleKeyboardEvts) {
@@ -106,14 +106,14 @@ export class DialPad extends React.Component<
     }
     this._buffer = this._buffer.filter(bufferedKey => bufferedKey !== key);
     this.makeKeyboardEffect(key, true);
-  }
+  };
 
   _clearTimeout = () => {
     if (this._timeoutId) {
       clearTimeout(this._timeoutId);
       this._timeoutId = null;
     }
-  }
+  };
 
   _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
     e.persist();
@@ -123,8 +123,8 @@ export class DialPad extends React.Component<
     this._timeoutId = setTimeout(() => {
       this.props.makeMouseEffect(KEY_2_ICON_MAP.plus);
       this._clearTimeout();
-    },                           DialPad._timeout);
-  }
+    }, DialPad._timeout);
+  };
 
   _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
     e.persist();
@@ -156,12 +156,12 @@ export class DialPad extends React.Component<
               return (
                 <JuiIconButton
                   shouldPersistBg={pressedKeys.includes(KEY_2_ICON_MAP[str])}
-                  disableToolTip={true}
+                  disableToolTip
                   onMouseDown={_onclick}
-                  size="xxlarge"
+                  size='xxlarge'
                   key={str}
-                  color="grey.900"
-                  stretchIcon={true}
+                  color='grey.900'
+                  stretchIcon
                 >
                   {str}
                 </JuiIconButton>
@@ -170,16 +170,16 @@ export class DialPad extends React.Component<
 
             return (
               <JuiIconButton
-                disableToolTip={true}
+                disableToolTip
                 shouldPersistBg={
                   pressedKeys.includes('0') || pressedKeys.includes('+')
                 }
                 onMouseDown={this._onMouseDownForZero}
                 onMouseUp={this._onMouseupForZero}
-                size="xxlarge"
+                size='xxlarge'
                 key={str}
-                color="grey.900"
-                stretchIcon={true}
+                color='grey.900'
+                stretchIcon
               >
                 {str}
               </JuiIconButton>

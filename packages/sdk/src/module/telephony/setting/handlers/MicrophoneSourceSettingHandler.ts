@@ -3,7 +3,6 @@
  * @Date: 2019-05-29 23:30:11
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
@@ -66,11 +65,11 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       state = ESettingItemState.INVISIBLE;
     }
     return state;
-  }
+  };
 
   private _onPermissionChange = async () => {
     isChrome() && (await this.getUserSettingEntity());
-  }
+  };
 
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
@@ -79,11 +78,11 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
     ) {
       this.getUserSettingEntity();
     }
-  }
+  };
 
   private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
     await this.getUserSettingEntity();
-  }
+  };
 
   dispose() {
     super.dispose();

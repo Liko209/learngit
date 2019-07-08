@@ -13,6 +13,7 @@ import { CodeItemService } from '../module/code/service';
 import { ConferenceItemService } from '../module/conference/service';
 import { ISubItemService } from '../module/base/service';
 import { TypeDictionary } from '../../../utils';
+/* eslint-disable */
 type ClassConfig = {
   typeId: number;
   value: any;

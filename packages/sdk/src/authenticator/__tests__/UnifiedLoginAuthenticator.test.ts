@@ -17,7 +17,7 @@ import {
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
-import { setRCToken } from '../utils';
+import { setRCToken, setRCAccountType } from '../utils';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -79,6 +79,7 @@ describe('UnifiedLoginAuthenticator', () => {
       .fn()
       .mockReturnValue({ id: 123 });
     setRCToken = jest.fn();
+    setRCAccountType = jest.fn();
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toEqual(true);

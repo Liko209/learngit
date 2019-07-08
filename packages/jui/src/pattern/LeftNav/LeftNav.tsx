@@ -20,7 +20,7 @@ import {
   width,
   typography,
 } from '../../foundation/utils/styles';
-
+/* eslint-disable */
 const MaxWidth = 180;
 const MinWidth = 64;
 type LeftNavProps = {
@@ -195,13 +195,13 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
       onRouteChange(url);
     };
     return this.onRouteChangeHandlers[url];
-  }
+  };
 
   renderNavItems = () => {
     const { icons, expand, selectedPath } = this.props;
     return icons.map((arr, idx) => {
       return (
-        <MuiList component="nav" disablePadding={true} key={idx}>
+        <MuiList component='nav' disablePadding key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
             const navPath = navUrl.split('/')[1];
@@ -209,14 +209,14 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
               selectedPath.toLowerCase() === navPath.toLowerCase();
             const NavItem = (
               <StyledListItem
-                button={true}
+                button
                 key={index}
                 selected={selected}
                 classes={{ selected: 'selected' }}
-                disableRipple={true}
+                disableRipple
                 data-test-automation-id={navPath}
                 focusVisibleClassName={'left-item-focus'}
-                disableGutters={true}
+                disableGutters
               >
                 <ListLink
                   className={`left-link ${selected ? 'active' : ''}`}
@@ -236,11 +236,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
             return expand ? (
               NavItem
             ) : (
-              <RuiTooltip
-                title={item.title}
-                key={index}
-                placement="right"
-              >
+              <RuiTooltip title={item.title} key={index} placement='right'>
                 {NavItem}
               </RuiTooltip>
             );
@@ -248,16 +244,16 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
         </MuiList>
       );
     });
-  }
+  };
   render() {
     const { expand } = this.props;
     return (
       <Left
         expand={expand}
-        variant="permanent"
+        variant='permanent'
         classes={{ paper: 'left-paper' }}
         open={expand}
-        data-test-automation-id="leftPanel"
+        data-test-automation-id='leftPanel'
       >
         {this.renderNavItems()}
       </Left>

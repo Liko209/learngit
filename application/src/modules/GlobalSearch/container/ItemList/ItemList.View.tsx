@@ -70,16 +70,16 @@ class ItemListViewComponent extends Component<Props, State> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
   hoverHighlight = (index: number) => {
     return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
-  }
+  };
 
   // if search item removed need update selectIndex
   selectIndexChange = (index: number) => {
     return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
-  }
+  };
 
   scrollToView = () => {
     const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
@@ -99,25 +99,25 @@ class ItemListViewComponent extends Component<Props, State> {
         stopIndex: selectIndex + MAX_COUNT,
       });
     }
-  }
+  };
 
   onKeyUp = () => {
     const { onKeyUp } = this.props;
     onKeyUp();
     this.scrollToView();
-  }
+  };
 
   onKeyDown = () => {
     const { onKeyDown, ids } = this.props;
     onKeyDown(ids);
     this.scrollToView();
-  }
+  };
 
   onEnter = (evt: KeyboardEvent) => {
     const { onEnter, ids, type } = this.props;
     onEnter(evt, ids, type);
     this.scrollToView();
-  }
+  };
 
   createSearchItem = (config: { id: number; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
@@ -137,7 +137,7 @@ class ItemListViewComponent extends Component<Props, State> {
         key={id}
       />
     );
-  }
+  };
 
   private _handleSizeUpdate = (size: Size) => {
     const width = size.width;
@@ -156,7 +156,7 @@ class ItemListViewComponent extends Component<Props, State> {
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
-  }
+  };
 
   componentDidUpdate() {
     this._performanceTracer.end({
@@ -197,7 +197,7 @@ class ItemListViewComponent extends Component<Props, State> {
           ref={this._dataList}
           initialDataCount={30}
           listHandler={listHandler}
-          reverse={true}
+          reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
             height: this.state.height,
             ref: this._listRef,

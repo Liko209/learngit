@@ -3,6 +3,8 @@
  * @Date: 2019-05-24 07:28:07
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -21,9 +23,7 @@ class DeleteViewComponent extends Component<Props> {
   _handleClick = () => {
     const { entity, t, tabName, deleteVoicemail, deleteCallLog } = this.props;
     const name =
-      entity === ENTITY_TYPE.VOICEMAIL
-        ? 'deleteVoicemail'
-        : 'deleteCallLog';
+      entity === ENTITY_TYPE.VOICEMAIL ? 'deleteVoicemail' : 'deleteCallLog';
     const title =
       entity === ENTITY_TYPE.VOICEMAIL
         ? t('voicemail.deleteVoicemail')
@@ -33,9 +33,7 @@ class DeleteViewComponent extends Component<Props> {
         ? t('voicemail.areYouSureYouWantToDeleteTheVoicemail')
         : t('calllog.doYouWanttoDeleteThisCallLog');
     const deleteItem =
-      entity === ENTITY_TYPE.VOICEMAIL
-        ? deleteVoicemail
-        : deleteCallLog;
+      entity === ENTITY_TYPE.VOICEMAIL ? deleteVoicemail : deleteCallLog;
 
     analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.DELETE);
 
@@ -45,11 +43,7 @@ class DeleteViewComponent extends Component<Props> {
       okBtnProps: { 'data-test-automation-id': `${name}OkButton` },
       cancelBtnProps: { 'data-test-automation-id': `${name}CancelButton` },
       size: 'small',
-      content: (
-        <JuiDialogContentText>
-          {content}
-        </JuiDialogContentText>
-      ),
+      content: <JuiDialogContentText>{content}</JuiDialogContentText>,
       okText: t('common.dialog.delete'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
@@ -63,7 +57,7 @@ class DeleteViewComponent extends Component<Props> {
         return true;
       },
     });
-  }
+  };
 
   get _screenReader() {
     const { entity, t } = this.props;
@@ -83,7 +77,7 @@ class DeleteViewComponent extends Component<Props> {
     return (
       <ActionButton
         key={`${entity}-delete`}
-        icon="delete-call"
+        icon='delete-call'
         type={type}
         tooltip={t('common.delete')}
         onClick={this._handleClick}

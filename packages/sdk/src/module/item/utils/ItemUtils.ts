@@ -8,6 +8,7 @@ import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SanitizedEventItem } from '../module/event/entity';
 import { EventUtils } from '../module/event/utils';
 import moment from 'moment';
+
 const DATE_FORMAT = 'YYYY-MM-DD';
 const { TYPE_ID_TASK, TYPE_ID_FILE, TYPE_ID_EVENT } = TypeDictionary;
 

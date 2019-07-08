@@ -36,42 +36,7 @@ class SelectSettingItemViewComponent<
   })
   private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     await this.props.saveSetting(event.target.value);
-  }
-
-  render() {
-    const { t, id, disabled, settingItem } = this.props;
-    return (
-      <JuiSettingSectionItem
-        id={id}
-        automationId={settingItem.automationId}
-        disabled={disabled}
-        label={t(settingItem.title || '')}
-        description={t(settingItem.description || '')}
-      >
-        {this._renderSelect()}
-      </JuiSettingSectionItem>
-    );
-  }
-
-  private _renderSelect() {
-    const { value, disabled, settingItem } = this.props;
-    return (
-      <JuiBoxSelect
-        onChange={this._handleChange}
-        disabled={disabled}
-        value={value}
-        displayEmpty={true}
-        automationId={`settingItemSelectBox-${settingItem.automationId}`}
-        data-test-automation-value={value}
-        isFullWidth={true}
-        name="settings"
-        renderValue={this._renderValue}
-      >
-        {this._renderSource()}
-      </JuiBoxSelect>
-    );
-  }
-
+  };
   private _renderValue = (value: string) => {
     const { source, settingItem } = this.props;
     const rawValue = source.find(
@@ -95,8 +60,25 @@ class SelectSettingItemViewComponent<
       return <JuiText>{reactNode}</JuiText>;
     }
     return reactNode;
+  };
+  private _renderSelect() {
+    const { value, disabled, settingItem } = this.props;
+    return (
+      <JuiBoxSelect
+        onChange={this._handleChange}
+        disabled={disabled}
+        value={value}
+        displayEmpty
+        automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        data-test-automation-value={value}
+        isFullWidth
+        name='settings'
+        renderValue={this._renderValue}
+      >
+        {this._renderSource()}
+      </JuiBoxSelect>
+    );
   }
-
   private _renderSource() {
     return this.props.source.map((item: T) => this._renderSourceItem(item));
   }
@@ -126,6 +108,20 @@ class SelectSettingItemViewComponent<
       sourceRenderer({ source, value: sourceItem })
     ) : (
       <JuiTextWithEllipsis>{itemValue}</JuiTextWithEllipsis>
+    );
+  }
+  render() {
+    const { t, id, disabled, settingItem } = this.props;
+    return (
+      <JuiSettingSectionItem
+        id={id}
+        automationId={settingItem.automationId}
+        disabled={disabled}
+        label={t(settingItem.title || '')}
+        description={t(settingItem.description || '')}
+      >
+        {this._renderSelect()}
+      </JuiSettingSectionItem>
     );
   }
 }

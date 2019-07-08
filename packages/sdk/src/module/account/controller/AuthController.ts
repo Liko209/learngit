@@ -130,7 +130,7 @@ class AuthController {
       this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.FAILURE);
       throw err;
     }
-  }
+  };
 }
 
 export { IUnifiedLogin, ILogin, AuthController };

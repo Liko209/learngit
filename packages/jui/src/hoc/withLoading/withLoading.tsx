@@ -8,6 +8,7 @@ import styled from '../../foundation/styled-components';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { withDelay } from '../withDelay';
 import { palette } from '../../foundation/utils';
+
 type WithLoadingProps = {
   loading: boolean;
   variant?: 'circular';
@@ -72,7 +73,7 @@ const withLoading = <
         <>
           {loading ? <LoadingWithDelay delay={delay} /> : null}
           <Component
-            {...props as P}
+            {...(props as P)}
             loading={loading}
             style={{ display: displayStyle }}
           />

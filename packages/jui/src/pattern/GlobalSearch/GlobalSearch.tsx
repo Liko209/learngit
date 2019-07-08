@@ -41,10 +41,10 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
   return (
     <StyledGlobalSearch
       classes={{ container: 'container' }}
-      scroll="body"
+      scroll='body'
       open={open}
       onClose={onClose}
-      disablePortal={true}
+      disablePortal
     >
       {children}
     </StyledGlobalSearch>

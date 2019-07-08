@@ -71,13 +71,13 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source, changeMap);
-  }
+  };
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()
       .getProfileActionController()
       .handleGroupIncomesNewPost(groupIds);
-  }
+  };
 
   getProfileController(): ProfileController {
     if (!this.profileController) {

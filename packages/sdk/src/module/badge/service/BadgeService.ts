@@ -8,6 +8,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { Badge } from '../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
+
 class BadgeService extends EntityBaseService<Badge, string> {
   private _badgeMap = new Map<string, () => Badge>();
 

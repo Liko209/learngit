@@ -38,6 +38,17 @@ class ReplyViewComponent extends React.Component<Props> {
   private _handleClickMap = {};
   private _preDefinedCallbackTimeMenuItems: any;
   private _preDefinedWillCallbackTimeMenuItems: any;
+
+  componentDidMount() {
+    const { startReply } = this.props;
+    this._preDefinedCallbackTimeMenuItems = this._generatePredefinedTimes(
+      RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
+    );
+    this._preDefinedWillCallbackTimeMenuItems = this._generatePredefinedTimes(
+      RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
+    );
+    startReply();
+  }
   private _handleClick = (
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
@@ -60,18 +71,7 @@ class ReplyViewComponent extends React.Component<Props> {
       return replyWithPattern(pattern);
     };
     return this._handleClickMap[pattern];
-  }
-
-  componentDidMount() {
-    const { startReply } = this.props;
-    this._preDefinedCallbackTimeMenuItems = this._generatePredefinedTimes(
-      RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
-    );
-    this._preDefinedWillCallbackTimeMenuItems = this._generatePredefinedTimes(
-      RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
-    );
-    startReply();
-  }
+  };
 
   private _InMeeting = () => {
     const { t } = this.props;
@@ -82,10 +82,10 @@ class ReplyViewComponent extends React.Component<Props> {
           `telephony.predefinedMessage.${predefinedMessage.inMeeting.label}`,
         )}
         handleClick={this._handleClick(predefinedMessage.inMeeting.pattern)}
-        automationId="reply-with-in-meeting"
+        automationId='reply-with-in-meeting'
       />
     );
-  }
+  };
 
   private _OnMyWay = () => {
     const { t } = this.props;
@@ -98,7 +98,7 @@ class ReplyViewComponent extends React.Component<Props> {
         handleClick={this._handleClick(predefinedMessage.onMyWay.pattern)}
       />
     );
-  }
+  };
   private _generatePredefinedTimes = (pattern: RTC_REPLY_MSG_PATTERN) => {
     const { t } = this.props;
 
@@ -111,7 +111,7 @@ class ReplyViewComponent extends React.Component<Props> {
         {t(`telephony.predefinedTime.${label}`)}
       </JuiPreDefineMenuItem>
     ));
-  }
+  };
 
   private _CallBack = () => {
     const { t } = this.props;
@@ -125,7 +125,7 @@ class ReplyViewComponent extends React.Component<Props> {
         {this._preDefinedCallbackTimeMenuItems}
       </JuiPreDefineMessage>
     );
-  }
+  };
 
   private _WillCallBack = () => {
     const { t } = this.props;
@@ -135,17 +135,17 @@ class ReplyViewComponent extends React.Component<Props> {
         text={t(
           `telephony.predefinedMessage.${predefinedMessage.willCallBack.label}`,
         )}
-        automationId="reply-with-will-call-back"
+        automationId='reply-with-will-call-back'
       >
         {this._preDefinedWillCallbackTimeMenuItems}
       </JuiPreDefineMessage>
     );
-  }
+  };
 
   private _handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { storeCustomMessage } = this.props;
     storeCustomMessage(e.target.value);
-  }
+  };
 
   private _handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const {
@@ -166,25 +166,22 @@ class ReplyViewComponent extends React.Component<Props> {
         replyWithMessage();
       }
     }
-  }
+  };
 
   private _handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Shift') {
       this.props.setShiftKeyDown(false);
     }
-  }
+  };
 
   private _handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-  }
+  };
 
   private _handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     if (event.clipboardData) {
       const msg = event.clipboardData.getData('text/plain');
-      const filteredMsg = msg.replace(
-        /[\~\@\#\$\%\^\&\*\(\)\_\+\{\}\[\]\|\<\>\/]*/g,
-        '',
-      );
+      const filteredMsg = msg.replace(/[~@#$%^&*()_+{}[\]|<>/]*/g, '');
       if (msg.length !== filteredMsg.length) {
         const { storeCustomMessage, customReplyMessage } = this.props;
         let appendMessage = customReplyMessage + filteredMsg;
@@ -195,14 +192,14 @@ class ReplyViewComponent extends React.Component<Props> {
         event.preventDefault();
       }
     }
-  }
+  };
 
   private _customReply = () => {
-    const { t, customReplyMessage } = this.props;
+    const { t, customReplyMessage = '' } = this.props;
     return (
       <JuiCustomReply
-        id="incoming-call-custom-reply-id"
-        fullWidth={true}
+        id='incoming-call-custom-reply-id'
+        fullWidth
         placeholder={t('telephony.customReplyMessagePlaceholder')}
         inputProps={{
           maxLength: wordsLimitation,
@@ -214,12 +211,12 @@ class ReplyViewComponent extends React.Component<Props> {
         draggable={false}
         onMouseDown={this._handleMouseDown}
         onPaste={this._handlePaste}
-        value={customReplyMessage ? customReplyMessage : ''}
-        data-test-automation-id="reply-with-custom-message"
+        value={customReplyMessage}
+        data-test-automation-id='reply-with-custom-message'
       />
     );
-  }
-
+  };
+  /* eslint-disable react/sort-comp */
   private _PreDefineMessages = [
     this._InMeeting,
     this._OnMyWay,
@@ -234,30 +231,30 @@ class ReplyViewComponent extends React.Component<Props> {
         uid={uid}
         showDefaultAvatar={!uid}
         imgProps={{ draggable: false }}
-        size="large"
+        size='large'
       />
     );
-  }
+  };
 
   private _Back = () => {
     const { t, quitReply } = this.props;
     return (
       <JuiIconButton
-        variant="plain"
-        color="common.white"
+        variant='plain'
+        color='common.white'
         onClick={quitReply}
-        size="large"
+        size='large'
         tooltipTitle={t('telephony.action.back')}
         aria-label={t('telephony.action.back')}
-        data-test-automation-id="reply-back-button"
+        data-test-automation-id='reply-back-button'
       >
         previous
       </JuiIconButton>
     );
-  }
+  };
 
   render() {
-    const { t, replyCountdownTime, isExt, phone } = this.props;
+    const { t, replyCountdownTime, isExt, phone, name } = this.props;
 
     return (
       <>

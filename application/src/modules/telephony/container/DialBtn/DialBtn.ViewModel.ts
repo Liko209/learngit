@@ -30,7 +30,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
      */
     this._makeCall(this._telephonyStore.inputString);
     this._trackCall(ANALYTICS_SOURCE);
-  }
+  };
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
   private _makeCall = async (val: string) => {
@@ -41,11 +41,11 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
       });
       this._telephonyService.hangUp();
     }
-  }
+  };
 
   private _trackCall = (analysisSource: string) => {
     analyticsCollector.makeOutboundCall(analysisSource);
-  }
+  };
 
   private _updateInputString = this._telephonyService.updateInputStringFactory(
     'inputString',

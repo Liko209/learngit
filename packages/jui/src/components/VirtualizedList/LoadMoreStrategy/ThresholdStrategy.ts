@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 13:14:44
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   ILoadMoreStrategy,
   LoadMoreStrategyParams,

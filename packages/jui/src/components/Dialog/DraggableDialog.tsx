@@ -38,7 +38,7 @@ const PaperComponent = ({
 }: PaperProps) => {
   return (
     <Draggable
-      bounds="body"
+      bounds='body'
       defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
       ref={dragRef}
       onStart={onStart}
@@ -106,12 +106,12 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       <StyledDraggableDialog
         PaperComponent={PaperComponent}
         TransitionComponent={Transition}
-        disableBackdropClick={true}
-        disableEscapeKeyDown={true}
-        disableEnforceFocus={true}
-        disableRestoreFocus={true}
-        hideBackdrop={true}
-        closeAfterTransition={true}
+        disableBackdropClick
+        disableEscapeKeyDown
+        disableEnforceFocus
+        disableRestoreFocus
+        hideBackdrop
+        closeAfterTransition
         open={open}
         fullScreen={false}
         PaperProps={paperProps}

@@ -79,7 +79,7 @@ class WrappedDialogTitle extends React.PureComponent<
   onContainerResize = (width: number) => {
     this.containerWidth = width;
     this.checkWidth();
-  }
+  };
 
   render() {
     const { variant, className, children, ...rest } = this.props;
@@ -90,10 +90,7 @@ class WrappedDialogTitle extends React.PureComponent<
       <RootRef rootRef={this.rootRef}>
         <MuiDialogTitle {...rest} className={classNames}>
           {children}
-          <ReactResizeDetector
-            handleWidth={true}
-            onResize={this.onContainerResize}
-          />
+          <ReactResizeDetector handleWidth onResize={this.onContainerResize} />
         </MuiDialogTitle>
       </RootRef>
     );
@@ -128,7 +125,7 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
 `;
 
 const JuiDialogHeaderTitleMainTitle = styled(props => (
-  <JuiText component="span" {...props} />
+  <JuiText component='span' {...props} />
 ))`
   && {
     ${typography('subheading1')}

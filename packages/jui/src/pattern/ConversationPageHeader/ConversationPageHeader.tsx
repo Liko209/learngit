@@ -106,33 +106,33 @@ class JuiConversationPageHeader
     } = this.props;
 
     const right = (
-      <div className="right-wrapper" id="conversation-header-right-wrapper">
+      <div className='right-wrapper' id='conversation-header-right-wrapper'>
         {Right}
       </div>
     );
     const titleElement = (
       <TitleWrapper
         tooltipTitle={title}
-        component="h6"
-        data-test-automation-id="conversation-page-header-title"
+        component='h6'
+        data-test-automation-id='conversation-page-header-title'
       >
         {title}
       </TitleWrapper>
     );
     return (
       <StyledPageHeader
-        data-test-automation-id="conversation-page-header"
-        position="static"
+        data-test-automation-id='conversation-page-header'
+        position='static'
         elevation={0}
-        square={true}
+        square
         {...rest}
       >
-        <MuiToolbar className="mui-toolbar" variant="dense">
-          <div className="left-wrapper">
+        <MuiToolbar className='mui-toolbar' variant='dense'>
+          <div className='left-wrapper'>
             <TitleAndStatusWrapper>
               {titleElement}
               {status ? (
-                <StatusWrapper data-test-automation-id="conversation-page-header-status">
+                <StatusWrapper data-test-automation-id='conversation-page-header-status'>
                   {status}
                 </StatusWrapper>
               ) : null}

@@ -24,32 +24,32 @@ class HoverControllerViewModel<T> extends StoreViewModel<T> {
       });
     }
     return this.cacheMap.get(fnKey);
-  }
+  };
 
   @action
   setSelectIndex = (cellIndex: number) => {
     this.selectIndex = cellIndex;
-  }
+  };
 
   @action
   resetSelectIndex = () => {
     this.selectIndex = InvalidIndexPath;
-  }
+  };
 
   @action
   setSelectIndexToDefault = () => {
     this.selectIndex = DefaultIndexPath;
-  }
+  };
 
   @action
   selectIndexChange = (cellIndex: number) => {
     return this.updateCacheIndex(cellIndex);
-  }
+  };
 
   @action
   isHover = (cellIndex: number) => {
     return cellIndex === this.selectIndex;
-  }
+  };
 }
 
 type HoverControllerBaseProps = {

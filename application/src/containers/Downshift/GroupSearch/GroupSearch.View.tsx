@@ -18,11 +18,7 @@ import { ViewProps } from './types';
 @observer
 class GroupSearchView extends React.Component<ViewProps> {
   inputRef = createRef<HTMLInputElement>();
-  onKeyDown = (event: JuiDownshiftKeyDownEvent) => {
-    if (event.key === 'Escape') {
-      event.nativeEvent.preventDownshiftDefault = true;
-    }
-  }
+
   componentDidMount() {
     const node = this.inputRef.current;
     const { autoFocusInput } = this.props;
@@ -30,7 +26,11 @@ class GroupSearchView extends React.Component<ViewProps> {
       node.focus();
     }
   }
-
+  onKeyDown = (event: JuiDownshiftKeyDownEvent) => {
+    if (event.key === 'Escape') {
+      event.nativeEvent.preventDownshiftDefault = true;
+    }
+  };
   render() {
     const {
       handleSelectChange,
@@ -55,7 +55,7 @@ class GroupSearchView extends React.Component<ViewProps> {
         inputPlaceholder={placeholder}
         InputItem={Chip}
         MenuItem={GroupSearchItem}
-        automationId="GroupSearchGroupSuggestionsList"
+        automationId='GroupSearchGroupSuggestionsList'
         messageRef={this.inputRef}
         minRowHeight={40}
         multiple={multiple}

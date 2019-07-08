@@ -11,6 +11,7 @@ import React, {
 } from 'react';
 import styled from '../../foundation/styled-components';
 import RO from 'resize-observer-polyfill';
+
 type JuiVirtualCellOnLoadFunc = () => void;
 
 type JuiVirtualCellProps<T> = {
@@ -28,7 +29,7 @@ class JuiObservedCellWrapper<T> extends PureComponent<JuiVirtualCellProps<T>> {
   private _handleResize = () => {
     const { onLoad } = this.props;
     onLoad && onLoad();
-  }
+  };
 
   componentDidMount() {
     const { current } = this._ref;

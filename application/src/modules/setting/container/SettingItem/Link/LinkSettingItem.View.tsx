@@ -28,7 +28,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
     url && window.open(url);
     const { dataTracking } = this.props.settingItem;
     dataTracking && dataTrackingForSetting(dataTracking);
-  }
+  };
 
   @catchError.flash({
     network: 'setting.errorText.forLink',
@@ -36,7 +36,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
   })
   private _getUrl = () => {
     return this.props.getUrl();
-  }
+  };
 
   render() {
     const { t, id, disabled, settingItem } = this.props;
@@ -50,11 +50,9 @@ class LinkSettingItemViewComponent extends Component<Props> {
         description={t(settingItem.description || '')}
       >
         <JuiButton
-          color="primary"
+          color='primary'
           disabled={disabled}
-          data-test-automation-id={`settingItemButton-${
-            settingItem.automationId
-          }`}
+          data-test-automation-id={`settingItemButton-${settingItem.automationId}`}
           onClick={this._handleClick}
           loading={this._loading}
         >

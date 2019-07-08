@@ -3,10 +3,9 @@
  * @Date: 2019-01-10 09:18:47
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { EventEmitter2 } from 'eventemitter2';
 import { RTCMediaElement } from './types';
 import { rtcLogger } from './RTCLoggerProxy';
-import { EventEmitter2 } from 'eventemitter2';
 import { RTC_MEDIA_ACTION } from '../api/types';
 
 const LOG_TAG = 'RTCMediaElementManager';

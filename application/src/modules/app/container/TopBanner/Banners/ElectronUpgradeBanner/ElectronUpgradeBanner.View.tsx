@@ -3,6 +3,7 @@
  * @Date: 2019-04-30 15:37:43
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 
 import React from 'react';
 import {
@@ -21,14 +22,14 @@ class ElectronUpgradeBannerViewComponent extends React.Component<
 > {
   handleDownloadClick = () => {
     iframeDownloader('downloadInstaller', this.props.downloadUrl);
-  }
+  };
   render() {
     const { t } = this.props;
     return (
       <JuiSnackbarContent
         type={ToastType.WARN}
         message={t('electron.upgrade.topBannerWarning')}
-        messageAlign="center"
+        messageAlign='center'
         fullWidth={true}
         action={
           <JuiSnackbarAction

@@ -30,9 +30,9 @@ const JuiRecentCallBtn = ({
   return (
     <StyleContainer>
       <JuiFabButton
-        size="medium"
+        size='medium'
         data-test-automation-id={automationId}
-        disableRipple={true}
+        disableRipple
         onClick={handleClick}
         {...rest}
       />

@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, array } from '@storybook/addon-knobs';
-import { JuiSearchItem } from '../';
+import { JuiSearchItem } from '..';
 import { JuiAvatar } from '../../../components/Avatar';
 
 import avatar from './img/avatar.jpg';
@@ -24,13 +24,13 @@ storiesOf('Pattern/SearchBar', module).add('JuiSearchItem', () => {
   return (
     <div>
       <JuiSearchItem
-        Avatar={<JuiAvatar src={avatar} size="small" />}
+        Avatar={<JuiAvatar src={avatar} size='small' />}
         value={knobs.value()}
         terms={knobs.terms()}
         onClick={() => {}}
       />
       <JuiSearchItem
-        Avatar={<JuiAvatar src={avatar} size="small" />}
+        Avatar={<JuiAvatar src={avatar} size='small' />}
         onClick={() => {}}
         value={knobs.value()}
         terms={knobs.terms()}

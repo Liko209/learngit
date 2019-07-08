@@ -3,7 +3,7 @@
  * @Date: 2019-05-09 09:53:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { RuiTooltip } from 'rcui/components/Tooltip';
@@ -52,11 +52,18 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   }
 `;
 
-class JuiConversationPageMember extends React.Component<
+class JuiConversationPageMember extends PureComponent<
   JuiConversationPageMemberProps
 > {
   render() {
-    const { onClick, ariaLabel, title, children, size, automationId } = this.props;
+    const {
+      onClick,
+      ariaLabel,
+      title,
+      children,
+      size,
+      automationId,
+    } = this.props;
 
     return (
       <RuiTooltip title={title}>
@@ -66,7 +73,7 @@ class JuiConversationPageMember extends React.Component<
           onClick={onClick}
           size={size}
         >
-          <JuiIconography iconSize="medium">member_count</JuiIconography>
+          <JuiIconography iconSize='medium'>member_count</JuiIconography>
           {children}
         </StyledConversationPageMember>
       </RuiTooltip>

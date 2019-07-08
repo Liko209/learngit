@@ -44,10 +44,8 @@ class EntityCacheController<
   async put(item: T | T[]): Promise<void> {
     if (Array.isArray(item)) {
       await this.bulkPut(item);
-    } else {
-      if (item) {
-        this.putInternal(item);
-      }
+    } else if (item) {
+      this.putInternal(item);
     }
   }
 

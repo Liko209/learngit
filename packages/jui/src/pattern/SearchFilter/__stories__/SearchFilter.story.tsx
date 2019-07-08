@@ -9,7 +9,7 @@ import { storiesOf } from '@storybook/react';
 import { JuiSearchFilter } from '..';
 import { differenceBy } from 'lodash';
 import { JuiDownshift } from '../../../components/Downshift';
-import { JuiSearchItem } from '../../../pattern/ContactSearch';
+import { JuiSearchItem } from '../../ContactSearch';
 import { JuiChip } from '../../../components/Chip';
 
 const suggestions = [
@@ -83,12 +83,12 @@ const MultipleDownshift = () => {
   return (
     <JuiDownshift
       selectedItems={[]}
-      inputValue=""
+      inputValue=''
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
-      inputLabel="Downshift"
-      inputPlaceholder="placeholder"
+      inputLabel='Downshift'
+      inputPlaceholder='placeholder'
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}
@@ -98,7 +98,7 @@ const MultipleDownshift = () => {
 
 storiesOf('Pattern/SearchFilter', module).add('SearchFilter', () => {
   return (
-    <JuiSearchFilter title="Filter">
+    <JuiSearchFilter title='Filter'>
       <MultipleDownshift />
       <MultipleDownshift />
     </JuiSearchFilter>

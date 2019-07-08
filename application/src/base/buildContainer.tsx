@@ -44,18 +44,44 @@ function buildContainer<P = {}, S = {}, SS = any>({
     componentWillUnmount() {
       this.vm.dispose && this.vm.dispose();
     }
+    @computed
+    private get _viewProps() {
+      const descriptors = Object.getOwnPropertyDescriptors(this.vm);
+      const props: any = {};
 
+      Object.keys(this.props).forEach((key: string) => {
+        props[key] = this.props[key];
+      });
+
+      Object.keys(descriptors)
+        .filter(this._isViewProp)
+        .forEach((key: string) => {
+          if (props[key] && props[key] !== this.vm[key]) {
+            const errorMessage = `buildContainer Error: '${
+              Container.displayName
+              }.props.${key}: ${props[key]}' conflict with '${
+              ViewModel.name
+              }.${key}: ${this.vm[key]}'`;
+
+            if (
+              process.env.NODE_ENV === 'development' ||
+              process.env.NODE_ENV === 'test'
+            ) {
+              throw new Error(errorMessage);
+            } else {
+              mainLogger.warn(errorMessage);
+            }
+          }
+
+          props[key] = this.vm[key];
+        });
+      return props;
+    }
     @action
     componentWillReact() {
       this.vm.getDerivedProps && this.vm.getDerivedProps(this.props || {});
       this.vm.onReceiveProps && this.vm.onReceiveProps(this.props || {});
     }
-
-    render() {
-      const View = this.View;
-      return <View {...this._viewProps} />;
-    }
-
     private _createPlugins() {
       return plugins ? plugins() : {};
     }
@@ -81,40 +107,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
       return vm;
     }
 
-    @computed
-    private get _viewProps() {
-      const descriptors = Object.getOwnPropertyDescriptors(this.vm);
-      const props: any = {};
-
-      Object.keys(this.props).forEach((key: string) => {
-        props[key] = this.props[key];
-      });
-
-      Object.keys(descriptors)
-        .filter(this._isViewProp)
-        .forEach((key: string) => {
-          if (props[key] && props[key] !== this.vm[key]) {
-            const errorMessage = `buildContainer Error: '${
-              Container.displayName
-            }.props.${key}: ${props[key]}' conflict with '${
-              ViewModel.name
-            }.${key}: ${this.vm[key]}'`;
-
-            if (
-              process.env.NODE_ENV === 'development' ||
-              process.env.NODE_ENV === 'test'
-            ) {
-              throw new Error(errorMessage);
-            } else {
-              mainLogger.warn(errorMessage);
-            }
-          }
-
-          props[key] = this.vm[key];
-        });
-      return props;
-    }
-
     private _isViewProp(key: string) {
       // - Props start with _ or $ are private
       // - 'verboseMemoryLeak' is add by EventEmitter2
@@ -123,6 +115,10 @@ function buildContainer<P = {}, S = {}, SS = any>({
       return (
         !/^\$|_/.test(key) && key !== 'verboseMemoryLeak' && key !== 'props'
       );
+    }
+    render() {
+      const ContainerView = this.View;
+      return <ContainerView {...this._viewProps} />;
     }
   }
 

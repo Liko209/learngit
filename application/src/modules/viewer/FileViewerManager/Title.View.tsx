@@ -67,7 +67,7 @@ class ViewerTitleViewComponent extends Component<Type> {
           )}
         </JuiDialogHeaderMeta>
         <JuiDialogHeaderTitle
-          variant="responsive"
+          variant='responsive'
           data-test-automation-id={'viewerTitle'}
         >
           <JuiDialogHeaderTitleMainTitle
@@ -78,8 +78,8 @@ class ViewerTitleViewComponent extends Component<Type> {
           <JuiDialogHeaderSubtitle data-test-automation-id={'viewerPageCount'}>
             <JuiViewerTitleWrap>
               <JuiTextField
-                id="outlined-number"
-                type="number"
+                id='outlined-number'
+                type='number'
                 value={textFieldValue}
                 onChange={handleTextFieldChange}
                 inputProps={{
@@ -92,13 +92,13 @@ class ViewerTitleViewComponent extends Component<Type> {
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
           <JuiButtonBar overlapSize={2}>
-            <Download url={downloadUrl} variant="round" />
+            <Download url={downloadUrl} variant='round' />
             <FileActionMenu
-              showViewInPostAction={true}
+              showViewInPostAction
               groupId={this.props.groupId}
               fileId={fileId}
-              disablePortal={true}
-              variant="round"
+              disablePortal
+              variant='round'
             />
             <JuiIconButton
               onClick={closeViewer}
