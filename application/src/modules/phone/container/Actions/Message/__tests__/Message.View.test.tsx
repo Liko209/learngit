@@ -23,4 +23,14 @@ describe('message', () => {
       expect(goToConversationWithLoading).toHaveBeenCalledWith({ id: 1 });
     }
   }
+
+  @testable
+  class JPT2457 {
+    @test('should the tooltip of the message icon to be "Message" when hover the button [JPT-2457]')
+    t1() {
+      const person = { id: 1 } as any;
+      const wrapper = mountWithTheme(<Message id={123} person={person} type={BUTTON_TYPE.ICON} />);
+      expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe('message.message');
+    }
+  }
 });

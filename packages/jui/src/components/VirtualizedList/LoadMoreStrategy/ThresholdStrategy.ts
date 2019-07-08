@@ -12,6 +12,8 @@ import {
 
 import { UndefinedAble } from '../types';
 
+const PRELOAD_COUNT_LIMIT = 50;
+
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
   private _minBatchCount: number;
@@ -70,6 +72,13 @@ class ThresholdStrategy implements ILoadMoreStrategy {
 
   getPreloadInfo(): UndefinedAble<LoadMoreInfo> {
     return this._preloadInfo;
+  }
+
+  updatePreloadCount(count: number) {
+    if (this._preloadInfo) {
+      this._preloadInfo.count =
+        count > PRELOAD_COUNT_LIMIT ? PRELOAD_COUNT_LIMIT : count;
+    }
   }
 }
 

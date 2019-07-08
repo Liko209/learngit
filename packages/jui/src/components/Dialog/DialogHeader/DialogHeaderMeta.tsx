@@ -17,6 +17,10 @@ const JuiDialogHeaderMeta = styled.div`
   display: flex;
   align-items: center;
   margin-right: ${spacing(4)};
+  width: ${spacing(50)};
+  @media screen and (max-width: 640px) {
+    width: auto;
+  }
 `;
 
 const JuiDialogHeaderMetaLeft = styled.div``;

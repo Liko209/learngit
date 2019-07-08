@@ -20,6 +20,7 @@ export {
   Radius,
   Spacing,
   ZIndex,
+  ThemeStyle,
 } from 'rcui/foundation/styles/theme';
 
 export type Shape = {

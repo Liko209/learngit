@@ -122,7 +122,8 @@ abstract class RCItemFetchController<
               : SYNC_DIRECTION.NEWER,
             false,
           ).catch((reason: JError) => {
-            if (!results.length) {
+            // The error page for callLog/voicemail is displayed only when the first fetch data failed
+            if (!anchorId && !results.length) {
               throw reason;
             }
             return [];

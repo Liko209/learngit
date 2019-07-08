@@ -258,12 +258,13 @@ describe('RCItemFetchController', () => {
       expect(controller.onFetchFinished).toBeCalled();
     });
 
-    it('should throw error when local data is empty and request crashed', async () => {
-      const mockError = { id: 'test' };
+    it('should throw error when anchorId is undefined and request crashed', async () => {
+      const mockData = { id: 'test' };
+      const mockError = { message: 'test' };
       controller.fetchDataFromDB = jest.fn().mockReturnValue([]);
       controller.onDBFetchFinished = jest.fn();
       mockUserConfig.getHasMore.mockResolvedValue(true);
-      controller.doSync.mockImplementation(() => {
+      controller.doSync.mockImplementation(async () => {
         throw mockError;
       });
 
@@ -280,6 +281,7 @@ describe('RCItemFetchController', () => {
       expect(mockUserConfig.getHasMore).toBeCalled();
       expect(controller.doSync).toBeCalled();
       expect(controller.onFetchFinished).not.toBeCalled();
+      expect.assertions(6);
     });
   });
 });

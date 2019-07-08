@@ -66,13 +66,14 @@ test.meta(<ITestMeta>{
     step.setMetadata('id', callhistoryId)
     await callhistoryItem.ClickCallbackButton();
   });
-   
+
   const telephonyDialog = app.homePage.telephonyDialog;
+
   await h(t).withLog(`Then the telephony dialog should be popup`, async () => {
     await telephonyDialog.ensureLoaded();
     await t.wait(5e3);
     await telephonyDialog.clickHangupButton();
     await t.wait(5e3);
   });
-  
+
 });

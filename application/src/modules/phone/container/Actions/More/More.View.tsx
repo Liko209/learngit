@@ -29,7 +29,7 @@ class MoreViewComponent extends Component<Props, State> {
     const { t, automationId } = this.props;
     return (
       <JuiIconButton
-        color="grey.500"
+        color="grey.600"
         variant="round"
         autoFocus={false}
         size="small"

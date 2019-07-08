@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ViewerViewModelProps, ViewerViewProps } from '../types';
+import { ViewerProps, ViewerViewProps } from '../types';
 import { ReactElement } from 'react';
 
-type ViewerContentViewModelProps = ViewerViewProps & ViewerViewModelProps;
+type ViewerContentViewModelProps = ViewerViewProps & ViewerProps;
 
 type ViewerContentViewProps = {
   left: ReactElement;
