@@ -79,6 +79,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
 
 .c1 .action {
   margin-right: 0;
+  pointer-events: auto;
 }
 
 .c1 .c3 + .c4 {
@@ -115,6 +116,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
 
 .c2 .action {
   margin-right: 0;
+  pointer-events: auto;
 }
 
 .c2 .c3 + .c4 {
@@ -151,6 +153,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
 
 .c6 .action {
   margin-right: 0;
+  pointer-events: auto;
 }
 
 .c6 .c3 + .c4 {
@@ -187,6 +190,7 @@ exports[`Storyshots Components/Snackbars toast: Components/Snackbars toast 1`] =
 
 .c7 .action {
   margin-right: 0;
+  pointer-events: auto;
 }
 
 .c7 .c3 + .c4 {

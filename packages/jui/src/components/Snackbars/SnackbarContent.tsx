@@ -80,7 +80,7 @@ const SnackbarContent = styled<SnackbarContentProps>(WrapperContent)`
     background-color: ${({ bgColor }) => palette(bgColor[0], bgColor[1], 0)};
     box-shadow: none;
     border-radius: ${({ fullWidth, theme }) =>
-      fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
+    fullWidth ? 0 : `${theme.shape.borderRadius}px`} !important;
     max-width: ${props => (props.fullWidth ? '100%' : width(160))} !important;
     box-sizing: border-box;
     margin: 0 auto;
@@ -94,6 +94,7 @@ const SnackbarContent = styled<SnackbarContentProps>(WrapperContent)`
 
   .action {
     margin-right: 0;
+    pointer-events: auto;
   }
 
   ${JuiSnackbarAction} + ${StyledTextButton} {
