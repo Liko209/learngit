@@ -19,11 +19,10 @@ module.exports = {
   transform: {
     '^.+\\.(jsx?|tsx?)$': '<rootDir>/config/jest/typescriptTransform.js',
     '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
-    '^(?!.*\\.(js|jsx|mjs|css|json)$)':
-      '<rootDir>/config/jest/fileTransform.js',
+    '^(?!.*\\.(js|jsx|mjs|css|json)$)': '<rootDir>/config/jest/fileTransform.js',
   },
   transformIgnorePatterns: [
-    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$',
+    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$',
   ],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
