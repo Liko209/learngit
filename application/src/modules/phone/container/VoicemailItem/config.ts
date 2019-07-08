@@ -6,11 +6,12 @@
 
 import { JuiAudioMode } from 'jui/pattern/AudioPlayer';
 import { BREAK_POINT_MAP } from './types';
+import { DATE_FORMAT } from '@/utils/date';
 const voiceMailDefaultResponsiveInfo = {
   audioMode: JuiAudioMode.FULL,
   buttonToShow: 3,
   showTranscriptionText: true,
-  dateFormat: 'full',
+  dateFormat: DATE_FORMAT.full,
 };
 
 const responsiveByBreakPoint = [
@@ -25,7 +26,7 @@ const responsiveByBreakPoint = [
       audioMode: JuiAudioMode.FULL,
       buttonToShow: 2,
       showTranscriptionText: false,
-      dateFormat: 'full',
+      dateFormat: DATE_FORMAT.full,
     },
   },
   {
@@ -35,7 +36,7 @@ const responsiveByBreakPoint = [
       audioMode: JuiAudioMode.MINI,
       buttonToShow: 2,
       showTranscriptionText: false,
-      dateFormat: 'full',
+      dateFormat: DATE_FORMAT.full,
     },
   },
   {
@@ -44,7 +45,7 @@ const responsiveByBreakPoint = [
       audioMode: JuiAudioMode.TINY,
       buttonToShow: 1,
       showTranscriptionText: false,
-      dateFormat: 'short',
+      dateFormat: DATE_FORMAT.short,
     },
   },
 ];

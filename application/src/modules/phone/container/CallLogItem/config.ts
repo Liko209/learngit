@@ -4,11 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BREAK_POINT_MAP } from '../VoicemailItem/types';
+import { DATE_FORMAT } from '@/utils/date';
 
 const callLogDefaultResponsiveInfo = {
   buttonToShow: 3,
   showCallInfo: true,
-  dateFormat: 'full',
+  dateFormat: DATE_FORMAT.full,
 };
 const kHandlers = [
   {
@@ -21,7 +22,7 @@ const kHandlers = [
     info: {
       buttonToShow: 2,
       showCallInfo: true,
-      dateFormat: 'short',
+      dateFormat: DATE_FORMAT.short,
     },
   },
   {
@@ -30,7 +31,7 @@ const kHandlers = [
     info: {
       buttonToShow: 1,
       showCallInfo: true,
-      dateFormat: 'short',
+      dateFormat: DATE_FORMAT.short,
     },
   },
   {
@@ -38,7 +39,7 @@ const kHandlers = [
     info: {
       buttonToShow: 1,
       showCallInfo: false,
-      dateFormat: 'short',
+      dateFormat: DATE_FORMAT.short,
     },
   },
 ];
