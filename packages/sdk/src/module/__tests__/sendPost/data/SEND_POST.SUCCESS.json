@@ -4,10 +4,8 @@
   "method": "post",
   "type": "request-response",
   "via": "socket",
-  "url": "https://glpdevxmn.asialab.glip.net/api/post",
   "hostAlias": "glip",
   "request": {
-    "url": "https://glpdevxmn.asialab.glip.net/api/post",
     "host": "https://glpdevxmn.asialab.glip.net",
     "path": "/api/post",
     "method": "post",

@@ -2,12 +2,13 @@ import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
+import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';
+import { IApi } from 'shield/sdk/types';
 
-itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockResponse }) => {
+itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {
   let groupService: GroupService;
 
   data.useInitialData(data.template.STANDARD);
-  data.apply();
 
   beforeAll(async () => {
     await sdk.setup();
@@ -19,13 +20,16 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockR
   describe('GroupService', () => {
     it('create team', async () => {
       const mockInfo = mockResponse(
-        require('./data/CREATE_TEAM.SUCCESS.json'),
-        (reqRes: IRequestResponse<Group, Group>) => {
+        readJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
+        api => {
+          const {
+            response: { data },
+          } = api;
           return {
-            id: reqRes.response.data._id,
-            creatorId: reqRes.response.data.creator_id,
-            members: reqRes.request.data!.members,
-            name: reqRes.request.data!.set_abbreviation,
+            id: data._id,
+            creatorId: data.creator_id,
+            members: data.members,
+            name: data.set_abbreviation,
           };
         },
       );
@@ -40,8 +44,10 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockR
     });
     it('modify team name', async () => {
       const mockInfo = mockResponse(
-        require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
-        (reqRes: IRequestResponse<any, Group>) => {
+        readJson<IApi<any, Group>>(
+          require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
+        ),
+        reqRes => {
           const {
             response: { data },
           } = reqRes;
@@ -60,14 +66,16 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockR
     });
     it('disable all team permission', async () => {
       const mockTeamInfo = mockResponse(
-        require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
-        (reqRes: IRequestResponse<any, Group>) => {
+        readJson<IApi<any, Group>>(
+          require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
+        ),
+        reqRes => {
           const {
             response: { data },
           } = reqRes;
           data.permissions!.user!.level = 0;
           return {
-            teamId: Number(data._id!),
+            teamId: Number(data._id),
             name: data.set_abbreviation,
             permissions: data.permissions,
           };
@@ -90,14 +98,16 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockR
     });
     it('enable all team permission', async () => {
       const mockInfo = mockResponse(
-        require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
-        (reqRes: IRequestResponse<any, Group>) => {
+        readJson<IApi<any, Group>>(
+          require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
+        ),
+        reqRes => {
           const {
             response: { data },
           } = reqRes;
           data.permissions!.user!.level = 15;
           return {
-            teamId: Number(data._id!),
+            teamId: Number(data._id),
             name: data.set_abbreviation,
             permissions: data.permissions,
           };
@@ -120,7 +130,9 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockR
     });
     it('add team member', async () => {
       const mockInfo = mockResponse(
-        require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
+        readJson<IApi<any, Group>>(
+          require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
+        ),
         (
           reqRes: IRequestResponse<{ _id: number; members: number[] }, Group>,
         ) => {

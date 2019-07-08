@@ -1,30 +1,3 @@
-// import {
-//   IRequest,
-//   INetworkRequestExecutorListener,
-//   IResponse,
-// } from 'foundation/network/network';
-
-// export { IRequest, IResponse, INetworkRequestExecutorListener };
-// export type RouterHandler = (
-//   request: IRequest,
-//   cb: INetworkRequestExecutorListener,
-//   routeParams: object,
-// ) => void | Promise<void>;
-// export interface IRouter {
-//   dispatch: RouterHandler;
-//   use(method: string, path: string, handler: RouterHandler): this;
-// }
-
-// export interface IResponseAdapter {
-//   adapt: (handler: Handler) => RouterHandler;
-// }
-
-// export type PathMatcher = (routePath: string, path: string) => boolean;
-
-// export interface IMockServer {
-//   handle: RouterHandler;
-// }
-
 export interface IStore<T extends object, Id extends number | string = number> {
   // items: T[];
   create(item: Partial<T>): T | undefined;

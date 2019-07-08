@@ -4,8 +4,6 @@ import { EventEmitter } from 'events';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
 const debug = createDebug('BlockExternalRequest', false);
-// const nock = require('nock');
-// nock.enableNetConnect();
 class SimpleBlockRequest extends EventEmitter {
   emit(event: any, ...args: any) {
     debug('emit -> emit', event);

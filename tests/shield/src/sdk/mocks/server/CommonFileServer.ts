@@ -1,7 +1,7 @@
 import {
   IMockServer,
   INetworkRequestExecutorListener,
-  IRequest,
+  IJRequest,
 } from '../../types';
 
 import url from 'url';
@@ -11,7 +11,7 @@ import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('FileServer', false);
 
 export class CommonFileServer implements IMockServer {
-  handle = (request: IRequest, cb: INetworkRequestExecutorListener) => {
+  handle = (request: IJRequest, cb: INetworkRequestExecutorListener) => {
     const mockJsonPath = this.getMockJsonPath(request.host, request.path);
     if (fs.existsSync(mockJsonPath)) {
       const result = JSON.parse(

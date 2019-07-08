@@ -15,9 +15,8 @@ import ThemeProvider from '@/containers/ThemeProvider';
 import * as router from '../../router/module.config';
 import * as app from '../../app/module.config';
 
-itForSdk('Service Integration test', ({ server, data, sdk }) => {
+itForSdk('Service Integration test', ({ data, sdk }) => {
   data.useInitialData(data.template.STANDARD);
-  data.apply();
 
   describe('test', () => {
     beforeAll(async () => {

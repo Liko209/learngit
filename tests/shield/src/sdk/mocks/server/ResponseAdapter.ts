@@ -1,16 +1,17 @@
 import _ from 'lodash';
-import { INetworkRequestExecutorListener, IRequest, Handler, IResponseAdapter } from '../types';
+import {
+  INetworkRequestExecutorListener,
+  IJRequest,
+  Handler,
+  IResponseAdapter,
+} from '../../types';
 import { createResponse, isPromise } from './utils';
-// import {  } from './types';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('ResponseAdapter', true);
 
 export class ResponseAdapter implements IResponseAdapter {
   adapt = (handler: Handler) => {
-    return (
-      request: IRequest,
-      cb: INetworkRequestExecutorListener,
-    ) => {
+    return (request: IJRequest, cb: INetworkRequestExecutorListener) => {
       let handlerResp;
       try {
         handlerResp = handler(request);

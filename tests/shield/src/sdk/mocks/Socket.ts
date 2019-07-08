@@ -1,7 +1,4 @@
-import {
-  IRequest,
-  INetworkRequestExecutorListener,
-} from 'foundation/network/network';
+import { INetworkRequestExecutorListener } from 'foundation/network/network';
 import { InstanceManager } from '../mocks/server/InstanceManager';
 import { ProxyServer } from '../mocks/server/ProxyServer';
 import { SocketRequest } from 'foundation/network/client/socket';

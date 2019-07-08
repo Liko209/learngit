@@ -74,15 +74,6 @@ interface INetworkRequestExecutorListener {
   onSuccess: (response: IResponse) => void;
 }
 
-interface IResponse<T = any> {
-  readonly data: T;
-  readonly status: RESPONSE_STATUS_CODE;
-  readonly statusText: string;
-  readonly headers: object;
-  readonly retryAfter: number;
-  request: IRequest;
-}
-
 type Header = {
   Authorization?: string;
   'X-RC-Access-Token-Data'?: string;
@@ -90,19 +81,30 @@ type Header = {
 
 type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
 
-interface IRequest<T = any> {
-  readonly id: string;
+interface IBaseRequest<T = any> {
+  host: string;
+  hostAlias?: string;
   path: string;
-  readonly method: NETWORK_METHOD;
+  method: string;
+  headers: object;
   data: T;
-  headers: Header;
+}
+
+interface IBaseResponse<T = any> {
+  status: number;
+  statusText?: string;
+  headers: object;
+  data: T;
+}
+
+interface IRequest<T = any> extends IBaseRequest<T> {
+  readonly id: string;
   params: object;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY;
   HAPriority: HA_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
-  host: string;
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
@@ -116,6 +118,14 @@ interface IRequest<T = any> {
   retryStrategy?: RetryStrategy;
 }
 
+interface IResponse<T = any> extends IBaseResponse<T> {
+  readonly data: T;
+  readonly status: RESPONSE_STATUS_CODE;
+  readonly statusText: string;
+  readonly headers: object;
+  readonly retryAfter: number;
+  request: IRequest;
+}
 interface IClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void;
   cancelRequest(request: IRequest): void;
@@ -222,6 +232,8 @@ export {
   IToken,
   IClient,
   Header,
+  IBaseRequest,
+  IBaseResponse,
   IRequest,
   IResponse,
   INetworkRequestExecutor,

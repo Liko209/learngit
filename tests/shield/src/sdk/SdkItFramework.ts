@@ -4,7 +4,7 @@ import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
 import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { InstanceManager } from './mocks/server/InstanceManager';
-import { CommonFileServer } from './mocks/server/CommonFileServer';
+// import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
 import { InitialData, GlipData } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
@@ -15,36 +15,58 @@ import { parseState } from './mocks/server/glip/utils';
 import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
-import { IResponse } from './types';
+import { IBaseResponse, IApi } from './types';
 
-type Processor<ResData, ReqData, T> = (
-  reqRes: IRequestResponse<ReqData, ResData>,
-) => T;
 blockExternalRequest();
+
+function readJson<
+  A extends IApi<any, any> = IApi<any, any>,
+  ReqData = A extends IApi<infer B, any> ? B : any,
+  ResData = A extends IApi<any, infer B> ? B : any
+>(json: IRequestResponse<ReqData, ResData>) {
+  ['path', 'method', 'request', 'response'].forEach(k =>
+    assert(json[k], `json lack of property[${k}]`),
+  );
+  return json;
+}
+
+function createRequestResponse<T>(
+  options: {
+    host: string;
+    method: string;
+    path: string;
+  },
+  response: IBaseResponse<T>,
+) {
+  return {
+    response,
+    request: {
+      method: options.method,
+    },
+    hostAlias: options.host,
+    method: options.method,
+    path: options.path,
+  } as IRequestResponse<any, T>;
+}
+
+type MockResponse = <
+  A extends IApi<any, any> = IApi<any, any>,
+  ReqData = A extends IApi<infer B, any> ? B : any,
+  ResData = A extends IApi<any, infer B> ? B : any,
+  T extends (api: IApi<ReqData, ResData>) => any = (
+    api: IApi<ReqData, ResData>,
+  ) => any
+>(
+  requestResponse: IRequestResponse<ReqData, ResData>,
+  extractor?: T,
+) => ReturnType<T>;
 
 type ItContext = {
   currentUserId: () => number;
   currentCompanyId: () => number;
-  mockJsonResponse: <
-    ResData = any,
-    ReqData = any,
-    T extends Processor<ResData, ReqData, any> = Processor<
-      ResData,
-      ReqData,
-      IRequestResponse<ReqData, ResData>
-    >
-  >(
-    requestResponse: IRequestResponse<ReqData, ResData>,
-    processor?: T,
-  ) => ReturnType<T>;
-  mockResponse(
-    options: {
-      host: string;
-      method: string;
-      path: string;
-    },
-    response: IResponse,
-  ): any;
+  mockResponse: MockResponse;
+  readJson: typeof readJson;
+  createRequestResponse: typeof createRequestResponse;
   data: {
     template: {
       BASIC: InitialData;
@@ -52,11 +74,6 @@ type ItContext = {
     };
     useInitialData: (initialData: InitialData) => GlipData;
     helper: () => GlipDataHelper;
-    apply: () => void;
-  };
-  server: {
-    glip: MockGlipServer;
-    rc: {};
   };
   sdk: {
     setup: () => Promise<void>;
@@ -139,7 +156,7 @@ export function itForSdk(
   let userId: number;
   let companyId: number;
   const proxyServer = InstanceManager.get(ProxyServer);
-  const fileServer = InstanceManager.get(CommonFileServer);
+  // const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
   const useAccount = (_companyId: number, _userId: number) => {
     userId = _userId;
@@ -159,81 +176,46 @@ export function itForSdk(
     return dataHelper;
   };
 
-  const apply = () => {
+  const applyData = () => {
     mockGlipServer.applyGlipData(glipData);
   };
 
-  function mockJsonResponse<ReqData, ResData>(
-    requestResponse: IRequestResponse<ReqData, ResData>,
-    processor?: (reqRes: IRequestResponse<ReqData, ResData>) => any,
-  ): any {
+  const mockResponse: MockResponse = (requestResponse, extractor) => {
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
       const requestResponsePool: IRequestResponse[] = [];
       jest
         .spyOn(proxyServer, 'getRequestResponsePool')
         .mockImplementation(() => requestResponsePool);
     }
-    let returnValue = requestResponse;
-    if (processor) {
-      returnValue = processor(requestResponse);
-    }
+    const extractResult = extractor
+      ? extractor(requestResponse)
+      : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
     pool.push(requestResponse);
-    return returnValue;
-  }
-
-  function mockResponse(
-    options: {
-      host: string;
-      method: string;
-      path: string;
-    },
-    response: IResponse,
-  ): any {
-    if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
-      const requestResponsePool: IRequestResponse[] = [];
-      jest
-        .spyOn(proxyServer, 'getRequestResponsePool')
-        .mockImplementation(() => requestResponsePool);
-    }
-    const requestResponse = {
-      // todo
-      response: response as any,
-      request: {
-        method: options.method,
-      },
-      hostAlias: options.host,
-      method: options.method,
-      path: options.path,
-    } as IRequestResponse;
-    const pool = proxyServer.getRequestResponsePool();
-    pool.push(requestResponse);
-    return response;
-  }
+    return extractResult;
+  };
 
   // provide for it case to mock data.
   const itCtx: ItContext = {
-    mockJsonResponse,
     mockResponse,
+    createRequestResponse,
+    readJson,
     currentUserId: () => userId,
     currentCompanyId: () => companyId,
     data: {
       useInitialData,
       helper,
-      apply,
       template: {
         BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
         STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
       },
     },
-    server: {
-      // inject mock server here
-      glip: mockGlipServer,
-      rc: {},
-    },
     sdk: {
-      setup,
       cleanUp,
+      setup: async () => {
+        applyData();
+        await setup();
+      },
     },
   };
   describe(name, () => {

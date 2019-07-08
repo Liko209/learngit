@@ -12,13 +12,12 @@ import { wait } from 'shield/utils';
 
 jest.setTimeout(300 * 1000);
 
-itForSdk('Service Integration test', ({ server, data, sdk }) => {
+itForSdk('Service Integration test', ({ data, sdk }) => {
   const glipData = data.useInitialData(data.template.BASIC);
   const team1 = data
     .helper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
-  data.apply();
 
   describe('test', () => {
     beforeAll(async () => {

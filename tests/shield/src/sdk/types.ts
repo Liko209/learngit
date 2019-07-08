@@ -5,47 +5,37 @@
  */
 
 import {
-  IRequest,
+  IRequest as IJRequest,
+  IResponse as IJResponse,
+  IBaseRequest,
+  IBaseResponse,
   INetworkRequestExecutorListener,
-  IResponse,
 } from 'foundation/network/network';
-import { UndefinedAble, Nullable } from 'sdk/types';
-// interface IRequest {}
-// interface IResponse {}
+import { Nullable } from 'sdk/types';
+
 interface IApiContract<T extends IApi> {
   api: T;
   desc: IRoute<T>;
 }
 
-interface IApi {
+interface IApi<Req = any, Res = any> {
   path: string;
   method: string;
-  query: object;
-  request: object;
-  response: object;
+  query?: object;
+  request: Pick<IBaseRequest<Req>, 'data'>;
+  response: Pick<IBaseResponse<Res>, 'data'>;
 }
-
-// interface IRouterHandler<T extends IApi> {
-//   (param: T): void;
-// }
 
 type QueryParser<T> = {
   [key in keyof T]: (v: string) => T[key];
 };
 
-// interface IRouter {
-//   register: <T extends IApi>(
-//     info: T & { query: QueryParser<T['query']> },
-//   ) => void;
-
-//   dispatch: () => void;
-// }
-
 type HttpVerb = 'get' | 'post' | 'put' | 'delete';
 type Handler = (
-  request: IRequest,
-  queryObject: object,
-) => Promise<IResponse> | IResponse;
+  request: IJRequest,
+  queryObject?: object,
+) => Promise<IJResponse> | IJResponse;
+
 type VerbHandler = { [key in HttpVerb]: Handler };
 interface IApiMap {
   [key: string]: Partial<VerbHandler>;
@@ -56,44 +46,40 @@ type IRoute<T extends IApi> = {
   method?: string;
   query?: QueryParser<T['query']>;
 };
-// type IRoute<T extends IApi> = Omit<T, 'query' | 'request' | 'response'> & {
-//   query: QueryParser<T['query']>;
-// };
 
 interface IResponseAdapter {
   adapt: (handler: Handler) => RouterHandler;
 }
 
 type RouterHandler = (
-  request: IRequest,
+  request: IJRequest,
   cb: INetworkRequestExecutorListener,
 ) => // routeParams: object,
 void | Promise<void>;
 interface IRouter {
-  // register: <T extends IApi>(
-  //   info: T & { query: QueryParser<T['query']> },
-  // ) => this;
-  // dispatch: RouterHandler;
-  // use(method: string, path: string, handler: RouterHandler): this;
   use(method: string, path: string, handler: Handler): this;
   match(option: { method: string; path: string }): Nullable<Handler>;
-  dispatch(request: IRequest): ReturnType<Handler>;
+  dispatch(request: IJRequest): ReturnType<Handler>;
 }
+
 interface IMockServer {
   handle: RouterHandler;
 }
 
 export {
-  IRequest,
+  IJRequest,
+  IJResponse,
+  // IRequest,
+  // IResponse,
+  IBaseRequest,
+  IBaseResponse,
   INetworkRequestExecutorListener,
-  IResponse,
   IRoute,
   IApi,
   IApiMap,
   VerbHandler,
   IApiContract,
   Handler,
-  // IRouterHandler,
   IMockServer,
   RouterHandler,
   QueryParser,

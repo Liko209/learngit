@@ -5,14 +5,13 @@
  * @Date: 2019-06-30 18:23:33
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { IBaseRequest, IBaseResponse } from '../../types';
 const INJECT_FLAG = '__jupiter__';
 const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';
 const GLIP_SOCKET_CHANEL_PATTERN = /^\d+\[\"([^"]*)\",(.*)\]$/;
 // [fullMatch, hostName, path]
 const URL_HOST_PATH = /^((?:https|http|wss|ws)?\:\/\/(?:[^\/:?#]+))(?:\:\d*)?(\/*[^?#]*[^?#\/])/;
-// const URL_HOST_PATH = /^(?:https|http)?\:\/\/((?:[^\/:?#]+)(?:\:\d*)?)(\/[^?#]*[^?#\/])/;
 export const SERVER_ALIAS_MAP = {
   // GLP-DEV-XMN
   'https://api-glpdevxmn.lab.nordigy.ru': 'rc',
@@ -26,27 +25,6 @@ export const SERVER_ALIAS_MAP = {
   'https://platform.ringcentral.com': 'rc',
   'https://app.glip.com': 'glip',
 };
-
-// we define a simple/common version IRequest here,
-// definition in foundation contain some business properties. we don't need it
-
-interface IRequest<T = any> {
-  url: string;
-  host: string;
-  hostAlias?: string;
-  path: string;
-  method: string;
-  headers: object;
-  data?: T;
-  withCredentials: boolean;
-}
-
-interface IResponse<T = any> {
-  data: T;
-  status: number;
-  statusText?: string;
-  headers: object;
-}
 
 interface ISocketRequest<T = object> {
   id: string;
@@ -73,7 +51,7 @@ interface ISocketResponse<T = any> {
 
 interface INetworkInfo {
   type: 'request-response' | 'socket-message';
-  url: string;
+  // url: string;
   host: string;
   path: string;
   hostAlias?: string;
@@ -84,8 +62,8 @@ export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo {
   via: string;
   // url: string;
   method: string;
-  request: IRequest<Req>;
-  response: IResponse<Res>;
+  request: IBaseRequest<Req>;
+  response: IBaseResponse<Res>;
 }
 
 export interface ISocketInfo<T = any> extends INetworkInfo {
@@ -154,19 +132,19 @@ class Utils {
     return parsed;
   }
 
-  static fromSocketRequest(request: ISocketRequest): IRequest {
+  static fromSocketRequest(request: ISocketRequest): IBaseRequest {
     return {
-      url: `${request.host}${request.uri}`,
+      // url: `${request.host}${request.uri}`,
       host: request.host,
       path: request.uri,
       method: request.method,
       headers: request.headers,
       data: request.parameters,
-      withCredentials: !request.authFree,
+      // withCredentials: !request.authFree,
     };
   }
 
-  static fromSocketResponse(response: ISocketResponse): IResponse {
+  static fromSocketResponse(response: ISocketResponse): IBaseResponse {
     const header = { ...response };
     delete header.request;
     delete header.body;
@@ -252,16 +230,16 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
               host,
               path,
               method,
-              url: openUrl,
+              // url: openUrl,
               type: 'request-response',
               via: 'xhr',
               request: {
                 host,
                 path,
                 method,
-                url: openUrl,
+                // url: openUrl,
                 // ...Utils.parseHostPatch(openUrl),
-                withCredentials: request.withCredentials,
+                // withCredentials: request.withCredentials,
                 data: request[INJECT_DATA],
                 headers: request[INJECT_HEADER],
               },
@@ -300,7 +278,7 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
     onSocketInfoComing &&
       onSocketInfoComing({
         type: 'socket-message',
-        url: socket.url,
+        // url: socket.url,
         ...Utils.parseHostPath(socket.url),
         protocol: socket.protocol,
         direction: 'send',
@@ -312,7 +290,7 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
         onSocketInfoComing &&
           onSocketInfoComing({
             type: 'socket-message',
-            url: socket.url,
+            // url: socket.url,
             ...Utils.parseHostPath(socket.url),
             protocol: socket.protocol,
             direction: 'receive',
@@ -367,15 +345,15 @@ class NetworkDataTool {
           ) as ISocketInfo;
           if (sourceRequest) {
             const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
-            const { host, path } = Utils.parseHostPath(rawRequest.url);
+            // const { host, path } = Utils.parseHostPath(rawRequest.url);
             this._infoPool.push({
-              host,
-              path,
+              host: rawRequest.host,
+              path: rawRequest.path,
               method: rawRequest.method,
               type: 'request-response',
               via: 'socket',
-              url: rawRequest.url,
-              hostAlias: this._aliasHost(host),
+              // url: rawRequest.url,
+              hostAlias: this._aliasHost(rawRequest.host),
               request: rawRequest,
               response: Utils.fromSocketResponse(socketResponse.data),
             });
@@ -401,7 +379,13 @@ class NetworkDataTool {
   save() {
     Utils.saveBlob(
       'network_all.json',
-      new Blob([JSON.stringify(this._infoPool, null, 2)]),
+      new Blob([
+        JSON.stringify(
+          this._infoPool.filter(item => !!item.hostAlias),
+          null,
+          2,
+        ),
+      ]),
     );
   }
 
@@ -410,7 +394,9 @@ class NetworkDataTool {
       'network_socket_only.json',
       new Blob([
         JSON.stringify(
-          this._infoPool.filter(item => item.type === 'socket-message'),
+          this._infoPool.filter(
+            item => item.hostAlias && item.type === 'socket-message',
+          ),
           null,
           2,
         ),
@@ -423,7 +409,9 @@ class NetworkDataTool {
       'network_request_response_only.json',
       new Blob([
         JSON.stringify(
-          this._infoPool.filter(item => item.type === 'request-response'),
+          this._infoPool.filter(
+            item => item.hostAlias && item.type === 'request-response',
+          ),
           null,
           2,
         ),

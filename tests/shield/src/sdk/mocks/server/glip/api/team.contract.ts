@@ -4,164 +4,70 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IApi } from '../../../../types';
-import { Route } from '../../../../decorators/Route.decorator';
-// interface IApiContract<T extends IApi> {
-//   api: T;
-//   desc: IRoute<T>;
-// }
-
-// interface IApi {
-//   path: string;
-//   method: string;
-//   query: object;
-//   request: object;
-//   response: object;
-// }
-
-// interface IRouterHandler<T extends IApi> {
-//   (param: T): void;
-// }
-
-// type IRoute<T extends IApi> = Omit<
-//   T,
-//   'query' | 'request' | 'response'
-// > & { query: QueryParser<T['query']> };
-
-export interface IApiTeamPost extends IApi {
+export interface IGlipTeamPost extends IApi {
   path: '/api/team/:id';
   method: 'post';
   query: {
     id: number;
   };
+  request: {
+    data: {
+      privacy: string;
+      description: string;
+      members: number[];
+      set_abbreviation: string;
+      is_team: boolean;
+      permissions: {
+        admin: {
+          uids: number[];
+          level: number;
+        };
+        user: {
+          uids: number[];
+          level: number;
+        };
+      };
+      request_id: string;
+    };
+  };
+  response: {
+    data: {
+      created_at: number;
+      creator_id: number;
+      version: number;
+      model_size: number;
+      is_new: boolean;
+      members: number[];
+      is_team: boolean;
+      is_public: boolean;
+      privacy: string;
+      description: string;
+      set_abbreviation: string;
+      permissions: {
+        admin: {
+          uids: number[];
+          level: number;
+        };
+        user: {
+          uids: number[];
+          level: number;
+        };
+      };
+      function_id: string;
+      company_id: number;
+      email_friendly_abbreviation: string;
+      guest_user_company_ids: any[];
+      _id: number;
+      most_recent_content_modified_at: number;
+      modified_at: number;
+      deactivated: boolean;
+    };
+  };
 }
 
-// const String2Number = (v: string): number => {
-//   return Number(v);
-// };
-// const createTeam: IRoute<IApiTeamPost> = {
-//   path: '/api/team/:id',
-//   method: 'post',
-//   query: {
-//     id: String2Number,
-//   },
+// export type GlipTeam = {
+//   // Get: IGet;
+//   Post: IPost;
+//   // Put: IPut;
 // };
 
-// class GlipController {
-//   @Route<IApiTeamPost>({
-//     path: '/api/team/:id',
-//     method: 'post',
-//     query: {
-//       id: String2Number,
-//     },
-//   })
-//   createTeam() {}
-// }
-
-// interface IRouter {
-//   register: <T extends IApi>(
-//     info: T & { query: QueryParser<T['query']> },
-//   ) => void;
-
-//   dispatch: () => void;
-// }
-
-// const Route = <T extends IApi>(desc: IRoute<T>): MethodDecorator => {
-//   return (target, propertyKey, descriptor) => {
-//     Reflect.defineMetadata('META_ROUTE', desc, target, propertyKey);
-//     return descriptor;
-//   };
-// };
-
-// const Controller = <T extends IApi>(desc: IRoute<T>): ClassDecorator => {
-//   return (target) => {
-//     Reflect.defineMetadata('META_CONTROLLER', target);
-//   };
-// };
-
-// class MyController {
-
-//   @Route({
-//     path: '/api/team/:id',
-//     method: 'post',
-//     query: {
-//       id: String2Number,
-//     },
-//   })
-//   createPost() {
-
-//   }
-// }
-
-// const createApi = <T extends IApiContract>(
-//   option: T & {query: QueryParser<T['query']>},
-// ): T => {
-//   const query: T['query'] = {};
-//   Object.keys(option.query).forEach(key => {
-//     query[key] = option.query[key];
-//   });
-//   return {
-//     path: apiDesc.path,
-//     method: apiDesc.method,
-//     query: {},
-//   };
-// };
-// interface IRegisterApi {
-//   ()
-// }
-
-// interface IApiTeamPost extends IApi {
-//   path: '/api/team/:id';
-//   method: 'post';
-//   query: {
-//     id: string;
-//   };
-//   // request: IRequest;
-// }
-
-// interface IApiDesc<Q> {
-//   path: string;
-//   method: string;
-//   query: QueryParser<Q>;
-// }
-
-// const String2Number = (v: string): number => {
-//   return Number(v);
-// };
-
-// const createApi = <Q extends object, T extends IApiDesc<Q>>(
-//   apiDesc: T,
-// ): IApi<Q> => {
-//   const query: IApi<Q> = {};
-//   Object.keys(apiDesc.query).forEach(key => {
-//     query[key] = apiDesc[query];
-//   });
-//   return {
-//     path: apiDesc.path,
-//     method: apiDesc.method,
-//     query: {},
-//   };
-// };
-
-// const teamPost = createApi({
-//   path: '/api/team/:id',
-//   method: 'post',
-//   query: {
-//     id: String2Number,
-//   },
-// });
-
-// type AP<T extends IApi> = {
-//   request: T['request'];
-// };
-
-// // interface IApiRouter<T extends IApi> {
-// //   (param: AP<T>): void;
-// // }
-
-// const aa: IApiTeamPost = {
-//   path: '/api/team/:id',
-//   method: 'post',
-//   query: {
-//     id: 'number',
-//   },
-// };

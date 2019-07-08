@@ -1,13 +1,11 @@
 {
-  "host": "glpdevxmn.asialab.glip.net",
+  "host": "https://glpdevxmn.asialab.glip.net",
   "path": "/api/add_team_members/44425222",
   "method": "put",
   "type": "request-response",
   "via": "socket",
-  "url": "https://glpdevxmn.asialab.glip.net/api/add_team_members/44425222",
   "hostAlias": "glip",
   "request": {
-    "url": "https://glpdevxmn.asialab.glip.net/api/add_team_members/44425222",
     "host": "https://glpdevxmn.asialab.glip.net",
     "path": "/api/add_team_members/44425222",
     "method": "put",

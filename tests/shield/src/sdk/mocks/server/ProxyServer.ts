@@ -1,9 +1,7 @@
-import { IMockServer, IResponseAdapter } from '../../types';
+import { IMockServer, IResponseAdapter, IJRequest } from '../../types';
 import { ResponseAdapter } from './ResponseAdapter';
 import {
-  IRequest,
   INetworkRequestExecutorListener,
-  IResponse,
   NETWORK_HANDLE_TYPE,
 } from 'foundation/network/network';
 import { CommonFileServer } from './CommonFileServer';
@@ -42,7 +40,7 @@ export class ProxyServer implements IMockServer {
   }
 
   handle = (
-    request: IRequest<any>,
+    request: IJRequest<any>,
     listener: INetworkRequestExecutorListener,
   ) => {
     const transRequestInfo = {

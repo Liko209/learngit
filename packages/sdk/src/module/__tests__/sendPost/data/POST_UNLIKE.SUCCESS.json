@@ -4,10 +4,8 @@
   "method": "put",
   "type": "request-response",
   "via": "socket",
-  "url": "https://glpdevxmn.asialab.glip.net/api/post/2794397700",
   "hostAlias": "glip",
   "request": {
-    "url": "https://glpdevxmn.asialab.glip.net/api/post/2794397700",
     "host": "https://glpdevxmn.asialab.glip.net",
     "path": "/api/post/2794397700",
     "method": "put",
