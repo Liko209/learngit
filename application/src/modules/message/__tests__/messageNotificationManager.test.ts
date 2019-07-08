@@ -191,7 +191,7 @@ describe('messageNotificationManager', () => {
       notificationManager.close = jest.fn();
       jest
         .spyOn(VM, 'MessageNotificationViewModel')
-        .mockImplementation(function(
+        .mockImplementation(function (
           _: number,
           hooks: { onDispose: Function },
         ) {
@@ -303,8 +303,8 @@ describe('messageNotificationManager', () => {
       ).toBe(`New person name`);
     });
 
-    it(`should unescape for text lik "you'll get it"`, () => {
-      expect(notificationManager.handlePostContent(`you'll get it`)).toEqual(
+    it(`should unescape for text like "you'll get it"`, () => {
+      expect(notificationManager.handlePostContent({ text: `you'll get it` })).toEqual(
         `you'll get it`,
       );
     });
