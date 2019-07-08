@@ -36,8 +36,8 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     );
   }
 
-  onLogin() {
-    super.onLogin();
+  onRCLogin() {
+    super.onRCLogin();
     this._initBadge();
   }
 

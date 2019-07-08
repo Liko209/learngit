@@ -17,6 +17,7 @@ import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
 import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
 import { ServiceLoader } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
@@ -34,7 +35,7 @@ describe('Sdk', () => {
   let networkManager: NetworkManager;
   let syncService: SyncService;
   const mockAccountService = {
-    scheduleReLoginGlipJob: jest.fn(),
+    startLoginGlip: jest.fn(),
     userConfig: AccountUserConfig.prototype,
     authUserConfig: AuthUserConfig.prototype,
   };
@@ -118,12 +119,9 @@ describe('Sdk', () => {
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(PhoneParserUtility.loadModule).toBeCalled();
       expect(syncService.syncData).not.toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
-        SERVICE.LOGIN,
-        true,
-      );
+      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
     });
-    it('should notify login when timestamp is valid and isFirstLogin is false', async () => {
+    it('should notify glip login when timestamp is valid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});
       syncService.getIndexTimestamp.mockReturnValue(123);
       await sdk.onAuthSuccess({
@@ -134,7 +132,25 @@ describe('Sdk', () => {
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(PhoneParserUtility.loadModule).toBeCalled();
       expect(syncService.syncData).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
+      expect(notificationCenter.emitKVChange).toBeCalledWith(
+        SERVICE.GLIP_LOGIN,
+        true,
+      );
+    });
+    it('should notify rc login when account type is rc and isFirstLogin is false', async () => {
+      syncService.syncData.mockImplementation(() => {});
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
+      await sdk.onAuthSuccess({
+        isRCOnlyMode: false,
+        isFirstLogin: false,
+      } as any);
+      expect(sdk.updateNetworkToken).toBeCalled();
+      expect(accountManager.updateSupportedServices).toBeCalled();
+      expect(PhoneParserUtility.loadModule).toBeCalled();
+      expect(syncService.syncData).toBeCalled();
+      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
     });
     it('should notify start loading when timestamp is inValid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});

@@ -115,11 +115,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
-      if (isRCOnlyMode) {
-        return;
-      }
-      this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
+      success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {

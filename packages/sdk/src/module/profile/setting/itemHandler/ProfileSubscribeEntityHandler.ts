@@ -57,7 +57,7 @@ class ProfileSubscribeEntityHandler<
       valueType: 1,
       parentModelId: 1,
       source: this.source,
-      value: profile[this.setting_key] as T,
+      value: profile ? (profile[this.setting_key] as T) : undefined,
       id: this.id,
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),

@@ -90,7 +90,7 @@ class ProfileActionController {
   async markMeConversationAsFav(): Promise<Profile | null> {
     const profile = await this.profileDataController.getProfile();
 
-    if (profile.me_tab) {
+    if (profile && profile.me_tab) {
       // Me conversation already be marked as favorite.
       return profile;
     }

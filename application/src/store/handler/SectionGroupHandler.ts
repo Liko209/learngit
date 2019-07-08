@@ -455,7 +455,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addFavoriteSection() {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const groupState: GroupStateModel = getEntity(
         ENTITY_NAME.GROUP_STATE,
@@ -465,6 +464,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupState && groupState.unreadCount
           ? groupState.unreadCount > 0
           : false;
+      const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe =
         currentUserId && _.includes(model.members, currentUserId);
       const groupService = ServiceLoader.getInstance<GroupService>(
@@ -492,7 +492,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     });
   }
   private async _addDirectMessageSection() {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
       const groupState: GroupStateModel = getEntity(
         ENTITY_NAME.GROUP_STATE,
@@ -502,6 +501,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         groupState && groupState.unreadCount
           ? groupState.unreadCount > 0
           : false;
+      const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;

@@ -98,7 +98,8 @@ class EntityBaseService<
   }
 
   protected onStarted() {
-    notificationCenter.on(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.on(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.on(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.on(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.subscribe();
@@ -106,7 +107,8 @@ class EntityBaseService<
     this._healthModuleController && this._healthModuleController.init();
   }
   protected onStopped() {
-    notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.off(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.off(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.off(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
@@ -118,7 +120,9 @@ class EntityBaseService<
     delete this._entityNotificationController;
   }
 
-  protected onLogin() {}
+  protected onRCLogin() {}
+
+  protected onGlipLogin(success: boolean) {}
 
   protected onLogout() {}
 

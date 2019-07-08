@@ -9,16 +9,21 @@ import { glipStatus } from '../../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
-  ReLoginAuthenticator,
+  GlipAuthenticator,
 } from '../../../authenticator';
-import { AccountManager } from '../../../framework';
+import { AccountManager, GLIP_LOGIN_STATUS } from '../../../framework';
 
 import { SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { ErrorParserHolder } from '../../../error';
-import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
+import {
+  ErrorParserHolder,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from '../../../error';
 import { AccountService } from '../service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { TaskController } from 'sdk/framework/controller/impl/TaskController';
+import { ReLoginGlipStrategy } from '../strategy/ReLoginGlipStrategy';
 
 interface ILogin {
   username: string;
@@ -31,8 +36,11 @@ interface IUnifiedLogin {
   token?: string;
 }
 
+const LOG_TAG = 'AuthController';
+
 class AuthController {
   private _accountManager: AccountManager;
+  private _loginGlipTask: TaskController;
 
   constructor(accountManager: AccountManager) {
     this._accountManager = accountManager;
@@ -44,23 +52,20 @@ class AuthController {
         UnifiedLoginAuthenticator.name,
         { code, token },
       );
-      mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
+      mainLogger
+        .tags(LOG_TAG)
+        .info(`unifiedLogin finished ${JSON.stringify(resp)}`);
     } catch (err) {
-      mainLogger.error(`unified login error: ${err}`);
+      mainLogger.tags(LOG_TAG).error(`unified login error: ${err}`);
       throw ErrorParserHolder.getErrorParser().parse(err);
     }
-  }
-
-  async login(params: ILogin) {
-    await this.loginGlip(params);
-    this.onLogin();
   }
 
   async loginGlip(params: ILogin) {
     try {
       await this._accountManager.login(RCPasswordAuthenticator.name, params);
     } catch (err) {
-      mainLogger.error(`err: ${err}`);
+      mainLogger.tags(LOG_TAG).error(`err: ${err}`);
       throw ErrorParserHolder.getErrorParser().parse(err);
     }
   }
@@ -88,40 +93,43 @@ class AuthController {
     return this._accountManager.isLoggedIn();
   }
 
-  scheduleReLoginGlipJob() {
-    jobScheduler.scheduleJob({
-      key: JOB_KEY.RE_LOGIN_GLIP,
-      intervalSeconds: 3600,
-      periodic: false,
-      needNetwork: true,
-      retryForever: true,
-      executeFunc: async (callback: (successful: boolean) => void) => {
-        if (await this.reLoginGlip()) {
-          callback(true);
-        } else {
-          callback(false);
-        }
-      },
-    });
+  isRCOnlyMode(): boolean {
+    return this._accountManager.isRCOnlyMode();
   }
 
-  async reLoginGlip(): Promise<boolean> {
-    try {
-      const status = await glipStatus();
-      if (status !== 'OK') {
-        return false;
-      }
-      return await this._accountManager.reLogin(ReLoginAuthenticator.name);
-    } catch (err) {
-      mainLogger.tags('ReLoginGlip').error(err);
-      return false;
+  getGlipLoginStatus(): GLIP_LOGIN_STATUS {
+    return this._accountManager.getGlipLoginStatus();
+  }
+
+  startLoginGlip() {
+    if (!this._loginGlipTask) {
+      this._loginGlipTask = new TaskController(
+        new ReLoginGlipStrategy(),
+        this.GlipLoginFunc,
+      );
     }
+    this._loginGlipTask.start();
   }
 
-  onLogin() {
-    // TODO replace all LOGIN listen on notificationCenter
-    // with accountManager.on(EVENT_LOGIN)
-    notificationCenter.emitKVChange(SERVICE.LOGIN);
+  GlipLoginFunc = async (): Promise<void> => {
+    try {
+      let result = true;
+      this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.PROCESS);
+      const status = await glipStatus();
+      if (status === 'OK') {
+        result = await this._accountManager.glipLogin(GlipAuthenticator.name);
+      } else {
+        result = false;
+      }
+      if (!result) {
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'glip login error');
+      }
+    } catch (err) {
+      mainLogger.tags(LOG_TAG).error(err);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+      this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.FAILURE);
+      throw err;
+    }
   }
 }
 
