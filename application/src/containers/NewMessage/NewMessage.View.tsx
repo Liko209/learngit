@@ -107,6 +107,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       errorUnknown,
+      canMentionTeam,
     } = this.props;
     if (errorUnknown) {
       this.renderFailError();
@@ -151,11 +152,13 @@ class NewMessageComponent extends React.Component<Props, State> {
           onChange={this.handleMessageChange}
           data-test-automation-id="newMessageTextarea"
         />
-        <JuiCheckboxLabel
-          checked={this.props.isDirectMessage}
-          label="Direct Message: Will send messages directly instead of create a group"
-          handleChange={this.props.handleCheckboxChange}
-        />
+        {canMentionTeam && (
+          <JuiCheckboxLabel
+            checked={this.props.isDirectMessage}
+            label="Direct Message: Will send messages directly instead of create a group"
+            handleChange={this.props.handleCheckboxChange}
+          />
+        )}
         <StyledTextWithLink>
           <JuiTextWithLink
             text={t('message.prompt.newMessageTip')}

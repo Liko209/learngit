@@ -6,7 +6,7 @@
 import { action, computed, observable } from 'mobx';
 import _ from 'lodash';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getGlobalValue, getEntity } from '@/store/utils';
+import { getGlobalValue, getEntity, getSingleEntity } from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import {
@@ -19,6 +19,8 @@ import GroupService, { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { UserPermission } from 'sdk/module/permission/entity';
+import UserPermissionModel from '@/store/models/UserPermission';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -35,6 +37,13 @@ class NewMessageViewModel extends StoreViewModel {
   errorUnknown: boolean = false;
   @observable
   isDirectMessage: boolean = false;
+  @computed
+  get canMentionTeam() {
+    return getSingleEntity<UserPermission, UserPermissionModel>(
+      ENTITY_NAME.USER_PERMISSION,
+      'canMentionTeam',
+    );
+  }
   @computed
   get disabledOkBtn() {
     return this.members.length === 0;
