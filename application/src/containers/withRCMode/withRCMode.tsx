@@ -8,11 +8,10 @@ import { service, GLIP_LOGIN_STATUS } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 
-const withRCMode = (hide: boolean = true) =>
-  function<P>(Comp: ComponentType<P>): any {
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
+const withRCMode = (hide: boolean = true) => function<P> (Comp: ComponentType<P>): any {
+  const accountService = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  );
     type State = {
       glipLoginSuccess: boolean;
     };
@@ -41,6 +40,6 @@ const withRCMode = (hide: boolean = true) =>
         return <Comp {...this.props as P} />;
       }
     };
-  };
+};
 
 export { withRCMode };

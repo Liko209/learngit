@@ -23,7 +23,7 @@ import { IDBObserver } from './IDBObserver';
 const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
-  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
 > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;

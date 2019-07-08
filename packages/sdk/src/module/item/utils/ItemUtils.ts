@@ -19,26 +19,22 @@ type EventLike = SanitizedEventItem;
 
 class ItemUtils {
   static taskFilter<T extends TaskLike>(groupId: number, showAll: boolean) {
-    return (task: T) =>
-      this._isValidExpectedType(groupId, task, TYPE_ID_TASK) &&
+    return (task: T) => this._isValidExpectedType(groupId, task, TYPE_ID_TASK) &&
       (showAll || !task.complete);
   }
 
   static fileFilter<T extends FileLike>(groupId: number) {
-    return (file: T) =>
-      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+    return (file: T) => this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
       !this._isPic(file);
   }
 
   static imageFilter<T extends FileLike>(groupId: number) {
-    return (file: T) =>
-      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+    return (file: T) => this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
       this._isPic(file);
   }
 
   static eventFilter<T extends EventLike>(groupId: number) {
-    return (event: T) =>
-      this._isValidExpectedType(groupId, event, TYPE_ID_EVENT) &&
+    return (event: T) => this._isValidExpectedType(groupId, event, TYPE_ID_EVENT) &&
       this._isTodayOrAfter(event);
   }
 

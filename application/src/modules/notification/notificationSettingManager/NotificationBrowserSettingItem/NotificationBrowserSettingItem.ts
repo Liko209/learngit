@@ -9,7 +9,7 @@ import { NotificationBrowserSettingItemViewModel } from './NotificationBrowserSe
 import { NotificationBrowserSettingItemProps } from './types';
 
 const NotificationBrowserSettingItem = buildContainer<
-  NotificationBrowserSettingItemProps
+NotificationBrowserSettingItemProps
 >({
   View: NotificationBrowserSettingItemView,
   ViewModel: NotificationBrowserSettingItemViewModel,

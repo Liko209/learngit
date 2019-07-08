@@ -166,9 +166,7 @@ class AccountService extends AbstractService
   async getRCToken() {
     let rcToken = this.authUserConfig.getRCToken();
     if (rcToken && this._isRCTokenExpired(rcToken)) {
-      rcToken = await this.refreshRCToken().catch((reason: JError) => {
-        return null;
-      });
+      rcToken = await this.refreshRCToken().catch(() => null);
     }
 
     return rcToken;

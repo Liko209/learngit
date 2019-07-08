@@ -49,9 +49,7 @@ class FileNameEditDialogViewModel extends FileActionViewModel {
     return fileNameArray.join('.');
   }
 
-  formatFileName = (name: string) => {
-    return name && name.replace(/^\s*/, '').replace(/[/?,*:&]/g, '_');
-  };
+  formatFileName = (name: string) => name && name.replace(/^\s*/, '').replace(/[/?,*:&]/g, '_');
 
   @action
   updateNewFileName = (name: string) => {

@@ -16,7 +16,9 @@ import {
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
-import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
+import {
+  Api, HandleByGlip, HandleByRingCentral, HandleByUpload,
+} from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';

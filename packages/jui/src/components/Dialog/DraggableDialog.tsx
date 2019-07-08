@@ -35,10 +35,9 @@ const PaperComponent = ({
   handle,
   TransitionComponent = JuiFade,
   ...rest
-}: PaperProps) => {
-  return (
+}: PaperProps) => (
     <Draggable
-      bounds='body'
+      bounds="body"
       defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
       ref={dragRef}
       onStart={onStart}
@@ -52,8 +51,7 @@ const PaperComponent = ({
         </TransitionComponent>
       </div>
     </Draggable>
-  );
-};
+);
 
 const StyledDraggableDialog = styled(JuiDialog)`
   &.root {

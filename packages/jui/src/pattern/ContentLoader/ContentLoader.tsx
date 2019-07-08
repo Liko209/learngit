@@ -33,8 +33,8 @@ class ContentLoader extends PureComponent<ThemeProps> {
         <Grid
           style={{ height: '100%' }}
           container
-          direction='column'
-          justify='space-between'
+          direction="column"
+          justify="space-between"
         >
           <Grid
             style={{
@@ -43,8 +43,8 @@ class ContentLoader extends PureComponent<ThemeProps> {
               borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
             }}
             container
-            direction='row'
-            justify='space-between'
+            direction="row"
+            justify="space-between"
           >
             <Grid
               item
@@ -83,7 +83,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 <ReactContentLoader
                   height={16 * height}
                   width={136.5 * width}
-                  preserveAspectRatio='none'
+                  preserveAspectRatio="none"
                   style={{
                     width: '100%',
                     height: `${16 * height}px`,
@@ -92,8 +92,8 @@ class ContentLoader extends PureComponent<ThemeProps> {
                   <rect
                     x={0}
                     y={3 * height}
-                    width='100%'
-                    height='62.5%'
+                    width="100%"
+                    height="62.5%"
                     rx={width}
                     ry={height}
                   />
@@ -128,17 +128,17 @@ class ContentLoader extends PureComponent<ThemeProps> {
           </Grid>
           <Grid
             container
-            direction='row'
-            alignItems='stretch'
-            justify='space-between'
+            direction="row"
+            alignItems="stretch"
+            justify="space-between"
             style={{
               flex: 1,
             }}
           >
             <Grid
               container
-              direction='column'
-              justify='space-between'
+              direction="column"
+              justify="space-between"
               style={{
                 width: `${18 * width}px`,
                 backgroundColor: `${grey['50']}`,
@@ -221,7 +221,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
                 />
               </ReactContentLoader>
             </Grid>
-            <Hidden only='xs'>
+            <Hidden only="xs">
               <Grid
                 item
                 style={{

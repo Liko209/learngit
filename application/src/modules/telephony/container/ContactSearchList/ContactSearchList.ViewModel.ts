@@ -181,11 +181,11 @@ export class ContactSearchListViewModel
         this.isSearching = false;
         const res = this.shouldDisplayPhoneNumberItem
           ? [
-              {
-                id: CONTACT_SEARCH_PHONE_NUMBER_ID,
-                directDial: parsedPhone.parsed,
-              } as SearchItem,
-            ]
+            {
+              id: CONTACT_SEARCH_PHONE_NUMBER_ID,
+              directDial: parsedPhone.parsed,
+            } as SearchItem,
+          ]
           : [];
         this.searchResult = currentSearchResult
           ? [...res, ...currentSearchResult.phoneContacts]
@@ -241,9 +241,7 @@ export class ContactSearchListViewModel
   };
 
   @action
-  hasMore = () => {
-    return this.displayIdx < this.searchResultLength - 1;
-  };
+  hasMore = () => this.displayIdx < this.searchResultLength - 1;
 
   @computed
   get trimmedInputString() {

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { observable } from 'mobx';
 import { Profile } from 'sdk/module/profile/entity';
 import {

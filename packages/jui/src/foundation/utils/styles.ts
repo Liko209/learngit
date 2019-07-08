@@ -81,14 +81,13 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
 function palette(name: keyof Palette, sub: string, opacities?: number) {
   if (!opacities) return getPalette(name, sub);
 
-  return ({ theme }: { theme: Theme }) =>
-    tinycolor(getPalette(name, sub)({ theme }))
-      .setAlpha(
-        String(opacities).indexOf('.') > -1
-          ? opacities
-          : theme.palette.action.hoverOpacity * opacities,
-      )
-      .toRgbString();
+  return ({ theme }: { theme: Theme }) => tinycolor(getPalette(name, sub)({ theme }))
+    .setAlpha(
+      String(opacities).indexOf('.') > -1
+        ? opacities
+        : theme.palette.action.hoverOpacity * opacities,
+    )
+    .toRgbString();
 }
 
 /**
@@ -120,15 +119,13 @@ function grey(sub: string, opacities?: number) {
 
 function activeOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) =>
-      1 - theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) => 1 - theme.palette.action.hoverOpacity * 2};
   `;
 }
 
 function disabledOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) =>
-      theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) => theme.palette.action.hoverOpacity * 2};
   `;
 }
 
@@ -203,15 +200,11 @@ const rippleEnter = (theme: Theme) => keyframes`
 `;
 
 function radius(type: keyof Theme['radius']) {
-  return ({ theme }: { theme: Theme }): string | number => {
-    return theme.radius[type];
-  };
+  return ({ theme }: { theme: Theme }): string | number => theme.radius[type];
 }
 
 function opacity(type: keyof Theme['opacity']) {
-  return ({ theme }: { theme: Theme }): number => {
-    return theme.opacity[type];
-  };
+  return ({ theme }: { theme: Theme }): number => theme.opacity[type];
 }
 
 export {

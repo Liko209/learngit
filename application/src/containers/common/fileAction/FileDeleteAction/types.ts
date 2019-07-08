@@ -16,4 +16,4 @@ export type FileDeleteActionViewProps = {
   fileName: string;
   handleDeleteFile: Function;
 } & FileDeleteActionProps &
-  WithTranslation;
+WithTranslation;

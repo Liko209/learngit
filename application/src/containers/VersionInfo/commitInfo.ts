@@ -1,4 +1,4 @@
-/* eslint:disable */
+/* eslint-disable */
 
 export const gitCommitInfo = {
   currentBranch: 'feature/FIJI-120',

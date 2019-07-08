@@ -16,29 +16,23 @@ const ENTITY_MAP = {
   [SearchItemTypes.PEOPLE]: {
     name: ENTITY_NAME.PERSON,
     event: ENTITY.PERSON,
-    getByIds: async (ids: number[]) => {
-      return ServiceLoader.getInstance<PersonService>(
-        ServiceConfig.PERSON_SERVICE,
-      ).getPersonsByIds(ids);
-    },
+    getByIds: async (ids: number[]) => ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    ).getPersonsByIds(ids),
   },
   [SearchItemTypes.GROUP]: {
     name: ENTITY_NAME.GROUP,
     event: ENTITY.GROUP,
-    getByIds: async (ids: number[]) => {
-      return ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      ).getGroupsByIds(ids);
-    },
+    getByIds: async (ids: number[]) => ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getGroupsByIds(ids),
   },
   [SearchItemTypes.TEAM]: {
     name: ENTITY_NAME.GROUP,
     event: ENTITY.GROUP,
-    getByIds: async (ids: number[]) => {
-      return ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      ).getGroupsByIds(ids);
-    },
+    getByIds: async (ids: number[]) => ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getGroupsByIds(ids),
   },
 };
 

@@ -46,11 +46,9 @@ class ParseContent {
 
     this._replacers
       .sort((a, b) => a.startIndex - b.startIndex)
-      .forEach(({ element }) =>
-        Array.isArray(element)
-          ? element.forEach(pushChild)
-          : pushChild(element),
-      );
+      .forEach(({ element }) => (Array.isArray(element)
+        ? element.forEach(pushChild)
+        : pushChild(element)));
 
     if (children.length === 1 && typeof children[0] === 'string') {
       return children[0];

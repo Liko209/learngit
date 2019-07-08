@@ -122,8 +122,8 @@ export class DeviceSyncManger {
     const realDeviceId =
       deviceId === defaultAudioID
         ? this._deviceManager.getDefaultDeviceId(
-            this._deviceManager.getDevices(),
-          )
+          this._deviceManager.getDevices(),
+        )
         : deviceId;
     const device = this._deviceManager
       .getDevices()
@@ -140,7 +140,9 @@ export class DeviceSyncManger {
     if (storeId !== this._storage.get()) {
       telephonyLogger
         .tags(LOG_TAG)
-        .info('setDevice to storage', { source, deviceId, storeId, device });
+        .info('setDevice to storage', {
+          source, deviceId, storeId, device,
+        });
       this._storage.set(storeId);
     }
     this._lastUsedDeviceManager.record(storeId);

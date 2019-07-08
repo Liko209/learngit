@@ -15,14 +15,10 @@ type ResponsiveProps = {
   content: ReactElement;
 };
 
-const LeftResponsive = withResponsive((props: ResponsiveProps) => {
-  return React.cloneElement(props.content);
-}, {});
+const LeftResponsive = withResponsive((props: ResponsiveProps) => React.cloneElement(props.content), {});
 
 const RightResponsive = withResponsive(
-  (props: ResponsiveProps) => {
-    return React.cloneElement(props.content);
-  },
+  (props: ResponsiveProps) => React.cloneElement(props.content),
   {
     visualMode: VISUAL_MODE.BOTH,
     maxWidth: 0,
@@ -35,7 +31,7 @@ const RightResponsive = withResponsive(
 @observer
 class ViewerContentViewComponent extends Component<
   WithTranslation & ViewerContentViewProps
-> {
+  > {
   render() {
     return (
       <JuiImageViewerContent>

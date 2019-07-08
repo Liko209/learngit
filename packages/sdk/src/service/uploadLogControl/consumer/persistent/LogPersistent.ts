@@ -90,9 +90,7 @@ export class LogPersistent implements ILogPersistent {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkDelete(
-      array.map((item: PersistentLogEntity) => {
-        return item.id;
-      }),
+      array.map((item: PersistentLogEntity) => item.id),
     );
   };
 

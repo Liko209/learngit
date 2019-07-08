@@ -72,9 +72,9 @@ function ensureOptions(
 ): JuiDragZoomOptions {
   return options
     ? {
-        ...DEFAULT_DRAG_ZOOM_OPTIONS,
-        ...options,
-      }
+      ...DEFAULT_DRAG_ZOOM_OPTIONS,
+      ...options,
+    }
     : DEFAULT_DRAG_ZOOM_OPTIONS;
 }
 
@@ -118,13 +118,9 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     return this.props.contentRef || this._contentRef;
   }
 
-  canZoomIn = () => {
-    return this.state.canZoomIn;
-  };
+  canZoomIn = () => this.state.canZoomIn;
 
-  canZoomOut = () => {
-    return this.state.canZoomOut;
-  };
+  canZoomOut = () => this.state.canZoomOut;
 
   reset = () => {
     this.getZoomRef().current!.reset();
@@ -247,7 +243,9 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       children,
     } = this.props;
     const { transform, canDrag } = this.state;
-    const { minPixel, maxPixel, step, ...zoomOptions } = ensureOptions(options);
+    const {
+      minPixel, maxPixel, step, ...zoomOptions
+    } = ensureOptions(options);
 
     const {
       minScale = zoomOptions.minScale,
@@ -285,31 +283,30 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
                 this.setState({ isDragging: false });
               }}
             >
-              {({ isDragging }) =>
-                React.cloneElement(
-                  children({
-                    canDrag,
-                    isDragging,
-                    transform,
-                    fitWidth: this._fitWidth,
-                    fitHeight: this._fitHeight,
-                    notifyContentSizeChange: this.updateContentSize,
-                  }),
-                  {
-                    ref: this._contentRef,
-                  },
-                )
+              {({ isDragging }) => React.cloneElement(
+                children({
+                  canDrag,
+                  isDragging,
+                  transform,
+                  fitWidth: this._fitWidth,
+                  fitHeight: this._fitHeight,
+                  notifyContentSizeChange: this.updateContentSize,
+                }),
+                {
+                  ref: this._contentRef,
+                },
+              )
               }
             </DragArea>
           )}
         </JuiZoomComponent>
         <ZoomButtonGroup
-          className='zoomGroup'
+          className="zoomGroup"
           resetMode={transform.scale !== 1}
           centerText={formatScaleText(transform.scale)}
           ZoomOut={
             <JuiIconButton
-              variant='plain'
+              variant="plain"
               tooltipTitle={zoomOutText}
               ariaLabel={zoomOutText}
               disabled={transform.scale - step < minScale}
@@ -322,7 +319,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           }
           ZoomIn={
             <JuiIconButton
-              variant='plain'
+              variant="plain"
               tooltipTitle={zoomInText}
               ariaLabel={zoomInText}
               disabled={transform.scale + step > maxScale}
@@ -335,7 +332,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           }
           ZoomReset={
             <JuiIconButton
-              variant='plain'
+              variant="plain"
               tooltipTitle={zoomResetText}
               ariaLabel={zoomResetText}
               disabled={transform.scale === 1}

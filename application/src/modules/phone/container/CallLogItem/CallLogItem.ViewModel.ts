@@ -94,8 +94,7 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   get duration() {
     const { duration } = this.data;
     const { secondTime, hourTime, minuteTime } = getHourMinuteSeconds(duration);
-    const normalize = (s: number, suffix: string) =>
-      s > 0 ? `${s} ${suffix}` : '';
+    const normalize = (s: number, suffix: string) => (s > 0 ? `${s} ${suffix}` : '');
     const array = [
       normalize(hourTime, i18nP('common.time.hour')),
       normalize(minuteTime, i18nP('common.time.min')),
@@ -131,9 +130,7 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
     );
   }
 
-  shouldShowCall = async () => {
-    return this._rcInfoService.isVoipCallingAvailable();
-  };
+  shouldShowCall = async () => this._rcInfoService.isVoipCallingAvailable();
 }
 
 export { CallLogItemViewModel };

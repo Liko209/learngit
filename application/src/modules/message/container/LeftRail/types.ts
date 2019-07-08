@@ -27,4 +27,6 @@ type LeftRailViewProps = {
   currentPostListType: string;
 };
 
-export { LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry };
+export {
+  LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry,
+};

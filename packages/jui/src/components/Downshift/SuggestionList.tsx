@@ -26,8 +26,8 @@ type JuiDownshiftSuggestionListState = {
 };
 
 class JuiDownshiftSuggestionList extends React.PureComponent<
-  JuiDownshiftSuggestionListProps,
-  JuiDownshiftSuggestionListState
+JuiDownshiftSuggestionListProps,
+JuiDownshiftSuggestionListState
 > {
   state = {
     renderedRange: { startIndex: 0, stopIndex: 0 },
@@ -66,9 +66,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
           onRenderedRangeChange={this._handleRenderedRangeChange}
           style={VL_STYLE}
         >
-          {suggestionItems.map((suggestionItem: SelectedItem, index: number) =>
-            this._renderItem(suggestionItem, index),
-          )}
+          {suggestionItems.map((suggestionItem: SelectedItem, index: number) => this._renderItem(suggestionItem, index))}
         </VirtualizedListWithAutoSizer>
       </StyledPaper>
     );

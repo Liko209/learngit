@@ -115,9 +115,9 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       <React.Fragment>
         <EnvSelect />
         <a
-          target='_blank'
-          rel='noopener noreferrer'
-          href='https://wiki.ringcentral.com/display/XTO/Jupiter+test+account'
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
         >
           Test Account
         </a>
@@ -127,7 +127,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     return (
       <div>
         <Form onSubmit={this.handleSubmit}>
-          <Button type='submit' data-anchor='btnLogin'>
+          <Button type="submit" data-anchor="btnLogin">
             {t('auth.signIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>

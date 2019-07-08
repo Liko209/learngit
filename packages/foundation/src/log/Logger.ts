@@ -127,12 +127,8 @@ export class Logger implements ILogger, ILoggerCore {
     this._logEntityProcessor = new LogEntityProcessor();
     this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
     this._memoizeTags = _.memoize(
-      (_tags: string[]): ILogger => {
-        return new LoggerTagDecorator(this, _tags);
-      },
-      (_tags: string[]) => {
-        return _tags.join(',');
-      },
+      (_tags: string[]): ILogger => new LoggerTagDecorator(this, _tags),
+      (_tags: string[]) => _tags.join(','),
     );
   }
 
@@ -172,9 +168,7 @@ export class Logger implements ILogger, ILoggerCore {
     return this.doLog(buildLogEntity(LOG_LEVEL.FATAL, [], params));
   }
 
-  tags = (...tags: string[]): ILogger => {
-    return this._memoizeTags(tags);
-  }
+  tags = (...tags: string[]): ILogger => this._memoizeTags(tags)
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;

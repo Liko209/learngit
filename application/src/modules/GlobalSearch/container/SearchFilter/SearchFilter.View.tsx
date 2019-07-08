@@ -65,10 +65,9 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           onChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           value={searchOptions.type as string}
-          automationId='typeSelector'
+          automationId="typeSelector"
         >
-          {typeFilter.map((item: SearchContentTypeItem) => {
-            return (
+          {typeFilter.map((item: SearchContentTypeItem) => (
               <JuiMenuItem
                 automationId={`typeSelector-${item.name}`}
                 value={item.value}
@@ -77,19 +76,17 @@ class SearchFilterViewComponent extends Component<ViewProps> {
                 {t(`globalSearch.${item.name}`)}
                 {item.count !== null ? ` (${item.count})` : ''}
               </JuiMenuItem>
-            );
-          })}
+          ))}
         </JuiLineSelect>
 
         <JuiLineSelect
           menuProps={this.lineSelectProps}
           onChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
-          automationId='timePostSelector'
+          automationId="timePostSelector"
           value={this.props.timeType}
         >
-          {timePeriodFilter.map((item: SearchContentTypeItem) => {
-            return (
+          {timePeriodFilter.map((item: SearchContentTypeItem) => (
               <JuiMenuItem
                 automationId={`timePost-${item.value}`}
                 value={item.id}
@@ -97,8 +94,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
               >
                 {t(`globalSearch.${item.value}`)}
               </JuiMenuItem>
-            );
-          })}
+          ))}
         </JuiLineSelect>
       </JuiSearchFilter>
     );

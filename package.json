@@ -71,13 +71,11 @@
     "enzyme-adapter-react-16": "1.9.1",
     "eslint": "5.16.0",
     "eslint-config-airbnb-typescript": "4.0.0",
-    "eslint-config-prettier": "6.0.0",
     "eslint-config-react-app": "4.0.1",
     "eslint-plugin-flowtype": "3.11.1",
     "eslint-plugin-import": "2.17.3",
     "eslint-plugin-jest": "22.6.4",
     "eslint-plugin-jsx-a11y": "6.2.1",
-    "eslint-plugin-prettier": "3.1.0",
     "eslint-plugin-react": "7.13.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "fake-indexeddb": "2.0.4",
@@ -107,7 +105,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
       "pre-push": "concurrently -r \"npm run tsc && npm run clean:build\" && npm run lint-all &&  npm run test:changed",
       "commit-msg": "node scripts/validate-commit-msg.js",
       "post-merge": "node scripts/update-dependencies.js"
@@ -115,11 +112,5 @@
   },
   "dependencies": {
     "firebase": "6.2.3"
-  },
-  "lint-staged": {
-    "**/*.ts?(x)": [
-      "prettier --write",
-      "git add"
-    ]
   }
 }

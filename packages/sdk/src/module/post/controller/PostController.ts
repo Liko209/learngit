@@ -58,9 +58,7 @@ class PostController {
         {
           requestController,
           canSaveRemoteData: false,
-          canRequest: () => {
-            return true;
-          },
+          canRequest: () => true,
         },
       );
 
@@ -167,9 +165,7 @@ class PostController {
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
-        (entity: Post) => {
-          return `${ENTITY.POST}.${entity.group_id}`;
-        },
+        (entity: Post) => `${ENTITY.POST}.${entity.group_id}`,
       );
     }
     return this._preInsertController;

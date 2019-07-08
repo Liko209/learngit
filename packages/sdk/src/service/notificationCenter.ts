@@ -12,7 +12,7 @@ export type NotificationEntityIds<IdType extends ModelIdType = number> = {
 };
 
 export type NotificationEntityBody<T, IdType extends ModelIdType = number> = NotificationEntityIds<
-  IdType
+IdType
 > & {
   entities: Map<IdType, T>;
 };

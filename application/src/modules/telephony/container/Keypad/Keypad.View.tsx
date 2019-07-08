@@ -25,10 +25,10 @@ class KeypadViewComponent extends Component<Props> {
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color='grey.900'
+          color="grey.900"
           disableToolTip
           onClick={this._handleKeypad}
-          size='xxlarge'
+          size="xxlarge"
         >
           keypad
         </JuiIconButton>

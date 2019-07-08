@@ -24,6 +24,6 @@ function parseDirectoryConfig(): DirectoryConfig {
     config[keyName] = config[keyName] || {};
     config[keyName][envName] = requireContext(envPath).default;
     return config;
-  },                 directoryConfig);
+  }, directoryConfig);
 }
 export { parseDirectoryConfig };

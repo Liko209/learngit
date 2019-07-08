@@ -24,7 +24,7 @@ class TestLogin implements ITestLoginInfo {
 const validUser = new TestLogin();
 
 class TestAccount extends AbstractAccount {
-  updateSupportedServices(data: any): Promise<void> {
+  updateSupportedServices(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
@@ -36,7 +36,7 @@ class TestAccount extends AbstractAccount {
     return 'TEST';
   }
 
-  protected getSupportedServicesByIndexData(indexData: any): string[] {
+  protected getSupportedServicesByIndexData(): string[] {
     return ['TestService'];
   }
 }

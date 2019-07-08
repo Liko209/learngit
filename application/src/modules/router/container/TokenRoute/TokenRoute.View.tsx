@@ -12,12 +12,12 @@ import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { JuiModal } from 'jui/components/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
-  WithTranslation & {
-    unifiedLogin: Function;
-    redirectToIndex: Function;
-    isOffline: boolean;
-    isError: boolean;
-  };
+WithTranslation & {
+  unifiedLogin: Function;
+  redirectToIndex: Function;
+  isOffline: boolean;
+  isError: boolean;
+};
 
 @observer
 class TokenRoute extends Component<TokenRouteProps> {

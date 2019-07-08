@@ -122,7 +122,7 @@ class SocketCanConnectController {
     if (!this._canConnectTimeOutId) {
       this._canConnectTimeOutId = setTimeout(() => {
         this._handleReTry(callback, forceOnline);
-      },                                     time);
+      }, time);
     } else {
       mainLogger.warn(TAG, ' has already exits time out id');
     }

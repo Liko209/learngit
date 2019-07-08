@@ -42,14 +42,10 @@ class HoverControllerViewModel<T> extends StoreViewModel<T> {
   };
 
   @action
-  selectIndexChange = (cellIndex: number) => {
-    return this.updateCacheIndex(cellIndex);
-  };
+  selectIndexChange = (cellIndex: number) => this.updateCacheIndex(cellIndex);
 
   @action
-  isHover = (cellIndex: number) => {
-    return cellIndex === this.selectIndex;
-  };
+  isHover = (cellIndex: number) => cellIndex === this.selectIndex;
 }
 
 type HoverControllerBaseProps = {

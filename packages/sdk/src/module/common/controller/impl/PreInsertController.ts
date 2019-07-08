@@ -19,7 +19,7 @@ import { mainLogger } from 'foundation';
 const LOG_TAG = '[PreInsertController]';
 const UNIQUE_ID = 'unique_id';
 class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
-  implements IPreInsertController<T> {
+implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
 
   constructor(

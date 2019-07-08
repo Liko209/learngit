@@ -31,6 +31,7 @@ abstract class AbstractHandleType implements IHandleType {
   ) => {
     callback(true, 0);
   }
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   onRefreshTokenFailure = (forceLogout: boolean) => {
   };
 
@@ -46,9 +47,7 @@ abstract class AbstractHandleType implements IHandleType {
   }
 
   requestDecoration(handler: ITokenHandler): (request: IRequest) => boolean {
-    return () => {
-      return true;
-    }
-  };
+    return () => true;
+  }
 }
 export default AbstractHandleType;

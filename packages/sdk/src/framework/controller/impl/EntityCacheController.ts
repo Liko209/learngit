@@ -6,7 +6,6 @@
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import { IdModel, Raw, ModelIdType } from '../../model';
-import _ from 'lodash';
 
 enum CACHE_INITIAL_STATUS {
   NONE,
@@ -88,7 +87,7 @@ class EntityCacheController<
     return result ? result : null;
   }
 
-  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[]): Promise<T[]> {
     const entities: T[] = [];
 
     ids.forEach((id: IdType) => {

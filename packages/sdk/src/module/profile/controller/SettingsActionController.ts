@@ -43,7 +43,6 @@ class SettingsActionController {
     if (profileId) {
       const preHandlePartial = (
         partialModel: Partial<Raw<Profile>>,
-        originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         const result = {
           ...updateProfile,
@@ -54,9 +53,7 @@ class SettingsActionController {
       await this._partialModifyController.updatePartially(
         profileId,
         preHandlePartial,
-        async (newProfile: Profile) => {
-          return await this._requestController.put(newProfile);
-        },
+        async (newProfile: Profile) => await this._requestController.put(newProfile),
       );
     }
   }

@@ -10,21 +10,17 @@ const ENV_PROJECT_MAP = {
 };
 
 export class FeedbackApi {
-  private static _getAuthHeader = () => {
-    return {
-      Authorization: `Bearer ${SENTRY_FEEDBACK_API_KEY}`,
-      'Content-Type': 'application/json',
-    };
-  }
+  private static _getAuthHeader = () => ({
+    Authorization: `Bearer ${SENTRY_FEEDBACK_API_KEY}`,
+    'Content-Type': 'application/json',
+  })
 
-  static sendFeedback = async (data: FeedbackData) => {
-    return await axios.post(
-      `/sentry/api/0/projects/jupiter-ct/${ENV_PROJECT_MAP[JUPITER_ENV] ||
+  static sendFeedback = async (data: FeedbackData) => await axios.post(
+    `/sentry/api/0/projects/jupiter-ct/${ENV_PROJECT_MAP[JUPITER_ENV] ||
         ENV_PROJECT_MAP['development']}/user-feedback/`,
-      data,
-      {
-        headers: FeedbackApi._getAuthHeader(),
-      },
-    );
-  }
+    data,
+    {
+      headers: FeedbackApi._getAuthHeader(),
+    },
+  )
 }

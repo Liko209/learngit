@@ -3,7 +3,9 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, comparer, computed } from 'mobx';
+import {
+  observable, action, comparer, computed,
+} from 'mobx';
 import { ProfileDialogGroupViewModel } from '../../Group.ViewModel';
 import { MembersProps, MembersViewProps } from './types';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
@@ -87,7 +89,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   }
 
   @action
-  hasMore = (direction: 'up' | 'down') => {
+  hasMore = () => {
     if (this.keywords) {
       return false;
     }

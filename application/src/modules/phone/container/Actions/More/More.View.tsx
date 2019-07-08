@@ -29,17 +29,17 @@ class MoreViewComponent extends Component<Props, State> {
     const { t, automationId } = this.props;
     return (
       <JuiIconButton
-        color='grey.600'
-        variant='round'
+        color="grey.600"
+        variant="round"
         autoFocus={false}
-        size='small'
-        key='voicemail-more'
+        size="small"
+        key="voicemail-more"
         data-test-automation-id={automationId}
         ariaLabel={t('common.more')}
         tooltipTitle={t('common.more')}
         tooltipForceHide={tooltipForceHide}
         onClick={this.openPopper}
-        className='phone-more-button'
+        className="phone-more-button"
       >
         more_horiz
       </JuiIconButton>
@@ -69,7 +69,7 @@ class MoreViewComponent extends Component<Props, State> {
         open={open}
         anchorEl={anchorEl}
         Anchor={this._Anchor}
-        placement='bottom-start'
+        placement="bottom-start"
         onClose={this.closePopper}
       >
         <JuiMenuList onClick={this.closePopper}>{children}</JuiMenuList>

@@ -14,4 +14,4 @@ export type ViewInPostActionProps = FileActionProps & {
 export type ViewInPostActionViewProps = {
   viewInPost: Function;
 } & ViewInPostActionProps &
-  WithTranslation;
+WithTranslation;

@@ -2,9 +2,13 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 11:05:46
  */
-import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
+import {
+  LogEntity, logManager, LOG_LEVEL, mainLogger,
+} from 'foundation';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
-import { ENTITY, SERVICE, WINDOW, DOCUMENT } from 'sdk/service/eventKey';
+import {
+  ENTITY, SERVICE, WINDOW, DOCUMENT,
+} from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { LogMemoryPersistent, LogUploadConsumer, IAccessor } from './consumer';
 import { configManager } from './config';
@@ -14,7 +18,6 @@ import {
   MemoryCollector,
   FixSizeMemoryLogCollection,
 } from './collectors';
-import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { IZipItemProvider, ZipItemLevel, IZipWorker } from './types';
 import { ZipLogZipItemProvider } from './ZipLogZipItemProvider';
@@ -92,7 +95,7 @@ export class LogControlManager implements IAccessor {
         'unhandledrejection',
         this.windowError.bind(this),
       );
-      window.addEventListener('beforeunload', (event: any) => {
+      window.addEventListener('beforeunload', () => {
         this.flush();
       });
     }
@@ -183,13 +186,9 @@ export class LogControlManager implements IAccessor {
     const result = await Promise.all(
       this._zipItemProviders
         .filter(provider => level >= provider.level)
-        .map(provider => {
-          return provider.getZipItems();
-        }),
+        .map(provider => provider.getZipItems()),
     );
-    const zipItems = result.reduce((previousValue, currentValue) => {
-      return previousValue.concat(currentValue);
-    });
+    const zipItems = result.reduce((previousValue, currentValue) => previousValue.concat(currentValue));
     if (!this.worker) {
       const zipWorker = (await import('./zip.worker')) as any;
       this.worker = createWorker(zipWorker.default);

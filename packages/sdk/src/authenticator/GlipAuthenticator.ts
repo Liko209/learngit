@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IAuthenticator, IAuthResponse, IAuthParams } from '../framework';
+import { IAuthenticator, IAuthResponse } from '../framework';
 import { loginGlip, ITokenModel } from '../api';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../module/account/service';
@@ -16,7 +16,7 @@ import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 const LOG_TAG = 'GlipAuthenticator';
 
 class GlipAuthenticator implements IAuthenticator {
-  async authenticate(params: IAuthParams): Promise<IAuthResponse> {
+  async authenticate(): Promise<IAuthResponse> {
     // login glip
     try {
       const authConfig = ServiceLoader.getInstance<AccountService>(

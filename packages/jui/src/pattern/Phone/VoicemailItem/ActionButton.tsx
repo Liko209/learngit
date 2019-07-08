@@ -17,7 +17,7 @@ type ActionButtonProps = {
   onClick: () => void;
 };
 
-const ActionButton = function({
+const ActionButton = function ({
   icon,
   type,
   tooltip,
@@ -29,10 +29,10 @@ const ActionButton = function({
     return (
       <JuiActionIconWrapper>
         <JuiIconButton
-          color='common.white'
-          variant='round'
+          color="common.white"
+          variant="round"
           autoFocus={false}
-          size='small'
+          size="small"
           data-test-automation-id={automationId}
           ariaLabel={screenReader}
           tooltipTitle={tooltip}

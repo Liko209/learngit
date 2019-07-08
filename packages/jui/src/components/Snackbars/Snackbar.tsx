@@ -17,7 +17,7 @@ type JuiSnackbarProps = MuiSnackbarProps & {
 
 const WrappedMuiSnackbar = React.memo((props: JuiSnackbarProps) => {
   const { noFix, ...rest } = props;
-  return <MuiSnackbar className='snackbar' {...rest} />;
+  return <MuiSnackbar className="snackbar" {...rest} />;
 });
 
 const JuiSnackbar = styled<JuiSnackbarProps>(WrappedMuiSnackbar)`

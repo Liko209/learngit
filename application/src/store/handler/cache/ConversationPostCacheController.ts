@@ -40,9 +40,7 @@ class ConversationPostCacheController extends PostCacheController {
   }
 
   private _preloadThumbnail(postModel: PostModel) {
-    const itemIds: number[] = postModel.itemIds.filter((id: number) => {
-      return TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id);
-    });
+    const itemIds: number[] = postModel.itemIds.filter((id: number) => TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id));
 
     if (itemIds && itemIds.length) {
       this._getThumbnailPreloadController().preload(itemIds);

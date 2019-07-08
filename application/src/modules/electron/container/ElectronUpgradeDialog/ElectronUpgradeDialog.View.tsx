@@ -10,7 +10,7 @@ import { JuiButton } from 'jui/components/Buttons';
 import { ElectronUpgradeDialogViewProps, Ref } from './types';
 
 class ElectronUpgradeDialogComponent extends React.Component<
-  ElectronUpgradeDialogViewProps
+ElectronUpgradeDialogViewProps
 > {
   static _portalRef: null | Ref = null;
 
@@ -37,9 +37,9 @@ class ElectronUpgradeDialogComponent extends React.Component<
     const Upgrade = (
       <JuiButton
         onClick={this.handleUpgrade}
-        color='primary'
+        color="primary"
         autoFocus={false}
-        key='upgrade'
+        key="upgrade"
         aria-label={t('electron.upgrade.upgrade')}
       >
         {t('electron.upgrade.upgrade')}

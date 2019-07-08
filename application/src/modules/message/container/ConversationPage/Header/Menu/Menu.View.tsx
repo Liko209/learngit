@@ -19,7 +19,7 @@ import { teamActionHandler } from '@/common/handleTeamAction';
 @observer
 class MenuComponent extends React.Component<
   WithTranslation & MenuProps & MenuViewProps
-> {
+  > {
   renderProfile = (title: string) => (
     <OpenProfileDialog id={this.props.profileId}>
       <JuiMenuItem data-test-automation-id="profileEntry">{title}</JuiMenuItem>

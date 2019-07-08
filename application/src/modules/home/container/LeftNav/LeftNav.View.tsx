@@ -14,8 +14,8 @@ import { observer } from 'mobx-react';
 type LeftNavProps = {
   isLeftNavOpen: boolean;
 } & LeftNavViewProps &
-  RouteComponentProps &
-  WithTranslation;
+RouteComponentProps &
+WithTranslation;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
@@ -34,12 +34,10 @@ class LeftNav extends Component<LeftNavProps> {
   @computed
   get translatedIconGroups() {
     const { iconGroups, t } = this.props;
-    return iconGroups.map(icons =>
-      icons.map(icon => ({
-        ...icon,
-        title: t(icon.title),
-      })),
-    );
+    return iconGroups.map(icons => icons.map(icon => ({
+      ...icon,
+      title: t(icon.title),
+    })));
   }
   onRouteChange = (url: string) => {
     const { history } = this.props;

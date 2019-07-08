@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, comparer, runInAction } from 'mobx';
+import {
+  action, observable, computed, comparer, runInAction,
+} from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { SearchService } from 'sdk/module/search';
@@ -180,17 +182,15 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   }
 
   @action
-  selectHandler = (selectIndex: number) => {
-    return () => {
-      this.currentIndex = selectIndex;
-      const { pid } = this.props;
-      const query = pid
-        ? `[data-id='${pid}'] .ql-container`
-        : '.conversation-page>div>div>.quill>.ql-container';
-      this._selectHandler(this).apply({
-        quill: (document.querySelector(query) as any).__quill,
-      });
-    };
+  selectHandler = (selectIndex: number) => () => {
+    this.currentIndex = selectIndex;
+    const { pid } = this.props;
+    const query = pid
+      ? `[data-id='${pid}'] .ql-container`
+      : '.conversation-page>div>div>.quill>.ql-container';
+    this._selectHandler(this).apply({
+      quill: (document.querySelector(query) as any).__quill,
+    });
   }
 
   @action

@@ -44,7 +44,9 @@ class IncomingViewComponent extends Component<Props> {
   };
 
   render() {
-    const { name, phone, t, isExt, incomingState } = this.props;
+    const {
+      name, phone, t, isExt, incomingState,
+    } = this.props;
 
     switch (incomingState) {
       case INCOMING_STATE.REPLY:

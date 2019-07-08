@@ -78,8 +78,7 @@ const StyledPresence = styled<JuiPresenceProps, 'div'>('div')`
   height: ${props => height(sizes[props.size || 'medium'])};
   border: ${props => props.borderSize && borderSizes[props.borderSize]}px solid
     ${palette('common', 'white')};
-  background: ${props =>
-    getColor(PRESENCE_COLOR_MAP[props.presence || PRESENCE.NOTREADY])};
+  background: ${props => getColor(PRESENCE_COLOR_MAP[props.presence || PRESENCE.NOTREADY])};
   border-radius: 50%;
 `;
 
@@ -89,13 +88,11 @@ const StyledDiv = styled<JuiPresenceProps, 'div'>('div')`
   background: ${palette('common', 'white')};
 `;
 
-const JuiPresence = memo((props: JuiPresenceProps) => {
-  return (
+const JuiPresence = memo((props: JuiPresenceProps) => (
     <StyledPresence {...props}>
       {props.presence === PRESENCE.DND ? <StyledDiv {...props} /> : null}
     </StyledPresence>
-  );
-});
+));
 
 export { JuiPresence };
 export default JuiPresence;
