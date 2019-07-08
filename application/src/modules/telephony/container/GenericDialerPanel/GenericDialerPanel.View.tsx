@@ -45,21 +45,13 @@ class GenericDialerPanelViewComponent extends React.Component<
   state = {
     shouldShowToolTip: true,
   };
-
-  _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = event.target;
-    this.props.setCallerPhoneNumber(value);
-  }
-
+  private _focusCampo = debounce(focusCampo, 30, {
+    leading: false,
+    trailing: true,
+  });
   componentDidMount() {
     this.props.onAfterDialerOpen && this.props.onAfterDialerOpen();
     this._focusInput();
-  }
-
-  componentWillUnmount() {
-    if (this._timer) {
-      clearTimeout(this._timer);
-    }
   }
 
   componentDidUpdate() {
@@ -69,14 +61,22 @@ class GenericDialerPanelViewComponent extends React.Component<
       this._timer = setTimeout(this._handleCloseToolTip, CLOSE_TOOLTIP_TIME);
     }
   }
-
+  componentWillUnmount() {
+    if (this._timer) {
+      clearTimeout(this._timer);
+    }
+  }
+  _onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    this.props.setCallerPhoneNumber(value);
+  };
   private _handleCloseToolTip = () => {
     const { enteredDialer } = this.props;
     enteredDialer &&
       this.setState({
         shouldShowToolTip: false,
       });
-  }
+  };
 
   private _clickToInput = (args: any) => {
     this.props.clickToInput(args);
@@ -84,23 +84,19 @@ class GenericDialerPanelViewComponent extends React.Component<
     if (this.props.inputString) {
       this._focusInput();
     }
-  }
+  };
 
   private _focusInput = () => {
     if (!this._dialerHeaderRef.current) {
       return;
     }
+    /* eslint-disable react/no-find-dom-node */
     const input = (ReactDOM.findDOMNode(
       this._dialerHeaderRef.current,
     ) as HTMLDivElement).querySelector('input');
 
     this._focusCampo(input);
-  }
-
-  private _focusCampo = debounce(focusCampo, 30, {
-    leading: false,
-    trailing: true,
-  });
+  };
 
   private _getCallerIdProps = () => {
     const {
@@ -128,12 +124,12 @@ class GenericDialerPanelViewComponent extends React.Component<
         tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
       },
     };
-  }
+  };
 
   private _renderCallerIdSelector = () => {
     const callerIdProps = this._getCallerIdProps();
     return <CallerIdSelector {...callerIdProps} />;
-  }
+  };
 
   private _renderDialer = () => {
     const { playAudio, dialerInputFocused } = this.props;
@@ -147,7 +143,7 @@ class GenericDialerPanelViewComponent extends React.Component<
         />
       </>
     );
-  }
+  };
 
   private _renderContactSearch = () => {
     const {
@@ -165,7 +161,7 @@ class GenericDialerPanelViewComponent extends React.Component<
         </ContactSearchContainer>
       </>
     );
-  }
+  };
 
   private _renderRecentCalls = () => {
     const { displayCallerIdSelector } = this.props;
@@ -175,7 +171,7 @@ class GenericDialerPanelViewComponent extends React.Component<
         <RecentCalls />
       </RecentCallContainer>
     );
-  }
+  };
 
   private _renderKeypadActions = () => {
     const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;
@@ -189,7 +185,7 @@ class GenericDialerPanelViewComponent extends React.Component<
       default:
         return this._renderDialer();
     }
-  }
+  };
 
   render() {
     const {
@@ -219,7 +215,7 @@ class GenericDialerPanelViewComponent extends React.Component<
         <JuiHeaderContainer>
           <DialerTitleBar />
           <JuiHeader
-            showDialerInputField={true}
+            showDialerInputField
             onChange={onChange}
             onFocus={onFocus}
             onBlur={onBlur}

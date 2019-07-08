@@ -37,8 +37,8 @@ class FullSearchViewComponent extends Component<Props> {
   onChangeTab = (tab: TAB_TYPE) => {
     const { setCurrentTab } = this.props;
     setCurrentTab(tab);
-  }
-
+  };
+  /* eslint-disable react/no-array-index-key */
   render() {
     const { t, currentTab } = this.props;
     return (

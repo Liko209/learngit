@@ -63,7 +63,7 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -122,7 +122,7 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -142,7 +142,7 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={{} as Caller}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -159,7 +159,7 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={{} as Caller}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -191,7 +191,7 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -209,8 +209,8 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={{} as Caller}
-          showCall={true}
-          canEditBlockNumbers={true}
+          showCall
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -228,7 +228,7 @@ describe('Action', () => {
           maxButtonCount={7}
           caller={{} as Caller}
           showCall={false}
-          canEditBlockNumbers={true}
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -254,8 +254,8 @@ describe('Action', () => {
           id={1234}
           maxButtonCount={7}
           caller={mockCaller}
-          showCall={true}
-          canEditBlockNumbers={true}
+          showCall
+          canEditBlockNumbers
           entity={ENTITY_TYPE.CALL_LOG}
         />,
       );
@@ -265,7 +265,9 @@ describe('Action', () => {
 
   @testable
   class JPT2366 {
-    @test('should show Message, Call, Block/Unblock, Delete in order when item is call log item [JPT-2366]')
+    @test(
+      'should show Message, Call, Block/Unblock, Delete in order when item is call log item [JPT-2366]',
+    )
     @mockEntity(
       mockPhoneAndPerson({
         person: {
@@ -294,13 +296,35 @@ describe('Action', () => {
       );
       wrapper.update();
       expect(wrapper.find(JuiIconButton)).toHaveLength(4);
-      expect(wrapper.find(JuiIconButton).at(0).props().children).toBe('phone');
-      expect(wrapper.find(JuiIconButton).at(1).props().children).toBe('chat_bubble');
-      expect(wrapper.find(JuiIconButton).at(2).props().children).toBe('blocked');
-      expect(wrapper.find(JuiIconButton).at(3).props().children).toBe('delete-call');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(2)
+          .props().children,
+      ).toBe('blocked');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(3)
+          .props().children,
+      ).toBe('delete-call');
     }
 
-    @test('should show Message, Call, Delete in order when item is call log item [JPT-2366]')
+    @test(
+      'should show Message, Call, Delete in order when item is call log item [JPT-2366]',
+    )
     @mockEntity(
       mockPhoneAndPerson({
         person: {
@@ -329,36 +353,53 @@ describe('Action', () => {
       );
       wrapper.update();
       expect(wrapper.find(JuiIconButton)).toHaveLength(3);
-      expect(wrapper.find(JuiIconButton).at(0).props().children).toBe('phone');
-      expect(wrapper.find(JuiIconButton).at(1).props().children).toBe('chat_bubble');
-      expect(wrapper.find(JuiIconButton).at(2).props().children).toBe('delete-call');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(2)
+          .props().children,
+      ).toBe('delete-call');
       expect(wrapper.find(Block).exists()).toBeFalsy();
     }
   }
 
   @testable
   class JPT2419 {
-    @test('should show Message, Call, Read/Unread, More(Download, Block/Unblock, Delete) in order when item is voicemail item [JPT-2419]')
-    @mockEntity(
-      {
-        ...mockPhoneAndPerson({
-          person: {
-            userDisplayName: 'displayName',
-            phoneNumbers: [
-              {
-                type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
-                phoneNumber: '+1234567890',
-              },
-            ],
-          },
-        }),
-        readStatus: READ_STATUS.READ,
-        attachments: [{
-          uri: 'uri',
-          type: ATTACHMENT_TYPE.AUDIO_RECORDING
-        }],
-      },
+    @test(
+      'should show Message, Call, Read/Unread, More(Download, Block/Unblock, Delete) in order when item is voicemail item [JPT-2419]',
     )
+    @mockEntity({
+      ...mockPhoneAndPerson({
+        person: {
+          userDisplayName: 'displayName',
+          phoneNumbers: [
+            {
+              type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+              phoneNumber: '+1234567890',
+            },
+          ],
+        },
+      }),
+      readStatus: READ_STATUS.READ,
+      attachments: [
+        {
+          uri: 'uri',
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+        },
+      ],
+    })
     @mockService(RCInfoService, 'isNumberBlocked', false)
     @mockService(PersonService, 'matchContactByPhoneNumber', { id: 1 })
     async t1() {
@@ -375,10 +416,30 @@ describe('Action', () => {
       );
       wrapper.update();
       expect(wrapper.find(JuiIconButton)).toHaveLength(4);
-      expect(wrapper.find(JuiIconButton).at(0).props().children).toBe('phone');
-      expect(wrapper.find(JuiIconButton).at(1).props().children).toBe('chat_bubble');
-      expect(wrapper.find(JuiIconButton).at(2).props().children).toBe('read');
-      expect(wrapper.find(JuiIconButton).at(3).props().children).toBe('more_horiz');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(2)
+          .props().children,
+      ).toBe('read');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(3)
+          .props().children,
+      ).toBe('more_horiz');
 
       const moreProps = wrapper.find(More).props();
       expect(moreProps.children).toHaveLength(3);
@@ -390,27 +451,29 @@ describe('Action', () => {
       Comp = moreProps.children[2].type;
       expect(<Comp />).toEqual(<Delete />);
     }
-    @test('should show Message, Call, Read/Unread, More(Download, Delete) in order when item is voicemail item [JPT-2419]')
-    @mockEntity(
-      {
-        ...mockPhoneAndPerson({
-          person: {
-            userDisplayName: 'displayName',
-            phoneNumbers: [
-              {
-                type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
-                phoneNumber: '+1234567890',
-              },
-            ],
-          },
-        }),
-        readStatus: READ_STATUS.READ,
-        attachments: [{
-          uri: 'uri',
-          type: ATTACHMENT_TYPE.AUDIO_RECORDING
-        }],
-      },
+    @test(
+      'should show Message, Call, Read/Unread, More(Download, Delete) in order when item is voicemail item [JPT-2419]',
     )
+    @mockEntity({
+      ...mockPhoneAndPerson({
+        person: {
+          userDisplayName: 'displayName',
+          phoneNumbers: [
+            {
+              type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+              phoneNumber: '+1234567890',
+            },
+          ],
+        },
+      }),
+      readStatus: READ_STATUS.READ,
+      attachments: [
+        {
+          uri: 'uri',
+          type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+        },
+      ],
+    })
     @mockService(RCInfoService, 'isNumberBlocked', false)
     @mockService(PersonService, 'matchContactByPhoneNumber', { id: 1 })
     async t2() {
@@ -427,10 +490,30 @@ describe('Action', () => {
       );
       wrapper.update();
       expect(wrapper.find(JuiIconButton)).toHaveLength(4);
-      expect(wrapper.find(JuiIconButton).at(0).props().children).toBe('phone');
-      expect(wrapper.find(JuiIconButton).at(1).props().children).toBe('chat_bubble');
-      expect(wrapper.find(JuiIconButton).at(2).props().children).toBe('read');
-      expect(wrapper.find(JuiIconButton).at(3).props().children).toBe('more_horiz');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(2)
+          .props().children,
+      ).toBe('read');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(3)
+          .props().children,
+      ).toBe('more_horiz');
 
       const moreProps = wrapper.find(More).props();
       expect(moreProps.children).toHaveLength(2);

@@ -7,6 +7,7 @@ import { TaskController } from '../../../framework/controller/impl/TaskControlle
 import { ITaskStrategy } from '../../../framework/strategy/ITaskStrategy';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 import { mainLogger } from 'foundation';
+
 const MAX_COUNT = 2;
 
 const LOG_TAG = 'INDEX_TASK_CONTROLLER';

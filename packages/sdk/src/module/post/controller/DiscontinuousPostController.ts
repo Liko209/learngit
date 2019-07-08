@@ -5,7 +5,7 @@
  */
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Post } from '../entity';
-import { Item } from '../../../module/item/entity';
+import { Item } from '../../item/entity';
 import { ItemService } from '../../item';
 import PostAPI from '../../../api/glip/post';
 import { Raw } from '../../../framework/model';

@@ -26,7 +26,7 @@ class FileNameEditDialogViewComponent extends Component<
     const value = event.target.value;
     const { updateNewFileName } = this.props;
     updateNewFileName(value);
-  }
+  };
 
   handleClose = () => portalManager.dismissLast();
 
@@ -38,8 +38,8 @@ class FileNameEditDialogViewComponent extends Component<
       if (newFileName !== undefined && !newFileName) return;
       handleEditFileName();
     }
-  }
-
+  };
+  /* eslint-disable react/jsx-no-duplicate-props */
   render() {
     const {
       t,
@@ -52,7 +52,7 @@ class FileNameEditDialogViewComponent extends Component<
     const { type } = item;
     return (
       <JuiModal
-        open={true}
+        open
         size={'medium'}
         title={t('message.prompt.editFileNameTitle')}
         onCancel={this.handleClose}
@@ -71,7 +71,7 @@ class FileNameEditDialogViewComponent extends Component<
           data-test-automation-id={'fileNameEditSuffixFollowTextField'}
           id={'fileNameEdit'}
           label={t('message.prompt.editFileNameInputLabel')}
-          fullWidth={true}
+          fullWidth
           InputProps={{
             classes: {
               root: 'root',

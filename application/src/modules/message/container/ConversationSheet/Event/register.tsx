@@ -6,7 +6,7 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Event, EventUpdate } from './';
+import { Event, EventUpdate } from '.';
 
 type Props = {
   ids: number[];

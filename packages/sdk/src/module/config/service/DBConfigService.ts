@@ -3,13 +3,12 @@
  * @Date: 2019-05-07 15:27:04
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { Listener } from 'eventemitter2';
 import { AbstractService } from '../../../framework/service/AbstractService';
 import { IDBConfigService } from './IDBConfigService';
-import { DBKVDao } from '../../../dao';
+import { DBKVDao } from '../../../framework/dao';
 import notificationCenter from '../../../service/notificationCenter';
 import { CONFIG_EVENT_TYPE } from '../constants';
-import { Listener } from 'eventemitter2';
 
 class DBConfigService extends AbstractService implements IDBConfigService {
   protected configDao: DBKVDao;

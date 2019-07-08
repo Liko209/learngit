@@ -17,6 +17,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import { More } from '../Actions/More';
 import { DeleteAll } from '../Actions/DeleteAll';
 
+/* eslint-disable */
 const DELAY_DEBOUNCE = 300;
 
 const useFilter: IUseFilter = (initial: string) => {
@@ -42,9 +43,9 @@ const CallHistoryWrapper = (
     <>
       <PhoneHeader
         title={props.t('phone.callhistory')}
-        data-test-automation-id="CallHistoryPageHeader"
+        data-test-automation-id='CallHistoryPageHeader'
         SubTitle={
-          <More automationId="callHistory-header-more">
+          <More automationId='callHistory-header-more'>
             <DeleteAll />
           </More>
         }
@@ -58,8 +59,8 @@ const CallHistoryWrapper = (
       />
       <PhoneWrapper>
         <JuiTabs
-          position="center"
-          forceFlex={true}
+          position='center'
+          forceFlex
           defaultActiveIndex={CallHistoryTypes.All}
           onChangeTab={clearUMI}
         >
@@ -72,7 +73,11 @@ const CallHistoryWrapper = (
                   title={props.t(title)}
                   automationId={automationID}
                 >
-                  <Component width={props.width} height={props.height} filterValue={filterValue} />
+                  <Component
+                    width={props.width}
+                    height={props.height}
+                    filterValue={filterValue}
+                  />
                 </JuiTab>
               );
             },

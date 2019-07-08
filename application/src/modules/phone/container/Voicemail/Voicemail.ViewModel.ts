@@ -36,7 +36,7 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   @action
   onVoicemailPlay = (id: ActiveVoicemailId) => {
     this.activeVoicemailId = id;
-  }
+  };
 
   constructor(props: any) {
     super(props);
@@ -91,17 +91,17 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
 
       return { data: [], hasMore: true };
     }
-  }
+  };
 
   @action
   onErrorReload = () => {
     this.isError = false;
-  }
+  };
 
   @action
   onFilterChange: IJuiChangePhoneFilter = value => {
     this.filterValue = value;
-  }
+  };
 }
 
 export { VoicemailViewModel };

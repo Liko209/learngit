@@ -87,8 +87,8 @@ describe('AllLogFetchController', () => {
           __deactivated: false,
         },
       ]);
-      expect(mockSourceController.bulkDelete).toBeCalledWith(['pseudo1']);
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
+      expect(mockSourceController.bulkDelete).toHaveBeenCalledWith(['pseudo1']);
+      expect(mockUserConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({});
     });
   });
 
@@ -96,7 +96,7 @@ describe('AllLogFetchController', () => {
     it('should call api', async () => {
       RCItemApi.syncCallLog = jest.fn();
       await controller['sendSyncRequest'](SYNC_TYPE.FSYNC);
-      expect(RCItemApi.syncCallLog).toBeCalledWith({
+      expect(RCItemApi.syncCallLog).toHaveBeenCalledWith({
         syncType: SYNC_TYPE.FSYNC,
       });
     });

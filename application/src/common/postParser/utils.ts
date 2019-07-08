@@ -12,7 +12,6 @@ import {
   regExpUnescape,
   mapUnescape,
 } from '@/common/emojiHelpers';
-import _ from 'lodash';
 import moize from 'moize';
 
 const isInRange = (index: number, range: TextRange) => {
@@ -78,7 +77,30 @@ const getComplementRanges = (ranges: TextRange[], fullLength: number) => {
 const HTMLUnescape = (str: string) => {
   return str.replace(regExpUnescape, (match: string) => mapUnescape[match]);
 };
-
+const getStylesObject = moize(
+  (styles: string) =>
+    styles
+      .split(';')
+      .filter(style => style.split(':')[0] && style.split(':')[1])
+      .map(style => [
+        style
+          .split(':')[0]
+          .trim()
+          .replace(/-./g, c => c.substr(1).toUpperCase()),
+        style.split(':')[1].trim(),
+      ])
+      .reduce(
+        (styleObj, style) => ({
+          ...styleObj,
+          [style[0]]: style[1],
+        }),
+        {},
+      ),
+  {
+    maxSize: 100,
+    transformArgs: ([styles]) => [styles],
+  },
+);
 const getTopLevelChildNodesFromHTML = (_html: string) => {
   let html = _html;
   const reg = /(<td\b[^>]*>(?:(?!<\/td>).)*?)(<\/tr>)/g;
@@ -150,31 +172,6 @@ const getTopLevelChildNodesFromHTML = (_html: string) => {
   return nodes;
 };
 
-const getStylesObject = moize(
-  (styles: string) =>
-    styles
-      .split(';')
-      .filter(style => style.split(':')[0] && style.split(':')[1])
-      .map(style => [
-        style
-          .split(':')[0]
-          .trim()
-          .replace(/-./g, c => c.substr(1).toUpperCase()),
-        style.split(':')[1].trim(),
-      ])
-      .reduce(
-        (styleObj, style) => ({
-          ...styleObj,
-          [style[0]]: style[1],
-        }),
-        {},
-      ),
-  {
-    maxSize: 100,
-    transformArgs: ([styles]) => [styles],
-  },
-);
-
 const MATCH_ALL_REGEX = /^[\s\S]+$/g;
 const MATCH_NOTHING_REGEX = /a^/g;
 const AT_MENTION_REGEX = /\s<at_mention id=([-?\d]*?) \/>/gi;
@@ -182,7 +179,7 @@ const MIN_ATMENTION_PATTERN_LENGTH = 20;
 const MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH = 20;
 const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
-const EMOJI_REGEX = /\s?<emoji data='([a-zA-Z0-9\+\/\=]+)' \/>/gi;
+const EMOJI_REGEX = /\s?<emoji data='([a-zA-Z0-9+/=]+)' \/>/gi;
 const MIN_EMOJI_PATTERN_LEN = 17;
 const EMOJI_UNICODE_REGEX_RANGE =
   '\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]';
@@ -209,7 +206,7 @@ const EMOJI_SIZE_MAP = {
   large: 30,
   small: 20,
 };
-
+/* eslint-disable no-useless-escape */
 // modified from Markdown.global_url_regex
 // tslint:disable-next-line:max-line-length
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;

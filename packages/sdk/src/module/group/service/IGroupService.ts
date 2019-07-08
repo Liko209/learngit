@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { Raw, SortableModel } from '../../../framework/model';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
@@ -10,7 +8,7 @@ import {
   TeamSetting,
   GroupCanBeShownResponse,
 } from '../types';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE } from '../../sync/types';
 import { Post } from 'sdk/module/post/entity';
 
 interface IGroupService {

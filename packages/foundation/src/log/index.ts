@@ -1,5 +1,6 @@
 import { LogManager } from './LogManager';
 import { ILogger } from './types';
+
 const logManager = LogManager.getInstance();
 const mainLogger: ILogger = logManager.getMainLogger();
 const networkLogger: ILogger = logManager.getNetworkLogger();

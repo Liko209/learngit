@@ -5,6 +5,7 @@
  */
 
 import { IdModel, SortableModel, ModelIdType } from '../../model';
+
 type FormattedKey = {
   original: string;
   formatted: string;

@@ -81,7 +81,7 @@ type State = {
   contextValue: ViewerContextType;
   initialScale: number;
 };
-
+/*eslint-disable*/
 @observer
 class ViewerViewComponent extends Component<
   ViewerViewType & WithTranslation,
@@ -117,13 +117,13 @@ class ViewerViewComponent extends Component<
     ) {
       event.preventDefault();
     }
-  }
+  };
 
   _handlerScroll = (event: MouseEvent) => {
     if (event.ctrlKey) {
       event.preventDefault();
     }
-  }
+  };
 
   componentDidMount() {
     dataAnalysis.page('Jup_Web/DT_conversation_fullScreenViewer');
@@ -152,31 +152,31 @@ class ViewerViewComponent extends Component<
         isAnimating: true,
       },
     });
-  }
+  };
 
   onTransitionEntered = () => {
     this.setState({
       contextValue: { ...this.state.contextValue, isAnimating: false },
     });
-  }
+  };
 
   onTransitionExited = () => {
     this.props.dataModule.viewerDestroyer();
-  }
+  };
 
   private _handleZoomOut = () => {
     const { dataModule } = this.props;
     const { currentScale } = dataModule;
     const scaleValue = Math.max(currentScale - 1 * SCALE_UNIT, MIN_SCALE);
     this._setScale(scaleValue);
-  }
+  };
 
   private _handleZoomIn = () => {
     const { dataModule } = this.props;
     const { currentScale } = dataModule;
     const scaleValue = Math.min(currentScale + 1 * SCALE_UNIT, MAX_SCALE);
     this._setScale(scaleValue);
-  }
+  };
 
   private _handleScaleChanged = (newScale: number) => {
     this._setScale(newScale);
@@ -186,7 +186,7 @@ class ViewerViewComponent extends Component<
         initialScale: newScale,
       });
     }
-  }
+  };
 
   private _setScale = _.debounce((newScale: number) => {
     const { dataModule } = this.props;
@@ -201,7 +201,7 @@ class ViewerViewComponent extends Component<
     this._update({
       scale: newScale,
     });
-  },                             100);
+  }, 100);
 
   private _handlePageIdxChanged = _.debounce((toIdx: number) => {
     const { dataModule } = this.props;
@@ -212,7 +212,7 @@ class ViewerViewComponent extends Component<
     this._update({
       pageIdx: toIdx,
     });
-  },                                         100);
+  }, 100);
 
   private _update = ({ scale, pageIdx }: updateParamsType) => {
     const { dataModule } = this.props;
@@ -222,13 +222,13 @@ class ViewerViewComponent extends Component<
         scale,
         pageIdx,
       });
-  }
+  };
 
   private _handleReset = () => {
     this._update({
       scale: this.state.initialScale,
     });
-  }
+  };
 
   renderThumbnailBar = () => {
     const { dataModule } = this.props;
@@ -240,21 +240,21 @@ class ViewerViewComponent extends Component<
         <JuiViewerSidebar
           open={true}
           items={items}
-          data-test-automation-id="ViewerSidebar"
+          data-test-automation-id='ViewerSidebar'
           selectedIndex={dataModule.currentPageIdx}
           onSelectedChanged={this._handlePageIdxChanged}
         />
       );
     }
     return <></>;
-  }
+  };
 
   private _getScaleDisplayString = () => {
     const { dataModule } = this.props;
     const { currentScale } = dataModule;
     const scaleStr = parseInt(`${currentScale * 100}`, 10);
     return `${scaleStr}%`;
-  }
+  };
 
   render() {
     const { t, dataModule, TitleRenderer, layout, PageRenderer } = this.props;
@@ -263,22 +263,22 @@ class ViewerViewComponent extends Component<
     const { initialScale } = this.state;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
-        <JuiViewerBackground data-test-automation-id="Viewer" show={show}>
+        <JuiViewerBackground data-test-automation-id='Viewer' show={show}>
           <JuiTransition
             appear={true}
             show={show}
-            duration="standard"
-            easing="sharp"
+            duration='standard'
+            easing='sharp'
             onExited={this.onTransitionExited}
             animation={imageViewerHeaderAnimation}
           >
-            <JuiDialogHeader data-test-automation-id="ViewerHeader">
+            <JuiDialogHeader data-test-automation-id='ViewerHeader'>
               <TitleRenderer
                 {...dataModule.title}
                 closeViewer={this.closeViewer}
               />
             </JuiDialogHeader>
-            <JuiDivider key="divider-filters" />
+            <JuiDivider key='divider-filters' />
           </JuiTransition>
           <>
             <JuiResponsiveLayout>
@@ -294,16 +294,16 @@ class ViewerViewComponent extends Component<
                       handlePageIdxChanged={this._handlePageIdxChanged}
                     />
                     <JuiZoomButtonGroup
-                      className="zoomGroup"
+                      className='zoomGroup'
                       resetMode={true}
-                      data-test-automation-id="ViewerZoomButtonGroup"
+                      data-test-automation-id='ViewerZoomButtonGroup'
                       centerText={this._getScaleDisplayString()}
                       ZoomOut={
                         <JuiIconButton
-                          variant="plain"
+                          variant='plain'
                           tooltipTitle={t('viewer.ZoomOut')}
                           ariaLabel={t('viewer.ZoomOut')}
-                          data-test-automation-id="ViewerZoomOutButton"
+                          data-test-automation-id='ViewerZoomOutButton'
                           disabled={currentScale === MIN_SCALE}
                           onClick={() => this._handleZoomOut()}
                         >
@@ -312,10 +312,10 @@ class ViewerViewComponent extends Component<
                       }
                       ZoomIn={
                         <JuiIconButton
-                          variant="plain"
+                          variant='plain'
                           tooltipTitle={t('viewer.ZoomIn')}
                           ariaLabel={t('viewer.ZoomIn')}
-                          data-test-automation-id="ViewerZoomInButton"
+                          data-test-automation-id='ViewerZoomInButton'
                           disabled={currentScale === MAX_SCALE}
                           onClick={() => this._handleZoomIn()}
                         >
@@ -324,10 +324,10 @@ class ViewerViewComponent extends Component<
                       }
                       ZoomReset={
                         <JuiIconButton
-                          variant="plain"
+                          variant='plain'
                           tooltipTitle={t('viewer.ZoomReset')}
                           ariaLabel={t('viewer.ZoomReset')}
-                          data-test-automation-id="ViewerResetButton"
+                          data-test-automation-id='ViewerResetButton'
                           disabled={currentScale === initialScale}
                           onClick={() => this._handleReset()}
                         >

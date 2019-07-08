@@ -9,6 +9,7 @@ import { SearchedResultData } from './types';
 import { mainLogger } from 'foundation/src';
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { EmptySearchRes } from './constants';
+
 type PostSearchCache = {
   key: string;
   handler: PostSearchHandler;

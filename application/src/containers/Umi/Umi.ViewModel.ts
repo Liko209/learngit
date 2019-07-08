@@ -3,8 +3,9 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { computed, untracked } from 'mobx';
-import _ from 'lodash';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';

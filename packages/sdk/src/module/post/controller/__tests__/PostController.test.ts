@@ -49,6 +49,9 @@ describe('PostController', () => {
         if (serviceName === ServiceConfig.USER_CONFIG_SERVICE) {
           return userConfigService;
         }
+        if (serviceName === ServiceConfig.GLOBAL_CONFIG_SERVICE) {
+          return userConfigService;
+        }
 
         return null;
       });
@@ -79,9 +82,9 @@ describe('PostController', () => {
 
       const result = postController.getPostActionController();
       expect(result instanceof PostActionController).toBe(true);
-      expect(buildEntitySourceController).toBeCalledTimes(2);
-      expect(buildPartialModifyController).toBeCalledTimes(1);
-      expect(buildRequestController).toBeCalledTimes(1);
+      expect(buildEntitySourceController).toHaveBeenCalledTimes(2);
+      expect(buildPartialModifyController).toHaveBeenCalledTimes(1);
+      expect(buildRequestController).toHaveBeenCalledTimes(1);
     });
   });
 

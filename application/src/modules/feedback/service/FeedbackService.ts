@@ -48,7 +48,7 @@ class FeedbackService {
       zipBlob,
       zipName: `RC_LOG_${uid}_${sessionId}_${DateFormatter.formatDate()}.zip`,
     };
-  }
+  };
 
   uploadRecentLogs = async (
     option?: Partial<UploadOption>,
@@ -75,9 +75,10 @@ class FeedbackService {
         filename: zipName,
       },
     );
-  }
+  };
 
   sendFeedback = async (message: string, comments: string): Promise<void> => {
+    /* eslint-disable  no-throw-literal */
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }
@@ -89,7 +90,7 @@ class FeedbackService {
       email: appContextInfo.email,
       name: appContextInfo.username,
     });
-  }
+  };
 }
 
 export { FeedbackService };

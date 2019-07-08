@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 13:25:32
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import history from '@/history';
 import storeManager from '@/store';
 import {
@@ -430,7 +430,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         }
       });
     }
-  }
+  };
 
   private async _addSection(
     sectionType: SECTION_TYPE,
@@ -792,7 +792,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       count = Number(profile.max_leftrail_group_tabs2);
     }
     return count;
-  }
+  };
 }
 
 export default SectionGroupHandler;

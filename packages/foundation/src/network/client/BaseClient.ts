@@ -3,7 +3,7 @@
  * @Date: 2018-05-03 11:25:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { IClient, IRequest, INetworkRequestExecutorListener } from '../..';
+import { IClient, IRequest, INetworkRequestExecutorListener } from '../network';
 
 abstract class BaseClient implements IClient {
   tasks: Map<string, IRequest>;

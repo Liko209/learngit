@@ -3,13 +3,12 @@
  * @Date: 2019-02-27 14:15:09
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { EventEmitter2 } from 'eventemitter2';
+import _ from 'lodash';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 import { RTC_MEDIA_ACTION } from './types';
 import { defaultAudioID } from '../account/constants';
-import _ from 'lodash';
 
 const LOG_TAG = 'RTCMediaDeviceManager';
 enum RTC_MEDIA_DEVICE_KIND {
@@ -26,10 +25,6 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   private _audioOutputTimer: NodeJS.Timeout | null = null;
   private _inputDeviceId: string = '';
   private _outputDeviceId: string = '';
-
-  constructor() {
-    super();
-  }
 
   public static instance(): RTCMediaDeviceManager {
     if (!RTCMediaDeviceManager._singleton) {

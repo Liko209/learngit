@@ -9,6 +9,7 @@ import { GroupAvatarViewProps } from './types';
 import { JuiAvatar } from 'jui/components/Avatar';
 import { observer } from 'mobx-react';
 import { accelerateURL } from '@/common/accelerateURL';
+
 @observer
 class GroupAvatarView extends Component<GroupAvatarViewProps> {
   render() {

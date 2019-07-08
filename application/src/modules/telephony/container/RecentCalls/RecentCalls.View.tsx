@@ -20,7 +20,6 @@ import { JuiVirtualizedListHandles } from 'jui/components/VirtualizedList';
 type Props = ViewProps & WithTranslation;
 type State = {
   height: number;
-  initialScrollToIndex: number;
 };
 const MAX_COUNT = 7;
 @observer
@@ -37,10 +36,10 @@ class RecentCallsComponent extends React.Component<Props, State> {
 
   state = {
     height: 0,
-    initialScrollToIndex: 0,
   };
 
   componentDidMount() {
+    /* eslint-disable  react/no-find-dom-node */
     const container = ReactDOM.findDOMNode(this._containerRef.current);
     if (container) {
       this.setState({
@@ -48,7 +47,17 @@ class RecentCallsComponent extends React.Component<Props, State> {
       });
     }
   }
+  private get _noRowsRenderer() {
+    const { t } = this.props;
 
+    return (
+      <JuiEmptyPage
+        data-test-automation-id='recentCallsEmptyPage'
+        image={noCallLogImage}
+        message={t('telephony.noCallLogAvailable')}
+      />
+    );
+  }
   // componentDidUpdate() {
   //   const { recentCallsScrollPosition } = this.props;
 
@@ -90,37 +99,25 @@ class RecentCallsComponent extends React.Component<Props, State> {
         stopIndex: focusIndex + MAX_COUNT,
       });
     }
-  }
+  };
 
   onKeyDown = () => {
     const { increaseFocusIndex } = this.props;
     increaseFocusIndex();
     this.scrollToView();
-  }
+  };
 
   onKeyUp = () => {
     const { decreaseFocusIndex } = this.props;
     decreaseFocusIndex();
     this.scrollToView();
-  }
+  };
 
   // onEnter = (evt: KeyboardEvent) => {
   //   const { onEnter } = this.props;
   //   onEnter(evt);
   //   this.scrollToView();
   // }
-
-  private get _noRowsRenderer() {
-    const { t } = this.props;
-
-    return (
-      <JuiEmptyPage
-        data-test-automation-id="recentCallsEmptyPage"
-        image={noCallLogImage}
-        message={t('telephony.noCallLogAvailable')}
-      />
-    );
-  }
 
   private _renderItems() {
     const { listHandler, focusIndex } = this.props;
@@ -156,7 +153,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
               <DataList
                 initialDataCount={INITIAL_COUNT}
                 listHandler={listHandler}
-                reverse={true}
+                reverse
                 InfiniteListProps={Object.assign(this._infiniteListProps, {
                   height,
                   ref: this._listRef,

@@ -174,7 +174,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.RELOAD, () => {
       history.replace('/messages');
-      location.reload();
+      window.location.reload();
     });
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {

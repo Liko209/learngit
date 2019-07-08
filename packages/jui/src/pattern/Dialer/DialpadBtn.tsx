@@ -78,12 +78,12 @@ const JuiDialpadBtn = ({
   return (
     <StyleContainer aria-label={ariaLabel}>
       <JuiFabButton
-        size="medium"
-        iconName="dialer"
-        disableRipple={true}
+        size='medium'
+        iconName='dialer'
+        disableRipple
         onClick={onClick}
         tooltipTitle={tooltipTitle}
-        data-test-automation-id="telephony-dialpad-btn"
+        data-test-automation-id='telephony-dialpad-btn'
         id={id}
       />
     </StyleContainer>

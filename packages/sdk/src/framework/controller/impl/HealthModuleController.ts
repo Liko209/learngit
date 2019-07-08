@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IHealthModuleController } from '../../../framework/controller/interface/IHealthModuleController';
+import { IHealthModuleController } from '../interface/IHealthModuleController';
 import {
   IHealthModule,
   HealthModuleManager,

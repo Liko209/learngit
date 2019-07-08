@@ -60,8 +60,8 @@ async function getThumbnailURLWithType(
     if (item.id < 0) {
       return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
     }
-    const origWidth = item.origWidth;
-    const origHeight = item.origHeight;
+    const { origWidth } = item;
+    const { origHeight } = item;
     let url = '';
     if (!item.type) {
       return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };

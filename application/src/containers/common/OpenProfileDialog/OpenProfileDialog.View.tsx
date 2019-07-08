@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
@@ -39,7 +40,7 @@ class OpenProfileDialogView extends Component<Props> {
       },
       transitionDuration,
     );
-  }
+  };
 
   render() {
     const { children } = this.props;

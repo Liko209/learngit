@@ -49,7 +49,7 @@ abstract class RCItemSyncController<
 
   handleNotification = async () => {
     await this.doSync(true, SYNC_DIRECTION.NEWER);
-  }
+  };
 
   protected canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean {
     return true;

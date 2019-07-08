@@ -7,6 +7,7 @@ import SocketRequest from './SocketRequest';
 import io from './socket.io';
 import SocketRequestHelper from './SocketRequestHelper';
 import { SocketResponse } from './SocketResponse';
+
 interface ISocketRequestDelegate {
   request: (request: SocketRequest) => Promise<SocketResponse>;
   isClientAvailable: () => boolean;

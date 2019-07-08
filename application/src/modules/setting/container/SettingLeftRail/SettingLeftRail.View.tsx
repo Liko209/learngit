@@ -50,39 +50,37 @@ class SettingLeftRailViewComponent extends Component<Props> {
       }
     });
   }
-
-  render() {
-    return (
-      <JuiLeftRail>
-        <JuiLeftRailStickyTop>
-          <StyledList component="nav" data-test-automation-id="settingLeftRail">
-            {this._renderNavItems()}
-          </StyledList>
-        </JuiLeftRailStickyTop>
-      </JuiLeftRail>
-    );
-  }
-
   private _renderNavItems() {
     const { t, pages, goToSettingPage } = this.props;
 
     return pages.map(page => {
       return (
         <JuiListNavItem
-          data-name="sub-setting"
+          data-name='sub-setting'
           data-test-automation-id={`entry-${page.automationId}`}
           selected={page.path === this.selectedPath}
           classes={{ selected: 'selected' }}
           onClick={() => goToSettingPage(page.id)}
           key={page.id}
         >
-          <JuiListNavItemIconographyLeft iconSize="small">
+          <JuiListNavItemIconographyLeft iconSize='small'>
             {page.icon}
           </JuiListNavItemIconographyLeft>
           <JuiListNavItemText>{toTitleCase(t(page.title))}</JuiListNavItemText>
         </JuiListNavItem>
       );
     });
+  }
+  render() {
+    return (
+      <JuiLeftRail>
+        <JuiLeftRailStickyTop>
+          <StyledList component='nav' data-test-automation-id='settingLeftRail'>
+            {this._renderNavItems()}
+          </StyledList>
+        </JuiLeftRailStickyTop>
+      </JuiLeftRail>
+    );
   }
 }
 

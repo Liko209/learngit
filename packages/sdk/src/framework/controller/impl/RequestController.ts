@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw, ModelIdType } from '../../../framework/model';
+import { IdModel, Raw, ModelIdType } from '../../model';
 import { ErrorHandlingController } from './ErrorHandlingController';
 import { transform } from '../../../service/utils';
 import NetworkClient, { IBaseQuery } from '../../../api/NetworkClient';
@@ -73,7 +73,7 @@ class RequestController<
   }
 
   private _validId(data: Partial<T>) {
-    let id: IdType | undefined = undefined;
+    let id: IdType | undefined;
     if (data.id) {
       id = data.id;
       delete data.id;

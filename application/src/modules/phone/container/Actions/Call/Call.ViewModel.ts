@@ -27,7 +27,7 @@ class CallViewModel extends StoreViewModel<CallProps> {
       entity === ENTITY_TYPE.CALL_LOG ? 'callHistory' : 'voicemailList',
     );
     analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.CALL);
-  }
+  };
 }
 
 export { CallViewModel };

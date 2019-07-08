@@ -13,6 +13,7 @@ import {
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
+
 interface ISearchService {
   addRecentSearchRecord(
     type: RecentSearchTypes,

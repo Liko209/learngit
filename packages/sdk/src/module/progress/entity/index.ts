@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Progress, PROGRESS_STATUS } from './Progress';
+
 export { Progress, PROGRESS_STATUS };

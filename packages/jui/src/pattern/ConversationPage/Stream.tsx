@@ -40,7 +40,7 @@ const JuiStream = React.memo(
       <StyledDiv
         ref={forwardRef}
         {...props}
-        data-test-automation-id="jui-stream"
+        data-test-automation-id='jui-stream'
       />
     );
   }),

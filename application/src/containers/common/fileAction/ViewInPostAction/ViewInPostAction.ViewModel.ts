@@ -32,7 +32,7 @@ class ViewInPostActionViewModel extends FileActionViewModel<
       portalManager.dismissAll();
       jumpToPost({ groupId, id: post.id });
     }
-  }
+  };
 }
 
 export { ViewInPostActionViewModel };

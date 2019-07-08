@@ -43,10 +43,10 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
     const { t, variant } = this.props;
     return (
       <JuiIconButton
-        size="medium"
+        size='medium'
         ariaLabel={t('common.more')}
         variant={variant}
-        data-test-automation-id="fileActionMore"
+        data-test-automation-id='fileActionMore'
         tooltipTitle={t('common.more')}
         onClick={this.openPopper}
         tooltipForceHide={tooltipForceHide}
@@ -54,7 +54,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
         more_vert
       </JuiIconButton>
     );
-  }
+  };
 
   openPopper = (evt: React.MouseEvent) => {
     const { currentTarget } = evt;
@@ -62,13 +62,13 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
       anchorEl: currentTarget,
       open: !state.open,
     }));
-  }
+  };
 
   closePopper = () => {
     this.setState({
       open: false,
     });
-  }
+  };
   render() {
     const {
       showViewInPostAction,

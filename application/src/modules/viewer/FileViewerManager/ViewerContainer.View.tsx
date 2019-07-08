@@ -16,7 +16,7 @@ type Type = {
   handleScaleChanged: () => void;
   handlePageIdxChanged: () => void;
 };
-
+/* eslint-disable */
 const ThumbnailBar: SFC<Type> = memo((props: Type) => {
   const { dataModule, handlePageIdxChanged } = props;
   if (dataModule.pages) {
@@ -53,7 +53,7 @@ const ViewerDocument = (props: Type) => {
     return (
       <JuiViewerDocument
         pages={pages}
-        data-test-automation-id="ViewerDocument"
+        data-test-automation-id='ViewerDocument'
         scale={dataModule.currentScale}
         pageIndex={dataModule.currentPageIdx}
         pageFit={true}

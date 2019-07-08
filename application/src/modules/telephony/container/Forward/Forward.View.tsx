@@ -18,41 +18,41 @@ class ForwardViewComponent extends React.Component<Props> {
     const { t, quitForward } = this.props;
     return (
       <JuiIconButton
-        variant="plain"
-        color="common.white"
+        variant='plain'
+        color='common.white'
         onClick={quitForward}
-        size="large"
+        size='large'
         tooltipTitle={t('telephony.action.back')}
         aria-label={t('telephony.action.back')}
-        data-test-automation-id="reply-back-button"
+        data-test-automation-id='reply-back-button'
       >
         previous
       </JuiIconButton>
     );
-  }
+  };
 
   private _ForwardBtn = () => {
     const { t, makeForwardCall } = this.props;
     return (
       <JuiFabButton
-        color="semantic.positive"
-        size="moreLarge"
+        color='semantic.positive'
+        size='moreLarge'
         showShadow={false}
-        tooltipPlacement="top"
-        iconName="forwardcall"
-        data-test-automation-id="telephony-forward-btn"
+        tooltipPlacement='top'
+        iconName='forwardcall'
+        data-test-automation-id='telephony-forward-btn'
         aria-label={t('telephony.action.forward')}
         tooltipTitle={t('telephony.action.forward')}
         onClick={makeForwardCall}
       />
     );
-  }
+  };
   render() {
     const { forward } = this.props;
 
     return (
       <GenericDialerPanel
-        inputStringProps="forwardString"
+        inputStringProps='forwardString'
         onInputEnterKeyDown={forward}
         CallActionBtn={this._ForwardBtn}
         displayCallerIdSelector={false}

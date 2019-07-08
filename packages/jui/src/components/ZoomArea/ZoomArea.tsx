@@ -3,7 +3,6 @@
  * @Date: 2019-02-28 15:16:18
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import React, { RefObject } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -26,10 +25,6 @@ type JuiZoomProps = {
 type JuiWithZoomProps = Pick<JuiZoomProps, 'transform'> & {
   zoomIn: (zoomCenter?: Position) => void;
   zoomOut: (zoomCenter?: Position) => void;
-};
-
-type JuiZoomState = {
-  zoomRect: ElementRect;
 };
 
 type JuiZoomOptions = {
@@ -63,25 +58,17 @@ const ZoomWrapper = styled.div`
 function ensureOptions(zoomOptions?: Partial<JuiZoomOptions>): JuiZoomOptions {
   return zoomOptions
     ? {
-      ...DEFAULT_OPTIONS,
-      ...zoomOptions,
-    }
+        ...DEFAULT_OPTIONS,
+        ...zoomOptions,
+      }
     : DEFAULT_OPTIONS;
 }
 
-class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
+class JuiZoomComponent extends React.Component<JuiZoomProps> {
   private _viewRef: RefObject<HTMLDivElement> = React.createRef();
 
   constructor(props: JuiZoomProps) {
     super(props);
-    this.state = {
-      zoomRect: {
-        left: 0,
-        top: 0,
-        width: 0,
-        height: 0,
-      },
-    };
   }
 
   getBoundingClientRect(): ElementRect {
@@ -100,15 +87,15 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     const { scale } = this.props.transform;
     const newScale = scale + scaleStep;
     this.zoomTo(newScale, zoomCenterPosition);
-  }
+  };
 
   zoomIn = () => {
     this.zoomStep(ensureOptions(this.props.zoomOptions).step);
-  }
+  };
 
   zoomOut = () => {
     this.zoomStep(-ensureOptions(this.props.zoomOptions).step);
-  }
+  };
 
   zoomTo = (newScale: number, zoomCenterPosition?: Position) => {
     const { scale, translateX, translateY } = this.props.transform;
@@ -137,7 +124,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
         translateY -
         (translateOffsetY * (fixNewScale / scale - 1)) / fixNewScale,
     });
-  }
+  };
 
   reset = () => {
     this.props.onTransformChange({
@@ -145,7 +132,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
       translateX: 0,
       translateY: 0,
     });
-  }
+  };
 
   onWheel = (ev: React.WheelEvent) => {
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
@@ -160,7 +147,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     const { maxScale, minScale } = ensureOptions(this.props.zoomOptions);
     const toScale = scale + sign * step * scale * factor;
     this.zoomTo(Math.max(Math.min(toScale, maxScale), minScale), point);
-  }
+  };
 
   render() {
     const {
@@ -177,9 +164,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     };
     const zoomTransformStyle: React.CSSProperties = {};
     if (applyTransform) {
-      zoomTransformStyle.transform = `scale(${transform.scale}) translate(${
-        transform.translateX
-      }px, ${transform.translateY}px)`;
+      zoomTransformStyle.transform = `scale(${transform.scale}) translate(${transform.translateX}px, ${transform.translateY}px)`;
     }
     return (
       <Container ref={this.getViewRef()} className={className}>
@@ -187,8 +172,8 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
           {children(zoomProps)}
         </ZoomWrapper>
         <ReactResizeDetector
-          handleHeight={true}
-          handleWidth={true}
+          handleHeight
+          handleWidth
           onResize={(width, height) => {
             const zoomRect = {
               width,
@@ -197,9 +182,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
               top: 0,
             };
             onZoomRectChange && onZoomRectChange(zoomRect);
-            this.setState({
-              zoomRect,
-            });
           }}
         />
       </Container>

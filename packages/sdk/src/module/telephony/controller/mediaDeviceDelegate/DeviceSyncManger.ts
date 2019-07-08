@@ -14,6 +14,7 @@ import {
   Disposer,
 } from './types';
 import { defaultAudioID } from 'voip/src/account/constants';
+
 const LOG_TAG = '[DeviceSyncManger]';
 
 export class DeviceSyncManger {
@@ -47,7 +48,7 @@ export class DeviceSyncManger {
         deviceId: newValue,
       });
     }
-  }
+  };
 
   private _handleDeviceManagerChanged = (newValue: string) => {
     if (this._storage.get() !== newValue) {
@@ -59,7 +60,7 @@ export class DeviceSyncManger {
         deviceId: newValue,
       });
     }
-  }
+  };
 
   private _ensureDevice = (): { source: SOURCE_TYPE; deviceId: string } => {
     const devices = this._deviceManager.getDevices();
@@ -107,7 +108,7 @@ export class DeviceSyncManger {
       source: SOURCE_TYPE.DEFAULT,
       deviceId: defaultDeviceId,
     };
-  }
+  };
 
   setDevice(info: { source: SOURCE_TYPE; deviceId: string }) {
     const { source, deviceId } = info;
@@ -128,14 +129,12 @@ export class DeviceSyncManger {
       .getDevices()
       .find(device => device.deviceId === deviceId);
     if (realDeviceId !== this._deviceManager.getDeviceId()) {
-      telephonyLogger
-        .tags(LOG_TAG)
-        .info('setDevice to deviceManager', {
-          source,
-          deviceId,
-          realDeviceId,
-          device,
-        });
+      telephonyLogger.tags(LOG_TAG).info('setDevice to deviceManager', {
+        source,
+        deviceId,
+        realDeviceId,
+        device,
+      });
       this._deviceManager.setDeviceId(realDeviceId);
     }
     if (storeId !== this._storage.get()) {

@@ -7,7 +7,7 @@ import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { width, height } from '../../foundation/utils';
 import * as EmptyScreen from './style';
-import { JuiEmptyScreenProps } from './';
+import { JuiEmptyScreenProps } from '.';
 
 const Pic = styled(EmptyScreen.Pic)`
   width: ${width(67)};
@@ -16,7 +16,7 @@ const Pic = styled(EmptyScreen.Pic)`
 
 const JuiConversationPageInit = React.memo((props: JuiEmptyScreenProps) => {
   const { image, text, actions } = props;
-
+  /* eslint-disable react/no-array-index-key */
   return (
     <EmptyScreen.Wrapper>
       <Pic src={image} />

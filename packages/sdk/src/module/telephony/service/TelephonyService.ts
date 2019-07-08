@@ -66,11 +66,11 @@ class TelephonyService extends EntityBaseService<Call>
 
   handleLogOut = async () => {
     this.telephonyController.logout();
-  }
+  };
 
   getVoipCallPermission = async () => {
     return this.telephonyController.getVoipCallPermission();
-  }
+  };
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
@@ -95,12 +95,12 @@ class TelephonyService extends EntityBaseService<Call>
 
   setTelephonyDelegate = (accountDelegate: ITelephonyDelegate) => {
     this.telephonyController.setAccountDelegate(accountDelegate);
-  }
+  };
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getCallCount() : 0;
-  }
+  };
 
   makeCall = async (toNumber: string, fromNumber: string) => {
     const accountController = this.telephonyController.getAccountController();
@@ -110,81 +110,81 @@ class TelephonyService extends EntityBaseService<Call>
         .makeCall(toNumber, fromNumber);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
-  }
+  };
 
   hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-  }
+  };
 
   mute = (callId: number) => {
     this.telephonyController.getAccountController().mute(callId);
-  }
+  };
 
   unmute = (callId: number) => {
     this.telephonyController.getAccountController().unmute(callId);
-  }
+  };
 
   hold = async (callId: number) => {
     return await this.telephonyController.getAccountController().hold(callId);
-  }
+  };
 
   unhold = async (callId: number) => {
     return await this.telephonyController.getAccountController().unhold(callId);
-  }
+  };
 
   startRecord = async (callId: number) => {
     return await this.telephonyController
       .getAccountController()
       .startRecord(callId);
-  }
+  };
 
   stopRecord = async (callId: number) => {
     return await this.telephonyController
       .getAccountController()
       .stopRecord(callId);
-  }
+  };
 
   dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
-  }
+  };
 
   answer = (callId: number) => {
     this.telephonyController.getAccountController().answer(callId);
-  }
+  };
 
   sendToVoiceMail = (callId: number) => {
     this.telephonyController.getAccountController().sendToVoiceMail(callId);
-  }
+  };
 
   ignore = (callId: number) => {
     this.telephonyController.getAccountController().ignore(callId);
-  }
+  };
 
   startReply = (callId: number) => {
     this.telephonyController.getAccountController().startReply(callId);
-  }
+  };
 
   replyWithMessage = (callId: number, message: string) => {
     this.telephonyController
       .getAccountController()
       .replyWithMessage(callId, message);
-  }
+  };
 
   park = async (callId: number) => {
     return await this.telephonyController.getAccountController().park(callId);
-  }
+  };
 
   flip = async (callId: number, flipNumber: number) => {
     return await this.telephonyController
       .getAccountController()
       .flip(callId, flipNumber);
-  }
+  };
 
   forward = async (callId: number, phoneNumber: string) => {
     return await this.telephonyController
       .getAccountController()
       .forward(callId, phoneNumber);
-  }
+  };
 
   replyWithPattern = (
     callId: number,
@@ -195,16 +195,16 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
-  }
+  };
 
   getRingerDevicesList = () => {
     return this.telephonyController.getRingerDevicesList();
-  }
+  };
 
   getVoipState = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getVoipState() : '';
-  }
+  };
 
   get phoneSetting() {
     if (!this._phoneSetting) {

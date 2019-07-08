@@ -1,0 +1,7 @@
+node_modules
+packages/rcui/src/**
+coverage
+tests
+/application/**/__tests__/*
+/packages/**/__tests__/*
+/packages/jui/**/__stories__/*

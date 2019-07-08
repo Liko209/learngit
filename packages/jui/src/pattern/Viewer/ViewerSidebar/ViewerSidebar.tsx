@@ -14,7 +14,7 @@ import { HotKeys } from '../../../hoc/HotKeys';
 import _ from 'lodash';
 
 const UPDATE_DEBOUNCE_TIME = 50;
-
+/* eslint-disable */
 type VisibleThumbnailType = {
   view: ThumbnailContainerItemsType;
   percent: number;
@@ -124,7 +124,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
       const enterTime = duration.enteringScreen;
       setTimeout(() => {
         this._scrollThumbnailIntoView();
-      },         enterTime);
+      }, enterTime);
     }
   }
 
@@ -191,7 +191,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
   private _emitSelectedCallback = (toIdx: number) => {
     const { onSelectedChanged } = this.props;
     onSelectedChanged && onSelectedChanged(toIdx);
-  }
+  };
 
   handleItemSelected = (e: any, info: ThumbnailInfoType) => {
     const { thumbnailNumber } = info;
@@ -199,7 +199,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     if (currentSelectedIndex !== thumbnailNumber) {
       this._updateSelectedByIndex(thumbnailNumber, this._emitSelectedCallback);
     }
-  }
+  };
 
   renderThumbnail = () => {
     const { items } = this.props;
@@ -232,7 +232,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
       });
     }
     return null;
-  }
+  };
 
   private _onArrowUpKeydown = (e: KeyboardEvent) => {
     const { currentSelectedIndex } = this.state;
@@ -241,7 +241,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
       this._emitSelectedCallback,
     );
     e.preventDefault();
-  }
+  };
 
   private _onArrowDownKeydown = (e: KeyboardEvent) => {
     const { currentSelectedIndex } = this.state;
@@ -250,7 +250,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
       this._emitSelectedCallback,
     );
     e.preventDefault();
-  }
+  };
 
   render() {
     const { open } = this.props;
@@ -260,7 +260,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     };
     return (
       <ViewerSidebarWrap
-        variant="persistent"
+        variant='persistent'
         expand={open}
         open={open}
         classes={{ paper: 'paper' }}

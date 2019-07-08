@@ -29,22 +29,6 @@ class SliderSettingItemViewComponent extends Component<Props> {
     10,
     { maxWait: 1000 / 60 }, // Ensure 60FPS
   );
-
-  render() {
-    const { t, id, disabled, settingItem } = this.props;
-    return (
-      <JuiSettingSectionItem
-        id={id}
-        automationId={settingItem.automationId}
-        disabled={disabled}
-        label={t(settingItem.title || '')}
-        description={t(settingItem.description || '')}
-      >
-        {this._renderSlider()}
-      </JuiSettingSectionItem>
-    );
-  }
-
   private _renderSlider() {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
@@ -67,6 +51,20 @@ class SliderSettingItemViewComponent extends Component<Props> {
         }`}
         data-test-automation-value={value}
       />
+    );
+  }
+  render() {
+    const { t, id, disabled, settingItem } = this.props;
+    return (
+      <JuiSettingSectionItem
+        id={id}
+        automationId={settingItem.automationId}
+        disabled={disabled}
+        label={t(settingItem.title || '')}
+        description={t(settingItem.description || '')}
+      >
+        {this._renderSlider()}
+      </JuiSettingSectionItem>
     );
   }
 }

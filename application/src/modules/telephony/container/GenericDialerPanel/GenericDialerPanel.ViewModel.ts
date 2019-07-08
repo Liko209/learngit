@@ -123,7 +123,7 @@ class GenericDialerPanelViewModel extends StoreViewModel<
       return;
     }
     this._telephonyService.playBeep(digit);
-  }
+  };
 
   // input using dialer's keypad instead of keyboard
   clickToInput = (str: string) => {
@@ -139,33 +139,33 @@ class GenericDialerPanelViewModel extends StoreViewModel<
     }
     this.playAudio(str);
     this._concatInputString(str);
-  }
+  };
 
   setCallerPhoneNumber = (str: string) =>
-    this._telephonyService.setCallerPhoneNumber(str)
+    this._telephonyService.setCallerPhoneNumber(str);
 
   onAfterDialerOpen = () =>
-    this.props.onAfterMount && this.props.onAfterMount()
+    this.props.onAfterMount && this.props.onAfterMount();
 
   deleteInputString = (startPos: number, endPos: number) => {
     this._deleteInputString(false, startPos, endPos);
-  }
+  };
 
   deleteAllInputString = () => {
     this._deleteInputString(true);
-  }
+  };
 
   onFocus = () => {
     this._telephonyStore.onDialerInputFocus();
-  }
+  };
 
   onBlur = () => {
     this._telephonyStore.onDialerInputBlur();
-  }
+  };
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     this._updateInputString(e.target.value);
-  }
+  };
 
   onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // let <ContactSearchList/> handle its own `Enter` key event
@@ -176,7 +176,7 @@ class GenericDialerPanelViewModel extends StoreViewModel<
     ) {
       this.props.onInputEnterKeyDown(this.inputString);
     }
-  }
+  };
 }
 
 export { GenericDialerPanelViewModel };

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
@@ -58,7 +58,7 @@ const JuiTranslationSummaryContent = styled.div`
 `;
 
 const JuiTranscriptionIcon = () => (
-  <JuiIconography iconColor={['grey', '500']} iconSize="medium">
+  <JuiIconography iconColor={['grey', '500']} iconSize='medium'>
     transcription
   </JuiIconography>
 );
@@ -81,18 +81,18 @@ const TranscriptionLoading = (props: ThemeProps) => {
       height={8 * height}
     >
       <rect
-        x="0"
+        x='0'
         y={width}
-        rx="2"
-        ry="2"
+        rx='2'
+        ry='2'
         width={`${44 * width}`}
         height={`${2 * height}`}
       />
       <rect
-        x="0"
+        x='0'
         y={`${5 * width}`}
-        rx="2"
-        ry="2"
+        rx='2'
+        ry='2'
         width={`${29 * width}`}
         height={`${2 * height}`}
       />
@@ -102,7 +102,9 @@ const TranscriptionLoading = (props: ThemeProps) => {
 
 const JuiTranscriptionLoading = withTheme(TranscriptionLoading);
 
-class JuiTranscriptionPreview extends Component<JuiTranscriptionPreviewProps> {
+class JuiTranscriptionPreview extends PureComponent<
+  JuiTranscriptionPreviewProps
+> {
   render() {
     const { showPreivew, transcription, isLoading } = this.props;
 
@@ -118,7 +120,9 @@ class JuiTranscriptionPreview extends Component<JuiTranscriptionPreviewProps> {
   }
 }
 
-class JuiTranscriptionDetails extends Component<JuiTranscriptionDetailsProps> {
+class JuiTranscriptionDetails extends PureComponent<
+  JuiTranscriptionDetailsProps
+> {
   render() {
     const { transcription } = this.props;
     return (

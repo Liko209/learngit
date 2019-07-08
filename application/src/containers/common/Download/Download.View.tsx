@@ -15,8 +15,8 @@ const Download = observer(
   ({ url, variant = 'plain', t }: DownloadViewProps & WithTranslation) => {
     return (
       <JuiIconButton
-        component="a"
-        download={true}
+        component='a'
+        download
         href={accelerateURL(url)}
         variant={variant}
         aria-label={t('common.download')}

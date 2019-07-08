@@ -9,7 +9,7 @@ import React, { MouseEvent } from 'react';
 import { JuiIconButton, JuiToggleButton } from '../../components/Buttons';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { ExcludeList } from './excludeList';
-import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
+import { JuiPopperMenu, AnchorProps } from '../PopperMenu';
 import { HotKeys } from '../../hoc/HotKeys';
 import styled from '../../foundation/styled-components';
 import { grey, spacing, height } from '../../foundation/utils';
@@ -124,17 +124,17 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
 
   private _handleMouseEnter = () => {
     this.setState({ isToggleWrapShow: false });
-  }
+  };
   private _handleMouseLeave = () => {
     this.setState({ isToggleWrapShow: true });
-  }
+  };
 
   handleClose = () => {
     this.setState({
       open: false,
       isToggleWrapShow: true,
     });
-  }
+  };
 
   private _handleClickEvent = (evt: MouseEvent) => {
     const { currentTarget } = evt;
@@ -156,21 +156,21 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
         }
       },
     );
-  }
+  };
 
   private _IconButton = ({ tooltipForceHide }: AnchorProps) => {
     return (
       <JuiIconButton
-        data-test-automation-id="conversation-chatbar-emoji-button"
+        data-test-automation-id='conversation-chatbar-emoji-button'
         tooltipTitle={this.props.tooltip}
         onClick={this._handleClickEvent}
-        size="medium"
+        size='medium'
         tooltipForceHide={tooltipForceHide}
       >
         {this.props.handlerIcon}
       </JuiIconButton>
     );
-  }
+  };
 
   private isIndexOf = (source: string[], target: string[]) => {
     let isIndex = true;
@@ -180,7 +180,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
       }
     });
     return isIndex;
-  }
+  };
   handleClick = (emoji: EmojiData) => {
     const { handleEmojiClick, isKeepOpen } = this.props;
     handleEmojiClick(emoji, () => {
@@ -188,7 +188,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
         this.handleClose();
       }
     });
-  }
+  };
 
   render() {
     const { anchorEl, open } = this.state;
@@ -211,14 +211,14 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
       >
         <StyledEmojiWrapper>
           <JuiPopperMenu
-            automationId="conversation-chatbar-emoji-menu"
+            automationId='conversation-chatbar-emoji-menu'
             open={open}
             anchorEl={anchorEl}
             onClose={this.handleClose}
             Anchor={this._IconButton}
-            placement="bottom-start"
-            noTransition={true}
-            disablePortal={true}
+            placement='bottom-start'
+            noTransition
+            disablePortal
           >
             <Picker
               i18n={i18nObj}
@@ -236,7 +236,7 @@ class JuiEmoji extends React.PureComponent<EmojiProps, State> {
             <StyledCutomizedComponentContainer
               isToggleWrapShow={this.state.isToggleWrapShow}
             >
-              <div className="leftContainer">
+              <div className='leftContainer'>
                 <FormControlLabel
                   control={
                     <JuiToggleButton

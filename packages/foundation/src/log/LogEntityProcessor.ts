@@ -7,10 +7,6 @@ import { LogEntity, ILogEntityProcessor } from './types';
 import { configManager } from './config';
 
 export class LogEntityProcessor implements ILogEntityProcessor {
-
-  constructor() {
-  }
-
   process(initLogEntity: LogEntity): LogEntity {
     const { decorators } = configManager.getConfig();
     const logEntity: LogEntity = decorators.reduce((preEntity, curLoader) => {
@@ -18,5 +14,4 @@ export class LogEntityProcessor implements ILogEntityProcessor {
     },                                             initLogEntity);
     return logEntity;
   }
-
 }

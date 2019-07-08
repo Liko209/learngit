@@ -13,7 +13,7 @@ import {
   HA_PRIORITY,
   IResponse,
 } from './network';
-import NetworkRequestBuilder from './client/NetworkRequestBuilder';
+
 abstract class BaseRequest implements IRequest {
   id: string;
   path: string;
@@ -36,7 +36,7 @@ abstract class BaseRequest implements IRequest {
   needAuth(): boolean {
     throw new Error('Method not implemented.');
   }
-  constructor(builder: NetworkRequestBuilder) {
+  constructor(builder: IRequest) {
     this.id = builder.id;
     this.path = builder.path;
     this.method = builder.method;

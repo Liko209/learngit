@@ -7,6 +7,7 @@ import { MeetingItemController } from '../controller/MeetingItemController';
 import { MeetingItem } from '../entity';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 import { EntityBaseService } from '../../../../../framework/service';
+
 class MeetingItemService extends EntityBaseService<MeetingItem> {
   private _meetingItemController: MeetingItemController;
   constructor() {

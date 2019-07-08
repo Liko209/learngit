@@ -57,12 +57,12 @@ class TriggerButtonComponent extends React.Component<
     return isOpen
       ? 'message.conversationDetailsHide'
       : 'message.conversationDetailsShow';
-  }
+  };
 
   private _getIconKey = () => {
     const { isOpen } = this.props;
     return isOpen ? 'double_chevron_right' : 'double_chevron_left';
-  }
+  };
 
   private _timerId: NodeJS.Timeout;
 
@@ -76,7 +76,7 @@ class TriggerButtonComponent extends React.Component<
       this.setState({
         show: true,
       });
-    },                         0);
+    }, 0);
   }
 
   componentWillUnmount() {
@@ -102,7 +102,7 @@ class TriggerButtonComponent extends React.Component<
           tooltipTitle={t(this._getTooltipKey())}
           ariaLabel={t(this._getTooltipKey())}
           onClick={onClick}
-          data-test-automation-id="right_rail_trigger_button"
+          data-test-automation-id='right_rail_trigger_button'
         >
           {this._getIconKey()}
         </JuiIconButton>
@@ -118,17 +118,17 @@ class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
     return (
-      <JuiRightShelfHeader id="right-rail-header">
+      <JuiRightShelfHeader id='right-rail-header'>
         <JuiRightShelfHeaderText>
           {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
-  }
+  };
 
   private _handleTabChanged = (index: number) => {
     this.setState({ tabIndex: index });
-  }
+  };
 
   private _renderListView = (
     type: RIGHT_RAIL_ITEM_TYPE,
@@ -149,13 +149,13 @@ class RightRailComponent extends React.Component<Props> {
         height={height}
       />
     );
-  }
-
+  };
+  /* eslint-disable react/no-array-index-key */
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+      <ReactResizeDetector handleWidth handleHeight>
         {({ width: w, height: h }: { width: number; height: number }) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
@@ -166,7 +166,7 @@ class RightRailComponent extends React.Component<Props> {
               {() => (
                 <JuiTabs
                   defaultActiveIndex={0}
-                  tag="right-shelf"
+                  tag='right-shelf'
                   width={w}
                   onChangeTab={this._handleTabChanged}
                   moreText={t('common.more')}
@@ -198,7 +198,7 @@ class RightRailComponent extends React.Component<Props> {
         }}
       </ReactResizeDetector>
     );
-  }
+  };
 
   render() {
     const { id } = this.props;
@@ -206,7 +206,7 @@ class RightRailComponent extends React.Component<Props> {
       return null;
     }
     return (
-      <JuiRightShelf data-test-automation-id="rightRail">
+      <JuiRightShelf data-test-automation-id='rightRail'>
         {this._renderHeader()}
         {this._renderTabs()}
       </JuiRightShelf>

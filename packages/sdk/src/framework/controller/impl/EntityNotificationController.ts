@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { IdModel, ModelIdType } from '../../model';
 import { IEntityChangeObserver } from '../types';
-import { ObservableController } from '../impl/ObservableController';
+import { ObservableController } from './ObservableController';
 import { IEntityNotificationController } from '../interface/IEntityNotificationController';
 
 class EntityNotificationController<T extends IdModel<ModelIdType> = IdModel>

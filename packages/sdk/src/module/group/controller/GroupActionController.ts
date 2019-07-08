@@ -215,12 +215,10 @@ export class GroupActionController {
           } else {
             permissions.admin = { uids: [member] };
           }
-        } else {
-          if (permissions.admin) {
-            permissions.admin.uids = _.difference(permissions.admin.uids, [
-              member,
-            ]);
-          }
+        } else if (permissions.admin) {
+          permissions.admin.uids = _.difference(permissions.admin.uids, [
+            member,
+          ]);
         }
         return {
           ...partialEntity,
@@ -390,7 +388,7 @@ export class GroupActionController {
       })
       .map((group: Group) => group.id);
     await this.removeTeamsByIds(privateGroupIds, true);
-  }
+  };
 
   async setAsTrue4HasMoreConfigByDirection(
     ids: number[],

@@ -16,7 +16,7 @@ function decode(text: string) {
     '<': '&lt;',
     '>': '&gt;',
   };
-  const REGEXP_DECODE = /[&\\\/'"<>]/g;
+  const REGEXP_DECODE = /[&\\/'"<>]/g;
   return text.replace(REGEXP_DECODE, ($0) => {
     let handleText = $0;
     if (DECODE[$0]) {

@@ -208,7 +208,7 @@ class JobScheduler {
     mainLogger.tags(UTIL_NAME).debug(`_setTimer, ${info.key}, ${interval}`);
     return setTimeout(() => {
       this._addProcessor(info);
-    },                interval);
+    }, interval);
   }
 
   private _canExecute(info: JobInfo, lastSuccessTime: number): boolean {
@@ -250,19 +250,17 @@ class JobScheduler {
         } else {
           this.cancelJob(info.key, true);
         }
+      } else if (info.periodic) {
+        info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
       } else {
-        if (info.periodic) {
+        const haveRetryTime = info.retryTime && info.retryTime > 0;
+        if (info.retryForever || haveRetryTime) {
+          if (haveRetryTime) {
+            info.retryTime = info.retryTime! - 1;
+          }
           info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
         } else {
-          const haveRetryTime = info.retryTime && info.retryTime > 0;
-          if (info.retryForever || haveRetryTime) {
-            if (haveRetryTime) {
-              info.retryTime = info.retryTime! - 1;
-            }
-            info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
-          } else {
-            this.cancelJob(info.key, true);
-          }
+          this.cancelJob(info.key, true);
         }
       }
       if (info.callback) {

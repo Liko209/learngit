@@ -90,7 +90,7 @@ class IdListPaginationHandler<
 
   protected defaultIsMatchFunc = (model: T) => {
     return this._sourceIds.includes(model.id);
-  }
+  };
 
   protected defaultSortFunc = (
     lhs: ISortableModel<IdType>,
@@ -108,12 +108,12 @@ class IdListPaginationHandler<
       }
     }
     return rhsPos - lhsPos;
-  }
+  };
 
   protected defaultTransformFunc = (model: T) => ({
     id: model.id,
     sortValue: this._sourceIds.indexOf(model.id),
-  })
+  });
 
   dispose() {
     this._foc && this._foc.dispose();

@@ -18,7 +18,7 @@ type JuiFileWithoutPreviewProps = {
 const FileSecondary = (secondary: string) => {
   return (
     <>
-      <span data-test-automation-id="file-no-preview-size">{secondary}</span>
+      <span data-test-automation-id='file-no-preview-size'>{secondary}</span>
     </>
   );
 };
@@ -29,7 +29,7 @@ const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
   const { size, fileName, Actions, iconType } = props;
 
   return (
-    <Jui.FileItem disableGutters={true}>
+    <Jui.FileItem disableGutters>
       <Jui.FileIcon>{iconType}</Jui.FileIcon>
       <Jui.FileInfo
         secondaryTypographyProps={{

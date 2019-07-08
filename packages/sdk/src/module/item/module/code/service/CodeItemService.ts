@@ -9,6 +9,7 @@ import { EntityBaseService } from '../../../../../framework/service';
 import { ItemQueryOptions } from '../../../types';
 import { CodeItem } from '../entity';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
+
 class CodeItemService extends EntityBaseService<CodeItem>
   implements ISubItemService {
   constructor() {

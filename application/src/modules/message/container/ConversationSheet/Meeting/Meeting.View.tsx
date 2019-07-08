@@ -22,6 +22,7 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+
 type meetingProps = WithTranslation & ViewProps;
 
 @observer
@@ -35,7 +36,7 @@ class Meeting extends React.Component<meetingProps> {
     return (
       <>
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
-          <JuiLink size="small" handleOnClick={() => window.open(joinUrl)}>
+          <JuiLink size='small' handleOnClick={() => window.open(joinUrl)}>
             {postParser(joinUrl, {
               keyword: this.context.keyword,
             })}
@@ -56,13 +57,13 @@ class Meeting extends React.Component<meetingProps> {
             })}
           </JuiAudioConferenceDescription>
           {<JuiItemConjunctionText description={t('item.or')} />}
-          <JuiLink size="small" handleOnClick={() => window.open(MEETING_URL)}>
+          <JuiLink size='small' handleOnClick={() => window.open(MEETING_URL)}>
             {t('item.globalNumber')}
           </JuiLink>
         </JuiItemContent>
       </>
     );
-  }
+  };
   private _renderContent() {
     return null;
   }
@@ -85,7 +86,7 @@ class Meeting extends React.Component<meetingProps> {
     return (
       <JuiConversationItemCard
         title={postParser(t(meetingTitle), { keyword: this.context.keyword })}
-        Icon="meetings"
+        Icon='meetings'
         subTitle={isEnded ? `${t('item.meeting.duration')}: ${duration}` : ''}
         isShowLoading={status === MEETING_STATUS.NOT_STARTED}
       >

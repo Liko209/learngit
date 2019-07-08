@@ -3,6 +3,7 @@
  * @Date: 2018-08-16 17:51:20
  * Copyright © RingCentral. All rights reserved.
  */
+/*eslint-disable*/
 class DBError extends Error {
   __proto__: Error;
   constructor(message?: string) {

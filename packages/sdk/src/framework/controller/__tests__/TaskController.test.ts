@@ -113,7 +113,7 @@ describe('TaskController', () => {
         expect(createTaskFunSpy).toBeCalledTimes(1);
         expect(doExecutingFunSpy).toBeCalledTimes(6);
         done();
-      }, 400);
+      }, 500);
     });
 
     it('should keep the last strategy and just do retry times if task still failed', done => {

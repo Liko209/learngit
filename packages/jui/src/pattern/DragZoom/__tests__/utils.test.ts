@@ -51,12 +51,12 @@ describe('utils', () => {
       const result = fixOffset(10, 100, 200);
       expect(result).toEqual(0);
     });
-    it('should fix offset', () => {
+    it('should fix offset while offset set to 5', () => {
       const result = fixOffset(5, 100, 90);
       expect(result).toEqual(5);
     });
 
-    it('should fix offset', () => {
+    it('should fix offset while offset set to -15', () => {
       const result = fixOffset(-15, 100, 90);
       expect(result).toEqual(-5);
     });

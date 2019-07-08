@@ -120,21 +120,21 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
 
   canZoomIn = () => {
     return this.state.canZoomIn;
-  }
+  };
 
   canZoomOut = () => {
     return this.state.canZoomOut;
-  }
+  };
 
   reset = () => {
     this.getZoomRef().current!.reset();
-  }
+  };
 
   updateContentSize = (contentWidth: number, contentHeight: number) => {
     this._contentWidth = contentWidth;
     this._contentHeight = contentHeight;
     this.updateRect();
-  }
+  };
 
   updateRect = () => {
     if (
@@ -159,8 +159,8 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         this._onAutoFitContentRectChange(fitWidth, fitHeight);
       }
     }
-  }
-
+  };
+  /* eslint-disable react/no-access-state-in-setstate */
   applyNewTransform = (newTransform: Transform) => {
     let transform = newTransform;
     let canDrag = this.state.canDrag;
@@ -197,13 +197,13 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         transform,
         canDrag,
       });
-  }
+  };
 
   onTransformChange = (info: { transform: Transform; canDrag: boolean }) => {
     this.setState({
       transform: info.transform,
     });
-  }
+  };
 
   private _onAutoFitContentRectChange = (
     fitWidth: number,
@@ -215,7 +215,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     this._fitHeight = fitHeight;
     this.props.onAutoFitContentRectChange &&
       this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
-  }
+  };
 
   private _updateScale(
     contentWidth: number,
@@ -298,17 +298,18 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
                   {
                     ref: this._contentRef,
                   },
-                )}
+                )
+              }
             </DragArea>
           )}
         </JuiZoomComponent>
         <ZoomButtonGroup
-          className="zoomGroup"
+          className='zoomGroup'
           resetMode={transform.scale !== 1}
           centerText={formatScaleText(transform.scale)}
           ZoomOut={
             <JuiIconButton
-              variant="plain"
+              variant='plain'
               tooltipTitle={zoomOutText}
               ariaLabel={zoomOutText}
               disabled={transform.scale - step < minScale}
@@ -321,7 +322,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           }
           ZoomIn={
             <JuiIconButton
-              variant="plain"
+              variant='plain'
               tooltipTitle={zoomInText}
               ariaLabel={zoomInText}
               disabled={transform.scale + step > maxScale}
@@ -334,7 +335,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           }
           ZoomReset={
             <JuiIconButton
-              variant="plain"
+              variant='plain'
               tooltipTitle={zoomResetText}
               ariaLabel={zoomResetText}
               disabled={transform.scale === 1}

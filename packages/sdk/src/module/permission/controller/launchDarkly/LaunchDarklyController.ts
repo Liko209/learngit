@@ -13,7 +13,7 @@ import { LDFlagSet } from 'launchdarkly-js-client-sdk';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';
-import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 class LaunchDarklyController {
   private isClientReady = false;

@@ -35,37 +35,11 @@ type DataListProps = {
 
 @observer
 class DataList extends React.Component<DataListProps> {
-  @action
-  private _loadInitialData = async () => {
-    // TODO support up=>down and down=>up
-    await this.props.listHandler.fetchData(
-      this._transformDirection('down'),
-      this.props.initialDataCount,
-    );
-    this.props.listHandler.setHasMore(false, this._transformDirection('up'));
-  }
-
-  @action
-  loadMore = async (direction: 'up' | 'down', count: number) => {
-    await this.props.listHandler.fetchData(
-      this._transformDirection(direction),
-      count,
-    );
-  }
-
-  private _transformDirection(direction: 'up' | 'down') {
-    if (this.props.reverse) {
-      return direction === 'up' ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
-    }
-    return direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
-  }
-
   componentDidUpdate(prevProps: DataListProps) {
     if (this.props.listHandler !== prevProps.listHandler) {
       this._loadInitialData();
     }
   }
-
   @computed
   get hasMore() {
     const hasMoreUp = this.props.listHandler.hasMore(
@@ -76,6 +50,30 @@ class DataList extends React.Component<DataListProps> {
     );
     return (direction: 'up' | 'down') =>
       direction === 'up' ? hasMoreUp : hasMoreDown;
+  }
+  @action
+  private _loadInitialData = async () => {
+    // TODO support up=>down and down=>up
+    await this.props.listHandler.fetchData(
+      this._transformDirection('down'),
+      this.props.initialDataCount,
+    );
+    this.props.listHandler.setHasMore(false, this._transformDirection('up'));
+  };
+
+  @action
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    await this.props.listHandler.fetchData(
+      this._transformDirection(direction),
+      count,
+    );
+  };
+
+  private _transformDirection(direction: 'up' | 'down') {
+    if (this.props.reverse) {
+      return direction === 'up' ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
+    }
+    return direction === 'up' ? QUERY_DIRECTION.NEWER : QUERY_DIRECTION.OLDER;
   }
 
   render() {

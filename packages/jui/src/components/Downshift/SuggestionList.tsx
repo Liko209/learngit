@@ -35,25 +35,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
 
   private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
     this.setState({ renderedRange });
-  }
-
-  render() {
-    const { automationId, suggestionItems, minRowHeight } = this.props;
-
-    return (
-      <StyledPaper square={true} data-test-automation-id={automationId}>
-        <VirtualizedListWithAutoSizer
-          minRowHeight={minRowHeight}
-          onRenderedRangeChange={this._handleRenderedRangeChange}
-          style={VL_STYLE}
-        >
-          {suggestionItems.map((suggestionItem: SelectedItem, index: number) =>
-            this._renderItem(suggestionItem, index),
-          )}
-        </VirtualizedListWithAutoSizer>
-      </StyledPaper>
-    );
-  }
+  };
 
   private _renderItem(suggestionItem: SelectedItem, index: number) {
     const { MenuItem, highlightedIndex, getItemProps } = this.props;
@@ -73,6 +55,23 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
       );
     }
     return { key: suggestionItem.id || 0 };
+  }
+  render() {
+    const { automationId, suggestionItems, minRowHeight } = this.props;
+
+    return (
+      <StyledPaper square data-test-automation-id={automationId}>
+        <VirtualizedListWithAutoSizer
+          minRowHeight={minRowHeight}
+          onRenderedRangeChange={this._handleRenderedRangeChange}
+          style={VL_STYLE}
+        >
+          {suggestionItems.map((suggestionItem: SelectedItem, index: number) =>
+            this._renderItem(suggestionItem, index),
+          )}
+        </VirtualizedListWithAutoSizer>
+      </StyledPaper>
+    );
   }
 }
 

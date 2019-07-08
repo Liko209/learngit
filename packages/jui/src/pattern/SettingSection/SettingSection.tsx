@@ -60,20 +60,20 @@ class JuiSettingSection extends React.PureComponent<JuiSettingSectionProps> {
     const { children, title, automationId } = this.props;
     return (
       <SettingSectionWrap
-        className="setting-section"
+        className='setting-section'
         data-test-automation-id={`settingSection-${automationId}`}
         data-test-automation-class={'settingSection'}
       >
-        <TitleHeaderWrap component="div" disableSticky={true}>
+        <TitleHeaderWrap component='div' disableSticky>
           <TitleWrap
-            className="setting-section-title"
+            className='setting-section-title'
             data-test-automation-id={`settingSectionTitle-${automationId}`}
           >
             {title}
           </TitleWrap>
         </TitleHeaderWrap>
         <JuiCard>
-          <ContentWrap className="setting-section-content">
+          <ContentWrap className='setting-section-content'>
             {children}
           </ContentWrap>
         </JuiCard>

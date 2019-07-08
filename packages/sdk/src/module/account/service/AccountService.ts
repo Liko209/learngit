@@ -216,7 +216,7 @@ class AccountService extends AbstractService
   onGlipForceLogout = (forceLogout: boolean) => {
     mainLogger.tags(LOG_TAG).info('Glip force logout:', forceLogout);
     this.onForceLogout(forceLogout);
-  }
+  };
 
   onForceLogout(forceLogout: boolean) {
     if (forceLogout) {

@@ -4,5 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FirebasePerformanceController } from './FirebasePerformanceController';
+
 const firebasePerformanceController: FirebasePerformanceController = new FirebasePerformanceController();
 export { firebasePerformanceController };

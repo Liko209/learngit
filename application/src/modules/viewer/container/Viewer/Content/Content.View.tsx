@@ -10,13 +10,14 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
 import { JuiImageViewerContent } from 'jui/pattern/ImageViewer';
+
 type ResponsiveProps = {
   content: ReactElement;
 };
 
 const LeftResponsive = withResponsive((props: ResponsiveProps) => {
   return React.cloneElement(props.content);
-},                                    {});
+}, {});
 
 const RightResponsive = withResponsive(
   (props: ResponsiveProps) => {

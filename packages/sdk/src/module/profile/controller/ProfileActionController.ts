@@ -69,10 +69,8 @@ class ProfileActionController {
         if (newIds.indexOf(groupId) === -1) {
           newIds = [groupId].concat(newIds);
         }
-      } else {
-        if (newIds.indexOf(groupId) !== -1) {
-          newIds = newIds.filter((id: number) => id !== groupId);
-        }
+      } else if (newIds.indexOf(groupId) !== -1) {
+        newIds = newIds.filter((id: number) => id !== groupId);
       }
       partialModel['favorite_group_ids'] = newIds;
       return partialModel;

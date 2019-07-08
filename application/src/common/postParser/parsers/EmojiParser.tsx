@@ -29,7 +29,14 @@ class EmojiParser extends PostParser implements IPostParser {
     const DEFAULT_TONE_INDEX = 1;
     const id = result[1];
     const emojiData = EmojiTransformer.emojiDataMap[id];
-    const { isCustomEmoji, name, tone, isEnlarged, ...others } = emojiData;
+    const {
+      isCustomEmoji,
+      name,
+      tone,
+      isEnlarged,
+      alt = 'emoji',
+      ...others
+    } = emojiData;
     if (!isCustomEmoji && name) {
       elem = (
         <Emoji
@@ -43,7 +50,7 @@ class EmojiParser extends PostParser implements IPostParser {
         </Emoji>
       );
     } else {
-      elem = <img {...others} />;
+      elem = <img alt={alt} {...others} />;
     }
 
     return elem;

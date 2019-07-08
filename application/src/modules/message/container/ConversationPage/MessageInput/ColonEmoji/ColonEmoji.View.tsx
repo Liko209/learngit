@@ -3,7 +3,7 @@
  * @Date: 2019-06-02 16:43:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { ColonEmojiViewProps } from './types';
@@ -38,7 +38,7 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
-  }
+  };
 
   componentDidUpdate(prevProps: ColonEmojiViewProps) {
     const { currentIndex } = this.props;
@@ -63,14 +63,14 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
           ? MAX_ITEM_NUMBER * ITEM_HEIGHT
           : ITEM_HEIGHT * memberIdsLength;
       return (
-        <JuiMentionPanel automationId="ColonEmojiPanel" isEditMode={isEditMode}>
+        <JuiMentionPanel automationId='ColonEmojiPanel' isEditMode={isEditMode}>
           <JuiMentionPanelSection>
             <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
             <JuiVirtualizedList
               minRowHeight={ITEM_HEIGHT}
               ref={this._listRef}
               height={colonEmojiHeight}
-              data-test-automation-id="colon-emoji-list"
+              data-test-automation-id='colon-emoji-list'
             >
               {members.map((emoji: any, index: number) => {
                 return (

@@ -10,7 +10,7 @@ import {
   JuiListNavItem,
   JuiListNavItemIconographyLeft,
   JuiListNavItemIconography,
-} from './../../components';
+} from '../../components';
 
 const StyledRightWrapper = styled.div`
   display: flex;
@@ -51,14 +51,14 @@ const JuiConversationListSectionHeader = memo(
     return (
       <JuiListNavItem
         className={className}
-        data-test-automation-id="conversation-list-section-header"
-        button={true}
+        data-test-automation-id='conversation-list-section-header'
+        button
         selected={selected}
         classes={{ selected: 'selected' }}
         onClick={onClick}
         {...rest}
       >
-        <JuiListNavItemIconographyLeft iconSize="small">
+        <JuiListNavItemIconographyLeft iconSize='small'>
           {icon}
         </JuiListNavItemIconographyLeft>
         <ItemText>{title}</ItemText>
@@ -66,9 +66,13 @@ const JuiConversationListSectionHeader = memo(
           {!expanded ? umi : null}
           {!hideArrow ? (
             <JuiListNavItemIconography
-              iconSize="medium"
+              iconSize='medium'
               onClick={onArrowClick}
-              data-test-automation-id={expanded ? 'conversation-list-section-header-arrow-up' : 'conversation-list-section-header-arrow-down'}
+              data-test-automation-id={
+                expanded
+                  ? 'conversation-list-section-header-arrow-up'
+                  : 'conversation-list-section-header-arrow-down'
+              }
             >
               {arrow}
             </JuiListNavItemIconography>

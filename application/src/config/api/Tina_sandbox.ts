@@ -1,4 +1,5 @@
 import { ApiConfig, DeepPartial } from 'sdk/types';
+
 const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://api-xmnup.lab.nordigy.ru',

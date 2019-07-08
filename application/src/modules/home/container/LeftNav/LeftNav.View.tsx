@@ -9,7 +9,6 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
 import { LeftNavViewProps } from './types';
 import { observable, computed } from 'mobx';
-import _ from 'lodash';
 import { observer } from 'mobx-react';
 
 type LeftNavProps = {
@@ -23,6 +22,15 @@ class LeftNav extends Component<LeftNavProps> {
   @observable
   selectedPath: string = window.location.pathname.split('/')[1];
 
+  componentDidMount() {
+    const { history } = this.props;
+    history.listen(() => {
+      const newSelectedPath = window.location.pathname.split('/')[1];
+      if (this.selectedPath !== newSelectedPath) {
+        this.selectedPath = newSelectedPath;
+      }
+    });
+  }
   @computed
   get translatedIconGroups() {
     const { iconGroups, t } = this.props;
@@ -33,17 +41,6 @@ class LeftNav extends Component<LeftNavProps> {
       })),
     );
   }
-
-  componentDidMount() {
-    const { history } = this.props;
-    history.listen(() => {
-      const newSelectedPath = window.location.pathname.split('/')[1];
-      if (this.selectedPath !== newSelectedPath) {
-        this.selectedPath = newSelectedPath;
-      }
-    });
-  }
-
   onRouteChange = (url: string) => {
     const { history } = this.props;
     const { pathname } = history.location;
@@ -53,7 +50,7 @@ class LeftNav extends Component<LeftNavProps> {
       return;
     }
     history.push(url);
-  }
+  };
 
   render() {
     const { isLeftNavOpen } = this.props;

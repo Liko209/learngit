@@ -52,10 +52,8 @@ abstract class AbstractProcessor {
         processor,
         existed,
       );
-    } else {
-      if (!existed) {
-        this._processors.push(processor);
-      }
+    } else if (!existed) {
+      this._processors.push(processor);
     }
 
     return true;

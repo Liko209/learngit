@@ -105,14 +105,14 @@ class CallViewModel extends AbstractViewModel<CallProps>
     if (!isCallSuccess) {
       this._telephonyService.hangUp();
     }
-  }
+  };
 
   @action
   trackCall = (analysisSource?: string) => {
     if (analysisSource) {
       analyticsCollector.makeOutboundCall(analysisSource);
     }
-  }
+  };
 
   showIcon = promisedComputed(false, async () => {
     const phoneNumber = this.phoneNumber;

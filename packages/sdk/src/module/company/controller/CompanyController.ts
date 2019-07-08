@@ -14,6 +14,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+
 class CompanyController {
   private _currentCompanyId: number;
   constructor(

@@ -5,7 +5,6 @@
  */
 
 // Replace ${deployHost} with real deployHost
-import _ from 'lodash';
 import { AppEnvSetting } from 'sdk/module/env';
 import { ConfigMap } from './types';
 import { loadFileConfigs, getEnvArray, get, set } from './utils';

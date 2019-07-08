@@ -3,9 +3,8 @@
  * @Date: 2018-09-11 17:32:34
  * Copyright © RingCentral. All rights reserved.
  */
-
-import styled from '../../../foundation/styled-components';
 import MuiSwitch from '@material-ui/core/Switch';
+import styled from '../../../foundation/styled-components';
 import {
   width,
   spacing,

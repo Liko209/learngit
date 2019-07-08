@@ -78,7 +78,7 @@ class TokenRouteViewModel extends StoreViewModel {
     } catch (e) {
       this._setIsError(true);
     }
-  }
+  };
 
   redirectToIndex = async () => {
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -88,7 +88,7 @@ class TokenRouteViewModel extends StoreViewModel {
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
     this._redirect(state);
-  }
+  };
 
   private _getUrlParams(location: H.Location) {
     return parse(location.search, { ignoreQueryPrefix: true });

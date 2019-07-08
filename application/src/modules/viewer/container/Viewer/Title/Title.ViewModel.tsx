@@ -48,7 +48,7 @@ class ViewerTitleViewModel extends AbstractViewModel<ViewerTitleProps> {
     }
     this.sender = null;
     this.createdAt = null;
-  }
+  };
 }
 
 export { ViewerTitleViewModel };

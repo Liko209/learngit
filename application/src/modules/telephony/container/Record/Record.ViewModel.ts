@@ -37,7 +37,7 @@ class RecordViewModel extends StoreViewModel<RecordProps>
       return;
     }
     this._telephonyService.startOrStopRecording();
-  }
+  };
 }
 
 export { RecordViewModel };

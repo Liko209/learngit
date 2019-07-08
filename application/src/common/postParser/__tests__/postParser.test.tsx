@@ -25,7 +25,7 @@ const customEmoji = {
     data:
       'https://glip-vault-1.s3.amazonaws.com/web/customer_files/96005824524/congrats.gif',
   },
-  ['google.com']: {
+  'google.com': {
     data:
       'https://glip-vault-1.s3.amazonaws.com/web/customer_files/96005824524/congrats.gif',
   },
@@ -439,9 +439,7 @@ describe('glipdown text', () => {
           postParser(atmention('121', 'Admin'), {
             atMentions: { map },
           }),
-        ).toEqual([
-          <JuiAtMention key={0} id='121' isCurrent={true} name='Admin' />,
-        ]);
+        ).toEqual([<JuiAtMention key={0} id='121' isCurrent name='Admin' />]);
       });
 
       it('should return array with AtMention - with extra string', () => {
@@ -553,6 +551,7 @@ describe('glipdown text', () => {
         ).toEqual([
           <img
             className='emoji enlarge-emoji'
+            alt='emoji'
             src={customEmoji['a_bash'].data}
             key={0}
           />,
