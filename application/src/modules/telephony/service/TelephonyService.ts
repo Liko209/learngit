@@ -368,6 +368,13 @@ class TelephonyService {
       ToastCallError.toastInvalidNumber();
       return;
     }
+    // No call permission
+    const callAvailable = await this._rcInfoService.isVoipCallingAvailable();
+    if (!callAvailable) {
+      ToastCallError.toastPermissionError();
+      return;
+    }
+
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(parsed as string);
@@ -410,6 +417,20 @@ class TelephonyService {
         );
         return false;
       }
+      case MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP === rv: {
+        ToastCallError.toastCountryBlockError();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        return false;
+      }
+      case MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE === rv: {
+        ToastCallError.toastVoipUnavailableError();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        return false;
+      }
       case MAKE_CALL_ERROR_CODE.NO_ERROR !== rv: {
         ToastCallError.toastCallFailed();
         mainLogger.error(
@@ -430,9 +451,9 @@ class TelephonyService {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
-      return;
+      return Promise.resolve(false);
     }
-    this.makeCall(toNumber);
+    return this.makeCall(toNumber);
   }
 
   hangUp = () => {

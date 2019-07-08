@@ -39,7 +39,7 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
       await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
-      this._telephonyStore.end();
+      this._telephonyService.hangUp();
     }
   }
 
