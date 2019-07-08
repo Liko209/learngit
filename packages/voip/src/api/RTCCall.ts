@@ -126,7 +126,7 @@ class RTCCall {
         RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       this.hangup();
-    },                                        kRTCHangupInvalidCallInterval * 1000);
+    }, kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {

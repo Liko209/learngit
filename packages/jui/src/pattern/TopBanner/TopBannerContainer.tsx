@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
+
 const JuiTopBannerContainer = styled.div`
   position: relative;
   overflow: hidden;

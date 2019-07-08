@@ -9,6 +9,7 @@ import { daoManager } from 'sdk/dao';
 import { RecentSearchModel } from '../entity';
 import { SEARCH_CONFIG_KEYS, SEARCH_MODULE_NAME } from './constants';
 import { UndefinedAble } from 'sdk/types';
+
 class SearchUserConfig extends DBConfig {
   static moduleName = 'search';
 

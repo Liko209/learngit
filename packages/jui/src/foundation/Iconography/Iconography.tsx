@@ -5,9 +5,9 @@
  */
 import * as React from 'react';
 import { name2icon } from './name2icon';
-import styled, { css } from '../../foundation/styled-components';
+import styled, { css } from '../styled-components';
 import { Palette } from '../theme/theme';
-import { palette, width } from '../../foundation/utils/styles';
+import { palette, width } from '../utils/styles';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 
 export type IconColor = [keyof Palette, string];
@@ -94,7 +94,7 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
     <RuiCircularProgress size={loadingSize} />
   ) : (
     <StyledSpan className={_className} {...rest}>
-      <StyledSvg role="img" iconColor={iconColor} size={iconSize}>
+      <StyledSvg role='img' iconColor={iconColor} size={iconSize}>
         {!!desc && <title>{desc}</title>}
         <use xlinkHref={useHref} href={useHref} />
       </StyledSvg>

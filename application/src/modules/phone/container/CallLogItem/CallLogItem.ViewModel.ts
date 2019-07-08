@@ -133,7 +133,7 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
 
   shouldShowCall = async () => {
     return this._rcInfoService.isVoipCallingAvailable();
-  }
+  };
 }
 
 export { CallLogItemViewModel };

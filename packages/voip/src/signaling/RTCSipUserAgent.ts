@@ -23,6 +23,7 @@ import {
 } from './constants';
 
 const WebPhone = require('ringcentral-web-phone');
+
 const LOG_TAG = 'RTCSipUserAgent';
 
 enum WEBPHONE_REGISTER_EVENT {
@@ -39,11 +40,6 @@ enum WEBPHONE_REGISTER_EVENT {
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
   private _switchBackTimer: NodeJS.Timeout | null = null;
-
-  constructor() {
-    super();
-  }
-
   public restartUA(
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
@@ -103,6 +99,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
           rtcLogger.debug('RC_WEBPHONE', `[${category}] ${content}`);
       }
     };
+    /* eslint-disable new-cap */
     this._webphone = new WebPhone.default(provisionData, options);
     this._initListener();
   }
@@ -223,7 +220,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     );
     this._switchBackTimer = setTimeout(() => {
       this.emit(UA_EVENT.SWITCH_BACK_PROXY);
-    },                                 timeout);
+    }, timeout);
     rtcLogger.debug(
       LOG_TAG,
       `Switch back to main proxy signal from web phone. Schedule switch back in ${timeout /

@@ -41,8 +41,8 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
     this.setState({
       exited: true,
     });
-  }
-
+  };
+  /* eslint-disable react/no-did-update-set-state */
   componentDidUpdate({ show }: InputFooterItemProps) {
     if (!show && this.props.show) {
       this.setState({
@@ -59,9 +59,9 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
         <InputFooterItemWrapper
           align={align}
           show={show}
-          duration="standard"
-          easing="sharp"
-          appear={true}
+          duration='standard'
+          easing='sharp'
+          appear
           onExited={this.onExited}
           {...rest}
         >

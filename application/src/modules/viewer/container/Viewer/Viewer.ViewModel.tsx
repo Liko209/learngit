@@ -140,32 +140,32 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     const { itemId } = this.props;
     this._itemListDataSource.loadInitialData(itemId, PAGE_SIZE);
     this._updateIndexInfo();
-  }
+  };
 
   doPreload = () => {
     if (this.ids) {
       this._preloadController.setIsAllowed(false);
       this._preloadController.replacePreload(this.ids, this._getItemIndex());
     }
-  }
+  };
 
   stopPreload = () => {
     this._preloadController.stop();
-  }
+  };
 
   onContentLoad = () => {
     this.enablePreload();
-  }
+  };
 
   onContentError = () => {
     this.enablePreload();
-  }
+  };
 
   enablePreload = () => {
     setTimeout(() => {
       this._preloadController.setIsAllowed(true);
     });
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -188,23 +188,23 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       this.currentIndex = index;
       this.currentItemId = itemId;
     });
-  }
+  };
 
   getCurrentItemId = () => {
     return this.currentItemId;
-  }
+  };
 
   getCurrentIndex = () => {
     return this.currentIndex;
-  }
+  };
 
   setOnCurrentItemDeletedCb = (callback: () => void) => {
     this._onCurrentItemDeletedCb = callback;
-  }
+  };
 
   setOnItemSwitchCb = (callback: (itemId: number) => void) => {
     this._onItemSwitchCb = callback;
-  }
+  };
 
   @computed
   get hasPrevious() {
@@ -238,7 +238,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this._onItemSwitchCb &&
         this._onItemSwitchCb(itemId, index, 'previous');
     }
-  }
+  };
 
   @action
   switchToNext = () => {
@@ -265,7 +265,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this._onItemSwitchCb &&
         this._onItemSwitchCb(itemId, index, 'next');
     }
-  }
+  };
 
   loadMore = async (direction: QUERY_DIRECTION): Promise<FileItem[] | null> => {
     if (this.isLoadingMore) {
@@ -278,11 +278,11 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     );
     this.isLoadingMore = false;
     return result;
-  }
+  };
 
   private _getItemIndex = (): number => {
     return this.ids.findIndex((_id: number) => _id === this.currentItemId);
-  }
+  };
 
   private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
@@ -322,7 +322,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this.historyIds = this.ids;
       }
     });
-  }
+  };
 
   private _onExceptions(toastMessage: string) {
     portalManager.dismissAll();
@@ -372,7 +372,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     if (needRefreshIndex) {
       this._updateIndexInfo();
     }
-  }
+  };
 }
 
 export { ViewerViewModel };

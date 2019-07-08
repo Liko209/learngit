@@ -60,7 +60,7 @@ class FileDeleteActionViewModel extends FileActionViewModel {
         .indexOf(this._currentItemVersion) + 1,
     );
     return true;
-  }
+  };
 
   private get _currentItemVersion() {
     const fileInConversation = !!this.post;

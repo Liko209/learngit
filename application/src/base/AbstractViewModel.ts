@@ -5,5 +5,6 @@
  */
 // TODO remove this
 import { StoreViewModel } from '@/store/ViewModel';
+
 const AbstractViewModel = StoreViewModel;
 export { AbstractViewModel };

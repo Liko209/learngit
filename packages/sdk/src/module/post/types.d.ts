@@ -5,6 +5,7 @@
  */
 import { Post } from './entity/Post';
 import { Raw } from '../../framework/model/Raw';
+
 export type SendPostType = {
   text: string;
   groupId: number;

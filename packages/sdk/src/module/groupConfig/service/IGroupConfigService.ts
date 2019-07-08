@@ -5,6 +5,7 @@
  */
 import { GroupConfig } from '../entity';
 import { Post } from 'sdk/module/post/entity';
+
 interface IGroupConfigService {
   updateGroupConfigPartialData(params: GroupConfig): Promise<boolean>;
   saveAndDoNotify(params: GroupConfig): Promise<boolean>;

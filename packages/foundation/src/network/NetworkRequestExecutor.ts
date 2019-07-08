@@ -27,10 +27,7 @@ import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 import { networkLogger } from '../log';
 
-const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
-  doRetry: () => void,
-  retryCounter: number,
-) => {
+const DEFAULT_RETRY_STRATEGY: RetryStrategy = (doRetry: () => void) => {
   setTimeout(doRetry, 3000);
 };
 const LOG_TAG = 'NetworkRequestExecutor';
@@ -181,13 +178,15 @@ export class NetworkRequestExecutor
   private _callXApiResponseCallback(response: IResponse) {
     switch (response.status) {
       case RESPONSE_STATUS_CODE.UNAUTHORIZED:
-        this._handle401XApiCompletionCallback(response);
+        this._handle401XApiCompletionCallback();
         return;
       case RESPONSE_STATUS_CODE.BAD_GATEWAY:
-        this._handle502XApiCompletionCallback(response);
+        this._handle502XApiCompletionCallback();
         break;
       case RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
+        break;
+      default:
         break;
     }
 
@@ -215,7 +214,7 @@ export class NetworkRequestExecutor
     }
   }
 
-  private _handle401XApiCompletionCallback(response: IResponse) {
+  private _handle401XApiCompletionCallback() {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this._removeAuthorization();
     this.responseListener &&
@@ -227,7 +226,7 @@ export class NetworkRequestExecutor
       delete this.request.headers.Authorization;
   }
 
-  private _handle502XApiCompletionCallback(response: IResponse) {
+  private _handle502XApiCompletionCallback() {
     this.responseListener &&
       this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
   }
@@ -250,16 +249,17 @@ export class NetworkRequestExecutor
   }
 
   private _isServerErrorCodeMatched(data: any, errorCode: string): boolean {
-    if (data.hasOwnProperty('errorCode') && data.errorCode === errorCode) {
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
+    const hasErrorProperty = hasOwnProperty.call(data, 'errors');
+    const hasErrorCodeProperty = hasOwnProperty.call(data, 'errorCode');
+    if (hasErrorCodeProperty && data.errorCode === errorCode) {
       return true;
     }
-    if (data.hasOwnProperty('errors')) {
+    if (hasErrorProperty) {
       const errors = data.errors;
       if (Array.isArray(errors)) {
         return errors.some((error: any) => {
-          return (
-            error.hasOwnProperty('errorCode') && error.errorCode === errorCode
-          );
+          return hasErrorCodeProperty && error.errorCode === errorCode;
         });
       }
     }

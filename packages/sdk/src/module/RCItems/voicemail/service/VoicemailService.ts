@@ -117,11 +117,11 @@ class VoicemailService extends EntityBaseService<Voicemail> {
       SYNC_DIRECTION.NEWER,
       true,
     );
-  }
+  };
 
   private _initBadge = async () => {
     await this._getVoicemailController().voicemailBadgeController.initializeUnreadCount();
-  }
+  };
 }
 
 export { VoicemailService };

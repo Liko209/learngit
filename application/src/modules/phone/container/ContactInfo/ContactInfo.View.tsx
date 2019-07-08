@@ -40,13 +40,13 @@ class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
     });
 
     didOpenMiniProfile && didOpenMiniProfile(personId);
-  }
+  };
 
   private _avatar() {
     const { isUnknownCaller, personId } = this.props;
 
     if (isUnknownCaller || !personId) {
-      return <Avatar showDefaultAvatar={true} />;
+      return <Avatar showDefaultAvatar />;
     }
 
     return <Avatar onClick={this.openMiniProfile} uid={personId} />;
@@ -56,7 +56,7 @@ class ContactInfoViewComponent extends Component<ContactInfoProps, State> {
     const { displayName, displayNumber, isUnread } = this.props;
 
     return (
-      <ContactItem disableButton={true} isUnread={isUnread}>
+      <ContactItem disableButton isUnread={isUnread}>
         <JuiListItemAvatar>{this._avatar()}</JuiListItemAvatar>
         <JuiListItemText primary={displayName} secondary={displayNumber} />
       </ContactItem>

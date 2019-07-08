@@ -26,7 +26,9 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   @observable
   _filterFunc: CallLogFilterFunc = null;
 
-  private _service = ServiceLoader.getInstance<CallLogService>(ServiceConfig.CALL_LOG_SERVICE);
+  private _service = ServiceLoader.getInstance<CallLogService>(
+    ServiceConfig.CALL_LOG_SERVICE,
+  );
 
   constructor(props: AllCallsProps) {
     super(props);
@@ -55,7 +57,11 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
 
   @computed
   private get _handler() {
-    return new AllCallsListHandler(this.props.type, this._fetchData, this._filterFunc);
+    return new AllCallsListHandler(
+      this.props.type,
+      this._fetchData,
+      this._filterFunc,
+    );
   }
 
   @computed
@@ -64,9 +70,15 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   }
 
   @action
-  private _fetchData: FetchAllCallsData = async (direction, pageSize, anchor) => {
+  private _fetchData: FetchAllCallsData = async (
+    direction,
+    pageSize,
+    anchor,
+  ) => {
     const realDirection =
-      direction === QUERY_DIRECTION.NEWER ? QUERY_DIRECTION.OLDER : QUERY_DIRECTION.NEWER;
+      direction === QUERY_DIRECTION.NEWER
+        ? QUERY_DIRECTION.OLDER
+        : QUERY_DIRECTION.NEWER;
 
     const options: CallLogFilterOptions = {
       callLogSource: this._source,
@@ -86,12 +98,12 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
 
       return { data: [], hasMore: true };
     }
-  }
+  };
 
   @action
   onErrorReload = () => {
     this.isError = false;
-  }
+  };
 }
 
 export { AllCallsViewModel };

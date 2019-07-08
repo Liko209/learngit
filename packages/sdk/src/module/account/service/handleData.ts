@@ -10,7 +10,7 @@ import {
   ACCOUNT_CLIENT_CONFIG,
 } from '../../../dao/account/constants';
 import notificationCenter from '../../../service/notificationCenter';
-import { AccountService } from '../service';
+import { AccountService } from '.';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { AccountGlobalConfig } from '../config';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';

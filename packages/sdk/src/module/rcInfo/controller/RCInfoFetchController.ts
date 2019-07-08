@@ -32,13 +32,13 @@ import {
   ForwardingFlipNumberModel,
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
+import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
+import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
+import { Nullable } from 'sdk/types';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
 const DEFAULT_PAGE_SIZE = 1000; // callerId(more than 200)
 
-import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
-import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
-import { Nullable } from 'sdk/types';
 class RCInfoFetchController {
   private _isRCInfoJobScheduled: boolean;
   private _shouldIgnoreFirstTime: boolean;
@@ -155,25 +155,25 @@ class RCInfoFetchController {
     const clientInfo = await RCInfoApi.requestRCClientInfo();
     await this.rcInfoUserConfig.setClientInfo(clientInfo);
     notificationCenter.emit(RC_INFO.CLIENT_INFO, clientInfo);
-  }
+  };
 
   requestRCAccountInfo = async (): Promise<void> => {
     const accountInfo = await RCInfoApi.requestRCAccountInfo();
     await this.rcInfoUserConfig.setAccountInfo(accountInfo);
     notificationCenter.emit(RC_INFO.ACCOUNT_INFO, accountInfo);
-  }
+  };
 
   requestRCExtensionInfo = async (): Promise<void> => {
     const extensionInfo = await RCInfoApi.requestRCExtensionInfo();
     await this.rcInfoUserConfig.setExtensionInfo(extensionInfo);
     notificationCenter.emit(RC_INFO.EXTENSION_INFO, extensionInfo);
-  }
+  };
 
   requestRCRolePermissions = async (): Promise<void> => {
     const rolePermissions = await RCInfoApi.requestRCRolePermissions();
     await this.rcInfoUserConfig.setRolePermissions(rolePermissions);
     notificationCenter.emit(RC_INFO.ROLE_PERMISSIONS, rolePermissions);
-  }
+  };
 
   requestSpecialNumberRule = async (): Promise<void> => {
     const countryId = await this._getCurrentCountryId();
@@ -184,7 +184,7 @@ class RCInfoFetchController {
     specialNumbers[countryId] = specialNumberRule;
     await this.rcInfoUserConfig.setSpecialNumberRules(specialNumbers);
     notificationCenter.emit(RC_INFO.SPECIAL_NUMBER_RULE, specialNumbers);
-  }
+  };
 
   private async _getCurrentCountryId() {
     const userId = AccountGlobalConfig.getUserDictionary() as number;
@@ -204,7 +204,7 @@ class RCInfoFetchController {
     const phoneData = await RCInfoApi.getPhoneParserData(phoneDataVersion);
     await this.rcInfoUserConfig.setPhoneData(phoneData);
     notificationCenter.emit(RC_INFO.PHONE_DATA, phoneData);
-  }
+  };
 
   requestExtensionPhoneNumberList = async (): Promise<void> => {
     const extensionPhoneNumberList = await RCInfoApi.getExtensionPhoneNumberList(
@@ -217,24 +217,24 @@ class RCInfoFetchController {
       RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
       extensionPhoneNumberList,
     );
-  }
+  };
 
   requestExtensionCallerId = async (): Promise<void> => {
     const extensionCallerId = await RCInfoApi.getExtensionCallerId();
     await this.rcInfoUserConfig.setExtensionCallerId(extensionCallerId);
     notificationCenter.emit(RC_INFO.EXTENSION_CALLER_ID, extensionCallerId);
-  }
+  };
   requestDialingPlan = async (): Promise<void> => {
     const dialingPlan = await RCInfoApi.getDialingPlan();
     await this.rcInfoUserConfig.setDialingPlan(dialingPlan);
     notificationCenter.emit(RC_INFO.DIALING_PLAN, dialingPlan);
-  }
+  };
 
   requestAccountServiceInfo = async (): Promise<void> => {
     const accountServiceInfo = await RCInfoApi.getAccountServiceInfo();
     await this.rcInfoUserConfig.setAccountServiceInfo(accountServiceInfo);
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
-  }
+  };
 
   requestBlockNumberList = async (): Promise<void> => {
     const params: GetBlockNumberListParams = {
@@ -245,7 +245,7 @@ class RCInfoFetchController {
     const result: BlockNumberItem[] = [];
     await this._requestBlockNumberListByPage(params, result);
     await this.rcInfoUserConfig.setBlockNumbers(result);
-  }
+  };
 
   private async _requestBlockNumberListByPage(
     params: GetBlockNumberListParams,

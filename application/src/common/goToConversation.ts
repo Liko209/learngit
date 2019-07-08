@@ -30,6 +30,26 @@ const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 const ERROR_CONVERSATION_NOT_FOUND = 'ERROR_CONVERSATION_NOT_FOUND';
 const DELAY_LOADING = 500;
 
+function goToConversation({
+  conversationId,
+  jumpToPostId,
+  replaceHistory,
+}: BaseGoToConversationParams) {
+  const args: [string, any?] = [String(conversationId)];
+  const currentConversation = getGlobalValue(
+    GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+  );
+  if (replaceHistory || conversationId === currentConversation) {
+    args.push('REPLACE');
+  } else {
+    args.push('PUSH');
+  }
+  if (jumpToPostId) {
+    args.push({ jumpToPostId });
+  }
+  MessageRouterChangeHelper.goToConversation(...args);
+}
+
 const getConversationId = async (id: number | number[]) => {
   const groupService = ServiceLoader.getInstance<GroupService>(
     ServiceConfig.GROUP_SERVICE,
@@ -63,7 +83,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
   const timer = setTimeout(() => {
     needReplaceHistory = true;
     history.push('/messages/loading');
-  },                       DELAY_LOADING);
+  }, DELAY_LOADING);
 
   let beforeJumpFun;
   if (beforeJump) {
@@ -99,26 +119,6 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     });
     return false;
   }
-}
-
-function goToConversation({
-  conversationId,
-  jumpToPostId,
-  replaceHistory,
-}: BaseGoToConversationParams) {
-  const args: [string, any?] = [String(conversationId)];
-  const currentConversation = getGlobalValue(
-    GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-  );
-  if (replaceHistory || conversationId === currentConversation) {
-    args.push('REPLACE');
-  } else {
-    args.push('PUSH');
-  }
-  if (jumpToPostId) {
-    args.push({ jumpToPostId });
-  }
-  MessageRouterChangeHelper.goToConversation(...args);
 }
 
 export {

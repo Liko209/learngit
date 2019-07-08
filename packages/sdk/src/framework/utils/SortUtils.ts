@@ -3,7 +3,7 @@
  * @Date: 2019-01-09 07:52:45
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { IdModel, ModelIdType, SortableModel } from '../model';
 class SortUtils {

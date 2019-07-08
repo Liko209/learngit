@@ -18,6 +18,7 @@ import { RuiTooltip } from 'rcui/components/Tooltip';
 import { palette, grey, width } from '../../../foundation/utils/styles';
 import { Theme, Palette } from '../../../foundation/theme/theme';
 import { TooltipProps } from '@material-ui/core/Tooltip';
+
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type IconButtonVariant = 'round' | 'plain';

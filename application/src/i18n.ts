@@ -8,7 +8,7 @@ import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
-const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
+const getVariationOfAOrAn = function(value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
   const actualValue =
@@ -31,7 +31,7 @@ const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
 };
 
 const interpolation = {
-  format(value: any, format: any, lng: any) {
+  format(value: any, format: any) {
     if (format === 'titlecase') return toTitleCase(value);
     if (format === 'uppercase') return value.toUpperCase();
     if (format === 'en-handle-an') {

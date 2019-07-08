@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { isChrome as _isChrome } from 'sdk/service/utils';
+
 export const isChrome = () => _isChrome;

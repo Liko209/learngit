@@ -10,6 +10,7 @@ import { BaseModuleSetting } from '../../setting';
 import { RegionSettingHandler } from './RegionSettingHandler';
 import { CallerIdSettingHandler } from './CallerIdSettingHandler';
 import { ExtensionSettingHandler } from './ExtensionSettingHandler';
+
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
   [SettingEntityIds.Phone_Region]: RegionSettingHandler;

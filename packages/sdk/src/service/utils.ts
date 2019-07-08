@@ -98,12 +98,10 @@ const baseHandleData = async (
             }
           },
         );
+      } else if (changeMap) {
+        changeMap.set(eventKey, { entities: data });
       } else {
-        if (changeMap) {
-          changeMap.set(eventKey, { entities: data });
-        } else {
-          notificationCenter.emitEntityUpdate(eventKey, data);
-        }
+        notificationCenter.emitEntityUpdate(eventKey, data);
       }
     }
     return normalData;

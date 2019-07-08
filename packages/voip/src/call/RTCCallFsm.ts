@@ -3,9 +3,9 @@
  * @Date: 2018-12-29 16:08:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import async from 'async';
+import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { CALL_FSM_NOTIFY } from './types';
 import {
   RTC_REPLY_MSG_PATTERN,

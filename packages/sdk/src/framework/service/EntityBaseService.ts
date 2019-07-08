@@ -10,7 +10,7 @@ import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../../framework/dao';
+import { BaseDao } from '../dao';
 import NetworkClient from '../../api/NetworkClient';
 import {
   buildRequestController,
@@ -146,7 +146,7 @@ class EntityBaseService<
   }
 
   isCacheEnable(): boolean {
-    return this._entityCacheController ? true : false;
+    return !!this._entityCacheController;
   }
 
   protected buildEntityCacheController() {
@@ -163,7 +163,7 @@ class EntityBaseService<
 
   private _canRequest = () => {
     return this.canRequest();
-  }
+  };
 
   private _initControllers() {
     if (this.entityOptions.isSupportedCache && !this._entityCacheController) {

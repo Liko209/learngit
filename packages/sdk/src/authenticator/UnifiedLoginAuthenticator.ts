@@ -23,7 +23,7 @@ interface IUnifiedLoginAuthenticateParams extends IAuthParams {
 class UnifiedLoginAuthenticator implements IAuthenticator {
   /**
    * should consider 2 cases
-  * 1. RC account
+   * 1. RC account
    * 2. Glip account
    * we only consider 1 now, will implement case 2 in the future
    */

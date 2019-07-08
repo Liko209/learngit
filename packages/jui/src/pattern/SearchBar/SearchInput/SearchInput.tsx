@@ -28,6 +28,9 @@ type JuiSearchInputProps = {
 
 class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
   private _inputDom = createRef<HTMLInputElement>();
+  private _color = moize((scope: string, name: string) => {
+    return [scope, name] as IconColor;
+  });
 
   constructor(props: JuiSearchInputProps) {
     super(props);
@@ -42,35 +45,31 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
       node.focus();
     }
     onClear();
-  }
+  };
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { onChange } = this.props;
     onChange(e);
-  }
+  };
 
   onBlur = (e: FocusEventHandler<HTMLInputElement>) => {
     const { onBlur } = this.props;
     onBlur && onBlur(e);
-  }
+  };
 
   blurTextInput = () => {
     const node = this._inputDom.current;
     if (node) {
       node.blur();
     }
-  }
+  };
 
   focusTextInput = () => {
     const node = this._inputDom.current;
     if (node) {
       node.focus();
     }
-  }
-
-  private _color = moize((scope: string, name: string) => {
-    return [scope, name] as IconColor;
-  });
+  };
 
   render() {
     const {
@@ -82,20 +81,20 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
       placeholder,
       showCloseBtn,
     } = this.props;
-
+    /* eslint-disable react/jsx-no-duplicate-props */
     return (
       <Jui.SearchWrapper hasValue={hasValue} focus={focus}>
         <Jui.SearchIcon
-          data-test-automation-id="search-icon"
+          data-test-automation-id='search-icon'
           iconColor={
             focus ? this._color('grey', '500') : this._color('common', 'white')
           }
-          iconSize="small"
+          iconSize='small'
         >
           search
         </Jui.SearchIcon>
         <Jui.SearchInput
-          data-test-automation-id="search-input"
+          data-test-automation-id='search-input'
           onChange={this.onChange}
           onFocus={onFocus}
           onBlur={this.onBlur}
@@ -113,8 +112,8 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
         />
         {showCloseBtn && (
           <Jui.CloseBtn
-            disableToolTip={true}
-            variant="plain"
+            disableToolTip
+            variant='plain'
             onClick={this.onClose}
             color={focus ? 'grey.500' : 'common.white'}
           >

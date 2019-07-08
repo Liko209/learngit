@@ -38,7 +38,7 @@ class FileNameEditDialogViewModel extends FileActionViewModel {
     this.isLoading && portalManager.dismissLast();
     this.isLoading = false;
     return true;
-  }
+  };
 
   @computed
   get fileNameRemoveSuffix() {
@@ -50,13 +50,13 @@ class FileNameEditDialogViewModel extends FileActionViewModel {
   }
 
   formatFileName = (name: string) => {
-    return name && name.replace(/^\s*/, '').replace(/[\/\?\,\*\:\&]/g, '_');
-  }
+    return name && name.replace(/^\s*/, '').replace(/[/?,*:&]/g, '_');
+  };
 
   @action
   updateNewFileName = (name: string) => {
     this.newFileName = this.formatFileName(name);
-  }
+  };
 }
 
 export { FileNameEditDialogViewModel };

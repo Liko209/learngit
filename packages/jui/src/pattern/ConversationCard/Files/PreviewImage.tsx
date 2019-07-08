@@ -52,11 +52,11 @@ const StyledImg = styled.img`
 `;
 
 const Icon = withDelay(() => (
-  <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
+  <JuiIconography iconSize='extraLarge'>image_preview</JuiIconography>
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
-  <Jui.ImageCard transparent={true} {...props}>
+  <Jui.ImageCard transparent {...props}>
     <Wrapper>
       <Icon delay={20} />
     </Wrapper>
@@ -125,7 +125,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     if (this._mounted) {
       this.setState({ loaded: true });
     }
-  }
+  };
 
   private _tryToReloadImage = () => {
     const { loaded, originURL, retryCount } = this.state;
@@ -134,7 +134,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       const newURL = `${originURL}&timestamp=${Date.now()}`;
       this.setState({ url: newURL });
     }
-  }
+  };
 
   private _handleImageLoadError = () => {
     const { retryCount } = this.state;
@@ -142,7 +142,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       { loaded: false, retryCount: retryCount + 1 },
       this._tryToReloadImage,
     );
-  }
+  };
 
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
     if (!this.state.loaded) return { display: 'none' };
@@ -153,12 +153,12 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     const styleHeight = justifyHeight ? { height: squareHeight } : {};
 
     return { ...styleWidth, ...styleHeight, display: 'block' };
-  }
+  };
 
   private _handleImageClick = (ev: React.MouseEvent) => {
     this.props.handleImageClick &&
       this.props.handleImageClick(ev, this.state.loaded);
-  }
+  };
 
   private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();
@@ -199,7 +199,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
             <Jui.ImageFileInfo
               width={width}
               height={height}
-              component="div"
+              component='div'
               onClick={this._handleInfoClick}
             >
               <FileName>{fileName}</FileName>

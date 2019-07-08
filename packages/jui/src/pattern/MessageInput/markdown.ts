@@ -19,10 +19,10 @@ const _inline = {
 };
 
 const _block = {
-  header: (attr: StringMap, insert: any, extra: { ordered: number }) => {
+  header: (attr: StringMap, insert: any) => {
     return `${'#'.repeat(attr.header)} ${insert}`;
   },
-  blockquote: (attr: StringMap, insert: any, extra: { ordered: number }) => {
+  blockquote: (attr: StringMap, insert: any) => {
     return `> ${insert}`;
   },
   list: (attr: StringMap, insert: any, extra: { ordered: number }) => {
@@ -32,6 +32,8 @@ const _block = {
         return `* ${insert}`;
       case 'ordered':
         return `${extra.ordered}. ${insert}`;
+      default:
+        break;
     }
     return insert;
   },
@@ -44,12 +46,13 @@ function markdownFromDelta(delta: DeltaStatic) {
   const lines: string[] = [];
   const extra: { ordered: number } = { ordered: 0 };
   const mentionIds: number[] = [];
-  const ops = delta && delta.ops || [];
-  ops.forEach((op: DeltaOperation, index: number, ops: DeltaOperation[]) => {
+  const ops = (delta && delta.ops) || [];
+  ops.forEach((op: DeltaOperation, idx: number, self: DeltaOperation[]) => {
     const attr = op.attributes;
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
     let insert = op.insert;
-    const lastElement: number = ops.length - 1;
-    if (lastElement === index) {
+    const lastElement: number = self.length - 1;
+    if (lastElement === idx) {
       insert = insert.replace(/[\n\r]$/, '');
     }
     if (insert.image) {
@@ -64,7 +67,7 @@ function markdownFromDelta(delta: DeltaStatic) {
 
     if (attr) {
       for (const key in attr) {
-        if (attr.hasOwnProperty(key) && key !== null) {
+        if (hasOwnProperty.call(attr, key) && key !== null) {
           if (key in _preInline) {
             insert = _preInline[key](attr, insert);
           }
@@ -72,7 +75,7 @@ function markdownFromDelta(delta: DeltaStatic) {
       }
 
       for (const key in attr) {
-        if (attr.hasOwnProperty(key) && key !== null) {
+        if (hasOwnProperty.call(attr, key) && key !== null) {
           if (key in _inline) {
             insert = _inline[key](attr, insert);
           }
@@ -80,7 +83,7 @@ function markdownFromDelta(delta: DeltaStatic) {
       }
 
       for (const key in attr) {
-        if (attr.hasOwnProperty(key) && key !== null) {
+        if (hasOwnProperty.call(attr, key) && key !== null) {
           if (key in _block) {
             if (insert === '\n') {
               insert = getLastLine(lines);
@@ -97,7 +100,9 @@ function markdownFromDelta(delta: DeltaStatic) {
     }
     const result = (getLastLine(lines) + insert).split('\n');
     for (const index in result) {
-      lines.push(result[index]);
+      if (Object.prototype.hasOwnProperty.call(result, index)) {
+        lines.push(result[index]);
+      }
     }
     if (block) {
       lines.push(`${getLastLine(lines)}\n`);

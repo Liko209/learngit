@@ -167,7 +167,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
         height,
       });
     }
-  }
+  };
 
   toggleShowPanel = () => {
     const { isShow } = this.state;
@@ -179,7 +179,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       }
     }
     this.setState({ isShow: !isShow });
-  }
+  };
 
   renderButton = () => {
     const { TriggerButton, visual } = this.props;
@@ -193,7 +193,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
       return <TriggerButton onClick={this.toggleShowPanel} isOpen={isOpen} />;
     }
     return null;
-  }
+  };
 
   get isManualMode() {
     const { visualMode } = this.props;
@@ -204,7 +204,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     const { children } = this.props;
     const { width, height } = this.state;
     return typeof children === 'function' ? children(width, height) : children;
-  }
+  };
 
   renderMode = () => {
     const { isShow, width } = this.state;
@@ -235,15 +235,15 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
           {this._renderChildren()}
           {visual && (
             <ReactResizeDetector
-              handleWidth={true}
-              handleHeight={true}
+              handleWidth
+              handleHeight
               onResize={this.onResize}
             />
           )}
         </StyledResizable>
       </>
     );
-  }
+  };
 
   renderMain = () => {
     const { minWidth } = this.props;
@@ -252,7 +252,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
         {this._renderChildren()}
       </StyledMain>
     );
-  }
+  };
 
   render() {
     const { visualMode } = this.props;

@@ -18,7 +18,7 @@ const Wrapper = styled.span`
   width: ${width(4)};
   height: ${height(4)};
 `;
-
+/* eslint-disable react/no-array-index-key */
 const JuiActions = ({ children }: Props) => {
   return (
     <React.Fragment>

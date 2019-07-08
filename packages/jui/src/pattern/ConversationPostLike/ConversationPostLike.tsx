@@ -57,14 +57,14 @@ class JuiConversationPostLike extends PureComponent<
     const { likedUsersCount, title, iLiked, onClick } = this.props;
 
     const elEntity = (
-      <StyleConversationPostLike data-name="footerLikeButton" onClick={onClick}>
+      <StyleConversationPostLike data-name='footerLikeButton' onClick={onClick}>
         <JuiIconButton
-          size="small"
+          size='small'
           color={iLiked ? 'primary' : undefined}
-          variant="plain"
-          disableToolTip={true}
-          data-name="actionBarLike"
-          data-test-automation-id="actionBarLike"
+          variant='plain'
+          disableToolTip
+          data-name='actionBarLike'
+          data-test-automation-id='actionBarLike'
         >
           {iLiked ? 'thumbup' : 'thumbup_border'}
         </JuiIconButton>

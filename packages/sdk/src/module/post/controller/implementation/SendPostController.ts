@@ -90,6 +90,7 @@ class SendPostController implements ISendPostController {
         post.group_id,
         post.item_ids,
       );
+      /* eslint-disable no-unneeded-ternary */
       post.item_data = itemData ? itemData : post.item_data;
       this._cleanUploadingFiles(post.group_id, post.item_ids);
     }

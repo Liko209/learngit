@@ -64,11 +64,11 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
       state = ESettingItemState.INVISIBLE;
     }
     return state;
-  }
+  };
 
   private _onPermissionChange = async () => {
     isChrome() && (await this.getUserSettingEntity());
-  }
+  };
 
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
@@ -78,11 +78,11 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
     ) {
       this.getUserSettingEntity();
     }
-  }
+  };
 
   private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
     await this.getUserSettingEntity();
-  }
+  };
 
   dispose() {
     super.dispose();

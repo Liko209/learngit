@@ -35,9 +35,9 @@ const JuiToggleButtonComponent: React.SFC<SwitchProps> = (
       }}
       checked={checked}
       onChange={onChange}
-      color="primary"
+      color='primary'
       disabled={disabled}
-      disableRipple={true}
+      disableRipple
       {...rest}
     />
     // </MuiTooltip>

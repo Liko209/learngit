@@ -5,11 +5,11 @@
  */
 
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
-import { AccountGlobalConfig } from '../../../../module/account/config';
-import { UserConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../account/config';
+import { UserConfigService } from '../../../config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
-
+/* eslint-disable */
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
 class PreInsertIdController implements IPreInsertIdController {

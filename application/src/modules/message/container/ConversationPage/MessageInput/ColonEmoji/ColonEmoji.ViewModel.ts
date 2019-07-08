@@ -6,6 +6,7 @@ import { Quill } from 'react-quill';
 import { ExcludeList, ConvertList } from 'jui/pattern/Emoji/excludeList';
 import 'jui/pattern/Emoji';
 import { emojiIndex, EmojiData } from 'emoji-mart';
+
 const DELAY = 300;
 const INIT_INDEX = 0;
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
@@ -87,11 +88,11 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
       this.currentIndex = INIT_INDEX;
       this.members = this._formatEmojiData(res);
     }
-  }
+  };
 
   private _doUnderscoreTransfer = (colons: string) => {
     return colons.split('-').join('_');
-  }
+  };
 
   private _formatEmojiData(res: EmojiData[]) {
     const emojis: MemberData[] = [];
@@ -122,7 +123,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
   }
   @action
   private _escapeHandler(vm: ColonEmojiViewModel) {
-    return function () {
+    return function() {
       if (vm.open) {
         vm.open = false;
       }
@@ -132,7 +133,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _upHandler(vm: ColonEmojiViewModel) {
-    return function () {
+    return function() {
       const size = vm.members.length;
       const currentIndex = (vm.currentIndex + size - 1) % size;
       vm.currentIndex = currentIndex < 0 ? vm.members.length : currentIndex;
@@ -142,7 +143,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _downHandler(vm: ColonEmojiViewModel) {
-    return function () {
+    return function() {
       const size = vm.members.length;
       const currentIndex = (vm.currentIndex + 1) % size;
       vm.currentIndex = currentIndex < 0 ? 0 : currentIndex;
@@ -152,7 +153,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
 
   @action
   private _selectHandler(vm: ColonEmojiViewModel) {
-    return function () {
+    return function() {
       if (!vm.open || !vm.members.length) {
         return true;
       }
@@ -180,7 +181,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
         quill: (document.querySelector(query) as any).__quill,
       });
     };
-  }
+  };
 
   @action
   private _onColon = (
@@ -197,7 +198,7 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
     }
     this.open = true;
     this._denotationChar = denotationChar;
-  }
+  };
 
   @computed
   get ids() {

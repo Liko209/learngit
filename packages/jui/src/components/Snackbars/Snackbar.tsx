@@ -3,6 +3,7 @@
  * @Date: 2018-12-06 15:53:10
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable import/no-named-default */
 import * as React from 'react';
 import {
   default as MuiSnackbar,
@@ -16,7 +17,7 @@ type JuiSnackbarProps = MuiSnackbarProps & {
 
 const WrappedMuiSnackbar = React.memo((props: JuiSnackbarProps) => {
   const { noFix, ...rest } = props;
-  return <MuiSnackbar className="snackbar" {...rest} />;
+  return <MuiSnackbar className='snackbar' {...rest} />;
 });
 
 const JuiSnackbar = styled<JuiSnackbarProps>(WrappedMuiSnackbar)`

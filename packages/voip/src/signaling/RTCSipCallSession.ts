@@ -5,7 +5,7 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import { IRTCCallSession } from '../signaling/IRTCCallSession';
+import { IRTCCallSession } from './IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTC_CALL_ACTION,
@@ -19,7 +19,7 @@ import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
-} from '../signaling/types';
+} from './types';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -41,10 +41,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onInputDeviceChanged = (deviceId: string) => {
     this._setAudioInputDevice(deviceId);
-  }
+  };
   private _onOutputDeviceChanged = (deviceId: string) => {
     this._setAudioOutputDevice(deviceId);
-  }
+  };
 
   constructor(uuid: string) {
     super();
@@ -231,12 +231,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         }
       });
     }
-
+    /* eslint-disable new-cap */
     if (local_stream && remote_stream) {
       this._session.mediaStreams = new MediaStreams.default(this._session);
       this.getMediaStats((report: any, session: any) => {
         this._mediaStatsManager.setMediaStatsReport(report);
-      },                 kRTCGetStatsInterval * 1000);
+      }, kRTCGetStatsInterval * 1000);
     }
   }
 

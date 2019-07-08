@@ -18,7 +18,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
-import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
@@ -119,6 +119,7 @@ class StateDataHandleController {
           return;
         }
         const groupState: GroupState = { id: groupId };
+        /* eslint-disable */
         Object.keys(group).forEach((key: string) => {
           switch (key) {
             case '__trigger_ids': {

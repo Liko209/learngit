@@ -10,7 +10,6 @@ import { CallLog } from '../entity';
 import { RCItemSyncResponse } from 'sdk/api/ringcentral/types/RCItemSync';
 import { mainLogger, PerformanceTracer } from 'foundation';
 import { CALL_RESULT, LOCAL_INFO_TYPE, CALL_LOG_SOURCE } from '../constants';
-import _ from 'lodash';
 import { SYNC_TYPE } from '../../sync';
 import { RCItemApi } from 'sdk/api';
 import { CallLogBadgeController } from './CallLogBadgeController';

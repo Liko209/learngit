@@ -52,7 +52,7 @@ storiesOf('Components/SizeDetector', module).add('toast', () => {
     return (
       <Wrapper>
         <JuiSizeDetector handleSizeChanged={handleSizeChanged} />
-        <JuiDialog open={true}>
+        <JuiDialog open>
           <JuiVirtualizedList
             height={height}
             minRowHeight={ITEM_HEIGHT}

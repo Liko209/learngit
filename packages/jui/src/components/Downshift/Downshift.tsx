@@ -70,11 +70,11 @@ class JuiDownshift extends React.PureComponent<
       }
     }
     this.props.onSelectChange(selectedItems);
-  }
+  };
 
   handleComposition = (isComposition: boolean) => {
     this.setState({ isComposition });
-  }
+  };
 
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
 
@@ -99,7 +99,7 @@ class JuiDownshift extends React.PureComponent<
         selectedItem={selectedItems}
         defaultHighlightedIndex={0}
         itemToString={this.handleItemToString}
-        id="downshift-multiple"
+        id='downshift-multiple'
       >
         {({
           isOpen,

@@ -107,7 +107,7 @@ class TaskController implements ITaskController {
     } else {
       this._outerCallback && this._outerCallback(true);
     }
-  }
+  };
 
   private _canNext() {
     return this._strategy && this._strategy.canNext();

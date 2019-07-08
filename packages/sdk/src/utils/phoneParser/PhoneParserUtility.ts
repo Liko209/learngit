@@ -46,7 +46,7 @@ class PhoneParserUtility {
 
   static triggerInitPhoneParser = () => {
     PhoneParserUtility.initPhoneParser(true);
-  }
+  };
 
   static async loadModule(): Promise<boolean> {
     if (PhoneParserUtility._moduleStatus === MODULE_STATUS.LOADED) {

@@ -17,7 +17,7 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { AccountService } from '../../account/service';
 import { SortableModel, ModelIdType } from '../../../framework/model';
-import { CompanyService } from '../../../module/company';
+import { CompanyService } from '../../company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
 import {
@@ -44,6 +44,7 @@ import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
 
+/* eslint-disable */
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
@@ -175,7 +176,7 @@ export class GroupFetchDataController {
   }
 
   async isFavored(id: number, type: number): Promise<boolean> {
-    let groupId: number | undefined = undefined;
+    let groupId: number | undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroup([id]);
@@ -358,7 +359,7 @@ export class GroupFetchDataController {
     groupB: SortableModel<Group>,
   ) => {
     return SortUtils.compareSortableModel<Group>(groupA, groupB);
-  }
+  };
 
   private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(

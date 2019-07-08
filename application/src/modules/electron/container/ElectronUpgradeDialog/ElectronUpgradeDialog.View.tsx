@@ -37,9 +37,9 @@ class ElectronUpgradeDialogComponent extends React.Component<
     const Upgrade = (
       <JuiButton
         onClick={this.handleUpgrade}
-        color="primary"
+        color='primary'
         autoFocus={false}
-        key="upgrade"
+        key='upgrade'
         aria-label={t('electron.upgrade.upgrade')}
       >
         {t('electron.upgrade.upgrade')}
@@ -48,7 +48,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
 
     return (
       <JuiModal
-        open={true}
+        open
         title={t('electron.upgrade.dialogTitle')}
         footer={Upgrade}
         aria-label={t('electron.upgrade.dialogTitle')}

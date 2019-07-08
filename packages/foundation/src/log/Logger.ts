@@ -3,6 +3,7 @@
  * @Date: 2018-12-26 15:22:39
  * Copyright © RingCentral. All rights reserved.
  */
+import _ from 'lodash';
 import { LOG_LEVEL } from './constants';
 import {
   ILogger,
@@ -15,7 +16,6 @@ import {
 import { configManager } from './config';
 import { LogEntityProcessor } from './LogEntityProcessor';
 import { ConsoleLogPrettier } from './ConsoleLogPrettier';
-import _ from 'lodash';
 
 const buildLogEntity = (
   level: LOG_LEVEL,
@@ -28,6 +28,95 @@ const buildLogEntity = (
   logEntity.params = params;
   return logEntity;
 };
+
+class ConsoleLogCore implements ILoggerCore {
+  constructor(private _consoleLogPrettier: IConsoleLogPrettier) {}
+  doLog(logEntity: LogEntity): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this._browserLog(
+      logEntity.level,
+      this._consoleLogPrettier.prettier(logEntity),
+    );
+  }
+
+  private _browserLog(level: LOG_LEVEL, params: any[]) {
+    switch (level) {
+      case LOG_LEVEL.FATAL:
+        window.console.error(...params);
+        break;
+      case LOG_LEVEL.ERROR:
+        window.console.error(...params);
+        break;
+      case LOG_LEVEL.WARN:
+        window.console.warn(...params);
+        break;
+      case LOG_LEVEL.INFO:
+        window.console.info(...params);
+        break;
+      case LOG_LEVEL.DEBUG:
+        window.console.debug(...params);
+        break;
+      case LOG_LEVEL.TRACE:
+        window.console.trace(...params);
+        break;
+      default:
+        window.console.log(...params);
+        break;
+    }
+  }
+}
+class LoggerTagDecorator implements ILogger {
+  constructor(private _loggerCore: ILoggerCore, private _tags: string[]) {}
+
+  log(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.LOG, this._tags, params),
+    );
+  }
+
+  trace(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.TRACE, this._tags, params),
+    );
+  }
+
+  debug(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.DEBUG, this._tags, params),
+    );
+  }
+
+  info(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.INFO, this._tags, params),
+    );
+  }
+
+  warn(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.WARN, this._tags, params),
+    );
+  }
+
+  error(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.ERROR, this._tags, params),
+    );
+  }
+
+  fatal(...params: any) {
+    return this._loggerCore.doLog(
+      buildLogEntity(LOG_LEVEL.FATAL, this._tags, params),
+    );
+  }
+
+  tags(...tags: string[]): ILogger {
+    return new LoggerTagDecorator(this._loggerCore, this._tags.concat(tags));
+  }
+}
 
 export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
@@ -85,7 +174,7 @@ export class Logger implements ILogger, ILoggerCore {
 
   tags = (...tags: string[]): ILogger => {
     return this._memoizeTags(tags);
-  }
+  };
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;
@@ -118,96 +207,5 @@ export class Logger implements ILogger, ILoggerCore {
       browser: { enabled },
     } = configManager.getConfig();
     return logEntity.level >= LOG_LEVEL.WARN || enabled;
-  }
-}
-
-class ConsoleLogCore implements ILoggerCore {
-  constructor(private _consoleLogPrettier: IConsoleLogPrettier) {}
-
-  doLog(logEntity: LogEntity): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    this._browserLog(
-      logEntity.level,
-      this._consoleLogPrettier.prettier(logEntity),
-    );
-  }
-
-  private _browserLog(level: LOG_LEVEL, params: any[]) {
-    switch (level) {
-      case LOG_LEVEL.FATAL:
-        window.console.error(...params);
-        break;
-      case LOG_LEVEL.ERROR:
-        window.console.error(...params);
-        break;
-      case LOG_LEVEL.WARN:
-        window.console.warn(...params);
-        break;
-      case LOG_LEVEL.INFO:
-        window.console.info(...params);
-        break;
-      case LOG_LEVEL.DEBUG:
-        window.console.debug(...params);
-        break;
-      case LOG_LEVEL.TRACE:
-        window.console.trace(...params);
-        break;
-      default:
-        window.console.log(...params);
-        break;
-    }
-  }
-}
-
-class LoggerTagDecorator implements ILogger {
-  constructor(private _loggerCore: ILoggerCore, private _tags: string[]) {}
-
-  log(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.LOG, this._tags, params),
-    );
-  }
-
-  trace(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.TRACE, this._tags, params),
-    );
-  }
-
-  debug(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.DEBUG, this._tags, params),
-    );
-  }
-
-  info(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.INFO, this._tags, params),
-    );
-  }
-
-  warn(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.WARN, this._tags, params),
-    );
-  }
-
-  error(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.ERROR, this._tags, params),
-    );
-  }
-
-  fatal(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.FATAL, this._tags, params),
-    );
-  }
-
-  tags(...tags: string[]): ILogger {
-    return new LoggerTagDecorator(this._loggerCore, this._tags.concat(tags));
   }
 }

@@ -71,13 +71,6 @@ function isThumbnailMode(props: JuiImageProps) {
   return props.thumbnailSrc && props.thumbnailSrc !== props.src;
 }
 
-function getInitState(props: JuiImageProps): JuiImageState {
-  if (isThumbnailMode(props)) {
-    return _.cloneDeep(JuiImageView.initThumbnailModeState);
-  }
-  return _.cloneDeep(JuiImageView.initState);
-}
-
 class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   static initState: JuiImageState = {
     loadings: {
@@ -88,7 +81,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     },
     currentShow: 'raw',
   };
-
   static initThumbnailModeState: JuiImageState = {
     loadings: {
       raw: true,
@@ -105,14 +97,19 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
 
   constructor(props: JuiImageProps) {
     super(props);
-    this.state = getInitState(props);
+    this.state = this.getInitState(props);
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
-
+  getInitState(props: JuiImageProps): JuiImageState {
+    if (isThumbnailMode(props)) {
+      return _.cloneDeep(JuiImageView.initThumbnailModeState);
+    }
+    return _.cloneDeep(JuiImageView.initState);
+  }
   getImageRef = (): RefObject<HTMLImageElement> => {
     return this.props.imageRef || this._imageRef;
-  }
+  };
 
   private _loadingView() {
     return (
@@ -125,7 +122,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
+        <JuiIconography iconSize='extraLarge' iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>
@@ -221,5 +218,4 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     );
   }
 }
-
 export { JuiImageView };

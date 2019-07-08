@@ -44,24 +44,6 @@ type SettingRouterPops = RouteComponentProps<{ subPath: string }>;
 
 @observer
 class SettingRouterComponent extends Component<SettingRouterPops> {
-  private get _settingStore() {
-    return jupiter.get(SettingStore);
-  }
-
-  private get _settingService() {
-    return jupiter.get<ISettingService>(ISettingService);
-  }
-
-  @computed
-  get pageIds() {
-    return this._settingStore.getAllPages();
-  }
-
-  getPath(pageId: string) {
-    const page = this._settingStore.getPageById(pageId);
-    return page ? page.path : '';
-  }
-
   componentDidMount() {
     if (!this.props.match.params.subPath) {
       if (this._settingStore.currentPage) {
@@ -75,16 +57,21 @@ class SettingRouterComponent extends Component<SettingRouterPops> {
       }
     }
   }
-
-  render() {
-    return (
-      <JuiResponsiveLayout>
-        <LeftRailResponsive />
-        <SwitchResponsive>{this._renderRoutes()}</SwitchResponsive>
-      </JuiResponsiveLayout>
-    );
+  getPath(pageId: string) {
+    const page = this._settingStore.getPageById(pageId);
+    return page ? page.path : '';
+  }
+  @computed
+  get pageIds() {
+    return this._settingStore.getAllPages();
+  }
+  private get _settingStore() {
+    return jupiter.get(SettingStore);
   }
 
+  private get _settingService() {
+    return jupiter.get<ISettingService>(ISettingService);
+  }
   private _renderRoutes() {
     return this.pageIds.map(pageId => (
       <Route
@@ -93,6 +80,14 @@ class SettingRouterComponent extends Component<SettingRouterPops> {
         render={() => <SettingPage id={pageId} />}
       />
     ));
+  }
+  render() {
+    return (
+      <JuiResponsiveLayout>
+        <LeftRailResponsive />
+        <SwitchResponsive>{this._renderRoutes()}</SwitchResponsive>
+      </JuiResponsiveLayout>
+    );
   }
 }
 

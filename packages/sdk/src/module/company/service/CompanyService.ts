@@ -14,7 +14,7 @@ import { daoManager } from '../../../dao';
 import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {

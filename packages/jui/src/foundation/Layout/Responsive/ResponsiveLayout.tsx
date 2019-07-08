@@ -54,7 +54,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   }
 
   checkWidth = (diffWidth: number, minWidth?: number, defaultWidth?: number) =>
-    (diffWidth > 0 ? defaultWidth || minWidth : minWidth) || 0
+    (diffWidth > 0 ? defaultWidth || minWidth : minWidth) || 0;
 
   contentWidth = (diffWidth: number) => {
     return this.hasSortedResponsiveInfo.reduce(
@@ -65,7 +65,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
       },
       0,
     );
-  }
+  };
 
   onResize = (width: number) => {
     const diffWidth = width - this.prevWidth;
@@ -83,18 +83,18 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
       }
       shouldUpdate = shouldUpdate || visual[tag] !== this.state.visual[tag];
       return totalWidth - checkWidth;
-    },                                  contentWidth);
+    }, contentWidth);
     if (shouldUpdate) {
       this.setState({
         visual,
       });
     }
-  }
+  };
 
   addResponsiveInfo = (Info: ResponsiveInfo) => {
     const { tag } = Info;
     this.responsiveInfo[tag] = Info;
-  }
+  };
 
   render() {
     const { children } = this.props;
@@ -112,7 +112,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
             })
           );
         })}
-        <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
+        <ReactResizeDetector handleWidth onResize={this.onResize} />
       </StyledWrapper>
     );
   }

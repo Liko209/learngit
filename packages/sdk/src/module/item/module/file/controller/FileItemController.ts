@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { buildPartialModifyController } from '../../../../../framework/controller';
-import { FileUploadController } from '../controller/FileUploadController';
+import { FileUploadController } from './FileUploadController';
 import { daoManager } from '../../../../../dao';
 import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { FileActionController } from './FileActionController';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;

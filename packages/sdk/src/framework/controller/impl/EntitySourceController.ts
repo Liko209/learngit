@@ -6,7 +6,7 @@
 
 import { mainLogger } from 'foundation';
 import { IdModel, ModelIdType } from '../../model';
-import { IDao } from '../../../framework/dao';
+import { IDao } from '../../dao';
 import _ from 'lodash';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';

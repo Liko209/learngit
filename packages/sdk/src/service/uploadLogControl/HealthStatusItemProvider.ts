@@ -35,5 +35,5 @@ export class HealthStatusItemProvider implements IZipItemProvider {
         content: results.join('\n'),
       } as ZipItem,
     ];
-  }
+  };
 }

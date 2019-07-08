@@ -61,11 +61,11 @@ class NotificationBrowserSettingItemViewComponent extends Component<
         { endPoint: 'web' },
       );
     }
-  }
+  };
 
   private _handleDialogClose = () => {
     this._handleDialog(false);
-  }
+  };
 
   private _renderDialog() {
     const { t } = this.props;
@@ -100,7 +100,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
       },
       true,
     );
-  }
+  };
 
   private _requestPermission = async () => {
     this.setState({
@@ -108,7 +108,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     });
     const permission = await this._permission.request();
     return permission;
-  }
+  };
 
   @catchError.flash({
     network: 'setting.errorText.network',
@@ -119,6 +119,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     checked: boolean,
   ) => {
     const browserPermission = this._permission.current;
+    /* eslint-disable */
     if (checked) {
       switch (browserPermission) {
         case PERMISSION.DEFAULT:
@@ -152,7 +153,7 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     } else {
       await this.props.setToggleState(checked);
     }
-  }
+  };
 
   render() {
     const {
@@ -172,14 +173,14 @@ class NotificationBrowserSettingItemViewComponent extends Component<
     const hidden = desktopNotifications === undefined;
     return (
       <JuiSettingSectionItem
-        id="notificationBrowserSetting"
-        automationId="notificationBrowser"
+        id='notificationBrowserSetting'
+        automationId='notificationBrowser'
         label={label}
         description={description}
       >
         {!hidden && (
           <JuiToggleButton
-            data-test-automation-id="settingItemToggleButton-notificationBrowser"
+            data-test-automation-id='settingItemToggleButton-notificationBrowser'
             checked={checked}
             onChange={this.handleToggleChange}
             aria-label={

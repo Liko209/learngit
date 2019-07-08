@@ -3,7 +3,6 @@
  * @Date: 2019-01-21 17:18:00
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   Person,
   HeadShotModel,
@@ -105,7 +104,7 @@ class PersonController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).authUserConfig;
     const token = auth.getGlipToken();
-    const glipToken = token && token.replace(/\"/g, '');
+    const glipToken = token && token.replace(/"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({
         uid,
@@ -116,7 +115,7 @@ class PersonController {
     }
     return '';
   }
-
+  /* eslint-disable no-continue */
   private _getHighestResolutionHeadshotUrlFromThumbs(
     thumbs: { key: string; value: string }[],
     desiredSize: number,
@@ -277,7 +276,7 @@ class PersonController {
       !person.is_pseudo_user &&
       !this._hasBogusEmail(person)
     );
-  }
+  };
 
   isVisible(person: Person): boolean {
     return (

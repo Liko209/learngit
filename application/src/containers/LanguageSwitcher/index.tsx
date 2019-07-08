@@ -9,14 +9,7 @@ interface ILanguage {
 class LanguageSwitcher extends React.PureComponent<WithTranslation> {
   constructor(props: WithTranslation) {
     super(props);
-    const { i18n } = this.props;
-    this.state = { language: i18n.language };
-
     this.handleChangeLanguage = this.handleChangeLanguage.bind(this);
-  }
-
-  static getDerivedStateFromProps(props: WithTranslation) {
-    return { language: props.i18n.language };
   }
 
   handleChangeLanguage(lng: string) {
@@ -27,7 +20,7 @@ class LanguageSwitcher extends React.PureComponent<WithTranslation> {
   renderLanguageChoice({ code, label }: ILanguage) {
     const handleChangeLanguage = () => this.handleChangeLanguage(code);
     return (
-      <button key={code} onClick={handleChangeLanguage}>
+      <button key={code} onClick={handleChangeLanguage} type='button'>
         {label}
       </button>
     );
@@ -40,7 +33,7 @@ class LanguageSwitcher extends React.PureComponent<WithTranslation> {
     ];
 
     return (
-      <div className="LanguageSwitcher">
+      <div className='LanguageSwitcher'>
         {languages.map(language => this.renderLanguageChoice(language))}
       </div>
     );

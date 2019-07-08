@@ -648,6 +648,9 @@
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
       "FlipSuccess": "Call flipped",
+      "NoCallPermission": "You no longer have the permission to make the call.",
+      "CountryBlock": "VoIP is not available in your country.",
+      "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "AutoRecording": "Cannot start call recording."
     },

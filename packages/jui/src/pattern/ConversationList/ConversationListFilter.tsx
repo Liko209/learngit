@@ -13,7 +13,7 @@ import { ConversationListItemText as ItemText } from './ConversationListItemText
 import {
   JuiToggleButton,
   JuiToggleButtonProps,
-} from './../../components/Buttons/ToggleButton';
+} from '../../components/Buttons/ToggleButton';
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
@@ -45,12 +45,12 @@ const JuiConversationListFilter: IConversationListItem = memo(
     return (
       <StyledListItem
         classes={{ selected: 'selected' }}
-        disableRipple={true}
+        disableRipple
         {...rest}
       >
         <ItemText>{label}</ItemText>
         <JuiToggleButton
-          className="toggle-button"
+          className='toggle-button'
           checked={checked}
           onChange={onChange}
           disabled={disabled}

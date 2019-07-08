@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 17:15:58
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ class InstantSearchViewComponent extends Component<Props> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
   hoverHighlight = (sectionIndex: number, cellIndex: number) => {
     return this._cacheIndexPathFn(
@@ -40,7 +40,7 @@ class InstantSearchViewComponent extends Component<Props> {
       sectionIndex,
       cellIndex,
     );
-  }
+  };
 
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
@@ -49,7 +49,7 @@ class InstantSearchViewComponent extends Component<Props> {
       sectionIndex,
       cellIndex,
     );
-  }
+  };
 
   createSearchItem = (config: {
     value: number | string;
@@ -78,7 +78,7 @@ class InstantSearchViewComponent extends Component<Props> {
         key={typeof value === 'string' ? `${value}${cellIndex}` : value}
       />
     );
-  }
+  };
 
   get searchResultList() {
     const { searchResult, onShowMore, t } = this.props;
@@ -122,7 +122,7 @@ class InstantSearchViewComponent extends Component<Props> {
           enter: onEnter,
         }}
       >
-        <JuiInstantSearch data-test-automation-id="search-results">
+        <JuiInstantSearch data-test-automation-id='search-results'>
           {this.searchResultList}
         </JuiInstantSearch>
       </HotKeys>

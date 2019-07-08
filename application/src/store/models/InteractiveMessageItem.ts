@@ -9,6 +9,7 @@ import {
   InteractiveMessageItemAttachment,
 } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
+
 export default class InteractiveMessageItemModel extends ItemModel {
   @observable title: string;
   @observable attachments?: InteractiveMessageItemAttachment[];

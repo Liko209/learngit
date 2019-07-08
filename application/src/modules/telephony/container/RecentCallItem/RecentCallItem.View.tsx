@@ -37,11 +37,11 @@ class RecentCallItemView extends React.Component<ViewProps> {
             caller={caller}
             isMissedCall={isMissedCall}
             direction={direction}
-            disableOpenMiniProfile={true}
+            disableOpenMiniProfile
           />
         </StyledContactWrapper>
         <StyledCallLogStatusWrapper>
-          <JuiIconography iconSize="medium" iconColor={color}>
+          <JuiIconography iconSize='medium' iconColor={color}>
             {icon}
           </JuiIconography>
         </StyledCallLogStatusWrapper>

@@ -71,7 +71,7 @@ class JuiMinimizedCall extends PureComponent<Props> {
     return (
       <StyledMinimizedCall onClick={onClick} {...rest}>
         <StyledInfo>
-          <StyledMarquee text={name} time={15} hoverToStop={true} />
+          <StyledMarquee text={name} time={15} hoverToStop />
           <StyledLabel>{label}</StyledLabel>
         </StyledInfo>
         <StyledActionsContainer>

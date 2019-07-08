@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // dynamic change at mention name if username changed
-const UN_ESCAPE_HTML_AT_MENTION_REGEXP =
-  /&lt;a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
+const UN_ESCAPE_HTML_AT_MENTION_REGEXP = /&lt;a class=['"]at_mention_compose[\S\s.]*?rel=\D+(\d+)((?!&gt;).)+&gt;@((((?!&lt;).))+)&lt;&sol;a&gt;/g;
 
 function decode(text: string) {
   const DECODE = {
@@ -16,8 +15,8 @@ function decode(text: string) {
     '<': '&lt;',
     '>': '&gt;',
   };
-  const REGEXP_DECODE = /[&\\\/'"<>]/g;
-  return text.replace(REGEXP_DECODE, ($0) => {
+  const REGEXP_DECODE = /[&\\/'"<>]/g;
+  return text.replace(REGEXP_DECODE, $0 => {
     let handleText = $0;
     if (DECODE[$0]) {
       handleText = DECODE[$0];
@@ -49,4 +48,9 @@ const handleAtMention = (str: string) => {
   }
   return text;
 };
-export { handleAtMention, UN_ESCAPE_HTML_AT_MENTION_REGEXP, decode, atMentionTemplate };
+export {
+  handleAtMention,
+  UN_ESCAPE_HTML_AT_MENTION_REGEXP,
+  decode,
+  atMentionTemplate,
+};

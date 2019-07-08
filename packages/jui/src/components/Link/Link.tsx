@@ -21,6 +21,12 @@ type JuiLinkProps = {
     | undefined;
 };
 
+const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
+  small: 'caption1',
+  medium: 'body2',
+  large: 'headline',
+};
+
 const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
   ${({ size }) => (size ? typography(typographySizeMap[size]) : '')}
   color: ${({ disabled, color = 'primary' }) =>
@@ -48,12 +54,6 @@ const JuiLink: ILink = React.memo(
     ) : null;
   },
 );
-
-const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
-  small: 'caption1',
-  medium: 'body2',
-  large: 'headline',
-};
 
 JuiLink.defaultProps = {
   size: 'medium',

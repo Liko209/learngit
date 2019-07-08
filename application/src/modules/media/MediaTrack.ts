@@ -192,7 +192,7 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-
+      /* eslint-disable no-console */
       if (!ext) {
         console.warn('No file extension was found!');
       }

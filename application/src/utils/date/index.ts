@@ -102,7 +102,7 @@ const condition = {
     return _.inRange(diff, 1, 7);
   },
   overSevenOrLessZero: (diff: number) => {
-    return 0 > diff || diff >= 7;
+    return diff < 0 || diff >= 7;
   },
   overOne: (diff: number) => {
     return !_.inRange(diff, 0, 1);
@@ -112,7 +112,7 @@ const condition = {
 function buildFormatter(
   buildCondition: { condition: Function; formatter: Function }[],
 ): Function {
-  return function (timestamp: Date): string {
+  return function(timestamp: Date): string {
     const mInit = moment(timestamp);
     const m = moment(timestamp)
       .hour(0)

@@ -70,21 +70,17 @@ type ConversationCardHeaderProps = {
 };
 
 class JuiConversationCardHeader extends React.PureComponent<
-  ConversationCardHeaderProps,
-  { headerItemMaxWidth: null | number }
+  ConversationCardHeaderProps
 > {
   leftSection: HTMLDivElement | null;
   constructor(props: ConversationCardHeaderProps) {
     super(props);
-    this.state = {
-      headerItemMaxWidth: null,
-    };
     this.leftSection = null;
   }
 
   setLeftSectionRef = (element: any) => {
     this.leftSection = element;
-  }
+  };
 
   setHeaderItemMaxWidth() {
     if (!this.leftSection) {
@@ -136,14 +132,14 @@ class JuiConversationCardHeader extends React.PureComponent<
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
-          <StyledName data-name="name">{name}</StyledName>
+          <StyledName data-name='name'>{name}</StyledName>
           {status ? (
-            <StyledStatus data-name="cardHeaderUserStatus">
+            <StyledStatus data-name='cardHeaderUserStatus'>
               {status}
             </StyledStatus>
           ) : null}
           {notification ? (
-            <StyledNotification data-name="cardHeaderNotification">
+            <StyledNotification data-name='cardHeaderNotification'>
               {notification}
             </StyledNotification>
           ) : null}
@@ -151,7 +147,7 @@ class JuiConversationCardHeader extends React.PureComponent<
         </StyledLeftSection>
         {(time || children) && (
           <RightSection>
-            {time && <StyledTime data-name="time">{time}</StyledTime>}
+            {time && <StyledTime data-name='time'>{time}</StyledTime>}
             {children}
           </RightSection>
         )}

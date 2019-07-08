@@ -3,6 +3,7 @@
  * @Date: 2018-11-08 09:21:02
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
@@ -44,6 +45,7 @@ import { container } from 'framework';
 import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { MessageService } from '@/modules/message/service';
 import { isEditable } from '../ConversationCard/utils/index';
+
 const STREAM = 'stream';
 const INPUT = 'input';
 
@@ -69,12 +71,12 @@ class ConversationPageViewComponent extends Component<
       goToConversation({ conversationId: this.props.groupId });
       this.remountStream();
     }
-  }
+  };
 
   remountStream = () => {
     this.streamKey++;
     this.forceUpdate();
-  }
+  };
 
   _handleDropFileInStream = (item: any, monitor: DropTargetMonitor) => {
     if (monitor) {
@@ -84,7 +86,7 @@ class ConversationPageViewComponent extends Component<
         current.directPostFiles && current.directPostFiles(files);
       }
     }
-  }
+  };
 
   _handleDropFileInMessageInput = (item: any, monitor: DropTargetMonitor) => {
     if (monitor) {
@@ -94,15 +96,15 @@ class ConversationPageViewComponent extends Component<
         current.handleDropFile && current.handleDropFile(files);
       }
     }
-  }
+  };
 
   private _preventStreamFolderDrop = () => {
     this._folderDetectMap[STREAM] = true;
-  }
+  };
 
   private _preventInputFolderDrop = () => {
     this._folderDetectMap[INPUT] = true;
-  }
+  };
 
   private _editLastPost = () => {
     const stream = this._streamRef.current;
@@ -131,7 +133,7 @@ class ConversationPageViewComponent extends Component<
       const service: MessageService = container.get(MESSAGE_SERVICE);
       service.setEditInputFocus(postId);
     }
-  }
+  };
 
   private get messageInput() {
     const { t, groupId, canPost, loadingStatus } = this.props;
@@ -139,7 +141,7 @@ class ConversationPageViewComponent extends Component<
     if (!canPost) {
       return (
         <JuiDisabledInput
-          data-test-automation-id="disabled-message-input"
+          data-test-automation-id='disabled-message-input'
           text={t('message.prompt.disabledText')}
         />
       );
@@ -180,14 +182,14 @@ class ConversationPageViewComponent extends Component<
           }
           updateConversationStatus={updateStatus}
         />
-        <div id="jumpToFirstUnreadButtonRoot" />
+        <div id='jumpToFirstUnreadButtonRoot' />
       </JuiStreamWrapper>
     );
     return groupId ? (
       <JuiConversationPage
-        className="conversation-page"
+        className='conversation-page'
         data-group-id={groupId}
-        data-test-automation-id="messagePanel"
+        data-test-automation-id='messagePanel'
       >
         <Header id={groupId} />
         <JuiDropZone

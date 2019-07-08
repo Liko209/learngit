@@ -5,4 +5,5 @@
  */
 
 import { TaskItemDao } from './TaskItemDao';
+
 export { TaskItemDao };

@@ -67,7 +67,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       variant={_variant}
       {...restProps}
     >
-      {loading ? <RuiCircularProgress size={16} color="inherit" /> : children}
+      {loading ? <RuiCircularProgress size={16} color='inherit' /> : children}
     </MuiButton>
   );
 };

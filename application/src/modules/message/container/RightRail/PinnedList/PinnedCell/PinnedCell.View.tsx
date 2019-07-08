@@ -13,6 +13,7 @@ import {
 import { PinnedCellViewProps, PinnedCellProps } from './types';
 import { PinnedItem } from '../PinnedItem';
 import { jumpToPost } from '@/common/jumpToPost';
+
 const MAX_ITEM_LENGTH = 3;
 
 type Props = PinnedCellViewProps & PinnedCellProps & WithTranslation;
@@ -26,7 +27,7 @@ class PinnedCellComponent extends Component<Props> {
       groupId,
       replaceHistory: true,
     });
-  }
+  };
 
   render() {
     const {
@@ -53,7 +54,7 @@ class PinnedCellComponent extends Component<Props> {
           <PinnedItem key={id} id={id} />
         ))}
         {itemLen > MAX_ITEM_LENGTH && (
-          <JuiPinnedCellMore data-test-automation-id="pinned-section-more">
+          <JuiPinnedCellMore data-test-automation-id='pinned-section-more'>
             {t('item.pinnedMore', { num: itemLen - MAX_ITEM_LENGTH })}
           </JuiPinnedCellMore>
         )}

@@ -43,7 +43,7 @@ const JuiTaskCheckbox = memo((props: Props) => {
       }}
       customColor={customColor}
       checked={checked}
-      disableRipple={true}
+      disableRipple
       {...rest}
     />
   );

@@ -14,7 +14,9 @@ import { BlockProps } from './types';
 class BlockViewModel extends StoreViewModel<BlockProps> {
   @observable isBlocked?: boolean;
 
-  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(ServiceConfig.RC_INFO_SERVICE);
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
 
   constructor(props: BlockProps) {
     super(props);
@@ -48,7 +50,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
     await this._rcInfoService.addBlockedNumber(this.number);
     await this.fetchNumberStatus();
     return true;
-  }
+  };
 
   @catchError.flash({
     network: 'phone.prompt.notAbleToUnblockForNetworkIssue',
@@ -59,7 +61,7 @@ class BlockViewModel extends StoreViewModel<BlockProps> {
     await this._rcInfoService.deleteBlockedNumbers([this.number]);
     await this.fetchNumberStatus();
     return true;
-  }
+  };
 }
 
 export { BlockViewModel };

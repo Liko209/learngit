@@ -11,7 +11,7 @@ const JuiDialogActions = styled(
       <MuiDialogActions
         {...props}
         classes={{ root: 'root' }}
-        disableActionSpacing={true}
+        disableActionSpacing
       />
     );
   }),

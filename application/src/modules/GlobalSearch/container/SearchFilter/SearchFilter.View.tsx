@@ -12,6 +12,7 @@ import { ContactSearch, GroupSearch } from '@/containers/Downshift';
 import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import { JuiLineSelect, MenuProps } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
+
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
 @observer
@@ -64,7 +65,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           onChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           value={searchOptions.type as string}
-          automationId="typeSelector"
+          automationId='typeSelector'
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
             return (
@@ -84,7 +85,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           menuProps={this.lineSelectProps}
           onChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
-          automationId="timePostSelector"
+          automationId='timePostSelector'
           value={this.props.timeType}
         >
           {timePeriodFilter.map((item: SearchContentTypeItem) => {

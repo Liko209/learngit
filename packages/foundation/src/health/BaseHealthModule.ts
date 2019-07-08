@@ -6,6 +6,7 @@
 
 import { IHealthStatusItem, IHealthModule } from './types';
 import { RegisterItemManager } from './RegisterItemManager';
+
 export class BaseHealthModule implements IHealthModule {
   private _manager: RegisterItemManager<IHealthStatusItem>;
 
