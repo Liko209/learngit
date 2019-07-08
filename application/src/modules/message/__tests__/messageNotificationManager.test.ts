@@ -253,7 +253,7 @@ describe('messageNotificationManager', () => {
       );
     });
 
-    it(`you'll get it`, () => {
+    it(`should unescape for text lik "you'll get it"`, () => {
       expect(notificationManager.handlePostContent(`you'll get it`)).toEqual(
         `you'll get it`,
       );
