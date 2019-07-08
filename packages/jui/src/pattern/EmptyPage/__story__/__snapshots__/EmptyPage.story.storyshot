@@ -14,20 +14,28 @@ exports[`Storyshots Pattern EmptyPage: Pattern EmptyPage 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
   width: 100%;
   min-width: 336px;
   height: 100%;
-  padding: 0px 32px;
+  padding: 16px 32px;
+  overflow: auto;
+}
+
+.c0 > :first-child {
+  margin-top: auto;
+}
+
+.c0 > :last-child {
+  margin-bottom: auto;
 }
 
 .c1 {
   margin-bottom: 28px;
   width: 268px;
   height: 212px;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
 }
 
 .c2 {

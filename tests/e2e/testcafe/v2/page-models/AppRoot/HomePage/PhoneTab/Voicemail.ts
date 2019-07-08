@@ -18,6 +18,10 @@ export class VoicemailPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
+  get filterInput() {
+    return this.getSelectorByAutomationId('phoneFilter').find('input');
+  }
+
   get scrollDiv() {
     return this.getSelectorByAutomationId('virtualized-list');
   }
@@ -113,6 +117,14 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('voicemail-read-button');
   }
 
+  get readButton() {
+    return this.getSelectorByIcon('read', this.readToggleButton);
+  }
+
+  get unreadButton() {
+    return this.getSelectorByIcon('unread', this.readToggleButton);
+  }
+
   get downloadButton() {
     return this.getSelectorByAutomationId('voicemail-download-button');
   }
@@ -133,12 +145,12 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('voicemail-block-button');
   }
 
-  get blockButton() 
+  get blockButton()
   {
     return this.getSelectorByIcon('blocked', this.blockToggle).parent('li');
   }
 
-  get unblockButton() 
+  get unblockButton()
   {
     return this.getSelectorByIcon('unblocked', this.blockToggle).parent('li');
   }

@@ -12,21 +12,28 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { CallLogType, FetchAllCallsData } from './types';
+import { CallLogType, FetchAllCallsData, CallLogFilterFunc } from './types';
+
+const getDefaultMatchFunc = (type: CallLogType) => (model: CallLog) => {
+  const isMissedCall =
+    model.result === CALL_RESULT.MISSED ||
+    model.result === CALL_RESULT.VOICEMAIL;
+
+  return !!(
+    model &&
+    !model.__deactivated &&
+    (type === CallLogType.MissedCall ? isMissedCall : true)
+  );
+};
 
 class AllCallsListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<CallLog, string>;
-  constructor(type: CallLogType, fetchData: FetchAllCallsData) {
-    const isMatchFunc = (model: CallLog) => {
-      const isMissedCall =
-        model.result === CALL_RESULT.MISSED ||
-        model.result === CALL_RESULT.VOICEMAIL;
-      return !!(
-        model &&
-        !model.__deactivated &&
-        (type === CallLogType.MissedCall ? isMissedCall : true)
-      );
-    };
+  constructor(
+    type: CallLogType,
+    fetchData: FetchAllCallsData,
+    filterFunc: CallLogFilterFunc,
+  ) {
+    const isMatchFunc = filterFunc || getDefaultMatchFunc(type);
 
     const transformFunc = (model: CallLog): ISortableModel<string> => {
       return {

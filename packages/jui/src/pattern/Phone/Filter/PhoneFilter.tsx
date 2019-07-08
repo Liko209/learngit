@@ -20,7 +20,7 @@ import {
 } from './types';
 
 const StyledPhoneFilter = styled(JuiOutlineTextField)`
-  width: ${width(40)};
+  width: ${width(50)};
   padding: ${spacing(0, 3)};
   border-color: ${grey('300')};
 
@@ -81,6 +81,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
   const iconRightProps = {
     tabIndex: 0,
     'aria-label': clearButtonLabel,
+    'data-test-automation-id': 'close',
   };
 
   const inputProps = {
@@ -100,6 +101,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
       IconRightProps={iconRightProps}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
+      data-test-automation-id="phoneFilter"
       {...iconState}
     />
   );

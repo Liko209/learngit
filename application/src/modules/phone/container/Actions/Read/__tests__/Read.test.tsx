@@ -39,7 +39,7 @@ const checkNotification = (message: string) => ({
 describe('Read', () => {
   @testable
   class init {
-    @test('should render correct when button is icon type under read status')
+    @test('should render correct when button is icon type under read status [JPT-2461]')
     @mockEntity({
       readStatus: READ_STATUS.READ,
     })
@@ -48,10 +48,10 @@ describe('Read', () => {
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('read');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markUnread');
-      expect(buttonProps.ariaLabel).toBe('voicemail.messageIsReadMarkItAsUnread');
+      expect(buttonProps.ariaLabel).toBe('voicemail.markUnread');
     }
 
-    @test('should render correct when button is icon type under unread status')
+    @test('should render correct when button is icon type under unread status [JPT-2461]')
     @mockEntity({
       readStatus: READ_STATUS.UNREAD,
     })
@@ -60,7 +60,7 @@ describe('Read', () => {
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('unread');
       expect(buttonProps.tooltipTitle).toBe('voicemail.markRead');
-      expect(buttonProps.ariaLabel).toBe('voicemail.messageIsUnreadMarkItAsRead');
+      expect(buttonProps.ariaLabel).toBe('voicemail.markRead');
     }
 
     @test('should render correct when button is menu item type under read status')
@@ -73,7 +73,7 @@ describe('Read', () => {
       const buttonProps = button.props();
       expect(button.text()).toBe('voicemail.markUnread');
       expect(buttonProps.icon).toBe('read');
-      expect(buttonProps['aria-label']).toBe('voicemail.messageIsReadMarkItAsUnread');
+      expect(buttonProps['aria-label']).toBe('voicemail.markUnread');
     }
 
     @test('should render correct when button is menu item type under unread status')
@@ -86,7 +86,7 @@ describe('Read', () => {
       const buttonProps = button.props();
       expect(button.text()).toBe('voicemail.markRead');
       expect(buttonProps.icon).toBe('unread');
-      expect(buttonProps['aria-label']).toBe('voicemail.messageIsUnreadMarkItAsRead');
+      expect(buttonProps['aria-label']).toBe('voicemail.markRead');
     }
   }
 

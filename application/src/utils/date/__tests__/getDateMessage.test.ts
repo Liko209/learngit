@@ -82,7 +82,7 @@ describe('getCreateTime', () => {
   it('should return time format when width < 400 [JPT-2144]', () => {
     const timestamp = moment().toISOString();
     expect(getCreateTime(timestamp, 'short')).toEqual(
-      moment(timestamp).format('hh MM A'),
+      moment(timestamp).format('h:mm A'),
     );
   });
   it('should be call postTimestamp if get createTime [JPT-2144]', () => {

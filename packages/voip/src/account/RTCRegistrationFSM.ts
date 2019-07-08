@@ -16,7 +16,8 @@ enum REGISTRATION_FSM_EVENT {
   REG_SUCCEED = 'regSuccess',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
-  TRARNSPORT_ERROR = 'transportError',
+  TRANSPORT_ERROR = 'transportError',
+  SWITCH_BACK_PROXY = 'switchBackProxy',
   RE_REGISTER = 'reRegister',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
@@ -48,8 +49,8 @@ class RTCRegistrationFSM extends StateMachine {
             REGISTRATION_FSM_STATE.FAILURE,
             REGISTRATION_FSM_STATE.READY,
           ],
-          to: () => {
-            dependency.onReRegisterAction();
+          to: (forceToMain: boolean) => {
+            dependency.onReRegisterAction(forceToMain);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
         },
@@ -73,7 +74,7 @@ class RTCRegistrationFSM extends StateMachine {
             delegate: IRTCCallDelegate,
             options: RTCCallOptions,
           ) => {
-            dependency.onReRegisterAction();
+            dependency.onReRegisterAction(false);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
         },
@@ -104,7 +105,7 @@ class RTCRegistrationFSM extends StateMachine {
           to: REGISTRATION_FSM_STATE.FAILURE,
         },
         {
-          name: REGISTRATION_FSM_EVENT.TRARNSPORT_ERROR,
+          name: REGISTRATION_FSM_EVENT.TRANSPORT_ERROR,
           from: [
             REGISTRATION_FSM_STATE.IN_PROGRESS,
             REGISTRATION_FSM_STATE.READY,
@@ -129,6 +130,18 @@ class RTCRegistrationFSM extends StateMachine {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
           from: [REGISTRATION_FSM_STATE.READY, REGISTRATION_FSM_STATE.FAILURE],
           to: REGISTRATION_FSM_STATE.READY,
+        },
+        {
+          name: REGISTRATION_FSM_EVENT.SWITCH_BACK_PROXY,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+          ],
+          to: () => {
+            dependency.onSwitchBackProxyAction();
+            return undefined;
+          },
         },
       ],
       methods: {

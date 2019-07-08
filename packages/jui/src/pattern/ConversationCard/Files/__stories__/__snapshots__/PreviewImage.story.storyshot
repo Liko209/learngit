@@ -59,6 +59,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   <img
     className="c0"
     onClick={[Function]}
+    onError={[Function]}
     onLoad={[Function]}
     src="test-file-stub"
     style={
@@ -70,6 +71,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   <img
     className="c0"
     onClick={[Function]}
+    onError={[Function]}
     onLoad={[Function]}
     src="test-file-stub"
     style={
@@ -81,6 +83,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   <img
     className="c0"
     onClick={[Function]}
+    onError={[Function]}
     onLoad={[Function]}
     src="test-file-stub"
     style={
@@ -92,6 +95,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   <img
     className="c0"
     onClick={[Function]}
+    onError={[Function]}
     onLoad={[Function]}
     src="test-file-stub"
     style={

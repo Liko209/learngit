@@ -8,8 +8,10 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ReadViewProps } from './types';
-import { BUTTON_TYPE, ActionButton } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { catchError } from '@/common/catchError';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { PHONE_ITEM_ACTIONS } from '@/AnalyticsCollector/constants';
 
 type Props = ReadViewProps & WithTranslation;
 
@@ -20,6 +22,8 @@ class ReadViewComponent extends Component<Props> {
     server: 'voicemail.prompt.notAbleToUnreadVoicemalForServerIssue',
   })
   private _handleUnread = () => {
+    const tabName = this.props.tabName;
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.MARK_UNREAD);
     return this.props.read();
   }
 
@@ -28,31 +32,23 @@ class ReadViewComponent extends Component<Props> {
     server: 'voicemail.prompt.notAbleToReadVoicemailForServerIssue',
   })
   private _handleRead = () => {
+    const tabName = this.props.tabName;
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.MARK_READ);
     return this.props.read();
   }
 
   private _handleClick = () => {
-    const { isRead, hookAfterClick, type } = this.props;
+    const { isRead } = this.props;
     if (isRead) {
       this._handleUnread();
     } else {
       this._handleRead();
-    }
-    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
-      hookAfterClick();
     }
   }
 
   get title() {
     const { isRead, t } = this.props;
     return isRead ? t('voicemail.markUnread') : t('voicemail.markRead');
-  }
-
-  get screenreaderText() {
-    const { isRead, t } = this.props;
-    return isRead
-      ? t('voicemail.messageIsReadMarkItAsUnread')
-      : t('voicemail.messageIsUnreadMarkItAsRead');
   }
 
   render() {
@@ -64,7 +60,7 @@ class ReadViewComponent extends Component<Props> {
         type={type}
         tooltip={this.title}
         onClick={this._handleClick}
-        screenReader={this.screenreaderText}
+        screenReader={this.title}
         automationId={`${entity}-read-button`}
       />
     );

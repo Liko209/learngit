@@ -9,17 +9,20 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import { withDelay } from 'jui/hoc/withDelay';
 import { JuiInfiniteList } from 'jui/components/VirtualizedList';
+import { withAutoSizer } from 'jui/components/AutoSizer/withAutoSizer';
 import { JuiMemberListEmptyView } from 'jui/pattern/EmptyScreen';
 import empty from './noresult.svg';
 import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
-import { ITEM_HEIGHT, EMPTY_HEIGHT } from '../constants';
+import { ITEM_HEIGHT } from '../constants';
 import { PerformanceTracer } from 'sdk';
 import { GROUP_PERFORMANCE_KEYS } from '../../../performanceKeys';
 
+const InfiniteList = withAutoSizer(JuiInfiniteList);
 const EmptyView = withDelay(JuiMemberListEmptyView);
+
 @observer
 class MemberList extends React.Component<
   WithTranslation & MemberListProps & MemberListViewProps
@@ -48,7 +51,6 @@ class MemberList extends React.Component<
 
   render() {
     const {
-      height,
       t,
       showEmpty,
       filteredMemberIds,
@@ -56,11 +58,8 @@ class MemberList extends React.Component<
       loadMore,
       hasMore,
     } = this.props;
-    const minHeight = showEmpty ? Math.max(EMPTY_HEIGHT, height) : height;
     return (
-      <JuiProfileDialogContentMemberList
-        style={{ minHeight, height: minHeight }}
-      >
+      <JuiProfileDialogContentMemberList>
         {showEmpty && (
           <EmptyView
             image={empty}
@@ -68,17 +67,16 @@ class MemberList extends React.Component<
             delay={100}
           />
         )}
-        <JuiInfiniteList
+        <InfiniteList
           loadInitialData={loadInitialData}
           loadMore={loadMore}
           hasMore={hasMore}
-          height={height}
           minRowHeight={ITEM_HEIGHT}
           onScroll={this.onScroll}
           data-test-automation-id="profileDialogMemberList"
         >
           {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
-        </JuiInfiniteList>
+        </InfiniteList>
       </JuiProfileDialogContentMemberList>
     );
   }

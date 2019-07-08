@@ -7,7 +7,6 @@ type ActionsProps = {
   entity: ENTITY_TYPE;
   caller?: Caller;
   maxButtonCount: number;
-  hookAfterClick: () => void;
   canEditBlockNumbers: boolean;
   showCall: boolean;
 };
@@ -16,6 +15,7 @@ type ActionsViewProps = {
   shouldShowBlock: boolean;
   person: PersonModel | null;
   isBlock: boolean;
+  phoneNumber: string | null;
 };
 
 export { ActionsProps, ActionsViewProps, ENTITY_TYPE };

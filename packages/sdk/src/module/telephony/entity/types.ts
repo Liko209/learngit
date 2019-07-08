@@ -14,13 +14,14 @@ enum CALL_STATE {
 enum HOLD_STATE {
   IDLE = 'idle',
   HELD = 'held',
-  DISABLE = 'disable',
+  DISABLED = 'disabled',
 }
 
 enum RECORD_STATE {
   IDLE = 'idle',
   RECORDING = 'recording',
-  DISABLE = 'disable',
+  RECORDING_DISABLED = 'recordingDisabled',
+  DISABLED = 'disabled',
 }
 
 enum CALL_DIRECTION {

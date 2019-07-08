@@ -66,7 +66,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
       return (
         <MenuItem
           {...getItemProps({ item: suggestionItem })}
-          itemId={suggestionItem.id}
+          uid={suggestionItem.id}
           key={suggestionItem.id}
           isHighlighted={isHighlighted}
         />

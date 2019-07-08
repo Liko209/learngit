@@ -350,6 +350,14 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.t.click(this.moreButtonOnHeader);
   }
 
+  get memberButton() {
+    return this.getSelectorByAutomationId('memberButton');
+  }
+
+  async clickMemberButton() {
+    return this.t.click(this.memberButton);
+  }
+
   get headerMoreMenu() {
     return this.getComponent(HeaderMoreMenu);
   }
@@ -632,6 +640,10 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 
+  get emptyPage() {
+    return this.getSelectorByAutomationId('mentionsEmptyPage', this.self)
+  }
+
   get scrollDiv() {
     return this.stream.parent('div');
   }
@@ -645,6 +657,10 @@ export class MentionPage extends BaseConversationPage {
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  get emptyPage() {
+    return this.getSelectorByAutomationId('bookmarksEmptyPage', this.self)
   }
 
   get scrollDiv() {

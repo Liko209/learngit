@@ -252,7 +252,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c5 {
@@ -526,7 +525,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c8 {

@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-03-17 15:56:18
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 20:08:30
+ * @Last Modified by:
+ * @Last Modified time: 2019-07-05 15:01:28
  */
 
 import { formalName } from '../../libs/filter';
@@ -485,29 +485,43 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
     members: [loginUser]
   }
 
-  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+  await h(t).withLog(`Given I have a team named "{name}" before login`, async (step) => {
+    step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
 
+  const filePaths = './sources/1.png';
+  const fileName = '1.png';
+
+  let postId: string, fileId: string, senderName: string;
+  await h(t).withLog(`And I send a file in the team`, async () => {
+    await h(t).scenarioHelper.createPostWithTextAndFiles({
+      filePaths,
+      group: team,
+      operator: loginUser,
+    }).then(res => {
+      postId = res.data.id;
+      fileId = res.data.attachments[0].id
+    });
+  });
+
+
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  const filesPath = '../../sources/1.png';
-  const fileName = '1.png';
 
-  let postId: string, fileId: string, senderName: string;
-  await h(t).withLog('And I open a team and upload a image files', async () => {
+  await h(t).withLog('And I open the team', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
-    await conversationPage.uploadFilesToMessageAttachment(filesPath);
-    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    postId = await conversationPage.nthPostItem(-1).postId;
-    fileId = (await h(t).glip(loginUser).getFilesIdsFromPostId(postId))[0];
-    senderName = await conversationPage.nthPostItem(-1).name.textContent;
+    await conversationPage.postItemById(postId).waitImageVisible();
+    senderName = await conversationPage.postItemById(postId).name.textContent;
   });
 
   await h(t).withLog('When I scroll to the first image post and click the first image', async () => {
@@ -642,5 +656,4 @@ test.meta(<ITestMeta>{
   await h(t).withLog("And hide send time", async () => {
     await t.expect(viewerDialog.sendTime.visible).notOk();
   });
-
 });

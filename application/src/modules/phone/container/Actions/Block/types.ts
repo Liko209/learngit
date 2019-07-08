@@ -5,10 +5,12 @@
  */
 
 import { Caller } from 'sdk/module/RCItems/types';
+import { PHONE_TAB } from '@/AnalyticsCollector/constants';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
 
 type BlockProps = {
+  phoneNumber: string;
   caller: Caller;
 };
 
@@ -16,9 +18,9 @@ type BlockViewProps = {
   type: BUTTON_TYPE;
   block: () => Promise<boolean>;
   isBlocked: boolean;
+  tabName: PHONE_TAB;
   unblock: () => Promise<boolean>;
   entity: ENTITY_TYPE;
-  hookAfterClick: () => void;
 };
 
 export { BUTTON_TYPE, BlockProps, BlockViewProps };

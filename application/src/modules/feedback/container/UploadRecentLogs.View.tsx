@@ -21,15 +21,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
+import { Loading } from 'jui/hoc/withLoading';
 
 type State = {};
 

@@ -150,6 +150,9 @@
     "bookmarkPosts": "Bookmarks",
     "@mentionsTitle": "@Mentions",
     "bookmarksTitle": "Bookmarks",
+    "noMentionPosts": "There are currently no posts that @mention you directly.",
+    "noBookmarkPosts": "You have no bookmarks yet. Hover on a post and click on the Bookmark icon to mark and save it for later reference.",
+    "loadingError": "Oops! Something went wrong, please try again.",
     "favoriteGroups": "favorites",
     "directGroups": "direct messages",
     "teamGroups": "teams",
@@ -240,6 +243,8 @@
       "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
       "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
       "editPostFailedForNetworkIssue": "We weren't able to apply edits to this post. Check your network connection, then try again.",
+      "viewInPostFailedWithServerIssue": "Sorry, something went wrong on our end and we weren't able to jump to the post. Try again later.",
+      "viewInPostFailedWithNetworkIssue": "Sorry, we weren't able to jump to the post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
       "deletePostTitle": "Delete Post?",
@@ -281,7 +286,8 @@
     },
     "fileAction": {
       "deleteFile": "Delete file",
-      "editFileName": "Edit filename"
+      "editFileName": "Edit filename",
+      "viewInPost": "View in post"
     },
     "Messages": "Messages",
     "message": "Message",
@@ -610,6 +616,10 @@
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
+      "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
+      "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
+      "RCPhoneIsNotInstalledOK": "Download RingCentral Phone",
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
       "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
@@ -713,6 +723,8 @@
     }
   },
   "calllog": {
+    "inputFilter": "Filter call history",
+    "clearFilter": "Clear call history filter",
     "deleteCallLog": "Delete call log",
     "deleteCallHistory": "Delete call history",
     "deleteAllCallHistory": "Delete all call history",
@@ -733,12 +745,10 @@
     },
     "inputFilter": "Filter voicemail",
     "clearFilter": "Clear voicemail filter",
-    "downloadVoicemail": "Download Voicemail",
-    "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
-    "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
-    "markUnread": "Mark Unread",
-    "markRead": "Mark Read",
-    "deleteVoicemail": "Delete Voicemail",
+    "downloadVoicemail": "Download voicemail",
+    "markUnread": "Mark as unread",
+    "markRead": "Mark as read",
+    "deleteVoicemail": "Delete voicemail",
     "areYouSureYouWantToDeleteTheVoicemail": "Are you sure you want to delete the voicemail?",
     "prompt": {
       "notAbleToUnreadVoicemalForNetworkIssue": "Sorry, we weren't able to mark the voicemail as unread due to a poor network connection. Try again.",
@@ -756,7 +766,8 @@
   "setting": {
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
-      "network": "We weren't able to save your settings. Check your network connection, then try again."
+      "network": "We weren't able to save your settings. Check your network connection, then try again.",
+      "forLink": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
     },
     "Settings": "Settings",
     "teamSettings": "Settings",
@@ -871,6 +882,10 @@
         "label": "Speaker source",
         "description": "Update your speaker source for RingCentral voice calls"
       },
+      "ringerSource": {
+        "label": "Ringer source",
+        "description": "Update your ringer source for RingCentral voice calls"
+      },
       "volume": {
         "label": "Volume control",
         "description": "Update the volume"
@@ -879,6 +894,8 @@
     "useDefault": "Use system default",
     "speaker": "Speaker",
     "noDevices": "No devices",
+    "allDevices": "All audio sources",
+    "off": "Off",
     "microphone": "Microphone",
     "builtInMicrophone": "Built-in microphone",
     "builtInSpeaker": "Built-in speaker",

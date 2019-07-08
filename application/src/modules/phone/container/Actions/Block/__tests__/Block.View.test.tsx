@@ -43,18 +43,23 @@ const checkNotification = (message: string) => ({
   type: 'success',
 });
 
+const phoneNumber = '+1234567890';
+
 const mockProps = {
+  phoneNumber,
   id: 1234,
   block: () => jest.fn().mockReturnValue(true),
   unblock: () => jest.fn().mockReturnValue(true),
-  caller: {} as Caller,
+  caller: {
+    phoneNumber
+  } as Caller,
 };
 
 describe('Block', () => {
   @testable
   class init {
     @test(
-      'should render correct when button is icon type under block status [JPT-2408-Step1]',
+      'should render correct when button is icon type under block status [JPT-2408-Step1/JPT-2462]',
     )
     t1() {
       const wrapper = mountWithTheme(
@@ -67,7 +72,7 @@ describe('Block', () => {
     }
 
     @test(
-      'should render correct when button is icon type under unblock status [JPT-2409-Step1]',
+      'should render correct when button is icon type under unblock status [JPT-2409-Step1/JPT-2462]',
     )
     t2() {
       const wrapper = mountWithTheme(
@@ -156,8 +161,8 @@ describe('Block', () => {
         <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={false} />,
       );
       await wrapper.instance().onBlockConfirm({
-        startLoading() {},
-        stopLoading() {},
+        startLoading() { },
+        stopLoading() { },
       });
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.numberHasBeenBlocked'),

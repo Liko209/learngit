@@ -17,6 +17,7 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
+import { HoverControllerBaseProps } from '../HoverController';
 
 import {
   VOICE_MAIL_ITEM_HEIGHT,
@@ -25,8 +26,9 @@ import {
   LOADING_DELAY,
 } from '../Voicemail/config';
 import noCallLogImage from '../images/no-call.svg';
+import noResultImage from '../images/no-result.svg';
 
-type Props = WithTranslation & AllCallsViewProps;
+type Props = WithTranslation & AllCallsViewProps & HoverControllerBaseProps;
 
 @observer
 class AllCallsViewComponent extends Component<Props> {
@@ -44,26 +46,35 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private get _noRowsRenderer() {
-    const { t } = this.props;
+    const { t, filterValue } = this.props;
+
+    const message = filterValue
+      ? t('phone.noMatchesFound')
+      : t('phone.noCallLogAvailable');
+
+    const image = filterValue ? noResultImage : noCallLogImage;
 
     return (
       <JuiEmptyPage
         data-test-automation-id="callHistoryEmptyPage"
-        image={noCallLogImage}
-        message={t('phone.noCallLogAvailable')}
+        image={image}
+        message={message}
         height={this._height}
       />
     );
   }
 
   private _renderItems() {
-    const { listHandler, width } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: string) => {
+    const { listHandler, resetSelectIndex, width, isHover } = this.props;
+    return listHandler.sortableListStore.getIds.map((itemId: string, cellIndex: number) => {
       return (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
+          onMouseLeave={resetSelectIndex}
+          isHover={isHover(cellIndex)}
+          onMouseOver={this.props.selectIndexChange(cellIndex)}
           width={width}
         />
       );
@@ -87,25 +98,25 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { listHandler, isError, onErrorReload } = this.props;
+    const { listHandler, isError, onErrorReload, type } = this.props;
 
     return (
-      <PhoneWrapper pageHeight={this._height}>
+      <PhoneWrapper pageHeight={this._height} data-type={type}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (
-          <DataList
-            initialDataCount={INITIAL_COUNT}
-            listHandler={listHandler}
-            reverse={true}
-            InfiniteListProps={Object.assign(this._infiniteListProps, {
-              height: this._height,
-              noRowsRenderer: this._noRowsRenderer,
-            })}
-          >
-            {this._renderItems()}
-          </DataList>
-        )}
+            <DataList
+              initialDataCount={INITIAL_COUNT}
+              listHandler={listHandler}
+              reverse={true}
+              InfiniteListProps={Object.assign(this._infiniteListProps, {
+                height: this._height,
+                noRowsRenderer: this._noRowsRenderer,
+              })}
+            >
+              {this._renderItems()}
+            </DataList>
+          )}
       </PhoneWrapper>
     );
   }

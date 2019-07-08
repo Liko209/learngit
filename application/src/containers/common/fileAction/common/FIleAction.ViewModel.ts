@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Post } from 'sdk/module/post/entity';
-import PostModel from '@/store/models/Post';
 import { computed } from 'mobx';
 import { Item } from 'sdk/module/item/entity';
 import FileItemModel from '@/store/models/FileItem';
@@ -14,7 +12,7 @@ import { ENTITY_NAME } from '@/store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { FileActionProps } from './types';
 
-class FileActionViewModel extends StoreViewModel<FileActionProps> {
+class FileActionViewModel<P = {}> extends StoreViewModel<FileActionProps & P> {
   @computed
   get fileId() {
     return this.props.fileId;
@@ -28,15 +26,6 @@ class FileActionViewModel extends StoreViewModel<FileActionProps> {
   @computed
   get fileName() {
     return this.item.name;
-  }
-
-  @computed
-  get post() {
-    const { postId } = this.props;
-    if (postId) {
-      return getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
-    }
-    return null;
   }
 }
 

@@ -10,11 +10,7 @@ import {
   JServerError,
   ERROR_CODES_SERVER,
 } from 'sdk/error';
-import {
-  catchError,
-  ERROR_TYPES,
-  getErrorType,
-} from '../catchError';
+import { catchError, ERROR_TYPES, getErrorType } from '../catchError';
 
 jest.mock('@/containers/Notification');
 
@@ -44,7 +40,7 @@ class MockFunc {
     }
     await Promise.reject(error);
     return false;
-  }
+  };
 
   @catchError.flash({
     network: MockFunc.mockCallback,
@@ -103,7 +99,7 @@ class MockFunc {
       error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
     }
     return Promise.reject(error);
-  }
+  };
 
   @catchError.flag({
     network: 'NetworkIssue',
@@ -275,20 +271,21 @@ describe('getErrorType', () => {
   });
   it('getErrorType: NETWORK', () => {
     expect(
-      getErrorType(new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'))
-    )
-    .toEqual(ERROR_TYPES.NETWORK);
+      getErrorType(
+        new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
+      ),
+    ).toEqual(ERROR_TYPES.NETWORK);
   });
   it('getErrorType: NOT_AUTHORIZED', () => {
     expect(
-      getErrorType(new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED'))
-    )
-    .toEqual(ERROR_TYPES.NOT_AUTHORIZED);
+      getErrorType(
+        new JServerError(ERROR_CODES_SERVER.NOT_AUTHORIZED, 'NOT_AUTHORIZED'),
+      ),
+    ).toEqual(ERROR_TYPES.NOT_AUTHORIZED);
   });
   it('getErrorType: BACKEND', () => {
     expect(
-      getErrorType(new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'))
-    )
-    .toEqual(ERROR_TYPES.BACKEND);
+      getErrorType(new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')),
+    ).toEqual(ERROR_TYPES.BACKEND);
   });
 });

@@ -10,6 +10,7 @@ import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -483,7 +484,14 @@ describe('glipdown text', () => {
             emoji: { hostName, unicodeOnly: false },
           }),
         ).toEqual([
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
           'hahahah',
@@ -498,12 +506,26 @@ describe('glipdown text', () => {
 
       it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
+          <Emoji
+            emoji='grin'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😁
           </Emoji>,
         ]);
         expect(postParser(':-/', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='confused' skin={1} set={'emojione'} size={30} key={0}>
+          <Emoji
+            emoji='confused'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😕
           </Emoji>,
         ]);
@@ -523,7 +545,14 @@ describe('glipdown text', () => {
             emoji: { hostName },
           }),
         ).toEqual([
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={30} key={0}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -538,10 +567,18 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={0}
+            backgroundImageFn={backgroundImageFn}
           >
             🤔
           </Emoji>,
-          <Emoji emoji='purse' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='purse'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             👛
           </Emoji>,
           <Emoji
@@ -550,6 +587,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={2}
+            backgroundImageFn={backgroundImageFn}
           >
             🥘
           </Emoji>,
@@ -558,7 +596,14 @@ describe('glipdown text', () => {
 
       it('should parse multiple ascii emojis[JPT-2396, JPT-2387]', () => {
         expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='confused' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='confused'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😕
           </Emoji>,
           ' ',
@@ -568,11 +613,19 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
           ' ',
-          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='heart'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             ❤
           </Emoji>,
         ]);
@@ -584,6 +637,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={0}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -594,6 +648,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -604,6 +659,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={2}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -629,7 +685,14 @@ describe('glipdown text', () => {
           }),
         ).toEqual([
           'hahah',
-          <Emoji emoji='grin' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='grin'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😁
           </Emoji>,
           '123___',
@@ -641,11 +704,25 @@ describe('glipdown text', () => {
             key={1}
           />,
           '++ ',
-          <Emoji emoji='sweat' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='sweat'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             😓
           </Emoji>,
           ' ',
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={3}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={3}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -658,7 +735,14 @@ describe('glipdown text', () => {
             emoji: { hostName },
           }),
         ).toEqual([
-          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='heart'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             ❤
           </Emoji>,
           ' ',
@@ -668,6 +752,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😅
           </Emoji>,
@@ -789,7 +874,14 @@ Veniam anim velit amet aliqua proident.`}
             name='@Jesse'
           />,
           ' ',
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -816,7 +908,14 @@ Veniam anim velit amet aliqua proident.`}
           />,
           ' wrote:',
           <q key={1}>sdfsadf</q>,
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -1055,7 +1154,14 @@ Veniam anim velit amet aliqua proident.`}
           <pre className='codesnippet' key={0}>
             &lt;a href='http://heynow.com' target='_blank'
             rel='noreferrer'&gt;some link&lt;/a&gt;
-            <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+            <Emoji
+              emoji='joy'
+              skin={1}
+              set={'emojione'}
+              size={20}
+              key={0}
+              backgroundImageFn={backgroundImageFn}
+            >
               😂
             </Emoji>
           </pre>,
@@ -1096,7 +1202,14 @@ Veniam anim velit amet aliqua proident.`}
           >
             https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
           </a>,
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);

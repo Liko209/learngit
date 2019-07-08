@@ -6,7 +6,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c15 {
@@ -397,6 +396,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -408,6 +408,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -419,6 +420,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -1286,6 +1288,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1435,6 +1438,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1584,6 +1588,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1733,6 +1738,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
