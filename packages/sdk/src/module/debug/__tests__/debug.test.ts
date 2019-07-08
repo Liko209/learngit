@@ -14,7 +14,7 @@ describe('debug', () => {
   });
   describe('inject()', () => {
     it('should inject log to window', () => {
-      expect(debug['_debug']['log']).not.toBeUndefined();
+      expect(debug['_instance']['log']).not.toBeUndefined();
     });
     it('should inject _debug to window', () => {
       debug.inject('test', 123);
