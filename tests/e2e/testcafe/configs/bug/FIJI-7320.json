@@ -1,7 +1,11 @@
 {
   "on_merge": {
     "fixtures": [
-      "./telephony/**/*.ts"
+      "./telephony/phoneSetting/*.ts",
+      "./telephony/Dialer.ts",
+      "./telephony/EndCall.ts",
+      "./telephony/Hold.ts",
+      "./telephony/MinimizeCall.ts"
     ],
     "browsers": [
       "selenium:chrome"
