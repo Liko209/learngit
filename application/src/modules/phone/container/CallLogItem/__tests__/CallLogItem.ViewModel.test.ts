@@ -7,10 +7,11 @@ import { test, testable } from 'shield';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
-import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
+import { getHourMinuteSeconds } from '@/utils/date';
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockService } from 'shield/sdk';
+import { DATE_FORMAT } from '@/utils/date';
 
 jest.mock('@/utils/date');
 jest.mock('i18next', () => ({
@@ -255,7 +256,7 @@ describe('CallLogItemViewModel', () => {
       expect(vm.callLogResponsiveMap).toEqual({
         buttonToShow: 2,
         showCallInfo: true,
-        dateFormat: 'full',
+        dateFormat: DATE_FORMAT.full,
       });
     }
 
@@ -264,7 +265,7 @@ describe('CallLogItemViewModel', () => {
       expect(vm.callLogResponsiveMap).toEqual({
         buttonToShow: 1,
         showCallInfo: true,
-        dateFormat: 'short',
+        dateFormat: DATE_FORMAT.short,
       });
     }
     t4() {
@@ -272,7 +273,7 @@ describe('CallLogItemViewModel', () => {
       expect(vm.callLogResponsiveMap).toEqual({
         buttonToShow: 1,
         showCallInfo: false,
-        dateFormat: 'short',
+        dateFormat: DATE_FORMAT.short,
       });
     }
   }
