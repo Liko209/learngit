@@ -10,7 +10,6 @@ import { Raw } from '../../../framework/model';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { transform } from '../../../service/utils';
-import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
@@ -89,12 +88,10 @@ class PersonDataController {
     });
 
     this._saveData(deactivatedData, normalData, source);
-    if (shouldEmitNotification(source)) {
-      if (changeMap) {
-        changeMap.set(ENTITY.PERSON, { entities: persons });
-      } else {
-        notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
-      }
+    if (changeMap) {
+      changeMap.set(ENTITY.PERSON, { entities: persons });
+    } else {
+      notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
     }
   }
 

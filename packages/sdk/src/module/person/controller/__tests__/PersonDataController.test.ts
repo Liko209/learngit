@@ -11,7 +11,6 @@ import { EntitySourceController } from '../../../../framework/controller/impl/En
 import { Person } from '../../entity';
 import { AccountGlobalConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
-import { SOURCE_TYPE } from 'sdk/module/telephony/controller/mediaDeviceDelegate/types';
 
 jest.mock('foundation/src/ioc');
 jest.mock('../../../../service/notificationCenter');
@@ -63,10 +62,11 @@ describe('PersonDataController', () => {
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 
-  it('should not emit notification when handle index data', async () => {
-    await personDataController.handleIncomingData([
-      rawPersonFactory.build({ _id: 1 }, SYNC_SOURCE.REMAINING),
-    ]);
+  it('should emit notification when handle remaining data', async () => {
+    await personDataController.handleIncomingData(
+      [rawPersonFactory.build({ _id: 1 })],
+      SYNC_SOURCE.REMAINING,
+    );
     expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 
