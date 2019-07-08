@@ -12,7 +12,7 @@ interface IRTCUserAgent extends EventEmitter2 {
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void;
-  reRegister(): void;
+  reRegister(forceToMain: boolean): void;
   unregister(): void;
   makeCall(phoneNumber: string, options: RTCCallOptions): any;
 }

@@ -29,10 +29,11 @@ import {
 } from './config';
 import noVoicemailImage from '../images/no-voicemail.svg';
 import noResultImage from '../images/no-result.svg';
+import { HoverControllerBaseProps } from '../HoverController';
 
 const DELAY_DEBOUNCE = 300;
 
-type Props = VoicemailViewProps & WithTranslation;
+type Props = VoicemailViewProps & WithTranslation & HoverControllerBaseProps;
 
 @observer
 class VoicemailWrapper extends Component<
@@ -85,10 +86,31 @@ class VoicemailWrapper extends Component<
   private _onFilterChange = debounce(this.props.onFilterChange, DELAY_DEBOUNCE);
 
   private _renderItems() {
-    const { listHandler, width } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: number) => {
-      return <VoicemailItem width={width} key={itemId} id={itemId} />;
-    });
+    const {
+      onVoicemailPlay,
+      activeVoicemailId,
+      listHandler,
+      resetSelectIndex,
+      width,
+      isHover,
+    } = this.props;
+
+    return listHandler.sortableListStore.getIds.map(
+      (itemId: number, cellIndex: number) => {
+        return (
+          <VoicemailItem
+            id={itemId}
+            key={itemId}
+            width={width}
+            activeVoicemailId={activeVoicemailId}
+            onVoicemailPlay={onVoicemailPlay}
+            onMouseLeave={resetSelectIndex}
+            isHover={isHover(cellIndex)}
+            onMouseOver={this.props.selectIndexChange(cellIndex)}
+          />
+        );
+      },
+    );
   }
 
   render() {

@@ -219,6 +219,40 @@ describe('MicrophoneSourceSettingHandler', () => {
     afterEach(() => {
       cleanUp();
     });
+
+    it.each`
+      devices                | isChromeValue | VoipCallPermission | RCFeaturePermission | expectRes
+      ${[{ deviceId: '1' }]} | ${true}       | ${true}            | ${true}             | ${0}
+      ${[{ deviceId: '1' }]} | ${true}       | ${true}            | ${false}            | ${0}
+      ${[{ deviceId: '1' }]} | ${true}       | ${false}           | ${true}             | ${0}
+      ${[{ deviceId: '1' }]} | ${true}       | ${false}           | ${false}            | ${2}
+      ${[{ deviceId: '1' }]} | ${false}      | ${true}            | ${true}             | ${2}
+      ${[{ deviceId: '1' }]} | ${false}      | ${true}            | ${false}            | ${2}
+      ${[{ deviceId: '1' }]} | ${false}      | ${false}           | ${true}             | ${2}
+      ${[{ deviceId: '1' }]} | ${false}      | ${false}           | ${false}            | ${2}
+      ${[]}                  | ${true}       | ${true}            | ${true}             | ${1}
+      ${[]}                  | ${false}      | ${true}            | ${true}             | ${2}
+    `(
+      'should get state is $expectRes when devices is $devices and chrome is $isChromeValue and VoipCallPermission is $VoipCallPermission and RCFeaturePermission is $RCFeaturePermission [JPT-2094]',
+      async ({
+        isChromeValue,
+        devices,
+        VoipCallPermission,
+        RCFeaturePermission,
+        expectRes,
+      }) => {
+        isChrome.mockReturnValue(isChromeValue);
+        mockRtcEngine.getAudioInputs.mockReturnValue(devices);
+        mockTelephonyService.getVoipCallPermission.mockResolvedValue(
+          VoipCallPermission,
+        );
+        rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(
+          RCFeaturePermission,
+        );
+        const result = await settingHandler.fetchUserSettingEntity();
+        expect(result.state).toEqual(expectRes);
+      },
+    );
     it('should fetch entity correctly', async () => {
       TelephonyGlobalConfig.getCurrentMicrophone.mockReturnValue('a');
       const devices = [{ deviceId: 'a' }, { deviceId: 'b' }];
@@ -266,40 +300,6 @@ describe('MicrophoneSourceSettingHandler', () => {
     it('should call off userConfig', () => {
       settingHandler.dispose();
       expect(TelephonyGlobalConfig.off).toBeCalled();
-    });
-  });
-  describe('getEntityState()', () => {
-    beforeEach(() => {
-      setUp();
-    });
-
-    afterEach(() => {
-      cleanUp();
-    });
-
-    it('JPT-2094 Show "Audio sources" section only for chrome/electron with meeting/call/conference permission', async () => {
-      isChrome.mockReturnValue(true);
-      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
-      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
-      expect(await settingHandler['_getEntityState']()).toEqual(
-        ESettingItemState.ENABLE,
-      );
-      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
-      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
-      expect(await settingHandler['_getEntityState']()).toEqual(
-        ESettingItemState.ENABLE,
-      );
-      mockTelephonyService.getVoipCallPermission.mockResolvedValue(false);
-      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(false);
-      expect(await settingHandler['_getEntityState']()).toEqual(
-        ESettingItemState.INVISIBLE,
-      );
-      isChrome.mockReturnValue(false);
-      mockTelephonyService.getVoipCallPermission.mockResolvedValue(true);
-      rcInfoService.isRCFeaturePermissionEnabled.mockResolvedValue(true);
-      expect(await settingHandler['_getEntityState']()).toEqual(
-        ESettingItemState.INVISIBLE,
-      );
     });
   });
 });

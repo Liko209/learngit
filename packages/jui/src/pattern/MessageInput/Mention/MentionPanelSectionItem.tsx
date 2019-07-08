@@ -14,7 +14,6 @@ const Wrapper = styled.div`
   padding: ${spacing(0, 5)};
   display: flex;
   align-items: center;
-  transition: background-color 0.2s ease-in;
   cursor: pointer;
   color: ${grey('900')};
   &&.selected {

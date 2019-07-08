@@ -145,7 +145,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Block button changed to Unblock button', async (step) => {
     step.setMetadata('id', callhistoryId);
-
     await callhistoryItem.hoverSelf();
     if (!await callhistoryItem.blockToggle.exists) {
       await callhistoryItem.openMoreMenu();

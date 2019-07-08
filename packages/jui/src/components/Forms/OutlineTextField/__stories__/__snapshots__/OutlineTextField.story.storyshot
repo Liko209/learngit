@@ -6,15 +6,6 @@ exports[`Storyshots Components/Forms OutlineTextField: Components/Forms OutlineT
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
-}
-
-.c6 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  cursor: pointer;
 }
 
 .c4 {
@@ -224,7 +215,7 @@ exports[`Storyshots Components/Forms OutlineTextField: Components/Forms OutlineT
       </div>
     </div>
     <span
-      className="c5 close icon c6"
+      className="c5 close icon c3"
       onClick={[Function]}
     >
       <svg

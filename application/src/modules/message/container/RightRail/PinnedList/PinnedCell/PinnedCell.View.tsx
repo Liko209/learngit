@@ -19,11 +19,14 @@ type Props = PinnedCellViewProps & PinnedCellProps & WithTranslation;
 
 @observer
 class PinnedCellComponent extends Component<Props> {
-  jumpToPost = () =>
-    jumpToPost({
-      ...this.props.post,
+  jumpToPost = () => {
+    const { id, groupId } = this.props.post;
+    return jumpToPost({
+      id,
+      groupId,
       replaceHistory: true,
-    })
+    });
+  }
 
   render() {
     const {

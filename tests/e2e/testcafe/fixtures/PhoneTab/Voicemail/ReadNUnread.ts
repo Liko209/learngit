@@ -64,12 +64,31 @@ async function ensuredOneVoicemail(t: TestController, caller: IUser, callee: IUs
   }
 }
 
+async function clickReadNUnreadButton(voicemailItem) {
+  await voicemailItem.hoverSelf();
+  if (!await voicemailItem.readToggleButton.exists) {
+    await voicemailItem.openMoreMenu();
+  }
+  await voicemailItem.clickReadToggle();
+}
+
+async function isReadButton(voicemailItem) {
+  await voicemailItem.hoverSelf();
+  if (!await voicemailItem.readToggleButton.exists) {
+    await voicemailItem.openMoreMenu();
+  }
+  if (await voicemailItem.readButton.exists) {
+    return true;
+  }
+  return false;
+}
+
 test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-2243', 'JPT-2244'],
   maintainers: ['Potar.He'],
   keywords: ['voicemail']
-})('Click “Mark Read” action to mark read a VM. & Click “Mark Unread” action to mark unread a VM', async (t) => {
+})('Click “Mark Read” action to mark read a VM. & Click “Mark as unread” action to mark unread a VM', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const callee = users[4];
   const caller = users[5];
@@ -108,67 +127,57 @@ test.meta(<ITestMeta>{
     step.setMetadata("count", umiCount.toString());
   });
 
-  const markUnread = 'Mark Unread'
-  const markRead = 'Mark Read'
+  const markUnread = 'Mark as unread'
+  const markRead = 'Mark as read'
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
 
   let isRead: boolean;
   await h(t).withLog('When I check the first voicemail read status is {status}', async (step) => {
-    await voicemailItem.openMoreMenu();
-    isRead = await voicemailItem.readToggleButton.textContent == markUnread;
+    isRead = await isReadButton(voicemailItem);
     step.setMetadata("status", isRead ? 'read' : 'Unread');
   });
 
   if (isRead) {
     await h(t).withLog('And I click "{markUnread}" button', async (step) => {
       step.setMetadata('markUnread', markUnread)
-      await voicemailItem.clickReadToggle();
+      await clickReadNUnreadButton(voicemailItem);
     });
     await h(t).withLog('Then the Umi should be +1: {umiCount}', async (step) => {
       step.setMetadata('umiCount', (umiCount + 1).toString())
       await voicemailEntry.umi.shouldBeNumber(umiCount + 1);
     });
 
-    await h(t).withLog('When I open more menu', async () => {
-      await voicemailItem.openMoreMenu();
-
-    });
     await h(t).withLog('Then the read toggle change to "{markRead}"', async (step) => {
       step.setMetadata('markRead', markRead)
-      await t.expect(voicemailItem.readToggleButton.textContent).eql(markRead);
+      await t.expect(await isReadButton(voicemailItem)).eql(false);
     });
 
     await h(t).withLog('And I click "{markRead}" button', async (step) => {
       step.setMetadata('markRead', markRead)
-      await voicemailItem.clickReadToggle();
+      await clickReadNUnreadButton(voicemailItem);
     });
     await h(t).withLog('Then the Umi should be: {umiCount}', async (step) => {
       step.setMetadata('umiCount', umiCount.toString())
       await voicemailEntry.umi.shouldBeNumber(umiCount);
     });
-
   } else {
     await h(t).withLog('And I click "{markRead}" button', async (step) => {
       step.setMetadata('markRead', markRead)
-      await voicemailItem.clickReadToggle();
+      await clickReadNUnreadButton(voicemailItem);
     });
     await h(t).withLog('Then the Umi should be -1: {umiCount}', async (step) => {
       step.setMetadata('umiCount', (umiCount - 1).toString())
       await voicemailEntry.umi.shouldBeNumber(umiCount - 1);
     });
 
-    await h(t).withLog('When I open more menu', async () => {
-      await voicemailItem.openMoreMenu();
-
-    });
     await h(t).withLog('Then the read toggle change to "{markUnread}"', async (step) => {
       step.setMetadata('markUnread', markUnread)
-      await t.expect(voicemailItem.readToggleButton.textContent).eql(markUnread);
+      await t.expect(await isReadButton(voicemailItem)).eql(true);
     });
 
     await h(t).withLog('And I click "{markUnread}" button', async (step) => {
       step.setMetadata('markUnread', markUnread)
-      await voicemailItem.clickReadToggle();
+      await clickReadNUnreadButton(voicemailItem);
     });
 
     await h(t).withLog('Then the Umi should be: {umiCount}', async (step) => {

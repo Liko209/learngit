@@ -5,7 +5,7 @@
  */
 
 import { loginGlip } from '../../api/glip/user';
-import { Api, RCAuthApi } from '../../api';
+import { Api, RCAuthApi, RCInfoApi } from '../../api';
 
 import { UnifiedLoginAuthenticator } from '..';
 import {
@@ -14,9 +14,10 @@ import {
   HttpResponseBuilder,
   HttpResponse,
 } from 'foundation';
-import { setRCToken } from '../utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
+import { setRCToken } from '../utils';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -36,11 +37,19 @@ function createResponse(obj: any) {
 describe('UnifiedLoginAuthenticator', () => {
   const unified = new UnifiedLoginAuthenticator();
   const accoutService = new AccountService();
+  const mockRCInfoService = {
+    requestRCAccountRelativeInfo: jest.fn(),
+    getRCExtensionInfo: jest.fn(),
+  } as any;
   ServiceLoader.getInstance = jest.fn().mockImplementation((config: string) => {
     if (config === ServiceConfig.ACCOUNT_SERVICE) {
       return accoutService;
     }
+    if (config === ServiceConfig.RC_INFO_SERVICE) {
+      return mockRCInfoService;
+    }
   });
+
   it('UnifiedLoginAuthenticator invalid tokens', async () => {
     const resp = await unified.authenticate({});
     expect(resp).toEqual({
@@ -48,6 +57,7 @@ describe('UnifiedLoginAuthenticator', () => {
       error: new Error('invalid tokens'),
     });
   });
+
   it('UnifiedLoginAuthenticator rc account', async () => {
     const oauthTokenResult = {
       access_token: 113123,
@@ -62,33 +72,24 @@ describe('UnifiedLoginAuthenticator', () => {
     RCAuthApi.oauthTokenViaAuthCode.mockResolvedValue(oauthTokenResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);
     Api.init({}, networkManager);
-    jest
-      .spyOn(unified, '_requestRCAccountRelativeInfo')
-      .mockImplementationOnce(() => {});
+    jest.spyOn(unified, '_requestRCAccountRelativeInfo');
+    RCInfoApi.requestRCAPIVersion = jest.fn();
+    AccountGlobalConfig.setUserDictionary = jest.fn();
+    mockRCInfoService.getRCExtensionInfo = jest
+      .fn()
+      .mockReturnValue({ id: 123 });
     setRCToken = jest.fn();
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toEqual(true);
     expect(resp.isFirstLogin).toEqual(true);
-    expect(resp.isRCOnlyMode).toEqual(false);
-    expect(resp.accountInfos!.length).toEqual(2);
+    expect(resp.isRCOnlyMode).toEqual(true);
+    expect(resp.accountInfos!.length).toEqual(1);
     expect(unified['_requestRCAccountRelativeInfo']).toBeCalled();
+    expect(RCInfoApi.requestRCAPIVersion).toBeCalled();
+    expect(AccountGlobalConfig.setUserDictionary).toBeCalled();
   });
-  it('UnifiedLoginAuthenticator rc account and glip failed', async () => {
-    loginGlip.mockImplementation(() => {
-      throw Error('failed');
-    });
-    Api.init({}, networkManager);
-    jest
-      .spyOn(unified, '_requestRCAccountRelativeInfo')
-      .mockImplementationOnce(() => {});
 
-    // todo: for now, ui can not support the rc only mode
-    // so will throw error to logout when glip is down
-    try {
-      await unified.authenticate({ code: '123' });
-    } catch (err) {}
-  });
   it('UnifiedLoginAuthenticator glip account', async () => {
     const resp = await unified.authenticate({ token: '123' });
     expect(resp).toEqual({

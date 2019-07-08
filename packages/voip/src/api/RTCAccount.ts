@@ -40,6 +40,7 @@ class RTCAccount implements IRTCAccount {
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
   private _postponeProvisioning: RTCSipProvisionInfo | null;
+  private _postponeSwitchBackProxy: boolean = false;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
@@ -172,16 +173,25 @@ class RTCAccount implements IRTCAccount {
 
   removeCallFromCallManager(uuid: string): void {
     this._callManager.removeCall(uuid);
-    if (this._callManager.callCount() === 0 && this._postponeProvisioning) {
-      rtcLogger.debug(
-        LOG_TAG,
-        "There's no active call. Process postpone provisioning info",
-      );
-      this._regManager.provisionReady(
-        this._postponeProvisioning,
-        kRTCProvisioningOptions,
-      );
-      this._postponeProvisioning = null;
+    if (!this._callManager.callCount()) {
+      if (this._postponeProvisioning) {
+        rtcLogger.debug(
+          LOG_TAG,
+          "There's no active call. Process postpone provisioning info",
+        );
+        this._regManager.provisionReady(
+          this._postponeProvisioning,
+          kRTCProvisioningOptions,
+        );
+        this._postponeProvisioning = null;
+      } else if (this._postponeSwitchBackProxy) {
+        rtcLogger.debug(
+          LOG_TAG,
+          "There's no active call. Process postpone switch back to main proxy",
+        );
+        this._regManager.reRegister(true);
+        this._postponeSwitchBackProxy = false;
+      }
     }
   }
 
@@ -198,20 +208,19 @@ class RTCAccount implements IRTCAccount {
         this._onAccountStateChanged(state);
       },
     );
-
     this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
       this._onLogoutAction();
     });
-
     this._regManager.on(REGISTRATION_EVENT.REFRESH_PROV, () => {
       this._refreshProv();
     });
-
+    this._regManager.on(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION, () => {
+      this._switchBackProxy();
+    });
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
       this._delegate.onReceiveNewProvFlags(info.sipFlags);
     });
-
     RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
@@ -312,6 +321,19 @@ class RTCAccount implements IRTCAccount {
 
   private _refreshProv() {
     this._provManager.refreshSipProv();
+  }
+
+  private _switchBackProxy() {
+    if (this.callCount()) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There're active calls. Postpone switch back to main proxy",
+      );
+      this._postponeSwitchBackProxy = true;
+    } else {
+      rtcLogger.debug(LOG_TAG, 'Switch back to main proxy');
+      this._regManager.reRegister(true);
+    }
   }
 }
 

@@ -16,6 +16,10 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getSelectorByAutomationId('fileDeleteItem', this.fileActionMenuList);
   }
 
+  get viewInPostMenu() {
+    return this.getSelectorByAutomationId('viewInPost', this.fileActionMenuList);
+  }
+
   get fileActionMenuList(){
     return this.getSelectorByAutomationId('fileActionMenuList');
   }
@@ -43,6 +47,10 @@ export class MoreActionOnFile extends BaseWebComponent{
 
   async clickDeleteFile(){
     await this.t.click(this.deleteFileMenu);
+  }
+
+  async clickViewInPost(){
+    await this.t.click(this.viewInPostMenu);
   }
 
   async renameFileMenuAtTop(menu:string){

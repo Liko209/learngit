@@ -9,6 +9,7 @@ import { container } from 'framework';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { TelephonyService } from '@/modules/telephony/service';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { PHONE_ITEM_ACTIONS } from '@/AnalyticsCollector/constants';
 
 import { CallProps, ENTITY_TYPE } from './types';
 
@@ -18,13 +19,14 @@ class CallViewModel extends StoreViewModel<CallProps> {
   }
 
   doCall = async () => {
-    const { caller, entity } = this.props;
+    const { caller, entity, tabName } = this.props;
     const toNumber = caller.extensionNumber || caller.phoneNumber;
     // actions ensure caller exist
     await this._telephonyService.makeCall(toNumber!);
     analyticsCollector.phoneCallBack(
       entity === ENTITY_TYPE.CALL_LOG ? 'callHistory' : 'voicemailList',
     );
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.CALL);
   }
 }
 

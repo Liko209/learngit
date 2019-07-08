@@ -65,7 +65,7 @@ class PhoneParserUtility {
     );
 
     notificationCenter.on(
-      SERVICE.LOGIN,
+      SERVICE.RC_LOGIN,
       PhoneParserUtility.triggerInitPhoneParser,
     );
 
@@ -113,7 +113,7 @@ class PhoneParserUtility {
       );
 
       notificationCenter.off(
-        SERVICE.LOGIN,
+        SERVICE.RC_LOGIN,
         PhoneParserUtility.triggerInitPhoneParser,
       );
 

@@ -24,12 +24,12 @@ const mockEntityData = {
 describe('Download', () => {
   @testable
   class init {
-    @test('should render correct when button is icon type')
+    @test('should render correct when button is icon type [JPT-2468]')
     @mockEntity(mockEntityData)
     t1() {
       const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.ICON} />);
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('download');
+      expect(buttonProps.children).toBe('download-call');
       expect(buttonProps.tooltipTitle).toBe('common.download');
       expect(buttonProps.ariaLabel).toBe('voicemail.downloadVoicemail');
     }
@@ -40,8 +40,8 @@ describe('Download', () => {
       const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.MENU_ITEM} />);
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
-      expect(button.text()).toBe('voicemail.downloadVoicemail');
-      expect(buttonProps.icon).toBe('download');
+      expect(buttonProps.icon).toBe('download-call');
+      expect(button.text()).toBe('common.download');
       expect(buttonProps['aria-label']).toBe('voicemail.downloadVoicemail');
     }
   }

@@ -7,7 +7,6 @@ type ActionsProps = {
   entity: ENTITY_TYPE;
   caller?: Caller;
   maxButtonCount: number;
-  hookAfterClick: () => void;
   canEditBlockNumbers: boolean;
   showCall: boolean;
 };

@@ -46,7 +46,7 @@ class CallLogBadgeController {
       const profile = await ServiceLoader.getInstance<ProfileService>(
         ServiceConfig.PROFILE_SERVICE,
       ).getProfile();
-      this._lastReadMissed = profile.last_read_missed;
+      this._lastReadMissed = profile ? profile.last_read_missed : undefined;
       const data = await this._sourceController.getEntities();
       data.forEach((data: CallLog) => {
         this._updateUnreadCount(data);

@@ -45,10 +45,14 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
     );
   }
 
-  private _getEntityState = async () => {
+  private _getEntityState = async (devices: MediaDeviceInfo[]) => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    let state = ESettingItemState.ENABLE;
+    if (!devices.length) {
+      state = ESettingItemState.DISABLE;
+    }
     const isEnable =
       isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
@@ -58,7 +62,10 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.CONFERENCING,
         )));
-    return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
+    if (!isEnable) {
+      state = ESettingItemState.INVISIBLE;
+    }
+    return state;
   }
 
   private _onPermissionChange = async () => {
@@ -101,7 +108,7 @@ export class SpeakerSourceSettingHandler extends AbstractSettingEntityHandler<
       value: devices.find(
         device => device.deviceId === TelephonyGlobalConfig.getCurrentSpeaker(),
       ),
-      state: await this._getEntityState(),
+      state: await this._getEntityState(devices),
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;

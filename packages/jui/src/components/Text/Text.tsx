@@ -6,12 +6,13 @@
 import React, { CSSProperties, PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 
-import MuiTypography, { TypographyProps } from '@material-ui/core/Typography';
+import MuiTypography from '@material-ui/core/Typography';
 import { RuiTooltip, RuiTooltipProps } from 'rcui/components/Tooltip';
 import styled from '../../foundation/styled-components';
 import { isTextOverflow } from '../../foundation/utils';
+import { ThemeStyle } from '../../foundation/theme/theme';
 
-const StyledTypography = styled(MuiTypography)`
+const StyledTypography = styled<any>(MuiTypography)`
   && {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -32,7 +33,9 @@ type JuiTextProps = {
   disableTooltip?: boolean;
   tooltipProps?: RuiTooltipProps;
   tooltipTitle?: React.ReactNode;
-} & TypographyProps;
+  variant?: ThemeStyle;
+  component?: React.ElementType;
+};
 
 type TextStates = {
   tipOpen: boolean;

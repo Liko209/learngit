@@ -117,6 +117,14 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('voicemail-read-button');
   }
 
+  get readButton() {
+    return this.getSelectorByIcon('read', this.readToggleButton);
+  }
+
+  get unreadButton() {
+    return this.getSelectorByIcon('unread', this.readToggleButton);
+  }
+
   get downloadButton() {
     return this.getSelectorByAutomationId('voicemail-download-button');
   }

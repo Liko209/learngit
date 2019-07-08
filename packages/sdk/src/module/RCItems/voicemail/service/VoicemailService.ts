@@ -28,8 +28,8 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     );
   }
 
-  onLogin() {
-    super.onLogin();
+  onRCLogin() {
+    super.onRCLogin();
     this._initBadge();
   }
 

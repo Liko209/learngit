@@ -33,6 +33,7 @@ import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
+import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -128,19 +129,26 @@ class Sdk {
     this.accountManager.updateSupportedServices();
 
     if (authResponse.isRCOnlyMode) {
-      notificationCenter.emitKVChange(SERVICE.LOGIN, authResponse.isRCOnlyMode);
+      notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
       const accountService = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       );
-      accountService.scheduleReLoginGlipJob();
+      accountService.startLoginGlip();
       return;
     }
 
     let isInLoading = false;
     if (!authResponse.isFirstLogin) {
+      const accountType = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig.getAccountType();
+      if (accountType === ACCOUNT_TYPE_ENUM.RC) {
+        notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
+      }
+
       const lastIndexTimestamp = this.syncService.getIndexTimestamp();
       if (lastIndexTimestamp) {
-        notificationCenter.emitKVChange(SERVICE.LOGIN);
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
       } else {
         mainLogger.tags(LOG_TAG).info('start loading');
         isInLoading = true;

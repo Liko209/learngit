@@ -67,6 +67,7 @@ describe('RCItemFetchController', () => {
       { name: 'GlipSomeOne' },
       { phoneNumber: '4949494949' },
       { name: 'XCZ' },
+      { phoneNumber: '8002076138' },
     ];
     const mockKey = [
       'Jupiter',
@@ -77,6 +78,7 @@ describe('RCItemFetchController', () => {
       'SomeOne',
       '49',
       'xcz',
+      '(800)207-6138',
     ];
     const mockMatchedContacts = [
       {
@@ -109,6 +111,7 @@ describe('RCItemFetchController', () => {
       { phoneContacts: [] },
       { phoneContacts: [] },
       { phoneContacts: [] },
+      { phoneContacts: [] },
     ];
     const mockResult = [
       [
@@ -135,6 +138,7 @@ describe('RCItemFetchController', () => {
       [{ name: 'GlipSomeOne' }],
       [{ phoneNumber: '4949494949' }],
       [{ name: 'XCZ' }],
+      [{ phoneNumber: '8002076138' }],
     ];
     it.each`
       key           | matchedContacts           | result
@@ -146,6 +150,7 @@ describe('RCItemFetchController', () => {
       ${mockKey[5]} | ${mockMatchedContacts[5]} | ${mockResult[5]}
       ${mockKey[6]} | ${mockMatchedContacts[6]} | ${mockResult[6]}
       ${mockKey[7]} | ${mockMatchedContacts[7]} | ${mockResult[7]}
+      ${mockKey[8]} | ${mockMatchedContacts[8]} | ${mockResult[8]}
     `(
       'should get correct filter func',
       async ({ key, matchedContacts, result }) => {
@@ -253,12 +258,13 @@ describe('RCItemFetchController', () => {
       expect(controller.onFetchFinished).toBeCalled();
     });
 
-    it('should throw error when local data is empty and request crashed', async () => {
-      const mockError = { id: 'test' };
+    it('should throw error when anchorId is undefined and request crashed', async () => {
+      const mockData = { id: 'test' };
+      const mockError = { message: 'test' };
       controller.fetchDataFromDB = jest.fn().mockReturnValue([]);
       controller.onDBFetchFinished = jest.fn();
       mockUserConfig.getHasMore.mockResolvedValue(true);
-      controller.doSync.mockImplementation(() => {
+      controller.doSync.mockImplementation(async () => {
         throw mockError;
       });
 
@@ -275,6 +281,7 @@ describe('RCItemFetchController', () => {
       expect(mockUserConfig.getHasMore).toBeCalled();
       expect(controller.doSync).toBeCalled();
       expect(controller.onFetchFinished).not.toBeCalled();
+      expect.assertions(6);
     });
   });
 });
