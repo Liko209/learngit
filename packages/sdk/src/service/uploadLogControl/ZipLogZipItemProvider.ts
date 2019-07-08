@@ -80,7 +80,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
       },
     ];
     if (!this.worker) {
-      const zipWorker = import('./zip.worker') as any;
+      const zipWorker = await (import('./zip.worker') as any);
       this.worker = createWorker(zipWorker.default);
     }
 
