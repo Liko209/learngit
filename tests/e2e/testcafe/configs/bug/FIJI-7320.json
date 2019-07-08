@@ -1,8 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./telephony/phoneSetting/GeneralSettings.ts",
-      "../telephony/Dialer"
+      "./telephony/**/*.ts"
     ],
     "browsers": [
       "selenium:chrome"
