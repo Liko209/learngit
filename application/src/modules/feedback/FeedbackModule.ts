@@ -9,7 +9,7 @@ import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
 import { LogControlManager } from 'sdk';
 import { debugLog } from 'sdk/module/debug/log';
 import { UploadRecentLogs } from './container/UploadRecentLogs';
-import { ZipItemLevel } from 'sdk/src/service/uploadLogControl/types';
+import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import { FeedbackService } from './service/FeedbackService';
 
 class FeedbackModule extends AbstractModule {
