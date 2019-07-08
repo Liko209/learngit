@@ -103,7 +103,7 @@ class TelephonyStore {
   dialerInputFocused: boolean = false;
 
   @observable
-  hasFetchedDataToLocal: boolean = false;
+  hasManualSelected: boolean = false;
 
   @observable
   chosenCallerPhoneNumber: string;
@@ -369,6 +369,7 @@ class TelephonyStore {
     this.callerName = undefined;
     this.phoneNumber = undefined;
     this.isContactMatched = false;
+    this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   }
 
