@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 14:33:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action } from 'mobx';
 import { differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
@@ -15,6 +15,8 @@ import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactAndGroupSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { FuzzySearchPersonOptions } from 'sdk/module/search/entity';
+
 class ContactAndGroupSearchViewModel extends StoreViewModel<
   ContactAndGroupSearchProps
 > {
@@ -36,20 +38,15 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
       },
     );
   }
-
+  @action
   handleSelectChange = (items: SelectedMember[]) => {
     const { onSelectChange } = this.props;
     this.suggestions = [];
     this.selectedItems = items;
     this.inputValue = '';
     return onSelectChange && onSelectChange(items);
-  }
-
-  @computed
-  private get _isExcludeMe() {
-    return this.props.isExcludeMe;
-  }
-
+  };
+  @action
   private _setSelectedItems() {
     const { groupId } = this.props;
     if (groupId) {
@@ -66,9 +63,9 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const params = {
+    const params: FuzzySearchPersonOptions = {
       searchKey: query,
-      excludeSelf: this._isExcludeMe,
+      excludeSelf: this.props.isExcludeMe,
       recentFirst: true,
     };
     if (this.groupMembers.length) {
@@ -78,13 +75,14 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
       sortableModels,
     } = await searchService.doFuzzySearchPersonsAndGroups(params);
     const { hasMembers } = this.props;
-    const existMembers = hasMembers
-      ? [...this.existMembers, ...hasMembers]
-      : this.existMembers;
+    const existMembers =
+      hasMembers && hasMembers.length
+        ? [...this.existMembers, ...hasMembers]
+        : this.existMembers;
 
     const filterMembers = differenceBy(sortableModels, existMembers, 'id');
     return filterMembers;
-  }
+  };
 
   @action
   searchMembers = (value: string) => {
@@ -102,7 +100,7 @@ class ContactAndGroupSearchViewModel extends StoreViewModel<
       }));
       this.suggestions = differenceBy(members, this.selectedItems, 'id');
     });
-  }
+  };
 }
 
 export { ContactAndGroupSearchViewModel };

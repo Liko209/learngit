@@ -153,7 +153,7 @@ export class GroupFetchDataController {
       const groupIds = _.difference(ids, personIds) as number[];
       if (groupIds.length) {
         const groups = await this.getGroupsByIds(groupIds);
-        groups.map(group => {
+        groups.forEach(group => {
           if (group.members && group.members.length) {
             personIds = [...personIds, ...group.members];
           }
@@ -723,7 +723,9 @@ export class GroupFetchDataController {
       if (companyReplyDomain) {
         const envDomain = this._getENVDomain();
         if (group.email_friendly_abbreviation) {
-          email = `${group.email_friendly_abbreviation}@${companyReplyDomain}.${envDomain}`;
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

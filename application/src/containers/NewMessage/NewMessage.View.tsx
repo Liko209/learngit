@@ -156,7 +156,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         {canMentionTeam && (
           <JuiCheckboxLabel
             checked={this.props.isDirectMessage}
-            label="Direct Message: Will send messages directly instead of create a group"
+            label={t('message.prompt.newMessageDirectlyTip')}
             handleChange={this.props.handleCheckboxChange}
           />
         )}

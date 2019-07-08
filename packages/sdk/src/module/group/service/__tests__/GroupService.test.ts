@@ -5,6 +5,7 @@ import { GroupController } from '../../controller/GroupController';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamSetting } from '../../types';
 import { GroupService } from '../GroupService';
+import { GROUP_QUERY_TYPE } from 'sdk/service';
 
 jest.mock('../../controller/GroupActionController', () => ({
   GroupActionController: jest.fn(),
@@ -32,6 +33,12 @@ describe('GroupService', () => {
     doFuzzySearchAllGroups: jest.fn(),
     doFuzzySearchGroups: jest.fn(),
     doFuzzySearchTeams: jest.fn(),
+    getGroupsByType: jest.fn(),
+    getGroupsByIds: jest.fn(),
+    getPersonIdsBySelectedItem: jest.fn(),
+    getLocalGroup: jest.fn(),
+    getOrCreateGroupByMemberList: jest.fn(),
+    isFavored: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -397,6 +404,43 @@ describe('GroupService', () => {
         false,
         undefined,
       );
+    });
+
+    it('should call getGroupFetchDataController when call getGroupsByType', async () => {
+      await groupService.getGroupsByType(GROUP_QUERY_TYPE.ALL, 1, 1);
+      expect(mockGroupFetchDataController.getGroupsByType).toBeCalledWith(
+        GROUP_QUERY_TYPE.ALL,
+        1,
+        1,
+      );
+    });
+
+    it('should call getGroupFetchDataController when call getGroupsByIds', async () => {
+      await groupService.getGroupsByIds([1], true);
+      expect(mockGroupFetchDataController.getGroupsByIds).toBeCalledWith(
+        [1],
+        true,
+      );
+    });
+    it('should call getGroupFetchDataController when call getPersonIdsBySelectedItem', async () => {
+      await groupService.getPersonIdsBySelectedItem([1]);
+      expect(
+        mockGroupFetchDataController.getPersonIdsBySelectedItem,
+      ).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call getLocalGroup', async () => {
+      await groupService.getLocalGroup([1]);
+      expect(mockGroupFetchDataController.getLocalGroup).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call getOrCreateGroupByMemberList', async () => {
+      await groupService.getOrCreateGroupByMemberList([1]);
+      expect(
+        mockGroupFetchDataController.getOrCreateGroupByMemberList,
+      ).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call isFavored', async () => {
+      await groupService.isFavored(1, 1);
+      expect(mockGroupFetchDataController.isFavored).toBeCalledWith(1, 1);
     });
   });
 

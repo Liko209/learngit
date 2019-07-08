@@ -21,7 +21,7 @@ import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
-import { TypeDictionary } from '../../../../utils';
+import { TypeDictionary, GlipTypeUtil } from '../../../../utils';
 import { PersonService } from '../../../person';
 import { Person } from '../../../person/entity';
 import { GroupDao } from '../../dao';
@@ -42,9 +42,9 @@ jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/account/config');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../../../module/company');
+jest.mock('sdk/module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
@@ -1009,7 +1009,9 @@ describe('GroupFetchDataController', () => {
 
       const res = await groupFetchDataController.getGroupEmail(group.id);
       expect(res).toBe(
-        `${group.email_friendly_abbreviation}@${companyReplyDomain}.${envDomain}`,
+        `${
+          group.email_friendly_abbreviation
+        }@${companyReplyDomain}.${envDomain}`,
       );
     });
 
@@ -1279,6 +1281,56 @@ describe('GroupFetchDataController', () => {
       expect(res.visiblePersons.length).toBe(2);
       expect(res.invisiblePersons.length).toBe(1);
       expect(res.invisiblePersons[0]).toBe(3);
+    });
+  });
+
+  describe('getPersonIdsBySelectedItem', () => {
+    beforeEach(() => {
+      groupFetchDataController.getGroupsByIds = jest.fn();
+    });
+    it('should return empty array when ids have group id ', async () => {
+      const personIds = [1, 2];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      groupFetchDataController.getGroupsByIds = jest
+        .fn()
+        .mockReturnValue([{ members: [3] }, { members: [1, 2, 4] }]);
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem([
+        ...personIds,
+        3,
+        4,
+      ]);
+      expect(groupFetchDataController.getGroupsByIds).toBeCalled();
+      expect(result).toEqual([1, 2, 3, 4]);
+    });
+    it('should return empty array when ids have id is string ', async () => {
+      const personIds = [1, 2, '1'];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        personIds,
+      );
+      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(result).toEqual(personIds);
+    });
+    it('should return empty array when ids are all person id ', async () => {
+      const personIds = [1, 2];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        personIds,
+      );
+      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(result).toEqual(personIds);
+    });
+    it('should return empty array when ids.length is 0', async () => {
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        [],
+      );
+      expect(result).toEqual([]);
     });
   });
 });

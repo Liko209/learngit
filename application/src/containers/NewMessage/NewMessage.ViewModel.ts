@@ -63,70 +63,65 @@ class NewMessageViewModel extends StoreViewModel {
     });
     this.emailErrorMsg = '';
     this.emailError = false;
-  }
+  };
   @action
   handleCheckboxChange = (value: boolean) => {
     this.isDirectMessage = value;
-  }
+  };
 
   @action
   newMessage = async (message: string) => {
-    try {
-      let ids = this.members.filter(id => _.isNumber(id)) as number[];
-      if (this.isDirectMessage) {
-        const personPromises: any = [];
-        const groupIds: number[] = [];
-        ids.map(id => {
-          if (GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)) {
-            personPromises.push(getConversationId(id));
-          } else {
-            groupIds.push(id);
+    let ids = this.members.filter(id => _.isNumber(id)) as number[];
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
+    if (this.isDirectMessage) {
+      const personPromises: any = [];
+      const groupIds: number[] = [];
+      ids.forEach(id => {
+        if (GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)) {
+          personPromises.push(getConversationId(id));
+        } else {
+          groupIds.push(id);
+        }
+      });
+      const conversationIds = (await Promise.all(personPromises)) as number[];
+      ids = [...conversationIds, ...groupIds];
+
+      const promise = ids.map((id: number) => {
+        return postService.sendPost({ groupId: id, text: message });
+      });
+      await Promise.all(promise);
+      groupIds[0] && goToConversation({ conversationId: groupIds[0] });
+    } else {
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
+      const personIds = await groupService.getPersonIdsBySelectedItem(ids);
+      goToConversationWithLoading({
+        id: Array.from(personIds) as number[],
+        async beforeJump(conversationId: number) {
+          if (message && conversationId) {
+            await postService.sendPost({
+              groupId: conversationId,
+              text: message,
+            });
+
+            // track analysis
+            const group = getEntity<Group, GroupModel>(
+              ENTITY_NAME.GROUP,
+              conversationId,
+            );
+            analyticsCollector.sendPost(
+              'send new message',
+              'text',
+              group.analysisType,
+            );
           }
-        });
-        const conversationIds = (await Promise.all(personPromises)) as number[];
-        ids = [...conversationIds, ...groupIds];
-
-        const postService = ServiceLoader.getInstance<PostService>(
-          ServiceConfig.POST_SERVICE,
-        );
-        const promise = ids.map((id: number) => {
-          return postService.sendPost({ groupId: id, text: message });
-        });
-        await Promise.all(promise);
-        groupIds[0] && goToConversation({ conversationId: groupIds[0] });
-      } else {
-        const groupService = ServiceLoader.getInstance<GroupService>(
-          ServiceConfig.GROUP_SERVICE,
-        );
-        const personIds = await groupService.getPersonIdsBySelectedItem(ids);
-        goToConversationWithLoading({
-          id: Array.from(personIds) as number[],
-          async beforeJump(conversationId: number) {
-            if (message && conversationId) {
-              const postService = ServiceLoader.getInstance<PostService>(
-                ServiceConfig.POST_SERVICE,
-              );
-              await postService.sendPost({
-                groupId: conversationId,
-                text: message,
-              });
-
-              // track analysis
-              const group = getEntity<Group, GroupModel>(
-                ENTITY_NAME.GROUP,
-                conversationId,
-              );
-              analyticsCollector.sendPost(
-                'send new message',
-                'text',
-                group.analysisType,
-              );
-            }
-          },
-        });
-      }
-    } catch (error) {}
-  }
+        },
+      });
+    }
+  };
 }
 
 export { NewMessageViewModel };

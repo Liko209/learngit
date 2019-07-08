@@ -27,7 +27,7 @@ class ContactAndGroupSearchItem extends React.Component<
       itemId,
       TypeDictionary.TYPE_ID_PERSON,
     ) ? (
-      <ContactSearchItem {...this.props} />
+      <ContactSearchItem uid={itemId} {...this.props} />
     ) : (
       <GroupSearchItem {...this.props} />
     );
@@ -42,7 +42,7 @@ class ContactAndGroupSearchView extends React.Component<ViewProps> {
     if (event.key === 'Escape') {
       event.nativeEvent.preventDownshiftDefault = true;
     }
-  }
+  };
 
   render() {
     const {
@@ -76,7 +76,7 @@ class ContactAndGroupSearchView extends React.Component<ViewProps> {
         nameError={error}
         emailError={errorEmail}
         helperText={helperText}
-        automationId="contactSearchSuggestionsList"
+        automationId='contactSearchSuggestionsList'
         messageRef={this.inputRef}
         minRowHeight={44}
         multiple={multiple}
