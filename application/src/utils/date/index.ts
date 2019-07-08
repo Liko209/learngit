@@ -261,7 +261,7 @@ function formatDuration(milliSeconds: number) {
 
 function getCreateTime(creationTime: string, dateFormat: string) {
   if (dateFormat === DATE_FORMAT.short) {
-    return moment(creationTime).format('h:mm A');
+    return dialerTimestamp(creationTime);
   }
   return postTimestamp(creationTime);
 }
