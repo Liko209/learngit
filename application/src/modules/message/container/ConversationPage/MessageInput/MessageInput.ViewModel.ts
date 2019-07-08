@@ -27,7 +27,6 @@ import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
 import { container } from 'framework';
-import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
@@ -36,27 +35,14 @@ import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
 
-const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
-  container
-    .get(FeedbackService)
-    .zipRecentLogs(level)
-    .then(zipResult => {
-      if (!zipResult) {
-        mainLogger.debug('Zip log fail.');
-        return;
-      }
-      saveBlob(zipResult.zipName, zipResult.zipBlob);
-    });
-};
-
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    saveDebugLog(ZipItemLevel.NORMAL);
+    container.get(FeedbackService).zipRecentLogs(ZipItemLevel.NORMAL);
   },
   '/debug-save-all': () => {
-    saveDebugLog(ZipItemLevel.DEBUG_ALL);
+    container.get(FeedbackService).zipRecentLogs(ZipItemLevel.DEBUG_ALL);
   },
 };
 

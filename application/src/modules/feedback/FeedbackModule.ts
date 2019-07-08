@@ -4,14 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule } from 'framework';
+import { AbstractModule, container } from 'framework';
 import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
 import { LogControlManager } from 'sdk';
+import { debugLog } from 'sdk/module/debug/log';
+import { UploadRecentLogs } from './container/UploadRecentLogs';
+import { ZipItemLevel } from 'sdk/src/service/uploadLogControl/types';
+import { FeedbackService } from './service/FeedbackService';
 
 class FeedbackModule extends AbstractModule {
   async bootstrap() {
     LogControlManager.instance().registerZipProvider(
       new ContextInfoZipItemProvider(),
+    );
+    debugLog.inject('debug', () => UploadRecentLogs.show());
+    debugLog.inject('debugAll', () =>
+      UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
+    );
+    debugLog.inject('debugSave', () =>
+      container.get(FeedbackService).zipRecentLogs(ZipItemLevel.NORMAL),
+    );
+    debugLog.inject('debugSaveAll', () =>
+      container.get(FeedbackService).zipRecentLogs(ZipItemLevel.DEBUG_ALL),
     );
   }
 }

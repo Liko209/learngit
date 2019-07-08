@@ -12,10 +12,11 @@ import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 import * as Sentry from '@sentry/browser';
 import { FeedbackApi } from '../FeedbackApi';
-import { SessionManager, DateFormatter } from 'sdk';
+import { SessionManager, DateFormatter, mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
+import { saveBlob } from '@/common/blobUtils';
 
 type UploadOption = { timeout: number; retry: number; level: ZipItemLevel };
 
@@ -33,6 +34,15 @@ class FeedbackService {
       this._fileStackClient = init(FILE_STACK_API_KEY);
     }
     return this._fileStackClient;
+  }
+
+  saveRecentLogs = async (level?: ZipItemLevel) => {
+    const zipResult = await this.zipRecentLogs(level);
+    if (!zipResult) {
+      mainLogger.debug('Zip log fail.');
+      return;
+    }
+    saveBlob(zipResult.zipName, zipResult.zipBlob);
   }
 
   zipRecentLogs = async (
