@@ -33,7 +33,7 @@
         },
         "user": {
           "uids": [],
-          "level": 2
+          "level": 0
         }
       },
       "function_id": "team",
@@ -83,7 +83,7 @@
         },
         "user": {
           "uids": [],
-          "level": 2
+          "level": 0
         }
       },
       "function_id": "team",

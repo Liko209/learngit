@@ -6,27 +6,26 @@ import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { InstanceManager } from './mocks/server/InstanceManager';
 import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
-import { InitialData, GlipData, GlipState } from './mocks/server/glip/types';
+import { InitialData, GlipData } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('SdkItFramework');
 import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
-import './blockExternalRequest';
+import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
+import { IResponse } from './types';
 
 type Processor<ResData, ReqData, T> = (
   reqRes: IRequestResponse<ReqData, ResData>,
 ) => T;
-
-// global.Promise = WrapPromise;
-// type GetProcessorType<T> = T extends Processor<any, any, infer R> ? R: any;
+blockExternalRequest();
 
 type ItContext = {
   currentUserId: () => number;
   currentCompanyId: () => number;
-  mockResponse: <
+  mockJsonResponse: <
     ResData = any,
     ReqData = any,
     T extends Processor<ResData, ReqData, any> = Processor<
@@ -38,6 +37,14 @@ type ItContext = {
     requestResponse: IRequestResponse<ReqData, ResData>,
     processor?: T,
   ) => ReturnType<T>;
+  mockResponse(
+    options: {
+      host: string;
+      method: string;
+      path: string;
+    },
+    response: IResponse,
+  ): any;
   data: {
     template: {
       BASIC: InitialData;
@@ -79,7 +86,6 @@ function parseInitialData(initialData: InitialData): GlipData {
     clientConfig: initialData.client_config,
     state: initialData.state,
     posts: initialData.posts || [],
-    // todo parse to groupState
     groupState: userGroupStates,
     profile: initialData.profile,
   };
@@ -157,7 +163,7 @@ export function itForSdk(
     mockGlipServer.applyGlipData(glipData);
   };
 
-  function mockResponse<ReqData, ResData>(
+  function mockJsonResponse<ReqData, ResData>(
     requestResponse: IRequestResponse<ReqData, ResData>,
     processor?: (reqRes: IRequestResponse<ReqData, ResData>) => any,
   ): any {
@@ -176,8 +182,38 @@ export function itForSdk(
     return returnValue;
   }
 
+  function mockResponse(
+    options: {
+      host: string;
+      method: string;
+      path: string;
+    },
+    response: IResponse,
+  ): any {
+    if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
+      const requestResponsePool: IRequestResponse[] = [];
+      jest
+        .spyOn(proxyServer, 'getRequestResponsePool')
+        .mockImplementation(() => requestResponsePool);
+    }
+    const requestResponse = {
+      // todo
+      response: response as any,
+      request: {
+        method: options.method,
+      },
+      hostAlias: options.host,
+      method: options.method,
+      path: options.path,
+    } as IRequestResponse;
+    const pool = proxyServer.getRequestResponsePool();
+    pool.push(requestResponse);
+    return response;
+  }
+
   // provide for it case to mock data.
   const itCtx: ItContext = {
+    mockJsonResponse,
     mockResponse,
     currentUserId: () => userId,
     currentCompanyId: () => companyId,

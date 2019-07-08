@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { INetworkRequestExecutorListener, IRequest } from '../types';
-import { createResponse, isPromise } from '../utils';
-import { Handler, IResponseAdapter } from './types';
+import { INetworkRequestExecutorListener, IRequest, Handler, IResponseAdapter } from '../types';
+import { createResponse, isPromise } from './utils';
+// import {  } from './types';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('ResponseAdapter', true);
 
@@ -10,11 +10,10 @@ export class ResponseAdapter implements IResponseAdapter {
     return (
       request: IRequest,
       cb: INetworkRequestExecutorListener,
-      routeParams: object,
     ) => {
       let handlerResp;
       try {
-        handlerResp = handler(request, routeParams);
+        handlerResp = handler(request);
       } catch (error) {
         debug('handle error: ', error);
         cb.onFailure(

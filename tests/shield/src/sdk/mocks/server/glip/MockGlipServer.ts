@@ -1,19 +1,11 @@
 import assert from 'assert';
 import { LokiDB } from 'foundation/db';
-import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
 import { Post } from 'sdk/module/post/entity/Post';
-import { State } from 'sdk/module/state/entity/State';
-import url from 'url';
 
 import { Router } from '../Router';
-import {
-  IMockServer,
-  INetworkRequestExecutorListener,
-  IRequest,
-} from '../types';
-import { createResponse } from '../utils';
+import { IRequest, IRoute, IApi } from '../../../types';
+import { createResponse, String2Number } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
 import { GlipGroupDao } from './dao/group';
@@ -25,14 +17,9 @@ import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
 import { schema } from './glipSchema';
 import { MockSocketServer } from './MockSocketServer';
-import { ResponseAdapter } from './ResponseAdapter';
 import {
   GlipData,
-  Handler,
-  IApi,
   InitialData,
-  IResponseAdapter,
-  VerbHandler,
   GlipPost,
   GlipGroupState,
   GlipState,
@@ -43,51 +30,18 @@ import {
 import { genPostId, parseState } from './utils';
 import { GlipDataHelper } from './data/data';
 import { STATE_KEYS } from './constants';
-import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 import { GlipBaseDao } from './GlipBaseDao';
+// import { GlipController } from './api/glip';
+import {
+  getMeta,
+  // getPrototypeDefineFunctions,
+} from '../../../decorators/metaUtil';
+import { META_ROUTE } from '../../../decorators/constants';
+import { Route } from '../../../decorators/Route.decorator';
 const debug = createDebug('MockGlipServer');
 
-interface IGlipApi extends IApi {
-  '/api/login': {
-    put: Handler;
-  };
-  '/v1.0/desktop/initial': {
-    get: Handler;
-  };
-  '/v1.0/desktop/remaining': {
-    get: Handler;
-  };
-  '/api/posts': {
-    get: Handler;
-  };
-  '/api/posts_items_by_ids': {
-    get: Handler;
-  };
-  '/api/post': {
-    post: Handler;
-  };
-  '/api/group/:id?': {
-    post: Handler;
-    put: Handler;
-  };
-  '/api/team/:id?': {
-    post: Handler;
-    put: Handler;
-  };
-  '/api/profile/:id?': {
-    get: Handler;
-    put: Handler;
-  };
-  // '/api/group/:id': {
-  // };
-  '/api/save_state_partial/:id?': {
-    put: Handler;
-  };
-  '/(.*)': VerbHandler;
-}
-
-export class MockGlipServer implements IMockServer {
+export class MockGlipServer {
   private _router: Router;
   postDao: GlipPostDao;
   itemDao: GlipItemDao;
@@ -102,53 +56,25 @@ export class MockGlipServer implements IMockServer {
   socketServer: MockSocketServer;
   dataHelper: GlipDataHelper;
 
-  // TODO optimize structure
-  api: IGlipApi = {
-    '/api/login': { put: request => this.login(request) },
-    '/api/profile/:id?': {
-      get: async (...args) => await this.getProfile(...args),
-      put: async (...args) => await this.updateProfile(...args),
-    },
-    '/api/posts': { get: async request => await this.getPosts(request) },
-    '/api/posts_items_by_ids': {
-      get: async request => await this.getPostsItemsByIds(request),
-    },
-    '/api/post': { post: async request => await this.createPost(request) },
-    '/api/group/:id?': {
-      post: async request => await this.createGroup(request),
-      put: async (...args) => await this.updateGroup(...args),
-    },
-    '/api/team/:id?': {
-      post: async request => await this.createTeam(request),
-      put: async (...args) => await this.updateTeam(...args),
-    },
-    '/api/save_state_partial/:id?': {
-      put: async request => await this.saveStatePartial(request),
-    },
-    '/v1.0/desktop/initial': {
-      get: async request => await this.getInitialData(request),
-    },
-    '/v1.0/desktop/remaining': {
-      get: request => createResponse({ status: 400, statusText: 'Mock error' }),
-    },
-    '/(.*)': {
-      get: request => this.commonHandler(request),
-      put: request => this.commonHandler(request),
-      post: request => this.commonHandler(request),
-      delete: request => this.commonHandler(request),
-    },
-  };
-
   constructor() {
-    const adapter: IResponseAdapter = new ResponseAdapter();
-    this._router = new Router(adapter);
-    this._router.applyApi(this.api);
     this.socketServer = new MockSocketServer('https://glip.socket.com');
-    this.socketServer.on('connection', () => {
-      console.log(
-        'TCL: =-=-=-=-=-=-MockGlipServer -> constructor -> connection',
-      );
+    this._router = new Router();
+    const routeMetas = getMeta<IRoute<IApi>>(
+      MockGlipServer.prototype,
+      META_ROUTE,
+    );
+    routeMetas.map(({ key, meta }) => {
+      const { method = 'get', path, query = {} } = meta;
+      this._router.use(method, path, (request, queryObject) => {
+        const queryParams = { ...queryObject };
+        Object.entries(query).forEach(([key, value]) => {
+          queryParams[key] = (value as any)(queryObject[key]);
+        });
+        // todo dynamic inject Request, body, query
+        return this[key](request, queryParams);
+      });
     });
+
     this.init();
   }
 
@@ -204,14 +130,43 @@ export class MockGlipServer implements IMockServer {
     this.dataHelper = new GlipDataHelper(companyId, userId);
   }
 
-  login = (request: IRequest) => {
+  @Route({
+    path: '/api/login',
+    method: 'put',
+  })
+  login(request: IRequest) {
     return createResponse({
       status: 200,
       statusText: '[mock] login success',
     });
   }
 
-  getInitialData = async (request: IRequest<any>) => {
+  @Route({
+    path: '/api/index',
+  })
+  index(request: IRequest) {
+    return createResponse({
+      data: {},
+      status: 200,
+      statusText: '[mock] login success',
+    });
+  }
+
+  @Route({
+    path: '/v1.0/desktop/remaining',
+  })
+  remaining(request: IRequest) {
+    return createResponse({
+      data: {},
+      status: 200,
+      statusText: '[mock] login success',
+    });
+  }
+
+  @Route({
+    path: '/v1.0/desktop/initial',
+  })
+  async getInitialData(request: IRequest<any>) {
     const user = this.personDao.findOne();
     const company = this.companyDao.findOne();
     assert(company, 'company not found.');
@@ -243,7 +198,10 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  getPosts = async (request: IRequest) => {
+  @Route({
+    path: '/api/posts',
+  })
+  async getPosts(request: IRequest) {
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
       request,
@@ -254,7 +212,10 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  getPostsItemsByIds = async (request: IRequest) => {
+  @Route({
+    path: '/api/posts_items_by_ids',
+  })
+  async getPostsItemsByIds(request: IRequest) {
     const post_ids = request.params['post_ids']
       .split(',')
       .map((it: string) => Number(it));
@@ -269,7 +230,11 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  createPost = async (request: IRequest<Post>) => {
+  @Route({
+    path: '/api/post',
+    method: 'post',
+  })
+  async createPost(request: IRequest<Post>) {
     const serverPost: GlipPost = { _id: genPostId(), ...request.data };
     const groupId = serverPost.group_id;
     const updateResult = this.postDao.put(serverPost);
@@ -308,8 +273,15 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  saveStatePartial = async (request: IRequest<GlipState>) => {
-    debug('handle saveStatePartial -> request');
+  @Route({
+    path: '/api/save_state_partial/:id?',
+    method: 'put',
+    query: {
+      id: String2Number,
+    },
+  })
+  saveStatePartial(request: IRequest<GlipState>, query: { id: number }) {
+    debug('handle saveStatePartial -> request', query);
     const groupStates = parseState(request.data);
     if (groupStates && groupStates[0]) {
       debug('saveStatePartial -> groupStates[0] %O', groupStates[0]);
@@ -328,7 +300,11 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  createGroup = async (request: IRequest<GlipGroup>) => {
+  @Route({
+    path: '/api/group',
+    method: 'post',
+  })
+  createGroup(request: IRequest<GlipGroup>) {
     const serverGroup = this.dataHelper.group.factory.build(request.data);
     this.groupDao.put(serverGroup);
     this.socketServer.emitEntityCreate(serverGroup);
@@ -338,7 +314,14 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  updateGroup = async (request: IRequest<GlipGroup>, routeParams: object) => {
+  @Route({
+    path: '/api/group/:id',
+    method: 'put',
+    query: {
+      id: String2Number,
+    },
+  })
+  updateGroup(request: IRequest<GlipGroup>, routeParams: object) {
     assert(routeParams['id'], 'update group lack ok id');
     return createResponse({
       request,
@@ -350,7 +333,11 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  createTeam = async (request: IRequest<GlipGroup>) => {
+  @Route({
+    path: '/api/team',
+    method: 'post',
+  })
+  createTeam(request: IRequest<GlipGroup>) {
     const serverTeam = this.dataHelper.team.factory.build(request.data);
     this.groupDao.put(serverTeam);
     this.socketServer.emitEntityCreate(serverTeam);
@@ -360,7 +347,14 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  updateTeam = async (request: IRequest<GlipGroup>, routeParams: object) => {
+  @Route({
+    path: '/api/team/:id',
+    method: 'put',
+    query: {
+      id: String2Number,
+    },
+  })
+  updateTeam(request: IRequest<GlipGroup>, routeParams: object) {
     assert(routeParams['id'], 'update team lack ok id');
     return createResponse({
       request,
@@ -372,7 +366,14 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  getProfile = async (request: IRequest<GlipProfile>, routeParams: object) => {
+  @Route({
+    path: '/api/profile/:id',
+    method: 'get',
+    query: {
+      id: String2Number,
+    },
+  })
+  getProfile(request: IRequest<GlipProfile>, routeParams: object) {
     assert(routeParams['id'], 'get profile lack ok id');
     return createResponse({
       request,
@@ -380,10 +381,14 @@ export class MockGlipServer implements IMockServer {
     });
   }
 
-  updateProfile = async (
-    request: IRequest<GlipProfile>,
-    routeParams: object,
-  ) => {
+  @Route({
+    path: '/api/profile/:id',
+    method: 'put',
+    query: {
+      id: String2Number,
+    },
+  })
+  updateProfile(request: IRequest<GlipProfile>, routeParams: object) {
     assert(routeParams['id'], 'update profile lack ok id');
     return createResponse({
       request,
@@ -393,40 +398,6 @@ export class MockGlipServer implements IMockServer {
         result => this.socketServer.emitMessage(result),
       ),
     });
-  }
-
-  handle = (request: IRequest, cb: INetworkRequestExecutorListener) => {
-    this._router.dispatch(request, cb);
-  }
-
-  commonHandler = (request: IRequest) => {
-    const mockJsonPath = this.getMockJsonPath(request.host, request.path);
-    if (fs.existsSync(mockJsonPath)) {
-      const result = JSON.parse(
-        fs.readFileSync(`${mockJsonPath}`, {
-          encoding: 'utf8',
-        }),
-      );
-      return createResponse({
-        request,
-        ...result.response,
-      });
-    }
-    return createResponse({
-      status: 404,
-      statusText: 'Mock data not found',
-    });
-  }
-
-  getMockJsonPath = (host: string, uri: string) => {
-    const { hostname } = url.parse(host);
-    const relatePath = `${hostname}${uri}`;
-    const mockDataPath = path.resolve(
-      __dirname,
-      '../../../../../',
-      `./testingData/http/${relatePath.replace(/\~/g, '-')}/200.json`,
-    );
-    return mockDataPath;
   }
 
   getRouter = () => this._router;

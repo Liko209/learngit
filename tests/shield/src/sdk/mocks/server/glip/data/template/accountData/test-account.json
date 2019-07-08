@@ -3317,6 +3317,40 @@
   ],
   "teams": [
     {
+      "_id": 44425222,
+      "created_at": 1562220030489,
+      "creator_id": 187875331,
+      "version": 6805697933082624,
+      "model_size": 0,
+      "is_new": true,
+      "members": [
+        187875331
+      ],
+      "is_team": true,
+      "is_public": false,
+      "privacy": "private",
+      "description": "testing",
+      "set_abbreviation": "[test] add member",
+      "permissions": {
+        "admin": {
+          "uids": [
+            187875331
+          ]
+        },
+        "user": {
+          "uids": [],
+          "level": 11
+        }
+      },
+      "function_id": "team",
+      "company_id": 401409,
+      "email_friendly_abbreviation": "_test__add_member",
+      "guest_user_company_ids": [],
+      "most_recent_content_modified_at": 1562220030489,
+      "modified_at": 1562220030489,
+      "deactivated": false
+    },
+    {
       "_id": 43114502,
       "created_at": 1559312632396,
       "creator_id": 187875331,

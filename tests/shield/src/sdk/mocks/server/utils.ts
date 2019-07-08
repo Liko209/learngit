@@ -18,9 +18,6 @@ export function isPromise(p: any): p is Promise<any> {
   return p && p.then;
 }
 
-class AccountDataBuilder {
-  // account(id: number, )
-  company() {}
-
-  build() {}
-}
+export const String2Number = (v: string): number => {
+  return Number(v);
+};

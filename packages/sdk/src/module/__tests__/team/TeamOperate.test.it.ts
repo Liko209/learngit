@@ -3,21 +3,10 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
 
-itForSdk('Group Integration test', ({ server, data, sdk, mockResponse }) => {
+itForSdk('Group Integration test', ({ server, data, sdk, mockJsonResponse: mockResponse }) => {
   let groupService: GroupService;
 
-  const glipData = data.useInitialData(data.template.BASIC);
-  // data.helper().team.createTeam('Test Team with thomas', [123]),
-  const team1 = data
-    .helper()
-    .team.createTeam('Test Team with thomas', [123], { post_cursor: 11 });
-  glipData.teams.push(team1, ...data.helper().team.factory.buildList(2));
-  glipData.groupState.push(
-    data.helper().groupState.createGroupState(team1._id, { post_cursor: 8 }),
-  );
-  glipData.people.push(
-    data.helper().person.build({ display_name: 'Special Name +86789' }),
-  );
+  data.useInitialData(data.template.STANDARD);
   data.apply();
 
   beforeAll(async () => {
@@ -28,8 +17,29 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockResponse }) => {
     await sdk.cleanUp();
   });
   describe('GroupService', () => {
-    it('search group', async () => {
-      const mockTeamInfo = mockResponse(
+    it('create team', async () => {
+      const mockInfo = mockResponse(
+        require('./data/CREATE_TEAM.SUCCESS.json'),
+        (reqRes: IRequestResponse<Group, Group>) => {
+          return {
+            id: reqRes.response.data._id,
+            creatorId: reqRes.response.data.creator_id,
+            members: reqRes.request.data!.members,
+            name: reqRes.request.data!.set_abbreviation,
+          };
+        },
+      );
+      await groupService.createTeam(mockInfo.creatorId, mockInfo.members, {
+        name: mockInfo.name,
+      });
+      const result = await groupService.getById(mockInfo.id!);
+      expect(result).not.toBeUndefined();
+      expect(result!.set_abbreviation).toEqual(mockInfo.name);
+      expect(result!.creator_id).toEqual(mockInfo.creatorId);
+      expect(result!.members).toEqual(mockInfo.members);
+    });
+    it('modify team name', async () => {
+      const mockInfo = mockResponse(
         require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
         (reqRes: IRequestResponse<any, Group>) => {
           const {
@@ -41,11 +51,104 @@ itForSdk('Group Integration test', ({ server, data, sdk, mockResponse }) => {
           };
         },
       );
+      await groupService.updateTeamSetting(mockInfo.teamId, {
+        name: mockInfo.name,
+      });
+      const result = await groupService.getById(mockInfo.teamId);
+      expect(result).not.toBeUndefined();
+      expect(result!.set_abbreviation).toEqual(mockInfo.name);
+    });
+    it('disable all team permission', async () => {
+      const mockTeamInfo = mockResponse(
+        require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
+        (reqRes: IRequestResponse<any, Group>) => {
+          const {
+            response: { data },
+          } = reqRes;
+          data.permissions!.user!.level = 0;
+          return {
+            teamId: Number(data._id!),
+            name: data.set_abbreviation,
+            permissions: data.permissions,
+          };
+        },
+      );
+      const beforeUpdate = await groupService.getById(mockTeamInfo.teamId);
+      expect(beforeUpdate!.permissions).not.toEqual(mockTeamInfo.permissions);
       await groupService.updateTeamSetting(mockTeamInfo.teamId, {
         name: mockTeamInfo.name,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: false,
+          TEAM_PIN_POST: false,
+          TEAM_POST: false,
+          TEAM_ADD_INTEGRATIONS: false,
+        },
       });
-      const result = await groupService.getById(mockTeamInfo.teamId);
-      expect(result!.set_abbreviation).toEqual(mockTeamInfo.name);
+      const afterUpdate = await groupService.getById(mockTeamInfo.teamId);
+      expect(afterUpdate).not.toBeUndefined();
+      expect(afterUpdate!.permissions).toEqual(mockTeamInfo.permissions);
+    });
+    it('enable all team permission', async () => {
+      const mockInfo = mockResponse(
+        require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
+        (reqRes: IRequestResponse<any, Group>) => {
+          const {
+            response: { data },
+          } = reqRes;
+          data.permissions!.user!.level = 15;
+          return {
+            teamId: Number(data._id!),
+            name: data.set_abbreviation,
+            permissions: data.permissions,
+          };
+        },
+      );
+      const beforeUpdate = await groupService.getById(mockInfo.teamId);
+      expect(beforeUpdate!.permissions).not.toEqual(mockInfo.permissions);
+      await groupService.updateTeamSetting(mockInfo.teamId, {
+        name: mockInfo.name,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+          TEAM_PIN_POST: true,
+          TEAM_POST: true,
+          TEAM_ADD_INTEGRATIONS: true,
+        },
+      });
+      const afterUpdate = await groupService.getById(mockInfo.teamId);
+      expect(afterUpdate).not.toBeUndefined();
+      expect(afterUpdate!.permissions).toEqual(mockInfo.permissions);
+    });
+    it('add team member', async () => {
+      const mockInfo = mockResponse(
+        require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
+        (
+          reqRes: IRequestResponse<{ _id: number; members: number[] }, Group>,
+        ) => {
+          return {
+            id: reqRes.request.data!._id,
+            addMembers: reqRes.request.data!.members,
+            newMembers: reqRes.response.data!.members,
+          };
+        },
+      );
+      await groupService.addTeamMembers(mockInfo.addMembers, mockInfo.id);
+      const result = await groupService.getById(mockInfo.id!);
+      expect(result).not.toBeUndefined();
+      expect(result!.members).toEqual(mockInfo.newMembers);
+    });
+    it('archived team', async () => {
+      const mockInfo = mockResponse(
+        require('./data/ARCHIVED_TEAM.SUCCESS.json'),
+        (reqRes: IRequestResponse<Group, Group>) => {
+          return {
+            id: reqRes.request.data!._id!,
+          };
+        },
+      );
+      await groupService.archiveTeam(mockInfo.id);
+      const result = await groupService.getById(mockInfo.id!);
+      expect(result).not.toBeUndefined();
+      expect(result!.is_archived).toBeTruthy();
     });
   });
 });
