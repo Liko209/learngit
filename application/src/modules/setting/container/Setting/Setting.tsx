@@ -8,8 +8,10 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps, Route } from 'react-router-dom';
 import { SettingRouter } from '../SettingRouter';
+import { withRCMode } from '@/containers/withRCMode';
 
 @observer
+@withRCMode()
 class SettingComponent extends Component<RouteComponentProps> {
   render() {
     return (

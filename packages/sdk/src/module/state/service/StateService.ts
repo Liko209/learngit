@@ -50,9 +50,9 @@ class StateService extends EntityBaseService<GroupState>
     });
   }
 
-  onLogin() {
-    super.onLogin();
-    this._initBadge();
+  onGlipLogin(success: boolean) {
+    super.onGlipLogin(success);
+    success && this._initBadge();
   }
 
   private _initBadge = async () => {

@@ -40,6 +40,7 @@ import { DaoGlobalConfig } from 'sdk/dao/config';
 import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -121,10 +122,17 @@ class SyncController {
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
-      notificationCenter.emitKVChange(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
     } catch (e) {
-      mainLogger.error(LOG_TAG, 'fetch initial data error, force logout');
-      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      mainLogger.error(LOG_TAG, 'fetch initial data error');
+      const accountType = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig.getAccountType();
+      if (accountType === ACCOUNT_TYPE_ENUM.RC) {
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+      } else {
+        notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      }
     }
     this._checkFetchedRemaining(currentTime);
     performanceTracer.end({ key: SYNC_PERFORMANCE_KEYS.FIRST_LOGIN });

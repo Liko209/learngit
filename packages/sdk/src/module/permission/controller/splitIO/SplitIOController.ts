@@ -30,7 +30,7 @@ class SplitIOController {
   }
 
   private _subscribeNotifications() {
-    notificationCenter.on(SERVICE.LOGIN, async () => {
+    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
       await this._initClient();
     });
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, async () => {

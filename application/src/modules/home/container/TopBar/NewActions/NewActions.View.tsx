@@ -12,10 +12,12 @@ import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
+import { withRCMode } from '@/containers/withRCMode';
 
 type NewActionsProps = WithTranslation & ViewProps;
 
 @observer
+@withRCMode()
 class NewActions extends React.Component<NewActionsProps> {
   constructor(props: NewActionsProps) {
     super(props);
