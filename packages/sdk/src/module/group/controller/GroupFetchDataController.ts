@@ -150,10 +150,10 @@ export class GroupFetchDataController {
           GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON),
       );
       const groupIds = _.difference(ids, personIds) as number[];
-      if (groupIds) {
+      if (groupIds.length) {
         const groups = await this.getGroupsByIds(groupIds);
         groups.map(group => {
-          if (group.members.length) {
+          if (group.members && group.members.length) {
             personIds = [...personIds, ...group.members];
           }
         });

@@ -130,7 +130,7 @@ class SearchPersonController {
       );
       const groups = await groupService.doFuzzySearchALlGroups(
         options.searchKey,
-        false,
+        true,
         true,
         true,
       );
