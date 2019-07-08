@@ -10,6 +10,11 @@ function wait(duration = 0) {
   return new Promise(resolve => setTimeout(resolve, duration));
 }
 
+async function waitDone(func: Function) {
+  func && func();
+  await wait();
+}
+
 function asyncTest(func: TestFunc, timeout = 0): Promise<void> {
   return wait(timeout).then(() => {
     if (func) {
@@ -21,4 +26,4 @@ function asyncTest(func: TestFunc, timeout = 0): Promise<void> {
   });
 }
 
-export { asyncTest, wait };
+export { asyncTest, wait, waitDone };

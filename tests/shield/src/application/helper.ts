@@ -9,14 +9,18 @@ import { act as ract } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { service } from 'sdk';
+import { wait } from '../utils';
 
 type TestCallback = (() => void) | (() => Promise<void>);
 
-function helper(element: ReactElement, type: WrapperType = WrapperType.Enzyme) {
+async function helper(
+  element: ReactElement,
+  type: WrapperType = WrapperType.Enzyme,
+) {
   const p = new TestApp(getWrapper(element, type));
   notificationCenter.emitKVChange(service.SERVICE.STOP_LOADING);
   notificationCenter.emitKVChange(service.SERVICE.LOGIN);
-
+  await wait();
   return p;
 }
 
