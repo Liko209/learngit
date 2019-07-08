@@ -5,8 +5,14 @@
  */
 
 import _ from 'lodash';
-import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
-import { Notification, ShowNotificationOptions } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import {
+  Notification,
+  ShowNotificationOptions,
+} from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { errorHelper } from 'sdk/error';
 import { mainLogger } from 'sdk';
@@ -203,13 +209,13 @@ function handleError(
 }
 
 function wrapHandleError(
-  oridinalMethod: Function,
+  originalMethod: Function,
   notificationType: NOTIFICATION_TYPE,
   options: CatchOptionsProps,
 ) {
   return function (this: Function, ...args: any[]) {
     try {
-      const result = oridinalMethod.apply(this, args);
+      const result = originalMethod.apply(this, args);
 
       // if method is asynchronous
       if (result instanceof Promise) {
@@ -224,7 +230,10 @@ function wrapHandleError(
   };
 }
 
-function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProps): any {
+function decorate(
+  notificationType: NOTIFICATION_TYPE,
+  options: CatchOptionsProps,
+): any {
   return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
@@ -246,7 +255,6 @@ function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProp
       return;
     }
 
-    // @action method = () => {}
     if (descriptor.initializer) {
       return {
         enumerable: false,
@@ -254,12 +262,15 @@ function decorate(notificationType: NOTIFICATION_TYPE, options: CatchOptionsProp
         writable: true,
         initializer() {
           // N.B: we can't immediately invoke initializer; this would be wrong
-          return wrapHandleError(descriptor.initializer!.call(this), notificationType, options);
+          return wrapHandleError(
+            descriptor.initializer!.call(this),
+            notificationType,
+            options,
+          );
         },
       };
     }
 
-    // @action method() { }
     if (descriptor.value) {
       const oridinalMethod = descriptor.value;
       return {

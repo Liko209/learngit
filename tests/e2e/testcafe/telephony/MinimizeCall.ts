@@ -1,8 +1,8 @@
 /*
  * @Author: Zack.Zheng
  * @Date: 2019-05-07 11:11:11
- * @Last Modified by: Zack.Zheng
- * @Last Modified time: 2019-05-07 11:11:11
+ * @Last Modified by: Lex Huang (lex.huang@ringcentral.com)
+ * @Last Modified time: 2019-06-28 14:14:07
  */
 
 import { h } from '../v2/helpers'
@@ -10,7 +10,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
-import { WebphoneSession } from '../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/MinimizeCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -299,7 +299,7 @@ test.meta(<ITestMeta>{
     await minimizeCallWindow.clickMuteButton();
   });
   await h(t).withLog('And I hover the “unmute” button', async () => {
-    await minimizeCallWindow.hoverunMuteButton();
+    await minimizeCallWindow.hoverUnMuteButton();
   });
   await h(t).withLog('Then show the tooltip', async () => {
     await minimizeCallWindow.showTooltip(tooltipTextunmute);

@@ -123,17 +123,6 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('createAccount', () => {
-    it('should call controller to create account', () => {
-      const mockAcc = new MockAcc();
-      const mockCall = new MockCall();
-      telephonyService.createAccount(mockAcc, mockCall);
-      expect(engineController.createAccount).toHaveBeenCalledWith(
-        mockAcc,
-        mockCall,
-      );
-    });
-  });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
       await telephonyService.makeCall('123', '456');
@@ -259,10 +248,10 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('getLastCalledNumber', () => {
-    it('should call account controller to get last called number', () => {
-      const spy = jest.spyOn(accountController, 'getLastCalledNumber');
-      telephonyService.getLastCalledNumber();
+  describe('getVoipState', () => {
+    it('should call account controller to get voip state', () => {
+      const spy = jest.spyOn(accountController, 'getVoipState');
+      telephonyService.getVoipState();
       expect(spy).toBeCalled();
     });
   });
@@ -284,6 +273,13 @@ describe('TelephonyService', () => {
       expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith(
         mockSetting,
       );
+    });
+  });
+
+  describe('getRingerDevicesList', () => {
+    it('should call getRingerDevicesList', () => {
+      telephonyService.getRingerDevicesList();
+      expect(engineController.getRingerDevicesList).toBeCalled();
     });
   });
 });

@@ -16,7 +16,12 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PERMISSION_ENUM } from '../constants';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
-import { Group, TeamPermission, TeamPermissionParams } from '../entity';
+import {
+  Group,
+  TeamPermission,
+  TeamPermissionParams,
+  GroupTyping,
+} from '../entity';
 import {
   PermissionFlags,
   TeamSetting,
@@ -28,13 +33,15 @@ import { Post } from '../../post/entity';
 import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { TypingIndicatorController } from '../controller/TypingIndicatorController';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
   groupConfigController: GroupConfigController;
+  typingIndicatorController: TypingIndicatorController;
   constructor() {
-    super(true, daoManager.getDao(GroupDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
     });
@@ -46,6 +53,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
           .deleteAllTeamInformation,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
           .setAsTrue4HasMoreConfigByDirection,
+        [SOCKET.TYPING]: this.handleIncomingTyingEvent,
       }),
     );
 
@@ -86,6 +94,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       this.groupConfigController = new GroupConfigController();
     }
     return this.groupConfigController;
+  }
+
+  protected getTypingIndicatorController() {
+    if (!this.typingIndicatorController) {
+      this.typingIndicatorController = new TypingIndicatorController();
+    }
+    return this.typingIndicatorController;
   }
 
   handleData = async (
@@ -207,11 +222,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .hasTeamAdmin(permission);
   }
 
-  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
-    return this.getGroupConfigController().hasMorePostInRemote(
-      groupId,
-      direction,
-    );
+  async hasMorePostInRemote(groupId: number) {
+    return this.getGroupConfigController().hasMorePostInRemote(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
@@ -369,6 +381,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .setAsTrue4HasMoreConfigByDirection(ids, direction);
   }
 
+  handleIncomingTyingEvent = (groupTyping: GroupTyping) => {
+    this.getTypingIndicatorController().handleIncomingTyingEvent(groupTyping);
+  }
+
   // update partial group data, for last accessed time
   async updateGroupLastAccessedTime(params: {
     id: number;
@@ -411,6 +427,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getSoundexById(id: number): string[] {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getSoundexById(id);
+  }
+
+  sendTypingEvent(groupId: number, isClear: boolean) {
+    return this.getTypingIndicatorController().sendTypingEvent(
+      groupId,
+      isClear,
+    );
   }
 }
 

@@ -12,7 +12,6 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
-  RTC_STATUS_CODE,
 } from '../types';
 import {
   kRTCAnonymous,
@@ -72,7 +71,6 @@ const mockProvisionData2 = {
 class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
   onReceiveIncomingCall = jest.fn();
-  onMadeOutgoingCall = jest.fn();
   onReceiveNewProvFlags = jest.fn();
 }
 
@@ -179,7 +177,10 @@ function setupAccount() {
   mockListener = new MockAccountListener();
   localStorage = new MockLocalStorage();
   RTCDaoManager.instance().setDaoDelegate(localStorage);
-  account = new RTCAccount(mockListener);
+  account = new RTCAccount(mockListener, {
+    endpointId: 'test',
+    userAgent: 'test',
+  });
   ua = new MockUserAgent();
   jest.spyOn(account._regManager._fsm, 'provisionReady');
   account._regManager._userAgent = ua;
@@ -187,13 +188,83 @@ function setupAccount() {
   account._onNewProv(mockProvisionData);
 }
 
+describe('Telephony HA', () => {
+  it('Should set postponeSwitchBackProxy to true when timer reached and receive switchBackProxy and has active call. [JPT-2306]', done => {
+    setupAccount();
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(true);
+      done();
+    });
+  });
+
+  it('Should reconnect to main proxy when timer reached and receive switchBackProxy and has no active call. [JPT-2307]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account._regManager.reRegister).toBeCalledWith(true);
+      done();
+    });
+  });
+
+  it('Should refresh SIP provision when receive provisionUpdate. [JPT-2308]', done => {
+    setupAccount();
+    jest.spyOn(account._provManager, 'refreshSipProv');
+    ua.mockSignal(UA_EVENT.PROVISION_UPDATE);
+    setImmediate(() => {
+      expect(account._provManager.refreshSipProv).toBeCalled();
+      done();
+    });
+  });
+
+  it('Should reconnect to main proxy when postponeSwitchBackProxy is true and active call end. [JPT-2309]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    const listener = new MockCallListener();
+    const call = account.makeCall('123', listener);
+    ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(true);
+      call.hangup();
+      setImmediate(() => {
+        expect(account.callCount()).toBe(0);
+        expect(account._regManager.reRegister).toBeCalledWith(true);
+        done();
+      });
+    });
+  });
+
+  it('Should do nothing when postponeSwitchBackProxy is false and active call end. [JPT-2310]', done => {
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    const listener = new MockCallListener();
+    const call = account.makeCall('123', listener);
+    setImmediate(() => {
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeSwitchBackProxy).toBe(false);
+      call.hangup();
+      setImmediate(() => {
+        expect(account.callCount()).toBe(0);
+        expect(account._regManager.reRegister).not.toBeCalledWith(true);
+        expect(account._postponeSwitchBackProxy).toBe(false);
+        done();
+      });
+    });
+  });
+});
+
 describe('RTCAccount', () => {
   it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
-      expect(account._regManager._regFailedFirstTime).toBe(true);
+      expect(account._regManager._failedTimes).toBe(0);
       expect(account._state).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
         RTC_ACCOUNT_STATE.REGISTERED,
@@ -254,9 +325,8 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       const ret2 = account.makeCall('234', listener);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
-        expect(ret1).toBe(RTC_STATUS_CODE.OK);
-        expect(ret2).toBe(RTC_STATUS_CODE.MAX_CALLS_REACHED);
+        expect(ret1).not.toBe(null);
+        expect(ret2).toBe(null);
         done();
       });
     });
@@ -265,10 +335,10 @@ describe('RTCAccount', () => {
   it('Should do nothing when receive incoming call and new call is not allowed. [JPT-809]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
+      expect(call).not.toBe(null);
       expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
       done();
     });
@@ -361,9 +431,9 @@ describe('RTCAccount', () => {
   it('Should call count set to 1 and return call when outbound call is allowed. [JPT-806]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
+      expect(call).not.toBe(null);
       expect(account.callCount()).toBe(1);
       done();
     });
@@ -460,8 +530,10 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(ua.unregister).toBeCalled();
-      done();
+      setImmediate(() => {
+        expect(ua.unregister).toBeCalled();
+        done();
+      });
     });
   });
 
@@ -516,13 +588,11 @@ describe('RTCAccount', () => {
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
+    const call = account.makeCall('123', listener);
     const session = new MockSession();
     const res = new MockResponse();
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalled();
-      expect(account.callList().length).toBe(1);
-      const call = account.callList()[0];
+      expect(call).not.toBe(null);
       call.onAccountReady();
       call.setCallSession(session);
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED, res);
@@ -706,7 +776,7 @@ describe('RTCAccount', () => {
     const ret = account.makeCall('123', callListener);
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.IDLE);
-      expect(ret).toBe(RTC_STATUS_CODE.OK);
+      expect(ret).not.toBe(null);
       expect(account.callCount()).toBe(1);
       setImmediate(() => {
         expect(account.callList()[0]._fsm.state()).toBe('pending');
@@ -720,9 +790,9 @@ describe('RTCAccount', () => {
       setupAccount();
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
-      account.makeAnonymousCall('123', listener);
+      const call = account.makeAnonymousCall('123', listener);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalled();
+        expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
         setImmediate(() => {
           expect(account.createOutgoingCallSession).toHaveBeenCalledWith(
@@ -731,7 +801,7 @@ describe('RTCAccount', () => {
               fromNumber: kRTCAnonymous,
             },
           );
-          expect(account.callList()[0].isAnonymous()).toBe(true);
+          expect(call.isAnonymous()).toBe(true);
           done();
         });
       });
@@ -742,9 +812,9 @@ describe('RTCAccount', () => {
       const listener = new MockCallListener();
       jest.spyOn(account, 'createOutgoingCallSession');
       const options: RTCCallOptions = { fromNumber: '234' };
-      account.makeAnonymousCall('123', listener, options);
+      const call = account.makeAnonymousCall('123', listener, options);
       setImmediate(() => {
-        expect(mockListener.onMadeOutgoingCall).toBeCalled();
+        expect(call).not.toBe(null);
         account._callManager.notifyAccountReady();
         setImmediate(() => {
           expect(account.createOutgoingCallSession).toHaveBeenCalledWith(

@@ -273,6 +273,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             </ButtonListItemText>
             <JuiIconButton
               variant="plain"
+              data-test-automation-id="archiveTeamToolTipButton"
               tooltipTitle={t('people.team.archiveTeamToolTip')}
             >
               info
@@ -292,6 +293,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             </ButtonListItemText>
             <JuiIconButton
               variant="plain"
+              data-test-automation-id="deleteTeamToolTipButton"
               tooltipTitle={t('people.team.deleteTeamToolTip')}
             >
               info
@@ -318,6 +320,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         onOK={this.handleOk}
         okText={toTitleCase(t('common.dialog.save'))}
         cancelText={toTitleCase(t('common.dialog.cancel'))}
+        modalProps={{ 'data-test-automation-id': 'team-setting-dialog' }}
       >
         {isAdmin ? this.renderEditSection() : null}
         {isAdmin ? this.renderMemberPermissionSettings() : null}

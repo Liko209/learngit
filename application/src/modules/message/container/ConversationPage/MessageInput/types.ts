@@ -11,11 +11,13 @@ type MessageInputProps = {
   id: number; // group id
   onPost?: () => void;
   viewRef: React.RefObject<any>;
+  onUpArrowPressed: () => void;
 };
 
 type MessageInputViewProps = {
   draft: string;
   error: string;
+  hasInput: boolean;
   forceSaveDraft(): void;
   forceSendPost(): void;
   addOnPostCallback(callback: OnPostCallback): void;

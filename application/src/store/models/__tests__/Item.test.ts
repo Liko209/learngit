@@ -47,12 +47,12 @@ describe('ItemModel', () => {
       const itemModel = ItemModel.fromJS({
         versions: [{}],
       } as any);
-      expect(itemModel.newestCreatorId).toBeNull();
+      expect(itemModel.newestCreatorId).toEqual(0);
     });
 
     it('should return null if versions not exist', () => {
       const itemModel = ItemModel.fromJS({} as any);
-      expect(itemModel.newestCreatorId).toBeNull();
+      expect(itemModel.newestCreatorId).toEqual(0);
     });
   });
 });

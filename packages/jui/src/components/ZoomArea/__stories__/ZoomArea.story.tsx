@@ -9,7 +9,6 @@ import { boolean, number } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 
 import styled from '../../../foundation/styled-components';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { Transform } from '../types';
 import { JuiWithZoomProps, JuiZoomArea, JuiZoomComponent } from '../ZoomArea';
 
@@ -104,7 +103,6 @@ class DemoWithZoomComponent extends React.Component<any, any> {
 }
 
 storiesOf('Components/ZoomArea', module)
-  .addDecorator(withInfoDecorator(JuiZoomComponent, { inline: true }))
   .add('ZoomComponent', () => (
     <div>
       <DemoWithZoomComponent />

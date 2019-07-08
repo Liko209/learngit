@@ -13,27 +13,42 @@ import { Mention } from '@/modules/message/container/ConversationPage/MessageInp
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
 import { handleAtMention } from 'jui/pattern/MessageInput/Mention/handleAtMention';
+import { container } from 'framework';
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { MessageService } from '@/modules/message/service';
+import { reaction, IReactionDisposer } from 'mobx';
 
 type State = {
   modules: object;
 };
-
+type Props = EditMessageInputViewProps & WithTranslation;
 @observer
-class EditMessageInputViewComponent extends Component<
-  EditMessageInputViewProps & WithTranslation,
-  State
-> {
+class EditMessageInputViewComponent extends Component<Props, State> {
   private _messageInputRef: React.RefObject<
     JuiMessageInput
   > = React.createRef();
   private _mentionRef: React.RefObject<any> = React.createRef();
-
+  private _messageService = container.get<MessageService>(MESSAGE_SERVICE);
+  private _disposer: IReactionDisposer;
   state = {
     modules: {},
   };
+  constructor(props: Props) {
+    super(props);
+    this._disposer = reaction(
+      () => this._messageService.getCurrentInputFocus() === this.props.id,
+      (shouldFocus: boolean) => {
+        shouldFocus && this.focusEditor();
+      },
+    );
+  }
 
   componentDidMount() {
     this.updateModules();
+  }
+  componentWillUnmount() {
+    this._messageService.blurEditInputFocus();
+    this._disposer();
   }
 
   updateModules() {
@@ -56,6 +71,10 @@ class EditMessageInputViewComponent extends Component<
     }
   }
 
+  blurHandler = () => {
+    this._messageService.blurEditInputFocus();
+  }
+
   render() {
     const { draft, text, error, gid, t, id, saveDraft } = this.props;
     const { modules } = this.state;
@@ -68,6 +87,7 @@ class EditMessageInputViewComponent extends Component<
         autofocus={false}
         isEditMode={true}
         onChange={saveDraft}
+        onBlur={this.blurHandler}
         placeholder={t('message.action.typeNewMessage')}
       >
         <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />

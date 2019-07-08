@@ -17,11 +17,10 @@ import {
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
   JuiDialogHeaderSubtitle,
+  JuiDialogHeaderTitleMainTitle,
 } from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-// import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
-// import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { DialogContext } from '@/containers/Dialog';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
@@ -33,6 +32,7 @@ import { dateFormatter } from '@/utils/date';
 import ViewerContext from '../ViewerContext';
 import { Download } from '@/containers/common/Download';
 import ReactResizeDetector from 'react-resize-detector';
+import { FileActionMenu } from '@/containers/common/fileAction';
 
 @observer
 class ViewerTitleViewComponent extends Component<
@@ -52,10 +52,30 @@ class ViewerTitleViewComponent extends Component<
     this.setState({ smallWindow: width < 640 });
   }
 
+  createAsyncOperationDecorator = (setLoading: Function) => (
+    op: () => Promise<any>,
+  ) => {
+    return async () => {
+      setLoading(true);
+      try {
+        return await op();
+      } finally {
+        setLoading(false);
+      }
+    };
+  }
+
   render() {
-    const { item, total, currentIndex, person, t } = this.props;
-    const { name, downloadUrl, createdAt } = item;
-    const { userDisplayName, id } = person;
+    const {
+      item,
+      total,
+      currentIndex,
+      sender,
+      createdAt,
+      t,
+      groupId,
+    } = this.props;
+    const { name, downloadUrl } = item;
     return (
       <ViewerContext.Consumer>
         {viewerContext => (
@@ -73,25 +93,31 @@ class ViewerTitleViewComponent extends Component<
                   onResize={this.handleHeaderResize}
                 />
                 <JuiDialogHeaderMeta>
-                  <JuiDialogHeaderMetaLeft>
-                    <Avatar
-                      uid={id}
-                      data-test-automation-id={'previewerSenderAvatar'}
-                    />
-                  </JuiDialogHeaderMetaLeft>
-                  <JuiDialogHeaderMetaRight
-                    title={userDisplayName}
-                    data-test-automation-id={'previewerSenderInfo'}
-                    subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                      moment(createdAt),
-                    )}
-                  />
+                  {sender && createdAt && (
+                    <>
+                      <JuiDialogHeaderMetaLeft>
+                        <Avatar
+                          uid={sender.id}
+                          data-test-automation-id={'previewerSenderAvatar'}
+                        />
+                      </JuiDialogHeaderMetaLeft>
+                      <JuiDialogHeaderMetaRight
+                        title={sender.userDisplayName}
+                        data-test-automation-id={'previewerSenderInfo'}
+                        subtitle={dateFormatter.dateAndTimeWithoutWeekday(
+                          moment(createdAt),
+                        )}
+                      />
+                    </>
+                  )}
                 </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle
                   variant="responsive"
                   data-test-automation-id={'previewerTitle'}
                 >
-                  <span>{name}</span>
+                  <JuiDialogHeaderTitleMainTitle>
+                    {name}
+                  </JuiDialogHeaderTitleMainTitle>
                   <JuiDialogHeaderSubtitle>
                     {' '}
                     {total > -1 && currentIndex > -1
@@ -100,29 +126,22 @@ class ViewerTitleViewComponent extends Component<
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
-                  <JuiButtonBar overlapSize={2.5}>
+                  <JuiButtonBar overlapSize={2}>
                     <Download url={downloadUrl} variant="round" />
-                    {/* <JuiPopoverMenu
-                      Anchor={() => (
-                        <JuiIconButton tooltipTitle={t('common.more')}>
-                          more_horiz
-                        </JuiIconButton>
-                      )}
-                      anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
+                    <FileActionMenu
+                      variant="round"
+                      groupId={groupId}
+                      showViewInPostAction={true}
+                      fileId={item.id}
+                      asyncOperationDecorator={
+                        this.createAsyncOperationDecorator(
+                          viewerContext.setLoading,
+                        ) as FunctionDecorator
+                      }
+                      beforeDelete={() => {
+                        viewerContext.setDeleteItem(true);
                       }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                      }}
-                    >
-                      <JuiMenuList>
-                        {this.state.smallWindow ? (
-                          <JuiMenuItem>{t('common.download')}</JuiMenuItem>
-                        ) : null}
-                      </JuiMenuList>
-                    </JuiPopoverMenu> */}
+                    />
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
                       aria-label={t('common.dialog.close')}

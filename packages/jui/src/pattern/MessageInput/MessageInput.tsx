@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
-import ReactQuill from 'react-quill';
-import { Delta } from 'quill';
+import ReactQuill, { Quill } from 'react-quill';
+import { Delta, Sources, RangeStatic } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
   spacing,
@@ -14,6 +14,8 @@ import {
 import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
+
+Quill.debug(false);
 
 const MessageInputDropZoneClasses: CSSProperties = {
   display: 'flex',
@@ -93,16 +95,21 @@ const StyledError = styled.div`
 `;
 
 const formats = ['mention'];
-
+type eventHandler = (
+  range: RangeStatic,
+  source: Sources,
+) => void;
 type Props = {
   value?: string | Delta;
   defaultValue?: string;
   onChange?: (newValue: string) => void;
-  onBlur?: Function;
+  onFocus?: eventHandler;
+  onBlur?: eventHandler;
   error: string;
   children: React.ReactNode;
   modules: object;
   toolbarNode?: React.ReactNode;
+  footerNode?: React.ReactNode;
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
   didDropFile?: (file: File[]) => void;
@@ -199,6 +206,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
     const {
       value,
       toolbarNode,
+      footerNode,
       attachmentsNode,
       defaultValue,
       error,
@@ -206,6 +214,8 @@ class JuiMessageInput extends React.PureComponent<Props> {
       modules,
       isEditMode,
       placeholder,
+      onBlur,
+      onFocus,
     } = this.props;
     const reactQuillValueProp = defaultValue
       ? {
@@ -235,10 +245,13 @@ class JuiMessageInput extends React.PureComponent<Props> {
           formats={formats}
           readOnly={initialReadOnly}
           ref={this._inputRef}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {footerNode}
         {attachmentsNode}
       </Wrapper>
     );

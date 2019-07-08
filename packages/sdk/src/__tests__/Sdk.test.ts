@@ -6,7 +6,7 @@
 /// <reference path="./types.d.ts" />
 import { Foundation, NetworkManager, mainLogger } from 'foundation';
 import Sdk from '../Sdk';
-import { Api, HandleByRingCentral } from '../api';
+import { Api, HandleByRingCentral, HandleByGlip } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import notificationCenter from '../service/notificationCenter';
@@ -20,9 +20,6 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
-
-// Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
 jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');
@@ -51,6 +48,7 @@ describe('Sdk', () => {
     accountManager = new AccountManager(null);
     serviceManager = new ServiceManager(null);
     networkManager = new NetworkManager();
+    jest.spyOn(networkManager, 'clearToken');
     syncService = new SyncService();
     sdk = new Sdk(
       daoManager,
@@ -79,6 +77,7 @@ describe('Sdk', () => {
   describe('onStartLogin()', () => {
     it('should init all module', async () => {
       sdk['_sdkConfig'] = { api: {}, db: {} };
+      jest.spyOn(Foundation, 'init');
       await sdk.onStartLogin();
       expect(Foundation.init).toBeCalled();
       expect(Api.init).toBeCalled();
@@ -87,6 +86,7 @@ describe('Sdk', () => {
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
         mockAccountService,
       );
+      expect(HandleByGlip.platformHandleDelegate).toEqual(mockAccountService);
     });
   });
 

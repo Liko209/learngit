@@ -17,3 +17,6 @@ export * from './DialpadBtn';
 export * from './constants';
 export * from './DialPad';
 export * from './CustomReply';
+export * from './RecentCalls';
+export * from './RecentCallBtn';
+export * from './EmptyPage';

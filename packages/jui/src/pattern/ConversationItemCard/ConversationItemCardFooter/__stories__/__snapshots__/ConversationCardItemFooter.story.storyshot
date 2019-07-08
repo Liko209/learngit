@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardFooter EventCollapse: Pattern/ConversationItemCard/ConversationItemCardFooter EventCollapse 1`] = `
+.c0 {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #0684bd;
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+<div
+  className="c0"
+  onClick={[Function]}
+>
+  show text
+</div>
+`;

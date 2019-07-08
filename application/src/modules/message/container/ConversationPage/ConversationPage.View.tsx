@@ -30,7 +30,20 @@ import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 import { withRouter } from 'react-router';
 import { goToConversation } from '@/common/goToConversation';
-
+import findLastIndex from 'lodash/findLastIndex';
+import { ENTITY_NAME } from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getEntity, getGlobalValue } from '@/store/utils';
+import PostModel from '../../../../store/models/Post';
+import { Post } from 'sdk/module/post/entity/Post';
+import { StreamItem } from './Stream/types';
+import storeManager from '@/store/base/StoreManager';
+import { jumpToPost } from '@/common/jumpToPost';
+import { StreamItemType } from '@/modules/message/container/ConversationPage/Stream/types';
+import { container } from 'framework';
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { MessageService } from '@/modules/message/service';
+import { isEditable } from '../ConversationCard/utils/index';
 const STREAM = 'stream';
 const INPUT = 'input';
 
@@ -91,6 +104,35 @@ class ConversationPageViewComponent extends Component<
     this._folderDetectMap[INPUT] = true;
   }
 
+  private _editLastPost = () => {
+    const stream = this._streamRef.current;
+    if (!stream) {
+      return;
+    }
+    const { items } = stream.props;
+    const uid = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+    const lastPostIndex = findLastIndex(items, (item: StreamItem) => {
+      const { value: id, type } = item;
+      if (!id || type !== StreamItemType.POST) {
+        return false;
+      }
+      const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
+      const { creatorId, text } = post;
+      return !!(creatorId === uid && text.trim() && isEditable(post));
+    });
+    if (~lastPostIndex) {
+      const postId = items[lastPostIndex].value as number;
+      const editPostIds = getGlobalValue(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS);
+      jumpToPost({ id: postId, groupId: this.props.groupId });
+      storeManager
+        .getGlobalStore()
+        .set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...editPostIds, postId]);
+      const service: MessageService = container.get(MESSAGE_SERVICE);
+      service.setEditInputFocus(postId);
+    }
+  }
+
   private get messageInput() {
     const { t, groupId, canPost, loadingStatus } = this.props;
 
@@ -118,6 +160,7 @@ class ConversationPageViewComponent extends Component<
           viewRef={this._messageInputRef}
           id={groupId}
           onPost={this.sendHandler}
+          onUpArrowPressed={this._editLastPost}
         />
       </JuiDropZone>
     );

@@ -216,7 +216,7 @@ storiesOf('Pattern/ConversationItemCard', module)
       >
         <JuiSectionDivider gap={2}>
           <JuiLabelWithContent label={'new event'}>
-            <JuiTimeMessage time={`${new Date().toLocaleDateString()}`} />
+            <JuiTimeMessage time={'10/10/2018'} />
           </JuiLabelWithContent>
           <JuiLabelWithContent label={'hahaha'}>
             <JuiEventLocation>no local</JuiEventLocation>
@@ -245,7 +245,7 @@ storiesOf('Pattern/ConversationItemCard', module)
           {hasEndTime && (
             <>
               <JuiLabelWithContent label={'due'}>
-                <JuiTimeMessage time={`${new Date().toLocaleDateString()} `} />
+                <JuiTimeMessage time={'6/26/2019 '} />
               </JuiLabelWithContent>
             </>
           )}
@@ -276,7 +276,7 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiLabelWithContent label={'files'}>
               <JuiFileWrapper>
                 <JuiExpandImage
-                  Actions={(() => ({})) as any}
+                  Actions={<div />}
                   previewUrl=""
                   icon={'doc'}
                   fileName={'filename'}

@@ -10,8 +10,6 @@ type MemberListProps = {
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
-  width: number;
-  height: number;
   searchInput: string;
   setShowEmpty: (flag: boolean) => void;
 };

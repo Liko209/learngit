@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { ClientFunction } from 'testcafe';
 import { H } from '../../../helpers';
+import * as assert from 'assert';
 
 
 export class TelephonyDialog extends BaseWebComponent {
@@ -39,6 +40,22 @@ export class TelephonyDialog extends BaseWebComponent {
 
   get hangupButton() {
     return this.getSelectorByAutomationId('telephony-end-btn');
+  }
+
+  get recentCallButton() {
+    return this.getSelectorByAutomationId('recentCallBtn');
+  }
+
+  get backToDialpadButton() {
+    return this.getSelectorByAutomationId('telephony-dialpad-btn', this.self);
+  }
+
+  get callLogList() {
+    return this.getSelectorByAutomationId('virtualized-list');
+  }
+
+  get callLogItem() {
+    return this.getSelectorByAutomationId('virtualized-list').find('div').nth(1).find('div');
   }
 
   async clickHangupButton() {
@@ -190,6 +207,13 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.buttonOfIcon('deletenumber');
   }
 
+  //contact search
+
+  get contactSearchAvatar()
+  {
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-avatar');
+  }
+
   // park
   get parkActionMenuItem() {
     return this.getSelectorByAutomationId('telephony-park-menu-item');
@@ -296,6 +320,60 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.hover(this.minimizeButton);
   }
 
+  async hoverRecentCallButton() {
+    await this.t.hover(this.recentCallButton);
+  }
+
+  async clickRecentCallButton() {
+    await this.t.click(this.recentCallButton);
+  }
+
+  async hoverBackToDialpadButton() {
+    await this.t.hover(this.backToDialpadButton);
+  }
+
+  async clickCallLogItem(n: number) {
+    await this.t.click(this.callLogItem.nth(n));
+  }
+
+  async scrollToY(y: number) {
+    const scrollDivElement = this.callLogList;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.callLogList.scrollTop).eql(y);
+  }
+
+  async scrollToBottom(retryTime = 3) { // retry until scroll bar at the end
+    let initHeight = 0;
+    for (const i of _.range(retryTime)) {
+      const scrollHeight = await this.callLogList.scrollHeight;
+      if (initHeight == scrollHeight) {
+        break
+      }
+      initHeight = scrollHeight;
+      const clientHeight = await this.callLogList.clientHeight;
+      await this.scrollToY(scrollHeight - clientHeight);
+    }
+  }
+
+  async expectStreamScrollToBottom() {
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.callLogList.scrollTop;
+      const scrollHeight = await this.callLogList.scrollHeight;
+      const clientHeight = await this.callLogList.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    });
+  }
+
+  async selectItemByKeyboard() {
+    await this.t.click(this.callLogList).pressKey('down');
+  }
+
   async hoverDeleteButton() {
     await this.t.hover(this.deleteButton);
   }
@@ -333,6 +411,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickReplyWithWillCallBackEntryButton() {
+    await this.t.hover(this.replyWithWillCallBackEntry);
     await this.t.click(this.replyWithWillCallBackEntry);
   }
 
@@ -413,11 +492,11 @@ class CallerIdList extends BaseWebComponent {
   }
 
   get callerIds() {
-    return this.self.find('li').filter('[data-value]');
+    return this.self.find('li');
   }
 
   async selectByValue(value: string) {
-    await this.t.click(this.callerIds.filter(`[data-value="${value}"]`));
+    await this.t.click(this.callerIds.filter(`[value="${value}"]`));
   }
 
   async selectNth(n: number) {
@@ -434,21 +513,53 @@ class CallerIdList extends BaseWebComponent {
   }
 }
 
-class ContactSearchList extends BaseWebComponent {
+export class ContactSearchList extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('telephony-contact-search-list');
   }
 
+    /* scroll */
+  get scrollDiv() {
+      return this.getSelectorByAutomationId('virtualized-list', this.self);
+  }
+
+  async scrollToY(y: number) {
+    const scrollDivElement = this.scrollDiv;
+    await ClientFunction((_y) => {
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
+  }
+
+  async scrollToMiddle() {
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      const middleHeight = (scrollHeight - clientHeight) / 2;
+      await this.scrollToY(middleHeight);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.scrollDiv.scrollTop).eql(y);
+  }
+
   get searchResults() {
-    return this.self.find('li').filter('[data-test-automation-id="telephony-contact-search-list_item"]');
+    return this.getSelectorByAutomationId("telephony-contact-search-list_item", this.self);
   }
 
   async selectNth(n: number) {
-    await this.t.click(this.searchResults.nth(n))
+    await this.t.click(this.searchResults.nth(n));
   }
 
-  get hasDirectDial(){
-    return !!(this.searchResults[0] && this.searchResults[0].find('div:nth-child(2)>button').exists);
+  get directDialIcon(){
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0));
+  }
+
+  get hasDirectDialIcon(){
+    return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
+  }
+
+  get hasDirectDial() {
+    return !!(this.searchResults[0] && this.searchResults.nth(0).find('div:nth-child(2)>button').exists);
   }
 }
 
@@ -472,6 +583,10 @@ export class TelephonyMinimizeWindow extends BaseWebComponent {
 
   get unMuteButton() {
     return this.buttonOfIcon('mic_off');
+  }
+
+  async hoverUnMuteButton() {
+    await this.t.hover(this.unMuteButton);
   }
 
   async clickUnMuteButton() {

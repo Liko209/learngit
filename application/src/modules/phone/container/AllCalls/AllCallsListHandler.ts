@@ -3,33 +3,37 @@
  * @Date: 2019-05-30 16:35:54
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { SortUtils } from 'sdk/framework/utils';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
+import { ENTITY } from 'sdk/service/eventKey';
+import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
 import {
   FetchSortableDataListHandler,
   ISortableModel,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { SortUtils } from 'sdk/framework/utils';
-import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
+import { CallLogType, FetchAllCallsData, CallLogFilterFunc } from './types';
 
-import { AllCallsDataProvider } from './AllCallsDataProvider';
-import { ENTITY } from 'sdk/service/eventKey';
-import { CallLogType } from './types';
-import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
+const getDefaultMatchFunc = (type: CallLogType) => (model: CallLog) => {
+  const isMissedCall =
+    model.result === CALL_RESULT.MISSED ||
+    model.result === CALL_RESULT.VOICEMAIL;
+
+  return !!(
+    model &&
+    !model.__deactivated &&
+    (type === CallLogType.MissedCall ? isMissedCall : true)
+  );
+};
 
 class AllCallsListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<CallLog, string>;
-  constructor(type: CallLogType) {
-    const isMatchFunc = (model: CallLog) => {
-      const isMissedCall =
-        model.result === CALL_RESULT.MISSED ||
-        model.result === CALL_RESULT.VOICEMAIL;
-      return !!(
-        model &&
-        !model.__deactivated &&
-        (type === CallLogType.MissedCall ? isMissedCall : true)
-      );
-    };
+  constructor(
+    type: CallLogType,
+    fetchData: FetchAllCallsData,
+    filterFunc: CallLogFilterFunc,
+  ) {
+    const isMatchFunc = filterFunc || getDefaultMatchFunc(type);
 
     const transformFunc = (model: CallLog): ISortableModel<string> => {
       return {
@@ -50,10 +54,8 @@ class AllCallsListHandler {
       );
     };
 
-    const dataProvider = new AllCallsDataProvider(type);
-
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
-      dataProvider,
+      { fetchData },
       {
         isMatchFunc,
         transformFunc,

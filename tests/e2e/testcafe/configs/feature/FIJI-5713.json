@@ -1,0 +1,10 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/MessageInput/EditLastPost.ts"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}

@@ -6,6 +6,7 @@
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SliderSettingItem } from '@/interface/setting';
+import { debounceTrackData } from '../utils/dataTrackingForSetting';
 import { SliderSettingItemProps } from './types';
 
 class SliderSettingItemViewModel extends BaseSettingItemViewModel<
@@ -13,9 +14,17 @@ class SliderSettingItemViewModel extends BaseSettingItemViewModel<
   SliderSettingItem
 > {
   @action
-  saveSetting = (newValue: number) => {
+  saveSetting = async (newValue: number) => {
     const { valueSetter } = this.settingItemEntity;
-    return valueSetter && valueSetter(newValue);
+    const { beforeSaving, dataTracking } = this.settingItem;
+    if (beforeSaving) {
+      const beforeSavingReturn = await beforeSaving(newValue);
+      if (beforeSavingReturn === false) {
+        return;
+      }
+    }
+    valueSetter && valueSetter(newValue);
+    dataTracking && debounceTrackData(dataTracking, newValue);
   }
 }
 

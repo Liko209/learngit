@@ -9,6 +9,7 @@ import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
 import {
   RTC_CALL_ACTION,
+  RTC_CALL_ACTION_ERROR_CODE,
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
@@ -25,10 +26,10 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
 import { CallReport } from '../report/Call';
 import { CALL_REPORT_PROPS } from '../report/types';
+import { kRTCGetStatsInterval } from '../account/constants';
+import { RTCMediaStatsManager } from './RTCMediaStatsManager';
 
-const {
-  MediaStreams,
-} = require('ringcentral-web-phone/src/ringcentral-web-phone-media-engine');
+const MediaStreams = require('ringcentral-web-phone/src/mediaStreams');
 
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
@@ -36,7 +37,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _inviteResponse: any = null;
   private _uuid: string = '';
   private _mediaElement: RTCMediaElement | null;
-  private _mediaDeviceManager: RTCMediaDeviceManager;
+  private _mediaStatsManager: RTCMediaStatsManager;
 
   private _onInputDeviceChanged = (deviceId: string) => {
     this._setAudioInputDevice(deviceId);
@@ -51,7 +52,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
       this._uuid,
     );
-    this._mediaDeviceManager = RTCMediaDeviceManager.instance();
+    this._mediaStatsManager = new RTCMediaStatsManager();
   }
   destroy() {
     if (!this._session) {
@@ -63,12 +64,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       this._session.sessionDescriptionHandler.removeAllListeners();
     }
 
-    this._mediaDeviceManager.off(
+    RTCMediaDeviceManager.instance().off(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
       this._onInputDeviceChanged,
     );
 
-    this._mediaDeviceManager.off(
+    RTCMediaDeviceManager.instance().off(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
       this._onOutputDeviceChanged,
     );
@@ -120,11 +121,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
-    this._mediaDeviceManager.on(
+    RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
       this._onInputDeviceChanged,
     );
-    this._mediaDeviceManager.on(
+    RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
       this._onOutputDeviceChanged,
     );
@@ -132,11 +133,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   private _initAudioDeviceChannel() {
-    const inputDeviceId = this._mediaDeviceManager.getCurrentAudioInput();
+    const inputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioInput();
     if (inputDeviceId !== '') {
       this._setAudioInputDevice(inputDeviceId);
     }
-    const outputDeviceId = this._mediaDeviceManager.getCurrentAudioOutput();
+    const outputDeviceId = RTCMediaDeviceManager.instance().getCurrentAudioOutput();
     if (outputDeviceId !== '') {
       this._setAudioOutputDevice(outputDeviceId);
     }
@@ -232,7 +233,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
 
     if (local_stream && remote_stream) {
-      this._session.mediaStreams = new MediaStreams(this._session);
+      this._session.mediaStreams = new MediaStreams.default(this._session);
+      this.getMediaStats((report: any, session: any) => {
+        this._mediaStatsManager.setMediaStatsReport(report);
+      },                 kRTCGetStatsInterval * 1000);
     }
   }
 
@@ -338,10 +342,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.START_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code =
+          data && data.code ? data.code : RTC_CALL_ACTION_ERROR_CODE.INVALID;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.START_RECORD,
+          code,
         );
       },
     );
@@ -355,10 +362,13 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           RTC_CALL_ACTION.STOP_RECORD,
         );
       },
-      () => {
+      (data: any) => {
+        const code =
+          data && data.code ? data.code : RTC_CALL_ACTION_ERROR_CODE.INVALID;
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.STOP_RECORD,
+          code,
         );
       },
     );
@@ -529,6 +539,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         timerInterval = 1000;
       }
       this._session.mediaStreams.getMediaStats(callback, timerInterval);
+    } else {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Failed to set media stats callback. Session or Media Stream is null',
+      );
     }
   }
 
@@ -588,7 +603,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     /** Add new audio input stream & re-init sip session */
     pc.addStream(stream);
-    this._session.sessionDescriptionHandler.getDescription();
+    try {
+      this._session.sessionDescriptionHandler.getDescription();
+    } catch (e) {
+      rtcLogger.warn(
+        LOG_TAG,
+        `Failed to get peer connection description: ${e.message}`,
+      );
+    }
   }
 
   private _setAudioOutputDevice(deviceID: string) {

@@ -25,6 +25,7 @@ type ContactSearchProps = {
   multiple?: boolean;
   autoSwitchEmail?: boolean;
   maxLength?: number;
+  autoFocus?: boolean;
 };
 
 type ViewProps = ContactSearchProps & {

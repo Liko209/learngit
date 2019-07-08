@@ -34,7 +34,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import StoreViewModel from '@/store/ViewModel';
-import { isExpectedItemOfThisGroup } from './Utils';
+import { isExpectedItemOfThisGroup, getNextItemToDisplay } from './Utils';
 
 const PAGE_SIZE = 20;
 
@@ -46,7 +46,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   @observable
   currentItemId: number;
   private _itemListDataSource: ItemListDataSource | ItemListDataSourceByPost;
-  private _onCurrentItemDeletedCb: () => void;
+  private _onCurrentItemDeletedCb: (nextItemId: number) => void;
   private _onItemSwitchCb: (
     itemId: number,
     index: number,
@@ -55,6 +55,10 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @observable
   total: number = -1;
+
+  historyIds: number[] | null = null;
+
+  toBeDeletedItem: Set<number> = new Set();
 
   private _preloadController: PreloadController;
 
@@ -115,6 +119,15 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         }
       },
     );
+
+    this.reaction(
+      () => this.ids,
+      ids => {
+        if (this.historyIds === null || this.historyIds.length === 0) {
+          this.historyIds = ids;
+        }
+      },
+    );
   }
 
   @computed
@@ -126,17 +139,32 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   init = () => {
     const { itemId } = this.props;
     this._itemListDataSource.loadInitialData(itemId, PAGE_SIZE);
-    this._fetchIndexInfo();
+    this._updateIndexInfo();
   }
 
   doPreload = () => {
     if (this.ids) {
+      this._preloadController.setIsAllowed(false);
       this._preloadController.replacePreload(this.ids, this._getItemIndex());
     }
   }
 
   stopPreload = () => {
     this._preloadController.stop();
+  }
+
+  onContentLoad = () => {
+    this.enablePreload();
+  }
+
+  onContentError = () => {
+    this.enablePreload();
+  }
+
+  enablePreload = () => {
+    setTimeout(() => {
+      this._preloadController.setIsAllowed(true);
+    });
   }
 
   dispose() {
@@ -256,16 +284,17 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     return this.ids.findIndex((_id: number) => _id === this.currentItemId);
   }
 
-  private _fetchIndexInfo = async () => {
+  private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
     const info = await this._itemListDataSource.fetchIndexInfo(itemId);
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
-        this.currentIndex = info.index;
-        if (info.index < 0) {
+        const itemDeleted = info.index < 0;
+        if (itemDeleted) {
           const itemType = this._itemListDataSource.type;
           const groupId = this._itemListDataSource.groupId;
+
           mainLogger
             .tags('ImageViewer')
             .info(
@@ -273,8 +302,24 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
                 info.index
               }/${info.totalCount}`,
             );
-          this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+
+          const nextToDisplay = getNextItemToDisplay(
+            this.historyIds!,
+            this.ids,
+            this.currentItemId,
+            this.currentIndex,
+          );
+
+          this.updateCurrentItemIndex(
+            nextToDisplay.index,
+            nextToDisplay.itemId,
+          );
+          this._onCurrentItemDeletedCb &&
+            this._onCurrentItemDeletedCb(nextToDisplay.itemId);
+        } else {
+          this.currentIndex = info.index;
         }
+        this.historyIds = this.ids;
       }
     });
   }
@@ -311,7 +356,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       const detailPayload = payload as NotificationEntityUpdatePayload<
         FileItem
       >;
-      detailPayload.body.entities.forEach((entity, key) => {
+      detailPayload.body.entities.forEach(entity => {
         if (
           isExpectedItemOfThisGroup(
             groupId,
@@ -325,7 +370,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       });
     }
     if (needRefreshIndex) {
-      this._fetchIndexInfo();
+      this._updateIndexInfo();
     }
   }
 }

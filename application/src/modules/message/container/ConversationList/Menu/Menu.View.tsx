@@ -122,6 +122,7 @@ class MenuViewComponent extends Component<Props> {
       this._closeConversationWithoutConfirmDialog();
     } else {
       Dialog.alert({
+        modalProps: { 'data-test-automation-id': 'close-conversation-alert-dialog' },
         title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
           <>
@@ -130,6 +131,7 @@ class MenuViewComponent extends Component<Props> {
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
+              automationId="close-conversation-alert-dont-ask-again"
               checked={this.checked}
               handleChange={this._checkboxChange}
             />

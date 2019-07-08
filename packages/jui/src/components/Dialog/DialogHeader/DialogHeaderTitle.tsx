@@ -13,8 +13,10 @@ import {
   typography,
   ellipsis,
   palette,
+  spacing,
 } from '../../../foundation/utils/styles';
 import ReactResizeDetector from 'react-resize-detector';
+import { JuiText } from '../../Text';
 
 type JuiDialogHeaderTitleProps = MuiDialogTitleProps & {
   variant?: 'regular' | 'responsive';
@@ -45,6 +47,9 @@ class WrappedDialogTitle extends React.PureComponent<
         const childSpans = Array.from(h2.children).filter(
           (child: Element) => child.tagName === 'SPAN',
         );
+        childSpans.forEach((child: HTMLElement) => {
+          child.style.alignSelf = 'auto';
+        });
         const childrenWidth = childSpans.reduce(
           (a, b) => a + b.getBoundingClientRect().width,
           0,
@@ -116,9 +121,23 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
       display: flex;
       flex-direction: column;
       align-items: center;
-      * {
-        ${ellipsis()}
-      }
+      max-width: ${spacing(140)};
+      margin: 0 auto;
+    }
+  }
+`;
+
+const JuiDialogHeaderTitleMainTitle = styled(props => (
+  <JuiText component="span" {...props} />
+))`
+  && {
+    ${typography('subheading1')}
+    display: inline;
+    &::before {
+      content: none;
+    }
+    &::after {
+      content: none;
     }
   }
 `;
@@ -132,4 +151,5 @@ export {
   JuiDialogHeaderTitle,
   JuiDialogHeaderTitleProps,
   JuiDialogHeaderSubtitle,
+  JuiDialogHeaderTitleMainTitle,
 };

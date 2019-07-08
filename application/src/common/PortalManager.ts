@@ -12,12 +12,44 @@ type Portal = {
   props?: any;
 };
 
+enum PROFILE_PORTAL_STATUS {
+  IS_SHOW,
+  SHOULD_CLOSE,
+}
+
+type ProfilePortalStatus =
+  | PROFILE_PORTAL_STATUS.IS_SHOW
+  | PROFILE_PORTAL_STATUS.SHOULD_CLOSE;
+
 type Portals = Map<number | string, Portal>;
 
 const EventKey = 'portalsChange';
 
 class PortalManager extends EventEmitter2 {
   portals: Portals = new Map();
+  profilePortalStatus: Set<ProfilePortalStatus> = new Set();
+
+  addShowStatus() {
+    this.profilePortalStatus.add(PROFILE_PORTAL_STATUS.IS_SHOW);
+  }
+
+  addShouldCloseStatus() {
+    if (this.profilePortalIsShow) {
+      this.profilePortalStatus.add(PROFILE_PORTAL_STATUS.SHOULD_CLOSE);
+    }
+  }
+
+  clear() {
+    this.profilePortalStatus.clear();
+  }
+
+  get profilePortalIsShow() {
+    return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.IS_SHOW);
+  }
+
+  get profilePortalShouldClose() {
+    return this.profilePortalStatus.has(PROFILE_PORTAL_STATUS.SHOULD_CLOSE);
+  }
 
   register({ component, dismiss, props }: Portal) {
     this.portals.set(props.key, { component, dismiss, props });

@@ -9,7 +9,7 @@ type Options = {
   readyCallback: () => void;
   updateCallback: (settings: LDFlagSet) => void;
 };
-import { initialize, LDUser, LDFlagSet } from 'ldclient-js';
+import { initialize, LDUser, LDFlagSet } from 'launchdarkly-js-client-sdk';
 import UserPermissionType from '../../types';
 import { mainLogger } from 'foundation';
 

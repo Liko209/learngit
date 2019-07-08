@@ -1,0 +1,218 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody EventDescription: Pattern/ConversationItemCard/ConversationItemCardBody EventDescription 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #9e9e9e;
+}
+
+.c0 a {
+  color: #18a4de;
+}
+
+.c0 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+<div
+  className="c0"
+>
+  description
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody EventLocation: Pattern/ConversationItemCard/ConversationItemCardBody EventLocation 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c0 a {
+  color: #18a4de;
+}
+
+.c0 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+<div
+  className="c0"
+>
+  Location
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody JuiTaskSectionOrDescription: Pattern/ConversationItemCard/ConversationItemCardBody JuiTaskSectionOrDescription 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #9e9e9e;
+}
+
+.c0 a {
+  color: #18a4de;
+}
+
+.c0 a:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+<div
+  className="c0"
+>
+  note
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TaskAvatarName: Pattern/ConversationItemCard/ConversationItemCardBody TaskAvatarName 1`] = `
+.c2.c2 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  margin: 0px 16px 0px 0px;
+}
+
+.c1 span {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c3 {
+  margin-left: 4px;
+}
+
+<div
+  className="task-avatar-name c0"
+>
+  <div
+    className="c1"
+  >
+    <div
+      className="MuiAvatar-root c2"
+      size="small"
+    >
+      <img
+        className="MuiAvatar-img"
+        src="test-file-stub"
+      />
+    </div>
+     
+    <span
+      className="c3"
+      data-test-automation-id="avatar-name-name"
+    >
+      zigoErbi1
+    </span>
+  </div>
+  <div
+    className="c1"
+  >
+    <div
+      className="MuiAvatar-root c2"
+      size="small"
+    >
+      <img
+        className="MuiAvatar-img"
+        src="test-file-stub"
+      />
+    </div>
+     
+    <span
+      className="c3"
+      data-test-automation-id="avatar-name-name"
+    >
+      zigoErbi2
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationItemCard/ConversationItemCardBody TimeMessage: Pattern/ConversationItemCard/ConversationItemCardBody TimeMessage 1`] = `
+.c0 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+}
+
+<div
+  className="c0"
+>
+  today at 3:00 PM - 3:30 PM
+</div>
+`;

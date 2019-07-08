@@ -26,7 +26,7 @@ class ProfileService extends EntityBaseService<Profile>
   private profileController: ProfileController;
   private _profileSetting: ProfileSetting;
   constructor() {
-    super(true, daoManager.getDao(ProfileDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });
@@ -151,12 +151,6 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getSettingsActionController()
       .updateSettingOptions(options);
-  }
-
-  async getDefaultCaller() {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getDefaultCaller();
   }
 
   private get profileSetting() {

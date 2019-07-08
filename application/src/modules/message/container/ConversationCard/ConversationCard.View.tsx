@@ -30,11 +30,17 @@ import {
 
 import { i18nP } from '@/utils/i18nT';
 import { Translation } from 'react-i18next';
-
+import {
+  SearchHighlightContext,
+  HighlightContextInfo,
+} from '@/common/postParser';
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
+  static contextType = SearchHighlightContext;
+  context: HighlightContextInfo;
+
   private _editMessageInputRef: React.RefObject<
     EditMessageInputViewComponent
   > = React.createRef();
@@ -42,12 +48,6 @@ export class ConversationCard extends React.Component<
     isHover: false,
     isFocusMoreAction: false,
   };
-
-  componentDidUpdate(prevProps: ConversationCardViewProps) {
-    if (this.props.isEditMode && !prevProps.isEditMode) {
-      this._focusEditor();
-    }
-  }
 
   handleMouseOver = () => {
     this.setState({
@@ -95,13 +95,6 @@ export class ConversationCard extends React.Component<
     });
   }
 
-  private _focusEditor() {
-    setTimeout(() => {
-      if (this._editMessageInputRef.current) {
-        this._editMessageInputRef.current.focusEditor();
-      }
-    },         100);
-  }
   get _navigationProps(): {
     mode?: string;
     navigate?: () => void;
@@ -182,7 +175,9 @@ export class ConversationCard extends React.Component<
           )}
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
-          {!hideText && !isEditMode && <TextMessage id={id} />}
+          {!hideText && !isEditMode && (
+            <TextMessage id={id} keyword={this.context.keyword} />
+          )}
           {isEditMode && (
             <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
           )}

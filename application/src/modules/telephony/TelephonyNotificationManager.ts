@@ -12,11 +12,11 @@ import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 import {
   TELEPHONY_SERVICE,
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
 } from './interface/constant';
-import { CALL_STATE } from './FSM';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 import { UserSettingEntity } from 'sdk/module/setting';
@@ -50,21 +50,24 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
     this._disposer = reaction(
       () => ({
         callState: this._telephonyStore.callState,
+        isIncomingCall: this._telephonyStore.isIncomingCall,
         isContactMatched: this._telephonyStore.isContactMatched,
       }),
       ({
         callState,
+        isIncomingCall,
         isContactMatched,
       }: {
         callState: CALL_STATE;
+        isIncomingCall: boolean;
         isContactMatched: boolean;
       }) => {
-        if (callState === CALL_STATE.INCOMING && isContactMatched) {
+        if (isIncomingCall && isContactMatched) {
           this.shouldShowNotification && this._showNotification();
         } else {
           const shouldCloseNotification = [
             CALL_STATE.IDLE,
-            CALL_STATE.DIALING,
+            CALL_STATE.DISCONNECTED,
             CALL_STATE.CONNECTING,
             CALL_STATE.CONNECTED,
           ];
@@ -81,6 +84,9 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
 
   private async _showNotification() {
     const { phoneNumber, callId, displayName } = this._telephonyStore;
+    if (!callId) {
+      return;
+    }
     let { callerName } = this._telephonyStore;
     let formatNumber = phoneNumber;
     if (phoneNumber) {

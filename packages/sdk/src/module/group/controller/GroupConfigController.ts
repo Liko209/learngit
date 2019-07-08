@@ -13,11 +13,9 @@ class GroupConfigController {
    * If direction === QUERY_DIRECTION.OLDER, should check has more.
    * If direction === QUERY_DIRECTION.NEWER, return true
    */
-  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
+  async hasMorePostInRemote(groupId: number) {
     const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    return direction === QUERY_DIRECTION.OLDER
-      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
-      : true;
+    return await groupConfigDao.hasMoreRemotePost(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {

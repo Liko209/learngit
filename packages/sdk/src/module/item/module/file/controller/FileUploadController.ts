@@ -68,9 +68,9 @@ class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
-  private _uploadFileQueue = new SequenceProcessorHandler(
-    'FileUploadController - upload file',
-  );
+  private _uploadFileQueue = new SequenceProcessorHandler({
+    name: 'FileUploadController - upload file',
+  });
 
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
@@ -454,10 +454,12 @@ class FileUploadController {
       if (itemFile.id > 0) {
         versionNumber = itemFile.versions.length;
       } else {
-        const existItemFile = !itemFile.is_new && await this._getOldestExistFile(
-          itemFile.group_ids[0],
-          itemFile.name,
-        );
+        const existItemFile =
+          !itemFile.is_new &&
+          (await this._getOldestExistFile(
+            itemFile.group_ids[0],
+            itemFile.name,
+          ));
         versionNumber = existItemFile ? existItemFile.versions.length + 1 : 1;
       }
     }

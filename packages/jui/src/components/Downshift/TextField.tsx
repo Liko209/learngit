@@ -4,11 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
-import styled from '../../foundation/styled-components';
-import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
 import { isEmailByReg } from '../../foundation/utils';
+import { StyledTextField } from './styles';
 
 type SelectedItem = {
   label: string;
@@ -42,24 +40,10 @@ type JuiDownshiftTextFieldProps = {
   onInputChange: (value: string) => void;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftTextFieldKeyDownEvent) => void;
+  autoFocus?: boolean;
+  onComposition: (isComposition: boolean) => void;
+  openMenu: () => void;
 };
-
-const StyledTextField = styled<TextFieldProps>(JuiTextField)`
-  && {
-    .inputRoot {
-      flex-wrap: wrap;
-    }
-    .input {
-      flex: 1;
-    }
-    .downshift-label {
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-` as typeof MuiTextField;
 
 class JuiDownshiftTextField extends React.PureComponent<
   JuiDownshiftTextFieldProps,
@@ -69,6 +53,10 @@ class JuiDownshiftTextField extends React.PureComponent<
     showPlaceholder: true,
   };
   handleFocus = () => {
+    const { inputValue, openMenu } = this.props;
+    if (!!inputValue) {
+      openMenu();
+    }
     this.setState({
       showPlaceholder: false,
     });
@@ -92,6 +80,7 @@ class JuiDownshiftTextField extends React.PureComponent<
     const { value } = event.target;
 
     onInputChange(value);
+
     if (
       autoSwitchEmail &&
       isEmailByReg(value) &&
@@ -126,6 +115,19 @@ class JuiDownshiftTextField extends React.PureComponent<
 
     onKeyDown && onKeyDown(event);
   }
+
+  handleCompositionStart = () => {
+    this.props.onComposition(true);
+  }
+
+  handleCompositionEnd = () => {
+    this.props.onComposition(false);
+    const { inputValue, openMenu } = this.props;
+    if (!!inputValue) {
+      openMenu();
+    }
+  }
+
   handleDelete = (item: SelectedItem) => () => {
     const { onSelectChange, inputValue } = this.props;
     let { selectedItems } = this.props;
@@ -152,6 +154,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       selectedItems,
       maxLength,
       multiple,
+      autoFocus,
     } = this.props;
     const { showPlaceholder } = this.state;
     const placeholderText =
@@ -164,6 +167,7 @@ class JuiDownshiftTextField extends React.PureComponent<
         helperText={nameError ? helperText : ''}
         InputProps={{
           ...getInputProps({
+            autoFocus,
             startAdornment: selectedItems.map((item: SelectedItem) => {
               return InputItem ? (
                 <InputItem
@@ -191,6 +195,8 @@ class JuiDownshiftTextField extends React.PureComponent<
         }}
         inputProps={{
           maxLength,
+          onCompositionStart: this.handleCompositionStart,
+          onCompositionEnd: this.handleCompositionEnd,
         }}
         InputLabelProps={{
           classes: {

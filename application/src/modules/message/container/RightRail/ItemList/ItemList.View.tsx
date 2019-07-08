@@ -32,8 +32,8 @@ class ItemListComponent extends React.Component<ItemListViewProps> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
     loadMoreStrategy: new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG),
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 

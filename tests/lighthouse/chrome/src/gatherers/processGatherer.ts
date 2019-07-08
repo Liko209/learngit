@@ -20,7 +20,6 @@ class PerformanceMetric {
 
 class ProcessGatherer extends BaseGatherer {
   private intervalId;
-  private browser;
   private metrics: Array<PerformanceMetric> = new Array();
 
   async _beforePass(passContext) {

@@ -9,7 +9,7 @@ import { container } from 'framework';
 import { computed } from 'mobx';
 import { DialerProps, DialerViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { CALL_STATE } from '../../FSM';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 import { analyticsCollector } from '@/AnalyticsCollector';
 
 class DialerViewModel extends StoreViewModel<DialerProps>
@@ -21,7 +21,7 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   constructor(props: DialerProps) {
     super(props);
     this.reaction(
-      () => this.callState,
+      () => this._telephonyStore.callState,
       callState => {
         if (callState === CALL_STATE.CONNECTING) {
           analyticsCollector.activeCall();
@@ -31,8 +31,8 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   }
 
   @computed
-  get callState() {
-    return this._telephonyStore.callState;
+  get isIncomingCall() {
+    return this._telephonyStore.isIncomingCall;
   }
 
   @computed
@@ -58,6 +58,21 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   @computed
   get dialerMinimizeTranslateY() {
     return this._telephonyStore.dialerMinimizeTranslateY;
+  }
+
+  @computed
+  get shouldDisplayDialer() {
+    return this._telephonyStore.shouldDisplayDialer;
+  }
+
+  @computed
+  private get _hasCall() {
+    return !!this._telephonyStore.callId;
+  }
+
+  @computed
+  get shouldDisplayCallCtrl() {
+    return this._hasCall && !this.keypadEntered;
   }
 }
 

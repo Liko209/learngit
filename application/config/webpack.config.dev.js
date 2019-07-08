@@ -28,7 +28,6 @@ const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
 const appPackage = require(paths.appPackageJson);
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -275,16 +274,13 @@ module.exports = {
               },
             ],
           },
-          // country flag svg loader
           {
-            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            test: /jui\/src\/assets\/.*\.svg$/,
             use: [
               {
                 loader: 'svg-sprite-loader',
                 options: {
-                  extract: true,
-                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
-                  symbolId: 'country-flag-[name]',
+                  symbolId: 'icon-[name]',
                 },
               },
               {
@@ -293,31 +289,7 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
-                    { reusePaths: true },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
-            use: [
-              {
-                loader: 'svg-sprite-loader',
-                options: {
-                  extract: true,
-                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
-                  symbolId: 'jupiter-[name]',
-                },
-              },
-              {
-                loader: 'svgo-loader',
-                options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },
@@ -447,8 +419,6 @@ module.exports = {
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
     }),
-    // svg sprite loader plugin
-    new SpriteLoaderPlugin(),
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(

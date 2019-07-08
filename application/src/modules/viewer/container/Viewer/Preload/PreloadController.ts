@@ -10,7 +10,10 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import {
   getMaxThumbnailURLInfo,
   getThumbnailURL,
@@ -27,6 +30,7 @@ class PreloadController implements IImageDownloadedListener {
   private _cachedIds: Set<number>;
   private _pendingIds: number[] = [];
   private _inProgressId: number = 0;
+  private _isAllowed: boolean = false;
   private _downloader: ImageDownloader;
   private _sequenceHandler: SequenceProcessorHandler;
 
@@ -35,7 +39,9 @@ class PreloadController implements IImageDownloadedListener {
     this._logger = mainLogger.tags(name);
     this._cachedIds = new Set<number>();
     this._downloader = new ImageDownloader();
-    this._sequenceHandler = new SequenceProcessorHandler(name);
+    this._sequenceHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name },
+    );
   }
 
   replacePreload(itemIds: number[], currentIndex: number) {
@@ -53,6 +59,16 @@ class PreloadController implements IImageDownloadedListener {
     this._pendingIds = [];
 
     this._downloader.cancelLoadingImage();
+  }
+
+  setIsAllowed(allowed: boolean) {
+    const shouldStart = allowed && !this._isAllowed;
+    if (allowed !== this._isAllowed) {
+      this._logger.info(`Will switch _isAllowed to ${allowed}`);
+    }
+    this._isAllowed = allowed;
+
+    shouldStart && this._startPreload();
   }
 
   getPendingIds() {
@@ -157,6 +173,10 @@ class PreloadController implements IImageDownloadedListener {
   }
 
   private _startPreload() {
+    if (!this._isAllowed) {
+      this._logger.info('Not allow to preload');
+      return;
+    }
     if (this._inProgressId) {
       this._logger.info(`In progress: ${this._inProgressId}`);
       return;

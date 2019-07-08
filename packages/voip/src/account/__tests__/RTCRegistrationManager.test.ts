@@ -6,6 +6,7 @@
 import { RTCRegistrationManager } from '../RTCRegistrationManager';
 import { UA_EVENT } from '../../signaling/types';
 import { EventEmitter2 } from 'eventemitter2';
+import { kRetryIntervalList } from '../constants';
 
 class MockUserAgent extends EventEmitter2 {
   constructor() {
@@ -121,21 +122,20 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should set retry interval to 5 sec when reg failed at first time [JPT-2257]', () => {
+    it('Should follow back off algorithm for register retry interval[JPT-2304]', () => {
       setup();
-      regManager._regFailedFirstTime = true;
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBeLessThanOrEqual(5);
-    });
-
-    it("Should set retry interval to 30 to 60 sec when reg failed and it's not the first time [JPT-2256]", () => {
-      setup();
-      regManager._regFailedFirstTime = false;
-      regManager._calculateNextRetryInterval();
-      const minExpected = 30;
-      const maxExpected = 60;
-      expect(regManager._retryInterval).toBeLessThanOrEqual(maxExpected);
-      expect(regManager._retryInterval).toBeGreaterThanOrEqual(minExpected);
+      let interval = 0;
+      for (let i = 0; i < 20; i++) {
+        interval = regManager._calculateNextRetryInterval();
+        if (i < kRetryIntervalList.length) {
+          expect(interval).toBeGreaterThanOrEqual(kRetryIntervalList[i].min);
+          expect(interval).toBeLessThanOrEqual(kRetryIntervalList[i].max);
+        } else {
+          expect(interval).toBeGreaterThanOrEqual(1920);
+          expect(interval).toBeLessThanOrEqual(3840);
+        }
+        regManager._failedTimes++;
+      }
     });
   });
 

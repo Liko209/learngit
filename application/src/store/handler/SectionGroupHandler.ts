@@ -26,7 +26,7 @@ import ProfileModel from '@/store/models/Profile';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
 import _ from 'lodash';
 import { autorun, computed, observable, reaction } from 'mobx';
-import { mainLogger } from 'sdk';
+import { mainLogger, PerformanceTracer } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { AccountService } from 'sdk/module/account';
 import { ProfileService } from 'sdk/module/profile';
@@ -37,11 +37,11 @@ import {
   NotificationEntityReplaceBody,
   NotificationEntityReplacePayload,
 } from 'sdk/service/notificationCenter';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { TDelta } from '../base/fetch/types';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 import { Notification } from '@/containers/Notification';
 import { defaultNotificationOptions } from '@/common/catchError';
+import { STORE_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 function groupTransformFunc(data: Group): ISortableModel {
   const {
@@ -103,8 +103,6 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
 
 const LOG_TAG = 'SectionGroupHandler';
 const DEFAULT_LEFT_RAIL_GROUP: number = 20;
-const MAX_LEFT_RAIL_GROUP: number = 50;
-const MAX_LEFT_RAIL_WITH_OPEN_GROUP: number = 51;
 
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _handlersMap: {} = {};
@@ -284,7 +282,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
             });
             mainLogger
               .tags(LOG_TAG)
-              .info('subscribe notification|user was removed from current conversation');
+              .info(
+                'subscribe notification|user was removed from current conversation',
+              );
           }
         }
         // update url
@@ -525,7 +525,6 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         transformFunc: groupTransformFunc,
         entityName: ENTITY_NAME.GROUP,
         eventName: undefined, // it should not subscribe notification by itself
-        limit: MAX_LEFT_RAIL_WITH_OPEN_GROUP,
       },
     );
   }
@@ -559,59 +558,66 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       transformFunc: groupTransformFunc,
       entityName: ENTITY_NAME.GROUP,
       eventName: undefined, // it should not subscribe notification by itself
-      limit: MAX_LEFT_RAIL_WITH_OPEN_GROUP,
     });
   }
 
   async fetchGroups(sectionType: SECTION_TYPE, direction: QUERY_DIRECTION) {
     if (this._handlersMap[sectionType]) {
       const performanceKey = this._getPerformanceKey(sectionType);
-      const performanceTracer = PerformanceTracer.initial();
+      const performanceTracer = PerformanceTracer.start();
       const groups =
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
           this._addToFetchProcessor(group.id);
         });
-      } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
-        groups.forEach(async (group: Group) => {
-          const stateService = ServiceLoader.getInstance<StateService>(
-            ServiceConfig.STATE_SERVICE,
-          );
-          const state = await stateService.getById(group.id);
-          if (state && state.unread_count) {
-            this._addToFetchProcessor(group.id);
-          }
-        });
       } else {
-        groups.forEach(async (group: Group) => {
-          const stateService = ServiceLoader.getInstance<StateService>(
-            ServiceConfig.STATE_SERVICE,
-          );
-          const state = await stateService.getById(group.id);
-          if (state && state.unread_mentions_count) {
-            this._addToFetchProcessor(group.id);
-          }
-        });
+        const stateService = ServiceLoader.getInstance<StateService>(
+          ServiceConfig.STATE_SERVICE,
+        );
+        if (stateService.isCacheInitialized()) {
+          groups.forEach((group: Group) => {
+            const state = stateService.getSynchronously(group.id);
+            this._addToFetchDependUnread(group.id, state, sectionType);
+          });
+        } else {
+          groups.forEach(async (group: Group) => {
+            const state = await stateService.getById(group.id);
+            this._addToFetchDependUnread(group.id, state, sectionType);
+          });
+        }
       }
       performanceTracer.end({ key: performanceKey, count: groups.length });
     }
   }
 
-  private async _addToFetchProcessor(groupId: number) {
+  private _addToFetchDependUnread(
+    groupId: number,
+    state: GroupState | null,
+    sectionType: SECTION_TYPE,
+  ) {
+    const hasUnread =
+      state &&
+      (sectionType === SECTION_TYPE.DIRECT_MESSAGE
+        ? state.unread_count
+        : state.unread_mentions_count);
+    hasUnread && this._addToFetchProcessor(groupId);
+  }
+
+  private _addToFetchProcessor(groupId: number) {
     preFetchConversationDataHandler.addProcessor(groupId);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {
     switch (sectionType) {
       case SECTION_TYPE.FAVORITE:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_FAVORITES;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_FAVORITES;
 
       case SECTION_TYPE.DIRECT_MESSAGE:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_DIRECT_MESSAGES;
 
       case SECTION_TYPE.TEAM:
-        return PERFORMANCE_KEYS.GROUP_SECTION_FETCH_TEAMS;
+        return STORE_PERFORMANCE_KEYS.GROUP_SECTION_FETCH_TEAMS;
     }
   }
 
@@ -785,7 +791,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (profile && profile.max_leftrail_group_tabs2) {
       count = Number(profile.max_leftrail_group_tabs2);
     }
-    return count > MAX_LEFT_RAIL_GROUP ? MAX_LEFT_RAIL_GROUP : count;
+    return count;
   }
 }
 

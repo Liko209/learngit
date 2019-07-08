@@ -5,18 +5,15 @@
  */
 
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { Api } from '../../../api';
-import { daoManager } from '../../../dao';
-import { Raw } from '../../../framework/model';
-import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { ChangeModel, SYNC_SOURCE } from '../../../module/sync/types';
-import { SOCKET } from '../../../service/eventKey';
-import {
-  GlipTypeUtil,
-  TypeDictionary,
-  PerformanceTracer,
-  PERFORMANCE_KEYS,
-} from '../../../utils';
+
+import { Api } from 'sdk/api';
+import { daoManager } from 'sdk/dao';
+import { Raw, IdModel } from 'sdk/framework/model';
+import { EntityBaseService } from 'sdk/framework/service/EntityBaseService';
+import { ChangeModel, SYNC_SOURCE } from 'sdk/module/sync/types';
+import { SOCKET } from 'sdk/service/eventKey';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { FEATURE_STATUS, FEATURE_TYPE } from '../../group/entity';
 import { PersonController } from '../controller/PersonController';
@@ -30,18 +27,22 @@ import {
 } from '../entity';
 import { ContactType } from '../types';
 import { IPersonService } from './IPersonService';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
+import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { PerformanceTracer } from 'foundation';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
   private _personController: PersonController;
   constructor() {
-    super(true, daoManager.getDao(PersonDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(PersonDao), {
       basePath: '/person',
       networkClient: Api.glipNetworkClient,
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PERSON]: this.handleIncomingData,
+        [SOCKET.PERSON]: this.handleSocketIOData,
       }),
     );
 
@@ -67,13 +68,20 @@ class PersonService extends EntityBaseService<Person>
   }
 
   protected async initialEntitiesCache() {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const persons = await super.initialEntitiesCache();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.PREPARE_PERSON_CACHE,
+      key: PERSON_PERFORMANCE_KEYS.PREPARE_PERSON_CACHE,
       count: persons && persons.length,
     });
     return persons;
+  }
+
+  handleSocketIOData = async (persons: Raw<Person>[]): Promise<void> => {
+    await this.getPersonController().handleIncomingData(
+      persons,
+      SYNC_SOURCE.SOCKET,
+    );
   }
 
   handleIncomingData = async (
@@ -172,6 +180,13 @@ class PersonService extends EntityBaseService<Person>
     eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
   ): void {
     this.getPersonController().getPhoneNumbers(person, eachPhoneNumber);
+  }
+
+  protected canRequest(): boolean {
+    const syncConfig = ServiceLoader.getInstance<EntityBaseService<IdModel>>(
+      ServiceConfig.SYNC_SERVICE,
+    ).getUserConfig() as SyncUserConfig;
+    return syncConfig && syncConfig.getFetchedRemaining();
   }
 }
 

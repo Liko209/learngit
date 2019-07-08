@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERROR_CODES_NETWORK, mainLogger } from 'foundation';
-
+import { ERROR_CODES_NETWORK, mainLogger, PerformanceTracer } from 'foundation';
 import { indexData, initialData, remainingData } from '../../../api';
 import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
@@ -22,7 +21,6 @@ import { RawPresence } from '../../../module/presence/entity';
 import { ServiceConfig, ServiceLoader } from '../../../module/serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../../../utils';
 import { progressManager } from '../../../utils/progress';
 import { CompanyService } from '../../company';
 import { Group, GroupService } from '../../group';
@@ -39,6 +37,7 @@ import { SyncListener, SyncService } from '../service';
 
 import { ChangeModel, SYNC_SOURCE } from '../types';
 import { DaoGlobalConfig } from 'sdk/dao/config';
+import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
 
@@ -117,7 +116,7 @@ class SyncController {
 
   private async _firstLogin() {
     this._progressBar.start();
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const currentTime = Date.now();
     try {
       await this._fetchInitial(currentTime);
@@ -128,7 +127,7 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     this._checkFetchedRemaining(currentTime);
-    performanceTracer.end({ key: PERFORMANCE_KEYS.FIRST_LOGIN });
+    performanceTracer.end({ key: SYNC_PERFORMANCE_KEYS.FIRST_LOGIN });
     this._progressBar.stop();
   }
 
@@ -137,9 +136,11 @@ class SyncController {
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
 
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
-    performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INITIAL_DATA });
+    performanceTracer.end({
+      key: SYNC_PERFORMANCE_KEYS.HANDLE_INITIAL_DATA,
+    });
 
     onInitialHandled && (await onInitialHandled());
     mainLogger.log(LOG_TAG, 'fetch initial data and handle success');
@@ -171,9 +172,11 @@ class SyncController {
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
 
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
-    performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_REMAINING_DATA });
+    performanceTracer.end({
+      key: SYNC_PERFORMANCE_KEYS.HANDLE_REMAINING_DATA,
+    });
 
     onRemainingHandled && (await onRemainingHandled());
     mainLogger.log('fetch remaining data and handle success');
@@ -198,9 +201,11 @@ class SyncController {
         mainLogger.log(LOG_INDEX_DATA, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
 
-        const performanceTracer = PerformanceTracer.initial();
+        const performanceTracer = PerformanceTracer.start();
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
-        performanceTracer.end({ key: PERFORMANCE_KEYS.HANDLE_INDEX_DATA });
+        performanceTracer.end({
+          key: SYNC_PERFORMANCE_KEYS.HANDLE_INDEX_DATA,
+        });
 
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
@@ -298,7 +303,6 @@ class SyncController {
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
       arrState.push(state);
-      arrState[0].__from_index = true;
     }
 
     let transProfile: Raw<Profile> | null = null;
@@ -309,7 +313,7 @@ class SyncController {
     const start = Date.now();
 
     // should handle account data first anyway
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await accountHandleData({
       userId,
       companyId,
@@ -368,7 +372,7 @@ class SyncController {
       `_handleIncomingCompany() company.length: ${companies &&
         companies.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<CompanyService>(
       ServiceConfig.COMPANY_SERVICE,
     ).handleIncomingData(companies, source, changeMap);
@@ -388,7 +392,7 @@ class SyncController {
       `_handleIncomingItem() item.length: ${items &&
         items.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     ).handleIncomingData(items, changeMap);
@@ -408,7 +412,7 @@ class SyncController {
       `_handleIncomingPresence() item.length: ${presences &&
         presences.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PresenceService>(
       ServiceConfig.PRESENCE_SERVICE,
     ).presenceHandleData(presences, changeMap);
@@ -428,7 +432,7 @@ class SyncController {
       `_handleIncomingState() states.length: ${states &&
         states.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
     ).handleState(states, source, changeMap);
@@ -447,7 +451,7 @@ class SyncController {
       LOG_INDEX_DATA,
       `_handleIncomingProfile(), source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     ).handleIncomingData(profile, source, changeMap);
@@ -466,7 +470,7 @@ class SyncController {
       `_handleIncomingPerson() persons.length: ${persons &&
         persons.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     ).handleIncomingData(persons, source, changeMap);
@@ -486,7 +490,7 @@ class SyncController {
       `_handleIncomingGroup() groups.length: ${groups &&
         groups.length}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     ).handleData(groups, source, changeMap);
@@ -507,7 +511,7 @@ class SyncController {
       `_handleIncomingPost() posts.length: ${posts &&
         posts.map(post => post._id)}, source: ${source}`,
     );
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     await ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     ).handleIndexData(posts, maxPostsExceeded, changeMap);
@@ -560,13 +564,16 @@ class SyncController {
   private _getPerformanceKey(source: SYNC_SOURCE, type: string) {
     switch (source) {
       case SYNC_SOURCE.INDEX:
-        return `${PERFORMANCE_KEYS.HANDLE_INDEX_INCOMING}${type}`;
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_INDEX_INCOMING}${type}`;
 
       case SYNC_SOURCE.INITIAL:
-        return `${PERFORMANCE_KEYS.HANDLE_INITIAL_INCOMING}${type}`;
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_INITIAL_INCOMING}${type}`;
 
       case SYNC_SOURCE.REMAINING:
-        return `${PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
+
+      case SYNC_SOURCE.SOCKET:
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_SOCKET_INCOMING}${type}`;
     }
   }
 

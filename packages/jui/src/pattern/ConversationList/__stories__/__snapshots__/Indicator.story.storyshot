@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/ConversationCard/Indicator Draft 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c1 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #ff8800;
+}
+
+<div>
+  <span
+    className="draft icon c0"
+  >
+    <svg
+      className="c1"
+      role="img"
+      size="medium"
+    >
+      <use
+        href="#icon-draft"
+        xlinkHref="#icon-draft"
+      />
+    </svg>
+  </span>
+</div>
+`;
+
+exports[`Storyshots Pattern/ConversationCard/Indicator Failure: Pattern/ConversationCard/Indicator Failure 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c1 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #f44336;
+}
+
+<div>
+  <span
+    className="send_failure icon c0"
+  >
+    <svg
+      className="c1"
+      role="img"
+      size="medium"
+    >
+      <use
+        href="#icon-refresh"
+        xlinkHref="#icon-refresh"
+      />
+    </svg>
+  </span>
+</div>
+`;

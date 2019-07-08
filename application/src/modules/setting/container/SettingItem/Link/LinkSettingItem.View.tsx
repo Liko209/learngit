@@ -9,8 +9,9 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiButton } from 'jui/components/Buttons/Button';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
-import { LinkSettingItemViewProps, LinkSettingItemProps } from './types';
 import { catchError } from '@/common/catchError';
+import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
+import { LinkSettingItemViewProps, LinkSettingItemProps } from './types';
 
 type Props = LinkSettingItemViewProps & LinkSettingItemProps & WithTranslation;
 
@@ -25,11 +26,13 @@ class LinkSettingItemViewComponent extends Component<Props> {
     const url = await this._getUrl();
     this._loading = false;
     url && window.open(url);
+    const { dataTracking } = this.props.settingItem;
+    dataTracking && dataTrackingForSetting(dataTracking);
   }
 
   @catchError.flash({
-    network: 'setting.errorText.network',
-    server: 'setting.errorText.server',
+    network: 'setting.errorText.forLink',
+    server: 'setting.errorText.forLink',
   })
   private _getUrl = () => {
     return this.props.getUrl();

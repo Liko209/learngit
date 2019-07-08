@@ -6,6 +6,6 @@
 import { FileItemViewProps } from './types';
 import { FileViewModel } from '../common/File/File.ViewModel';
 
-class FileItemViewModel extends FileViewModel implements FileItemViewProps {}
+class FileItemViewModel extends FileViewModel<FileItemViewProps> {}
 
 export { FileItemViewModel };

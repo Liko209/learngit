@@ -176,6 +176,8 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     if (this._currentSrc !== src && src !== '') {
       this._audio.src = src;
       this._currentSrc = src;
+
+      this._audio.currentTime = this.state.timestamp;
     }
 
     if (this._audio.src) {
@@ -230,6 +232,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
           onAction={this._onAction}
         />
         <JuiAudioProgress
+          status={status}
           mode={mode}
           duration={duration}
           value={timestamp}

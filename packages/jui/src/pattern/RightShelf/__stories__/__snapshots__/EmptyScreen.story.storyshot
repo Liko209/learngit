@@ -1,0 +1,213 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/ConversationRightShelf EmptyScreen 1`] = `
+.c6.c6 {
+  min-width: 104px;
+  padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  text-transform: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #0684bd;
+  text-align: center;
+}
+
+.c6.c6.containedButtonStyle {
+  color: #fff;
+  box-shadow: unset;
+  background-color: #0684bd;
+}
+
+.c6.c6.containedButtonStyle:hover {
+  opacity: 0.88;
+}
+
+.c6.c6.containedButtonStyle.disabled {
+  background-color: #bfbfbf;
+  color: #fff;
+}
+
+.c6.c6.containedButtonStyle:active {
+  box-shadow: unset;
+}
+
+.c6.c6.textButtonStyle.disabled {
+  color: #bfbfbf;
+}
+
+.c6.c6.textButtonStyle:hover {
+  background-color: rgba(6,132,189,0.12);
+}
+
+.c6.c6.outlineButtonStyle {
+  border-color: #0684bd;
+}
+
+.c6.c6.roundButtonStyle {
+  height: 28px;
+  border-radius: 28px;
+  padding: 0px 16px;
+  background-color: #fff;
+  color: #0684bd;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+}
+
+.c6.c6.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c6.c6.roundButtonStyle:hover:active {
+  background-color: #f5f6fb;
+}
+
+.c6.c6.roundButtonStyle .rippleVisible {
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c5 {
+  margin: 0px 8px 16px 0px;
+}
+
+.c5:last-child {
+  margin: 0;
+}
+
+.c4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  padding: 36px 0px 0px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 268px;
+  padding: 80px 40px 0px;
+  -webkit-align-items: flex-start;
+  -webkit-box-align: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+}
+
+.c1 {
+  margin: 0px 0px 28px;
+  min-width: 188px;
+  min-height: 148px;
+  width: 188px;
+  height: 148px;
+  margin: 0px 0px 32px;
+}
+
+.c2 {
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  color: #212121;
+  margin: 0px 0px 8px;
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 28px;
+}
+
+.c3 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #616161;
+  margin: 0px 0px 12px;
+  color: #9e9e9e;
+  margin: 0px 0px 8px;
+}
+
+<div
+  className="c0"
+>
+  <img
+    className="c1"
+    src="test-file-stub"
+  />
+  <div
+    className="c2"
+    data-test-automation-id="right-shelf-empty-screen-text"
+  >
+    No files shared yet
+  </div>
+  <div
+    className="c3"
+    data-test-automation-id="right-shelf-empty-screen-content"
+  >
+    Files that get shared in your conversation automatically show up here.
+  </div>
+  <div
+    className="c4"
+  >
+    <div
+      className="c5"
+    >
+      <button
+        className="MuiButtonBase-root MuiButton-root MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge c6"
+        disabled={false}
+        onBlur={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        tabIndex="0"
+        type="button"
+      >
+        <span
+          className="MuiButton-label"
+        >
+          Share a file
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;

@@ -18,12 +18,26 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import _ from 'lodash';
-
+import { POST_LIST_TYPE } from '../types';
+import { JuiEmptyPage } from 'jui/pattern/EmptyPage';
+import noMentionImage from '../images/empty-@mention.svg';
+import noBookmarkImage from '../images/empty-bookmark.svg';
+import moize from 'moize';
+import { ErrorPage } from '@/modules/common/container/ErrorPage';
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
 const POST_PRELOAD_COUNT = 20;
 const POST_PRELOAD_DIRECTION = 'up';
-
+const emptyPageData = {
+  [POST_LIST_TYPE.mentions]: {
+    translationKey: 'message.noMentionPosts',
+    emptyImage: noMentionImage,
+  },
+  [POST_LIST_TYPE.bookmarks]: {
+    translationKey: 'message.noBookmarkPosts',
+    emptyImage: noBookmarkImage,
+  },
+};
 @observer
 class StreamViewComponent extends Component<Props> {
   static contextType = ConversationPageContext;
@@ -59,16 +73,45 @@ class StreamViewComponent extends Component<Props> {
     return this.props.hasMoreDown;
   }
 
+  private _defaultLoading() {
+    return <DefaultLoadingWithDelay delay={100} />;
+  }
+
+  private _defaultLoadingMore() {
+    return <DefaultLoadingMore />;
+  }
+
+  private _getEmptyPage = moize((type, height) => {
+    if (!type) {
+      return undefined;
+    }
+    const { translationKey, emptyImage } = emptyPageData[type];
+    const { t } = this.props;
+    return (
+      <JuiEmptyPage
+        data-test-automation-id={`${type}EmptyPage`}
+        image={emptyImage}
+        message={t(translationKey)}
+        height={height}
+      />
+    );
+  });
+
+  private _getErrorPage = moize(height => {
+    return <ErrorPage onReload={this.props.tryAgain} height={height} />;
+  });
+
   render() {
-    const { ids, isShow = true } = this.props;
+    const { ids, isShow = true, shouldShowErrorPage, type } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post
 
     const { height } = this.context;
-    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
-    const defaultLoadingMore = <DefaultLoadingMore />;
-    return (
+
+    return type && shouldShowErrorPage ? (
+      this._getErrorPage(height)
+    ) : (
       <StreamContext.Provider value={{ isShow }}>
         <JuiStream style={this._wrapperStyleGen(height)}>
           <JuiInfiniteList
@@ -78,9 +121,10 @@ class StreamViewComponent extends Component<Props> {
             minRowHeight={50} // extract to const
             loadInitialData={this.props.fetchInitialPosts}
             loadMore={this.props.fetchNextPagePosts}
-            loadingRenderer={defaultLoading}
+            loadingRenderer={this._defaultLoading}
+            noRowsRenderer={this._getEmptyPage(type, height)}
             hasMore={this._hasMore}
-            loadingMoreRenderer={defaultLoadingMore}
+            loadingMoreRenderer={this._defaultLoadingMore}
             stickToLastPosition={false}
           >
             {ids.map(id => (

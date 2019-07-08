@@ -10,7 +10,8 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta, IUser } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from '../../../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
+
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
@@ -189,8 +190,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then The voicemail pauses', async () => {
-    await t.expect(voicemailItem.currentTimeSpan.textContent).notEql('00:00');
     await t.expect(voicemailItem.playButton.exists).ok();
+    await t.expect(voicemailItem.endTimeSpan.exists).ok();
+    await t.expect(voicemailItem.currentTimeSpan.exists).notOk();
   });
 });
 

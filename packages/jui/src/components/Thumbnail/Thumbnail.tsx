@@ -38,6 +38,7 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
       width: size === 'small' ? 5 * width : 9 * width,
       height: size === 'small' ? 5 * height : 9 * height,
       backgroundImage: `url(${url})`,
+      display: 'inline-block',
       borderRadius:
         size === 'small'
           ? 0.5 * theme.shape['borderRadius']
@@ -76,7 +77,11 @@ class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
             data-test-automation-id="thumbnail"
           />
         ) : (
-          <JuiIconography iconSize={size === 'small' ? 'small' : 'extraLarge'}>
+          <JuiIconography
+            iconSize={size === 'small' ? 'small' : 'extraLarge'}
+            data-test-automation-id="iconThumbnail"
+            onClick={onClick}
+          >
             {iconType}
           </JuiIconography>
         )}

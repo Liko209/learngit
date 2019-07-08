@@ -115,12 +115,7 @@ describe('CallLogDao', () => {
 
   describe('queryCallLogs', () => {
     it('should queryCallLogs in viewDao', async () => {
-      await dao.queryCallLogs(
-        CALL_LOG_SOURCE.ALL,
-        'mockId',
-        QUERY_DIRECTION.OLDER,
-        20,
-      );
+      await dao.queryCallLogs({});
       expect(viewDao.queryCallLogs).toBeCalled();
     });
   });
@@ -194,6 +189,22 @@ describe('CallLogDao', () => {
     it('should bulkUpdate in viewDao', async () => {
       await dao['_bulkUpdateCallLogView']([mockCallLog], true);
       expect(viewDao.bulkUpdate).toBeCalled();
+    });
+  });
+
+  describe('queryAllUniquePhoneNumberCalls', () => {
+    it('should call with right parameters', async () => {
+      const result = [{ id: '1' }];
+      viewDao.getAllUniquePhoneNumberCalls = jest
+        .fn()
+        .mockResolvedValue(result);
+
+      expect(
+        await dao.queryAllUniquePhoneNumberCalls(CALL_LOG_SOURCE.ALL),
+      ).toEqual(result);
+      expect(viewDao.getAllUniquePhoneNumberCalls).toBeCalledWith(
+        CALL_LOG_SOURCE.ALL,
+      );
     });
   });
 });

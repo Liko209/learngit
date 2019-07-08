@@ -6,7 +6,6 @@
 // tslint:disable:no-console
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 import { JuiTextField } from '../';
 
@@ -55,6 +54,6 @@ const TextFieldStories = () => {
   );
 };
 
-storiesOf('Components/Forms', module)
-  .addDecorator(withInfoDecorator(JuiTextField, { inline: true }))
-  .add('TextField', () => <TextFieldStories />);
+storiesOf('Components/Forms', module).add('TextField', () => (
+  <TextFieldStories />
+));

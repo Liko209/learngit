@@ -30,6 +30,7 @@ class ProfileMiniCardPersonFooter extends Component<
     const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
+      portalManager.addShouldCloseStatus();
     }
   }
 
@@ -40,6 +41,7 @@ class ProfileMiniCardPersonFooter extends Component<
 
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
+    portalManager.addShouldCloseStatus();
   }
 
   private get _ActionButtons() {
@@ -56,7 +58,7 @@ class ProfileMiniCardPersonFooter extends Component<
           name: person.userDisplayName,
         })}
       >
-        chat_bubble
+        chat
       </JuiIconButton>
     );
 

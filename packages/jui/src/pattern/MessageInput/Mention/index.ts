@@ -71,7 +71,7 @@ class Mention {
       this._quill.deleteText(
         this._mentionCharPos,
         this._cursorPos - this._mentionCharPos,
-        'api',
+        'silent',
       );
       this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'api');
       this._quill.insertText(this._mentionCharPos + 1, ' ', 'api');

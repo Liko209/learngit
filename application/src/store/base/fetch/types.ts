@@ -72,6 +72,14 @@ export type TReplacedData<
   data: SortableModel;
 };
 
-export interface IEntityDataProvider<Model> {
-  getByIds(ids: number[]): Promise<Model[]>;
+export interface IEntityDataProvider<
+  Model,
+  IdType extends ModelIdType = number
+> {
+  getByIds(ids: IdType[]): Promise<Model[]>;
 }
+export type HasMore = {
+  older?: boolean;
+  newer?: boolean;
+  both?: boolean;
+};

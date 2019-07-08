@@ -6,27 +6,30 @@ import { TelephonyService } from '../../../service/TelephonyService';
 import { TELEPHONY_SERVICE } from '../../../interface/constant';
 import { CLIENT_SERVICE } from '@/modules/common/interface';
 import { ClientService } from '@/modules/common';
+import { getEntity } from '@/store/utils';
+
+jest.mock('@/store/utils');
 
 const searchService = {
   doFuzzySearchPhoneContacts: jest.fn().mockReturnValue(null),
 };
 
 const sleep = async () =>
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(resolve, 500);
   });
-jest.spyOn(ServiceLoader, 'getInstance').mockImplementation((conf) => {
+jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
   switch (conf) {
     case ServiceConfig.SEARCH_SERVICE:
       return searchService;
     case ServiceConfig.PHONE_NUMBER_SERVICE:
       return {
-        isValidNumber: jest.fn().mockImplementation((toNumber) => ({
+        isValidNumber: jest.fn().mockImplementation(toNumber => ({
           isValid: true,
           toNumber,
           parsed: toNumber,
         })),
-        getLocalCanonical: jest.fn().mockImplementation((i) => i),
+        getLocalCanonical: jest.fn().mockImplementation(i => i),
       };
     default:
       return {};
@@ -44,7 +47,16 @@ container.bind(CLIENT_SERVICE).to(ClientService);
 let contactSearchListViewModel: ContactSearchListViewModel;
 
 beforeAll(() => {
-  contactSearchListViewModel = new ContactSearchListViewModel({});
+  (getEntity as jest.Mock).mockReturnValue({});
+  const mockedFn = jest.fn();
+
+  contactSearchListViewModel = new ContactSearchListViewModel({
+    onContactSelected: jest.fn(),
+    inputStringProps: 'inputString',
+  });
+  contactSearchListViewModel._telephonyService.makeCall = jest.fn();
+  contactSearchListViewModel.props.onContactSelected = (args: any) =>
+    contactSearchListViewModel._telephonyService.makeCall(args);
 });
 
 afterEach(() => {

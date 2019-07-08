@@ -9,7 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
 import { Author, AuthorProps } from './Author';
 import { Title, TitleProps } from './Title';
-import { Field, FieldsWrapper, FieldProps } from './Field';
+import { Field, FieldsWrapper, IFieldProps } from './Field';
 import { ImageView } from './ImageView';
 import { Footer, FooterProps } from './Footer';
 import { MarkDownView } from './base';
@@ -17,7 +17,7 @@ import { MarkDownView } from './base';
 type BodyProps = {
   color?: string;
   text?: string;
-  fields?: FieldProps[];
+  fields?: IFieldProps[];
   image_url?: string;
 } & AuthorProps &
   TitleProps &
@@ -47,7 +47,7 @@ const Body = (props: BodyProps) => {
       )}
       {fields.length > 0 && (
         <FieldsWrapper>
-          {fields.map((fieldLooper: FieldProps) => (
+          {fields.map((fieldLooper: IFieldProps) => (
             <Field {...fieldLooper} key={uuid.v1()} />
           ))}
         </FieldsWrapper>

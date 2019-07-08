@@ -4,12 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { memo, ReactNode, createRef } from 'react';
-import styled from 'src/foundation/styled-components';
-import { palette, spacing } from '../../../foundation/utils/styles';
+import styled from '../../../foundation/styled-components';
+import { spacing } from '../../../foundation/utils/styles';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import { JuiViewerThumbnail, ThumbnailInfoType } from '../ViewerThumbnail';
 import { getVisibleElements, scrollIntoViewWithContainer } from '../ui_utils';
 import { duration } from '@material-ui/core/styles/transitions';
+import { HotKeys } from '../../../hoc/HotKeys';
+import _ from 'lodash';
+
+const UPDATE_DEBOUNCE_TIME = 50;
 
 type VisibleThumbnailType = {
   view: ThumbnailContainerItemsType;
@@ -124,20 +128,22 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     }
   }
 
-  private _updateSelectedByIndex(toIdx: number) {
-    if (toIdx >= 0 && toIdx <= this.state.numberThumbnails - 1) {
-      const { onSelectedChanged } = this.props;
-      this.setState(
-        {
-          currentSelectedIndex: toIdx,
-        },
-        () => {
-          this._scrollThumbnailIntoView();
-          onSelectedChanged && onSelectedChanged(toIdx);
-        },
-      );
-    }
-  }
+  private _updateSelectedByIndex = _.debounce(
+    (toIdx: number, emitChangeCallback?: (toIdx: number) => void) => {
+      if (toIdx >= 0 && toIdx <= this.state.numberThumbnails - 1) {
+        this.setState(
+          {
+            currentSelectedIndex: toIdx,
+          },
+          () => {
+            this._scrollThumbnailIntoView();
+            emitChangeCallback && emitChangeCallback(toIdx);
+          },
+        );
+      }
+    },
+    UPDATE_DEBOUNCE_TIME,
+  );
 
   private _scrollThumbnailIntoView() {
     const visibleThumbs: VisibleThumbsType | null = this._getVisibleThumbs();
@@ -182,11 +188,16 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     return null;
   }
 
+  private _emitSelectedCallback = (toIdx: number) => {
+    const { onSelectedChanged } = this.props;
+    onSelectedChanged && onSelectedChanged(toIdx);
+  }
+
   handleItemSelected = (e: any, info: ThumbnailInfoType) => {
     const { thumbnailNumber } = info;
     const { currentSelectedIndex } = this.state;
     if (currentSelectedIndex !== thumbnailNumber) {
-      this._updateSelectedByIndex(thumbnailNumber);
+      this._updateSelectedByIndex(thumbnailNumber, this._emitSelectedCallback);
     }
   }
 
@@ -223,6 +234,24 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     return null;
   }
 
+  private _onArrowUpKeydown = (e: KeyboardEvent) => {
+    const { currentSelectedIndex } = this.state;
+    this._updateSelectedByIndex(
+      currentSelectedIndex - 1,
+      this._emitSelectedCallback,
+    );
+    e.preventDefault();
+  }
+
+  private _onArrowDownKeydown = (e: KeyboardEvent) => {
+    const { currentSelectedIndex } = this.state;
+    this._updateSelectedByIndex(
+      currentSelectedIndex + 1,
+      this._emitSelectedCallback,
+    );
+    e.preventDefault();
+  }
+
   render() {
     const { open } = this.props;
     const transitionDuration = {
@@ -237,9 +266,16 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
         classes={{ paper: 'paper' }}
         transitionDuration={transitionDuration}
       >
-        <ViewerSidebarContentWrap ref={this.container as any}>
-          {this.renderThumbnail()}
-        </ViewerSidebarContentWrap>
+        <HotKeys
+          keyMap={{
+            up: this._onArrowUpKeydown,
+            down: this._onArrowDownKeydown,
+          }}
+        >
+          <ViewerSidebarContentWrap ref={this.container as any}>
+            {this.renderThumbnail()}
+          </ViewerSidebarContentWrap>
+        </HotKeys>
       </ViewerSidebarWrap>
     );
   }

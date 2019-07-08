@@ -41,6 +41,11 @@ class ConversationPostViewModel extends AbstractViewModel<
     const { key } = this._activityData;
     return getPostType(key);
   }
+
+  @computed
+  get isTeamMention(): boolean {
+    return !!this._post.isTeamMention;
+  }
 }
 
 export { ConversationPostViewModel };

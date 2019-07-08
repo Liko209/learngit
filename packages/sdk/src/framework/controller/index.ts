@@ -33,14 +33,16 @@ export function buildEntitySourceController<
   IdType extends ModelIdType = number
 >(
   entityPersistentController: IEntityPersistentController<T, IdType>,
-  requestController?: IRequestController<T, IdType>,
-  canSaveRemoteData?: boolean,
+  requestConfig?: {
+    requestController: IRequestController<T, IdType>;
+    canSaveRemoteData: boolean;
+    canRequest: () => boolean;
+  },
 ) {
   return new EntitySourceController<T, IdType>(
     entityPersistentController,
     daoManager.getDao(DeactivatedDao),
-    requestController,
-    canSaveRemoteData,
+    requestConfig,
   );
 }
 
@@ -61,11 +63,10 @@ export function buildRequestController<
 export function buildEntityCacheController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
->() {
-  return new EntityCacheController<T, IdType>() as IEntityCacheController<
-    T,
-    IdType
-  >;
+>(entityName?: string) {
+  return new EntityCacheController<T, IdType>(
+    entityName,
+  ) as IEntityCacheController<T, IdType>;
 }
 
 export function buildEntityCacheSearchController<

@@ -197,3 +197,69 @@ test.meta(<ITestMeta>{
     await profileDialog.countOnMemberListShouldBe(1);
   });
 });
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2402'],
+  maintainers: ['Spike Yang'],
+  keywords: ['ProfileScreen'],
+})('If the user can access Mini Profile from Team Member View', async (t) => {
+
+  const company = h(t).rcData.mainCompany;
+  const [loginUser, ...rest] = company.users;
+  const app = new AppRoot(t);
+
+  let teamT1Id;
+  let title;
+
+  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+
+  title = 'Given team T1 initial member only login user.';
+  await h(t).withLog(title, async () => {
+    teamT1Id = await h(t).platform(loginUser).createAndGetGroupId({
+      isPublic: true,
+      name: uuid(),
+      type: 'Team',
+      members: [loginUser.rcId],
+    });
+  });
+
+  const messageTab = app.homePage.messageTab;
+  const profileDialog = app.homePage.profileDialog;
+  const miniProfile = app.homePage.miniProfile;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  title = `Given I login with ${loginUser.company.number}#${loginUser.extension}`;
+  await h(t).withLog(title, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  title = 'When I open team T1 profile.';
+  await h(t).withLog(title, async () => {
+    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+    await profileDialog.ensureLoaded();
+  });
+
+  title = 'And click memberButton.';
+
+  await h(t).withLog(title, async () => {
+    await conversationPage.clickMemberButton();
+  });
+
+  title = 'And click member avatar.';
+
+  await h(t).withLog(title, async () => {
+    await profileDialog.clickMembersAvatar();
+  });
+
+  title = 'Then Display the mini profile dialog.'
+
+  await h(t).withLog(title, async () => {
+    await t.expect(miniProfile.self.exists).ok();
+  })
+});

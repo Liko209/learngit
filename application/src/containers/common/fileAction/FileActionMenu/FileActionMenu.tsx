@@ -3,33 +3,49 @@
  * @Date: 2019-05-27 14:31:37
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { FileDeleteAction } from '../FileDeleteAction';
-import { FileNameEditAction } from '../FileNameEditAction';
+import React, { Component } from 'react';
+import { JuiIconButton, IconButtonVariant } from 'jui/components/Buttons';
+import { FileDeleteAction, FileDeleteActionProps } from '../FileDeleteAction';
+import {
+  FileNameEditAction,
+  FileNameEditActionProps,
+} from '../FileNameEditAction';
+import { ViewInPostAction } from '../ViewInPostAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
-type Props = {
+type FileActionMenuProps = {
   fileId: number;
   postId?: number;
   disablePortal?: boolean;
-} & WithTranslation;
+  variant?: IconButtonVariant;
+  showViewInPostAction?: boolean;
+  groupId?: number;
+  asyncOperationDecorator?: FunctionDecorator;
+} & FileDeleteActionProps &
+  FileNameEditActionProps &
+  WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
-class Component extends React.Component<Props, State> {
+class InnerComponent extends Component<FileActionMenuProps, State> {
+  static defaultProps: Partial<FileActionMenuProps> = {
+    variant: 'plain',
+    showViewInPostAction: false,
+  };
+
   state = {
     open: false,
     anchorEl: null,
   };
+
   private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
-    const { t } = this.props;
+    const { t, variant } = this.props;
     return (
       <JuiIconButton
         size="medium"
-        variant="plain"
         ariaLabel={t('common.more')}
+        variant={variant}
         data-test-automation-id="fileActionMore"
         tooltipTitle={t('common.more')}
         onClick={this.openPopper}
@@ -54,7 +70,15 @@ class Component extends React.Component<Props, State> {
     });
   }
   render() {
-    const { fileId, postId, disablePortal } = this.props;
+    const {
+      showViewInPostAction,
+      fileId,
+      postId,
+      groupId,
+      disablePortal,
+      asyncOperationDecorator,
+      ...rest
+    } = this.props;
     return (
       <JuiPopperMenu
         Anchor={this._Anchor}
@@ -65,14 +89,21 @@ class Component extends React.Component<Props, State> {
         data-test-automation-id={'fileActionMenu'}
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
-          <FileNameEditAction fileId={fileId} postId={postId} />
-          <FileDeleteAction fileId={fileId} postId={postId} />
+          <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
+          {showViewInPostAction && groupId && (
+            <ViewInPostAction
+              asyncOperationDecorator={asyncOperationDecorator}
+              fileId={fileId}
+              groupId={groupId}
+            />
+          )}
+          <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
         </JuiMenuList>
       </JuiPopperMenu>
     );
   }
 }
 
-const FileActionMenu = withTranslation('translations')(Component);
+const FileActionMenu = withTranslation('translations')(InnerComponent);
 
-export { FileActionMenu, Props };
+export { FileActionMenu, FileActionMenuProps };

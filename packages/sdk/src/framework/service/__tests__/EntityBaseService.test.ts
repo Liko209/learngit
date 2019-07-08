@@ -45,7 +45,11 @@ describe('EntityBaseService', () => {
   function setUp() {
     dao = new BaseDao('TestEntity', new TestDatabase());
     deactivatedDao = new BaseDao('DeactivatedDao', new TestDatabase());
-    service = new EntityBaseService<TestEntity>(false, dao, networkConfig);
+    service = new EntityBaseService<TestEntity>(
+      { isSupportedCache: true },
+      dao,
+      networkConfig,
+    );
   }
 
   beforeEach(() => {
@@ -67,7 +71,11 @@ describe('EntityBaseService', () => {
       jest.spyOn(dao, 'createQuery').mockReturnValue(query);
       query.limit.mockReturnValue(query);
       query.toArray.mockResolvedValue({ id: 1 });
-      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      const service = new EntityBaseService<Person>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
       service['initialEntitiesCache']();
       expect(query.toArray).toBeCalled();
     });
@@ -82,7 +90,11 @@ describe('EntityBaseService', () => {
       jest.spyOn(dao, 'createQuery').mockReturnValue(query);
       query.limit.mockReturnValue(query);
       query.toArray.mockResolvedValue({ id: 1 });
-      const service = new EntityBaseService<Person>(true, dao, networkConfig);
+      const service = new EntityBaseService<Person>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
       service['initialEntitiesCache']();
       expect(query.toArray).not.toBeCalled();
     });
@@ -99,8 +111,25 @@ describe('EntityBaseService', () => {
     });
 
     it('should return true when init entity source controller', () => {
-      service = new EntityBaseService<TestEntity>(false, dao, networkConfig);
-      expect(service.getEntitySource()['canSaveRemoteData']).toBeTruthy();
+      service = new EntityBaseService<TestEntity>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
+      expect(
+        service.getEntitySource()['requestConfig']['canSaveRemoteData'],
+      ).toBeTruthy();
+    });
+  });
+
+  describe('canRequest()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return true', () => {
+      const result = service['canRequest']();
+      expect(result).toBeTruthy();
     });
   });
 
@@ -115,7 +144,7 @@ describe('EntityBaseService', () => {
 
     it('should call entity source controller once', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -134,7 +163,7 @@ describe('EntityBaseService', () => {
 
     it('should call network client once', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -150,7 +179,7 @@ describe('EntityBaseService', () => {
 
     it('should call network client once and throw error', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -170,7 +199,7 @@ describe('EntityBaseService', () => {
 
     it('should not call network client once when checkFunc return false', async () => {
       const service = new EntityBaseService<TestEntity>(
-        false,
+        { isSupportedCache: true },
         dao,
         networkConfig,
       );
@@ -181,6 +210,29 @@ describe('EntityBaseService', () => {
       const result = await service.getById(1);
 
       expect(result).toBeNull();
+    });
+
+    it('should not call network client once when canRequest return false', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        { isSupportedCache: true },
+        dao,
+        networkConfig,
+      );
+      service._checkTypeFunc = jest.fn().mockReturnValue(true);
+      service['canRequest'] = jest.fn().mockReturnValue(false);
+      jest.spyOn(dao, 'get').mockImplementation(async () => {
+        return null;
+      });
+
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
+
+      const result = await service.getById(1);
+
+      expect(networkConfig.networkClient.get).not.toHaveBeenCalled();
+
+      expect(result).toBeUndefined();
     });
   });
 

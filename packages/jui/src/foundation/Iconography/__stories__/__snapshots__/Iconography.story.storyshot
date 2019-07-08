@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Foundation Iconography: Foundation Iconography 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c1 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+  fill: #18a4de;
+}
+
+<div>
+  <span
+    className="  icon c0"
+  >
+    <svg
+      className="c1"
+      role="img"
+    >
+      <title>
+        ha
+      </title>
+      <use
+        href="#undefined"
+        xlinkHref="#undefined"
+      />
+    </svg>
+  </span>
+</div>
+`;

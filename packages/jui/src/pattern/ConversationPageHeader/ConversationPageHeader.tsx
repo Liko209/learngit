@@ -25,7 +25,7 @@ import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
-  status?: string | null;
+  status?: string | React.ReactNode;
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &
@@ -113,7 +113,6 @@ class JuiConversationPageHeader
     const titleElement = (
       <TitleWrapper
         tooltipTitle={title}
-        variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
       >

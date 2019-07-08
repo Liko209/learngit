@@ -354,7 +354,10 @@ class PersonController {
       const companyId = userConfig.getCurrentCompanyId();
 
       numberList.forEach((item: string) => {
-        const person = cacheController.getPersonByPhoneNumber(item);
+        const person = cacheController.getPersonByPhoneNumber(
+          item,
+          isShortNumber,
+        );
         if (
           person &&
           !this._isDeactivated(person) &&

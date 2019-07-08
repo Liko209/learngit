@@ -1,0 +1,124 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/PopoverMenu PopoverMenu: Pattern/PopoverMenu PopoverMenu 1`] = `
+.c1.c1 {
+  min-width: 104px;
+  padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  text-transform: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #0684bd;
+  text-align: center;
+}
+
+.c1.c1.containedButtonStyle {
+  color: #fff;
+  box-shadow: unset;
+  background-color: #0684bd;
+}
+
+.c1.c1.containedButtonStyle:hover {
+  opacity: 0.88;
+}
+
+.c1.c1.containedButtonStyle.disabled {
+  background-color: #bfbfbf;
+  color: #fff;
+}
+
+.c1.c1.containedButtonStyle:active {
+  box-shadow: unset;
+}
+
+.c1.c1.textButtonStyle.disabled {
+  color: #bfbfbf;
+}
+
+.c1.c1.textButtonStyle:hover {
+  background-color: rgba(6,132,189,0.12);
+}
+
+.c1.c1.outlineButtonStyle {
+  border-color: #0684bd;
+}
+
+.c1.c1.roundButtonStyle {
+  height: 28px;
+  border-radius: 28px;
+  padding: 0px 16px;
+  background-color: #fff;
+  color: #0684bd;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+}
+
+.c1.c1.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c1.c1.roundButtonStyle:hover:active {
+  background-color: #f5f6fb;
+}
+
+.c1.c1.roundButtonStyle .rippleVisible {
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: 100%;
+}
+
+<div>
+  <div
+    className="c0"
+    onClick={[Function]}
+    onMouseDown={[Function]}
+  >
+    <button
+      className="MuiButtonBase-root MuiButton-root MuiButton-contained containedButtonStyle MuiButton-raised MuiButton-sizeLarge c1"
+      disabled={false}
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex="0"
+      type="button"
+    >
+      <span
+        className="MuiButton-label"
+      >
+        Open Popover
+      </span>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </button>
+  </div>
+</div>
+`;

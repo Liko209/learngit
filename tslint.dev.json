@@ -6,7 +6,6 @@
     "jsx-wrap-multiline": false
   },
   "jsRules": {
-    "no-eval": true,
-    "no-debugger": true
+    "no-eval": true
   }
 }

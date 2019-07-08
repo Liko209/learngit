@@ -52,14 +52,14 @@ class NewMessageSeparatorHandler extends Assembler {
     this._oldestPost = _.first(postList);
     /*
      * (1)
-     * If the `New Messages` separator already existed,
+     * If the `New messages` separator already existed,
      * it will never be modified when receive new posts
      */
     if (this.separatorId) return args;
 
     /*
      * (2)
-     * Check if there should be a `New Messages` separator
+     * Check if there should be a `New messages` separator
      */
     const lastPost = _.last(postList);
     const hasSeparator = !!lastPost && lastPost.id > this._readThrough;
@@ -127,7 +127,7 @@ class NewMessageSeparatorHandler extends Assembler {
 
   /**
    * When the user received a new post, and the user is at the
-   * bottom of stream, we should not add `New Messages` separator.
+   * bottom of stream, we should not add `New messages` separator.
    */
   disable() {
     this._disabled = true;

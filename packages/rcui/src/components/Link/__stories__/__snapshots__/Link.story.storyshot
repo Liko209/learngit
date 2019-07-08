@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Link Link: Link Link 1`] = `
+.c0 {
+  color: #0684DB;
+}
+
+.c0:hover {
+  color: rgb(4,92,153);
+  cursor: pointer;
+}
+
+.c0:active {
+  color: rgba(6,132,219,0.84);
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+   
+  <div>
+    <a
+      color="primary"
+      disabled={false}
+    >
+      <span
+        className="c0"
+        color="primary"
+        disabled={false}
+        size="medium"
+      >
+        Button
+      </span>
+    </a>
+  </div>
+</div>
+`;

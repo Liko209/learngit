@@ -22,7 +22,6 @@ import {
 import { withKnobs } from '@storybook/addon-knobs';
 import { withA11y } from '@storybook/addon-a11y';
 import { withNotes } from '@storybook/addon-notes';
-import { withInfo } from '@storybook/addon-info';
 
 import { ThemeProvider as JuiThemeProvider } from '../src/foundation/theme/index';
 import './index.css';
@@ -32,41 +31,20 @@ const ThemeDecorator = storyFn => {
     <JuiThemeProvider themeName='light'>
       <ThemeProvider theme={convert(themes.light)}>
         <Global styles={createReset} />
-        <div style={{ padding: 20 }}>{storyFn()}</div>
+        <div
+          id='component'
+          style={{
+            padding: '20px',
+            maxWidth: 'fit-content',
+            maxHeight: 'fit-content',
+          }}
+        >
+          {storyFn()}
+        </div>
       </ThemeProvider>
     </JuiThemeProvider>
   );
 };
-
-addDecorator(
-  withInfo({
-    styles: {
-      header: {
-        h1: {
-          marginRight: '20px',
-          fontSize: '25px',
-          display: 'inline',
-        },
-        body: {
-          paddingTop: 0,
-          paddingBottom: 0,
-          marginBottom: 0,
-        },
-        h2: {
-          display: 'inline',
-          color: '#999',
-        },
-      },
-      infoBody: {
-        backgroundColor: '#eee',
-        padding: '0px 5px',
-        lineHeight: '2',
-      },
-    },
-    inline: false,
-    source: false,
-  }),
-);
 
 addDecorator(withA11y);
 addDecorator(withNotes);
