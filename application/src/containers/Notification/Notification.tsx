@@ -6,7 +6,7 @@
 import { JuiSnackbarContentProps } from 'jui/components/Snackbars';
 import _ from 'lodash';
 import { AbstractViewModel } from '@/base';
-import { observable, autorun } from 'mobx';
+import { observable, autorun, action } from 'mobx';
 import { ToastProps, ToastMessageAlign } from '../ToastWrapper/Toast/types';
 import { Omit } from 'jui/foundation/utils/typeHelper';
 
@@ -22,6 +22,7 @@ class Notification extends AbstractViewModel {
   static data: ToastProps[] = [];
   static _buffer: NotificationProps[] = [];
 
+  @action
   private static _showNotification(props: NotificationProps) {
     if (Notification.data.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);
@@ -32,7 +33,7 @@ class Notification extends AbstractViewModel {
     );
     const id = Date.now();
     const dismiss = () => {
-      _.remove(Notification.data, item => item.id === id);
+      Notification._removeNotification(id);
     };
     const toast = {
       id,
@@ -47,6 +48,11 @@ class Notification extends AbstractViewModel {
     return {
       dismiss,
     };
+  }
+
+  @action
+  private static _removeNotification(id: number) {
+    _.remove(Notification.data, item => item.id === id);
   }
 
   static flashToast(props: NotificationProps) {
