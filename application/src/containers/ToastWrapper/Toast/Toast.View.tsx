@@ -30,7 +30,7 @@ class ToastComponent extends React.Component<Props> {
   }
   render() {
     function transitionDown(props: any) {
-      return <Slide {...props} direction="down" />;
+      return <Slide {...props} direction='down' />;
     }
     const {
       id,
@@ -46,9 +46,9 @@ class ToastComponent extends React.Component<Props> {
     if (dismissible) {
       action.push(
         <JuiSnackbarAction
-          key="dismiss"
-          variant="icon"
-          aria-label="Dismiss"
+          key='dismiss'
+          variant='icon'
+          aria-label='Dismiss'
           onClick={dismiss}
         >
           close
@@ -62,9 +62,9 @@ class ToastComponent extends React.Component<Props> {
     const config = { ...rest, action, message: ms };
     return (
       <JuiSnackbar
-        noFix={true}
+        noFix
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={true}
+        open
         TransitionComponent={transitionDown}
         onClose={this._onClose}
         autoHideDuration={autoHideDuration}

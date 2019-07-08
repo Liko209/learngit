@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SocketFSM, StateHandlerType } from './SocketFSM';
-import notificationCenter from '../../service/notificationCenter';
-import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
+import notificationCenter from '../notificationCenter';
+import { CONFIG, SOCKET, SERVICE } from '../eventKey';
 import { mainLogger, HealthModuleManager, BaseHealthModule } from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
@@ -42,7 +42,9 @@ export class SocketManager {
       .get(MODULE_IDENTIFY)!
       .register({
         name: 'SocketConnectState',
-        getStatus: () => ({ state: this.activeFSM ? this.activeFSM.state : 'none' }),
+        getStatus: () => ({
+          state: this.activeFSM ? this.activeFSM.state : 'none',
+        }),
       });
   }
 
@@ -115,11 +117,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
-      if (isRCOnlyMode) {
-        return;
-      }
-      this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
+      success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {
@@ -300,7 +299,6 @@ export class SocketManager {
   private _onLockScreen() {
     if (!this.activeFSM) {
       this.info('No activeFSM when lock screen.');
-      return;
     }
   }
 
@@ -316,7 +314,6 @@ export class SocketManager {
     if (this._hasLoggedIn && !this._isOffline) {
       this.info('Will renew socketFSM due to unlocking screen.');
       this._restartFSM();
-      return;
     }
   }
 

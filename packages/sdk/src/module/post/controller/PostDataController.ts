@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { mainLogger, PerformanceTracer } from 'foundation';
-import _ from 'lodash';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
@@ -25,7 +24,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
-import GroupService from '../../group';
+import { GroupService } from '../../group';
 import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
@@ -46,12 +45,14 @@ class PostDataController {
     if (shouldSaveToDb) {
       this.deletePreInsertPosts(transformedData);
     }
-    const posts: Post[] =
-      (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
-    const items =
-      (await ServiceLoader.getInstance<ItemService>(
+    const values = await Promise.all([
+      this.filterAndSavePosts(transformedData, shouldSaveToDb),
+      ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
-      ).handleIncomingData(data.items)) || [];
+      ).handleIncomingData(data.items),
+    ]);
+    const posts: Post[] = values[0] || [];
+    const items = values[1] || [];
     performanceTracer.end({
       key: POST_PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
       count: posts.length,
@@ -337,7 +338,7 @@ class PostDataController {
     });
 
     return Array.from(postGroupMap.values());
-  }
+  };
 
   async filterAndSavePosts(
     posts: Post[],
@@ -368,7 +369,7 @@ class PostDataController {
 
   postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
     return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
-  }
+  };
 
   /**
    * 1, Check whether the group has discontinues post,

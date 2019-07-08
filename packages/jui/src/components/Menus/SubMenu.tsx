@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useState, useCallback } from 'react';
-import { StyledMenuItem } from '../Menus/MenuItem';
-import { JuiMenuList } from '../Menus/MenuList';
+import { StyledMenuItem } from './MenuItem';
+import { JuiMenuList } from './MenuList';
 import { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiIconography } from '../../foundation/Iconography';
@@ -40,17 +40,17 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
 
   const Anchor = useCallback(() => {
     if (disabled) {
-      return <StyledMenuItem disabled={true}>{title}</StyledMenuItem>;
+      return <StyledMenuItem disabled>{title}</StyledMenuItem>;
     }
     return (
       <StyledSubMenuItem {...rest}>
         {title}
-        <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
+        <JuiIconography iconSize='medium' iconColor={['grey', '600']}>
           arrow_right
         </JuiIconography>
       </StyledSubMenuItem>
     );
-  },                         [disabled]);
+  }, [disabled]);
 
   const open = Boolean(anchorEl);
 
@@ -59,11 +59,11 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
       open={open}
       anchorEl={anchorEl}
       Anchor={Anchor}
-      placement="right-start"
+      placement='right-start'
       onMouseEnter={openPopper}
       onMouseLeave={closePopper}
       onClose={closePopper}
-      noTransition={true}
+      noTransition
     >
       <JuiMenuList>{props.children}</JuiMenuList>
     </JuiPopperMenu>

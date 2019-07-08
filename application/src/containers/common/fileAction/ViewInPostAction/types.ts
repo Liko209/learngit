@@ -6,6 +6,7 @@
 
 import { WithTranslation } from 'react-i18next';
 import { FileActionProps } from '../common/types';
+
 export type ViewInPostActionProps = FileActionProps & {
   groupId: number;
   asyncOperationDecorator?: FunctionDecorator;

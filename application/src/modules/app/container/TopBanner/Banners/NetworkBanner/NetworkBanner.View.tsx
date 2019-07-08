@@ -16,13 +16,12 @@ class NetworkBannerViewComponent extends React.Component<
 > {
   render() {
     const { t, isShow } = this.props;
-
     return isShow ? (
       <JuiSnackbarContent
         type={ToastType.ERROR}
         message={t('common.prompt.NoInternetConnection')}
-        messageAlign="center"
-        fullWidth={true}
+        messageAlign='center'
+        fullWidth
       />
     ) : null;
   }

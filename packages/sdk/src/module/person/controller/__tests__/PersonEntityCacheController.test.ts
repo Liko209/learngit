@@ -8,6 +8,7 @@ import { PersonEntityCacheController } from '../PersonEntityCacheController';
 import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
 import { Person } from '../../entity';
 import { PersonService } from '../../service/PersonService';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 const soundex = require('soundex-code');
 
 jest.mock('../../../../module/account/config');
@@ -156,6 +157,106 @@ describe('PersonEntityCacheController', () => {
         soundex('rock'),
         soundex('chen'),
       ]);
+    });
+  });
+
+  describe('_addPhoneNumbers', () => {
+    it('should add ext and direct number to cache', () => {
+      setUp();
+      const person: Person = {
+        id: 39,
+        company_id: 1,
+        sanitized_rc_extension: {
+          extensionNumber: '39',
+          type: 'User',
+        },
+        rc_phone_numbers: [
+          {
+            id: 39,
+            phoneNumber: '8885287464',
+            usageType: 'MainCompanyNumber',
+          },
+          { id: 39, phoneNumber: '6502270039', usageType: 'DirectNumber' },
+        ],
+      };
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        userConfig: { getCurrentCompanyId: jest.fn().mockReturnValueOnce(1) },
+      });
+      const shortNumCache = new Map();
+      const longNumCache = new Map();
+      Object.assign(personEntityCacheController, {
+        _shortNumberCache: shortNumCache,
+        _longNumberCache: longNumCache,
+      });
+      shortNumCache.set = jest.fn();
+      longNumCache.set = jest.fn();
+      personEntityCacheController._addPhoneNumbers(person);
+      expect(shortNumCache.set).toBeCalledWith('39', person);
+      expect(longNumCache.set).toBeCalledWith('6502270039', person);
+      expect(longNumCache.set).toBeCalledTimes(1);
+    });
+  });
+
+  describe('_removePhoneNumbersByPerson', () => {
+    it('should remove ext and direct num from cache', () => {
+      setUp();
+      const person: Person = {
+        id: 39,
+        company_id: 1,
+        sanitized_rc_extension: {
+          extensionNumber: '39',
+          type: 'User',
+        },
+        rc_phone_numbers: [
+          {
+            id: 39,
+            phoneNumber: '8885287464',
+            usageType: 'MainCompanyNumber',
+          },
+          { id: 39, phoneNumber: '6502270039', usageType: 'DirectNumber' },
+        ],
+      };
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        userConfig: { getCurrentCompanyId: jest.fn().mockReturnValueOnce(1) },
+      });
+      const shortNumCache = new Map();
+      const longNumCache = new Map();
+      Object.assign(personEntityCacheController, {
+        _shortNumberCache: shortNumCache,
+        _longNumberCache: longNumCache,
+      });
+      shortNumCache.delete = jest.fn();
+      longNumCache.delete = jest.fn();
+      personEntityCacheController._removePhoneNumbersByPerson(person);
+      expect(shortNumCache.delete).toBeCalledWith('39');
+      expect(longNumCache.delete).toBeCalledWith('6502270039');
+      expect(longNumCache.delete).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getPersonByPhoneNumber', () => {
+    let shortNumCache: Map<string, Person>;
+    let longNumCache: Map<string, Person>;
+    beforeEach(() => {
+      setUp();
+      shortNumCache = new Map();
+      longNumCache = new Map();
+      Object.assign(personEntityCacheController, {
+        _shortNumberCache: shortNumCache,
+        _longNumberCache: longNumCache,
+      });
+      shortNumCache.get = jest.fn();
+      longNumCache.get = jest.fn();
+    });
+
+    it('should get person from short num cache', () => {
+      personEntityCacheController.getPersonByPhoneNumber('123', true);
+      expect(shortNumCache.get).toBeCalled();
+    });
+
+    it('should get person from long num cache', () => {
+      personEntityCacheController.getPersonByPhoneNumber('123', false);
+      expect(longNumCache.get).toBeCalled();
     });
   });
 });

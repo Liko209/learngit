@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { JuiProfileDialogContentSummaryButton } from 'jui/pattern/Profile/Dialog';
@@ -29,7 +30,7 @@ const renderButton = (
       tabIndex={0}
       onClick={handleClick}
     >
-      <JuiIconography iconSize="medium">{iconName}</JuiIconography>
+      <JuiIconography iconSize='medium'>{iconName}</JuiIconography>
       {t(buttonMessage)}
     </JuiProfileDialogContentSummaryButton>
   );

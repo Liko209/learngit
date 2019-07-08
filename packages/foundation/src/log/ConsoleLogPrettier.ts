@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity, IConsoleLogPrettier } from './types';
+
 const COLORS = ['#ff8800', '#516bf0', '#008b8b'];
 export class ConsoleLogPrettier implements IConsoleLogPrettier {
   prettier(logEntity: LogEntity): any[] {

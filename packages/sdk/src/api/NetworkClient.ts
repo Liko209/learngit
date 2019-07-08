@@ -195,7 +195,7 @@ export default class NetworkClient {
       requestConfig,
       retryCount,
       priority = REQUEST_PRIORITY.NORMAL,
-      HAPriority,
+      HAPriority = HA_PRIORITY.BASIC,
       timeout,
       pathPrefix,
       channel,
@@ -221,7 +221,7 @@ export default class NetworkClient {
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .setPriority(priority)
-      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC)
+      .setHAPriority(HAPriority)
       .setChannel(channel || '');
   }
 

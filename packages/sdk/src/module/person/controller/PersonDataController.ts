@@ -13,7 +13,7 @@ import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class PersonDataController {
@@ -54,7 +54,7 @@ class PersonDataController {
         }
       }
     }
-  }
+  };
 
   handleIncomingData = async (
     persons: Raw<Person>[],
@@ -69,7 +69,7 @@ class PersonDataController {
     );
     this.handleTeamRemovedIds(transformedData, changeMap);
     this._saveDataAndDoNotification(transformedData, source, changeMap);
-  }
+  };
 
   private _saveDataAndDoNotification(
     persons: Person[],

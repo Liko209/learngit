@@ -30,15 +30,6 @@ class MemberHeader extends React.Component<
   static contextType = ProfileContext;
   private _ref: RefObject<any> = createRef();
   private _observer?: RO;
-  private _handleResize = (entries: ResizeObserverEntry[]) => {
-    const entry = entries[0];
-    const { width, height } = entry.contentRect;
-    const { sizeManager } = this.context;
-    sizeManager.updateSize('profileDialogMemberHeader', {
-      width,
-      height: height + PADDING_FIX,
-    });
-  }
 
   componentDidMount() {
     const { current } = this._ref;
@@ -53,13 +44,22 @@ class MemberHeader extends React.Component<
       this._observer.disconnect();
     }
   }
+  private _handleResize = (entries: ResizeObserverEntry[]) => {
+    const entry = entries[0];
+    const { width, height } = entry.contentRect;
+    const { sizeManager } = this.context;
+    sizeManager.updateSize('profileDialogMemberHeader', {
+      width,
+      height: height + PADDING_FIX,
+    });
+  };
   addTeamMembers = () => {
     const { group } = this.props;
     portalManager.dismissLast();
     Dialog.simple(<AddMembers group={group} />, {
       size: 'medium',
     });
-  }
+  };
 
   render() {
     const {
@@ -75,20 +75,20 @@ class MemberHeader extends React.Component<
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
-        data-test-automation-id="profileDialogMemberHeader"
+        data-test-automation-id='profileDialogMemberHeader'
         ref={this._ref}
       >
         <JuiProfileDialogContentMemberHeaderTitle>
           {`${t(key)} (${members.length})`}
           {isTeam && isCurrentUserHasPermissionAddMember && (
             <ButtonInRight onClick={this.addTeamMembers}>
-              <JuiIconography iconSize="medium">add_team</JuiIconography>
+              <JuiIconography iconSize='medium'>add_team</JuiIconography>
               {t('people.team.AddTeamMembers')}
             </ButtonInRight>
           )}
         </JuiProfileDialogContentMemberHeaderTitle>
         {hasSearch && (
-          <JuiProfileDialogContentMemberHeaderSearch data-test-automation-id="profileDialogMemberSearch">
+          <JuiProfileDialogContentMemberHeaderSearch data-test-automation-id='profileDialogMemberSearch'>
             <JuiOutlineTextField
               InputProps={{
                 placeholder: t('people.team.searchMembers'),
@@ -97,9 +97,9 @@ class MemberHeader extends React.Component<
                 },
               }}
               onChange={onSearch}
-              iconName="search"
-              iconPosition="left"
-              data-test-automation-id="profileDialogMemberSearch"
+              iconName='search'
+              iconPosition='left'
+              data-test-automation-id='profileDialogMemberSearch'
             />
           </JuiProfileDialogContentMemberHeaderSearch>
         )}

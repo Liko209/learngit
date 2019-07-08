@@ -24,7 +24,9 @@ export class RegisterItemManager<T extends UniqueItem>
     );
     if (duplicateItemIndex > -1) {
       this._items.splice(duplicateItemIndex, 1);
-      const warnText = `register item: ${item.name} is duplicate, will replace pre item`;
+      const warnText = `register item: ${
+        item.name
+      } is duplicate, will replace pre item`;
       logManager
         .getLogger(LOG_TAG)
         .tags(this._name)

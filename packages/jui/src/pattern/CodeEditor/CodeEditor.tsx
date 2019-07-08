@@ -185,6 +185,7 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
           prevScrollPosition.top,
         );
       }
+      /* eslint-disable no-prototype-builtins */
       if (typeof nextProps.codeMirrorOption === 'object') {
         for (const optionName in nextProps.codeMirrorOption) {
           if (
@@ -255,12 +256,12 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
         <StyledEditorWrapper
           maxHeight={height}
           initAnimation={initAnimation}
-          data-test-automation-id="codeSnippetBody"
+          data-test-automation-id='codeSnippetBody'
         >
           <StyledTextArea
             ref={this.textareaNode as any}
             defaultValue={this.props.value}
-            autoComplete="off"
+            autoComplete='off'
           />
           <OverrideDefaultStyle />
         </StyledEditorWrapper>

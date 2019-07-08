@@ -67,7 +67,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
     if (this.props.onEnter) {
       this.props.onEnter(node, isAppearing);
     }
-  }
+  };
 
   handleExit = (node: HTMLElement) => {
     const { theme } = this.props;
@@ -89,7 +89,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
     if (this.props.onExit) {
       this.props.onExit(node);
     }
-  }
+  };
 
   render() {
     const {
@@ -104,7 +104,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
 
     return (
       <Transition
-        appear={true}
+        appear
         in={inProp}
         onEnter={this.handleEnter}
         onExit={this.handleExit}

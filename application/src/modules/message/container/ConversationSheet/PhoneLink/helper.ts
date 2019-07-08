@@ -12,7 +12,7 @@ function isSupportWebRTC() {
     navigator['mozGetUserMedia']
   );
 }
-
+/* eslint-disable */
 function handleHrefAttribute(attr: {
   canUseTelephony: boolean;
   content: string;

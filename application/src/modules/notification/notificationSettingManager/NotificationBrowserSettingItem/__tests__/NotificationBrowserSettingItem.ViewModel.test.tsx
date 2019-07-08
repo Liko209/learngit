@@ -5,6 +5,7 @@
  */
 
 import { NotificationBrowserSettingItemViewModel } from '../NotificationBrowserSettingItem.ViewModel';
+
 jest.mock('@/utils/i18nT', () => (key: string) => key);
 
 function setUpMock() {

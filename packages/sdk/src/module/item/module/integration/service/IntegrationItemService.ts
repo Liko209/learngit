@@ -8,6 +8,7 @@ import { IntegrationItemController } from '../controller/IntegrationItemControll
 import { IntegrationItem } from '../entity';
 import { GlipTypeUtil } from '../../../../../utils';
 import { EntityBaseService } from '../../../../../framework/service';
+
 class IntegrationItemService extends EntityBaseService<IntegrationItem> {
   private _integrationItemController: IntegrationItemController;
 

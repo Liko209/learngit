@@ -5,4 +5,5 @@
  */
 
 import { LinkItemService } from './LinkItemService';
+
 export { LinkItemService };

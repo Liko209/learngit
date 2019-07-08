@@ -21,7 +21,7 @@ class EmojiItemView extends Component<EmojiItemViewProps> {
         Avatar={
           <Emoji
             emoji={id || ''}
-            set="emojione"
+            set='emojione'
             size={32}
             backgroundImageFn={backgroundImageFn}
           />

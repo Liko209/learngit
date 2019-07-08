@@ -107,7 +107,7 @@ class MediaReport implements IMediaReport {
         tailMax: max,
       });
       return prev;
-    },                 Object.create(null));
+    }, Object.create(null));
   }
 
   private _parse(data: MediaStatusReport): MediaReportItemType {
@@ -153,8 +153,10 @@ class MediaReport implements IMediaReport {
     if (!this._outcome) return null;
 
     KEYS.forEach(key => {
-      this._outcome![key].variance = this._accumulator[key].value;
-      this._outcome![key].average = this._getAverage(key);
+      if (this._outcome) {
+        this._outcome[key].variance = this._accumulator[key].value;
+        this._outcome[key].average = this._getAverage(key);
+      }
     });
     return this._outcome;
   }

@@ -21,6 +21,7 @@ import {
   SearchHighlightContext,
 } from '@/common/postParser';
 import { Palette } from 'jui/foundation/theme/theme';
+
 type Props = WithTranslation & EventViewProps;
 
 @observer
@@ -28,25 +29,30 @@ class Event extends React.Component<Props, {}> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   render() {
-    const { event, t, color = ['common', 'black'] as [keyof Palette, string], timeContent } = this.props;
+    const {
+      event,
+      t,
+      color = ['common', 'black'] as [keyof Palette, string],
+      timeContent,
+    } = this.props;
     const { text, description, location } = event;
 
     return (
       <JuiConversationItemCard
         title={postParser(text, { keyword: this.context.keyword })}
         iconColor={color}
-        Icon="event"
+        Icon='event'
       >
         <JuiSectionDivider gap={2}>
           <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
               time={`${timeContent.get()}`}
-              data-test-automation-id="event-due"
+              data-test-automation-id='event-due'
             />
           </JuiLabelWithContent>
           {location && (
             <JuiLabelWithContent label={t('item.locationTitle')}>
-              <JuiEventLocation data-test-automation-id="event-location">
+              <JuiEventLocation data-test-automation-id='event-location'>
                 {postParser(location, {
                   keyword: this.context.keyword,
                   url: true,
@@ -55,7 +61,7 @@ class Event extends React.Component<Props, {}> {
             </JuiLabelWithContent>
           )}
           {description && (
-            <JuiEventDescription data-test-automation-id="event-description">
+            <JuiEventDescription data-test-automation-id='event-description'>
               {postParser(description, {
                 keyword: this.context.keyword,
                 phoneNumber: true,

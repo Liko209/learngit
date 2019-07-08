@@ -138,7 +138,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
 
   private _fetchCallLogsFunc = async (ids: string[]): Promise<CallLog[]> => {
     return await this.batchGet(ids, true);
-  }
+  };
 
   private async _putCallLogView(callLog: CallLog) {
     await this._viewDao.put(this._toCallLogView(callLog));
@@ -162,6 +162,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   private _toPartialCallLogView(callLog: Partial<CallLog>) {
+    /* eslint-disable no-nested-ternary */
     const caller = callLog.direction
       ? callLog.direction === CALL_DIRECTION.INBOUND
         ? callLog.from

@@ -55,12 +55,12 @@ export class JuiHistoryOperation extends React.PureComponent<
     }
 
     return hander;
-  }
-
+  };
+  /* eslint-disable react/no-access-state-in-setstate */
   handleToggle = (target: EventTarget & HTMLElement) => {
     this._showPopup = true;
     this.setState({ anchorEl: target, open: !this.state.open });
-  }
+  };
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
     if (this._showPopup) {
@@ -73,7 +73,7 @@ export class JuiHistoryOperation extends React.PureComponent<
     }
 
     this.setState({ open: false, anchorEl: null });
-  }
+  };
 
   handleMenuItemClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -83,7 +83,7 @@ export class JuiHistoryOperation extends React.PureComponent<
     this.handleClose(event);
     const { onClickMenu } = this.props;
     onClickMenu(type, index);
-  }
+  };
 
   render() {
     const { open, anchorEl } = this.state;

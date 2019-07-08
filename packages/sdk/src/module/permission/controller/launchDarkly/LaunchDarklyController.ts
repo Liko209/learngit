@@ -13,7 +13,7 @@ import { LDFlagSet } from 'launchdarkly-js-client-sdk';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';
-import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 class LaunchDarklyController {
   private isClientReady = false;
@@ -36,7 +36,7 @@ class LaunchDarklyController {
   }
 
   private _subscribeNotifications() {
-    notificationCenter.on(SERVICE.LOGIN, async () => {
+    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
       await this._initClient();
     });
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, async () => {

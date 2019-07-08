@@ -74,10 +74,10 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
     } = props;
     const getAvatar = () => {
       if (PersonAvatar) {
-        return <PersonAvatar size="small" uid={id} />;
+        return <PersonAvatar size='small' uid={id} />;
       }
       if (GroupAvatar) {
-        return <GroupAvatar size="small" cid={id} />;
+        return <GroupAvatar size='small' cid={id} />;
       }
       return null;
     };
@@ -96,7 +96,7 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
         }}
         deleteIcon={
           <JuiIconButton
-            variant="plain"
+            variant='plain'
             tooltipTitle={deleteTooltip}
             color={isError ? 'semantic.negative' : 'grey.500'}
             data-test-automation-id={deleteAutomationId}

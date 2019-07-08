@@ -16,7 +16,11 @@ function createDependenciesDoc(dependencies: IDependency[]) {
 
     ${dependencies.map((dependency) => {
       const { options, __docgenInfo, displayName } = dependency;
-      return `+ ${options ? options.name : __docgenInfo ? __docgenInfo.displayName : displayName} `; // tslint:disable-line
+      if (options) return `+ ${options.name}`;
+      if (__docgenInfo) {
+        `+ ${__docgenInfo.displayName}`;
+      }
+      return `+ ${displayName}`;
     }).join('\n    ')}
   `;
 }

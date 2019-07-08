@@ -11,7 +11,12 @@ import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 import { Caller } from 'sdk/module/RCItems/types';
 import { BlockViewModel } from '../Block.ViewModel';
 
@@ -97,15 +102,19 @@ describe('BlockViewModel', () => {
 
   @testable
   class block {
-
-    @test('should toast error when block number fail for network issue [JPT-2410]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: false,
-    }, {
-      method: 'addBlockedNumber',
-      data: networkErrorFunc,
-    }])
+    @test(
+      'should toast error when block number fail for network issue [JPT-2410]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: false,
+      },
+      {
+        method: 'addBlockedNumber',
+        data: networkErrorFunc,
+      },
+    ])
     async t1() {
       const vm = new BlockViewModel({
         phoneNumber,
@@ -115,20 +124,27 @@ describe('BlockViewModel', () => {
       });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(
+        phoneNumber,
+      );
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForNetworkIssue'),
       );
     }
 
-    @test('should toast error when block number fail for server issue [JPT-2411]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: false,
-    }, {
-      method: 'addBlockedNumber',
-      data: serverErrorFunc,
-    }])
+    @test(
+      'should toast error when block number fail for server issue [JPT-2411]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: false,
+      },
+      {
+        method: 'addBlockedNumber',
+        data: serverErrorFunc,
+      },
+    ])
     async t2() {
       const vm = new BlockViewModel({
         phoneNumber,
@@ -138,7 +154,9 @@ describe('BlockViewModel', () => {
       });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(
+        phoneNumber,
+      );
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForServerIssue'),
       );
@@ -147,15 +165,19 @@ describe('BlockViewModel', () => {
 
   @testable
   class unblock {
-
-    @test('should toast error when unblock number fail for network issue [JPT-2412]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: true,
-    }, {
-      method: 'deleteBlockedNumbers',
-      data: networkErrorFunc,
-    }])
+    @test(
+      'should toast error when unblock number fail for network issue [JPT-2412]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: true,
+      },
+      {
+        method: 'deleteBlockedNumbers',
+        data: networkErrorFunc,
+      },
+    ])
     async t1() {
       const vm = new BlockViewModel({
         phoneNumber,
@@ -165,20 +187,27 @@ describe('BlockViewModel', () => {
       });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([
+        phoneNumber,
+      ]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForNetworkIssue'),
       );
     }
 
-    @test('should toast error when unblock number fail for server issue [JPT-2413]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: true,
-    }, {
-      method: 'deleteBlockedNumbers',
-      data: serverErrorFunc,
-    }])
+    @test(
+      'should toast error when unblock number fail for server issue [JPT-2413]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: true,
+      },
+      {
+        method: 'deleteBlockedNumbers',
+        data: serverErrorFunc,
+      },
+    ])
     async t2() {
       const vm = new BlockViewModel({
         phoneNumber,
@@ -188,10 +217,12 @@ describe('BlockViewModel', () => {
       });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([
+        phoneNumber,
+      ]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForServerIssue'),
       );
     }
   }
-})
+});

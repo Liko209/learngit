@@ -14,7 +14,7 @@ import { EditPostType } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ENTITY } from '../../../../service/eventKey';
 import { IPostActionController } from '../interface/IPostActionController';
-import { ItemService } from '../../../../module/item/service';
+import { ItemService } from '../../../item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -44,10 +44,8 @@ class PostActionController implements IPostActionController {
         if (index === -1) {
           likes.push(personId);
         }
-      } else {
-        if (index > -1) {
-          likes.splice(index, 1);
-        }
+      } else if (index > -1) {
+        likes.splice(index, 1);
       }
       return {
         ...partialPost,

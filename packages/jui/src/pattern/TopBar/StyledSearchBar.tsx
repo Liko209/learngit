@@ -60,9 +60,9 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
   return (
     <TobBarSearch
       iconName={iconName}
-      radiusType="circle"
+      radiusType='circle'
       iconPosition={position}
-      disabled={true}
+      disabled
       onClick={onClick}
       value={value}
       onClickIconRight={onClear}
@@ -76,8 +76,8 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
           'data-test-automation-id': 'topBar-search-input',
         },
       }}
-      data-test-automation-id="topBar-search-bar"
-      className="topBar-search-bar"
+      data-test-automation-id='topBar-search-bar'
+      className='topBar-search-bar'
     />
   );
 });

@@ -7,5 +7,6 @@
 // FIXME: RCINT-11158
 
 import { ThemeHandler } from 'rcui/foundation/styles/ThemeHandler';
+
 export { ThemeHandler };
 export default new ThemeHandler();

@@ -18,25 +18,25 @@ storiesOf('Pattern/ImageViewer', module)
     return (
       <JuiFabGroup
         centerText={'100%'}
-        resetMode={true}
+        resetMode
         ZoomIn={
           <JuiIconButton
-            variant="plain"
-            tooltipTitle="zoom_in"
+            variant='plain'
+            tooltipTitle='zoom_in'
             symbol={zoomIn}
           />
         }
         ZoomOut={
           <JuiIconButton
-            variant="plain"
-            tooltipTitle="zoom_out"
+            variant='plain'
+            tooltipTitle='zoom_out'
             symbol={zoomOut}
           />
         }
         ZoomReset={
           <JuiIconButton
-            variant="plain"
-            tooltipTitle="reset zoom"
+            variant='plain'
+            tooltipTitle='reset zoom'
             symbol={resetZoom}
           />
         }

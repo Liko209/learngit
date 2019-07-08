@@ -110,8 +110,10 @@ class RecentCallLogsHandler {
       case EVENT_TYPES.RELOAD:
         this._handleDataReload(payload);
         break;
+      default:
+        break;
     }
-  }
+  };
 
   private _handleDataReplace(
     payload: NotificationEntityReplacePayload<CallLog, string>,

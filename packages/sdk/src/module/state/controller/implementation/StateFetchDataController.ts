@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { daoManager } from '../../../../dao';
 import { StateDao } from '../../dao';
 import { GroupState, MyState } from '../../entity/State';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateService } from '../../service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 class StateFetchDataController {
   private _myStateId: number;
   constructor(

@@ -46,7 +46,7 @@ class PhoneParserUtility {
 
   static triggerInitPhoneParser = () => {
     PhoneParserUtility.initPhoneParser(true);
-  }
+  };
 
   static async loadModule(): Promise<boolean> {
     if (PhoneParserUtility._moduleStatus === MODULE_STATUS.LOADED) {
@@ -65,7 +65,7 @@ class PhoneParserUtility {
     );
 
     notificationCenter.on(
-      SERVICE.LOGIN,
+      SERVICE.RC_LOGIN,
       PhoneParserUtility.triggerInitPhoneParser,
     );
 
@@ -113,7 +113,7 @@ class PhoneParserUtility {
       );
 
       notificationCenter.off(
-        SERVICE.LOGIN,
+        SERVICE.RC_LOGIN,
         PhoneParserUtility.triggerInitPhoneParser,
       );
 

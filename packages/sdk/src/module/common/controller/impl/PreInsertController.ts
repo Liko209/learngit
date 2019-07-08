@@ -98,6 +98,8 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       case PROGRESS_STATUS.CANCELED:
         this.progressService.deleteProgress(entity.id);
         break;
+      default:
+        break;
     }
   }
 
@@ -142,7 +144,7 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
 
   private _getUniqueId(entity: T) {
     let preInsertId: string = '';
-    if (entity.hasOwnProperty(UNIQUE_ID)) {
+    if (Object.prototype.hasOwnProperty.call(entity, UNIQUE_ID)) {
       preInsertId = entity[UNIQUE_ID];
     }
     return preInsertId;

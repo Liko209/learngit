@@ -69,10 +69,8 @@ class ProfileActionController {
         if (newIds.indexOf(groupId) === -1) {
           newIds = [groupId].concat(newIds);
         }
-      } else {
-        if (newIds.indexOf(groupId) !== -1) {
-          newIds = newIds.filter((id: number) => id !== groupId);
-        }
+      } else if (newIds.indexOf(groupId) !== -1) {
+        newIds = newIds.filter((id: number) => id !== groupId);
       }
       partialModel['favorite_group_ids'] = newIds;
       return partialModel;
@@ -90,7 +88,7 @@ class ProfileActionController {
   async markMeConversationAsFav(): Promise<Profile | null> {
     const profile = await this.profileDataController.getProfile();
 
-    if (profile.me_tab) {
+    if (profile && profile.me_tab) {
       // Me conversation already be marked as favorite.
       return profile;
     }

@@ -91,19 +91,6 @@ class JuiContainer extends PureComponent<Props> {
     keypadFullSize: false,
   };
 
-  state = {
-    showHoverActions: false,
-  };
-
-  _onFocus = (e: any) => {
-    const { onFocus } = this.props;
-    // prevent drag & drop
-    e.stopPropagation();
-    e.preventDefault();
-
-    onFocus && onFocus(e);
-  }
-
   componentDidMount() {
     if (this._containerRef.current) {
       this._containerRef.current.addEventListener(
@@ -122,6 +109,14 @@ class JuiContainer extends PureComponent<Props> {
       this._onFocus,
     );
   }
+  _onFocus = (e: any) => {
+    const { onFocus } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onFocus && onFocus(e);
+  };
 
   render() {
     const {

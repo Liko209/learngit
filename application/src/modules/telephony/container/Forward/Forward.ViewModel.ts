@@ -33,11 +33,11 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
 
   makeForwardCall = () => {
     this.forward(this._telephonyStore.forwardString);
-  }
+  };
 
   @catchError.flash({
     server: 'telephony.prompt.ForwardBackendError',
@@ -51,15 +51,15 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
     await this._telephonyService.forward(val);
     this._onActionSuccess('telephony.prompt.ForwardCallSuccess');
     return true;
-  }
+  };
 
   quitForward = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 
   dispose = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 }
 
 export { ForwardViewModel };

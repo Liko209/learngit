@@ -40,25 +40,25 @@ export class LogPersistent implements ILogPersistent {
         configManager.getConfig().persistentLimit,
       );
     }
-  }
+  };
 
   put = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.put(item);
-  }
+  };
 
   bulkPut = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkPut(array);
-  }
+  };
 
   get = async (key: number) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     return await this._collection.get(key);
-  }
+  };
 
   getAll = async (limit?: number) => {
     await this._ensureInit();
@@ -78,13 +78,13 @@ export class LogPersistent implements ILogPersistent {
       criteria,
     });
     return array;
-  }
+  };
 
   delete = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.delete(item.id);
-  }
+  };
 
   bulkDelete = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
@@ -94,14 +94,14 @@ export class LogPersistent implements ILogPersistent {
         return item.id;
       }),
     );
-  }
+  };
 
   count = async () => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     return await this._collection.count();
-  }
-
+  };
+  /* eslint-disable */
   cleanPersistentWhenReachLimit = async (maxPersistentSize: number) => {
     const performanceTracer = PerformanceTracer.start();
     const logs = await this.getAll();
@@ -124,5 +124,5 @@ export class LogPersistent implements ILogPersistent {
         }
       }
     }
-  }
+  };
 }

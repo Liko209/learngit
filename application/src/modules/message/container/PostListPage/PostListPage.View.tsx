@@ -35,12 +35,12 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
                 }}
               >
                 <JuiConversationPage
-                  data-test-automation-id="post-list-page"
+                  data-test-automation-id='post-list-page'
                   data-type={kind}
                   ref={ref}
                 >
                   <JuiConversationPageHeader
-                    data-test-automation-id="post-list-page-header"
+                    data-test-automation-id='post-list-page-header'
                     title={t(caption)}
                   />
                   {ids ? (

@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { Listener } from 'eventemitter2';
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { ServiceLoader, ServiceConfig } from '../serviceLoader';
-import { Listener } from 'eventemitter2';
 
 class GlobalConfig {
   static moduleName: string;

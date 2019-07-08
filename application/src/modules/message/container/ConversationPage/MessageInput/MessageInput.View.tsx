@@ -93,21 +93,21 @@ class MessageInputViewComponent extends Component<
     if (current) {
       current.vm.autoUploadFiles(array);
     }
-  }
+  };
 
   handleCopyPasteFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files, false);
     }
-  }
+  };
 
   handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files);
     }
-  }
+  };
 
   private _getMenus() {
     const { t } = this.props;
@@ -154,7 +154,7 @@ class MessageInputViewComponent extends Component<
           tooltip={t('message.action.attachFile')}
           title={t('message.inputMenus.uploadFileMenuTitle')}
           onFileChanged={this._autoUploadFile}
-          data-test-automation-id="message-action-bar-attachment"
+          data-test-automation-id='message-action-bar-attachment'
         />
         <Emoji
           tooltip={t('message.emoji.emojiTooltip')}
@@ -167,7 +167,7 @@ class MessageInputViewComponent extends Component<
   );
 
   private _getAttachmentsNode = moize((id: number) => (
-    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft />
   ));
 
   private _getFooterNode = moize((hasInput: boolean) => (

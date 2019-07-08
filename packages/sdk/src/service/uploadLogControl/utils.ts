@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
+
 export function createWorker(worker: any) {
   return _.isFunction(worker) ? worker() : null;
 }

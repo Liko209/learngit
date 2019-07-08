@@ -31,7 +31,7 @@ const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
 };
 
 const interpolation = {
-  format(value: any, format: any, lng: any) {
+  format(value: any, format: any) {
     if (format === 'titlecase') return toTitleCase(value);
     if (format === 'uppercase') return value.toUpperCase();
     if (format === 'en-handle-an') {

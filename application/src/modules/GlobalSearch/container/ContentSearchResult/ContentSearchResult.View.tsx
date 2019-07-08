@@ -37,7 +37,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
     if (height !== this.state.height || size.width !== this.state.width) {
       this.setState({ height, width: size.width });
     }
-  }
+  };
   render() {
     const {
       t,
@@ -59,12 +59,12 @@ class ContentSearchResultViewComponent extends Component<Props> {
       >
         <JuiFullSearchWrapper
           {...rest}
-          data-test-automation-id="search-message-panel"
+          data-test-automation-id='search-message-panel'
         >
           <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiFullSearchResultWrapper>
             {showResult && searchState.requestId ? (
-              <JuiListSubheader data-test-automation-id="searchResultsCount">
+              <JuiListSubheader data-test-automation-id='searchResultsCount'>
                 {t('globalSearch.Results', { count: postsCount })}
               </JuiListSubheader>
             ) : null}
@@ -80,7 +80,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
                       isShow={isShow}
                       postIds={searchState.postIds}
                       postFetcher={onPostsFetch}
-                      selfProvide={true}
+                      selfProvide
                     />
                   </SearchHighlightContext.Provider>
                 )}

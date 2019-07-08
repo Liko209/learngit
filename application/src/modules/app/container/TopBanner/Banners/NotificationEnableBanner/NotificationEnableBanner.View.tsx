@@ -46,7 +46,7 @@ class NotificationEnableBannerViewComponent extends React.Component<
         },
       });
     }
-  }
+  };
 
   render() {
     const { t, isShow, isBlocked, handleClose } = this.props;
@@ -57,15 +57,15 @@ class NotificationEnableBannerViewComponent extends React.Component<
       <JuiSnackbarContent
         type={ToastType.INFO}
         message={t(translationKey)}
-        messageAlign="center"
-        fullWidth={true}
+        messageAlign='center'
+        fullWidth
         action={[
           !isBlocked ? (
-            <JuiSnackbarAction key="enable" onClick={this.enableNotification}>
+            <JuiSnackbarAction key='enable' onClick={this.enableNotification}>
               {t('notification.topBanner.enablePermissionAction')}
             </JuiSnackbarAction>
           ) : null,
-          <JuiSnackbarAction key="close" variant="icon" onClick={handleClose}>
+          <JuiSnackbarAction key='close' variant='icon' onClick={handleClose}>
             close
           </JuiSnackbarAction>,
         ]}

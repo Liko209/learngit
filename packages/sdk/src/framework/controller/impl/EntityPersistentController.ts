@@ -6,12 +6,13 @@
 
 import { IdModel, ModelIdType } from '../../model';
 import { IEntityPersistentController } from '../interface/IEntityPersistentController';
-import { IDao } from '../../../framework/dao';
+import { IDao } from '../../dao';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../service/constants';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
+/* eslint-disable */
 class EntityPersistentController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number

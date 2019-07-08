@@ -29,7 +29,7 @@ class CallViewComponent extends Component<Props> {
      */
     call();
     trackCall(this.props.analysisSource);
-  }
+  };
 
   render() {
     const { t, phoneNumber, size, variant, color, showIcon } = this.props;
@@ -48,7 +48,7 @@ class CallViewComponent extends Component<Props> {
         })}
         variant={variant}
         color={color}
-        data-test-automation-id="telephony-call-btn"
+        data-test-automation-id='telephony-call-btn'
       >
         phone
       </JuiIconButton>

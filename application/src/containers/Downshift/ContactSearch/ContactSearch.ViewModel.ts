@@ -16,6 +16,7 @@ import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
   @observable existMembers: number[] = [];
   @observable suggestions: SelectedMember[] = [];
@@ -42,7 +43,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     this.selectedItems = items;
     this.inputValue = '';
     return onSelectChange && onSelectChange(items);
-  }
+  };
 
   @computed
   private get _isExcludeMe() {
@@ -57,7 +58,6 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       return;
     }
     this.groupMembers = [];
-    return;
   }
 
   @action
@@ -85,7 +85,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       },
     );
     return filterMembers;
-  }
+  };
 
   @action
   searchMembers = (value: string) => {
@@ -103,7 +103,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       }));
       this.suggestions = differenceBy(members, this.selectedItems, 'id');
     });
-  }
+  };
 }
 
 export { ContactSearchViewModel };

@@ -28,7 +28,7 @@ import {
   SequenceProcessorHandler,
   IProcessor,
 } from '../../../../../framework/processor';
-
+/* eslint-disable */
 const LOG_TAG = 'FileUploadController';
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -595,9 +595,7 @@ class FileUploadController {
         mainLogger
           .tags(LOG_TAG)
           .log(
-            `_sendItemFileInQueue, done for ${preInsertItem.id}_${
-              preInsertItem.name
-            }`,
+            `_sendItemFileInQueue, done for ${preInsertItem.id}_${preInsertItem.name}`,
           );
       },
     );
@@ -626,7 +624,7 @@ class FileUploadController {
     try {
       // in order to keep file time close to item time to keep item order same as file order
       preInsertItem.versions[0].date = Date.now();
-      let result: ItemFile | undefined = undefined;
+      let result: ItemFile | undefined;
       if (existItemFile) {
         result = (await this._updateItem(
           existItemFile,

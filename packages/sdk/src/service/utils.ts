@@ -70,8 +70,10 @@ const baseHandleData = async (
     });
 
     if (deactivatedData.length > 0) {
-      await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-      await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
+      await Promise.all([
+        daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData),
+        dao.bulkDelete(deactivatedData.map((item: any) => item.id)),
+      ]);
     }
 
     if (normalData.length > 0) {
@@ -96,12 +98,10 @@ const baseHandleData = async (
             }
           },
         );
+      } else if (changeMap) {
+        changeMap.set(eventKey, { entities: data });
       } else {
-        if (changeMap) {
-          changeMap.set(eventKey, { entities: data });
-        } else {
-          notificationCenter.emitEntityUpdate(eventKey, data);
-        }
+        notificationCenter.emitEntityUpdate(eventKey, data);
       }
     }
     return normalData;

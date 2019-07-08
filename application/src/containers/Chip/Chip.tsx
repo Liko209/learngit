@@ -16,11 +16,21 @@ const ChipComponent = (props: any) => {
     const type = GlipTypeUtil.extractTypeId(id);
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       return (
-        <JuiChip PersonAvatar={Avatar} deleteTooltip={t('common.remove')} {...rest} />
+        <JuiChip
+          PersonAvatar={Avatar}
+          id={id}
+          deleteTooltip={t('common.remove')}
+          {...rest}
+        />
       );
     }
     return (
-      <JuiChip GroupAvatar={GroupAvatar} deleteTooltip={t('common.remove')} {...rest} />
+      <JuiChip
+        GroupAvatar={GroupAvatar}
+        id={id}
+        deleteTooltip={t('common.remove')}
+        {...rest}
+      />
     );
   }
   return <JuiChip {...props} />;
@@ -28,7 +38,7 @@ const ChipComponent = (props: any) => {
 
 const Chip = (props: any) => (
   <Translation>
-    {(t) => <ChipComponent {...props} t={t} deleteAutomationId="chip-remove" />}
+    {t => <ChipComponent {...props} t={t} deleteAutomationId='chip-remove' />}
   </Translation>
 );
 

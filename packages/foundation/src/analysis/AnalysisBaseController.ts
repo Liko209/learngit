@@ -5,14 +5,12 @@
  */
 class AnalysisBaseController {
   private _isProduction: boolean = false;
-  constructor() {}
-
   getEndPoint() {
     let result = 'others';
     if (!window['jupiterElectron']) {
       result = 'web';
     } else {
-      const platform = navigator.platform;
+      const { platform } = navigator;
       if (platform.startsWith('Mac')) {
         result = 'mac';
       } else if (platform.startsWith('Win32')) {

@@ -195,5 +195,5 @@ export class LogControlManager implements IAccessor {
       this.worker = createWorker(zipWorker.default);
     }
     return this.worker.zip(zipItems);
-  }
+  };
 }

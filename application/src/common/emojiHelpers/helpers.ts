@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 10:27:20
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import {
   mapEscape,
   mapUnescape,

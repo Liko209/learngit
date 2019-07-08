@@ -13,7 +13,7 @@ import { JuiAutoSizer, Size } from './AutoSizer';
 function withAutoSizer<P>(
   Component: ComponentType<P>,
 ): ComponentType<Pick<P, Exclude<keyof P, 'width' | 'height'>>> {
-  return function (props: P) {
+  return function(props: P) {
     return (
       <JuiAutoSizer>
         {(size: Size) => (

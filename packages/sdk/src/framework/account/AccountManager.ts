@@ -23,6 +23,11 @@ const AUTH_SUCCESS = 'ACCOUNT_MANAGER.AUTH_SUCCESS';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
 const EVENT_SUPPORTED_SERVICE_CHANGE =
   'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
+enum GLIP_LOGIN_STATUS {
+  PROCESS,
+  SUCCESS,
+  FAILURE,
+}
 
 class AccountManager extends EventEmitter2 {
   static START_LOGIN = START_LOGIN;
@@ -31,6 +36,8 @@ class AccountManager extends EventEmitter2 {
   static EVENT_SUPPORTED_SERVICE_CHANGE = EVENT_SUPPORTED_SERVICE_CHANGE;
 
   private _isLogin = false;
+  private _isRCOnlyMode = false;
+  private _glipLoginStatus = GLIP_LOGIN_STATUS.PROCESS;
   private _accountMap: Map<string, IAccount> = new Map();
   private _accounts: IAccount[] = [];
 
@@ -60,7 +67,7 @@ class AccountManager extends EventEmitter2 {
     return this._handleAuthResponse(resp);
   }
 
-  async reLogin(authType: string): Promise<boolean> {
+  async glipLogin(authType: string): Promise<boolean> {
     const authenticator = this._container.get<IAuthenticator>(authType);
     const resp = await authenticator.authenticate({});
     if (!resp.success) {
@@ -100,6 +107,18 @@ class AccountManager extends EventEmitter2 {
 
   isLoggedIn(): boolean {
     return this._isLogin;
+  }
+
+  isRCOnlyMode(): boolean {
+    return this._isRCOnlyMode;
+  }
+
+  setGlipLoginStatus(status: GLIP_LOGIN_STATUS): void {
+    this._glipLoginStatus = status;
+  }
+
+  getGlipLoginStatus(): GLIP_LOGIN_STATUS {
+    return this._glipLoginStatus;
   }
 
   updateSupportedServices(data?: any) {
@@ -160,6 +179,7 @@ class AccountManager extends EventEmitter2 {
       return { success: false, error: new Error('Auth fail') };
     }
     this._isLogin = true;
+    this._isRCOnlyMode = !!resp.isRCOnlyMode;
     const accounts = this._createAccounts(resp.accountInfos);
     this.emit(AUTH_SUCCESS, resp);
     return {
@@ -170,4 +190,4 @@ class AccountManager extends EventEmitter2 {
   }
 }
 
-export { AccountManager };
+export { AccountManager, GLIP_LOGIN_STATUS };

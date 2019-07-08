@@ -13,6 +13,7 @@ type ProfileWrapperProps = {
   dismiss: () => void;
 };
 
+/* eslint-disable */
 const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
   const _ref = useRef<HTMLDivElement>(null);
 
@@ -35,7 +36,7 @@ const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
     return () => {
       document.removeEventListener('click', _clickEventHandler);
     };
-  },        []);
+  }, []);
 
   return (
     <div ref={_ref}>

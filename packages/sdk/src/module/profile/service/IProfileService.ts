@@ -6,10 +6,11 @@
 
 import { SettingOption } from '../types';
 import { Profile } from '../entity';
+import { Nullable } from 'sdk/types';
 
 interface IProfileService {
   updateSettingOptions(options: SettingOption[]): Promise<void>;
-  getProfile(): Promise<Profile>;
+  getProfile(): Promise<Nullable<Profile>>;
 }
 
 export { IProfileService };

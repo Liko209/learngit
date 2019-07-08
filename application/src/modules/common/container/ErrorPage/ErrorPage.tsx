@@ -9,15 +9,15 @@ import { JuiEmptyPage } from 'jui/pattern/EmptyPage';
 import { JuiButton } from 'jui/components/Buttons';
 import { IErrorPage } from './types';
 import tryAgainImage from './images/try-again.svg';
-
+/* eslint-disable */
 const ErrorPageComponent: IErrorPage = ({ t, onReload, height }) => (
   <JuiEmptyPage
-    data-test-automation-id="errorPage"
+    data-test-automation-id='errorPage'
     message={t('common.prompt.loadError')}
     image={tryAgainImage}
     height={height}
   >
-    <JuiButton variant="outlined" onClick={onReload}>
+    <JuiButton variant='outlined' onClick={onReload}>
       {t('common.button.tryAgain')}
     </JuiButton>
   </JuiEmptyPage>

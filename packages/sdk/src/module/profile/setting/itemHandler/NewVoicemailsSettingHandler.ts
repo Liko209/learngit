@@ -62,7 +62,10 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     if (!desktopNotifications && !PlatformUtils.isElectron()) {
       state = ESettingItemState.DISABLE;
     }
-    if (profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL) {
+    if (
+      profile &&
+      profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL
+    ) {
       state = ESettingItemState.INVISIBLE;
     }
     return state;
@@ -109,9 +112,9 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   }
   private async _getVoiceMail() {
     const profile = await this._profileService.getProfile();
-    let voiceMail = profile[SETTING_KEYS.DESKTOP_VOICEMAIL];
-    if (voiceMail === undefined) {
-      voiceMail = NOTIFICATION_OPTIONS.ON;
+    let voiceMail = NOTIFICATION_OPTIONS.ON;
+    if (profile && profile.desktop_notifications_new_voicemails !== undefined) {
+      voiceMail = profile.desktop_notifications_new_voicemails;
     }
     return voiceMail;
   }

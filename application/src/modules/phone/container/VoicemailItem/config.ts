@@ -6,6 +6,7 @@
 
 import { JuiAudioMode } from 'jui/pattern/AudioPlayer';
 import { BREAK_POINT_MAP } from './types';
+
 const voiceMailDefaultResponsiveInfo = {
   audioMode: JuiAudioMode.FULL,
   buttonToShow: 3,

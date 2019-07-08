@@ -20,6 +20,7 @@ import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Nullable } from 'sdk/types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -70,13 +71,13 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source, changeMap);
-  }
+  };
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()
       .getProfileActionController()
       .handleGroupIncomesNewPost(groupIds);
-  }
+  };
 
   getProfileController(): ProfileController {
     if (!this.profileController) {
@@ -85,7 +86,7 @@ class ProfileService extends EntityBaseService<Profile>
     return this.profileController;
   }
 
-  async getProfile(): Promise<Profile> {
+  async getProfile(): Promise<Nullable<Profile>> {
     return await this.getProfileController()
       .getProfileDataController()
       .getProfile();

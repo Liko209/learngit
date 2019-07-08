@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
+
 export function serializeUrlParams(params: object) {
   const str: string[] = [];
 

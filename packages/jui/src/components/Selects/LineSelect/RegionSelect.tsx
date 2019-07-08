@@ -9,7 +9,7 @@ import {
   JuiIconography,
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
-import { JuiLineSelect } from '../../Selects/LineSelect';
+import { JuiLineSelect } from '.';
 import { JuiMenuItem } from '../../Menus';
 import { JuiListItemText } from '../../Lists';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
@@ -80,7 +80,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
         <StyledRegionSelectWrap>
           <MuiListItemIcon>
             <JuiIconography
-              iconSize="large"
+              iconSize='large'
               symbol={selectRegion.regionIcon}
               desc={selectRegion.desc}
             />
@@ -104,7 +104,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
       {regionList.map((item: RegionType) => {
         const regionIcon = (
           <JuiIconography
-            iconSize="large"
+            iconSize='large'
             symbol={item.regionIcon}
             desc={item.desc}
           />

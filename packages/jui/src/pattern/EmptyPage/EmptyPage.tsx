@@ -50,7 +50,7 @@ const StyledEmptyPageMessage = styled.span`
   ${typography('subheading1')};
   color: ${grey('900')};
 `;
-
+/* eslint-disable */
 const JuiEmptyPageComponent: IJuiEmptyPage = ({
   height = '100%',
   image = '',

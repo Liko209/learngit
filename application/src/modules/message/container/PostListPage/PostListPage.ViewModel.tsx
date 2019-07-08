@@ -111,7 +111,7 @@ class PostListPageViewModel extends AbstractViewModel {
   unsetCurrentPostListValue = () => {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.CURRENT_POST_LIST_TYPE, '');
-  }
+  };
 
   private _getDataByIds = async (ids: number[]) => {
     const postsStore = storeManager.getEntityMapStore(
@@ -133,7 +133,7 @@ class PostListPageViewModel extends AbstractViewModel {
       );
     }
     return [...postsFromService, ...postsFromStore];
-  }
+  };
 
   private _getOnePageData = async (
     start: number,
@@ -142,7 +142,7 @@ class PostListPageViewModel extends AbstractViewModel {
     if (this.ids === undefined) {
       return { data: [], hasMore: true };
     }
-
+    /* eslint-disable */
     const data = [];
     let currentIds = [];
     let currentStart = start;
@@ -161,7 +161,7 @@ class PostListPageViewModel extends AbstractViewModel {
 
     const hasMore = data.length === pageSize && currentEnd < this.ids.length;
     return { data, hasMore };
-  }
+  };
 
   postFetcher = async (
     direction: QUERY_DIRECTION,
@@ -174,7 +174,7 @@ class PostListPageViewModel extends AbstractViewModel {
       start = index + 1;
     }
     return await this._getOnePageData(start, pageSize);
-  }
+  };
 }
 
 export { PostListPageViewModel };

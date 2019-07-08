@@ -12,10 +12,10 @@ class DialerPanelViewComponent extends React.Component<Props> {
     const { makeCall, onAfterDialerOpen } = this.props;
     return (
       <GenericDialerPanel
-        inputStringProps="inputString"
+        inputStringProps='inputString'
         onInputEnterKeyDown={makeCall}
         CallActionBtn={DialBtn}
-        displayCallerIdSelector={true}
+        displayCallerIdSelector
         onContactSelected={makeCall}
         onAfterMount={onAfterDialerOpen}
       />

@@ -3,7 +3,7 @@
  * @Date: 2019-03-14 16:13:52
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import _ from 'lodash';
 import { ISearchService } from '../service/ISearchService';
 import { GroupService } from '../../group';
@@ -205,7 +205,7 @@ class SearchPersonController {
     personB: SortableModel<Person>,
   ) => {
     return SortUtils.compareSortableModel<Person>(personA, personB);
-  }
+  };
 
   private _getMostRecentViewTime(
     personId: number,

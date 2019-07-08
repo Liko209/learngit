@@ -4,7 +4,6 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { DeskTopNotification } from '../agent/DesktopNotification';
-import _ from 'lodash';
 import {
   INotificationService,
   NotificationOpts,
@@ -16,13 +15,14 @@ import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
 import { computed } from 'mobx';
-const logger = mainLogger.tags('AbstractNotificationManager');
 import { UserSettingEntity } from 'sdk/module/setting';
 import { getEntity } from '@/store/utils/entities';
 import { ENTITY_NAME } from '@/store/constants';
 import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+
+const logger = mainLogger.tags('AbstractNotificationManager');
 
 class NotificationService implements INotificationService {
   @INotificationPermission
@@ -100,7 +100,7 @@ class NotificationService implements INotificationService {
   clear = () => {
     // todo clear scope
     this._notificationDistributor.clear();
-  }
+  };
 }
 
 export { NotificationService };

@@ -34,15 +34,15 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem disableButton={true} isUnread={false}>
+    <ContactItem disableButton isUnread={false}>
       <JuiListItemAvatar>
-        <JuiIconography iconSize="medium" iconColor={color}>
+        <JuiIconography iconSize='medium' iconColor={color}>
           {icon}
         </JuiIconography>
       </JuiListItemAvatar>
       {isShowCallInfo && (
         <JuiListItemText
-          alignCenter={true}
+          alignCenter
           primary={callType}
           primaryColor={textColor}
           secondary={isMissedCall ? null : duration}

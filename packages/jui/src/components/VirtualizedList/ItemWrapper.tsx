@@ -1,4 +1,5 @@
 import { createElement, HTMLAttributes } from 'react';
+
 const WRAPPER_IDENTIFIER = 'data-customized-wrapper';
 const ItemWrapper = createElement<
   HTMLAttributes<HTMLElement> & { [WRAPPER_IDENTIFIER]: boolean },

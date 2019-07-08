@@ -46,7 +46,7 @@ class CallLogBadgeController {
       const profile = await ServiceLoader.getInstance<ProfileService>(
         ServiceConfig.PROFILE_SERVICE,
       ).getProfile();
-      this._lastReadMissed = profile.last_read_missed;
+      this._lastReadMissed = profile ? profile.last_read_missed : undefined;
       const data = await this._sourceController.getEntities();
       data.forEach((data: CallLog) => {
         this._updateUnreadCount(data);
@@ -82,7 +82,7 @@ class CallLogBadgeController {
     } else if (payload.type === EVENT_TYPES.REPLACE) {
       this.handleCallLogReplace(payload.body.entities);
     }
-  }
+  };
 
   handleProfile = async (payload: NotificationEntityPayload<Profile>) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
@@ -103,7 +103,7 @@ class CallLogBadgeController {
         this._updateBadge();
       }
     }
-  }
+  };
 
   handleCallLogReplace(replaceData: Map<string, CallLog>) {
     if (this._badgeStatus === BADGE_STATUS.IDLE) {

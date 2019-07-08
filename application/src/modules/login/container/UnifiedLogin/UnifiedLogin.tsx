@@ -96,7 +96,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
-  }
+  };
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
   //   this.setState({ brandId: event.currentTarget.value });
@@ -106,7 +106,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     event.preventDefault();
     const { location } = this.props;
     window.location.href = getUrl(location);
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -115,8 +115,9 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       <React.Fragment>
         <EnvSelect />
         <a
-          target="_blank"
-          href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
+          target='_blank'
+          rel='noopener noreferrer'
+          href='https://wiki.ringcentral.com/display/XTO/Jupiter+test+account'
         >
           Test Account
         </a>
@@ -126,7 +127,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     return (
       <div>
         <Form onSubmit={this.handleSubmit}>
-          <Button type="submit" data-anchor="btnLogin">
+          <Button type='submit' data-anchor='btnLogin'>
             {t('auth.signIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>

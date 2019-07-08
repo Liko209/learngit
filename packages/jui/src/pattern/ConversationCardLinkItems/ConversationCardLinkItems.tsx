@@ -74,8 +74,8 @@ const LinkTitle = styled.p`
 `;
 
 function getMaxHeight(lineHeight: any, lineNumber: number) {
-  const heightNumber: number = Number(lineHeight.replace(/[^-\d\.]/g, ''));
-  const unit: string = lineHeight.replace(/[-\d\.]/g, '');
+  const heightNumber: number = Number(lineHeight.replace(/[^-\d.]/g, ''));
+  const unit: string = lineHeight.replace(/[-\d.]/g, '');
   return `${heightNumber * lineNumber}${unit}`;
 }
 
@@ -128,7 +128,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     const { onLinkItemClose } = this.props;
     event.stopPropagation();
     onLinkItemClose && onLinkItemClose(event);
-  }
+  };
   render() {
     const { title, summary, thumbnail, url, favicon, faviconName } = this.props;
     return (
@@ -138,7 +138,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
           <TitleWithSummary>
             <TitleNSummaryWrapper>
               <LinkTitle>
-                <a href={url} target="_blank">
+                <a href={url} target='_blank' rel='noopener noreferrer'>
                   {title}
                 </a>
               </LinkTitle>
@@ -150,8 +150,8 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
             </FaviconWrapper>
           </TitleWithSummary>
           <JuiIconButton
-            disableToolTip={true}
-            variant="plain"
+            disableToolTip
+            variant='plain'
             onClick={this.onLinkItemClose}
           >
             close

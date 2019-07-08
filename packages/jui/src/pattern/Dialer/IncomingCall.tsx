@@ -70,7 +70,7 @@ class JuiIncomingCall extends PureComponent<Props> {
         </StyledIgnoreContainer>
         <Avatar />
         <StyledInfo>
-          <StyledMarquee text={name} time={15} hoverToStop={true} />
+          <StyledMarquee text={name} time={15} hoverToStop />
           {phone && <StyledPhone>{phone}</StyledPhone>}
         </StyledInfo>
         <StyledActionsContainer>

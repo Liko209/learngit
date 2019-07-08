@@ -42,16 +42,6 @@ class ViewerTitleViewComponent extends Component<
 
   dismiss = this.context;
 
-  state = { show: true, smallWindow: false };
-
-  closeDialog = () => {
-    this.setState({ show: false });
-  }
-
-  handleHeaderResize = (width: number) => {
-    this.setState({ smallWindow: width < 640 });
-  }
-
   createAsyncOperationDecorator = (setLoading: Function) => (
     op: () => Promise<any>,
   ) => {
@@ -63,7 +53,7 @@ class ViewerTitleViewComponent extends Component<
         setLoading(false);
       }
     };
-  }
+  };
 
   render() {
     const {
@@ -80,18 +70,15 @@ class ViewerTitleViewComponent extends Component<
       <ViewerContext.Consumer>
         {viewerContext => (
           <JuiTransition
-            appear={true}
+            appear
             show={viewerContext.show}
-            duration="standard"
-            easing="sharp"
+            duration='standard'
+            easing='sharp'
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader data-test-automation-id="ViewerHeader">
-                <ReactResizeDetector
-                  handleWidth={true}
-                  onResize={this.handleHeaderResize}
-                />
+              <JuiDialogHeader data-test-automation-id='ViewerHeader'>
+                <ReactResizeDetector handleWidth />
                 <JuiDialogHeaderMeta>
                   {sender && createdAt && (
                     <>
@@ -112,7 +99,7 @@ class ViewerTitleViewComponent extends Component<
                   )}
                 </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle
-                  variant="responsive"
+                  variant='responsive'
                   data-test-automation-id={'previewerTitle'}
                 >
                   <JuiDialogHeaderTitleMainTitle>
@@ -127,11 +114,11 @@ class ViewerTitleViewComponent extends Component<
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
                   <JuiButtonBar overlapSize={2}>
-                    <Download url={downloadUrl} variant="round" />
+                    <Download url={downloadUrl} variant='round' />
                     <FileActionMenu
-                      variant="round"
+                      variant='round'
                       groupId={groupId}
-                      showViewInPostAction={true}
+                      showViewInPostAction
                       fileId={item.id}
                       asyncOperationDecorator={
                         this.createAsyncOperationDecorator(
@@ -152,7 +139,7 @@ class ViewerTitleViewComponent extends Component<
                   </JuiButtonBar>
                 </JuiDialogHeaderActions>
               </JuiDialogHeader>
-              <JuiDivider key="divider-filters" />
+              <JuiDivider key='divider-filters' />
             </div>
           </JuiTransition>
         )}

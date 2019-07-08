@@ -3,6 +3,7 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { createRef } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
@@ -61,7 +62,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       if (node) {
         node.focus();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -73,18 +74,18 @@ class NewMessageComponent extends React.Component<Props, State> {
     const { newMessage } = this.props;
     newMessage(message);
     this.onClose();
-  }
+  };
 
   onClose = () => this.context();
 
   openCreateTeam = () => {
     this.onClose();
     CreateTeam.show();
-  }
+  };
 
   handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ message: e.target.value });
-  }
+  };
 
   renderFailError() {
     const message = 'message.prompt.SorryWeWereNotAbleToSendTheMessage';
@@ -124,7 +125,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         okText={t('common.dialog.send')}
         contentBefore={
           serverError && (
-            <StyledSnackbarsContent type="error">
+            <StyledSnackbarsContent type='error'>
               {t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
@@ -150,7 +151,7 @@ class NewMessageComponent extends React.Component<Props, State> {
             maxLength: 10000,
           }}
           onChange={this.handleMessageChange}
-          data-test-automation-id="newMessageTextarea"
+          data-test-automation-id='newMessageTextarea'
         />
         {canMentionTeam && (
           <JuiCheckboxLabel

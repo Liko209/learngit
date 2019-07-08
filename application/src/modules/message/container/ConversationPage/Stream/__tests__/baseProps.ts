@@ -5,7 +5,6 @@
  */
 import i18next from 'i18next';
 import React from 'react';
-import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 
 const baseProps = {
@@ -23,9 +22,6 @@ const baseProps = {
   enableNewMessageSeparatorHandler: jest
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
-  plugins: {
-    loadingMorePlugin: new LoadingMorePlugin(),
-  },
   loadMore: jest.fn().mockName('loadMore'),
   hasMore: jest.fn().mockName('hasMore'),
   notEmpty: true,
@@ -43,7 +39,7 @@ const baseProps = {
   updateHistoryHandler: () => {},
   mostRecentPostId: 0,
   resetJumpToPostId: () => null,
-  resetAll: (id: number) => {},
+  resetAll: () => {},
 };
 
 export { baseProps };

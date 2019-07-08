@@ -67,7 +67,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       variant={_variant}
       {...restProps}
     >
-      {loading ? <RuiCircularProgress size={20} color="inherit" /> : children}
+      {loading ? <RuiCircularProgress size={16} color='inherit' /> : children}
     </MuiButton>
   );
 };
@@ -93,6 +93,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
     padding: ${spacing(2.5, 4)};
+    display: flex;
     text-transform: none;
     ${typography('button')};
     color: ${palette('primary', 'main')};

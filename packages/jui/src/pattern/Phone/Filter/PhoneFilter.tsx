@@ -50,7 +50,7 @@ const useInput: IUseInput = (initValue, callback) => {
 
   return [value, setInputValue];
 };
-
+/* eslint-disable react/prop-types */
 const PhoneFilter: IJuiPhoneFilter = ({
   clearButtonLabel,
   placeholder,
@@ -93,15 +93,15 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   return (
     <StyledPhoneFilter
-      size="small"
-      radiusType="rounded"
+      size='small'
+      radiusType='rounded'
       ref={ref}
       value={value}
       InputProps={inputProps}
       IconRightProps={iconRightProps}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
-      data-test-automation-id="phoneFilter"
+      data-test-automation-id='phoneFilter'
       {...iconState}
     />
   );

@@ -77,7 +77,7 @@ export type ZIndexOptions = typeof zIndex;
 export type BreakpointsOptions = typeof breakpoints;
 export type Color = [
   keyof PaletteOptions | 'grey',
-  keyof ColorPartial | keyof SimplePaletteColorOptions
+  keyof ColorPartial | keyof SimplePaletteColorOptions,
 ];
 
 export type ThemeOptions = {

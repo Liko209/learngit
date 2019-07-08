@@ -7,9 +7,9 @@ import { detect } from 'jui/foundation/theme';
 
 let theme:
   | {
-    default: string;
-    themes: string[];
-  }
+      default: string;
+      themes: string[];
+    }
   | undefined;
 
 async function detectTheme() {

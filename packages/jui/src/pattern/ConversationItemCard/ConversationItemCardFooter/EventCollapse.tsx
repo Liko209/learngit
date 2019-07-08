@@ -49,10 +49,10 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
       isShow: false,
     };
   }
-
+  /* eslint-disable react/no-access-state-in-setstate */
   handleToggle = () => {
     this.setState({ isShow: !this.state.isShow });
-  }
+  };
 
   render() {
     const { children, hideText, showText, ...rest } = this.props;

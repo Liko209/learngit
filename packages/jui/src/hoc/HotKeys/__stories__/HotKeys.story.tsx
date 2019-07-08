@@ -7,7 +7,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
-import { HotKeys } from '../';
+import { HotKeys } from '..';
 
 class Test extends React.PureComponent<{}, {}> {
   onEnter(e: any, combo: any) {
@@ -30,10 +30,10 @@ class Test extends React.PureComponent<{}, {}> {
         {({ unbind, reset }) => {
           return (
             <ul>
-              <li onClick={reset} className="li">
+              <li onClick={reset} className='li'>
                 1
               </li>
-              <li onClick={() => unbind('esc')} className="li">
+              <li onClick={() => unbind('esc')} className='li'>
                 2
               </li>
             </ul>
@@ -52,7 +52,7 @@ class Test1 extends React.PureComponent<{}, {}> {
   save = async (e: any, combo: any) => {
     console.log('-----Test1 command + s', e, combo);
     return false; // same as jquery event return false
-  }
+  };
 
   render() {
     return (
@@ -65,8 +65,8 @@ class Test1 extends React.PureComponent<{}, {}> {
           'mod+s': this.save,
         }}
       >
-        <li className="li">111111</li>
-        <li className="li">2222222</li>
+        <li className='li'>111111</li>
+        <li className='li'>2222222</li>
       </HotKeys>
     );
   }

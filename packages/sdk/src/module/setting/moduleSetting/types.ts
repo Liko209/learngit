@@ -5,6 +5,7 @@
  */
 import { UserSettingEntity } from '../entity';
 import { Nullable, UndefinedAble } from 'sdk/types';
+
 interface IUserSettingHandler<T = any> {
   id: number;
   userSettingEntityCache: UndefinedAble<UserSettingEntity<T>>;
