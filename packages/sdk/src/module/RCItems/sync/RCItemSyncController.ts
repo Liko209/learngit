@@ -21,7 +21,7 @@ abstract class RCItemSyncController<
 > extends AbstractSyncController<T, IdType> {
   private _lastRequestSyncTime = 0;
   private _triggerSilentFetchKeys = [
-    SERVICE.LOGIN,
+    SERVICE.RC_LOGIN,
     WINDOW.FOCUS,
     WINDOW.ONLINE,
   ];

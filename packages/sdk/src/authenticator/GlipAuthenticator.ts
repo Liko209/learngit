@@ -13,7 +13,9 @@ import notificationCenter from '../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 
-class ReLoginAuthenticator implements IAuthenticator {
+const LOG_TAG = 'GlipAuthenticator';
+
+class GlipAuthenticator implements IAuthenticator {
   async authenticate(params: IAuthParams): Promise<IAuthResponse> {
     // login glip
     try {
@@ -36,7 +38,7 @@ class ReLoginAuthenticator implements IAuthenticator {
       });
       return {
         success: true,
-        isFirstLogin: false,
+        isFirstLogin: true,
         accountInfos: [
           {
             type: GlipAccount.name,
@@ -45,10 +47,10 @@ class ReLoginAuthenticator implements IAuthenticator {
         ],
       };
     } catch (err) {
-      mainLogger.tags('UnifiedLogin').error(`login glip failed, ${err}`);
+      mainLogger.tags(LOG_TAG).error(`login glip failed, ${err}`);
       return { success: false };
     }
   }
 }
 
-export { ReLoginAuthenticator };
+export { GlipAuthenticator };

@@ -9,10 +9,20 @@ import { ServiceConfig } from '../module/serviceLoader';
 class RCAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
     this.setSupportedServices([
-      ServiceConfig.RC_INFO_SERVICE,
-      ServiceConfig.RC_EVENT_SUBSCRIPTION_SERVICE,
-      ServiceConfig.VOICEMAIL_SERVICE,
+      ServiceConfig.ACCOUNT_SERVICE,
+      ServiceConfig.BADGE_SERVICE,
       ServiceConfig.CALL_LOG_SERVICE,
+      ServiceConfig.DB_CONFIG_SERVICE,
+      ServiceConfig.GLOBAL_CONFIG_SERVICE,
+      ServiceConfig.PERMISSION_SERVICE,
+      ServiceConfig.PHONE_NUMBER_SERVICE,
+      ServiceConfig.PROFILE_SERVICE,
+      ServiceConfig.RC_EVENT_SUBSCRIPTION_SERVICE,
+      ServiceConfig.RC_INFO_SERVICE,
+      ServiceConfig.SETTING_SERVICE,
+      ServiceConfig.TELEPHONY_SERVICE,
+      ServiceConfig.USER_CONFIG_SERVICE,
+      ServiceConfig.VOICEMAIL_SERVICE,
     ]);
   }
 }

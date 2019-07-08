@@ -64,7 +64,10 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     if (!desktopNotifications && !PlatformUtils.isElectron()) {
       state = ESettingItemState.DISABLE;
     }
-    if (profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL) {
+    if (
+      profile &&
+      profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL
+    ) {
       state = ESettingItemState.INVISIBLE;
     }
     return state;
@@ -109,9 +112,9 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
   }
   private async _getDesktopCall() {
     const profile = await this._profileService.getProfile();
-    let desktopCall = profile[SETTING_KEYS.DESKTOP_CALL];
-    if (desktopCall === undefined) {
-      desktopCall = NOTIFICATION_OPTIONS.ON;
+    let desktopCall = NOTIFICATION_OPTIONS.ON;
+    if (profile && profile.desktop_notifications_incoming_calls !== undefined) {
+      desktopCall = profile.desktop_notifications_incoming_calls;
     }
     return desktopCall;
   }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ReLoginAuthenticator } from '../ReLoginAuthenticator';
+import { GlipAuthenticator } from '../GlipAuthenticator';
 import { AuthUserConfig } from '../../module/account/config/AuthUserConfig';
 import { loginGlip } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
@@ -15,8 +15,8 @@ jest.mock('../../module/account/config/AuthUserConfig');
 jest.mock('../../api');
 jest.mock('../../service/notificationCenter');
 
-describe('ReLoginAuthenticator', () => {
-  let reLoginAuthenticator: ReLoginAuthenticator;
+describe('GlipAuthenticator', () => {
+  let glipAuthenticator: GlipAuthenticator;
   beforeEach(() => {
     ServiceLoader.getInstance = jest
       .fn()
@@ -25,12 +25,12 @@ describe('ReLoginAuthenticator', () => {
           return { authUserConfig: AuthUserConfig.prototype };
         }
       });
-    reLoginAuthenticator = new ReLoginAuthenticator();
+    glipAuthenticator = new GlipAuthenticator();
   });
   describe('authenticate()', () => {
     it('should return false when rc token is invalid', async () => {
       AuthUserConfig.prototype.getRCToken.mockReturnValueOnce(undefined);
-      expect(await reLoginAuthenticator.authenticate({})).toEqual({
+      expect(await glipAuthenticator.authenticate({})).toEqual({
         success: false,
       });
     });
@@ -40,7 +40,7 @@ describe('ReLoginAuthenticator', () => {
       loginGlip.mockImplementationOnce(() => {
         throw Error('error');
       });
-      expect(await reLoginAuthenticator.authenticate({})).toEqual({
+      expect(await glipAuthenticator.authenticate({})).toEqual({
         success: false,
       });
     });
@@ -52,9 +52,9 @@ describe('ReLoginAuthenticator', () => {
           'x-authorization': 'glipToken',
         },
       });
-      expect(await reLoginAuthenticator.authenticate({})).toEqual({
+      expect(await glipAuthenticator.authenticate({})).toEqual({
         success: true,
-        isFirstLogin: false,
+        isFirstLogin: true,
         accountInfos: [
           {
             type: 'GlipAccount',
@@ -78,7 +78,7 @@ describe('ReLoginAuthenticator', () => {
           'x-authorization': 'glipToken',
         },
       });
-      expect(await reLoginAuthenticator.authenticate({})).toEqual({
+      expect(await glipAuthenticator.authenticate({})).toEqual({
         success: false,
       });
     });

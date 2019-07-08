@@ -20,12 +20,39 @@ describe('MakeCallController', () => {
     jest.resetModules();
     jest.restoreAllMocks();
   }
+  const mockAccountService = {
+    isRCOnlyMode: jest.fn(),
+  };
+  const mockPersonService = {
+    matchContactByPhoneNumber: jest.fn(),
+  };
+  const mockRcInfoService = {
+    getRCExtensionInfo: jest.fn(),
+    getSpecialNumberRule: jest.fn(),
+  };
+  const mockPhoneNumberService = {
+    getE164PhoneNumber: jest.fn(),
+  };
 
   beforeEach(() => {
     clearMocks();
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.ACCOUNT_SERVICE) {
+        return mockAccountService;
+      }
+      if (data === ServiceConfig.PERSON_SERVICE) {
+        return mockPersonService;
+      }
+      if (data === ServiceConfig.RC_INFO_SERVICE) {
+        return mockRcInfoService;
+      }
+      if (data === ServiceConfig.PHONE_NUMBER_SERVICE) {
+        return mockPhoneNumberService;
+      }
+      return;
+    });
     makeCallController = new MakeCallController();
   });
-
   describe('tryMakeCall', () => {
     it('should return error when there is no internet connection', async () => {
       jest

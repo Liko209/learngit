@@ -49,7 +49,9 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   async updateValue(model: Partial<DesktopNotificationsSettingModel>) {
     const { isGranted } = Pal.instance.getNotificationPermission();
     const profile = await this._profileService.getProfile();
-    const wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    const wantNotifications = profile
+      ? profile[SETTING_KEYS.DESKTOP_NOTIFICATION]
+      : undefined;
     if (
       isGranted &&
       model.desktopNotifications !== undefined &&
@@ -116,10 +118,9 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     const profile = await this._profileService.getProfile().catch(error => {
       mainLogger.warn('_getWantNotifications failed');
     });
-    let wantNotifications =
-      profile && profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
-    if (wantNotifications === undefined) {
-      wantNotifications = true;
+    let wantNotifications = true;
+    if (profile && profile.want_desktop_notifications !== undefined) {
+      wantNotifications = profile.want_desktop_notifications;
     }
     return wantNotifications;
   }

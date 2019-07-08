@@ -110,9 +110,9 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
 
   private async _getNewMessage() {
     const profile = await this._profileService.getProfile();
-    let desktopMessage = profile[SETTING_KEYS.DESKTOP_MESSAGE];
-    if (desktopMessage === undefined) {
-      desktopMessage = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    let desktopMessage = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    if (profile && profile.desktop_notifications_new_messages !== undefined) {
+      desktopMessage = profile.desktop_notifications_new_messages;
     }
     return desktopMessage;
   }

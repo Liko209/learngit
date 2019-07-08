@@ -21,7 +21,11 @@ import {
   IUnifiedLogin,
   ILogin,
 } from '../controller/AuthController';
-import { AbstractService, AccountManager } from '../../../framework';
+import {
+  AbstractService,
+  AccountManager,
+  GLIP_LOGIN_STATUS,
+} from '../../../framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { Nullable } from '../../../types';
 import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
@@ -232,10 +236,6 @@ class AccountService extends AbstractService
     await this.getAuthController().unifiedLogin({ code, token });
   }
 
-  async login(params: ILogin) {
-    await this.getAuthController().login(params);
-  }
-
   async loginGlip(params: ILogin) {
     await this.getAuthController().loginGlip(params);
   }
@@ -252,12 +252,19 @@ class AccountService extends AbstractService
     return this.getAuthController().isLoggedIn();
   }
 
-  scheduleReLoginGlipJob() {
-    this.getAuthController().scheduleReLoginGlipJob();
+  isRCOnlyMode(): boolean {
+    return this.getAuthController().isRCOnlyMode();
   }
 
-  async reLoginGlip(): Promise<boolean> {
-    return await this.getAuthController().reLoginGlip();
+  getGlipLoginStatus(): GLIP_LOGIN_STATUS {
+    if (this.isAccountReady()) {
+      this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.SUCCESS);
+    }
+    return this.getAuthController().getGlipLoginStatus();
+  }
+
+  startLoginGlip() {
+    this.getAuthController().startLoginGlip();
   }
 }
 
