@@ -16,6 +16,12 @@ const searchService = {
       sortableModels: [{ id: 2 }],
     };
   },
+  doFuzzySearchPersonsAndGroups() {
+    return {
+      terms: [],
+      sortableModels: [{ id: 2 }],
+    };
+  },
 };
 
 const props = {
@@ -48,7 +54,7 @@ describe('ContactSearchVM', () => {
         members,
         displayName: 'aaa',
       });
-      const contactAndGroupSearchViewModel = new contactAndGroupSearchViewModel(
+      const contactAndGroupSearchViewModel = new ContactAndGroupSearchViewModel(
         Object.assign(props, { groupId: 5 }),
       );
 
