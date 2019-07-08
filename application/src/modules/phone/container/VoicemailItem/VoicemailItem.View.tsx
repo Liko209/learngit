@@ -18,14 +18,16 @@ import {
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
-import { VoicemailViewProps, JuiAudioMode, ResponsiveObject } from './types';
+import { VoicemailViewProps, VoicemailProps, JuiAudioMode, ResponsiveObject } from './types';
 import { ENTITY_TYPE } from '../constants';
 import { getCreateTime } from '@/utils/date';
 
-type VoicemailItemProps = VoicemailViewProps &
-  WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
+type VoicemailItemProps = VoicemailViewProps
+  & VoicemailProps
+  & WithTranslation
+  & { id: number; voiceMailResponsiveMap: ResponsiveObject };
+
 type State = {
-  isHover: boolean;
   showCall: boolean;
 };
 
@@ -34,7 +36,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   private _AudioPlayer = React.createRef<JuiAudioPlayer>();
 
   state = {
-    isHover: false,
     showCall: false,
   };
 
@@ -49,8 +50,8 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   }
 
   get playerMode() {
-    const { isHover } = this.state;
     const {
+      isHover,
       isAudioActive,
       voiceMailResponsiveMap: voiceMailResponsiveMap,
     } = this.props;
@@ -72,14 +73,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
     if (this._AudioPlayer.current) {
       this._AudioPlayer.current.pause();
     }
-  }
-
-  handleMouseOver = () => {
-    this.setState({ isHover: true });
-  }
-
-  handleMouseLeave = () => {
-    this.setState({ isHover: false });
   }
 
   private _getTips() {
@@ -114,11 +107,14 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       createTime,
       direction,
       canEditBlockNumbers,
+      onMouseOver,
+      onMouseLeave,
+      isHover,
       voiceMailResponsiveMap: voiceMailResponsiveMap,
       // onChange,
       // selected,
     } = this.props;
-    const { isHover, showCall } = this.state;
+    const { showCall } = this.state;
 
     return (
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
@@ -129,8 +125,8 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       >
         <VoicemailSummary
           isUnread={isUnread}
-          onMouseOver={this.handleMouseOver}
-          onMouseLeave={this.handleMouseLeave}
+          onMouseLeave={onMouseLeave}
+          onMouseOver={onMouseOver}
         >
           <StyledContactWrapper>
             <ContactInfo
@@ -173,7 +169,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
                 caller={caller}
                 entity={ENTITY_TYPE.VOICEMAIL}
                 maxButtonCount={voiceMailResponsiveMap.buttonToShow}
-                hookAfterClick={this.handleMouseLeave}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}
               />

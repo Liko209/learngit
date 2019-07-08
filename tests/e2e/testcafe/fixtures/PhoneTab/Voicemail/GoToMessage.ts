@@ -34,7 +34,6 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
 
 
-
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: callee.company.number,
@@ -65,32 +64,32 @@ test.meta(<ITestMeta>{
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
   const voicemailId = await voicemailItem.id;
   const voicemailName = await voicemailItem.callerName.textContent;
-  
+
 
   await h(t).withLog('When I click Message button', async (step) => {
     step.setMetadata('id', voicemailId)
     await voicemailItem.ClickMessageButton();
   });
 
-  const conversationPage = app.homePage.messageTab.conversationPage; 
-  
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
   await h(t).withLog(`Then the conversation should be open`, async () => {
     await t.expect(conversationPage.title.textContent).eql(voicemailName);
   });
 
-  
+
   const messageTab = app.homePage.leftPanel.messagesEntry;
-  
+
   await h(t).withLog(`Open Message page`, async () => {
     await messageTab.enter();
   });
 
   const phoneTab = app.homePage.leftPanel.phoneEntry;
-  
+
   await h(t).withLog(`Open Phone page`, async () => {
     await phoneTab.enter();
     await voicemailPage.ensureLoaded();
   });
-  
+
 });
 

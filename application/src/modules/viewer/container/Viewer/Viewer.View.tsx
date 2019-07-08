@@ -6,18 +6,16 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ViewerViewProps, ViewerViewModelProps } from './types';
+import { ViewerViewProps } from './types';
 import { ViewerTitle } from './Title';
 import { ViewerContent } from './Content';
 import { JuiViewerBackground } from 'jui/pattern/ImageViewer';
 import ViewerContext from './ViewerContext';
+import { Loading } from 'jui/hoc/withLoading';
 
 @observer
-class ViewerView extends Component<
-  ViewerViewProps & ViewerViewModelProps,
-  any
-> {
-  constructor(props: ViewerViewProps & ViewerViewModelProps) {
+class ViewerView extends Component<ViewerViewProps, any> {
+  constructor(props: ViewerViewProps) {
     super(props);
     this.state = {
       contextValue: {
@@ -29,8 +27,10 @@ class ViewerView extends Component<
         onContentError: props.onContentError,
         isAnimating: true,
         setDeleteItem: this.setDeleteItem,
+        setLoading: this.setLoading,
       },
       deleteItem: false,
+      loading: false,
     };
   }
 
@@ -54,6 +54,10 @@ class ViewerView extends Component<
     });
   }
 
+  setLoading = (value: boolean) => {
+    this.setState({ loading: value });
+  }
+
   onTransitionEntered = () => {
     this.setState({
       contextValue: { ...this.state.contextValue, isAnimating: false },
@@ -72,20 +76,22 @@ class ViewerView extends Component<
     const { contentLeftRender, ...rest } = this.props;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
-        <JuiViewerBackground
-          data-test-automation-id="Viewer"
-          show={this.state.contextValue.show}
-        >
-          <ViewerTitle itemId={rest.itemId} {...rest} />
-          <ViewerContent
-            data-test-automation-id="ViewerContent"
-            left={contentLeftRender({
-              ...rest,
-              deleteItem: this.state.deleteItem,
-            })}
-            right={<></>}
-          />
-        </JuiViewerBackground>
+        <Loading loading={this.state.loading}>
+          <JuiViewerBackground
+            data-test-automation-id="Viewer"
+            show={this.state.contextValue.show}
+          >
+            <ViewerTitle {...rest} />
+            <ViewerContent
+              data-test-automation-id="ViewerContent"
+              left={contentLeftRender({
+                ...rest,
+                deleteItem: this.state.deleteItem,
+              })}
+              right={<></>}
+            />
+          </JuiViewerBackground>
+        </Loading>
       </ViewerContext.Provider>
     );
   }

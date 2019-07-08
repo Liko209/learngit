@@ -8,6 +8,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
+import { ContactSearchList } from '../v2/page-models/AppRoot/HomePage/TelephonyDialog';
 
 fixture('Telephony/Forward')
 .beforeEach(setupCase(BrandTire.RC_WITH_PHONE))
@@ -209,15 +210,98 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog('Then I click more options button', async () => {
+  await h(t).withLog('When I click more options button', async () => {
     await telephonyDialog.clickMoreOptionsButton();
   });
 
-  await h(t).withLog('Then I hover forward options', async () => {
+  await h(t).withLog('And I hover forward options', async () => {
     await telephonyDialog.hoverForwardButton();
   });
 
-  await h(t).withLog('Then I click custom forward button', async () => {
+  await h(t).withLog('And I click custom forward button', async () => {
+    await telephonyDialog.clickCustomForwardButton();
+  });
+
+  await h(t).withLog('Then the forward title should exist', async () => {
+    const title = "Forward Call"
+    await telephonyDialog.existForwardTitle(title);
+  });
+
+  await h(t).withLog('When I type "7" on input field ', async () => {
+    await telephonyDialog.typeTextInDialer('7');
+  });
+
+  await h(t).withLog('Then I should see contact search panel', async () => {
+    await t.expect(telephonyDialog.contactSearchAvatar.exists).ok();
+  });
+
+  await h(t).withLog('When I reset then input "703" via keypad', async () => {
+    await telephonyDialog.clickDeleteButton();
+    await telephonyDialog.tapKeypad('703');
+  });
+
+  await h(t).withLog('Then I should not see contact search panel', async () => {
+    await t.expect(telephonyDialog.contactSearchAvatar.exists).notOk();
+  });
+
+  await h(t).withLog('When I click on the to forward action button', async () => {
+    await telephonyDialog.clickForwardActionButton();
+  });
+
+  const alertText = 'Your call was forwarded successfully.'
+  await h(t).withLog(`Then there should be fail flash toast (short = 2s) displayed "${alertText}"`, async () => {
+    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+  });
+
+  await h(t).withLog('And forwarder dialog should displayed', async () => {
+    await forwarderWebPhone.waitForStatus('invited');
+  });
+
+  await h(t).withLog('When callerUser hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+
+  await h(t).withLog('Then callerUser webphone session status is "terminated"', async () => {
+    await callerWebPhone.waitForStatus('terminated');
+  });
+});
+
+//Skip due to bug FIJI-7188
+test.skip.meta(<ITestMeta>{
+  caseIds: ['JPT-2378'],
+  priority: ['P2'],
+  maintainers: ['zack'],
+  keywords: ['Forward']
+})('Show last entered and last viewed locations when back to the custom forward page', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When webphone call this extension to me', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+  const contactSearchList = app.homePage.contactSearchList;
+  await h(t).withLog('Then telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click more options button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+
+  await h(t).withLog('And I hover forward options', async () => {
+    await telephonyDialog.hoverForwardButton();
+  });
+
+  await h(t).withLog('And I click custom forward button', async () => {
     await telephonyDialog.clickCustomForwardButton();
   });
 
@@ -226,28 +310,29 @@ test.meta(<ITestMeta>{
     await telephonyDialog.existForwardTitle(title);
   });
 
-  await h(t).withLog('When I click "703" on the keypad ', async () => {
-    await telephonyDialog.tapKeypad('703');
+  await h(t).withLog('When I type "1" on input field ', async () => {
+    await telephonyDialog.typeTextInDialer('1');
+    await contactSearchList.ensureLoaded();
   });
 
-  await h(t).withLog('When I click on the to forward action button', async () => {
-    await telephonyDialog.clickForwardActionButton();
+  await h(t).withLog('And I scroll to middle in contact search', async () => {
+    await t.expect(contactSearchList.directDialIcon.visible).ok();
+    await contactSearchList.scrollToY(50);
+    await contactSearchList.expectStreamScrollToY(50);
   });
 
-  const alertText = 'Your call was forwarded successfully.'
-  await h(t).withLog(`And there should be fail flash toast (short = 2s) displayed "${alertText}"`, async () => {
-    await app.homePage.alertDialog.shouldBeShowMessage(alertText);
+  await h(t).withLog('And I back to Incoming call page', async () => {
+    await telephonyDialog.clickHideKeypadButton();
   });
 
-  await h(t).withLog('Then forwarder dialog should displayed', async () => {
-    await forwarderWebPhone.waitForStatus('invited');
+  await h(t).withLog('And I go to custom forward page again', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+    await telephonyDialog.hoverForwardButton();
+    await telephonyDialog.clickCustomForwardButton();
   });
-
-  await h(t).withLog('When callerUser hangup the call', async () => {
-    await callerWebPhone.hangup();
-  });
-
-  await h(t).withLog('And callerUser webphone session status is "terminated"', async () => {
-    await callerWebPhone.waitForStatus('terminated');
+  //BUG
+  await h(t).withLog(`Then it should show last entered and last viewed locations at the custom forward page`, async () => {
+    //await contactSearchList.expectStreamScrollToY(0);
+    await contactSearchList.expectStreamScrollToY(50);
   });
 });

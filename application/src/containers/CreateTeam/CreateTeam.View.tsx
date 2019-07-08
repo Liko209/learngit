@@ -13,7 +13,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiSnackbarContent } from 'jui/components/Banners';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
+import { Loading } from 'jui/hoc/withLoading';
 import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
@@ -39,14 +39,6 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
     margin: 0 0 ${spacing(4)} 0;
   }
 `;
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
 
 type Props = ViewProps & WithTranslation;
 

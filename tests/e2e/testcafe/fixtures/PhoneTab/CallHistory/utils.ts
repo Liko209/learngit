@@ -74,6 +74,12 @@ export async function addOneCallLogFromGuest(t: TestController, caller: IUser, c
       await callerSession.waitForStatus('terminated');
       await t.expect(callHistoryPage.items.count).gte(1, { timeout: 10e3 });
     });
+
+    await h(t).withLog('And refresh page', async () => {
+      await t.wait(5e3);
+      await h(t).reload();
+      await app.homePage.ensureLoaded();
+    });
   }
 
 

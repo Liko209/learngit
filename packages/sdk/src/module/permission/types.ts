@@ -15,6 +15,7 @@ enum UserPermissionType {
   ZIP_LOG_AUTO_UPLOAD_BETA = 'ZIP_LOG_AUTO_UPLOAD_BETA',
   CAN_SHOW_NOTE = 'CAN_SHOW_NOTE',
   CAN_MENTION_TEAM = 'CAN_MENTION_TEAM',
+  CAN_SHOW_ALL_GROUP = 'CAN_SHOW_ALL_GROUP',
 }
 
 export default UserPermissionType;

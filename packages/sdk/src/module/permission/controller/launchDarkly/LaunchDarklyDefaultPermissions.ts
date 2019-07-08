@@ -11,6 +11,7 @@ const LaunchDarklyDefaultPermissions = {
   JUPITER_CAN_USE_TELEPHONY: true,
   CAN_SHOW_NOTE: false,
   CAN_MENTION_TEAM: false,
+  CAN_SHOW_ALL_GROUP: false,
 };
 
 export { LaunchDarklyDefaultPermissions };

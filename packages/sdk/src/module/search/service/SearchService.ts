@@ -20,7 +20,6 @@ import { ConfigChangeHistory } from 'sdk/framework/config/types';
 import { Nullable } from 'sdk/types';
 import { configMigrator } from 'sdk/framework/config';
 import { SearchConfigHistory } from '../config/ConfigHistory';
-import { Group } from 'sdk/module/group';
 
 class SearchService extends AbstractService
   implements ISearchService, IConfigHistory {

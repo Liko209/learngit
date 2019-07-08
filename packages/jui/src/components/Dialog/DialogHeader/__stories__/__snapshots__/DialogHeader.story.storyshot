@@ -6,7 +6,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c7 {
@@ -185,13 +184,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c1.c1.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c2 {
@@ -303,7 +297,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c7 {
@@ -523,13 +516,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c1.c1.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c2 {
@@ -825,7 +813,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c12 {
@@ -1045,13 +1032,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c6.c6.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c7 {
@@ -1097,6 +1079,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -ms-flex-align: center;
   align-items: center;
   margin-right: 16px;
+  width: 200px;
 }
 
 .c4 {
@@ -1128,6 +1111,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 .c3 {
   margin-left: 8px;
   max-width: 160px;
+}
+
+@media screen and (max-width:640px) {
+  .c1 {
+    width: auto;
+  }
 }
 
 @media screen and (max-width:640px) {

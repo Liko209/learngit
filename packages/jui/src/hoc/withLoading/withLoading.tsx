@@ -82,4 +82,14 @@ const withLoading = <
   );
 };
 
-export { withLoading, WithLoadingProps, DefaultLoadingWithDelay };
+const Loader = () => (
+  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
+);
+const Loading = withLoading(
+  (props: { loading: boolean; children: React.ReactNode }) => (
+    <>{props.children}</>
+  ),
+  Loader,
+);
+
+export { withLoading, WithLoadingProps, DefaultLoadingWithDelay, Loading };

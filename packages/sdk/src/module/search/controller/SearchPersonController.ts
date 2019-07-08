@@ -32,7 +32,6 @@ import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
-import { IPermissionService } from 'sdk/module/permission/service/IPermissionService';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 
 type MatchedInfo = {
