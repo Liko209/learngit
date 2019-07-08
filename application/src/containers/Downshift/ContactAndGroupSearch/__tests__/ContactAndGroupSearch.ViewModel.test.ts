@@ -3,7 +3,7 @@
  * @Date: 2018-10-12 15:19:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { ContactSearchViewModel } from '../ContactSearch.ViewModel';
+import { ContactAndGroupSearchViewModel } from '../ContactAndGroupSearch.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
 
@@ -29,16 +29,18 @@ describe('ContactSearchVM', () => {
       jest.clearAllMocks();
     });
     it('List shows/no shows if enter text matched/no matched any contact in posted by input filed [JPT-1554]', async () => {
-      const contactSearchViewModel = new ContactSearchViewModel(props);
+      const contactAndGroupSearchViewModel = new ContactAndGroupSearchViewModel(
+        props,
+      );
       let value = 'aaa';
       ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
-      contactSearchViewModel.existMembers = [1];
-      await expect(contactSearchViewModel.fetchPersons(value)).resolves.toEqual(
-        [{ id: 2 }],
-      );
+      contactAndGroupSearchViewModel.existMembers = [1];
+      await expect(
+        contactAndGroupSearchViewModel.fetchPersons(value),
+      ).resolves.toEqual([{ id: 2 }]);
       value = '';
-      contactSearchViewModel.searchMembers(value);
-      expect(contactSearchViewModel.suggestions).toEqual([]);
+      contactAndGroupSearchViewModel.searchMembers(value);
+      expect(contactAndGroupSearchViewModel.suggestions).toEqual([]);
     });
     it('Check the search list of the post by when searching message in a conversation [JPT-1635]', async () => {
       const members = [1, 2, 3];
@@ -46,11 +48,11 @@ describe('ContactSearchVM', () => {
         members,
         displayName: 'aaa',
       });
-      const contactSearchViewModel = new ContactSearchViewModel(
+      const contactAndGroupSearchViewModel = new contactAndGroupSearchViewModel(
         Object.assign(props, { groupId: 5 }),
       );
 
-      expect(contactSearchViewModel.groupMembers).toEqual(members);
+      expect(contactAndGroupSearchViewModel.groupMembers).toEqual(members);
     });
   });
   describe('_setSelectedItems()', () => {
@@ -60,11 +62,11 @@ describe('ContactSearchVM', () => {
         members,
         displayName: 'aaa',
       });
-      const contactSearchViewModel = new ContactSearchViewModel(
+      const contactAndGroupSearchViewModel = new ContactAndGroupSearchViewModel(
         Object.assign(props, { groupId: null }),
       );
-      contactSearchViewModel._setSelectedItems();
-      expect(contactSearchViewModel.groupMembers).toEqual([]);
+      contactAndGroupSearchViewModel._setSelectedItems();
+      expect(contactAndGroupSearchViewModel.groupMembers).toEqual([]);
     });
   });
 });

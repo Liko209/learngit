@@ -18,7 +18,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import GroupService, { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/src/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable

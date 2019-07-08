@@ -15,7 +15,7 @@ import { Chip } from '@/containers/Chip';
 import { ViewProps, ContactAndGroupSearchItemViewProps } from './types';
 import { ContactSearchItem } from '../ContactSearch/ContactSearchItem';
 import { GroupSearchItem } from '../GroupSearch/GroupSearchItem';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/src/utils';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 @observer
 class ContactAndGroupSearchItem extends React.Component<

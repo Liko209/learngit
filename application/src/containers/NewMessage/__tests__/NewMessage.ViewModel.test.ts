@@ -7,17 +7,21 @@
 import * as goToConversation from '@/common/goToConversation';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { GroupService } from 'sdk/module/group';
 
 jest.mock('sdk/module/post');
 jest.mock('../../Notification');
 jest.mock('@/common/goToConversation');
-
-jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({});
+jest.mock('sdk/module/group');
+const groupService = new GroupService();
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue(groupService);
 
 const newMessageVM = new NewMessageViewModel();
 
 describe('NewMessageVM', () => {
   it('new message success', async () => {
+    newMessageVM.isDirectMessage = false;
+    groupService.getPersonIdsBySelectedItem = jest.fn().mockReturnValue([]);
     jest
       .spyOn(goToConversation, 'goToConversation')
       .mockImplementation(() => 112);
