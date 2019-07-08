@@ -88,7 +88,7 @@ class EntityCacheController<
     return result ? result : null;
   }
 
-  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[]): Promise<T[]> {
     const entities: T[] = [];
 
     ids.forEach((id: IdType) => {

@@ -23,8 +23,9 @@ function clearMocks() {
 
 describe('PersonEntityCacheController', () => {
   let personEntityCacheController: PersonEntityCacheController;
+  let personService: PersonService;
   function setUp() {
-    const personService: any = new PersonService();
+    personService = new PersonService();
     personEntityCacheController = new PersonEntityCacheController(
       personService,
     );
@@ -50,6 +51,7 @@ describe('PersonEntityCacheController', () => {
   }
   beforeEach(() => {
     clearMocks();
+    setUp();
   });
 
   describe('buildPersonEntityCacheController', () => {
@@ -122,6 +124,30 @@ describe('PersonEntityCacheController', () => {
       expect(personEntityCacheController.getSoundexById(4)).toEqual([
         soundex('user01@rc.com'),
       ]);
+    });
+  });
+
+  describe('putInternal', () => {
+    it('should not put to phone number cache and soundex cache when is invalid person', async () => {
+      personService.isCacheValid = jest.fn().mockReturnValue(false);
+      personEntityCacheController['_setSoundexValue'] = jest.fn();
+      personEntityCacheController['_addPhoneNumbers'] = jest.fn();
+      personEntityCacheController['putInternal']({ id: 10 } as any);
+      expect(personEntityCacheController['_setSoundexValue']).not.toBeCalled();
+      expect(personEntityCacheController['_addPhoneNumbers']).not.toBeCalled();
+    });
+
+    it('should not put to phone number cache and soundex cache when is invalid person', async () => {
+      personService.isCacheValid = jest.fn().mockReturnValue(true);
+      personEntityCacheController['_setSoundexValue'] = jest.fn();
+      personEntityCacheController['_addPhoneNumbers'] = jest.fn();
+      personEntityCacheController['putInternal']({ id: 10 } as any);
+      expect(personEntityCacheController['_addPhoneNumbers']).toBeCalledWith({
+        id: 10,
+      });
+      expect(personEntityCacheController['_setSoundexValue']).toBeCalledWith({
+        id: 10,
+      });
     });
   });
 

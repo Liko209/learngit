@@ -177,10 +177,12 @@ describe('SortableGroupMemberHandler', () => {
     });
 
     it('should off notification when call dispose', () => {
+      sortableGroupMemberHandler['_isFetchBegin'] = true;
       const foc = { dispose: jest.fn() };
       sortableGroupMemberHandler['_foc'] = foc as any;
       sortableGroupMemberHandler.dispose();
       expect(foc.dispose).toBeCalled();
+      expect(sortableGroupMemberHandler['_isFetchBegin']).toBeFalsy();
     });
   });
 
@@ -234,8 +236,9 @@ describe('SortableGroupMemberHandler', () => {
           return person.email;
         });
 
+      expect(sortableGroupMemberHandler['_isFetchBegin']).toBeFalsy();
       await sortableGroupMemberHandler.fetchGroupMembersByPage(20);
-
+      expect(sortableGroupMemberHandler['_isFetchBegin']).toBeTruthy();
       setTimeout(() => {
         expect(sortableGroupMemberHandler.sortedMemberIds).toEqual(expectRes);
         expect(personService.getPersonsByIds).toBeCalledWith([
