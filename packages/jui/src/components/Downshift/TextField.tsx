@@ -46,8 +46,8 @@ type JuiDownshiftTextFieldProps = {
 };
 
 class JuiDownshiftTextField extends React.PureComponent<
-  JuiDownshiftTextFieldProps,
-  JuiDownshiftTextFieldStates
+JuiDownshiftTextFieldProps,
+JuiDownshiftTextFieldStates
 > {
   state: JuiDownshiftTextFieldStates = {
     showPlaceholder: true,
@@ -108,7 +108,9 @@ class JuiDownshiftTextField extends React.PureComponent<
     }
   };
   handleKeyDown = (event: JuiDownshiftTextFieldKeyDownEvent) => {
-    const { onSelectChange, inputValue, selectedItems, onKeyDown } = this.props;
+    const {
+      onSelectChange, inputValue, selectedItems, onKeyDown,
+    } = this.props;
     if (selectedItems.length && !inputValue.length && event.keyCode === 8) {
       onSelectChange(selectedItems.slice(0, selectedItems.length - 1));
     }
@@ -169,8 +171,7 @@ class JuiDownshiftTextField extends React.PureComponent<
         InputProps={{
           ...getInputProps({
             autoFocus,
-            startAdornment: selectedItems.map((item: SelectedItem) => {
-              return InputItem ? (
+            startAdornment: selectedItems.map((item: SelectedItem) => (InputItem ? (
                 <InputItem
                   label={item.label}
                   key={item.id}
@@ -179,8 +180,7 @@ class JuiDownshiftTextField extends React.PureComponent<
                   id={item.id}
                   onDelete={this.handleDelete(item)}
                 />
-              ) : null;
-            }),
+            ) : null)),
             inputRef: messageRef,
             onFocus: this.handleFocus,
             onBlur: this.handleBlur,

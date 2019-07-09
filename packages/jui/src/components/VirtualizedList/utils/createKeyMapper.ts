@@ -5,21 +5,19 @@
  */
 import { VirtualizedListChild } from '../types';
 
-const createKeyMapper = (children: VirtualizedListChild[]) => {
-  return (i: number) => {
-    let result: number | string = '';
-    const child = children[i];
-    if (child) {
-      if (child.key === null) {
-        throw new Error(
-          "VirtualizedList Error: 'key' was required for <JuiVirtualizedList/>'s children",
-        );
-      } else {
-        result = child.key;
-      }
+const createKeyMapper = (children: VirtualizedListChild[]) => (i: number) => {
+  let result: number | string = '';
+  const child = children[i];
+  if (child) {
+    if (child.key === null) {
+      throw new Error(
+        "VirtualizedList Error: 'key' was required for <JuiVirtualizedList/>'s children",
+      );
+    } else {
+      result = child.key;
     }
-    return result;
-  };
+  }
+  return result;
 };
 
 export { createKeyMapper };

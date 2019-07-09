@@ -5,7 +5,9 @@
  */
 import React from 'react';
 import tinycolor from 'tinycolor2';
-import { height, palette, opacity, grey } from '../../../foundation/utils';
+import {
+  height, palette, opacity, grey,
+} from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
 import {
   JuiExpansionPanelSummary,
@@ -29,24 +31,22 @@ const StyleVoicemailSummary = styled<VoicemailSummaryProps>(Wrapper)`
       background-color: transparent;
     }
     &:hover {
-      background-color: ${({ isUnread, theme }) =>
-        isUnread
-          ? tinycolor(palette('primary', '600')({ theme }))
-              .setAlpha(opacity('05')({ theme }))
-              .toRgbString()
-          : tinycolor(grey('900')({ theme }))
-              .setAlpha(opacity('05')({ theme }))
-              .toRgbString()};
+      background-color: ${({ isUnread, theme }) => (isUnread
+    ? tinycolor(palette('primary', '600')({ theme }))
+      .setAlpha(opacity('05')({ theme }))
+      .toRgbString()
+    : tinycolor(grey('900')({ theme }))
+      .setAlpha(opacity('05')({ theme }))
+      .toRgbString())};
     }
     &:active {
-      background-color: ${({ isUnread, theme }) =>
-        isUnread
-          ? tinycolor(palette('primary', '600')({ theme }))
-              .setAlpha(opacity('1')({ theme }))
-              .toRgbString()
-          : tinycolor(grey('900')({ theme }))
-              .setAlpha(opacity('1')({ theme }))
-              .toRgbString()};
+      background-color: ${({ isUnread, theme }) => (isUnread
+    ? tinycolor(palette('primary', '600')({ theme }))
+      .setAlpha(opacity('1')({ theme }))
+      .toRgbString()
+    : tinycolor(grey('900')({ theme }))
+      .setAlpha(opacity('1')({ theme }))
+      .toRgbString())};
     }
   }
 `;

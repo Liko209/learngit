@@ -33,8 +33,8 @@ const StyledList = styled(JuiList)`
 `;
 
 type Props = SettingLeftRailViewProps &
-  WithTranslation &
-  RouteComponentProps<{ subPath: string }>;
+WithTranslation &
+RouteComponentProps<{ subPath: string }>;
 
 @observer
 class SettingLeftRailViewComponent extends Component<Props> {
@@ -53,29 +53,27 @@ class SettingLeftRailViewComponent extends Component<Props> {
   private _renderNavItems() {
     const { t, pages, goToSettingPage } = this.props;
 
-    return pages.map(page => {
-      return (
+    return pages.map(page => (
         <JuiListNavItem
-          data-name='sub-setting'
+          data-name="sub-setting"
           data-test-automation-id={`entry-${page.automationId}`}
           selected={page.path === this.selectedPath}
           classes={{ selected: 'selected' }}
           onClick={() => goToSettingPage(page.id)}
           key={page.id}
         >
-          <JuiListNavItemIconographyLeft iconSize='small'>
+          <JuiListNavItemIconographyLeft iconSize="small">
             {page.icon}
           </JuiListNavItemIconographyLeft>
           <JuiListNavItemText>{toTitleCase(t(page.title))}</JuiListNavItemText>
         </JuiListNavItem>
-      );
-    });
+    ));
   }
   render() {
     return (
       <JuiLeftRail>
         <JuiLeftRailStickyTop>
-          <StyledList component='nav' data-test-automation-id='settingLeftRail'>
+          <StyledList component="nav" data-test-automation-id="settingLeftRail">
             {this._renderNavItems()}
           </StyledList>
         </JuiLeftRailStickyTop>

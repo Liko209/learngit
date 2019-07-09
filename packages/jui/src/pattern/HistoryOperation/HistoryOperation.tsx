@@ -30,8 +30,8 @@ const MenuListItemWrapper = styled.div`
 `;
 
 export class JuiHistoryOperation extends React.PureComponent<
-  TowardsProps,
-  { open: boolean; anchorEl: HTMLElement | null }
+TowardsProps,
+{ open: boolean; anchorEl: HTMLElement | null }
 > {
   private _clickMenuHander: {
     [key: string]: (event: React.MouseEvent<HTMLElement>) => void;
@@ -48,8 +48,7 @@ export class JuiHistoryOperation extends React.PureComponent<
   getClickMenuHander = (key: string, type: OPERATION, index: number) => {
     let hander = this._clickMenuHander[key];
     if (!hander) {
-      hander = (event: React.MouseEvent<HTMLElement>) =>
-        this.handleMenuItemClick(event, type, index);
+      hander = (event: React.MouseEvent<HTMLElement>) => this.handleMenuItemClick(event, type, index);
       this._clickMenuHander[key] = hander;
       return hander;
     }

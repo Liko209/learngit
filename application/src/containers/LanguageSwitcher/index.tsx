@@ -20,7 +20,7 @@ class LanguageSwitcher extends React.PureComponent<WithTranslation> {
   renderLanguageChoice({ code, label }: ILanguage) {
     const handleChangeLanguage = () => this.handleChangeLanguage(code);
     return (
-      <button key={code} onClick={handleChangeLanguage} type='button'>
+      <button key={code} onClick={handleChangeLanguage} type="button">
         {label}
       </button>
     );
@@ -33,7 +33,7 @@ class LanguageSwitcher extends React.PureComponent<WithTranslation> {
     ];
 
     return (
-      <div className='LanguageSwitcher'>
+      <div className="LanguageSwitcher">
         {languages.map(language => this.renderLanguageChoice(language))}
       </div>
     );

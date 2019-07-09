@@ -5,7 +5,9 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, palette, typography, height } from '../../foundation/utils';
+import {
+  spacing, palette, typography, height,
+} from '../../foundation/utils';
 import MuiList, { ListProps } from '@material-ui/core/List';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';

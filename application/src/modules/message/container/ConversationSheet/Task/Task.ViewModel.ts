@@ -69,7 +69,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
         }
         return assignedId;
       })
-      .filter((item) => item !== null);
+      .filter(item => item !== null);
   }
 
   @computed
@@ -151,9 +151,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get files() {
-    return this.attachments.map((file: FileItemModel) => {
-      return getFileType(file);
-    });
+    return this.attachments.map((file: FileItemModel) => getFileType(file));
   }
 
   @computed

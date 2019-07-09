@@ -5,7 +5,6 @@
  */
 import { AbstractViewModel } from '@/base';
 import { ViewerTitleProps } from './types';
-import _ from 'lodash';
 import { computed, observable } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

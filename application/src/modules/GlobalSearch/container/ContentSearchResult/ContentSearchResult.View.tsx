@@ -23,7 +23,7 @@ import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 
 type Props = ContentSearchResultViewProps &
-  WithTranslation & { isShow: boolean };
+WithTranslation & { isShow: boolean };
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
@@ -59,12 +59,12 @@ class ContentSearchResultViewComponent extends Component<Props> {
       >
         <JuiFullSearchWrapper
           {...rest}
-          data-test-automation-id='search-message-panel'
+          data-test-automation-id="search-message-panel"
         >
           <JuiSizeDetector handleSizeChanged={this.handleSizeChanged} />
           <JuiFullSearchResultWrapper>
             {showResult && searchState.requestId ? (
-              <JuiListSubheader data-test-automation-id='searchResultsCount'>
+              <JuiListSubheader data-test-automation-id="searchResultsCount">
                 {t('globalSearch.Results', { count: postsCount })}
               </JuiListSubheader>
             ) : null}

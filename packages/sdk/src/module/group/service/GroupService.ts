@@ -57,12 +57,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return (
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+    this.setCheckTypeFunc((id: number) => (
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
-      );
-    });
+    ));
   }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
@@ -326,9 +324,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -342,9 +340,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     includeUserSelf?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -358,9 +356,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchTeams(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -375,11 +373,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   setAsTrue4HasMoreConfigByDirection = async (
     ids: number[],
     direction: QUERY_DIRECTION,
-  ): Promise<void> => {
-    return await this.getGroupController()
-      .getGroupActionController()
-      .setAsTrue4HasMoreConfigByDirection(ids, direction);
-  };
+  ): Promise<void> => await this.getGroupController()
+    .getGroupActionController()
+    .setAsTrue4HasMoreConfigByDirection(ids, direction);
 
   handleIncomingTyingEvent = (groupTyping: GroupTyping) => {
     this.getTypingIndicatorController().handleIncomingTyingEvent(groupTyping);

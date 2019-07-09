@@ -190,7 +190,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     fitHeight,
                     notifyContentSizeChange,
                     canDrag,
-                    isDragging,
                     transform,
                   }) => {
                     const imageStyle = {
@@ -219,21 +218,21 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 </JuiDragZoom>
                 {hasPrevious && (
                   <JuiImageViewerPreviousButton
-                    className='buttonWrapper'
+                    className="buttonWrapper"
                     tooltipTitle={t('viewer.PreviousFile')}
                     aria-label={t('viewer.PreviousFile')}
                     onClick={this.switchPreImage}
-                    iconName='previous'
+                    iconName="previous"
                     iconColor={memoizeColor('grey', '900')}
                   />
                 )}
                 {hasNext && (
                   <JuiImageViewerForwardButton
-                    className='buttonWrapper'
+                    className="buttonWrapper"
                     tooltipTitle={t('viewer.NextFile')}
                     aria-label={t('viewer.NextFile')}
                     onClick={this.switchNextImage}
-                    iconName='forward'
+                    iconName="forward"
                     iconColor={memoizeColor('grey', '900')}
                   />
                 )}
@@ -249,8 +248,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 }
                 targetElement={this._imageRef.current}
                 show={value.show}
-                duration='standard'
-                easing='sharp'
+                duration="standard"
+                easing="sharp"
                 onEntered={value.onTransitionEntered}
                 onExited={value.onTransitionExited}
               />

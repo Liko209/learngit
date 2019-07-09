@@ -49,8 +49,8 @@ const CONTAINER_IDS = {
 };
 
 class TriggerButtonComponent extends React.Component<
-  TriggerButtonProps,
-  TriggerButtonState
+TriggerButtonProps,
+TriggerButtonState
 > {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
@@ -102,7 +102,7 @@ class TriggerButtonComponent extends React.Component<
           tooltipTitle={t(this._getTooltipKey())}
           ariaLabel={t(this._getTooltipKey())}
           onClick={onClick}
-          data-test-automation-id='right_rail_trigger_button'
+          data-test-automation-id="right_rail_trigger_button"
         >
           {this._getIconKey()}
         </JuiIconButton>
@@ -118,7 +118,7 @@ class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
     return (
-      <JuiRightShelfHeader id='right-rail-header'>
+      <JuiRightShelfHeader id="right-rail-header">
         <JuiRightShelfHeaderText>
           {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
@@ -166,7 +166,7 @@ class RightRailComponent extends React.Component<Props> {
               {() => (
                 <JuiTabs
                   defaultActiveIndex={0}
-                  tag='right-shelf'
+                  tag="right-shelf"
                   width={w}
                   onChangeTab={this._handleTabChanged}
                   moreText={t('common.more')}
@@ -206,7 +206,7 @@ class RightRailComponent extends React.Component<Props> {
       return null;
     }
     return (
-      <JuiRightShelf data-test-automation-id='rightRail'>
+      <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
         {this._renderTabs()}
       </JuiRightShelf>

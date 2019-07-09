@@ -29,7 +29,9 @@ type Props = {
 };
 
 const JuiTextWithLink = memo((props: Props) => {
-  const { text, linkText, onClick, TypographyProps, JuiLinkProps } = props;
+  const {
+    text, linkText, onClick, TypographyProps, JuiLinkProps,
+  } = props;
   let textProps;
   if (TypographyProps) {
     const { innerRef, ...rest } = TypographyProps;

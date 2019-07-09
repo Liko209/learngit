@@ -178,11 +178,9 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     rtcLogger.debug(LOG_TAG, `default device label: ${label}`);
     const realDevice = devices.find(
-      (device: MediaDeviceInfo): boolean => {
-        return (
-          device.deviceId !== defaultAudioID && label.endsWith(device.label)
-        );
-      },
+      (device: MediaDeviceInfo): boolean => (
+        device.deviceId !== defaultAudioID && label.endsWith(device.label)
+      ),
     );
     if (realDevice) {
       return realDevice.deviceId;
@@ -226,8 +224,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     newDevices: MediaDeviceInfo[],
     oldDevices: MediaDeviceInfo[],
   ) {
-    const compareFunc = (l: MediaDeviceInfo, r: MediaDeviceInfo) =>
-      l.deviceId === r.deviceId;
+    const compareFunc = (l: MediaDeviceInfo, r: MediaDeviceInfo) => l.deviceId === r.deviceId;
     const deleted = _.differenceWith(oldDevices, newDevices, compareFunc);
     const added = _.differenceWith(newDevices, oldDevices, compareFunc);
     return {
@@ -283,9 +280,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     return _.reduce(
       devices,
-      (acc, item) => {
-        return acc + item.deviceId + item.label;
-      },
+      (acc, item) => acc + item.deviceId + item.label,
       '',
     );
   }

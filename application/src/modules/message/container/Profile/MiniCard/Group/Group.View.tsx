@@ -18,7 +18,7 @@ import { ProfileMiniCardGroupFooter } from './Footer';
 @observer
 class ProfileMiniCardGroupView extends Component<
   ProfileMiniCardGroupViewProps
-> {
+  > {
   render() {
     const { id, group } = this.props;
     return group.displayName ? (

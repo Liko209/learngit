@@ -17,7 +17,7 @@ const ENTRY_KEY_CODE = 13;
 @observer
 class FileNameEditDialogViewComponent extends Component<
   FileNameEditDialogViewProps
-> {
+  > {
   state: {
     isLoading: false;
   };

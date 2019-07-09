@@ -78,8 +78,7 @@ class TelephonySettingManager {
               dataTracking: {
                 name: 'defaultPhoneApp',
                 type: 'phoneGeneral',
-                optionTransform: value =>
-                  DefaultPhoneAppDataTrackingOption[value],
+                optionTransform: value => DefaultPhoneAppDataTrackingOption[value],
               },
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
@@ -95,8 +94,7 @@ class TelephonySettingManager {
               dataTracking: {
                 name: 'callerID',
                 type: 'phoneGeneral',
-                optionTransform: value =>
-                  CallerIDDataTrackingOption[value.usageType] ||
+                optionTransform: value => CallerIDDataTrackingOption[value.usageType] ||
                   CallerIDDataTrackingOption.CompanyOther,
               },
             } as SelectSettingItem<IPhoneNumberRecord>,

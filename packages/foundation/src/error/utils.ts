@@ -27,9 +27,7 @@ export function errorConditionSelector(
   conditions: ErrorCondition | ErrorCondition[],
 ) {
   if (Array.isArray(conditions)) {
-    return conditions.some(condition =>
-      isErrorMatchCondition(error, condition),
-    );
+    return conditions.some(condition => isErrorMatchCondition(error, condition));
   }
   return isErrorMatchCondition(error, conditions);
 }

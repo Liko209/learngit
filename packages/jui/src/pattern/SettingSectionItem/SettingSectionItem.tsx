@@ -105,7 +105,7 @@ const SettingSectionItemWrap = styled.div`
 `;
 
 class JuiSettingSectionItem extends React.PureComponent<
-  JuiSettingSectionItemProps
+JuiSettingSectionItemProps
 > {
   render() {
     const {

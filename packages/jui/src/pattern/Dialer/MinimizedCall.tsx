@@ -27,10 +27,9 @@ type Props = {
 const StyledMinimizedCall = styled('div')`
   order: -1;
   box-sizing: border-box;
-  background-color: ${({ theme }) =>
-    tinycolor(palette('common', 'black')({ theme }))
-      .setAlpha(opacity('3')({ theme }))
-      .toRgbString()};
+  background-color: ${({ theme }) => tinycolor(palette('common', 'black')({ theme }))
+    .setAlpha(opacity('3')({ theme }))
+    .toRgbString()};
   padding: ${spacing(0, 4)};
   width: ${width(60)};
   height: ${height(16)};
@@ -67,7 +66,9 @@ const StyledActionsContainer = styled('div')`
 
 class JuiMinimizedCall extends PureComponent<Props> {
   render() {
-    const { name, label, Actions, onClick, ...rest } = this.props;
+    const {
+      name, label, Actions, onClick, ...rest
+    } = this.props;
     return (
       <StyledMinimizedCall onClick={onClick} {...rest}>
         <StyledInfo>

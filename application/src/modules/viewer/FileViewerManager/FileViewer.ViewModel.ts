@@ -5,7 +5,9 @@
  */
 
 import React from 'react';
-import { computed, action, observable, Reaction } from 'mobx';
+import {
+  computed, action, observable, Reaction,
+} from 'mobx';
 
 import { Person } from 'sdk/module/person/entity';
 import { AbstractViewModel } from '@/base';
@@ -26,7 +28,6 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
-import _ from 'lodash';
 
 class FileViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
@@ -101,15 +102,13 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     const { origHeight, origWidth } = this._item;
     const { pages } = this._currentVersion;
     return pages
-      ? pages.map(({ url }: ItemVersionPage) => {
-          return {
-            url,
-            viewport: {
-              origHeight,
-              origWidth,
-            },
-          };
-        })
+      ? pages.map(({ url }: ItemVersionPage) => ({
+        url,
+        viewport: {
+          origHeight,
+          origWidth,
+        },
+      }))
       : undefined;
   }
 

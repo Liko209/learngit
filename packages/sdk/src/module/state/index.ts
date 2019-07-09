@@ -10,4 +10,6 @@ import { GROUP_BADGE_TYPE } from './constants';
 
 export * from './entity';
 
-export { IStateService, StateService, GroupBadge, GROUP_BADGE_TYPE };
+export {
+  IStateService, StateService, GroupBadge, GROUP_BADGE_TYPE,
+};

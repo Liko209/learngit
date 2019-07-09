@@ -91,8 +91,7 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailDirectMessage',
           type: 'emailNotificationSettings',
-          optionTransform: value =>
-            EmailNotificationSelectDataTrackingOption[value],
+          optionTransform: value => EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('directMessages'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -116,8 +115,7 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailTeams',
           type: 'emailNotificationSettings',
-          optionTransform: value =>
-            EmailNotificationSelectDataTrackingOption[value],
+          optionTransform: value => EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('teams'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -134,13 +132,11 @@ class MessageSettingManager implements IMessageSettingManager {
       },
     ];
 
-    emailNotificationSettingItems.forEach(i =>
-      this._settingService.registerItem(
-        MESSAGE_SETTING_SCOPE,
-        SETTING_SECTION__EMAIL_NOTIFICATIONS,
-        i,
-      ),
-    );
+    emailNotificationSettingItems.forEach(i => this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__EMAIL_NOTIFICATIONS,
+      i,
+    ));
     this._settingService.registerItem(
       MESSAGE_SETTING_SCOPE,
       SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,

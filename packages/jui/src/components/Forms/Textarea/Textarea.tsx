@@ -70,11 +70,11 @@ class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
 
   InputProps = isOutlinedTextFieldProps(this.props)
     ? {
-        classes: { root: 'input-root' },
-      }
+      classes: { root: 'input-root' },
+    }
     : {
-        classes: { root: 'input-root', underline: 'input-underline' },
-      };
+      classes: { root: 'input-root', underline: 'input-underline' },
+    };
 
   render() {
     const { ...juiTextareaRest } = this.props;

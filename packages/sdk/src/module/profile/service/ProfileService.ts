@@ -40,9 +40,7 @@ class ProfileService extends EntityBaseService<Profile>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE));
   }
 
   protected onStarted() {

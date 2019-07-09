@@ -52,7 +52,7 @@ const StyledImg = styled.img`
 `;
 
 const Icon = withDelay(() => (
-  <JuiIconography iconSize='extraLarge'>image_preview</JuiIconography>
+  <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
@@ -104,7 +104,9 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   ) {
     const newURL = nextProps.url;
     if (newURL !== prevState.originURL) {
-      return { url: newURL, originURL: newURL, loaded: false, retryCount: 0 };
+      return {
+        url: newURL, originURL: newURL, loaded: false, retryCount: 0,
+      };
     }
     return null;
   }
@@ -171,7 +173,9 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, placeholder } = this.props;
+    const {
+      Actions, fileName, forceSize, placeholder,
+    } = this.props;
     const { loaded, url } = this.state;
     const { width, height } =
       loaded && !forceSize ? this._imageInfo : this.props;
@@ -199,7 +203,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
             <Jui.ImageFileInfo
               width={width}
               height={height}
-              component='div'
+              component="div"
               onClick={this._handleInfoClick}
             >
               <FileName>{fileName}</FileName>

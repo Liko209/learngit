@@ -115,9 +115,7 @@ class JuiTabs extends PureComponent<Props, States> {
   componentWillReceiveProps(nextProps: Props) {
     const { children } = nextProps;
     const newTabTitles: (string | JSX.Element)[] = [];
-    Children.map(children, (child: ReactElement<JuiTabProps>) => {
-      return newTabTitles.push(child.props.title);
-    });
+    Children.map(children, (child: ReactElement<JuiTabProps>) => newTabTitles.push(child.props.title));
     // force update after i18n ready
     if (difference(newTabTitles, this._tabTitles).length !== 0) {
       this._moreWidth = 0;

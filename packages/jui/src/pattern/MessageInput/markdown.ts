@@ -1,30 +1,18 @@
 import { DeltaStatic, DeltaOperation, StringMap } from 'quill';
 
 const _preInline = {
-  link: (attr: StringMap, insert: any) => {
-    return `[${insert}](${attr.link})`;
-  },
+  link: (attr: StringMap, insert: any) => `[${insert}](${attr.link})`,
 };
 
 const _inline = {
-  italic: (attr: StringMap, insert: any) => {
-    return `*${insert}*`;
-  },
-  bold: (attr: StringMap, insert: any) => {
-    return `**${insert}**`;
-  },
-  code: (attr: StringMap, insert: any) => {
-    return `\`${insert}\``;
-  },
+  italic: (attr: StringMap, insert: any) => `*${insert}*`,
+  bold: (attr: StringMap, insert: any) => `**${insert}**`,
+  code: (attr: StringMap, insert: any) => `\`${insert}\``,
 };
 
 const _block = {
-  header: (attr: StringMap, insert: any) => {
-    return `${'#'.repeat(attr.header)} ${insert}`;
-  },
-  blockquote: (attr: StringMap, insert: any) => {
-    return `> ${insert}`;
-  },
+  header: (attr: StringMap, insert: any) => `${'#'.repeat(attr.header)} ${insert}`,
+  blockquote: (attr: StringMap, insert: any) => `> ${insert}`,
   list: (attr: StringMap, insert: any, extra: { ordered: number }) => {
     extra.ordered += 1;
     switch (attr.list) {

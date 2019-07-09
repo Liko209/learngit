@@ -9,13 +9,11 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 
 type Props = WithTranslation;
 
-const MeetingButtonComponent = (props: Props) => {
-  return (
+const MeetingButtonComponent = (props: Props) => (
     <JuiIconButton tooltipTitle={props.t('meeting.Meetings')}>
       meetings
     </JuiIconButton>
-  );
-};
+);
 
 const MeetingButton = withTranslation('translations')(MeetingButtonComponent);
 

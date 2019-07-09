@@ -37,7 +37,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
         presence={presence}
         {...rest}
       >
-        <span className='avatar-short-name'>{shortName}</span>
+        <span className="avatar-short-name">{shortName}</span>
       </JuiAvatar>
     );
 
@@ -45,7 +45,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
       <JuiAvatar
         src={rest.cover ? defaultCoverAvatar : defaultAvatar}
         data-test-automation-id={automationId}
-        color=''
+        color=""
         {...rest}
       />
     );
@@ -63,7 +63,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
         <JuiAvatar
           src={accelerateURL(headShotUrl)}
           data-test-automation-id={automationId}
-          color=''
+          color=""
           presence={presence}
           {...rest}
         />

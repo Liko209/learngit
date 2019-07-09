@@ -8,7 +8,9 @@ import React, { memo } from 'react';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, typography, height } from '../../foundation/utils';
+import {
+  spacing, grey, typography, height,
+} from '../../foundation/utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import {
   JuiToggleButton,
@@ -40,7 +42,9 @@ type IConversationListItem = {
 
 const JuiConversationListFilter: IConversationListItem = memo(
   (props: JuiConversationListFilterProps) => {
-    const { label, checked, onChange, disabled, ...rest } = props;
+    const {
+      label, checked, onChange, disabled, ...rest
+    } = props;
 
     return (
       <StyledListItem
@@ -50,7 +54,7 @@ const JuiConversationListFilter: IConversationListItem = memo(
       >
         <ItemText>{label}</ItemText>
         <JuiToggleButton
-          className='toggle-button'
+          className="toggle-button"
           checked={checked}
           onChange={onChange}
           disabled={disabled}

@@ -76,7 +76,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
   /* eslint-disable react/no-array-index-key */
   if (showDuplicateFiles) {
     const content = (
-      <Content data-test-automation-id='messageinput-duplicate-modal-title'>
+      <Content data-test-automation-id="messageinput-duplicate-modal-title">
         {subtitle}
         <NameList>
           {duplicateFileNames.map((fileName: string, index: number) => (
@@ -89,31 +89,31 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
       </Content>
     );
     const footer = (
-      <Footer data-test-automation-id='messageinput-duplicate-footer'>
+      <Footer data-test-automation-id="messageinput-duplicate-footer">
         <JuiButton
           onClick={onCancel}
-          color='primary'
-          variant='text'
+          color="primary"
+          variant="text"
           autoFocus
-          data-test-automation-id='messageinput-duplicate-cancel-button'
+          data-test-automation-id="messageinput-duplicate-cancel-button"
         >
           {cancelText}
         </JuiButton>
         <JuiButton
           onClick={onUpdate}
-          color='primary'
-          variant='contained'
+          color="primary"
+          variant="contained"
           autoFocus
-          data-test-automation-id='messageinput-duplicate-update-button'
+          data-test-automation-id="messageinput-duplicate-update-button"
         >
           {updateText}
         </JuiButton>
         <JuiButton
           onClick={onCreate}
-          color='primary'
-          variant='contained'
+          color="primary"
+          variant="contained"
           autoFocus
-          data-test-automation-id='messageinput-duplicate-create-button'
+          data-test-automation-id="messageinput-duplicate-create-button"
         >
           {createText}
         </JuiButton>
@@ -124,7 +124,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
         open={showDuplicateFiles}
         title={title}
         footer={footer}
-        data-test-automation-id='messageinput-duplicate-modal'
+        data-test-automation-id="messageinput-duplicate-modal"
       >
         {content}
       </JuiModal>

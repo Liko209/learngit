@@ -121,7 +121,7 @@ class EntityBaseService<
   }
 
   protected onRCLogin() {}
-
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected onGlipLogin(success: boolean) {}
 
   protected onLogout() {}
@@ -161,9 +161,7 @@ class EntityBaseService<
     return true;
   }
 
-  private _canRequest = () => {
-    return this.canRequest();
-  };
+  private _canRequest = () => this.canRequest();
 
   private _initControllers() {
     if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
@@ -178,12 +176,12 @@ class EntityBaseService<
         ),
         this.networkConfig
           ? {
-              requestController: buildRequestController<T, IdType>(
-                this.networkConfig,
-              ),
-              canSaveRemoteData: this.canSaveRemoteEntity(),
-              canRequest: this._canRequest,
-            }
+            requestController: buildRequestController<T, IdType>(
+              this.networkConfig,
+            ),
+            canSaveRemoteData: this.canSaveRemoteEntity(),
+            canRequest: this._canRequest,
+          }
           : undefined,
       );
     }
@@ -221,13 +219,11 @@ class EntityBaseService<
     return this._entityNotificationController;
   }
 
-  async getSettingsByParentId(settingId: number): Promise<BaseSettingEntity[]> {
+  async getSettingsByParentId(): Promise<BaseSettingEntity[]> {
     return [];
   }
 
-  async getSettingItemById(
-    settingId: number,
-  ): Promise<BaseSettingEntity | undefined> {
+  async getSettingItemById(): Promise<BaseSettingEntity | undefined> {
     return undefined;
   }
 

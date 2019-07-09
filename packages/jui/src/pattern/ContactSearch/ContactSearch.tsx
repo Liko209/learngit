@@ -222,7 +222,9 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       errorEmail,
       messageRef,
     } = this.props;
-    const { inputValue, selectedItem, shrink, showPlaceholder } = this.state;
+    const {
+      inputValue, selectedItem, shrink, showPlaceholder,
+    } = this.state;
 
     let filterSuggestions = suggestions;
 
@@ -232,7 +234,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
     /* eslint-disable react/no-array-index-key */
     return (
       <Downshift
-        id='downshift-multiple'
+        id="downshift-multiple"
         inputValue={inputValue}
         onChange={this.handleChange}
         selectedItem={selectedItem}
@@ -246,8 +248,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
           inputValue,
           selectedItem,
           highlightedIndex,
-        }) => {
-          return (
+        }) => (
             <div>
               <StyledDownshiftMultipleWrapper>
                 {renderInput({
@@ -261,8 +262,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                   ref: messageRef,
                   InputProps: getInputProps({
                     startAdornment: selectedItem.map(
-                      (item: Suggestion, index: number) => {
-                        return Chip ? (
+                      (item: Suggestion, index: number) => (Chip ? (
                           <Chip
                             key={index}
                             tabIndex={0}
@@ -271,8 +271,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                             uid={item.id}
                             onDelete={this.handleDelete(item)}
                           />
-                        ) : null;
-                      },
+                      ) : null),
                     ),
                     onFocus: () => {
                       this.setState({
@@ -306,22 +305,19 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                 })}
                 {isOpen && filterSuggestions.length ? (
                   <StyledPaper square data-test-automation-id={automationId}>
-                    {filterSuggestions.map((suggestion: Suggestion, index) =>
-                      this.renderSuggestion({
-                        ContactSearchItem,
-                        suggestion,
-                        index,
-                        selectedItem,
-                        highlightedIndex,
-                        itemProps: getItemProps({ item: suggestion }),
-                      }),
-                    )}
+                    {filterSuggestions.map((suggestion: Suggestion, index) => this.renderSuggestion({
+                      ContactSearchItem,
+                      suggestion,
+                      index,
+                      selectedItem,
+                      highlightedIndex,
+                      itemProps: getItemProps({ item: suggestion }),
+                    }))}
                   </StyledPaper>
                 ) : null}
               </StyledDownshiftMultipleWrapper>
             </div>
-          );
-        }}
+        )}
       </Downshift>
     );
   }

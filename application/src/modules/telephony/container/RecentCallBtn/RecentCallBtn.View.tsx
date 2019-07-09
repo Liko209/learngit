@@ -25,16 +25,16 @@ class RecentCallBtnComponent extends React.Component<Props> {
       (!shouldShowRecentCallOrBackBtn ? (
         <JuiRecentCallBtn
           tooltipTitle={t('telephony.action.recentCall')}
-          automationId='recentCallBtn'
-          iconName='history'
+          automationId="recentCallBtn"
+          iconName="history"
           handleClick={jumpToRecentCall}
         />
       ) : (
         <JuiRecentCallBtn
-          iconName='dialer'
+          iconName="dialer"
           handleClick={backToDialer}
           tooltipTitle={t('telephony.action.backToDialer')}
-          automationId='telephony-dialpad-btn'
+          automationId="telephony-dialpad-btn"
         />
       ))
     );

@@ -3,8 +3,6 @@
  * @Date: 2019-01-04 13:10:59
  * Copyright © RingCentral. All rights reserved.
  */
-
-import _ from 'lodash';
 import { Item } from '../entity';
 import { Raw } from '../../../framework/model';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
@@ -38,17 +36,12 @@ class ItemActionController {
   async doNotRenderItem(id: number, type: string) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Item>>,
-      originalPost: Item,
-    ): Partial<Raw<Item>> => {
-      return {
-        ...partialPost,
-        do_not_render: true,
-      };
-    };
+    ): Partial<Raw<Item>> => ({
+      ...partialPost,
+      do_not_render: true,
+    });
 
-    const doUpdateModel = async (updateItem: Item) => {
-      return await this._buildItemRequestController(type).put(updateItem);
-    };
+    const doUpdateModel = async (updateItem: Item) => await this._buildItemRequestController(type).put(updateItem);
 
     await this._partialModifyController.updatePartially(
       id,
@@ -68,13 +61,10 @@ class ItemActionController {
     if (itemId > 0) {
       const preHandlePartial = (
         partialItem: Partial<Raw<Item>>,
-        originalItem: Item,
-      ): Partial<Raw<Item>> => {
-        return {
-          ...partialItem,
-          deactivated: true,
-        };
-      };
+      ): Partial<Raw<Item>> => ({
+        ...partialItem,
+        deactivated: true,
+      });
 
       const doUpdateModel = async (updateItem: Item) => {
         const requestController = this._buildItemRequestController(
@@ -98,9 +88,7 @@ class ItemActionController {
           (notification: { eventKey: string; entities: Item[] }) => {
             notificationCenter.emitEntityDelete(
               notification.eventKey,
-              notification.entities.map((item: Item) => {
-                return item.id;
-              }),
+              notification.entities.map((item: Item) => item.id),
             );
           },
         );

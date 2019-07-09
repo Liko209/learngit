@@ -17,8 +17,8 @@ type JuiLinkProps = {
   color?: 'primary' | 'secondary';
   Component?: React.ComponentType | keyof JSX.IntrinsicElements;
   handleOnClick?:
-    | ((event: React.MouseEvent<HTMLSpanElement>) => void)
-    | undefined;
+  | ((event: React.MouseEvent<HTMLSpanElement>) => void)
+  | undefined;
 };
 
 const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
@@ -29,17 +29,15 @@ const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
 
 const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
   ${({ size }) => (size ? typography(typographySizeMap[size]) : '')}
-  color: ${({ disabled, color = 'primary' }) =>
-    disabled ? grey('500') : palette(color, 'main')};
+  color: ${({ disabled, color = 'primary' }) => (disabled ? grey('500') : palette(color, 'main'))};
   &:hover {
     text-decoration: ${({ disabled }) => (disabled ? 'none' : 'underline')};
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   }
   &:active {
-    color: ${({ theme, color = 'primary' }) =>
-      tinycolor(palette(color, 'main')({ theme }))
-        .setAlpha(1 - theme.palette.action.hoverOpacity * 2)
-        .toRgbString()};
+    color: ${({ theme, color = 'primary' }) => tinycolor(palette(color, 'main')({ theme }))
+    .setAlpha(1 - theme.palette.action.hoverOpacity * 2)
+    .toRgbString()};
   }
 `;
 

@@ -25,16 +25,16 @@ class AddViewComponent extends Component<Props> {
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color='grey.900'
+          color="grey.900"
           disableToolTip
           onClick={this._handleAdd}
-          size='xxlarge'
+          size="xxlarge"
           disabled
-          data-test-automation-id='telephony-add-btn'
+          data-test-automation-id="telephony-add-btn"
         >
           call_add
         </JuiIconButton>
-        <span className='disabled'>{t('telephony.action.add')}</span>
+        <span className="disabled">{t('telephony.action.add')}</span>
       </JuiKeypadAction>
     );
   }

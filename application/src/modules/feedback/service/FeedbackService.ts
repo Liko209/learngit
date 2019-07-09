@@ -69,7 +69,7 @@ class FeedbackService {
       {
         timeout,
         retry,
-        onProgress: (evt: { totalPercent: number; totalBytes: number }) => {},
+        onProgress: () => {},
       },
       {
         filename: zipName,

@@ -24,8 +24,7 @@ const Wrapper = styled.div<{ hasThumb?: boolean; leftBorderColor?: string }>`
   margin: ${spacing(2.5, 0, 2.5, 0)};
   padding: ${spacing(5, 5, 1, 5)};
   border-left: 2px solid
-    ${({ leftBorderColor }) =>
-      leftBorderColor ? leftBorderColor : palette('primary', 'divider')};
+    ${({ leftBorderColor }) => (leftBorderColor ? leftBorderColor : palette('primary', 'divider'))};
   padding-right: ${({ hasThumb }) => (hasThumb ? spacing(34) : spacing(5))};
   a {
     color: ${palette('primary', 'main')};
@@ -39,7 +38,9 @@ const Wrapper = styled.div<{ hasThumb?: boolean; leftBorderColor?: string }>`
 const AttachmentsWrapper = styled.div``;
 
 const AttachmentItem = (props: AttachmentItemProps) => {
-  const { pretext, thumb_url, color, ...rest } = props;
+  const {
+    pretext, thumb_url, color, ...rest
+  } = props;
   return (
     <Wrapper hasThumb={!!thumb_url} leftBorderColor={color}>
       <MarkDownView content={pretext} />

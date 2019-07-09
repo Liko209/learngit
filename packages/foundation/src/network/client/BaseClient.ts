@@ -10,7 +10,7 @@ abstract class BaseClient implements IClient {
   constructor() {
     this.tasks = new Map();
   }
-
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     this.tasks.set(request.id, request);
   }

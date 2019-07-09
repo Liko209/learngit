@@ -109,8 +109,7 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     callback && callback(ref);
   }
 
-  private _getFixedCellHeight = () =>
-    this.props.fixedCellHeight || this.props.minCellHeight
+  private _getFixedCellHeight = () => this.props.fixedCellHeight || this.props.minCellHeight
 
   private get cache() {
     if (!this._cache) {
@@ -233,9 +232,7 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     }
   }
 
-  isRowLoaded = ({ index }: Index) => {
-    return !!this.props.dataSource.get(index as any);
-  }
+  isRowLoaded = ({ index }: Index) => !!this.props.dataSource.get(index as any)
 
   private _toDataIndex(rowIndex: number) {
     const { dataSource } = this.props;

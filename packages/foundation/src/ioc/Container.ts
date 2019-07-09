@@ -67,8 +67,9 @@ class Container {
   get<T>(name: InjectableName<T>): T {
     const registration = this.getRegistration(name);
 
-    if (registration.async)
+    if (registration.async) {
       throw new Error(`${name} is async, use asyncGet() to get it.`);
+    }
 
     const cache = this._getCache(registration);
     if (cache) return cache;

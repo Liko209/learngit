@@ -35,9 +35,7 @@ class PreFetchConversationDataHandler {
 
   private _onNetWorkChanged(onLine: boolean) {
     if (onLine) {
-      this._preFetchControllers.map(controller =>
-        this._preFetchUnCachedGroupData(controller),
-      );
+      this._preFetchControllers.map(controller => this._preFetchUnCachedGroupData(controller));
     }
   }
 
@@ -81,15 +79,11 @@ class PreFetchConversationDataHandler {
   }
 
   setCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller =>
-      controller.setCurrentCacheConversation(groupId),
-    );
+    this._preFetchControllers.forEach(controller => controller.setCurrentCacheConversation(groupId));
   }
 
   releaseCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller =>
-      controller.releaseCurrentConversation(groupId),
-    );
+    this._preFetchControllers.forEach(controller => controller.releaseCurrentConversation(groupId));
   }
 
   removeCache(groupId: number) {

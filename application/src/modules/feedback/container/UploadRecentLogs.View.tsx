@@ -26,8 +26,8 @@ import { Loading } from 'jui/hoc/withLoading';
 type State = {};
 
 type Props = UploadRecentLogsViewProps &
-  UploadRecentLogsViewModelProps &
-  WithTranslation;
+UploadRecentLogsViewModelProps &
+WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -97,7 +97,9 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   onClose = () => this.context();
 
   render() {
-    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
+    const {
+      handleTitleChange, handleDescChange, isLoading, t,
+    } = this.props;
     return (
       <JuiModal
         open

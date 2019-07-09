@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { uniq } from 'lodash';
-import { observable, action, computed, createAtom } from 'mobx';
+import {
+  observable, action, computed, createAtom,
+} from 'mobx';
 import { SettingPage, SettingSection, SettingItem } from '@/interface/setting';
 import { SettingStoreScope } from './SettingStoreScope';
 import { isItemVisible } from './helper';
@@ -69,9 +71,7 @@ class SettingStore {
   }
 
   getSectionItems(sectionId: SettingSection['id']) {
-    return this._getAll(storeScope =>
-      storeScope.getSectionItems(sectionId),
-    ).sort(this._compareItemWeight);
+    return this._getAll(storeScope => storeScope.getSectionItems(sectionId)).sort(this._compareItemWeight);
   }
 
   getSectionVisibleItems(sectionId: SettingSection['id']) {
@@ -80,9 +80,7 @@ class SettingStore {
 
   getPageItems(pageId: SettingPage['id']) {
     return this.getPageSections(pageId).reduce(
-      (result: SettingItem['id'][], sectionId: SettingSection['id']) => {
-        return result.concat(this.getSectionItems(sectionId));
-      },
+      (result: SettingItem['id'][], sectionId: SettingSection['id']) => result.concat(this.getSectionItems(sectionId)),
       [],
     );
   }
@@ -130,25 +128,19 @@ class SettingStore {
   private _comparePageWeight = (
     leftId: SettingPage['id'],
     rightId: SettingPage['id'],
-  ) => {
-    return this.getPageById(leftId)!.weight - this.getPageById(rightId)!.weight;
-  }
+  ) => this.getPageById(leftId)!.weight - this.getPageById(rightId)!.weight
 
   private _compareSectionWeight = (
     leftId: SettingSection['id'],
     rightId: SettingSection['id'],
-  ) => {
-    return (
-      this.getSectionById(leftId)!.weight - this.getSectionById(rightId)!.weight
-    );
-  }
+  ) => (
+    this.getSectionById(leftId)!.weight - this.getSectionById(rightId)!.weight
+  )
 
   private _compareItemWeight = (
     leftId: SettingItem['id'],
     rightId: SettingItem['id'],
-  ) => {
-    return this.getItemById(leftId)!.weight - this.getItemById(rightId)!.weight;
-  }
+  ) => this.getItemById(leftId)!.weight - this.getItemById(rightId)!.weight
 }
 
 export { SettingStore, SettingStoreScope };

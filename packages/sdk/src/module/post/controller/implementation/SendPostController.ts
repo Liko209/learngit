@@ -118,9 +118,7 @@ class SendPostController implements ISendPostController {
 
     const updateLocalPostCallback = async (
       post: Partial<Post>,
-    ): Promise<Post | null> => {
-      return await this.updateLocalPost(post);
-    };
+    ): Promise<Post | null> => await this.updateLocalPost(post);
 
     await this._postItemController.waiting4ItemsReady(
       post,
@@ -134,20 +132,15 @@ class SendPostController implements ISendPostController {
     const backup = _.cloneDeep(post);
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
-      originalPost: Post,
-    ): Partial<Raw<Post>> => {
-      return {
-        ...partialPost,
-        ...backup,
-      };
-    };
+    ): Partial<Raw<Post>> => ({
+      ...partialPost,
+      ...backup,
+    });
     if (backup.id) {
       return this.postActionController.partialModifyController.updatePartially(
         backup.id,
         preHandlePartial,
-        async (newPost: Post) => {
-          return newPost;
-        },
+        async (newPost: Post) => newPost,
         (
           originalEntities: Post[],
           updatedEntities: Post[],

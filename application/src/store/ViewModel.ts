@@ -37,10 +37,9 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
     return this._props;
   }
 
-  private _getAttributes = (props?: Partial<P>) =>
-    props && this._BLACKLISTED_PROPS
-      ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
-      : props;
+  private _getAttributes = (props?: Partial<P>) => (props && this._BLACKLISTED_PROPS
+    ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
+    : props);
 
   constructor(props?: P, BLACKLISTED_PROPS?: string[]) {
     super();

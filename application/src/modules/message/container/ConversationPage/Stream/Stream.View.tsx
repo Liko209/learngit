@@ -4,9 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React, { Component, RefObject, createRef, cloneElement } from 'react';
+import React, {
+  Component, RefObject, createRef, cloneElement,
+} from 'react';
 import storeManager from '@/store/base/StoreManager';
-import { observable, runInAction, reaction, action } from 'mobx';
+import {
+  observable, runInAction, reaction, action,
+} from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
 import { mainLogger, PerformanceTracer } from 'sdk';
 import { ConversationInitialPost } from '../../ConversationInitialPost';
@@ -61,7 +65,7 @@ class StreamViewComponent extends Component<Props> {
     { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
   private _listRef: React.RefObject<
-    JuiVirtualizedListHandles
+  JuiVirtualizedListHandles
   > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
   @observable private _historyViewed: boolean | null = null;
@@ -79,12 +83,11 @@ class StreamViewComponent extends Component<Props> {
     [StreamItemType.INITIAL_POST]: this._renderInitialPost,
   };
   private _contentStyleGen = _.memoize(
-    (height?: number) =>
-      ({
-        minHeight: height,
-        display: 'flex',
-        flexDirection: 'column',
-      } as React.CSSProperties),
+    (height?: number) => ({
+      minHeight: height,
+      display: 'flex',
+      flexDirection: 'column',
+    } as React.CSSProperties),
   );
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -229,7 +232,7 @@ class StreamViewComponent extends Component<Props> {
     return shouldHaveJumpButton ? (
       <JumpToFirstUnreadButtonWrapper>
         <JuiLozengeButton
-          arrowDirection='up'
+          arrowDirection="up"
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
@@ -337,15 +340,9 @@ class StreamViewComponent extends Component<Props> {
     this._setUmiDisplay(true);
   };
 
-  findPost = (i: StreamItem) => {
-    return i.type === StreamItemType.POST;
-  };
+  findPost = (i: StreamItem) => i.type === StreamItemType.POST;
 
-  private _findStreamItemIndexByPostId = (id: number) => {
-    return this.props.items.findIndex((item: StreamItemPost) => {
-      return item.type === StreamItemType.POST && item.value === id;
-    });
-  };
+  private _findStreamItemIndexByPostId = (id: number) => this.props.items.findIndex((item: StreamItemPost) => item.type === StreamItemType.POST && item.value === id);
 
   @action
   private _loadInitialPosts = async () => {
@@ -374,9 +371,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _watchUnreadCount() {
     const disposer = reaction(
-      () => {
-        return this.props.mostRecentPostId;
-      },
+      () => this.props.mostRecentPostId,
       () => {
         if (this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
@@ -406,12 +401,12 @@ class StreamViewComponent extends Component<Props> {
     this.props.enableNewMessageSeparatorHandler();
     this._setUmiDisplay(true);
   };
-  private _renderNewMessagesDivider(streamItem: StreamItem) {
+  private _renderNewMessagesDivider() {
     const { t } = this.props;
     const dividerText: string = t('message.stream.newMessagesDivider');
     return (
       <TimeNodeDivider
-        key='TimeNodeDividerNewMessagesDivider'
+        key="TimeNodeDividerNewMessagesDivider"
         value={dividerText}
       />
     );
@@ -430,16 +425,15 @@ class StreamViewComponent extends Component<Props> {
   }
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
     const { refresh, postIds } = this.props;
-    const highlightPost = () =>
-      requestAnimationFrame(() => {
-        if (this._jumpToPostRef.current) {
-          this._jumpToPostRef.current.highlight();
-          goToConversation({
-            conversationId: this.props.groupId,
-            replaceHistory: true,
-          });
-        }
-      });
+    const highlightPost = () => requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+        goToConversation({
+          conversationId: this.props.groupId,
+          replaceHistory: true,
+        });
+      }
+    });
     // handle hight and jump to post Id
     if (currentId === prevId) {
       highlightPost();
@@ -457,12 +451,14 @@ class StreamViewComponent extends Component<Props> {
     this._globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, value);
   }
   render() {
-    const { loadMore, hasMore, items, loadingStatus } = this.props;
+    const {
+      loadMore, hasMore, items, loadingStatus,
+    } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
-
+    /* eslint-disable implicit-arrow-linebreak */
     return (
       <JuiStream>
         <JuiAutoSizer>
@@ -473,7 +469,7 @@ class StreamViewComponent extends Component<Props> {
                 // if they are directly accessed by render, for render
                 // callback, we can wrap it with <Observer>
                 // See: https://tinyurl.com/y3nfuybu
-                loadingStatus === STATUS.FAILED ? (
+                (loadingStatus === STATUS.FAILED ? (
                   this._onInitialDataFailed
                 ) : (
                   <>
@@ -497,7 +493,7 @@ class StreamViewComponent extends Component<Props> {
                       {this._renderStreamItems()}
                     </JuiInfiniteList>
                   </>
-                )
+                ))
               }
             </Observer>
           )}

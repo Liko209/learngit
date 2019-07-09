@@ -68,8 +68,7 @@ const SearchItemValueWrapper = styled.div`
 
 const Joined = styled.span`
   padding: ${spacing(0, 1)};
-  color: ${({ theme }) =>
-    theme.palette.getContrastText(primary('700', 2)({ theme }))};
+  color: ${({ theme }) => theme.palette.getContrastText(primary('700', 2)({ theme }))};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}
@@ -107,7 +106,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
   const className = hovered ? 'search-items hover' : 'search-items';
   return (
     <SearchItemWrapper className={className} disableRipple {...rest}>
-      <SearchItemAvatar data-test-automation-id='search-item-avatar'>
+      <SearchItemAvatar data-test-automation-id="search-item-avatar">
         {Avatar}
       </SearchItemAvatar>
       <SearchItemValueWrapper>
@@ -116,13 +115,13 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           terms={terms}
           beforeValue={beforeValue}
           afterValue={afterValue}
-          data-test-automation-id='search-item-text'
+          data-test-automation-id="search-item-text"
         />
         {isPrivate && (
-          <PrivateIcon data-test-automation-id='search-item-private' />
+          <PrivateIcon data-test-automation-id="search-item-private" />
         )}
         {isJoined && (
-          <Joined data-test-automation-id='search-item-joined'>
+          <Joined data-test-automation-id="search-item-joined">
             {joinedStatusText}
           </Joined>
         )}

@@ -10,12 +10,10 @@ import { JuiIconography } from '../../../foundation/Iconography';
 
 const StyledIconographyDraft = styled(JuiIconography)``;
 
-const JuiIndicatorDraft = () => {
-  return (
+const JuiIndicatorDraft = () => (
     <StyledIconographyDraft iconSize="medium" iconColor={['secondary', '600']}>
       draft
     </StyledIconographyDraft>
-  );
-};
+);
 
 export { StyledIconographyDraft, JuiIndicatorDraft };

@@ -16,7 +16,7 @@ import { ChangeEvent, KeyboardEvent } from 'react';
 import { toFirstLetterUpperCase } from '../../helpers';
 
 class GenericDialerPanelViewModel extends StoreViewModel<
-  GenericDialerPanelProps
+GenericDialerPanelProps
 > {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(
@@ -141,11 +141,9 @@ class GenericDialerPanelViewModel extends StoreViewModel<
     this._concatInputString(str);
   };
 
-  setCallerPhoneNumber = (str: string) =>
-    this._telephonyService.setCallerPhoneNumber(str);
+  setCallerPhoneNumber = (str: string) => this._telephonyService.setCallerPhoneNumber(str);
 
-  onAfterDialerOpen = () =>
-    this.props.onAfterMount && this.props.onAfterMount();
+  onAfterDialerOpen = () => this.props.onAfterMount && this.props.onAfterMount();
 
   deleteInputString = (startPos: number, endPos: number) => {
     this._deleteInputString(false, startPos, endPos);

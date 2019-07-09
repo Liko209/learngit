@@ -112,11 +112,11 @@ export default class FileItemModel extends ItemModel {
   }
 
   getDirectRelatedPostInGroup(groupId: number) {
-    return this._getDirectRelatedPostInGroup(groupId, this.modifiedAt);
+    return this._getDirectRelatedPostInGroup(groupId);
   }
 
   private _getDirectRelatedPostInGroup = moize.promise(
-    (groupId: number, modifiedAt) => {
+    (groupId: number) => {
       const postService = ServiceLoader.getInstance<PostService>(
         ServiceConfig.POST_SERVICE,
       );

@@ -29,7 +29,7 @@ class JuiDialer extends PureComponent<Props> {
     return (
       <StyledDialer
         {...this.props}
-        data-test-automation-id='dialer-container'
+        data-test-automation-id="dialer-container"
       />
     );
   }

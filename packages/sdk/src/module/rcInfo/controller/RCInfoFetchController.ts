@@ -254,9 +254,7 @@ class RCInfoFetchController {
     const response = await RCInfoApi.getBlockNumberList(params);
     response.records &&
       result.push(
-        ...response.records.filter(data => {
-          return data.status === BLOCK_STATUS.BLOCKED;
-        }),
+        ...response.records.filter(data => data.status === BLOCK_STATUS.BLOCKED),
       );
     if (
       response.paging &&
@@ -316,7 +314,7 @@ class RCInfoFetchController {
   }
 
   private async _getAllSpecialNumberRules(): Promise<
-    SpecialNumberRuleModel | ISpecialServiceNumber | undefined
+  SpecialNumberRuleModel | ISpecialServiceNumber | undefined
   > {
     return (await this.rcInfoUserConfig.getSpecialNumberRules()) || undefined;
   }
@@ -349,7 +347,7 @@ class RCInfoFetchController {
   }
 
   async getExtensionPhoneNumberList(): Promise<
-    IExtensionPhoneNumberList | undefined
+  IExtensionPhoneNumberList | undefined
   > {
     return (
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined

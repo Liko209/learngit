@@ -45,4 +45,6 @@ type StreamContextInfo = {
 
 const StreamContext = createContext<StreamContextInfo>({ isShow: true });
 
-export { StreamProps, StreamViewProps, SuccinctPost, StreamContext };
+export {
+  StreamProps, StreamViewProps, SuccinctPost, StreamContext,
+};

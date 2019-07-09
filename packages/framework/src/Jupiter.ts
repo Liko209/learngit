@@ -58,9 +58,7 @@ class Jupiter {
     loader: () => Promise<{ config: ModuleConfig }>,
     afterBootstrap?: () => void,
   ) {
-    const promise = loader().then(m =>
-      this.registerModule(m.config, afterBootstrap),
-    );
+    const promise = loader().then(m => this.registerModule(m.config, afterBootstrap));
     this._asyncModulePromises.push(promise);
     return promise;
   }
@@ -97,9 +95,7 @@ class Jupiter {
     ): provide is {
       name: interfaces.ServiceIdentifier<T>;
       value: interfaces.Newable<T>;
-    } => {
-      return !!provide.value;
-    };
+    } => !!provide.value;
 
     let identifier: interfaces.ServiceIdentifier<T>;
     let creator: interfaces.Newable<T>;
@@ -203,8 +199,8 @@ class Jupiter {
 
   onInitialized<T>(
     identifier:
-      | interfaces.ServiceIdentifier<T>
-      | interfaces.ServiceIdentifier<T>[],
+    | interfaces.ServiceIdentifier<T>
+    | interfaces.ServiceIdentifier<T>[],
     callback: (...args: any[]) => void,
   ) {
     const identifiers = this._formatIdentifier(identifier);
@@ -223,8 +219,8 @@ class Jupiter {
 
   onDisposed<T>(
     identifier:
-      | interfaces.ServiceIdentifier<T>
-      | interfaces.ServiceIdentifier<T>[],
+    | interfaces.ServiceIdentifier<T>
+    | interfaces.ServiceIdentifier<T>[],
     callback: () => void,
   ) {
     const identifiers = this._formatIdentifier(identifier);
@@ -254,8 +250,8 @@ class Jupiter {
 
   private _formatIdentifier<T>(
     identifier:
-      | interfaces.ServiceIdentifier<T>
-      | interfaces.ServiceIdentifier<T>[],
+    | interfaces.ServiceIdentifier<T>
+    | interfaces.ServiceIdentifier<T>[],
   ) {
     return !Array.isArray(identifier) ? [identifier] : identifier;
   }

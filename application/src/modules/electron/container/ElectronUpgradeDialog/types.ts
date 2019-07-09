@@ -15,7 +15,7 @@ type ElectronUpgradeDialogProps = {
 };
 
 type ElectronUpgradeDialogViewProps = WithTranslation &
-  ElectronUpgradeDialogProps;
+ElectronUpgradeDialogProps;
 
 type UpgradeUserAction = {
   skip?: boolean;

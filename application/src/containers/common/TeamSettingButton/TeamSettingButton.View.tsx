@@ -33,8 +33,8 @@ class TeamSettingButtonViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size={size}
-        color='grey.500'
-        data-test-automation-id='settingButton'
+        color="grey.500"
+        data-test-automation-id="settingButton"
         alwaysEnableTooltip
         onClick={this.onClickSettingButton}
         tooltipTitle={toTitleCase(t('setting.teamSettings'))}

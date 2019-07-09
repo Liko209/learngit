@@ -4,15 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
-
 import { RegisterItemManager } from './RegisterItemManager';
 import { IHealthModule, IHealthModuleManager } from './types';
 
 export class HealthModuleManager implements IHealthModuleManager {
   private static _instance: HealthModuleManager;
   private _manager: RegisterItemManager<
-    IHealthModule
+  IHealthModule
   > = new RegisterItemManager('HealthModuleManager');
 
   private constructor() {}

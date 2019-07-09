@@ -213,7 +213,7 @@ function wrapHandleError(
   notificationType: NOTIFICATION_TYPE,
   options: CatchOptionsProps,
 ) {
-  return function(this: Function, ...args: any[]) {
+  return function (this: Function, ...args: any[]) {
     try {
       const result = originalMethod.apply(this, args);
 
@@ -234,7 +234,7 @@ function decorate(
   notificationType: NOTIFICATION_TYPE,
   options: CatchOptionsProps,
 ): any {
-  return function(target: any, propertyName: string, descriptor?: any) {
+  return function (target: any, propertyName: string, descriptor?: any) {
     // bound instance methods
     if (!descriptor) {
       Object.defineProperty(target, propertyName, {
@@ -289,11 +289,11 @@ function catchError(options: StrategyProps[]) {
   return decorate(NOTIFICATION_TYPE.CUSTOM, options);
 }
 
-catchError.flash = function(options: NotifyErrorProps) {
+catchError.flash = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLASH, options);
 };
 
-catchError.flag = function(options: NotifyErrorProps) {
+catchError.flag = function (options: NotifyErrorProps) {
   return decorate(NOTIFICATION_TYPE.FLAG, options);
 };
 

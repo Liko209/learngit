@@ -62,7 +62,9 @@ const StyledActionsContainer = styled('div')`
 
 class JuiIncomingCall extends PureComponent<Props> {
   render() {
-    const { Ignore, Avatar, name, phone, Actions } = this.props;
+    const {
+      Ignore, Avatar, name, phone, Actions,
+    } = this.props;
     return (
       <StyledIncomingCall>
         <StyledIgnoreContainer>

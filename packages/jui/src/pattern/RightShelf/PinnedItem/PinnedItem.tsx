@@ -22,21 +22,21 @@ class JuiPinnedItem extends PureComponent<JuiPinnedItemProps> {
     let iconElement = icon;
     if (typeof icon === 'string') {
       iconElement = (
-        <JuiIconography iconSize='inherit' iconColor={['grey', '500']}>
+        <JuiIconography iconSize="inherit" iconColor={['grey', '500']}>
           {icon}
         </JuiIconography>
       );
     }
     return (
       <Wrapper>
-        <IconWrapper data-test-automation-id='pinned-item-icon'>
+        <IconWrapper data-test-automation-id="pinned-item-icon">
           {iconElement}
         </IconWrapper>
         {isFile ? (
           <FileName>{text}</FileName>
         ) : (
           <JuiListItemText
-            data-test-automation-id='pinned-item-text'
+            data-test-automation-id="pinned-item-text"
             primary={text}
           />
         )}

@@ -3,7 +3,9 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
+import React, {
+  useState, memo, forwardRef, useRef, useCallback,
+} from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {

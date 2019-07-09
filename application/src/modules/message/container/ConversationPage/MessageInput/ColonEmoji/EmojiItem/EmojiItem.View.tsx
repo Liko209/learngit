@@ -14,14 +14,16 @@ import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/Men
 @observer
 class EmojiItemView extends Component<EmojiItemViewProps> {
   render() {
-    const { currentIndex, selectHandler, index, id, displayId } = this.props;
+    const {
+      currentIndex, selectHandler, index, id, displayId,
+    } = this.props;
 
     return (
       <JuiMentionPanelSectionItem
         Avatar={
           <Emoji
             emoji={id || ''}
-            set='emojione'
+            set="emojione"
             size={32}
             backgroundImageFn={backgroundImageFn}
           />

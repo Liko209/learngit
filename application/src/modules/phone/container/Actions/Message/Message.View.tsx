@@ -28,8 +28,8 @@ class MessageViewComponent extends Component<Props> {
     const { goToConversation, entity, type } = this.props;
     return (
       <ActionButton
-        key='message-button'
-        icon='chat_bubble'
+        key="message-button"
+        icon="chat_bubble"
         type={type}
         tooltip={this.title}
         onClick={goToConversation}

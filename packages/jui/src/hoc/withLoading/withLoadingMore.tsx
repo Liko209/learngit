@@ -41,7 +41,7 @@ const withLoadingMore = (
     : null;
 
   return class LoadingMoreComponent extends React.PureComponent<
-    WithLoadingMoreProps
+  WithLoadingMoreProps
   > {
     render() {
       const { loadingTop, loadingBottom, ...rest } = this.props;

@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { IEntitySourceController } from '../../controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../controller/interface/IPartialModifyController';
 import { PartialModifyController } from '../../controller/impl/PartialModifyController';
@@ -9,20 +7,18 @@ const delegate = (
   getObject: Function,
   methodName: string,
   isAsync: boolean = true,
-) => {
-  return isAsync
-    ? jest.fn().mockImplementation(async (...args) => {
-        const object = getObject();
-        return await object[methodName].call(object, ...args);
-      })
-    : jest.fn().mockImplementation((...args) => {
-        const object = getObject();
-        return object[methodName].call(object, ...args);
-      });
-};
+) => (isAsync
+  ? jest.fn().mockImplementation(async (...args) => {
+    const object = getObject();
+    return await object[methodName].call(object, ...args);
+  })
+  : jest.fn().mockImplementation((...args) => {
+    const object = getObject();
+    return object[methodName].call(object, ...args);
+  }));
 
 export class TestPartialModifyController<T extends IdModel = IdModel>
-  implements IPartialModifyController<T> {
+implements IPartialModifyController<T> {
   public partialModifyController: IPartialModifyController<T>;
   constructor(public entitySourceController: IEntitySourceController<T>) {
     this.partialModifyController = new PartialModifyController(

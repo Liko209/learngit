@@ -5,8 +5,10 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, action, reaction } from 'mobx';
-import { PersonService, ContactType } from 'sdk/module/person';
+import {
+  observable, computed, action, reaction,
+} from 'mobx';
+import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -248,7 +250,6 @@ class TelephonyStore {
 
     return await personService.matchContactByPhoneNumber(
       phone,
-      ContactType.GLIP_CONTACT,
     );
   };
 

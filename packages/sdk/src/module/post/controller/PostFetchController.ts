@@ -5,7 +5,9 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
+import {
+  Post, IPostQuery, IPostResult, IRawPostResult,
+} from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
 import { PostDao } from '../dao';
@@ -271,12 +273,10 @@ class PostFetchController {
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex((localPost: Post) => {
-            return (
-              localPost.unique_id !== undefined &&
+          const index = localPosts.findIndex((localPost: Post) => (
+            localPost.unique_id !== undefined &&
               localPost.unique_id === remotePost.unique_id
-            );
-          });
+          ));
           if (index !== -1) {
             localPosts.splice(index, 1);
           }

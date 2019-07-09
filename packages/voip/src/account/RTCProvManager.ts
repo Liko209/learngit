@@ -144,10 +144,7 @@ class RTCProvManager extends EventEmitter2 {
       return;
     }
 
-    if (
-      (response.status as number) < 200 ||
-      (response.status as number) >= 400
-    ) {
+    if ((response.status as number) < 200 || (response.status as number) >= 400) {
       rtcLogger.info(LOG_TAG, `the response is error:${response.status}`);
       this._errorHandling(ERROR_TYPE.REQUEST_ERROR, response.retryAfter);
       return;

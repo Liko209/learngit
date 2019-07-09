@@ -41,4 +41,6 @@ const MarkDownView = (props: MarkDownViewProps) => {
   return null;
 };
 
-export { ImageWithSize, Span, MarkDownView, MarkDownViewProps };
+export {
+  ImageWithSize, Span, MarkDownView, MarkDownViewProps,
+};

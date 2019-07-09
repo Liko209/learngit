@@ -10,7 +10,7 @@ import { ProfileMiniCardPersonViewModel } from '../Person.ViewModel';
 import { ProfileMiniCardPersonHeaderProps } from './types';
 
 const ProfileMiniCardPersonHeader = buildContainer<
-  ProfileMiniCardPersonHeaderProps
+ProfileMiniCardPersonHeaderProps
 >({
   View: ProfileMiniCardPersonHeaderView,
   ViewModel: ProfileMiniCardPersonViewModel,
