@@ -11,7 +11,7 @@ type TextMessageProps = {
 };
 
 type TextMessageViewProps = {
-  content: ChildrenType;
+  renderText: ChildrenType;
 };
 
 export { TextMessageProps, TextMessageViewProps };
