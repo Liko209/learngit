@@ -5,6 +5,7 @@
  */
 import { IDebugModule } from './types';
 import { debugLog } from './log';
+
 const DEBUG_TAG = '_debug';
 
 class Debug {
@@ -16,7 +17,7 @@ class Debug {
 
   private _init() {
     window[DEBUG_TAG] = this._instance;
-    this.inject('log', debugLog);
+    this.inject('log', debugLog.get());
   }
 
   inject(name: string, m: IDebugModule) {

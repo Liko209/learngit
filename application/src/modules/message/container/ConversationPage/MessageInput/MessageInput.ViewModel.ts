@@ -39,10 +39,10 @@ const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    container.get(FeedbackService).zipRecentLogs(ZipItemLevel.NORMAL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
   },
   '/debug-save-all': () => {
-    container.get(FeedbackService).zipRecentLogs(ZipItemLevel.DEBUG_ALL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL);
   },
 };
 

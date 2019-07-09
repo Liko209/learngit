@@ -14,19 +14,11 @@ import { FeedbackService } from './service/FeedbackService';
 
 class FeedbackModule extends AbstractModule {
   async bootstrap() {
-    LogControlManager.instance().registerZipProvider(
-      new ContextInfoZipItemProvider(),
-    );
+    LogControlManager.instance().registerZipProvider(new ContextInfoZipItemProvider());
     debugLog.inject('debug', () => UploadRecentLogs.show());
-    debugLog.inject('debugAll', () =>
-      UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
-    );
-    debugLog.inject('debugSave', () =>
-      container.get(FeedbackService).zipRecentLogs(ZipItemLevel.NORMAL),
-    );
-    debugLog.inject('debugSaveAll', () =>
-      container.get(FeedbackService).zipRecentLogs(ZipItemLevel.DEBUG_ALL),
-    );
+    debugLog.inject('debugAll', () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }));
+    debugLog.inject('save', () => container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL));
+    debugLog.inject('saveAll', () => container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL));
   }
 }
 

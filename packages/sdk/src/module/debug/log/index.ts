@@ -14,6 +14,10 @@ class DebugLogModule implements IDebugModule {
   inject(name: string, m: any) {
     this._instance[name] = m;
   }
+
+  get() {
+    return this._instance;
+  }
 }
 const debugLog = new DebugLogModule();
 export { debugLog };
