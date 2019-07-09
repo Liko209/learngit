@@ -35,7 +35,6 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     }), ({ text, keyword }) => {
       const res = this._getContent(text, keyword);
       this._textType = typeof res === 'string';
-      console.log(this._textType, res);
       if (this._textType) {
         this._text = res as string;
       } else {
