@@ -559,6 +559,11 @@ class TelephonyStore {
   }
 
   @computed
+  get callConnectingTime(): number {
+    return this.call.connectingTime;
+  }
+
+  @computed
   get isInbound(): boolean {
     return this.call.direction === CALL_DIRECTION.INBOUND;
   }

@@ -31,6 +31,9 @@ export default class CallModel extends Base<Call> {
   holdState: HOLD_STATE;
 
   @observable
+  connectingTime: number;
+
+  @observable
   connectTime: number;
 
   @observable
@@ -68,6 +71,7 @@ export default class CallModel extends Base<Call> {
       record_state,
       session_id,
       startTime,
+      connectingTime,
       connectTime,
       disconnectTime,
       direction,
@@ -84,6 +88,7 @@ export default class CallModel extends Base<Call> {
     this.recordState = record_state;
     this.sessionId = session_id;
     this.startTime = startTime;
+    this.connectingTime = connectingTime;
     this.connectTime = connectTime;
     this.disconnectTime = disconnectTime;
     this.direction = direction;
