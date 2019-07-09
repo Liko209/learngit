@@ -1,7 +1,13 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ConversationStream/*.ts"
+      "./fixtures/ConversationStream/Event.ts",
+      "./fixtures/ConversationStream/AudioConference.ts",
+      "./fixtures/ConversationStream/ConversationStream.ts",
+      "./fixtures/ConversationStream/EmailAddress.ts",
+      "./fixtures/ConversationStream/PageHeader.ts",
+      "./fixtures/ContentPanel/*.ts",
+      "./fixtures/RightRail/*.ts"
     ],
     "browsers": [
       "selenium:chrome"
