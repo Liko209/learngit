@@ -26,7 +26,7 @@ import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
 import {
-  reaction, IReactionDisposer, runInAction, action,
+  reaction, IReactionDisposer, runInAction, action
 } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -75,6 +75,7 @@ class TelephonyService {
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
   private _defaultCallerPhoneNumberDisposer: IReactionDisposer;
+  private _isExtDisposer: IReactionDisposer;
   private _ringtone: HTMLAudioElement | null;
   private _keypadBeepPool: HTMLMediaElement[] | null;
   private _currentSoundTrackForBeep: number | null;
@@ -320,6 +321,13 @@ class TelephonyService {
       },
     );
 
+    this._isExtDisposer = reaction(
+      () => this._telephonyStore.phoneNumber,
+      async phoneNumber => {
+        this._telephonyStore.isExt = await this.isShortNumber(phoneNumber);
+      },
+    );
+
     // triggering a change of caller id list
     this._getCallerPhoneNumberList();
   };
@@ -358,7 +366,7 @@ class TelephonyService {
           phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
       );
 
-    const { isValid, parsed } = await this.isValidNumber(toNumber);
+    const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
       return;
@@ -372,7 +380,7 @@ class TelephonyService {
 
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(parsed as string);
+      return this.makeRCPhoneCall(toNumber);
     }
     callback && callback();
 
@@ -385,10 +393,12 @@ class TelephonyService {
     }
 
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
+      `${
+        TelephonyService.TAG
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
-      parsed as string,
+      toNumber,
       fromNumber,
     );
 
@@ -430,7 +440,7 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = parsed as string;
+    this._telephonyStore.phoneNumber = toNumber;
     return true;
   };
 
@@ -551,9 +561,7 @@ class TelephonyService {
       ServiceConfig.PERSON_SERVICE,
     );
 
-    return await personService.matchContactByPhoneNumber(
-      phone,
-    );
+    return await personService.matchContactByPhoneNumber(phone);
   };
 
   getAllCallCount = () => {
@@ -722,6 +730,7 @@ class TelephonyService {
     this._incomingCallDisposer && this._incomingCallDisposer();
     this._defaultCallerPhoneNumberDisposer &&
       this._defaultCallerPhoneNumberDisposer();
+    this._isExtDisposer && this._isExtDisposer();
 
     this._pauseRingtone();
     this._telephonyStore.hasManualSelected = false;
@@ -731,6 +740,7 @@ class TelephonyService {
     delete this._hasActiveOutBoundCallDisposer;
     delete this._callerPhoneNumberDisposer;
     delete this._incomingCallDisposer;
+    delete this._isExtDisposer;
     delete this._ringtone;
     delete this._keypadBeepPool;
   };
@@ -804,6 +814,12 @@ class TelephonyService {
       time,
       timeUnit,
     );
+  };
+
+  isShortNumber = async (
+    toNumber: string = this._telephonyStore.inputString,
+  ) => {
+    return this._phoneNumberService.isShortNumber(toNumber);
   };
 
   isValidNumber = async (

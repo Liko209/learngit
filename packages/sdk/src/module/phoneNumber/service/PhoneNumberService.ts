@@ -55,6 +55,10 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
     return this.getPhoneNumberController().getLocalCanonical(phoneNumber);
   }
 
+  async isShortNumber(phoneNumber: string) {
+    return this.getPhoneNumberController().isShortNumber(phoneNumber);
+  }
+
   async generateMatchedPhoneNumberList(
     phoneNumber: string,
     phoneParserUtility: PhoneParserUtility,
