@@ -75,10 +75,7 @@ const transformPartial2Map = <T extends IdModel<IdType>, IdType extends ModelIdT
     let itemId;
     if (item.id) {
       itemId = item.id;
-    } else {
-      itemId = item._id;
-    }
-    if (item._id) {
+    } else if (item._id) {
       itemId = item._id;
     } else {
       itemId = 0;
