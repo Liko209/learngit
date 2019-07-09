@@ -109,6 +109,7 @@ describe('TelephonyService', () => {
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
+      isVoipCallingAvailable: jest.fn().mockReturnValue(true),
       hasSetCallerId: jest.fn(),
     };
 
@@ -120,6 +121,7 @@ describe('TelephonyService', () => {
         parsed: toNumber,
       })),
       getLocalCanonical: jest.fn().mockImplementation(i => i),
+      isShortNumber: jest.fn().mockResolvedValue(true),
     };
     mockedSettingService = {
       getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
@@ -197,6 +199,7 @@ describe('TelephonyService', () => {
       forward: jest.fn(),
       flip: jest.fn(),
       userConfig: { getLastCalledNumber: jest.fn() },
+      isShortNumber: jest.fn().mockReturnValue(true),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
@@ -833,6 +836,15 @@ describe('TelephonyService', () => {
     telephonyService.flip(phoneNumber);
     expect(mockedServerTelephonyService.flip).toHaveBeenCalled();
     telephonyService._callId = undefined;
+  });
+
+  it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
+    initializeCallerId();
+    mockedRCInfoService.isVoipCallingAvailable = jest
+      .fn()
+      .mockReturnValue(false);
+    await (telephonyService as TelephonyService).makeCall(v4());
+    expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
   });
 
   describe(`onReceiveIncomingCall()`, () => {

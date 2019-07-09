@@ -29,8 +29,8 @@ type State = {
 const DELAY_LOADING = 300;
 
 class JuiConversationLoading extends React.PureComponent<
-  JuiConversationLoadingProps,
-  State
+JuiConversationLoadingProps,
+State
 > {
   timer: NodeJS.Timeout;
 
@@ -43,7 +43,7 @@ class JuiConversationLoading extends React.PureComponent<
       this.setState({
         showLoading: true,
       });
-    },                      DELAY_LOADING);
+    }, DELAY_LOADING);
   }
 
   render() {

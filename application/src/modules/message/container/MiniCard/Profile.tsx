@@ -3,7 +3,6 @@
  * @Date: 2018-11-21 19:10:14
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ThemeProvider from '@/containers/ThemeProvider';

@@ -11,7 +11,7 @@ import { FileActionViewModel } from '../common/FIleAction.ViewModel';
 import { ViewInPostActionProps } from './types';
 
 class ViewInPostActionViewModel extends FileActionViewModel<
-  ViewInPostActionProps
+ViewInPostActionProps
 > {
   @catchError.flash({
     network: 'message.prompt.viewInPostFailedWithNetworkIssue',
@@ -21,9 +21,7 @@ class ViewInPostActionViewModel extends FileActionViewModel<
     const { groupId, asyncOperationDecorator } = this.props;
     let post;
     if (asyncOperationDecorator) {
-      post = await asyncOperationDecorator(() =>
-        this.item.getDirectRelatedPostInGroup(groupId),
-      )();
+      post = await asyncOperationDecorator(() => this.item.getDirectRelatedPostInGroup(groupId))();
     } else {
       post = await this.item.getDirectRelatedPostInGroup(groupId);
     }
@@ -32,7 +30,7 @@ class ViewInPostActionViewModel extends FileActionViewModel<
       portalManager.dismissAll();
       jumpToPost({ groupId, id: post.id });
     }
-  }
+  };
 }
 
 export { ViewInPostActionViewModel };

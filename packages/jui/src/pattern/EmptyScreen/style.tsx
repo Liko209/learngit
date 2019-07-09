@@ -44,4 +44,6 @@ const Actions = styled.div`
   flex-wrap: wrap;
 `;
 
-export { Wrapper, Pic, Text, Content, Actions, ActionWrapper };
+export {
+  Wrapper, Pic, Text, Content, Actions, ActionWrapper,
+};

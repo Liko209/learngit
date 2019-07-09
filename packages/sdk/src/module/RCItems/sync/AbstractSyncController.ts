@@ -170,7 +170,7 @@ abstract class AbstractSyncController<
     }
     return result;
   }
-
+  /* eslint-disable */
   private async _startSync(
     isSilent: boolean,
     syncType: SYNC_TYPE,

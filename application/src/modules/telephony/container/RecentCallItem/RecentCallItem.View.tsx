@@ -24,20 +24,20 @@ class RecentCallItemView extends React.Component<ViewProps> {
       isMissedCall,
       startTime,
       direction,
-      handleClick,
+      makeCall,
       selected,
     } = this.props;
     const color: IconColor = isMissedCall
       ? ['accent', 'tomato']
       : ['grey', '600'];
     return (
-      <JuiRecentCallItem onClick={handleClick} tabIndex={0} selected={selected}>
+      <JuiRecentCallItem onClick={makeCall} tabIndex={0} selected={selected}>
         <StyledContactWrapper>
           <ContactInfo
             caller={caller}
             isMissedCall={isMissedCall}
             direction={direction}
-            disableOpenMiniProfile={true}
+            disableOpenMiniProfile
           />
         </StyledContactWrapper>
         <StyledCallLogStatusWrapper>

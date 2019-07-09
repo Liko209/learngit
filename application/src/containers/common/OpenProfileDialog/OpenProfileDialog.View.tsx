@@ -4,15 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
 import portalManager from '@/common/PortalManager';
 import { OpenProfile } from '@/common/OpenProfile';
+import { withRCMode } from '@/containers/withRCMode';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
 
 @observer
+@withRCMode()
 class OpenProfileDialogView extends Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -37,7 +40,7 @@ class OpenProfileDialogView extends Component<Props> {
       },
       transitionDuration,
     );
-  }
+  };
 
   render() {
     const { children } = this.props;

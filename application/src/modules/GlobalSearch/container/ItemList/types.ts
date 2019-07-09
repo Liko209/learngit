@@ -30,8 +30,8 @@ type ItemListViewProps = {
   setSelectIndex: (index: number) => void;
   selectIndexChange: (index: number) => void;
   listHandler:
-    | FetchSortableDataListHandler<Person, number>
-    | FetchSortableDataListHandler<Group, number>;
+  | FetchSortableDataListHandler<Person, number>
+  | FetchSortableDataListHandler<Group, number>;
 };
 
 export {

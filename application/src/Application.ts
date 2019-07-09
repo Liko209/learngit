@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import '@/polyfill';
-import { Jupiter, inject, container, injectable } from 'framework';
+import {
+  Jupiter, inject, container, injectable,
+} from 'framework';
 import * as sw from '@/modules/service-worker/module.config';
 import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';
@@ -52,11 +54,10 @@ class Application {
     jupiter.registerModule(media.config);
 
     if (window.jupiterElectron) {
-      jupiter.registerModuleAsync(() =>
-        import(/*
+      jupiter.registerModuleAsync(() => import(/*
         webpackChunkName: "m.electron" */
-        '@/modules/electron/module.config'),
-      );
+        '@/modules/electron/module.config'
+      ));
     }
     return this._jupiter.bootstrap();
   }

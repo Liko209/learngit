@@ -3,7 +3,7 @@
  * @Date: 2019-02-02 08:51:54
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, ReactElement } from 'react';
+import React, { PureComponent, ReactElement } from 'react';
 import { JuiListItemText } from '../../../components/Lists';
 import { Wrapper, IconWrapper } from './styles';
 import { JuiIconography } from '../../../foundation/Iconography';
@@ -16,7 +16,7 @@ type JuiPinnedItemProps = {
   id: number;
 };
 
-class JuiPinnedItem extends Component<JuiPinnedItemProps> {
+class JuiPinnedItem extends PureComponent<JuiPinnedItemProps> {
   render() {
     const { icon, text, isFile } = this.props;
     let iconElement = icon;

@@ -20,7 +20,6 @@ import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
-import { postTimestamp } from '@/utils/date';
 
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';

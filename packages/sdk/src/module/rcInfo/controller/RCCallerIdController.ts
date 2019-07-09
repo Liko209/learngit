@@ -49,23 +49,19 @@ const BLOCKED_NUMBER_CALLER_ID = 0;
 
 class RCCallerIdController {
   private _partialModifyController: IPartialModifyController<
-    IExtensionCallerId,
-    string
+  IExtensionCallerId,
+  string
   >;
   constructor(private _rcInfoFetchController: RCInfoFetchController) {
     this._initPartialController();
   }
   private _initPartialController() {
     const entitySourceController: IPartialEntitySourceController<
-      IExtensionCallerId,
-      string
+    IExtensionCallerId,
+    string
     > = {
-      getEntityNotificationKey: () => {
-        return RC_INFO.EXTENSION_CALLER_ID;
-      },
-      get: async (id: string) => {
-        return await this._rcInfoFetchController.getExtensionCallerId();
-      },
+      getEntityNotificationKey: () => RC_INFO.EXTENSION_CALLER_ID,
+      get: async () => await this._rcInfoFetchController.getExtensionCallerId(),
       update: async (item: IExtensionCallerId) => {
         await this._rcInfoFetchController.setExtensionCallerId(item);
       },
@@ -90,11 +86,12 @@ class RCCallerIdController {
     let result = [];
     result = this._addBlockedNumber(callerIdList);
     result = result.filter(
-      (item: PhoneNumberModel) =>
-        !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
+      (item: PhoneNumberModel) => !CALLER_ID_FILTER_TYPE.includes(item.usageType as PhoneNumberType),
     );
     result = result.map((item: PhoneNumberModel) => {
-      const { id, phoneNumber, usageType, label } = item;
+      const {
+        id, phoneNumber, usageType, label,
+      } = item;
       return {
         id,
         phoneNumber,
@@ -193,11 +190,9 @@ class RCCallerIdController {
     await this._partialModifyController.updatePartially(
       RC_INFO.EXTENSION_CALLER_ID,
       preHandlePartial,
-      async (newData: IExtensionCallerId) => {
-        return await RCInfoApi.setExtensionCallerId({
-          byFeature: [params],
-        });
-      },
+      async () => await RCInfoApi.setExtensionCallerId({
+        byFeature: [params],
+      }),
     );
   }
 

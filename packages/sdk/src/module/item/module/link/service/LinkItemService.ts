@@ -16,9 +16,7 @@ class LinkItemService extends BaseSubItemService<LinkItem, SanitizedLinkItem> {
 
   constructor() {
     super(daoManager.getDao<LinkItemDao>(LinkItemDao));
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_LINK);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_LINK));
   }
 
   protected get linkItemController() {

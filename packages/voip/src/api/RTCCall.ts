@@ -126,7 +126,7 @@ class RTCCall {
         RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       this.hangup();
-    },                                        kRTCHangupInvalidCallInterval * 1000);
+    }, kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -731,9 +731,7 @@ class RTCCall {
       );
       return;
     }
-    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => {
-      return sub.split('=');
-    });
+    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => sub.split('='));
     this._callInfo.partyId = idMap[0][1];
     this._callInfo.sessionId = idMap[1][1];
     CallReport.instance().update(

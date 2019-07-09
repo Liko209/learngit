@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { createContext } from 'react';
-import { LoadingMorePlugin } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
 import { ISortableModelWithData } from '@/store/base/fetch/types';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -29,16 +28,12 @@ type StreamProps = {
 type StreamViewProps = {
   ids: number[];
   hasMoreDown: boolean;
-  plugins: TPluginsProps;
-  shouldShowErrorPage: boolean;
-  tryAgain: () => void;
   fetchInitialPosts: () => Promise<void>;
   fetchNextPagePosts: () => Promise<void>;
+  shouldShowErrorPage: boolean;
+  tryAgain: () => void;
 };
 
-type TPluginsProps = {
-  loadingMorePlugin: LoadingMorePlugin;
-};
 type SuccinctPost = {
   id: number;
   deactivated?: boolean;
@@ -50,4 +45,6 @@ type StreamContextInfo = {
 
 const StreamContext = createContext<StreamContextInfo>({ isShow: true });
 
-export { StreamProps, StreamViewProps, SuccinctPost, StreamContext };
+export {
+  StreamProps, StreamViewProps, SuccinctPost, StreamContext,
+};

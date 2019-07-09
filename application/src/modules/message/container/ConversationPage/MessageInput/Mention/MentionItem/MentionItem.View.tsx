@@ -7,7 +7,9 @@ import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/Men
 @observer
 class MentionItemView extends Component<MentionItemViewProps, {}> {
   render() {
-    const { currentIndex, selectHandler, index, person } = this.props;
+    const {
+      currentIndex, selectHandler, index, person,
+    } = this.props;
     const { id, userDisplayName } = person;
 
     return (

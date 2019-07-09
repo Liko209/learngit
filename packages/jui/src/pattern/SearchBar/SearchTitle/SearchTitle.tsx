@@ -45,7 +45,9 @@ type JuiSearchTitleProps = {
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
-  const { title, isShowMore, showMore, onClick, ...rest } = props;
+  const {
+    title, isShowMore, showMore, onClick, ...rest
+  } = props;
 
   return (
     <SearchTitleWrapper {...rest}>

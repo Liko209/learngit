@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ElectronUpgradeDialogProps } from './types';
 
 class ElectronUpgradeDialogViewModel extends StoreViewModel<
-  ElectronUpgradeDialogProps
+ElectronUpgradeDialogProps
 > {}
 
 export { ElectronUpgradeDialogViewModel };

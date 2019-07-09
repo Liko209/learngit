@@ -3,7 +3,7 @@
  * @Date: 2018-06-04 15:44:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { IRequest, IResponse, RESPONSE_STATUS_CODE } from '../../network';
+import { IRequest, IResponse, RESPONSE_STATUS_CODE } from '..';
 
 abstract class NetworkResponseBuilder<R extends IRequest> {
   data: any = {};

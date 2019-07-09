@@ -27,7 +27,7 @@ import { NoteItemService } from '../module/note/service';
 import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const INVALID_ITEM_ID = [-1, -2, null];
-
+const LOG_NAME = 'ItemService';
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
@@ -65,7 +65,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ItemNotification.getItemsNotifications,
     );
     return result;
-  }
+  };
 
   protected get itemServiceController() {
     if (!this._itemServiceController) {
@@ -156,6 +156,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     const fileItemsIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
     );
+    /* eslint-disable no-await-in-loop */
     for (let i = 0; i < fileItemsIds.length; i++) {
       if (!(await this.fileService.hasValidItemFile(fileItemsIds[i]))) {
         return false;
@@ -259,7 +260,9 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     itemId: number,
     options: ItemQueryOptions,
   ): Promise<{ index: number; totalCount: number }> {
-    return this.itemServiceController.getItemIndexInfo(itemId, options);
+    const result = this.itemServiceController.getItemIndexInfo(itemId, options);
+    mainLogger.tags(LOG_NAME).info('getItemIndexInfo', result);
+    return result;
   }
   async editFileName(itemId: number, newName: string): Promise<void> {
     await this.fileService.editFileName(itemId, newName);

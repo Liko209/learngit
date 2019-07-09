@@ -29,10 +29,12 @@ class CallViewComponent extends Component<Props> {
      */
     call();
     trackCall(this.props.analysisSource);
-  }
+  };
 
   render() {
-    const { t, phoneNumber, size, variant, color, showIcon } = this.props;
+    const {
+      t, phoneNumber, size, variant, color, showIcon,
+    } = this.props;
 
     if (!showIcon.get()) {
       return null;

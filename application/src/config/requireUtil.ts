@@ -3,9 +3,8 @@
  * @Date: 2019-04-06 14:14:33
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { DirectoryConfig } from './types';
 import _ from 'lodash';
+import { DirectoryConfig } from './types';
 
 function parseDirectoryConfig(): DirectoryConfig {
   if (process.env.NODE_ENV === 'test' && !_.isFunction(require.context)) {
@@ -23,8 +22,8 @@ function parseDirectoryConfig(): DirectoryConfig {
     const [, keyName, envFileName] = envPath.split('/');
     const [envName] = envFileName.split('.');
     config[keyName] = config[keyName] || {};
-    config[keyName][envName] = requireContext(envPath)['default'];
+    config[keyName][envName] = requireContext(envPath).default;
     return config;
-  },                 directoryConfig);
+  }, directoryConfig);
 }
 export { parseDirectoryConfig };

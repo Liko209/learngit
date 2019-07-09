@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IProgress, IProgressObserver } from './types';
+
 interface IProgressEvent {
   loaded: number;
   total: number;
@@ -16,13 +17,9 @@ class ProgressBar implements IProgress {
 
   constructor(private _progressBarObserver: IProgressObserver) {}
 
-  isStart = () => {
-    return this._start;
-  }
+  isStart = () => this._start;
 
-  getProgress = () => {
-    return this._progress;
-  }
+  getProgress = () => this._progress;
 
   start() {
     if (!this._start) {

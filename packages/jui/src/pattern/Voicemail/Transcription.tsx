@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
@@ -102,7 +102,9 @@ const TranscriptionLoading = (props: ThemeProps) => {
 
 const JuiTranscriptionLoading = withTheme(TranscriptionLoading);
 
-class JuiTranscriptionPreview extends Component<JuiTranscriptionPreviewProps> {
+class JuiTranscriptionPreview extends PureComponent<
+JuiTranscriptionPreviewProps
+> {
   render() {
     const { showPreivew, transcription, isLoading } = this.props;
 
@@ -118,7 +120,9 @@ class JuiTranscriptionPreview extends Component<JuiTranscriptionPreviewProps> {
   }
 }
 
-class JuiTranscriptionDetails extends Component<JuiTranscriptionDetailsProps> {
+class JuiTranscriptionDetails extends PureComponent<
+JuiTranscriptionDetailsProps
+> {
   render() {
     const { transcription } = this.props;
     return (

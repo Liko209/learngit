@@ -4,11 +4,10 @@
  * Copyright © RingCentral. All rights reserved
  */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { loginGlip, RCInfoApi, RCAuthApi, ITokenModel } from '../api';
+import { RCInfoApi, RCAuthApi, ITokenModel } from '../api';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
-
 import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
@@ -24,7 +23,7 @@ interface IUnifiedLoginAuthenticateParams extends IAuthParams {
 class UnifiedLoginAuthenticator implements IAuthenticator {
   /**
    * should consider 2 cases
-  * 1. RC account
+   * 1. RC account
    * 2. Glip account
    * we only consider 1 now, will implement case 2 in the future
    */
@@ -74,7 +73,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     const response = {
       success: true,
-      isRCOnlyMode: false,
+      isRCOnlyMode: true,
       isFirstLogin: true,
       accountInfos: [
         {
@@ -83,21 +82,6 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
         },
       ],
     };
-
-    // login glip
-    try {
-      const glipToken = await this._loginGlipByRCToken(rcToken);
-      response.accountInfos.push({
-        type: GlipAccount.name,
-        data: glipToken,
-      });
-    } catch (err) {
-      // todo: for now, ui can not support the rc only mode
-      // so will throw error to logout when glip is down
-      // mainLogger.tags('UnifiedLogin').error(err);
-      // response.isRCOnlyMode = true;
-      throw err;
-    }
     return response;
   }
 
@@ -122,19 +106,6 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     AccountGlobalConfig.setUserDictionary(
       (await rcInfoService.getRCExtensionInfo())!.id.toString(),
     );
-  }
-
-  private async _loginGlipByRCToken(rcToken: ITokenModel) {
-    // fetch glip token
-    const glipLoginResponse = await loginGlip(rcToken);
-    if (glipLoginResponse.status >= 200 && glipLoginResponse.status < 300) {
-      const glipToken = glipLoginResponse.headers['x-authorization'];
-      notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, {
-        glipToken,
-      });
-      return glipToken;
-    }
-    throw Error(`login glip failed, ${glipLoginResponse.statusText}`);
   }
 }
 

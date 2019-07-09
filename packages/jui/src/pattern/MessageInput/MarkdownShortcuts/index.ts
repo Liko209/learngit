@@ -60,7 +60,7 @@ export default class MarkdownShortcuts {
           setTimeout(() => {
             this.quill.formatLine(selection.index, 0, 'header', size);
             this.quill.deleteText(selection.index - text.length, text.length);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -71,7 +71,7 @@ export default class MarkdownShortcuts {
           setTimeout(() => {
             this.quill.formatLine(selection.index, 1, 'blockquote', true);
             this.quill.deleteText(selection.index - 2, 2);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -82,7 +82,7 @@ export default class MarkdownShortcuts {
           setTimeout(() => {
             this.quill.formatLine(selection.index, 1, 'code-block', true);
             this.quill.deleteText(selection.index - 4, 4);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -104,7 +104,7 @@ export default class MarkdownShortcuts {
               italic: true,
             });
             this.quill.format('bold', false);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -123,7 +123,7 @@ export default class MarkdownShortcuts {
             this.quill.deleteText(startIndex, annotatedText.length);
             this.quill.insertText(startIndex, matchedText, { bold: true });
             this.quill.format('bold', false);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -142,7 +142,7 @@ export default class MarkdownShortcuts {
             this.quill.deleteText(startIndex, annotatedText.length);
             this.quill.insertText(startIndex, matchedText, { italic: true });
             this.quill.format('italic', false);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -161,7 +161,7 @@ export default class MarkdownShortcuts {
             this.quill.deleteText(startIndex, annotatedText.length);
             this.quill.insertText(startIndex, matchedText, { strike: true });
             this.quill.format('strike', false);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -184,7 +184,7 @@ export default class MarkdownShortcuts {
               (this.quill.getSelection() as RangeStatic).index,
               ' ',
             );
-          },         0);
+          }, 0);
         },
       },
       {
@@ -198,17 +198,17 @@ export default class MarkdownShortcuts {
             this.quill.insertEmbed(startIndex + 1, 'hr', true, 'user');
             this.quill.insertText(startIndex + 2, '\n', 'silent');
             this.quill.setSelection(startIndex + 2, 0, 'silent');
-          },         0);
+          }, 0);
         },
       },
       {
         name: 'asterisk-ul',
         pattern: /^(\*|\+)\s$/g,
-        action: (text, selection, pattern) => {
+        action: (text, selection) => {
           setTimeout(() => {
             this.quill.formatLine(selection.index, 1, 'list', 'unordered');
             this.quill.deleteText(selection.index - 2, 2);
-          },         0);
+          }, 0);
         },
       },
       {
@@ -228,7 +228,7 @@ export default class MarkdownShortcuts {
                 'image',
                 hrefLink.slice(1, hrefLink.length - 1),
               );
-            },         0);
+            }, 0);
           }
         },
       },
@@ -250,17 +250,17 @@ export default class MarkdownShortcuts {
                 'link',
                 hrefLink.slice(1, hrefLink.length - 1),
               );
-            },         0);
+            }, 0);
           }
         },
       },
     ];
 
     // Handler that looks for insert deltas that match specific characters
-    this.quill.on('text-change', (delta, oldContents, source) => {
+    this.quill.on('text-change', delta => {
       if (delta && delta.ops) {
         for (let i = 0; i < delta.ops.length; i += 1) {
-          if (delta.ops[i].hasOwnProperty('insert')) {
+          if (Object.prototype.hasOwnProperty.call(delta.ops[i], 'insert')) {
             if (delta.ops[i].insert === ' ') {
               this.onSpace();
             } else if (delta.ops[i].insert === '\n') {

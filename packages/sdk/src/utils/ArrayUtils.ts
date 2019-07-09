@@ -36,6 +36,7 @@ class ArrayUtils {
         endIndex = difEnd >= idArray.length ? idArray.length : difEnd;
       }
     } else {
+      /* eslint-disable no-nested-ternary */
       endIndex =
         direction !== QUERY_DIRECTION.OLDER
           ? startIndex + limit > idArray.length

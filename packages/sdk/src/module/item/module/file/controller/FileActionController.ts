@@ -13,7 +13,7 @@ import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
 import { AccountService } from '../../../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-
+/* eslint-disable */
 class FileActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,

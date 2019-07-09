@@ -3,7 +3,9 @@
  * @Date: 2018-09-10 19:28:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { action, get, set, remove, observable } from 'mobx';
+import {
+  action, get, set, remove, observable,
+} from 'mobx';
 
 import BaseStore from './BaseStore';
 import { ENTITY_NAME } from '../constants';

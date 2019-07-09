@@ -40,23 +40,22 @@ class SettingsActionController {
     });
 
     const profileId = this._profileDataController.getCurrentProfileId();
-    const preHandlePartial = (
-      partialModel: Partial<Raw<Profile>>,
-      originalModel: Profile,
-    ): Partial<Raw<Profile>> => {
-      const result = {
-        ...updateProfile,
-        ...partialModel,
+    if (profileId) {
+      const preHandlePartial = (
+        partialModel: Partial<Raw<Profile>>,
+      ): Partial<Raw<Profile>> => {
+        const result = {
+          ...updateProfile,
+          ...partialModel,
+        };
+        return result;
       };
-      return result;
-    };
-    await this._partialModifyController.updatePartially(
-      profileId,
-      preHandlePartial,
-      async (newProfile: Profile) => {
-        return await this._requestController.put(newProfile);
-      },
-    );
+      await this._partialModifyController.updatePartially(
+        profileId,
+        preHandlePartial,
+        async (newProfile: Profile) => await this._requestController.put(newProfile),
+      );
+    }
   }
 }
 

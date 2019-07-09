@@ -8,7 +8,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select, boolean, number } from '@storybook/addon-knobs';
 
-import { JuiOutlineTextField, JuiOutlineTextFieldProps } from '../';
+import { JuiOutlineTextField, JuiOutlineTextFieldProps } from '..';
 
 storiesOf('Components/Forms', module).add('OutlineTextField', () => {
   const maxLength = number('maxLength', 20);
@@ -52,8 +52,8 @@ storiesOf('Components/Forms', module).add('OutlineTextField', () => {
             maxLength,
           },
         }}
-        iconName="search"
-        iconPosition="left"
+        iconName='search'
+        iconPosition='left'
         disabled={disabled}
         radiusType={radius}
         size={size}
@@ -67,8 +67,8 @@ storiesOf('Components/Forms', module).add('OutlineTextField', () => {
             maxLength,
           },
         }}
-        iconName="lock"
-        iconPosition="right"
+        iconName='lock'
+        iconPosition='right'
         disabled={disabled}
         radiusType={radius}
         size={size}
@@ -82,7 +82,7 @@ storiesOf('Components/Forms', module).add('OutlineTextField', () => {
           },
         }}
         iconName={['search', 'close']}
-        iconPosition="both"
+        iconPosition='both'
         disabled={disabled}
         radiusType={radius}
         size={size}
@@ -90,7 +90,8 @@ storiesOf('Components/Forms', module).add('OutlineTextField', () => {
         inputAfter={
           <div style={{ padding: '0 0 0 12px' }} onClick={() => alert('clear')}>
             clear
-          </div>}
+          </div>
+        }
       />
     </div>
   );

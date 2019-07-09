@@ -9,4 +9,6 @@ import { Raw } from './Raw';
 import { IPagination } from './IPagination';
 import { SortableModel } from './SortableModel';
 
-export { IdModel, ModelIdType, Raw, IPagination, SortableModel };
+export {
+  IdModel, ModelIdType, Raw, IPagination, SortableModel,
+};

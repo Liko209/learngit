@@ -19,6 +19,7 @@ type PreloadImgState = {
   isError: boolean;
 };
 
+/* eslint-disable */
 class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   constructor(props: PreloadImgProps) {
     super(props);
@@ -30,7 +31,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
 
   handleLoad = () => {
     return this.setState({ loaded: true });
-  }
+  };
 
   handleError = () => {
     const { url } = this.props;
@@ -38,7 +39,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       mainLogger.warn('Preload image', 'Network error');
       this.setState({ isError: true, loaded: true });
     }
-  }
+  };
 
   render() {
     const { children, placeholder, url } = this.props;

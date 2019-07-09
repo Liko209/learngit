@@ -7,8 +7,6 @@
 import StateMachine from 'ts-javascript-state-machine';
 import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { REGISTRATION_FSM_STATE } from './types';
-import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
-import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 enum REGISTRATION_FSM_EVENT {
@@ -69,11 +67,7 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
           from: REGISTRATION_FSM_STATE.FAILURE,
-          to: (
-            toNumber: string,
-            delegate: IRTCCallDelegate,
-            options: RTCCallOptions,
-          ) => {
+          to: () => {
             dependency.onReRegisterAction(false);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },

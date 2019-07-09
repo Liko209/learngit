@@ -12,6 +12,7 @@ import { ContactSearch, GroupSearch } from '@/containers/Downshift';
 import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import { JuiLineSelect, MenuProps } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
+
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
 @observer
@@ -66,8 +67,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           value={searchOptions.type as string}
           automationId="typeSelector"
         >
-          {typeFilter.map((item: SearchContentTypeItem) => {
-            return (
+          {typeFilter.map((item: SearchContentTypeItem) => (
               <JuiMenuItem
                 automationId={`typeSelector-${item.name}`}
                 value={item.value}
@@ -76,8 +76,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
                 {t(`globalSearch.${item.name}`)}
                 {item.count !== null ? ` (${item.count})` : ''}
               </JuiMenuItem>
-            );
-          })}
+          ))}
         </JuiLineSelect>
 
         <JuiLineSelect
@@ -87,8 +86,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           automationId="timePostSelector"
           value={this.props.timeType}
         >
-          {timePeriodFilter.map((item: SearchContentTypeItem) => {
-            return (
+          {timePeriodFilter.map((item: SearchContentTypeItem) => (
               <JuiMenuItem
                 automationId={`timePost-${item.value}`}
                 value={item.id}
@@ -96,8 +94,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
               >
                 {t(`globalSearch.${item.value}`)}
               </JuiMenuItem>
-            );
-          })}
+          ))}
         </JuiLineSelect>
       </JuiSearchFilter>
     );

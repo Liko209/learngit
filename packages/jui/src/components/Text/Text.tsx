@@ -88,6 +88,7 @@ class JuiText extends PureComponent<JuiTextProps, TextStates> {
 
   componentDidMount() {
     if (!this.props.disableTooltip) {
+      /* eslint-disable react/no-find-dom-node */
       const textEl = ReactDOM.findDOMNode(this.textRef.current);
 
       if (textEl && textEl instanceof HTMLElement) {

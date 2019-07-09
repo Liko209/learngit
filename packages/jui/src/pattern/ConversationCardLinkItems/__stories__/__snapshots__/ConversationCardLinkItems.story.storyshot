@@ -319,6 +319,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
         >
           <a
             href="http://www.zhihu.com"
+            rel="noopener noreferrer"
             target="_blank"
           >
             Jupiter Offical WebSite,Jupiter Offical WebSite,Jupiter Offical WebSite,Jupiter Offical WebSite,Jupiter Offical WebSiteJupiter Offical WebSite,Jupiter Offical WebSite,Jupiter Offical WebSiteJupiter Offical WebSite

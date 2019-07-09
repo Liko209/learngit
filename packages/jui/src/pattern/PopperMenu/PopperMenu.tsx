@@ -50,6 +50,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
       onMouseLeave,
     } = this.props;
     const id = open ? 'popper-menu' : '';
+    /* eslint-disable jsx-a11y/no-static-element-interactions */
     return (
       <ClickAwayListener onClickAway={onClose}>
         {/*
@@ -66,7 +67,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
             anchorEl={anchorEl}
             placement={placement}
             data-test-automation-id={automationId}
-            transition={true}
+            transition
             disablePortal={disablePortal}
             modifiers={{
               flip: {
@@ -78,8 +79,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
               },
             }}
           >
-            {({ TransitionProps }) => {
-              return (
+            {({ TransitionProps }) => (
                 <Grow
                   {...TransitionProps}
                   timeout={noTransition ? 0 : 'auto'}
@@ -89,8 +89,7 @@ class JuiPopperMenu extends React.PureComponent<JuiPopperMenuProps> {
                 >
                   <Paper>{children}</Paper>
                 </Grow>
-              );
-            }}
+            )}
           </JuiPopper>
         </div>
       </ClickAwayListener>

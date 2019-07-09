@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SendPostType } from '../../types';
+
 interface ISendPostController {
   sendPost(params: SendPostType): void;
   reSendPost(id: number): void;

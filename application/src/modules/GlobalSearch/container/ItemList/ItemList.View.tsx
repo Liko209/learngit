@@ -33,8 +33,8 @@ import {
 } from './config';
 
 type Props = ItemListProps &
-  ItemListViewProps &
-  WithTranslation & { terms: string[] };
+ItemListViewProps &
+WithTranslation & { terms: string[] };
 
 type State = {
   width?: number;
@@ -53,7 +53,7 @@ class ItemListViewComponent extends Component<Props, State> {
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
-    JuiVirtualizedListHandles
+  JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
 
@@ -70,19 +70,17 @@ class ItemListViewComponent extends Component<Props, State> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
-  hoverHighlight = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
-  }
+  hoverHighlight = (index: number) => this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
-  }
+  selectIndexChange = (index: number) => this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
 
   scrollToView = () => {
-    const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
+    const {
+      selectIndex, startIndex, stopIndex, setRangeIndex,
+    } = this.props;
     if (selectIndex >= stopIndex) {
       this._dataList.current &&
         this._dataList.current.loadMore('down', MAX_COUNT);
@@ -99,25 +97,25 @@ class ItemListViewComponent extends Component<Props, State> {
         stopIndex: selectIndex + MAX_COUNT,
       });
     }
-  }
+  };
 
   onKeyUp = () => {
     const { onKeyUp } = this.props;
     onKeyUp();
     this.scrollToView();
-  }
+  };
 
   onKeyDown = () => {
     const { onKeyDown, ids } = this.props;
     onKeyDown(ids);
     this.scrollToView();
-  }
+  };
 
   onEnter = (evt: KeyboardEvent) => {
     const { onEnter, ids, type } = this.props;
     onEnter(evt, ids, type);
     this.scrollToView();
-  }
+  };
 
   createSearchItem = (config: { id: number; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
@@ -137,7 +135,7 @@ class ItemListViewComponent extends Component<Props, State> {
         key={id}
       />
     );
-  }
+  };
 
   private _handleSizeUpdate = (size: Size) => {
     const width = size.width;
@@ -156,7 +154,7 @@ class ItemListViewComponent extends Component<Props, State> {
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
-  }
+  };
 
   componentDidUpdate() {
     this._performanceTracer.end({
@@ -168,13 +166,11 @@ class ItemListViewComponent extends Component<Props, State> {
   private _renderItems() {
     const { listHandler, type } = this.props;
     return listHandler.sortableListStore.getIds.map(
-      (id: number, index: number) => {
-        return this.createSearchItem({
-          id,
-          type,
-          index,
-        });
-      },
+      (id: number, index: number) => this.createSearchItem({
+        id,
+        type,
+        index,
+      }),
     );
   }
 
@@ -197,7 +193,7 @@ class ItemListViewComponent extends Component<Props, State> {
           ref={this._dataList}
           initialDataCount={30}
           listHandler={listHandler}
-          reverse={true}
+          reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
             height: this.state.height,
             ref: this._listRef,

@@ -31,7 +31,7 @@ jest.mock('@/common/ImageDownloader', () => {
 jest.mock('sdk/module/item/service');
 jest.mock('@/common/getThumbnailURL', () => {
   return {
-    getThumbnailURL: jest.fn().mockReturnValue('http://xxx'),
+    getLargeRawImageURL: jest.fn().mockReturnValue('http://xxx'),
   };
 });
 

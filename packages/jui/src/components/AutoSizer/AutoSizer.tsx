@@ -64,7 +64,7 @@ const JuiAutoSizer = ({
     return () => {
       observer.disconnect();
     };
-  },              []);
+  }, []);
   return <Wrapper ref={ref as any}>{children({ width, height })}</Wrapper>;
 };
 

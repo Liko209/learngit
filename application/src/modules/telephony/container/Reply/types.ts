@@ -27,6 +27,7 @@ type ViewProps = {
   isExt: boolean;
   phone?: string;
   uid?: number;
+  name?: string;
 };
 
 export { Props, ViewProps };

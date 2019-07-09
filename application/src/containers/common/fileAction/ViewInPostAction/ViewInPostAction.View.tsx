@@ -11,7 +11,7 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import { action } from 'mobx';
 
 class ViewInPostActionViewComponent extends Component<
-  ViewInPostActionViewProps
+ViewInPostActionViewProps
 > {
   _Icon = (
     <JuiIconography iconColor={['grey', '500']} iconSize="small">
@@ -22,7 +22,7 @@ class ViewInPostActionViewComponent extends Component<
   @action
   viewInPost = () => {
     this.props.viewInPost();
-  }
+  };
 
   render() {
     const { t } = this.props;

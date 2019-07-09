@@ -15,7 +15,9 @@ export default class NoteItemModel extends ItemModel {
 
   constructor(data: Item) {
     super(data);
-    const { title, summary, creator_id, deactivated } = data;
+    const {
+      title, summary, creator_id, deactivated,
+    } = data;
     this.title = title!;
     this.summary = summary!;
     this.creatorId = creator_id;

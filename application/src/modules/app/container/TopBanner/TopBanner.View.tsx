@@ -18,9 +18,9 @@ class TopBannerView extends React.Component<TopBannerViewProps> {
   render() {
     const children = _(this._appStore.topBanners)
       .orderBy('priority', 'asc')
-      .map(({ priority, Component, props, isShow }) => {
-        return isShow ? <Component key={priority} {...props} /> : null;
-      })
+      .map(({
+        priority, Component, props, isShow,
+      }) => (isShow ? <Component key={priority} {...props} /> : null))
       .value();
     return <JuiTopBannerContainer>{children}</JuiTopBannerContainer>;
   }

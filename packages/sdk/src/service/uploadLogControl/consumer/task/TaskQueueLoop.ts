@@ -22,12 +22,12 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
     task: Task,
     error: Error,
     loopController: OnTaskErrorController,
-  ) => await loopController.abort()
+  ) => await loopController.abort();
 
   onTaskCompleted = async (
     task: Task,
     loopController: OnTaskCompletedController,
-  ) => await loopController.next()
+  ) => await loopController.next();
 
   onLoopCompleted = async () => {};
   name: string;
@@ -74,7 +74,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
     clearTimeout(this._timeoutId);
     this._timeoutId = setTimeout(() => {
       this._isSleeping = false;
-    },                           timeout);
+    }, timeout);
   }
 
   wake(): void {
@@ -97,7 +97,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
     const completedController: OnTaskCompletedController = this.createCompletedHandler(
       setTask,
     );
-
+    /* eslint-disable no-await-in-loop */
     while (task) {
       try {
         await task.onExecute();

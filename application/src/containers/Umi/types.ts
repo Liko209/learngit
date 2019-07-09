@@ -28,4 +28,6 @@ type UnreadCounts = {
   mentionCount: number;
 };
 
-export { UMI_SECTION_TYPE, UmiProps, UmiViewProps, UnreadCounts };
+export {
+  UMI_SECTION_TYPE, UmiProps, UmiViewProps, UnreadCounts,
+};

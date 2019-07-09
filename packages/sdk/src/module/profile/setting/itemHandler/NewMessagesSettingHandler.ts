@@ -24,7 +24,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
+DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_NewMessages;
 
@@ -38,12 +38,8 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
-      this.onSettingEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
   }
 
   async updateValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
@@ -64,7 +60,7 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
   }
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<
-      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
+    DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
     > = {
       weight: 1,
       valueType: 1,
@@ -110,9 +106,9 @@ class NewMessagesSettingHandler extends AbstractSettingEntityHandler<
 
   private async _getNewMessage() {
     const profile = await this._profileService.getProfile();
-    let desktopMessage = profile[SETTING_KEYS.DESKTOP_MESSAGE];
-    if (desktopMessage === undefined) {
-      desktopMessage = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    let desktopMessage = DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION;
+    if (profile && profile.desktop_notifications_new_messages !== undefined) {
+      desktopMessage = profile.desktop_notifications_new_messages;
     }
     return desktopMessage;
   }

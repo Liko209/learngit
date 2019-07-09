@@ -76,6 +76,14 @@ export class RcPlatformSdk {
     return await this.createPost(data, groupId);
   }
 
+  async deletePost(postId: string, groupId: string) {
+    const url = `restapi/v1.0/glip/chats/${groupId}/posts/${postId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.delete(url);
+    });
+  }
+
+
   async createGroup(data: any) {
     const url = 'restapi/v1.0/glip/groups';
     return await this.retryRequestOnException(async () => {

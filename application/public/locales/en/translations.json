@@ -298,6 +298,11 @@
       "oneTyping": "<0>{{personA}}</0> is typing...",
       "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
       "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    },
+    "initialization": {
+      "initializing": "Initializing...",
+      "failure": "The message service failed to start.",
+      "tryAgain": " Please try again later."
     }
   },
   "item": {
@@ -643,6 +648,9 @@
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
       "FlipSuccess": "Call flipped",
+      "NoCallPermission": "You no longer have the permission to make the call.",
+      "CountryBlock": "VoIP is not available in your country.",
+      "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "AutoRecording": "Cannot start call recording."
     },
@@ -657,7 +665,8 @@
       "record": "Record the call",
       "stopRecord": "Stop recording",
       "minimize": "Minimize the dialog",
-      "callActions": "Call actions"
+      "callActions": "Call actions",
+      "recentCall": "Show recent calls"
     },
     "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
@@ -773,7 +782,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": {
-      "title": "Notification and Sounds",
+      "title": "Notifications and sounds",
       "otherNotificationSettings": {
         "title": "Other notification settings",
         "newMessageBadgeCount": {
@@ -802,11 +811,11 @@
         },
         "incomingCalls": {
           "label": "Incoming calls",
-          "description": "Choose your preference for desktop notifications for incoming calls"
+          "description": "Receive notifications for incoming calls"
         },
         "callsAndVoicemails": {
           "label": "Missed calls and new voicemails",
-          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+          "description": "Receive notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
@@ -821,7 +830,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Choose your preferences for email notifications for team messages"
+          "description": "Receive email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily digest",
@@ -888,7 +897,7 @@
       },
       "volume": {
         "label": "Volume control",
-        "description": "Update the volume"
+        "description": "Update the app volume"
       }
     },
     "useDefault": "Use system default",

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ISchema } from 'foundation';
+
 export const TABLE_LOG = 'log';
 
 /**

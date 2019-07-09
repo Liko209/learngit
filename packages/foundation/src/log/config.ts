@@ -1,11 +1,11 @@
-import { LogEntity, LogConfig } from './types';
-import { LOG_LEVEL } from './constants';
 import mergeWith from 'lodash/mergeWith';
+import { LogConfig } from './types';
+import { LOG_LEVEL } from './constants';
 
 const defaultConfig: LogConfig = {
   level: LOG_LEVEL.ALL,
   enabled: true,
-  filter: (logEntity: LogEntity) => true,
+  filter: () => true,
   browser: {
     enabled: true,
   },

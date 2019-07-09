@@ -9,14 +9,12 @@ const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const webpack = require('webpack');
-const resolve = require('resolve');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -27,7 +25,7 @@ const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
 const appPackage = require(paths.appPackageJson);
-const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const eslintRules = require('../../.eslintrc');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -186,6 +184,35 @@ module.exports = {
   module: {
     strictExportPresence: true,
     rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /\.test.(ts|tsx)$/,
+        enforce: 'pre',
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
+        ],
+        use: [
+          {
+            options: {
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
+              baseConfig: {
+                extends: require.resolve('../../eslint-config'),
+              },
+              ignore: true,
+              failOnError: true,
+              cache: true,
+              emitError: true,
+              ...eslintRules,
+            },
+            loader: require.resolve('eslint-loader'),
+          },
+        ],
+      },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
 
@@ -357,28 +384,6 @@ module.exports = {
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Perform type checking and linting in a separate process to speed up compilation
-    new ForkTsCheckerWebpackPlugin({
-      typescript: resolve.sync('typescript', {
-        basedir: paths.appNodeModules,
-      }),
-      async: false, // in order to show tslint error. [improvement] Need to use pre loader
-      useTypescriptIncrementalApi: true,
-      checkSyntacticErrors: true,
-      tsconfig: paths.appTsConfig,
-      tslint: paths.appTsLint,
-      reportFiles: [
-        '**',
-        '!**/*.json',
-        '!**/__tests__/**',
-        '!**/?(*.)(spec|test).*',
-        '!**/src/setupProxy.*',
-        '!**/src/setupTests.*',
-      ],
-      watch: paths.appSrc,
-      silent: true,
-      // The formatter is invoked directly in WebpackDevServerUtils during development
-      formatter: typescriptFormatter,
-    }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,

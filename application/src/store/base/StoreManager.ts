@@ -20,8 +20,8 @@ enum STORE_TYPE {
 interface IStores {
   [STORE_TYPE.ENTITY]: {
     [storeName: string]:
-      | MultiEntityMapStore<any, any>
-      | SingleEntityMapStore<any, any>;
+    | MultiEntityMapStore<any, any>
+    | SingleEntityMapStore<any, any>;
   };
   [STORE_TYPE.GLOBAL]: GlobalStore;
 }
@@ -84,7 +84,7 @@ class StoreManager {
   getEntityMapStore(entityStoreName: ENTITY_NAME) {
     let store = this.getStore(STORE_TYPE.ENTITY, entityStoreName) as
       | MultiEntityMapStore<any, any>
-      | SingleEntityMapStore<any, any>;
+    | SingleEntityMapStore<any, any>;
     if (!store) {
       if (ENTITY_SETTING[entityStoreName].type === HANDLER_TYPE.MULTI_ENTITY) {
         store = new MultiEntityMapStore(

@@ -31,17 +31,13 @@ class PostProvider implements IEntityDataProvider<Post> {
   }
 }
 class DiscontinuousPosListHandler extends IdListPaginationHandler<
-  Post,
-  PostModel
+Post,
+PostModel
 > {
   constructor(sourceIds: number[], postProvider?: IEntityDataProvider<Post>) {
-    const filterFunc = (post: PostModel) => {
-      return !post.deactivated;
-    };
+    const filterFunc = (post: PostModel) => !post.deactivated;
 
-    const isMatchFunc = (post: Post) => {
-      return this._sourceIds.includes(post.id) && !post.deactivated;
-    };
+    const isMatchFunc = (post: Post) => this._sourceIds.includes(post.id) && !post.deactivated;
 
     const options = {
       filterFunc,

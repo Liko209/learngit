@@ -25,11 +25,11 @@ class ProgressManager {
         NProgress.inc();
       },
 
-      onProgress: (progressInstance: IProgress) => {
+      onProgress: () => {
         this._updateProgress();
       },
 
-      onStop: (progressInstance: IProgress) => {
+      onStop: () => {
         this._updateProgress();
       },
     };
@@ -40,19 +40,15 @@ class ProgressManager {
       this._progressInstances.push(progressInstance);
   }
 
-  private _isProgressExist = (progressInstance: IProgress) => {
-    return (
-      this._progressInstances.findIndex(item => item === progressInstance) > -1
-    );
-  }
+  private _isProgressExist = (progressInstance: IProgress) => (
+    this._progressInstances.findIndex(item => item === progressInstance) > -1
+  )
 
   private _updateProgress = () => {
     let progress = 1;
     if (this._progressInstances.length) {
       progress =
-        _.sumBy(this._progressInstances, progressInstance =>
-          progressInstance.getProgress(),
-        ) / this._progressInstances.length;
+        _.sumBy(this._progressInstances, progressInstance => progressInstance.getProgress()) / this._progressInstances.length;
       progress > NProgress.status && NProgress.set(progress);
     }
     if (progress === 1) {

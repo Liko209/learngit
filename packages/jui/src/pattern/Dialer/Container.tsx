@@ -50,6 +50,7 @@ const StyledKeypadActionsContainer = styled('div')`
     flex-direction: column;
     position: relative;
     cursor: default;
+    min-height: 0;
   }
 `;
 
@@ -58,8 +59,7 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: ${({ removeMargin, theme }) =>
-      removeMargin ? spacing(-5)({ theme }) : 0};
+    margin-bottom: ${({ removeMargin, theme }) => (removeMargin ? spacing(-5)({ theme }) : 0)};
   }
 `;
 
@@ -74,8 +74,7 @@ const JuiKeypadAction = styled('div')`
       color: ${grey('700')};
       ${typography('caption1')};
       &.disabled {
-        color: ${({ theme }) =>
-          palette('action', 'disabledBackground')({ theme })};
+        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })};
       }
     }
   }
@@ -90,19 +89,6 @@ class JuiContainer extends PureComponent<Props> {
     removePadding: false,
     keypadFullSize: false,
   };
-
-  state = {
-    showHoverActions: false,
-  };
-
-  _onFocus = (e: any) => {
-    const { onFocus } = this.props;
-    // prevent drag & drop
-    e.stopPropagation();
-    e.preventDefault();
-
-    onFocus && onFocus(e);
-  }
 
   componentDidMount() {
     if (this._containerRef.current) {
@@ -122,6 +108,14 @@ class JuiContainer extends PureComponent<Props> {
       this._onFocus,
     );
   }
+  _onFocus = (e: any) => {
+    const { onFocus } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onFocus && onFocus(e);
+  };
 
   render() {
     const {
@@ -136,7 +130,7 @@ class JuiContainer extends PureComponent<Props> {
     const keypadActions = Array.isArray(KeypadActions)
       ? KeypadActions.map((Action: React.ComponentType) => (
           <Action key={Action.displayName} />
-        ))
+      ))
       : KeypadActions;
 
     return (
@@ -179,10 +173,10 @@ const ContactSearchContainer = styled.div<{ addMargin: boolean }>`
     height: 100%;
     width: 100%;
     flex: 1;
+    min-height: 0;
     & > .contact-search-list-container {
       margin-top: ${({ addMargin }) => (addMargin ? spacing(11) : 0)};
-      height: ${({ addMargin, theme }) =>
-        `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
+      height: ${({ addMargin, theme }) => `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
       overflow: hidden;
     }
   }

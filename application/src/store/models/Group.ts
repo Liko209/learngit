@@ -21,6 +21,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
 import { Person } from 'sdk/module/person/entity';
 
+/* eslint-disable */
 export default class GroupModel extends Base<Group> {
   @observable
   isTeam?: boolean;

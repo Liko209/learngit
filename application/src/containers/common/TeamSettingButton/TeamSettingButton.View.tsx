@@ -26,7 +26,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
     } else if (group.type === CONVERSATION_TYPES.NORMAL_GROUP) {
       GroupSettings.show({ id });
     }
-  }
+  };
 
   render() {
     const { size, t } = this.props;
@@ -35,7 +35,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
         size={size}
         color="grey.500"
         data-test-automation-id="settingButton"
-        alwaysEnableTooltip={true}
+        alwaysEnableTooltip
         onClick={this.onClickSettingButton}
         tooltipTitle={toTitleCase(t('setting.teamSettings'))}
       >

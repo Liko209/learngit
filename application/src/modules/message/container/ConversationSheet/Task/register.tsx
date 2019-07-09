@@ -10,7 +10,7 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Task, TaskUpdate } from './';
+import { Task, TaskUpdate } from '.';
 
 type Props = {
   ids: number[];

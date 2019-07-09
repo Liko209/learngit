@@ -13,7 +13,7 @@ import CodeSnippetItem from '@/store/models/CodeItem';
 import { CodeSnippetViewModelProps } from './types';
 
 export class CodeSnippetViewModel extends StoreViewModel<
-  CodeSnippetViewModelProps
+CodeSnippetViewModelProps
 > {
   private static _isCollapseMap = new Map<number, boolean>();
 

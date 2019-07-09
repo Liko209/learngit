@@ -1,4 +1,5 @@
 import { ApiConfig, DeepPartial } from 'sdk/types';
+
 const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://api-glpci1xmn.lab.nordigy.ru',
@@ -16,6 +17,12 @@ const config: DeepPartial<ApiConfig> = {
   },
   upload: {
     server: 'https://glpci1xmn.asialab.glip.net:8443',
+  },
+  launchdarkly: {
+    clientId: '',
+  },
+  splitio: {
+    clientSecret: '',
   },
 };
 export default config;

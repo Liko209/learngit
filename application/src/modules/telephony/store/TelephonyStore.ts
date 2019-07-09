@@ -5,17 +5,15 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable, computed, action, reaction } from 'mobx';
-import { PersonService, ContactType } from 'sdk/module/person';
+import {
+  observable, computed, action, reaction
+} from 'mobx';
+import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import {
-  Person,
-  PHONE_NUMBER_TYPE,
-  PhoneNumberModel,
-} from 'sdk/module/person/entity';
+import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -29,9 +27,6 @@ import {
   INITIAL_REPLY_COUNTDOWN_TIME,
   CALL_TYPE,
 } from '../interface/constant';
-const some = require('lodash/some');
-const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
-
 import {
   Call,
   HOLD_STATE,
@@ -41,6 +36,8 @@ import {
   CALL_DIRECTION,
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
+
+const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
@@ -61,7 +58,7 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string;
+  phoneNumber?: string; // original phone number without parsed
 
   @observable
   isContactMatched: boolean = false;
@@ -101,6 +98,9 @@ class TelephonyStore {
 
   @observable
   dialerInputFocused: boolean = false;
+
+  @observable
+  hasManualSelected: boolean = false;
 
   @observable
   chosenCallerPhoneNumber: string;
@@ -149,6 +149,9 @@ class TelephonyStore {
 
   @observable
   enteredDialer: boolean = false;
+
+  @observable
+  isExt: boolean = false;
 
   constructor() {
     type FSM = '_callWindowFSM';
@@ -226,27 +229,13 @@ class TelephonyStore {
       : this.callerName;
   }
 
-  @computed
-  get isExt() {
-    if (this.person) {
-      return some(this.person.phoneNumbers, {
-        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
-        phoneNumber: this.phoneNumber,
-      });
-    }
-    return false;
-  }
-
   private _matchContactByPhoneNumber = async (phone: string) => {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
 
-    return await personService.matchContactByPhoneNumber(
-      phone,
-      ContactType.GLIP_CONTACT,
-    );
-  }
+    return await personService.matchContactByPhoneNumber(phone);
+  };
 
   private get _localCallWindowStatus() {
     const localCallWindowStatus = localStorage.getItem(
@@ -266,7 +255,7 @@ class TelephonyStore {
     if (this.callWindowState !== CALL_WINDOW_STATUS.MINIMIZED) {
       this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.CLOSE_DIALER]();
     }
-  }
+  };
 
   @action
   private _openCallWindow = () => {
@@ -282,67 +271,62 @@ class TelephonyStore {
       this._callWindowFSM[OPEN_FLOATING_DIALER]();
       this.stopAnimation();
     }
-  }
+  };
 
   @action
   private _clearEnteredKeys = () => {
     this.enteredKeys = '';
-  }
+  };
 
   @action
   private _clearForwardString = () => {
     this.forwardString = '';
-  }
-
-  @action
-  updateDefaultChosenNumber = (defaultCallerPhoneNumber: string) => {
-    this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
-  }
+  };
 
   @action
   openKeypad = () => {
     this.keypadEntered = true;
-  }
+  };
 
   @action
   quitKeypad = () => {
     this.keypadEntered = false;
-  }
+  };
 
   @action
   inputKey = (key: string) => {
     this.enteredKeys += key;
-  }
+  };
 
   inputCustomReplyMessage = (msg: string) => {
     this.customReplyMessage = msg.trimLeft();
-  }
+  };
 
   @action
   openDialer = () => {
     this._history.add(DIALING);
     this._openCallWindow();
     this.shouldKeepDialog = true;
-  }
+  };
 
   @action
   closeDialer = () => {
     this._closeCallWindow();
     this.shouldKeepDialog = false;
     this._history.delete(DIALING);
-  }
+  };
 
   @action
   attachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.FLOATING;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.ATTACHED_WINDOW]();
-  }
+  };
 
   @action
   detachedWindow = () => {
     this._localCallWindowStatus = CALL_WINDOW_STATUS.DETACHED;
     this._callWindowFSM[CALL_WINDOW_TRANSITION_NAMES.DETACHED_WINDOW]();
-  }
+  };
 
   @action
   end = () => {
@@ -371,69 +355,70 @@ class TelephonyStore {
     this.callerName = undefined;
     this.phoneNumber = undefined;
     this.isContactMatched = false;
+    this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
-  }
+  };
 
   @action
   directCall = () => {
     this.resetFirstLetterThroughKeypadForInputString();
     this._openCallWindow();
-  }
+  };
 
   @action
   incomingCall = () => {
     this._history.add(CALL_DIRECTION.INBOUND);
     this._openCallWindow();
-  }
+  };
 
   onDialerInputFocus = () => {
     this.dialerInputFocused = true;
-  }
+  };
 
   @action
   onDialerInputBlur = () => {
     this.dialerInputFocused = false;
-  }
+  };
 
   @action
   onDialerFocus = () => {
     this.dialerFocused = true;
-  }
+  };
 
   @action
   onDialerBlur = () => {
     this.dialerFocused = false;
-  }
+  };
 
   @action
   startAnimation = () => {
     this.startMinimizeAnimation = true;
-  }
+  };
 
   @action
   stopAnimation = () => {
     this.startMinimizeAnimation = false;
-  }
+  };
 
   @action
   enterFirstLetterThroughKeypadForInputString = () => {
     this.firstLetterEnteredThroughKeypadForInputString = true;
-  }
+  };
 
   @action
   resetFirstLetterThroughKeypadForInputString = () => {
     this.firstLetterEnteredThroughKeypadForInputString = false;
-  }
+  };
 
   @action
   enterFirstLetterThroughKeypadForForwardString = () => {
     this.firstLetterEnteredThroughKeypadForForwardString = true;
-  }
+  };
 
   @action
   resetFirstLetterThroughKeypadForForwardString = () => {
     this.firstLetterEnteredThroughKeypadForForwardString = false;
-  }
+  };
 
   @computed
   get isDetached() {
@@ -478,19 +463,19 @@ class TelephonyStore {
     if (!this._intervalReplyId) {
       this._createReplyInterval();
     }
-  }
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   directForward = () => {
     this.incomingState = INCOMING_STATE.FORWARD;
-  }
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
   backIncoming = () => {
     this.incomingState = INCOMING_STATE.IDLE;
-  }
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action
@@ -499,7 +484,7 @@ class TelephonyStore {
     this.customReplyMessage = '';
     this._intervalReplyId && clearInterval(this._intervalReplyId);
     this._intervalReplyId = undefined;
-  }
+  };
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @action.bound
@@ -510,7 +495,7 @@ class TelephonyStore {
       if (!this.replyCountdownTime) {
         this._intervalReplyId && clearInterval(this._intervalReplyId);
       }
-    },                                  1000);
+    }, 1000);
   }
 
   @computed
@@ -555,6 +540,11 @@ class TelephonyStore {
   @computed
   get activeCallTime(): number {
     return this.call.connectTime;
+  }
+
+  @computed
+  get callConnectingTime(): number {
+    return this.call.connectingTime;
   }
 
   @computed
@@ -627,12 +617,12 @@ class TelephonyStore {
   @action
   jumpToRecentCall = () => {
     this.isRecentCalls = true;
-  }
+  };
 
   @action
   backToDialer = () => {
     this.isRecentCalls = false;
-  }
+  };
 }
 
 export { TelephonyStore, CALL_TYPE, INCOMING_STATE };
