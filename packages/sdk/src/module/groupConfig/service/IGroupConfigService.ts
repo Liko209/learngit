@@ -6,6 +6,7 @@
 import { GroupConfig } from '../entity';
 import { Post } from 'sdk/module/post/entity';
 import { QUERY_DIRECTION } from 'sdk/dao';
+
 interface IGroupConfigService {
   updateGroupConfigPartialData(params: GroupConfig): Promise<boolean>;
   saveAndDoNotify(params: GroupConfig): Promise<boolean>;
