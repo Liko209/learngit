@@ -21,7 +21,7 @@ const kHandlers = [
     info: {
       buttonToShow: 2,
       showCallInfo: true,
-      dateFormat: DATE_FORMAT.short,
+      dateFormat: DATE_FORMAT.full,
     },
   },
   {
