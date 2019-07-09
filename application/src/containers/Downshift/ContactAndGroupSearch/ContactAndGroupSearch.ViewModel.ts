@@ -1,6 +1,6 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-09-18 14:33:00
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-07-09 14:07:28
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable, action } from 'mobx';

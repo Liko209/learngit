@@ -1,6 +1,6 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-10-11 15:04:39
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-07-09 14:07:41
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
@@ -40,7 +40,7 @@ type ViewProps = ContactAndGroupSearchProps & {
 };
 
 type ContactAndGroupSearchItemViewProps = {
-  itemId: number;
+  uid: number;
   person: PersonModel;
   isHighlighted: boolean;
 };

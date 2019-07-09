@@ -1,6 +1,6 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-10-12 15:19:44
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-07-09 14:07:00
  * Copyright © RingCentral. All rights reserved.
  */
 import { ContactAndGroupSearchViewModel } from '../ContactAndGroupSearch.ViewModel';

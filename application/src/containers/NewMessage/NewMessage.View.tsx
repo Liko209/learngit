@@ -13,7 +13,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactAndGroupSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -132,17 +132,29 @@ class NewMessageComponent extends React.Component<Props, State> {
         }
         cancelText={t('common.dialog.cancel')}
       >
-        <ContactAndGroupSearch
-          onSelectChange={handleSearchContactChange}
-          label={t('people.team.Members')}
-          placeholder={t('people.team.SearchContactPlaceholder')}
-          error={emailError}
-          helperText={emailError ? t(emailErrorMsg) : ''}
-          errorEmail={errorEmail}
-          messageRef={this.messageRef}
-          multiple={true}
-          autoSwitchEmail={true}
-        />
+        {
+          canMentionTeam ? <ContactAndGroupSearch
+            onSelectChange={handleSearchContactChange}
+            label={t('people.team.Members')}
+            placeholder={t('people.team.SearchContactPlaceholder')}
+            error={emailError}
+            helperText={emailError ? t(emailErrorMsg) : ''}
+            errorEmail={errorEmail}
+            messageRef={this.messageRef}
+            multiple={true}
+            autoSwitchEmail={true}
+          /> : <ContactSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              messageRef={this.messageRef}
+              multiple={true}
+              autoSwitchEmail={true}
+            />
+        }
         <JuiTextarea
           id={t('message.action.typeNewMessage')}
           label={t('message.action.typeNewMessage')}

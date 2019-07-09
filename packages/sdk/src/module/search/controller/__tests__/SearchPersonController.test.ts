@@ -20,7 +20,6 @@ import { PersonEntityCacheController } from '../../../person/controller/PersonEn
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
 import { AccountService } from 'sdk/module/account';
-import { PermissionService } from 'sdk/module/permission';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config');
@@ -28,7 +27,6 @@ jest.mock('../../../../api');
 jest.mock('../../../../dao/DaoManager');
 jest.mock('../../../group');
 jest.mock('../../../groupConfig');
-jest.mock('sdk/module/permission');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -45,12 +43,10 @@ describe('SearchPersonController', () => {
   let cacheSearchController: IEntityCacheSearchController<Person>;
   let groupService: GroupService;
   let groupConfigService: GroupConfigService;
-  let permissionService: PermissionService;
   function setUp() {
     groupConfigService = new GroupConfigService();
     groupService = new GroupService();
     personService = new PersonService();
-    permissionService = new PermissionService();
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
     entityCacheController = PersonEntityCacheController.buildPersonEntityCacheController(
@@ -86,9 +82,6 @@ describe('SearchPersonController', () => {
             break;
           case ServiceConfig.ACCOUNT_SERVICE:
             result = { userConfig: AccountUserConfig.prototype };
-            break;
-          case ServiceConfig.PERMISSION_SERVICE:
-            result = permissionService;
             break;
           case ServiceConfig.GLOBAL_CONFIG_SERVICE:
             result = {
@@ -808,7 +801,7 @@ describe('SearchPersonController', () => {
   });
 
   describe('duFuzzySearchPersonAndGroup', () => {
-    it('should return person value when have permission', async () => {
+    it('should return person value', async () => {
       const persons = [{ id: 1 }, { id: 2 }];
       const groups = [{ id: 3 }, { id: 4 }];
       const value = {
@@ -822,7 +815,6 @@ describe('SearchPersonController', () => {
       groupService.doFuzzySearchALlGroups = jest.fn().mockReturnValue({
         sortableModels: groups,
       });
-      permissionService.hasPermission = jest.fn().mockReturnValue(true);
       const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
         { searchKey: '1' },
       );
@@ -832,20 +824,23 @@ describe('SearchPersonController', () => {
       });
       expect(groupService.doFuzzySearchALlGroups).toBeCalled();
     });
-    it('should return person value when have no permission', async () => {
-      const persons = [{ id: 1 }, { id: 2 }];
+    it('should return person value when not search key', async () => {
+      const persons = [];
       const value = {
-        terms: '1',
+        terms: '',
         sortableModels: persons,
       };
       searchPersonController.doFuzzySearchPersons = jest
         .fn()
         .mockReturnValue(value);
-      permissionService.hasPermission = jest.fn().mockReturnValue(false);
+
       const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
-        { searchKey: '1' },
+        { searchKey: '' },
       );
-      expect(result).toEqual(value);
+      expect(result).toEqual({
+        terms: '',
+        sortableModels: persons,
+      });
       expect(groupService.doFuzzySearchALlGroups).not.toBeCalled();
     });
   });

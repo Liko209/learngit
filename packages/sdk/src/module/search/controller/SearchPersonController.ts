@@ -32,7 +32,6 @@ import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
-import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -42,7 +41,7 @@ type MatchedInfo = {
 };
 
 class SearchPersonController {
-  constructor(private _searchService: ISearchService) {}
+  constructor(private _searchService: ISearchService) { }
 
   async doFuzzySearchPhoneContacts(
     options: FuzzySearchPersonOptions,
@@ -62,7 +61,7 @@ class SearchPersonController {
         sortablePerson.extraData.forEach((phoneNumber: PhoneNumber) => {
           if (
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.length ===
-              0 ||
+            0 ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
               item => phoneNumber.id.includes(item.formatted),
             )
@@ -118,13 +117,7 @@ class SearchPersonController {
     const persons = await this.doFuzzySearchPersons(options);
     result.terms = persons.terms;
     result.sortableModels = persons.sortableModels;
-    const permissionService = ServiceLoader.getInstance<PermissionService>(
-      ServiceConfig.PERMISSION_SERVICE,
-    );
-    const canMentionTeam = await permissionService.hasPermission(
-      UserPermissionType.CAN_MENTION_TEAM,
-    );
-    if (canMentionTeam && options.searchKey) {
+    if (options.searchKey) {
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,
       );
@@ -311,14 +304,14 @@ class SearchPersonController {
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
       ? await this._searchService.getRecentSearchRecordsByType(
-          RecentSearchTypes.PEOPLE,
-        )
+        RecentSearchTypes.PEOPLE,
+      )
       : undefined;
 
     const individualGroups = recentFirst
       ? ServiceLoader.getInstance<GroupService>(
-          ServiceConfig.GROUP_SERVICE,
-        ).getIndividualGroups()
+        ServiceConfig.GROUP_SERVICE,
+      ).getIndividualGroups()
       : undefined;
 
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -399,11 +392,11 @@ class SearchPersonController {
         }
         const recentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-              person.id,
-              groupConfigService,
-              recentSearchedPersons!,
-              individualGroups!,
-            )
+            person.id,
+            groupConfigService,
+            recentSearchedPersons!,
+            individualGroups!,
+          )
           : 0;
         return {
           id: person.id,

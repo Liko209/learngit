@@ -9,11 +9,13 @@ import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 
 import { AbstractViewModel } from '@/base';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue, getSingleEntity } from '@/store/utils';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { matchInvalidEmail } from '@/utils/string';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { UserPermission } from 'sdk/module/permission/entity';
+import UserPermissionModel from '@/store/models/UserPermission';
 
 class CreateTeamViewModel extends AbstractViewModel {
   @observable
@@ -42,6 +44,14 @@ class CreateTeamViewModel extends AbstractViewModel {
   @computed
   get isOffline() {
     return getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline';
+  }
+
+  @computed
+  get canMentionTeam() {
+    return getSingleEntity<UserPermission, UserPermissionModel>(
+      ENTITY_NAME.USER_PERMISSION,
+      'canMentionTeam',
+    );
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {

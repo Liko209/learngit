@@ -65,8 +65,11 @@ class NewMessageViewModel extends StoreViewModel {
     this.emailError = false;
   };
   @action
-  handleCheckboxChange = (value: boolean) => {
-    this.isDirectMessage = value;
+  handleCheckboxChange = (
+    event: React.ChangeEvent<{}>,
+    checked: boolean,
+  ) => {
+    this.isDirectMessage = checked;
   };
 
   @action
@@ -76,7 +79,7 @@ class NewMessageViewModel extends StoreViewModel {
       ServiceConfig.POST_SERVICE,
     );
     if (this.isDirectMessage) {
-      const personPromises: any = [];
+      const personPromises: Promise<number | null>[] = [];
       const groupIds: number[] = [];
       ids.forEach(id => {
         if (GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)) {
@@ -90,7 +93,7 @@ class NewMessageViewModel extends StoreViewModel {
 
       const promise = ids.map((id: number) => postService.sendPost({ groupId: id, text: message }));
       await Promise.all(promise);
-      groupIds[0] && goToConversation({ conversationId: groupIds[0] });
+      ids[0] && goToConversation({ conversationId: ids[0] });
     } else {
       const groupService = ServiceLoader.getInstance<GroupService>(
         ServiceConfig.GROUP_SERVICE,

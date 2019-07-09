@@ -1,6 +1,6 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-10-11 14:31:01
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-07-09 14:07:21
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { createRef } from 'react';
@@ -20,14 +20,14 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 @observer
 class ContactAndGroupSearchItem extends React.Component<ContactAndGroupSearchItemViewProps> {
   render() {
-    const { itemId } = this.props;
+    const { uid } = this.props;
     return GlipTypeUtil.isExpectedType(
-      itemId,
+      uid,
       TypeDictionary.TYPE_ID_PERSON,
     ) ? (
-        <ContactSearchItem uid={itemId} {...this.props} />
+        <ContactSearchItem {...this.props} />
       ) : (
-        <GroupSearchItem {...this.props} />
+        <GroupSearchItem itemId={uid} {...this.props} />
       );
   }
 }
