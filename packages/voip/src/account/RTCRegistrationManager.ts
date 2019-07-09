@@ -135,8 +135,8 @@ class RTCRegistrationManager extends EventEmitter2
     this._userAgent.on(UA_EVENT.REG_SUCCESS, () => {
       this._onUARegSuccess();
     });
-    this._userAgent.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
-      this._onUARegFailed(response, cause);
+    this._userAgent.on(UA_EVENT.REG_FAILED, (response: any) => {
+      this._onUARegFailed(response);
     });
     this._userAgent.on(UA_EVENT.RECEIVE_INVITE, (session: any) => {
       this._onUAReceiveInvite(session);
@@ -250,7 +250,7 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  private _onUARegFailed(response?: any, cause?: any) {
+  private _onUARegFailed(response?: any) {
     if (
       response &&
       response.status_code &&
@@ -307,7 +307,7 @@ class RTCRegistrationManager extends EventEmitter2
     }
     this._retryTimer = setTimeout(() => {
       this.reRegister();
-    },                            interval * 1000);
+    }, interval * 1000);
   }
 
   private _clearRegisterRetryTimer() {

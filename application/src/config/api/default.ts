@@ -1,4 +1,5 @@
 import { ApiConfig } from 'sdk/types';
+
 const config: ApiConfig = {
   rc: {
     server: 'https://platform.ringcentral.com',

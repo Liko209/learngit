@@ -3,7 +3,7 @@
  * @Date: 2019-02-04 10:02:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { FetchSortableDataListHandler } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
 import storeManager, { ENTITY_NAME } from '@/store';

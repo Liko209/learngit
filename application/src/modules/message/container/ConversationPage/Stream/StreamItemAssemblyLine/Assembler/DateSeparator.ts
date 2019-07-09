@@ -14,11 +14,11 @@ import { StreamItemType, StreamItem } from '../../types';
 import { getDateTimeStamp } from '@/utils/date';
 
 export class DateSeparator extends Assembler {
-  onAdd: AssemblerAddFunc = ({ added, postList, streamItemList, ...rest }) => {
+  onAdd: AssemblerAddFunc = ({
+    added, postList, streamItemList, ...rest
+  }) => {
     const criteria = (createdAt: number) => getDateTimeStamp(createdAt);
-    const postByDay = _(added).groupBy(sortModel =>
-      criteria(sortModel.sortValue),
-    );
+    const postByDay = _(added).groupBy(sortModel => criteria(sortModel.sortValue));
     const convertDateToStreamItem: (t: number) => StreamItem = (
       timeStamp: number,
     ) => ({
@@ -32,10 +32,10 @@ export class DateSeparator extends Assembler {
       .value();
     const streamItems = streamItemList.concat(dates);
 
-    return { postList, added, streamItemList: streamItems, ...rest };
+    return {
+      postList, added, streamItemList: streamItems, ...rest,
+    };
   }
 
-  onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
-    return { ...args };
-  }
+  onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => ({ ...args })
 }

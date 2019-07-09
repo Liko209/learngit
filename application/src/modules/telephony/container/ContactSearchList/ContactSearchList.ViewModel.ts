@@ -110,26 +110,26 @@ export class ContactSearchListViewModel
     this._isSearchingDisposer();
     this._displayDisposer();
     super.dispose();
-  }
+  };
 
   @action
   increaseFocusIndex = () => {
     const next = this.focusIndex + 1;
     const maxIndex = this.searchResult.length - 1;
     this.focusIndex = next >= maxIndex ? maxIndex : next;
-  }
+  };
 
   @action
   decreaseFocusIndex = () => {
     const next = this.focusIndex - 1;
     const minimumIndex = 0;
     this.focusIndex = next <= minimumIndex ? minimumIndex : next;
-  }
+  };
 
   onClick = (focusIndex: number) => {
     this.focusIndex = focusIndex;
     this.onEnter();
-  }
+  };
 
   @action
   onEnter = () => {
@@ -155,12 +155,12 @@ export class ContactSearchListViewModel
       phoneNumber = this.trimmedInputString;
     }
     this.props.onContactSelected(phoneNumber);
-  }
+  };
 
   @action
   private _setDefaultFocusIndex = async () => {
-    this.focusIndex = !!this.shouldDisplayPhoneNumberItem ? 0 : -1;
-  }
+    this.focusIndex = this.shouldDisplayPhoneNumberItem ? 0 : -1;
+  };
 
   private _searchReaction = debounce(
     async () => {
@@ -169,7 +169,6 @@ export class ContactSearchListViewModel
         trimmedInputString = this.trimmedInputString;
         if (!trimmedInputString.length) {
           this.searchResult = [];
-          return;
         }
       });
       const [currentSearchResult, parsedPhone] = await Promise.all([
@@ -182,11 +181,11 @@ export class ContactSearchListViewModel
         this.isSearching = false;
         const res = this.shouldDisplayPhoneNumberItem
           ? [
-              {
-                id: CONTACT_SEARCH_PHONE_NUMBER_ID,
-                directDial: parsedPhone.parsed,
-              } as SearchItem,
-            ]
+            {
+              id: CONTACT_SEARCH_PHONE_NUMBER_ID,
+              directDial: parsedPhone.parsed,
+            } as SearchItem,
+          ]
           : [];
         this.searchResult = currentSearchResult
           ? [...res, ...currentSearchResult.phoneContacts]
@@ -219,18 +218,18 @@ export class ContactSearchListViewModel
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
     });
-  }
+  };
 
   private _getIdx = (idx: number) => {
     const maxIdx = this.searchResultLength - 1;
     return idx >= maxIdx ? maxIdx : idx;
-  }
+  };
 
   // This method must be called after data being fetched
   loadInitialData = async () => {
     this.displayIdx = this._getIdx(INITIAL_PAGE_SIZE);
     this._setDefaultFocusIndex();
-  }
+  };
 
   loadMore = async (direction: Direction, count: number) => {
     runInAction(() => {
@@ -239,12 +238,10 @@ export class ContactSearchListViewModel
       }
       this.displayIdx = this._getIdx(this.displayIdx + count);
     });
-  }
+  };
 
   @action
-  hasMore = () => {
-    return this.displayIdx < this.searchResultLength - 1;
-  }
+  hasMore = () => this.displayIdx < this.searchResultLength - 1;
 
   @computed
   get trimmedInputString() {

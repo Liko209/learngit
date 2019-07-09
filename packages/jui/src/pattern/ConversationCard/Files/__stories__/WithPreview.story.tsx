@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiFileWithPreview } from '../';
+import { JuiFileWithPreview } from '..';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import download from '../../../../assets/jupiter-icon/icon-download.svg';
 import image from './contemplative-reptile.jpg';
@@ -14,9 +14,9 @@ import image from './contemplative-reptile.jpg';
 storiesOf('Pattern/ConversationCard', module).add('FileWithPreview', () => {
   const actions = [
     <JuiIconButton
-      key="download"
-      variant="plain"
-      tooltipTitle="download"
+      key='download'
+      variant='plain'
+      tooltipTitle='download'
       symbol={download}
     />,
   ];
@@ -25,29 +25,29 @@ storiesOf('Pattern/ConversationCard', module).add('FileWithPreview', () => {
     <div>
       <JuiFileWithPreview
         url={image}
-        fileName="fileName"
-        size="2.3Mb"
+        fileName='fileName'
+        size='2.3Mb'
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
         url={image}
-        fileName="fileName"
-        size="2.3Mb"
+        fileName='fileName'
+        size='2.3Mb'
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
         url={image}
-        fileName="fileName"
-        size="2.3Mb"
+        fileName='fileName'
+        size='2.3Mb'
         iconType={'pdf'}
         Actions={actions}
       />
       <JuiFileWithPreview
         url={image}
-        fileName="fileName"
-        size="2.3Mb"
+        fileName='fileName'
+        size='2.3Mb'
         iconType={'pdf'}
         Actions={actions}
       />

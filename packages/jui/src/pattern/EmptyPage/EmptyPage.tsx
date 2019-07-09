@@ -21,8 +21,7 @@ const StyledEmptyPage = styled.div<{ pageHeight: number | string }>`
   align-items: center;
   width: 100%;
   min-width: ${width(84)};
-  height: ${({ pageHeight }) =>
-    typeof pageHeight === 'number' ? `${pageHeight}px` : pageHeight};
+  height: ${({ pageHeight }) => (typeof pageHeight === 'number' ? `${pageHeight}px` : pageHeight)};
   padding: ${spacing(4, 8)};
   overflow: auto;
 
@@ -50,7 +49,7 @@ const StyledEmptyPageMessage = styled.span`
   ${typography('subheading1')};
   color: ${grey('900')};
 `;
-
+/* eslint-disable */
 const JuiEmptyPageComponent: IJuiEmptyPage = ({
   height = '100%',
   image = '',

@@ -158,7 +158,7 @@ describe('TeamSettingsViewModel', () => {
         );
       const vm = setUp();
       await vm.leaveTeam();
-      expect(Notification.flashToast).lastCalledWith(
+      expect(Notification.flashToast).toHaveBeenLastCalledWith(
         toastParamsBuilder('people.prompt.leaveTeamServerErrorContent'),
       );
     });
@@ -180,7 +180,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       try {
         expect(vm.leaveTeam()).rejects.toEqual('Async error');
-        expect(Notification.flashToast).not.toBeCalled();
+        expect(Notification.flashToast).not.toHaveBeenCalled();
         expect(utils.generalErrorHandler).toHaveBeenCalled();
       } catch {}
     });

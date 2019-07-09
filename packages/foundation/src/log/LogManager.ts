@@ -1,3 +1,4 @@
+import mergeWith from 'lodash/mergeWith';
 import { Logger } from './Logger';
 import { LOG_LEVEL, LOG_TAGS } from './constants';
 import {
@@ -7,7 +8,6 @@ import {
   ILogCollector,
 } from './types';
 import { configManager } from './config';
-import mergeWith from 'lodash/mergeWith';
 import {
   MessageDecorator,
   SessionDecorator,

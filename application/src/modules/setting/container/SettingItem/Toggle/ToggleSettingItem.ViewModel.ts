@@ -12,7 +12,7 @@ import {
 import { ToggleSettingItemProps } from './types';
 
 class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
-  ToggleSettingItemProps
+ToggleSettingItemProps
 > {
   @action
   saveSetting = async (value: boolean) => {

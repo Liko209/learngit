@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { SearchService } from '../service';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
 import { serializeUrlParams } from '../../../utils';
@@ -25,13 +24,11 @@ class RecentSearchRecordController {
       recentRecords.pop();
     }
 
-    recentRecords = recentRecords.filter((x: RecentSearchModel) => {
-      return (
-        x.type !== type ||
+    recentRecords = recentRecords.filter((x: RecentSearchModel) => (
+      x.type !== type ||
         x.value !== value ||
         serializeUrlParams(x.query_params) !== serializeUrlParams(params)
-      );
-    });
+    ));
 
     const time = Date.now();
     const model: RecentSearchModel = {
@@ -60,9 +57,7 @@ class RecentSearchRecordController {
 
   async removeRecentSearchRecords(toRemoveIds: Set<number>) {
     let records = await this.getRecentSearchRecords();
-    records = records.filter((record: RecentSearchModel) => {
-      return !toRemoveIds.has(record.id);
-    });
+    records = records.filter((record: RecentSearchModel) => !toRemoveIds.has(record.id));
     await this._updateRecentRecords(records);
   }
 

@@ -3,6 +3,7 @@
  * @Date: 2018-12-09 10:10:02
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -32,15 +33,15 @@ class DeleteViewComponent extends React.Component<Props> {
         });
       },
     });
-  }
+  };
   render() {
     const { disabled, t } = this.props;
     return (
       <JuiMenuItem
         onClick={this._handleDelete}
         disabled={disabled}
-        icon="delete"
-        data-test-automation-id="message-action-delete"
+        icon='delete'
+        data-test-automation-id='message-action-delete'
       >
         {t('message.action.deletePost')}
       </JuiMenuItem>

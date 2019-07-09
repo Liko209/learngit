@@ -3,10 +3,8 @@
  * @Date: 2018-12-28 16:28:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { EventEmitter2 } from 'eventemitter2';
-import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
+import _ from 'lodash';
 import {
   IResponse,
   NETWORK_VIA,
@@ -15,6 +13,8 @@ import {
 import { HttpRequest } from 'foundation/src/network/client/http';
 import NetworkRequestBuilder from 'foundation/src/network/client/NetworkRequestBuilder';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { RTCRestApiManager } from '../utils/RTCRestApiManager';
+import { RTCSipProvisionInfo, RTC_PROV_EVENT } from './types';
 import {
   kRTCProvRequestErrorRetryTimerMin,
   kRTCProvFreshTimer,
@@ -25,7 +25,6 @@ import {
 import { isNotEmptyString } from '../utils/utils';
 import { RTC_REST_API } from '../utils/types';
 import { RTCDaoManager } from '../utils/RTCDaoManager';
-import _ from 'lodash';
 
 enum ERROR_TYPE {
   REQUEST_ERROR,
@@ -47,10 +46,6 @@ class RTCProvManager extends EventEmitter2 {
 
   // for unit test and log
   public retrySeconds: number = 0;
-
-  constructor() {
-    super();
-  }
 
   async acquireSipProv() {
     const localSipProvisionInfo = RTCDaoManager.instance().readProvisioning();
@@ -90,7 +85,7 @@ class RTCProvManager extends EventEmitter2 {
     }
     this._refreshByRegFailedTimer = setTimeout(() => {
       this._refreshSipProvWhenTimeArrived();
-    },                                         this._refreshByRegFailedInterval * 1000);
+    }, this._refreshByRegFailedInterval * 1000);
   }
 
   private _refreshSipProvWhenTimeArrived() {
@@ -149,7 +144,7 @@ class RTCProvManager extends EventEmitter2 {
       return;
     }
 
-    if (<number>response.status < 200 || <number>response.status >= 400) {
+    if ((response.status as number) < 200 || (response.status as number) >= 400) {
       rtcLogger.info(LOG_TAG, `the response is error:${response.status}`);
       this._errorHandling(ERROR_TYPE.REQUEST_ERROR, response.retryAfter);
       return;
@@ -193,7 +188,7 @@ class RTCProvManager extends EventEmitter2 {
     this._clearFreshTimer();
     this._reFreshTimerId = setTimeout(() => {
       this._sendSipProvRequest();
-    },                                this._reFreshInterval * 1000);
+    }, this._reFreshInterval * 1000);
   }
 
   private _clearFreshTimer() {
@@ -204,10 +199,10 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _errorHandling(type: ERROR_TYPE, retryAfter: number): void {
-    let interval: number = 0;
+    let interval = 0;
     switch (type) {
       case ERROR_TYPE.REQUEST_ERROR:
-        interval = !!retryAfter
+        interval = retryAfter
           ? Math.max(this._requestErrorRetryInterval, retryAfter)
           : this._requestErrorRetryInterval;
         this._retryRequestForError(interval);
@@ -218,7 +213,7 @@ class RTCProvManager extends EventEmitter2 {
         );
         break;
       case ERROR_TYPE.PARAMS_ERROR:
-        interval = !!retryAfter
+        interval = retryAfter
           ? Math.max(kRTCProvParamsErrorRetryTimer, retryAfter)
           : kRTCProvParamsErrorRetryTimer;
         this._retryRequestForError(interval);
@@ -237,12 +232,12 @@ class RTCProvManager extends EventEmitter2 {
     setTimeout(() => {
       this._canAcquireSipProv = true;
       this._sendSipProvRequest();
-    },         seconds * 1000);
+    }, seconds * 1000);
   }
 
   private _checkSipProvInfoParams(info: RTCSipProvisionInfo): boolean {
     rtcLogger.info(LOG_TAG, `the prov info: ${JSON.stringify(info)}`);
-    let paramsCorrect: boolean = false;
+    let paramsCorrect = false;
     try {
       const paramsSipInfo =
         info.sipInfo instanceof Array ? info.sipInfo[0] : info.sipInfo;

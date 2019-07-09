@@ -15,7 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import PhoneNumberModel from '@/store/models/PhoneNumber';
 
 export class ContactSearchItemViewModel extends StoreViewModel<
-  ContactSearchItemProps
+ContactSearchItemProps
 > {
   @observable.shallow
   _person?: any;
@@ -30,9 +30,9 @@ export class ContactSearchItemViewModel extends StoreViewModel<
     this._personFrame = requestAnimationFrame(() => {
       this._person = this.props.personId
         ? getEntity<Person, PersonModel>(
-            ENTITY_NAME.PERSON,
-            this.props.personId,
-          )
+          ENTITY_NAME.PERSON,
+          this.props.personId,
+        )
         : undefined;
       delete this._personFrame;
     });

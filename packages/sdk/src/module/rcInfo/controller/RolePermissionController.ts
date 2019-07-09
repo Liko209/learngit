@@ -15,13 +15,11 @@ class RolePermissionController {
     const rolePermissions = await this._rcInfoFetchController.getRCRolePermissions();
     if (rolePermissions && rolePermissions.permissions) {
       const rcRolePermission = rolePermissions.permissions.find(
-        (item: RCRolePermission) => {
-          return item.permission &&
+        (item: RCRolePermission) => (item.permission &&
             item.permission.id &&
             item.permission.id === id
-            ? true
-            : false;
-        },
+          ? true
+          : false),
       );
       if (rcRolePermission) {
         return true;

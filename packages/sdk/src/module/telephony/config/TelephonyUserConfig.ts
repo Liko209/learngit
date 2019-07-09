@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { UserConfig } from '../../config';
-import { AccountGlobalConfig } from '../../../module/account/config';
+import { AccountGlobalConfig } from '../../account/config';
 import { TELEPHONY_KEYS } from './configKeys';
 
 class TelephonyUserConfig extends UserConfig {

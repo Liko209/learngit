@@ -42,24 +42,22 @@ class StateService extends EntityBaseService<GroupState>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return (
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
+    this.setCheckTypeFunc((id: number) => (
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
-      );
-    });
+    ));
   }
 
-  onLogin() {
-    super.onLogin();
-    this._initBadge();
+  onGlipLogin(success: boolean) {
+    super.onGlipLogin(success);
+    success && this._initBadge();
   }
 
   private _initBadge = async () => {
     await this.getStateController()
       .getTotalUnreadController()
       .initializeTotalUnread();
-  }
+  };
 
   protected getStateController(): StateController {
     if (!this._stateController) {
@@ -128,7 +126,7 @@ class StateService extends EntityBaseService<GroupState>
     await this.getStateController()
       .getStateDataHandleController()
       .handleState(states, source, changeMap);
-  }
+  };
 
   handleGroupCursor = async (
     groups: Partial<Group>[],
@@ -137,7 +135,7 @@ class StateService extends EntityBaseService<GroupState>
     await this.getStateController()
       .getStateDataHandleController()
       .handleGroupCursor(groups, ignoreCursorValidate);
-  }
+  };
 
   handleStateChangeForTotalUnread = (
     payload: NotificationEntityPayload<GroupState>,
@@ -145,7 +143,7 @@ class StateService extends EntityBaseService<GroupState>
     this.getStateController()
       .getTotalUnreadController()
       .handleGroupState(payload);
-  }
+  };
 
   handleGroupChangeForTotalUnread = (
     payload: NotificationEntityPayload<Group>,
@@ -153,7 +151,7 @@ class StateService extends EntityBaseService<GroupState>
     this.getStateController()
       .getTotalUnreadController()
       .handleGroup(payload);
-  }
+  };
 
   handleProfileChangeForTotalUnread = (
     payload: NotificationEntityPayload<Profile>,
@@ -161,7 +159,7 @@ class StateService extends EntityBaseService<GroupState>
     this.getStateController()
       .getTotalUnreadController()
       .handleProfile(payload);
-  }
+  };
 
   getSingleGroupBadge(id: number): UndefinedAble<GroupBadge> {
     return this.getStateController()

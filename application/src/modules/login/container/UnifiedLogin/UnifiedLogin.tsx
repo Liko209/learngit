@@ -96,7 +96,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
-  }
+  };
 
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
   //   this.setState({ brandId: event.currentTarget.value });
@@ -106,7 +106,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     event.preventDefault();
     const { location } = this.props;
     window.location.href = getUrl(location);
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -116,6 +116,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
         <EnvSelect />
         <a
           target="_blank"
+          rel="noopener noreferrer"
           href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
         >
           Test Account

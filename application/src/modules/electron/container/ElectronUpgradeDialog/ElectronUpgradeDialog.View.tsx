@@ -10,7 +10,7 @@ import { JuiButton } from 'jui/components/Buttons';
 import { ElectronUpgradeDialogViewProps, Ref } from './types';
 
 class ElectronUpgradeDialogComponent extends React.Component<
-  ElectronUpgradeDialogViewProps
+ElectronUpgradeDialogViewProps
 > {
   static _portalRef: null | Ref = null;
 
@@ -48,7 +48,7 @@ class ElectronUpgradeDialogComponent extends React.Component<
 
     return (
       <JuiModal
-        open={true}
+        open
         title={t('electron.upgrade.dialogTitle')}
         footer={Upgrade}
         aria-label={t('electron.upgrade.dialogTitle')}

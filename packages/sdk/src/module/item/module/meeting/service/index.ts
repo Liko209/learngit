@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MeetingItemService } from './MeetingItemService';
+
 export { MeetingItemService };

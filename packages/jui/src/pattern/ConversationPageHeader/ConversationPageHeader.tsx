@@ -29,7 +29,7 @@ type JuiConversationPageHeaderProps = {
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &
-  MuiAppBarProps;
+MuiAppBarProps;
 
 const TitleWrapper = styled<JuiTextProps>(JuiText)`
   && {
@@ -82,9 +82,9 @@ const TitleAndStatusWrapper = styled('div')`
 `;
 
 type IJuiConversationPageHeader = React.PureComponent<
-  JuiConversationPageHeaderProps
+JuiConversationPageHeaderProps
 > &
-  Dependencies;
+Dependencies;
 
 class JuiConversationPageHeader
   extends React.PureComponent<JuiConversationPageHeaderProps>
@@ -124,7 +124,7 @@ class JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         position="static"
         elevation={0}
-        square={true}
+        square
         {...rest}
       >
         <MuiToolbar className="mui-toolbar" variant="dense">

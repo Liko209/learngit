@@ -29,9 +29,7 @@ class InputFooterViewComponent extends React.Component<InputFooterViewProps> {
     );
   });
 
-  private _getTypingIndicator = moize((show, typingList) => {
-    return <TypingIndicator show={show} typingList={typingList} />;
-  });
+  private _getTypingIndicator = moize((show, typingList) => <TypingIndicator show={show} typingList={typingList} />);
 
   render() {
     const {

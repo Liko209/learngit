@@ -38,21 +38,17 @@ class RecentCallLogsHandler {
   private _recentCalls: Map<string, { id: string; creationTime: number }>;
   private _recentCallIds: string[];
   private _idListHandler: IdListPaginationHandler<
-    CallLog,
-    CallLogModel,
-    string
+  CallLog,
+  CallLogModel,
+  string
   >;
 
   async init() {
     await this._initRecentCallInfo();
 
-    const filterFunc = (model: CallLogModel) => {
-      return !model.deactivated;
-    };
+    const filterFunc = (model: CallLogModel) => !model.deactivated;
 
-    const isMatchFunc = (entity: CallLog) => {
-      return !entity.__deactivated && this._recentCallIds.includes(entity.id);
-    };
+    const isMatchFunc = (entity: CallLog) => !entity.__deactivated && this._recentCallIds.includes(entity.id);
 
     this._idListHandler = new IdListPaginationHandler(this._recentCallIds, {
       filterFunc,
@@ -110,8 +106,10 @@ class RecentCallLogsHandler {
       case EVENT_TYPES.RELOAD:
         this._handleDataReload(payload);
         break;
+      default:
+        break;
     }
-  }
+  };
 
   private _handleDataReplace(
     payload: NotificationEntityReplacePayload<CallLog, string>,
@@ -164,11 +162,11 @@ class RecentCallLogsHandler {
 
   private _updateSourceIds(
     recentCalls: Map<
-      string,
-      {
-        id: string;
-        creationTime: number;
-      }
+    string,
+    {
+      id: string;
+      creationTime: number;
+    }
     >,
   ) {
     this._recentCallIds = this._toSortedIds(recentCalls);
@@ -181,21 +179,19 @@ class RecentCallLogsHandler {
 
   private _toSortedIds(
     recentCalls: Map<
-      string,
-      {
-        id: string;
-        creationTime: number;
-      }
+    string,
+    {
+      id: string;
+      creationTime: number;
+    }
     >,
   ) {
-    const sortedCallInfos = Array.from(recentCalls.values()).sort((a, b) => {
-      return SortUtils.sortModelByKey<IdModel<string>, string>(
-        a,
-        b,
-        ['creationTime'],
-        true,
-      );
-    });
+    const sortedCallInfos = Array.from(recentCalls.values()).sort((a, b) => SortUtils.sortModelByKey<IdModel<string>, string>(
+      a,
+      b,
+      ['creationTime'],
+      true,
+    ));
 
     return sortedCallInfos.map(v => v.id);
   }
@@ -205,9 +201,7 @@ class RecentCallLogsHandler {
   ) {
     const deletedSortableModelIds = payload.body.ids;
     if (this._recentCallIds && deletedSortableModelIds) {
-      const shouldReFetch = deletedSortableModelIds.some((value: string) => {
-        return this._recentCallIds.includes(value);
-      });
+      const shouldReFetch = deletedSortableModelIds.some((value: string) => this._recentCallIds.includes(value));
       mainLogger
         .tags(MODULE_NAME)
         .log('receive delete call log, need to reFetch', { shouldReFetch });

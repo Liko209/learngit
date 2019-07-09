@@ -48,8 +48,8 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _entityId: number;
   private _entityCacheController: IEntityCacheController<Call>;
   private _callActionCallbackMap: Map<
-    string,
-    { resolve: IResultResolveFn; reject: IResultRejectFn }
+  string,
+  { resolve: IResultResolveFn; reject: IResultRejectFn }
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
@@ -113,7 +113,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-
+  /* eslint-disable */
   private _handleCallStateChanged(state: RTC_CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {

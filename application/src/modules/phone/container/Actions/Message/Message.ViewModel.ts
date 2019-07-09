@@ -25,7 +25,7 @@ class MessageViewModel extends StoreViewModel<MessageProps> {
         id: person.id,
       });
     }
-  }
+  };
 }
 
 export { MessageViewModel };

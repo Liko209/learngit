@@ -483,6 +483,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   flex-direction: column;
   position: relative;
   cursor: default;
+  min-height: 0;
 }
 
 .c18.c18 {

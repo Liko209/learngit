@@ -61,8 +61,8 @@ type State = {
 };
 
 class JuiStreamLoading extends React.PureComponent<
-  JuiConversationLoadingProps,
-  State
+JuiConversationLoadingProps,
+State
 > {
   timer: NodeJS.Timeout;
   showLinkTimer: NodeJS.Timeout;
@@ -81,7 +81,7 @@ class JuiStreamLoading extends React.PureComponent<
         this.setState({
           showLink: true,
         });
-      },                              1000);
+      }, 1000);
     }
   }
 
@@ -130,4 +130,6 @@ class JuiStreamLoading extends React.PureComponent<
   }
 }
 
-export { Loading, Progress, Tip, TipLink, JuiStreamLoading };
+export {
+  Loading, Progress, Tip, TipLink, JuiStreamLoading,
+};

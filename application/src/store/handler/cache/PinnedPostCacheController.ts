@@ -6,7 +6,6 @@
 
 import { FetchSortableDataListHandler } from '@/store/base';
 import GroupModel from '@/store/models/Group';
-import _ from 'lodash';
 import { PostCacheController } from './PostCacheController';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';

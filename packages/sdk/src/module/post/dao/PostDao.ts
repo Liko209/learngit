@@ -10,7 +10,6 @@ import { PostViewDao } from './PostViewDao';
 import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
-import _ from 'lodash';
 
 class PostDao extends BaseDao<Post> {
   static COLLECTION_NAME = 'post';
@@ -71,9 +70,7 @@ class PostDao extends BaseDao<Post> {
     return await this.getPostViewDao().queryPostIdsByGroupId(groupId);
   }
 
-  private _fetchPostsFunc = async (ids: number[]) => {
-    return await this.batchGet(ids, true);
-  }
+  private _fetchPostsFunc = async (ids: number[]) => await this.batchGet(ids, true)
 
   async queryPostsByGroupId(
     groupId: number,
@@ -151,13 +148,11 @@ class PostDao extends BaseDao<Post> {
 
   private async _bulkPutPostView(array: Post[]) {
     await this.getPostViewDao().bulkPut(
-      array.map((post: Post) => {
-        return {
-          id: post.id,
-          group_id: post.group_id,
-          created_at: post.created_at,
-        };
-      }),
+      array.map((post: Post) => ({
+        id: post.id,
+        group_id: post.group_id,
+        created_at: post.created_at,
+      })),
     );
   }
 }

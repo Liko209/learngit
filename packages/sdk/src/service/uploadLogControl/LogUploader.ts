@@ -27,7 +27,7 @@ export class LogUploader implements ILogUploader {
       env = '',
       browser = '',
     } = Pal.instance.getApplicationInfo();
-    const host = location.host;
+    const host = window.location.host;
     await axios.post(postUrl, message, {
       headers: {
         'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}/${host}`,

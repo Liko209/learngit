@@ -7,7 +7,7 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { JuiTextField } from '../';
+import { JuiTextField } from '..';
 
 const TextFieldStories = () => {
   const [values, setValues] = React.useState({
@@ -22,9 +22,9 @@ const TextFieldStories = () => {
       <section>
         <p>default</p>
         <JuiTextField
-          id="TeamName"
-          label="Team name"
-          fullWidth={true}
+          id='TeamName'
+          label='Team name'
+          fullWidth
           onKeyDown={handleChange('name')}
           InputProps={{
             classes: {
@@ -40,9 +40,9 @@ const TextFieldStories = () => {
       <section>
         <p>type="number" use aria-label for control</p>
         <JuiTextField
-          id="outlined-number"
-          label=""
-          type="number"
+          id='outlined-number'
+          label=''
+          type='number'
           value={values.age}
           onChange={handleChange('age')}
           inputProps={{

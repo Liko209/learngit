@@ -11,6 +11,7 @@ import { getEntity } from '@/store/utils';
 import { Post } from 'sdk/module/post/entity';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
+
 class ActionsViewModel extends StoreViewModel<ActionsProps> {
   @computed
   get post() {

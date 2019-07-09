@@ -32,7 +32,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
       <Fragment>
         <Grid
           style={{ height: '100%' }}
-          container={true}
+          container
           direction="column"
           justify="space-between"
         >
@@ -42,12 +42,12 @@ class ContentLoader extends PureComponent<ThemeProps> {
               height: `${16 * width}px`,
               borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
             }}
-            container={true}
+            container
             direction="row"
             justify="space-between"
           >
             <Grid
-              item={true}
+              item
               style={{
                 width: `${85 * width}px`,
                 height: `${16 * width}px`,
@@ -74,7 +74,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Grid>
             <Hidden only={['xs', 'sm']}>
               <Grid
-                item={true}
+                item
                 style={{
                   height: `${16 * width}px`,
                   flex: 1,
@@ -102,7 +102,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Hidden>
             <Hidden only={['xs']}>
               <Grid
-                item={true}
+                item
                 style={{
                   height: `${16 * width}px`,
                   width: `${67 * width}px`,
@@ -127,7 +127,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Hidden>
           </Grid>
           <Grid
-            container={true}
+            container
             direction="row"
             alignItems="stretch"
             justify="space-between"
@@ -136,7 +136,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             }}
           >
             <Grid
-              container={true}
+              container
               direction="column"
               justify="space-between"
               style={{
@@ -223,7 +223,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Grid>
             <Hidden only="xs">
               <Grid
-                item={true}
+                item
                 style={{
                   width: `${67 * width}px`,
                   backgroundColor: `${grey['50']}`,
@@ -290,7 +290,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
               </Grid>
             </Hidden>
             <Grid
-              item={true}
+              item
               style={{
                 borderRight: '1px solid rgba(0, 0, 0, 0.12)',
                 position: 'relative',
@@ -303,7 +303,7 @@ class ContentLoader extends PureComponent<ThemeProps> {
             </Grid>
             <Hidden only={['xs', 'sm']}>
               <Grid
-                item={true}
+                item
                 style={{
                   width: `${67 * width}px`,
                   backgroundColor: `${grey['50']}`,

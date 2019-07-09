@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -78,7 +78,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
         />
       </JuiVirtualCellWrapper>
     );
-  }
+  };
 
   componentDidUpdate(prevProps: MentionViewProps) {
     const { currentIndex } = this.props;
@@ -112,7 +112,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
                       mentionHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
                     }
                     fixedCellHeight={ITEM_HEIGHT}
-                    data-test-automation-id="mention-list"
+                    data-test-automation-id='mention-list'
                   />
                 </JuiMentionPanelSection>
               );

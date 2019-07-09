@@ -14,12 +14,10 @@ export const KEYS = [
 
 export const deepClone = (arg: any) => JSON.parse(JSON.stringify(arg));
 
-export const defaultItems = () =>
-  KEYS.reduce((prev, curr) => {
-    prev[curr] = 0;
-    return prev;
-  },          Object.create(null));
+export const defaultItems = () => KEYS.reduce((prev, curr) => {
+  prev[curr] = 0;
+  return prev;
+}, Object.create(null));
 
 type Sleep = (ms: number) => Promise<void>;
-export const sleep: Sleep = ms =>
-  new Promise(resolve => setTimeout(resolve, ms));
+export const sleep: Sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

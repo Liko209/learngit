@@ -68,8 +68,7 @@ const SearchItemValueWrapper = styled.div`
 
 const Joined = styled.span`
   padding: ${spacing(0, 1)};
-  color: ${({ theme }) =>
-    theme.palette.getContrastText(primary('700', 2)({ theme }))};
+  color: ${({ theme }) => theme.palette.getContrastText(primary('700', 2)({ theme }))};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}
@@ -106,7 +105,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
   // e2e also will be use it. shouldn't change the class name
   const className = hovered ? 'search-items hover' : 'search-items';
   return (
-    <SearchItemWrapper className={className} disableRipple={true} {...rest}>
+    <SearchItemWrapper className={className} disableRipple {...rest}>
       <SearchItemAvatar data-test-automation-id="search-item-avatar">
         {Avatar}
       </SearchItemAvatar>
@@ -122,7 +121,9 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           <PrivateIcon data-test-automation-id="search-item-private" />
         )}
         {isJoined && (
-          <Joined data-test-automation-id="search-item-joined">{joinedStatusText}</Joined>
+          <Joined data-test-automation-id="search-item-joined">
+            {joinedStatusText}
+          </Joined>
         )}
       </SearchItemValueWrapper>
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}

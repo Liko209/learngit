@@ -5,4 +5,5 @@
  */
 
 import { SearchService } from './service';
+
 export { SearchService };

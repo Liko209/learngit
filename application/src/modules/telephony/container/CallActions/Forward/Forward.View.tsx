@@ -38,8 +38,7 @@ class ForwardViewComponent extends React.Component<Props> {
         disabled={shouldDisableForwardButton}
       >
         {forwardCalls &&
-          forwardCalls.map(({ phoneNumber, label }, index) => {
-            return (
+          forwardCalls.map(({ phoneNumber, label }, index) => (
               <JuiMenuItem
                 key={label}
                 onClick={this._handleClick(phoneNumber)}
@@ -47,8 +46,7 @@ class ForwardViewComponent extends React.Component<Props> {
               >
                 <JuiListItemText primary={label} secondary={phoneNumber} />
               </JuiMenuItem>
-            );
-          })}
+          ))}
         <JuiMenuItem
           onClick={directForward}
           data-test-automation-id="custom-forward"

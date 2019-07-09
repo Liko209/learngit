@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractViewModel } from '@/base';
+
 class TopBannerViewModel extends AbstractViewModel {}
 
 export { TopBannerViewModel };

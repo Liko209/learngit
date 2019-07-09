@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
-import { JuiFileWithExpand, JuiPreviewImage } from '../';
+import { JuiFileWithExpand, JuiPreviewImage } from '..';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import download from '../../../../assets/jupiter-icon/icon-download.svg';
 import image from './contemplative-reptile.jpg';
@@ -16,23 +16,23 @@ storiesOf('Pattern/ConversationCard', module).add('JuiFileWithExpand', () => {
   const expand = boolean('expand', false);
   const actions = [
     <JuiIconButton
-      key="download"
-      variant="plain"
-      tooltipTitle="download"
+      key='download'
+      variant='plain'
+      tooltipTitle='download'
       symbol={download}
     />,
   ];
   return (
     <div>
       <JuiFileWithExpand
-        icon="default_file"
+        icon='default_file'
         fileName={fileName}
         expand={expand}
         Actions={
           <div>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="download"
+              variant='plain'
+              tooltipTitle='download'
               symbol={download}
             />
           </div>
@@ -47,14 +47,14 @@ storiesOf('Pattern/ConversationCard', module).add('JuiFileWithExpand', () => {
         />
       </JuiFileWithExpand>
       <JuiFileWithExpand
-        icon="default_file"
+        icon='default_file'
         fileName={fileName}
         expand={expand}
         Actions={
           <div>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="download"
+              variant='plain'
+              tooltipTitle='download'
               symbol={download}
             />
           </div>
@@ -69,14 +69,14 @@ storiesOf('Pattern/ConversationCard', module).add('JuiFileWithExpand', () => {
         />
       </JuiFileWithExpand>
       <JuiFileWithExpand
-        icon="default_file"
+        icon='default_file'
         fileName={fileName}
         expand={expand}
         Actions={
           <div>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="download"
+              variant='plain'
+              tooltipTitle='download'
               symbol={download}
             />
           </div>
@@ -91,14 +91,14 @@ storiesOf('Pattern/ConversationCard', module).add('JuiFileWithExpand', () => {
         />
       </JuiFileWithExpand>
       <JuiFileWithExpand
-        icon="default_file"
+        icon='default_file'
         fileName={fileName}
         expand={expand}
         Actions={
           <div>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="download"
+              variant='plain'
+              tooltipTitle='download'
               symbol={download}
             />
           </div>
@@ -113,14 +113,14 @@ storiesOf('Pattern/ConversationCard', module).add('JuiFileWithExpand', () => {
         />
       </JuiFileWithExpand>
       <JuiFileWithExpand
-        icon="default_file"
+        icon='default_file'
         fileName={fileName}
         expand={expand}
         Actions={
           <div>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="download"
+              variant='plain'
+              tooltipTitle='download'
               symbol={download}
             />
           </div>

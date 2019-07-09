@@ -34,9 +34,7 @@ type CheckboxLabelProps = {
   label: string;
   handleChange(event: React.ChangeEvent<{}>, checked: boolean): void;
 };
-const CheckboxLabel = memo((props: CheckboxLabelProps) => {
-  return <CheckboxWithLabel {...props} />;
-});
+const CheckboxLabel = memo((props: CheckboxLabelProps) => <CheckboxWithLabel {...props} />);
 
 @observer
 class CheckboxWithLabel extends React.Component<CheckboxLabelProps> {

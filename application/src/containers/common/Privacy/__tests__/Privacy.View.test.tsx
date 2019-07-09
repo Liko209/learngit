@@ -15,6 +15,7 @@ import {
   JServerError,
   ERROR_CODES_SERVER,
 } from 'sdk/error';
+
 jest.mock('@/containers/Notification');
 
 const someProps = {
@@ -31,7 +32,7 @@ describe('PrivacyView', () => {
     Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
   });
   afterEach(() => {
-    jest.clearAllMocks()
+    jest.clearAllMocks();
   });
   describe('render()', () => {
     it('should display flash toast notification when change team from public to private failed. [JPT-491]', async () => {

@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 09:44:03
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -39,7 +39,7 @@ class AttachmentManagerViewComponent extends Component<
       );
     }
     return null;
-  }
+  };
 
   componentWillUnmount() {
     this.props.cleanFiles();
@@ -47,11 +47,11 @@ class AttachmentManagerViewComponent extends Component<
 
   didSelectFiles = (files: File[]) => {
     this.props.autoUploadFiles(files);
-  }
+  };
 
   directPostFiles = async (files: File[]) => {
     await this.props.autoUploadFiles(files, true, this.props.sendFilesOnlyPost);
-  }
+  };
 
   render() {
     return this._showDuplicateFilesDialogIfNeeded();

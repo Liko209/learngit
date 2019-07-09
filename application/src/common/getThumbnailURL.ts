@@ -26,6 +26,12 @@ const SQUARE_SIZE = 180;
 const DEFAULT_WIDTH = 1000;
 const DEFAULT_HEIGHT = 200;
 
+// same with dThor, just use the 2000x2000 for largest image size
+// in image viewer. I think dThor use this trick for the image-rotation bug
+// which caused by the EXIF info of image.
+// This maybe change for future.
+const LARGE_IMAGE_SIZE = 2000;
+
 function getThumbnailURL(
   item: FileItemModel,
   size: { width: number; height: number } = { width: 1000, height: 200 },
@@ -60,8 +66,8 @@ async function getThumbnailURLWithType(
     if (item.id < 0) {
       return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
     }
-    const origWidth = item.origWidth;
-    const origHeight = item.origHeight;
+    const { origWidth } = item;
+    const { origHeight } = item;
     let url = '';
     if (!item.type) {
       return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
@@ -150,19 +156,15 @@ async function getThumbnailURLWithType(
 
 function getMaxThumbnailURLInfo(item: FileItemModel) {
   if (item.thumbs && item.storeFileId) {
-    const urlKeys = Object.keys(item.thumbs).filter((key: string) =>
-      key.startsWith(`${item.storeFileId}`),
-    );
+    const urlKeys = Object.keys(item.thumbs).filter((key: string) => key.startsWith(`${item.storeFileId}`));
     // {storeFileId}[size={width}x{height}] size info is option
     const maxInfo = {
       urlKey: '',
       width: 0,
       height: 0,
     };
-    const getWidthKey = (width: number, height: number) =>
-      `width-${item.storeFileId}size=${width}x${height}`;
-    const getHeightKey = (width: number, height: number) =>
-      `height-${item.storeFileId}size=${width}x${height}`;
+    const getWidthKey = (width: number, height: number) => `width-${item.storeFileId}size=${width}x${height}`;
+    const getHeightKey = (width: number, height: number) => `height-${item.storeFileId}size=${width}x${height}`;
     const toNumber = (value: number | string) => {
       if (_.isNumber(value)) {
         return value;
@@ -201,10 +203,43 @@ function getMaxThumbnailURLInfo(item: FileItemModel) {
   };
 }
 
+async function getLargeRawImageURL(
+  item: FileItemModel,
+): Promise<string | undefined> {
+  const id = item ? item.id : 0;
+  let largeRawImageURL;
+  if (id > 0) {
+    // get from thumb first
+    largeRawImageURL = getThumbnailURL(item, {
+      width: LARGE_IMAGE_SIZE,
+      height: LARGE_IMAGE_SIZE,
+    });
+
+    // if not in thumb, get url from itemService
+    if (!largeRawImageURL) {
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
+      const url = await itemService.getThumbsUrlWithSize(
+        id,
+        LARGE_IMAGE_SIZE,
+        LARGE_IMAGE_SIZE,
+      );
+      largeRawImageURL = url;
+    }
+    if (!largeRawImageURL) {
+      largeRawImageURL = item.downloadUrl;
+    }
+  }
+
+  return largeRawImageURL;
+}
+
 export {
   getThumbnailURL,
   getMaxThumbnailURLInfo,
   getThumbnailURLWithType,
+  getLargeRawImageURL,
   IMAGE_TYPE,
   SQUARE_SIZE,
 };

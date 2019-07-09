@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from '../entity';
-import _ from 'lodash';
 import { Api } from '../../../api';
 import { PostActionController } from './implementation/PostActionController';
 import {
@@ -25,7 +24,7 @@ import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
 import { ENTITY } from '../../../service/eventKey';
 import { PostSearchManagerController } from './implementation/PostSearchManagerController';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { IGroupService } from '../../group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PostItemController } from './implementation/PostItemController';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
@@ -59,9 +58,7 @@ class PostController {
         {
           requestController,
           canSaveRemoteData: false,
-          canRequest: () => {
-            return true;
-          },
+          canRequest: () => true,
         },
       );
 
@@ -168,9 +165,7 @@ class PostController {
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
-        (entity: Post) => {
-          return `${ENTITY.POST}.${entity.group_id}`;
-        },
+        (entity: Post) => `${ENTITY.POST}.${entity.group_id}`,
       );
     }
     return this._preInsertController;

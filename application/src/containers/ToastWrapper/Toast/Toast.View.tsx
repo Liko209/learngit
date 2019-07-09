@@ -62,9 +62,9 @@ class ToastComponent extends React.Component<Props> {
     const config = { ...rest, action, message: ms };
     return (
       <JuiSnackbar
-        noFix={true}
+        noFix
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={true}
+        open
         TransitionComponent={transitionDown}
         onClose={this._onClose}
         autoHideDuration={autoHideDuration}

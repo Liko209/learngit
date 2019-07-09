@@ -9,6 +9,7 @@ import { SearchedResultData } from './types';
 import { mainLogger } from 'foundation/src';
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { EmptySearchRes } from './constants';
+
 type PostSearchCache = {
   key: string;
   handler: PostSearchHandler;
@@ -24,9 +25,7 @@ class PostSearchManagerController {
     if (this._postSearchHandlers.size >= MAX_SEARCH_CACHE) {
       const caches = Array.from(this._postSearchHandlers.values());
       const orderedCache = caches.sort(
-        (a: PostSearchCache, b: PostSearchCache) => {
-          return a.creationTime - b.creationTime;
-        },
+        (a: PostSearchCache, b: PostSearchCache) => a.creationTime - b.creationTime,
       );
 
       const toDeleteKey = orderedCache[0].key;

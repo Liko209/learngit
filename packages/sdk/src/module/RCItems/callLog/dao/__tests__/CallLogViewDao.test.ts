@@ -30,7 +30,7 @@ describe('CallLogDao', () => {
           anchorId: 'id',
         }),
       ).toEqual([]);
-      expect(viewDao.get).toBeCalled();
+      expect(viewDao.get).toHaveBeenCalled();
     });
 
     it('should return [] when can not get views', async () => {
@@ -46,8 +46,8 @@ describe('CallLogDao', () => {
           anchorId: 'id',
         }),
       ).toEqual([]);
-      expect(viewDao.get).toBeCalled();
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.get).toHaveBeenCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
     });
 
     it('should get correct call logs', async () => {
@@ -77,10 +77,10 @@ describe('CallLogDao', () => {
           anchorId: 'id',
         }),
       ).toEqual(['1', '3']);
-      expect(viewDao.get).toBeCalled();
-      expect(viewDao.createQuery).toBeCalled();
-      expect(ArrayUtils.sliceIdArray).toBeCalled();
-      expect(fetchFunc).toBeCalled();
+      expect(viewDao.get).toHaveBeenCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
+      expect(ArrayUtils.sliceIdArray).toHaveBeenCalled();
+      expect(fetchFunc).toHaveBeenCalled();
     });
   });
 
@@ -96,7 +96,7 @@ describe('CallLogDao', () => {
         .mockReturnValue({ toArray: jest.fn().mockReturnValue(views) });
 
       const sortedView = await viewDao.queryAllViews(CALL_LOG_SOURCE.ALL);
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
       expect(sortedView[0]).toEqual(views[2]);
       expect(sortedView[1]).toEqual(views[1]);
       expect(sortedView[2]).toEqual(views[0]);
@@ -113,7 +113,7 @@ describe('CallLogDao', () => {
       });
 
       expect(await viewDao.queryOldestTimestamp()).toEqual(timestamp);
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
     });
 
     it('should get empty when view is invalid', async () => {
@@ -124,7 +124,7 @@ describe('CallLogDao', () => {
       });
 
       expect(await viewDao.queryOldestTimestamp()).toEqual(null);
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
     });
   });
 
@@ -138,7 +138,7 @@ describe('CallLogDao', () => {
       });
 
       expect(await viewDao.queryNewestTimestamp()).toEqual(timestamp);
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
     });
 
     it('should get empty when view is invalid', async () => {
@@ -149,7 +149,7 @@ describe('CallLogDao', () => {
       });
 
       expect(await viewDao.queryNewestTimestamp()).toEqual(null);
-      expect(viewDao.createQuery).toBeCalled();
+      expect(viewDao.createQuery).toHaveBeenCalled();
     });
   });
 

@@ -10,7 +10,7 @@ import { ProfileMiniCardPersonViewModel } from '../Person.ViewModel';
 import { ProfileMiniCardPersonFooterProps } from './types';
 
 const ProfileMiniCardPersonFooter = buildContainer<
-  ProfileMiniCardPersonFooterProps
+ProfileMiniCardPersonFooterProps
 >({
   View: ProfileMiniCardPersonFooterView,
   ViewModel: ProfileMiniCardPersonViewModel,

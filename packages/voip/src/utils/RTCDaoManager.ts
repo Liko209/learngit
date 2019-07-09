@@ -8,6 +8,7 @@ import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCSipProvisionInfo } from '../account/types';
 import { rtcLogger } from './RTCLoggerProxy';
 import { kProvisioningInfoKey } from './constants';
+
 const LOG_TAG = 'RTCDaoMananger';
 
 class RTCDaoManager {

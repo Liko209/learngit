@@ -1,4 +1,5 @@
 import { PERMISSION_ENUM, GROUP_CAN_NOT_SHOWN_REASON } from './constants';
+
 type TeamSetting = {
   name?: string;
   description?: string;

@@ -10,7 +10,7 @@ import GroupAPI from '../../../api/glip/group';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { AccountService } from '../../../module/account';
+import { AccountService } from '../../account';
 import { mainLogger } from 'foundation';
 
 type GroupTypingParams = {

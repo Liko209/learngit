@@ -22,7 +22,9 @@ class PersonAPI extends Api {
     size: number;
     glipToken: string;
   }) {
-    const { uid, headShotVersion, size, glipToken } = headShotParam;
+    const {
+      uid, headShotVersion, size, glipToken,
+    } = headShotParam;
     return `${
       this.httpConfig.glip.cacheServer
     }/headshot/${uid}/${size}/${headShotVersion}?t=${glipToken}`;

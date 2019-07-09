@@ -11,7 +11,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, array } from '@storybook/addon-knobs';
-import { JuiSearchItemValue } from '../';
+import { JuiSearchItemValue } from '..';
 
 storiesOf('Pattern/SearchBar', module).add('JuiSearchItemValue', () => {
   const value = text('value', 'abcdefg');

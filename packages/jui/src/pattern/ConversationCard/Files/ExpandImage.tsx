@@ -44,7 +44,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
       expand: !expand,
     });
     onSwitchExpand(!expand);
-  }
+  };
 
   _Actions = moize((tooltip: string, ImageActions?: JSX.Element) => {
     if (ImageActions) {

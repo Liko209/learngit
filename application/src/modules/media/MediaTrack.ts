@@ -142,8 +142,8 @@ class MediaTrack {
       typeof options.src !== 'string'
         ? options.src || []
         : options.src
-        ? [options.src]
-        : [];
+          ? [options.src]
+          : [];
     this._muted = options.muted || false;
     this._volume =
       options.volume !== undefined && Utils.isValidVolume(options.volume)
@@ -192,7 +192,7 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-
+      /* eslint-disable no-console */
       if (!ext) {
         console.warn('No file extension was found!');
       }
@@ -232,14 +232,12 @@ class MediaTrack {
     devices: MediaDeviceType[],
     options?: { currentTime: number },
   ): Sound[] {
-    return devices.map(device => {
-      return this._createSound({
-        id: `${this._id}_${device}`,
-        outputDevice: device,
-        seek: (options && options.currentTime) || 0,
-        isDeviceSound: true,
-      });
-    });
+    return devices.map(device => this._createSound({
+      id: `${this._id}_${device}`,
+      outputDevice: device,
+      seek: (options && options.currentTime) || 0,
+      isDeviceSound: true,
+    }));
   }
 
   private _initDeviceSounds(
@@ -261,9 +259,7 @@ class MediaTrack {
     const currentUsedDevices = this._outputDevices;
     const diffDevices = Utils.difference(devices, currentUsedDevices);
 
-    const removeDevices = currentUsedDevices.filter(device =>
-      diffDevices.includes(device),
-    );
+    const removeDevices = currentUsedDevices.filter(device => diffDevices.includes(device));
     const addDevices = devices.filter(device => !!diffDevices.includes(device));
 
     this._removeDeviceSounds(removeDevices);

@@ -12,6 +12,7 @@ import {
   ScrollSearchResponse,
 } from './types';
 import { NETWORK_VIA } from 'foundation';
+
 class SearchAPI extends Api {
   static basePath = '/search';
 

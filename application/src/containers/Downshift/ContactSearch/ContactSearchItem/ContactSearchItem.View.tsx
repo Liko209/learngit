@@ -14,7 +14,9 @@ import { observer } from 'mobx-react';
 @observer
 class ContactSearchItemView extends React.Component<ViewProps> {
   render() {
-    const { person, isHighlighted, uid, ...rest } = this.props;
+    const {
+      person, isHighlighted, uid, ...rest
+    } = this.props;
     return (
       <JuiMenuItem
         {...rest}

@@ -17,7 +17,7 @@ describe('SizeMeasurer', () => {
         {({ width, height, ref }) => (
           <div
             ref={ref as any}
-            className="target"
+            className='target'
             style={{ width: 2333, height: 6666 }}
           >
             {width}x{height}

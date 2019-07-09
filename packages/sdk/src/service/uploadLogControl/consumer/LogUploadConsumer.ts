@@ -15,6 +15,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import { ILogProducer, ILogConsumer } from '../collectors';
 import { IAccessor } from './types';
 
+/* eslint-disable */
+
 const PERSISTENT_STATE = {
   INIT: 'INIT',
   NO_SURE: 'NO_SURE',
@@ -247,7 +249,7 @@ export class LogUploadConsumer implements ILogConsumer {
     this._timeoutId = setTimeout(() => {
       this._consumePersistentIfNeed();
       this._flushMemory();
-    },                           configManager.getConfig().autoFlushTimeCycle);
+    }, configManager.getConfig().autoFlushTimeCycle);
   }
 
   private _flushMemory(force?: boolean) {

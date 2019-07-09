@@ -3,6 +3,9 @@
  * @Date: 2019-06-03 13:42:21
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -56,7 +59,7 @@ class AllCallsViewComponent extends Component<Props> {
 
     return (
       <JuiEmptyPage
-        data-test-automation-id="callHistoryEmptyPage"
+        data-test-automation-id='callHistoryEmptyPage'
         image={image}
         message={message}
         height={this._height}
@@ -66,19 +69,21 @@ class AllCallsViewComponent extends Component<Props> {
 
   private _renderItems() {
     const { listHandler, resetSelectIndex, width, isHover } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: string, cellIndex: number) => {
-      return (
-        <CallLogItem
-          didOpenMiniProfile={this._didOpenMiniProfile}
-          id={itemId}
-          key={itemId}
-          onMouseLeave={resetSelectIndex}
-          isHover={isHover(cellIndex)}
-          onMouseOver={this.props.selectIndexChange(cellIndex)}
-          width={width}
-        />
-      );
-    });
+    return listHandler.sortableListStore.getIds.map(
+      (itemId: string, cellIndex: number) => {
+        return (
+          <CallLogItem
+            didOpenMiniProfile={this._didOpenMiniProfile}
+            id={itemId}
+            key={itemId}
+            onMouseLeave={resetSelectIndex}
+            isHover={isHover(cellIndex)}
+            onMouseOver={this.props.selectIndexChange(cellIndex)}
+            width={width}
+          />
+        );
+      },
+    );
   }
 
   private _didOpenMiniProfile = () => {
@@ -87,7 +92,7 @@ class AllCallsViewComponent extends Component<Props> {
         ? CallLogSourceType.All
         : CallLogSourceType.Missed;
     analyticsCollector.openMiniProfile(source);
-  }
+  };
 
   componentDidMount() {
     if (this.props.type === CallLogType.All) {
@@ -105,18 +110,18 @@ class AllCallsViewComponent extends Component<Props> {
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (
-            <DataList
-              initialDataCount={INITIAL_COUNT}
-              listHandler={listHandler}
-              reverse={true}
-              InfiniteListProps={Object.assign(this._infiniteListProps, {
-                height: this._height,
-                noRowsRenderer: this._noRowsRenderer,
-              })}
-            >
-              {this._renderItems()}
-            </DataList>
-          )}
+          <DataList
+            initialDataCount={INITIAL_COUNT}
+            listHandler={listHandler}
+            reverse={true}
+            InfiniteListProps={Object.assign(this._infiniteListProps, {
+              height: this._height,
+              noRowsRenderer: this._noRowsRenderer,
+            })}
+          >
+            {this._renderItems()}
+          </DataList>
+        )}
       </PhoneWrapper>
     );
   }

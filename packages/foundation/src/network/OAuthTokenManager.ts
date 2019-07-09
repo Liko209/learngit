@@ -6,6 +6,7 @@
 import OAuthTokenHandler from './OAuthTokenHandler';
 import Token from './Token';
 import { IHandleType } from './network';
+
 class OAuthTokenManager {
   public tokenHandlers: Map<IHandleType, OAuthTokenHandler> = new Map();
 

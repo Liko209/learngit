@@ -11,6 +11,7 @@ import { Voicemail } from '../entity';
 import { RCItemUserConfig } from '../../config';
 import { VoicemailFetchController } from './VoicemailFetchController';
 import { VoicemailBadgeController } from './VoicemailBadgeController';
+
 class VoicemailController {
   private _voicemailActionController: VoicemailActionController;
   private _voicemailFetchController: VoicemailFetchController;
