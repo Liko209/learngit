@@ -7,7 +7,7 @@ import { AbstractAccount } from '../framework';
 import { ServiceConfig } from '../module/serviceLoader';
 
 class GlipAccount extends AbstractAccount {
-  async updateSupportedServices(data: any): Promise<void> {
+  async updateSupportedServices(): Promise<void> {
     this.setSupportedServices([
       ServiceConfig.ACCOUNT_SERVICE,
       ServiceConfig.BADGE_SERVICE,

@@ -9,7 +9,6 @@
  * Do not do any DB, Network operations in this file
  */
 
-import _ from 'lodash';
 import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
 import { versionHash } from '../../../../utils/mathUtils';
 import { Markdown } from 'glipdown';

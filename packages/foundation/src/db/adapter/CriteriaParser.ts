@@ -3,8 +3,8 @@
  * @Date: 2018-05-31 13:46:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { IQuery } from './../db';
 import {
+  IQuery,
   IQueryCriteria,
   ICriteria,
   ICriteriaParser,
@@ -17,6 +17,7 @@ import {
   IFilter,
   IAnyOf,
 } from '../db';
+
 export default class CriteriaParser<T> implements ICriteriaParser<T> {
   parallels: IQuery<T>[] = [];
   offsets: number = 0;

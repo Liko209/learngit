@@ -95,7 +95,7 @@ describe('RecentCallLogsHandler', () => {
   describe('init', () => {
     it('should fetch recent call log from call log service and init private variables', async () => {
       await recentCallLogsHandler.init();
-      expect(notificationCenter.on).toBeCalledWith(
+      expect(notificationCenter.on).toHaveBeenCalledWith(
         'ENTITY.CALLLOG',
         recentCallLogsHandler.handleCallLogChanges,
       );
@@ -124,8 +124,10 @@ describe('RecentCallLogsHandler', () => {
       recentCallLogsHandler['_idListHandler'].dispose = jest.fn();
       recentCallLogsHandler.dispose();
 
-      expect(recentCallLogsHandler['_idListHandler'].dispose).toBeCalled();
-      expect(notificationCenter.off).toBeCalledWith(
+      expect(
+        recentCallLogsHandler['_idListHandler'].dispose,
+      ).toHaveBeenCalled();
+      expect(notificationCenter.off).toHaveBeenCalledWith(
         'ENTITY.CALLLOG',
         recentCallLogsHandler.handleCallLogChanges,
       );
@@ -154,7 +156,7 @@ describe('RecentCallLogsHandler', () => {
       const newIds = ['1-update', '1', '4'];
       expect(
         recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-      ).toBeCalledWith(newIds);
+      ).toHaveBeenCalledWith(newIds);
       expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
     });
 
@@ -170,7 +172,7 @@ describe('RecentCallLogsHandler', () => {
       const newIds = ['2-update', '1-update', '1', '3', '4'];
       expect(
         recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-      ).toBeCalledWith(newIds);
+      ).toHaveBeenCalledWith(newIds);
       expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
     });
 
@@ -194,7 +196,7 @@ describe('RecentCallLogsHandler', () => {
       await recentCallLogsHandler.handleCallLogChanges(payload);
       setTimeout(() => {
         const newIds = ['2', '3'];
-        expect(callLogService.fetchRecentCallLogs).toBeCalled();
+        expect(callLogService.fetchRecentCallLogs).toHaveBeenCalled();
         expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
         done();
       }, 10);
@@ -218,7 +220,7 @@ describe('RecentCallLogsHandler', () => {
       recentCallLogsHandler.handleCallLogChanges(payload);
       setTimeout(() => {
         const newIds = ['2', '3'];
-        expect(callLogService.fetchRecentCallLogs).toBeCalled();
+        expect(callLogService.fetchRecentCallLogs).toHaveBeenCalled();
         expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
         done();
       }, 10);

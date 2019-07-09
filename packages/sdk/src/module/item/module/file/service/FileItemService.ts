@@ -27,9 +27,7 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
         networkClient: Api.glipNetworkClient,
       },
     );
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE));
   }
 
   protected get fileItemController() {

@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import MuiTypography, { TypographyProps } from '@material-ui/core/Typography';
-import JuiLink, { JuiLinkProps } from '../Link';
+import { JuiLink, JuiLinkProps } from '../Link';
 
 import { grey, typography } from '../../foundation/utils/styles';
 
@@ -29,7 +29,9 @@ type Props = {
 };
 
 const JuiTextWithLink = memo((props: Props) => {
-  const { text, linkText, onClick, TypographyProps, JuiLinkProps } = props;
+  const {
+    text, linkText, onClick, TypographyProps, JuiLinkProps,
+  } = props;
   let textProps;
   if (TypographyProps) {
     const { innerRef, ...rest } = TypographyProps;

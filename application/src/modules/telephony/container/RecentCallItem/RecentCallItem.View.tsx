@@ -37,7 +37,7 @@ class RecentCallItemView extends React.Component<ViewProps> {
             caller={caller}
             isMissedCall={isMissedCall}
             direction={direction}
-            disableOpenMiniProfile={true}
+            disableOpenMiniProfile
           />
         </StyledContactWrapper>
         <StyledCallLogStatusWrapper>

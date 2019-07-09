@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
+
 export function serializeUrlParams(params: object) {
   const str: string[] = [];
 
@@ -22,7 +23,5 @@ export function omitLocalProperties(
     return data.map(item => omitLocalProperties(item));
   }
   const localDataKeys = ['id', '_delta'];
-  return _.omitBy(data, (value, key) => {
-    return key.startsWith('__') || localDataKeys.indexOf(key) >= 0;
-  });
+  return _.omitBy(data, (value, key) => key.startsWith('__') || localDataKeys.indexOf(key) >= 0);
 }

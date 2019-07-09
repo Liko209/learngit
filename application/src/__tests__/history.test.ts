@@ -44,22 +44,7 @@ describe('history', () => {
 
       expect(isSameLocation(newLocation)).toBeFalsy();
     });
-    it('should return true when search is different', () => {
-      const newLocation = {
-        hash: '#',
-      };
-      const oldLocation = {
-        pathname: '',
-        search: '',
-        hash: '',
-        key: '',
-        state: {},
-      };
-      history.location = oldLocation;
-
-      expect(isSameLocation(newLocation)).toBeFalsy();
-    });
-    it('should return true when search is different', () => {
+    it('should return true when search is hash', () => {
       const newLocation = {
         hash: '#',
       };
@@ -176,7 +161,7 @@ describe('history', () => {
       pushOrReplace(action)(newLocation);
       expect(action).toHaveBeenCalled();
     });
-    it('should be call action when location is different', () => {
+    it('should be call pathName when location is different', () => {
       const action = jest.fn();
       const location = {
         pathname: '',

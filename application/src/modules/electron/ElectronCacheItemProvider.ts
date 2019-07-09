@@ -17,7 +17,7 @@ export class ElectronCacheItemProvider implements IZipItemProvider {
     const { getIndexedDBZip, getLocalStorageZip } = window.jupiterElectron;
     const result: ZipItem[] = [];
     if (getIndexedDBZip) {
-      const indexedDbZip = (await getIndexedDBZip(location.href)) as Blob;
+      const indexedDbZip = (await getIndexedDBZip(window.location.href)) as Blob;
       result.push({
         type: '.zip',
         folder: 'ElectronCache',

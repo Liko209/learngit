@@ -12,6 +12,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { IPartialModifyController } from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
 
+/* eslint-disable */
 class PartialModifyController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number

@@ -18,7 +18,7 @@ class KeypadViewComponent extends Component<Props> {
   private _handleKeypad = async () => {
     const { keypad } = this.props;
     keypad();
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -26,7 +26,7 @@ class KeypadViewComponent extends Component<Props> {
       <JuiKeypadAction>
         <JuiIconButton
           color="grey.900"
-          disableToolTip={true}
+          disableToolTip
           onClick={this._handleKeypad}
           size="xxlarge"
         >

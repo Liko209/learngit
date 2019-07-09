@@ -67,7 +67,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   getQuoteHead = () => {
     const { userDisplayName: name, id } = this._creator;
-    // tslint:disable-next-line
+    /* eslint-disable max-len */
     const quoteHead = `<span class='mention' data-id='${id}' data-name='${name}' data-denotation-char='@'><span contenteditable='false'><span class='ql-mention-denotation-char'>@</span>${name}</span></span> wrote:<br />`;
     return quoteHead;
   }

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { useEffect, useRef, SFC, memo } from 'react';
+import React, {
+  useEffect, useRef, SFC, memo,
+} from 'react';
 import portalManager from '@/common/PortalManager';
 import { Profile, PROFILE_TYPE } from '../Profile';
 
@@ -13,6 +15,7 @@ type ProfileWrapperProps = {
   dismiss: () => void;
 };
 
+/* eslint-disable */
 const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
   const _ref = useRef<HTMLDivElement>(null);
 
@@ -35,7 +38,7 @@ const ProfileWrapper: SFC<ProfileWrapperProps> = memo(({ id, dismiss }) => {
     return () => {
       document.removeEventListener('click', _clickEventHandler);
     };
-  },        []);
+  }, []);
 
   return (
     <div ref={_ref}>

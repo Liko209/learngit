@@ -10,7 +10,9 @@ import {
   JuiOutlineTextFieldProps,
 } from '../../../components/Forms/OutlineTextField';
 import styled from '../../../foundation/styled-components';
-import { spacing, grey, typography, radius } from '../../../foundation/utils';
+import {
+  spacing, grey, typography, radius,
+} from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   display: flex;
@@ -41,7 +43,9 @@ type JuiGlobalSearchInputProps = {
 } & JuiOutlineTextFieldProps;
 
 const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
-  const { showClear, onClear, onClose, clearText, ...rest } = props;
+  const {
+    showClear, onClear, onClose, clearText, ...rest
+  } = props;
 
   const ref = useRef<JuiOutlineTextFieldRef>(null);
   const baseOnClear = () => {

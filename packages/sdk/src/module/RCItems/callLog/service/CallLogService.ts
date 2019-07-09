@@ -134,17 +134,17 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
       payload,
     );
-  }
+  };
 
   private _handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
       payload,
     );
-  }
+  };
 
   private _initBadge = async () => {
     await this.callLogController.callLogBadgeController.initializeUnreadCount();
-  }
+  };
 }
 
 export { CallLogService };

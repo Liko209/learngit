@@ -5,12 +5,9 @@
  */
 
 const Utils = {
-  isValidVolume: (vol: number) => {
-    return vol <= 1 && vol >= 0;
-  },
+  isValidVolume: (vol: number) => vol <= 1 && vol >= 0,
   intersection: (a: string[], b: string[]) => a.filter(v => b.includes(v)),
-  difference: (a: string[], b: string[]) =>
-    a.concat(b).filter(v => !a.includes(v) || !b.includes(v)),
+  difference: (a: string[], b: string[]) => a.concat(b).filter(v => !a.includes(v) || !b.includes(v)),
 };
 
 export { Utils };

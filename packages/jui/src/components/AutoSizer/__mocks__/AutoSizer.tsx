@@ -5,8 +5,6 @@
  */
 import React from 'react';
 
-const JuiAutoSizer = ({ children }: any) => {
-  return <div>{children({ width: 200, height: 200 })}</div>;
-};
+const JuiAutoSizer = ({ children }: any) => <div>{children({ width: 200, height: 200 })}</div>;
 
 export { JuiAutoSizer };

@@ -7,6 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { CreateTeamView } from '../CreateTeam.View';
 import { Notification } from '@/containers/Notification';
+
 jest.mock('@/containers/Notification');
 
 describe('CreateTeamView', () => {
@@ -74,7 +75,7 @@ describe('CreateTeamView', () => {
       ];
       Object.assign(view.state, { items });
       view.createTeam();
-      expect(mockCreate).toBeCalled();
+      expect(mockCreate).toHaveBeenCalled();
 
       const expectResult = {
         name: props.teamName,
@@ -86,7 +87,7 @@ describe('CreateTeamView', () => {
           TEAM_PIN_POST: true,
         },
       };
-      expect(mockCreate).toBeCalledWith(props.members, expectResult);
+      expect(mockCreate).toHaveBeenCalledWith(props.members, expectResult);
     });
   });
 });

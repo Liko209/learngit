@@ -271,7 +271,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   getIcon(
-    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
+    {
+      id, headshotVersion = '', headshot = '', hasHeadShot,
+    }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {

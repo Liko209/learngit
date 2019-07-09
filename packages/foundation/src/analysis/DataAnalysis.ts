@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SegAnalysisController } from './SegAnalysisController';
+
 class DataAnalysis {
   private _segAnalysis: SegAnalysisController;
   constructor() {

@@ -26,9 +26,9 @@ import { TitleType } from '../container/ViewerView/interface';
 import { Download } from '@/containers/common/Download';
 
 type Type = TitleType &
-  WithTranslation & {
-    closeViewer: () => void;
-  };
+WithTranslation & {
+  closeViewer: () => void;
+};
 
 @observer
 class ViewerTitleViewComponent extends Component<Type> {
@@ -94,10 +94,10 @@ class ViewerTitleViewComponent extends Component<Type> {
           <JuiButtonBar overlapSize={2}>
             <Download url={downloadUrl} variant="round" />
             <FileActionMenu
-              showViewInPostAction={true}
+              showViewInPostAction
               groupId={this.props.groupId}
               fileId={fileId}
-              disablePortal={true}
+              disablePortal
               variant="round"
             />
             <JuiIconButton

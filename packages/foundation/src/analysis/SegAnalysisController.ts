@@ -3,16 +3,12 @@
  * @Date: 2019-04-02 19:26:16
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { AnalysisBaseController } from './AnalysisBaseController';
 import Segment from 'load-segment';
+import { AnalysisBaseController } from './AnalysisBaseController';
 import keys from './keys.json';
 
 class SegAnalysisController extends AnalysisBaseController {
   private _segment: TSegment;
-  constructor() {
-    super();
-  }
 
   init() {
     const key = this.isProduction() ? keys.production : keys.develop;
@@ -36,10 +32,10 @@ class SegAnalysisController extends AnalysisBaseController {
   }
 
   private _addEndPoint(options: any = {}) {
-    if (options['endPoint']) {
+    if (options.endPoint) {
       return options;
     }
-    options['endPoint'] = this.getEndPoint();
+    options.endPoint = this.getEndPoint();
     return options;
   }
 }

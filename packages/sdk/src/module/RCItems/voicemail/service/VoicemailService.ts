@@ -79,7 +79,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     );
   }
 
-  async downloadTranscription(id: number): Promise<string> {
+  async downloadTranscription(): Promise<string> {
     // todo
     return 'This is transcription.';
   }
@@ -117,11 +117,11 @@ class VoicemailService extends EntityBaseService<Voicemail> {
       SYNC_DIRECTION.NEWER,
       true,
     );
-  }
+  };
 
   private _initBadge = async () => {
     await this._getVoicemailController().voicemailBadgeController.initializeUnreadCount();
-  }
+  };
 }
 
 export { VoicemailService };

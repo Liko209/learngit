@@ -43,9 +43,7 @@ function i18nP(key: string, options?: i18next.TOptions | string): string {
   if (i18next.isInitialized && hasLoadedNamespace()) {
     return i18next.t(key, options);
   }
-  return promisedComputedInternal('', async () => {
-    return await i18nT(key, options);
-  }).get();
+  return promisedComputedInternal('', async () => await i18nT(key, options)).get();
 }
 
 export type i18nTValueProps = string | Promise<string>;

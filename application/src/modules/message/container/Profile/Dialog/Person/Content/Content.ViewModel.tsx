@@ -32,16 +32,12 @@ class ProfileDialogPersonContentViewModel extends ProfileDialogPersonViewModel
 
   @computed
   get extensionNumbers() {
-    return this._phoneNumbers.filter((info: PhoneNumberInfo) => {
-      return info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER;
-    });
+    return this._phoneNumbers.filter((info: PhoneNumberInfo) => info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER);
   }
 
   @computed
   get directNumbers() {
-    const phoneNumbers = this._phoneNumbers.filter((info: PhoneNumberInfo) => {
-      return info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER;
-    });
+    const phoneNumbers = this._phoneNumbers.filter((info: PhoneNumberInfo) => info.type === PHONE_NUMBER_TYPE.DIRECT_NUMBER);
     phoneNumbers.forEach((item: PhoneNumberInfo) => {
       item.phoneNumber = formatPhoneNumber(item.phoneNumber);
     });

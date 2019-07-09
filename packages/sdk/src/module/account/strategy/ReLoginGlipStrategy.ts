@@ -15,8 +15,8 @@ class ReLoginGlipStrategy implements ITaskStrategy {
   getNext(): number {
     const index =
       this._retryIndex > MAX_RETRY_INDEX ? MAX_RETRY_INDEX : this._retryIndex;
-    const min = Math.pow(2, index);
-    const max = index === MAX_RETRY_INDEX ? 60 * 60 : Math.pow(2, index + 1);
+    const min = 2 ** index;
+    const max = index === MAX_RETRY_INDEX ? 60 * 60 : 2 ** (index + 1);
     ++this._retryIndex;
     return Math.floor(Math.random() * (max - min) + min);
   }

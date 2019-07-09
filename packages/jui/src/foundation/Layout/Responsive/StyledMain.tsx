@@ -15,8 +15,7 @@ const StyledMain = styled('div')`
   height: 100%;
   flex: 1 1 0%;
   overflow: hidden;
-  ${(props: StyledMainProps) =>
-    css`
+  ${(props: StyledMainProps) => css`
       min-width: ${props.minWidth}px;
     `};
 `;

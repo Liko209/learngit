@@ -51,9 +51,10 @@ function calcActionBarWith(buttonNumber: number) {
   );
 }
 
-const ItemCardHeader = styled.div<{
+type ItemCardProps = {
   buttonNumber: number;
-}>`
+}
+const ItemCardHeader = styled.div<ItemCardProps>`
   position: relative;
   padding: ${spacing(4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
@@ -68,12 +69,9 @@ const ItemCardHeader = styled.div<{
 
 const ItemCardContent = styled(props => (
   <JuiCardContent {...omit(props, ['hasPadding'])} />
-))<{
-  hasPadding: boolean;
-}>`
+))<{hasPadding: boolean;}>`
   &&& {
-    padding: ${({ hasPadding }) =>
-      hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0)};
+    padding: ${({ hasPadding }) => (hasPadding ? spacing(0, 4, 5, 10) : spacing(0, 0, 0, 0))};
     ${typography('body1')};
   }
 `;
@@ -105,7 +103,7 @@ type JuiConversationItemCardProps = {
 } & React.DOMAttributes<{}>;
 
 class JuiConversationItemCard extends React.PureComponent<
-  JuiConversationItemCardProps
+JuiConversationItemCardProps
 > {
   titleHandle = (e: React.MouseEvent<HTMLElement>) => {
     const { titleClick } = this.props;

@@ -3,6 +3,9 @@
  * @Date: 2019-06-24 13:52:30
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -60,7 +63,7 @@ class DeleteViewComponent extends Component<Props, State> {
         return result ? true : false;
       },
     });
-  }
+  };
 
   get _screenReader() {
     const { t } = this.props;

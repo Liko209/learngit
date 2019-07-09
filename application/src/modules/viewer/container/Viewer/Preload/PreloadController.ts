@@ -79,14 +79,14 @@ class PreloadController implements IImageDownloadedListener {
     return this._inProgressId;
   }
 
-  onSuccess(item: DownloadItemInfo, width: number, height: number): void {
+  onSuccess(item: DownloadItemInfo): void {
     this._logger.info(`onSuccess ${item.id}`);
     this._cachedIds.add(item.id);
 
     this._doNextPreload();
   }
 
-  onFailure(item: DownloadItemInfo, errorCode: number): void {
+  onFailure(item: DownloadItemInfo): void {
     this._logger.info(`onFailure ${item.id}`);
 
     this._doNextPreload();
@@ -115,9 +115,7 @@ class PreloadController implements IImageDownloadedListener {
   }
 
   private _filterOutCachedIds(itemIds: number[]) {
-    return itemIds.filter((itemId: number) => {
-      return !this._cachedIds.has(itemId);
-    });
+    return itemIds.filter((itemId: number) => !this._cachedIds.has(itemId));
   }
 
   @action

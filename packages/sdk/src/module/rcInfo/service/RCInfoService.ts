@@ -93,7 +93,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     this.getRCInfoController()
       .getRCInfoFetchController()
       .requestRCInfo();
-  }
+  };
 
   async requestRCAccountRelativeInfo() {
     await this.getRCInfoController()

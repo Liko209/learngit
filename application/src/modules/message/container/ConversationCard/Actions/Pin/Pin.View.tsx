@@ -23,20 +23,18 @@ class PinViewComponent extends Component<Props> {
     network: 'message.prompt.notAbleToUnpinForNetworkIssue',
     server: 'message.prompt.notAbleToUnpinForServerIssue',
   })
-  private _handleUnpin = () => {
-    return this._handleTogglePin();
-  }
+  private _handleUnpin = () => this._handleTogglePin()
 
   @catchError.flash({
     network: 'message.prompt.notAbleToPinForNetworkIssue',
     server: 'message.prompt.notAbleToPinForServerIssue',
   })
-  private _handlePin = () => {
-    return this._handleTogglePin();
-  }
+  private _handlePin = () => this._handleTogglePin()
 
   render() {
-    const { isPin, shouldShowPinOption, shouldDisablePinOption, t } = this.props;
+    const {
+      isPin, shouldShowPinOption, shouldDisablePinOption, t,
+    } = this.props;
     return (
       shouldShowPinOption && (
         <JuiIconButton

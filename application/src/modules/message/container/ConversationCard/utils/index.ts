@@ -1,5 +1,6 @@
 import { TypeDictionary } from 'sdk/utils';
 import PostModel from '@/store/models/Post';
+
 export function isEditable(post: PostModel) {
   const { itemTypeIds } = post;
   return !(

@@ -18,6 +18,7 @@ import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 import { AccountService } from 'sdk/module/account';
 import { SettingValue } from '../../types';
+
 class ProfileSubscribeEntityHandler<
   T extends SettingValue
 > extends AbstractSettingEntityHandler<T> {
@@ -40,9 +41,7 @@ class ProfileSubscribeEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
   }
 
   async updateValue(value: T) {

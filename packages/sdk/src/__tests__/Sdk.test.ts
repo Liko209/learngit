@@ -3,6 +3,7 @@
  * @Date: 2018-05-21 15:35:28
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable spaced-comment */
 /// <reference path="./types.d.ts" />
 import { Foundation, NetworkManager, mainLogger } from 'foundation';
 import Sdk from '../Sdk';

@@ -3,6 +3,7 @@
  * @Date: 2018-11-05 14:12:57
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { debounce } from 'lodash';
 import ReactDOM from 'react-dom';
 
@@ -41,7 +42,7 @@ function addScrollEndListener(
   const debounceCallback = debounce(() => {
     callback();
     el.removeEventListener('scroll', debounceCallback);
-  },                                SCROLL_END_DETECT_DEBOUNCE);
+  }, SCROLL_END_DETECT_DEBOUNCE);
   el.addEventListener('scroll', debounceCallback);
   // When no scroll happened, we need to callback too.
   window.requestAnimationFrame(() => debounceCallback());

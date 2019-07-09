@@ -3,6 +3,7 @@
  * @Date: 2019-05-28 16:05:06
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -28,7 +29,7 @@ class ScrollMemory extends Component<ScrollMemoryProps> {
       scrollEl.scrollTop = top;
       scrollEl.scrollLeft = left;
     }
-  }
+  };
 
   private _rememberCurrentPosition = () => {
     const scrollEl = ReactDOM.findDOMNode(this);
@@ -38,7 +39,7 @@ class ScrollMemory extends Component<ScrollMemoryProps> {
         scrollEl.scrollLeft,
       ]);
     }
-  }
+  };
 
   render() {
     return <div style={{ display: 'none' }} />;

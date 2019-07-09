@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AUTH_KEYS } from './configKeys';
-import { UserConfig } from '../../../module/config';
+import { UserConfig } from '../../config';
 import { AccountGlobalConfig } from './AccountGlobalConfig';
 
 class AuthUserConfig extends UserConfig {

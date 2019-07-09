@@ -3,7 +3,7 @@
  * @Date: 2018-12-06 13:12:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { Listener } from 'eventemitter2';
 import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
@@ -31,7 +31,6 @@ import {
   RTC_NETWORK_STATE,
   RTC_SLEEP_MODE_EVENT,
 } from '../utils/types';
-import { Listener } from 'eventemitter2';
 
 const LOG_TAG = 'RTCAccount';
 

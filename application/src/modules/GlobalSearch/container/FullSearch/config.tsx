@@ -7,6 +7,7 @@ import React from 'react';
 import { ContentSearchResult } from '../ContentSearchResult';
 import { ListSearchResult } from '../ListSearchResult';
 import { TAB_TYPE } from './types';
+
 type TabProps = {
   isShow: boolean;
 };

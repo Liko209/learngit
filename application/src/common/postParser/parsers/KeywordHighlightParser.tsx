@@ -3,6 +3,8 @@
  * @Date: 2019-05-24 15:34:56
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import React from 'react';
 import {
   IPostParser,

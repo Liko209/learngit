@@ -166,9 +166,7 @@ class AccountService extends AbstractService
   async getRCToken() {
     let rcToken = this.authUserConfig.getRCToken();
     if (rcToken && this._isRCTokenExpired(rcToken)) {
-      rcToken = await this.refreshRCToken().catch((reason: JError) => {
-        return null;
-      });
+      rcToken = await this.refreshRCToken().catch(() => null);
     }
 
     return rcToken;
@@ -216,7 +214,7 @@ class AccountService extends AbstractService
   onGlipForceLogout = (forceLogout: boolean) => {
     mainLogger.tags(LOG_TAG).info('Glip force logout:', forceLogout);
     this.onForceLogout(forceLogout);
-  }
+  };
 
   onForceLogout(forceLogout: boolean) {
     if (forceLogout) {

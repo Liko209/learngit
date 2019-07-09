@@ -20,8 +20,8 @@ type BodyProps = {
   fields?: IFieldProps[];
   image_url?: string;
 } & AuthorProps &
-  TitleProps &
-  FooterProps;
+TitleProps &
+FooterProps;
 
 const Wrapper = styled.div`
   display: flex;

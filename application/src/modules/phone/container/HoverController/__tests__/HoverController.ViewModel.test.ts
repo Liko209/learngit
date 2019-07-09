@@ -36,7 +36,9 @@ describe('HoverController', () => {
 
   @testable
   class setSelectIndex {
-    @test('should setSelectIndex set selectIndex correct when call setSelectIndex')
+    @test(
+      'should setSelectIndex set selectIndex correct when call setSelectIndex',
+    )
     t1() {
       arr.forEach(vm.updateCacheIndex);
       expect(vm.selectIndex).toEqual(DefaultIndexPath);
@@ -47,7 +49,9 @@ describe('HoverController', () => {
 
   @testable
   class resetSelectIndex {
-    @test(`should selectIndex be ${InvalidIndexPath} when call resetSelectIndex`)
+    @test(
+      `should selectIndex be ${InvalidIndexPath} when call resetSelectIndex`,
+    )
     t1() {
       arr.forEach(vm.updateCacheIndex);
       vm.setSelectIndex(arr[0]);
@@ -59,7 +63,9 @@ describe('HoverController', () => {
 
   @testable
   class setSelectIndexToDefault {
-    @test(`should selectIndex be ${DefaultIndexPath} when call setSelectIndexToDefault`)
+    @test(
+      `should selectIndex be ${DefaultIndexPath} when call setSelectIndexToDefault`,
+    )
     t1() {
       arr.forEach(vm.updateCacheIndex);
       vm.setSelectIndex(arr[0]);

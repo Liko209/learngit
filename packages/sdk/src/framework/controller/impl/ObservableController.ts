@@ -14,9 +14,7 @@ class ObservableController<T> implements IObservableController<T> {
   }
 
   removeObserver(observer: T) {
-    this._observers = this._observers.filter((value: T) => {
-      return observer !== value;
-    });
+    this._observers = this._observers.filter((value: T) => observer !== value);
   }
 
   notifyObserver4Changes(notifyFunc: (observer: T) => void) {

@@ -34,4 +34,6 @@ const predefinedTime = [
 const filterCharacters = '~@#$%^&*()_+{}[]|<>/';
 const wordsLimitation = 100;
 
-export { predefinedMessage, predefinedTime, filterCharacters, wordsLimitation };
+export {
+  predefinedMessage, predefinedTime, filterCharacters, wordsLimitation,
+};

@@ -47,7 +47,7 @@ class HomeModule extends AbstractModule {
         throw err;
       }
     }
-  }
+  };
 
   addAsyncModuleOnInitializedListener() {
     if (this._homeService.hasModules(['message', 'telephony'])) {

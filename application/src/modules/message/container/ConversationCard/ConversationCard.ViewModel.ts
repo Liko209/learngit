@@ -96,9 +96,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get integrationItems() {
     if (this.post.itemIds) {
-      return this.post.itemIds.filter((id: number) =>
-        GlipTypeUtil.isIntegrationType(id),
-      );
+      return this.post.itemIds.filter((id: number) => GlipTypeUtil.isIntegrationType(id));
     }
     return [];
   }

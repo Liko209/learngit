@@ -36,7 +36,6 @@ class ProfileActionController {
 
     const preHandlePartial = (
       partialModel: Partial<Raw<Profile>>,
-      originalModel: Profile,
     ): Partial<Raw<Profile>> => {
       // const favIds = originalModel.favorite_group_ids || [];
       const newFavIds = this._reorderFavoriteGroupIds(
@@ -51,9 +50,7 @@ class ProfileActionController {
     return this.partialModifyController.updatePartially(
       profileId,
       preHandlePartial,
-      async (newProfile: Profile) => {
-        return this.requestController.put(newProfile);
-      },
+      async (newProfile: Profile) => this.requestController.put(newProfile),
     );
   }
 
@@ -69,10 +66,8 @@ class ProfileActionController {
         if (newIds.indexOf(groupId) === -1) {
           newIds = [groupId].concat(newIds);
         }
-      } else {
-        if (newIds.indexOf(groupId) !== -1) {
-          newIds = newIds.filter((id: number) => id !== groupId);
-        }
+      } else if (newIds.indexOf(groupId) !== -1) {
+        newIds = newIds.filter((id: number) => id !== groupId);
       }
       partialModel['favorite_group_ids'] = newIds;
       return partialModel;
@@ -81,9 +76,7 @@ class ProfileActionController {
     return this.partialModifyController.updatePartially(
       profileId,
       preHandlePartial,
-      async (newProfile: Profile) => {
-        return this.requestController.put(newProfile);
-      },
+      async (newProfile: Profile) => this.requestController.put(newProfile),
     );
   }
 
@@ -123,9 +116,7 @@ class ProfileActionController {
       return this.partialModifyController.updatePartially(
         profileId,
         preHandlePartial,
-        async (newProfile: Profile) => {
-          return this.requestController.put(newProfile);
-        },
+        async (newProfile: Profile) => this.requestController.put(newProfile),
       );
     }
     return null;
@@ -156,7 +147,6 @@ class ProfileActionController {
 
       const preHandlePartial = (
         partialModel: Partial<Raw<Profile>>,
-        originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         if (toBook) {
           oldFavPostIds.unshift(postId);
@@ -170,9 +160,7 @@ class ProfileActionController {
       return await this.partialModifyController.updatePartially(
         this.profileDataController.getCurrentProfileId(),
         preHandlePartial,
-        async (newProfile: Profile) => {
-          return this.requestController.put(newProfile);
-        },
+        async (newProfile: Profile) => this.requestController.put(newProfile),
       );
     }
     return null;
@@ -193,9 +181,7 @@ class ProfileActionController {
     return this.partialModifyController.updatePartially(
       this.profileDataController.getCurrentProfileId(),
       preHandlePartial,
-      async (newProfile: Profile) => {
-        return this.requestController.put(newProfile);
-      },
+      async (newProfile: Profile) => this.requestController.put(newProfile),
     );
   }
 
@@ -237,9 +223,7 @@ class ProfileActionController {
     return this.partialModifyController.updatePartially(
       this.profileDataController.getCurrentProfileId(),
       preHandlePartial,
-      async (newProfile: Profile) => {
-        return this.requestController.put(newProfile);
-      },
+      async (newProfile: Profile) => this.requestController.put(newProfile),
     );
   }
 
@@ -267,9 +251,7 @@ class ProfileActionController {
     return this.partialModifyController.updatePartially(
       this.profileDataController.getCurrentProfileId(),
       preHandlePartial,
-      async (newProfile: Profile) => {
-        return this.requestController.put(newProfile);
-      },
+      async (newProfile: Profile) => this.requestController.put(newProfile),
     );
   }
 

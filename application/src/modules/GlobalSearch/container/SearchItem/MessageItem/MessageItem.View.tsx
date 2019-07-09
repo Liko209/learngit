@@ -3,6 +3,8 @@
  * @Date: 2019-01-30 14:38:03
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -13,7 +15,7 @@ import { ViewProps } from './types';
 
 @observer
 class MessageItemComponent extends React.Component<
-ViewProps & WithTranslation
+  ViewProps & WithTranslation
 > {
   render() {
     const {
@@ -36,12 +38,13 @@ ViewProps & WithTranslation
         hovered={hovered}
         onClick={onClick}
         Avatar={
-          <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
+          <JuiIconography iconSize='medium' iconColor={['grey', '500']}>
             history
-          </JuiIconography>}
+          </JuiIconography>
+        }
         value={groupName.get()}
         terms={terms}
-        data-test-automation-id="search-message-item"
+        data-test-automation-id='search-message-item'
         data-id={groupId}
         joinedStatusText={t('people.team.joinedStatus')}
       />

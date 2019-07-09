@@ -49,8 +49,8 @@ abstract class RCItemSyncController<
 
   handleNotification = async () => {
     await this.doSync(true, SYNC_DIRECTION.NEWER);
-  }
-
+  };
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean {
     return true;
   }

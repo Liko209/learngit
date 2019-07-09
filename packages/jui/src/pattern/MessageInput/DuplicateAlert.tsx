@@ -73,6 +73,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
     createText,
   } = props;
   const showDuplicateFiles = duplicateFileNames.length > 0;
+  /* eslint-disable react/no-array-index-key */
   if (showDuplicateFiles) {
     const content = (
       <Content data-test-automation-id="messageinput-duplicate-modal-title">
@@ -93,7 +94,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           onClick={onCancel}
           color="primary"
           variant="text"
-          autoFocus={true}
+          autoFocus
           data-test-automation-id="messageinput-duplicate-cancel-button"
         >
           {cancelText}
@@ -102,7 +103,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           onClick={onUpdate}
           color="primary"
           variant="contained"
-          autoFocus={true}
+          autoFocus
           data-test-automation-id="messageinput-duplicate-update-button"
         >
           {updateText}
@@ -111,7 +112,7 @@ const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
           onClick={onCreate}
           color="primary"
           variant="contained"
-          autoFocus={true}
+          autoFocus
           data-test-automation-id="messageinput-duplicate-create-button"
         >
           {createText}

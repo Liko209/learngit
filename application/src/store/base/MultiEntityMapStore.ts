@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
+import {
+  onBecomeObserved, onBecomeUnobserved, action, observable,
+} from 'mobx';
 import { service, mainLogger } from 'sdk';
 import { IdModel, ModelIdType, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
@@ -13,7 +15,7 @@ import { EntityBaseService } from 'sdk/framework/service';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
-
+/* eslint-disable */
 export default class MultiEntityMapStore<
   T extends IdModel<IdType>,
   K extends Entity<IdType>,
@@ -187,7 +189,7 @@ export default class MultiEntityMapStore<
   remove(id: IdType) {
     setTimeout(() => {
       delete this._data[id];
-    },         0);
+    }, 0);
   }
 
   @action
@@ -196,7 +198,7 @@ export default class MultiEntityMapStore<
       ids.forEach((id: IdType) => {
         delete this._data[id];
       });
-    },         0);
+    }, 0);
   }
 
   @action
@@ -366,7 +368,7 @@ export default class MultiEntityMapStore<
       diffKeys.forEach((id: IdType) => {
         delete this._data[id];
       });
-    },         100);
+    }, 100);
   }
 
   private _getIsHidden() {

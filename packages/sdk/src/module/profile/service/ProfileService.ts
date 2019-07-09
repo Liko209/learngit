@@ -40,9 +40,7 @@ class ProfileService extends EntityBaseService<Profile>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE));
   }
 
   protected onStarted() {
@@ -71,13 +69,13 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source, changeMap);
-  }
+  };
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()
       .getProfileActionController()
       .handleGroupIncomesNewPost(groupIds);
-  }
+  };
 
   getProfileController(): ProfileController {
     if (!this.profileController) {

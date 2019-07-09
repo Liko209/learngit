@@ -11,6 +11,6 @@ type ElectronUpgradeBannerProps = {
 };
 
 type ElectronUpgradeBannerViewProps = WithTranslation &
-  ElectronUpgradeBannerProps & {};
+ElectronUpgradeBannerProps & {};
 
 export { ElectronUpgradeBannerProps, ElectronUpgradeBannerViewProps };

@@ -19,16 +19,16 @@ import { ISortableModel } from './types';
 const LOG_TAG = 'FetchPostDataListHandler';
 
 class FetchPostDataListHandler extends FetchSortableDataListHandler<
-  Post,
-  number
+Post,
+number
 > {
   constructor(
     dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
     groupId: number,
     listStore: SortableListStore<
-      number,
-      ISortableModel
+    number,
+    ISortableModel
     > = new SortableListStore(options.sortFunc),
   ) {
     super(dataProvider, options, listStore);

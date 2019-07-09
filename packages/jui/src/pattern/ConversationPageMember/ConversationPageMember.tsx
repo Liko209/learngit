@@ -3,7 +3,7 @@
  * @Date: 2019-05-09 09:53:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { RuiTooltip } from 'rcui/components/Tooltip';
@@ -25,8 +25,7 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   align-items: center;
   border: none;
   padding: 0;
-  height: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size] * 2)({ theme })};
+  height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
   cursor: pointer;
@@ -41,10 +40,10 @@ const StyledConversationPageMember = styled.button<MemberProps>`
 
   :hover {
     color: ${({
-      theme: {
-        palette: { tonalOffset, grey },
-      },
-    }) => darken(grey['500'], tonalOffset)};
+    theme: {
+      palette: { tonalOffset, grey },
+    },
+  }) => darken(grey['500'], tonalOffset)};
   }
 
   > span {
@@ -52,11 +51,18 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   }
 `;
 
-class JuiConversationPageMember extends React.Component<
-  JuiConversationPageMemberProps
+class JuiConversationPageMember extends PureComponent<
+JuiConversationPageMemberProps
 > {
   render() {
-    const { onClick, ariaLabel, title, children, size, automationId } = this.props;
+    const {
+      onClick,
+      ariaLabel,
+      title,
+      children,
+      size,
+      automationId,
+    } = this.props;
 
     return (
       <RuiTooltip title={title}>

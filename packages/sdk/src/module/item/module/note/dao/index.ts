@@ -5,4 +5,5 @@
  */
 
 import { NoteItemDao } from './NoteItemDao';
+
 export { NoteItemDao };

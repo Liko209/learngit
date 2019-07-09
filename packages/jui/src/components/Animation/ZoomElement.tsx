@@ -20,7 +20,7 @@ type ZoomElementProps = {
 
 type Status = 'mounted' | 'entered' | 'exited';
 class ZoomElementAnimation extends React.PureComponent<
-  ZoomElementProps & ThemeProps
+ZoomElementProps & ThemeProps
 > {
   state = {
     status: 'mounted' as Status,
@@ -37,16 +37,18 @@ class ZoomElementAnimation extends React.PureComponent<
         targetElement.style.cssText = '';
       }
       onEntered && onEntered();
-    },         theme.transitions.duration[duration]);
+    }, theme.transitions.duration[duration]);
     this.setState({ status: 'entered' });
   }
 
   handleExited = () => {
-    const { onExited, theme, duration, originalElement } = this.props;
+    const {
+      onExited, theme, duration, originalElement,
+    } = this.props;
     setTimeout(() => {
       originalElement && (originalElement.style.visibility = 'visible');
       onExited && onExited();
-    },         theme.transitions.duration[duration]);
+    }, theme.transitions.duration[duration]);
     this.setState({ status: 'exited' });
   }
 
@@ -141,10 +143,10 @@ class ZoomElementAnimation extends React.PureComponent<
         originalElement!.style.visibility = 'hidden';
         targetElement.style.cssText = `
             ${this._computeCssTransform(
-              startPosition,
-              endPosition,
-              targetElement,
-            )};
+    startPosition,
+    endPosition,
+    targetElement,
+  )};
             ${this._getTransition()}
          `;
       });

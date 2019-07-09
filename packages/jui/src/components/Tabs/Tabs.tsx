@@ -115,9 +115,7 @@ class JuiTabs extends PureComponent<Props, States> {
   componentWillReceiveProps(nextProps: Props) {
     const { children } = nextProps;
     const newTabTitles: (string | JSX.Element)[] = [];
-    Children.map(children, (child: ReactElement<JuiTabProps>) => {
-      return newTabTitles.push(child.props.title);
-    });
+    Children.map(children, (child: ReactElement<JuiTabProps>) => newTabTitles.push(child.props.title));
     // force update after i18n ready
     if (difference(newTabTitles, this._tabTitles).length !== 0) {
       this._moreWidth = 0;
@@ -125,15 +123,7 @@ class JuiTabs extends PureComponent<Props, States> {
       this.setState({ remeasure: true });
     }
   }
-
-  private _measureMoreWidth = () => {
-    const domMore = this._moreRef.current;
-    if (domMore) {
-      this._moreWidth = domMore.getBoundingClientRect().width;
-    }
-    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
-  }
-
+  /* eslint-disable */
   private _measureContainerWidth = () => {
     const domContainer = this._containerRef.current;
     if (domContainer) {
@@ -145,7 +135,7 @@ class JuiTabs extends PureComponent<Props, States> {
       this._containerWidth = domContainer.offsetWidth - paddingX - borderX;
     }
     // console.log('tabs', `_containerWidth: ${this._containerWidth}`);
-  }
+  };
 
   private _measureTabWidths = () => {
     this._tabWidthsTotal = 0;
@@ -159,7 +149,7 @@ class JuiTabs extends PureComponent<Props, States> {
     });
     // console.log('tabs', `_tabWidths: ${this._tabWidths}`);
     // console.log('tabs', `_tabWidthsTotal: ${this._tabWidthsTotal}`);
-  }
+  };
 
   private _calculateIndexTabsAndIndexMenus = () => {
     const { indexSelected } = this.state; // current selected tab index
@@ -197,14 +187,14 @@ class JuiTabs extends PureComponent<Props, States> {
       indexMenus,
       indexTabs,
     });
-  }
+  };
 
   private _handleChangeTab = (event: MouseEvent, indexSelected: number) => {
     if (indexSelected === MORE) {
       return;
     }
     this._setSelectedTabIndex(indexSelected);
-  }
+  };
 
   private _showMenuList = (evt: MouseEvent) => {
     const { currentTarget } = evt;
@@ -212,17 +202,17 @@ class JuiTabs extends PureComponent<Props, States> {
       anchorEl: currentTarget,
       openMenu: !state.openMenu,
     }));
-  }
+  };
 
   private _hideMenuList = () => {
     this.setState({
       openMenu: false,
     });
-  }
+  };
 
   private _handleMenuItemClick = (index: number, event: MouseEvent) => {
     this._setSelectedTabIndex(index);
-  }
+  };
 
   private _setSelectedTabIndex = (indexSelected: number) => {
     let { indexLazyLoadComponents } = this.state;
@@ -235,21 +225,21 @@ class JuiTabs extends PureComponent<Props, States> {
       this._setLocalSelectedIndex(indexSelected);
     }
     onChangeTab && onChangeTab(indexSelected);
-  }
+  };
 
   private _getLocalKey = () => {
     const { tag } = this.props;
     return `tabs-${tag}`;
-  }
+  };
 
   private _getLocalSelectedIndex = () => {
     const value = localStorage.getItem(this._getLocalKey());
     return Number(value) || 0;
-  }
+  };
 
   private _setLocalSelectedIndex = (index: number) => {
     return localStorage.setItem(this._getLocalKey(), String(index));
-  }
+  };
 
   private _renderMoreAndMenu = () => {
     const { indexMenus, openMenu, anchorEl } = this.state;
@@ -259,7 +249,7 @@ class JuiTabs extends PureComponent<Props, States> {
     return (
       <JuiPopperMenu
         Anchor={this._renderMore}
-        placement="bottom-start"
+        placement='bottom-start'
         open={openMenu}
         value={MORE}
         key={MORE}
@@ -281,7 +271,7 @@ class JuiTabs extends PureComponent<Props, States> {
         </JuiMenuList>
       </JuiPopperMenu>
     );
-  }
+  };
 
   private _renderMore = ({ tooltipForceHide }: AnchorProps) => {
     const { tag, moreText } = this.props;
@@ -297,7 +287,7 @@ class JuiTabs extends PureComponent<Props, States> {
       ref: this._moreRef,
       automationId: `${tag}-more`,
     });
-  }
+  };
 
   private _renderForShow = () => {
     const { indexTabs } = this.state;
@@ -313,7 +303,7 @@ class JuiTabs extends PureComponent<Props, States> {
       tabs.push(tabMoreAndMenu);
     }
     return tabs;
-  }
+  };
 
   private _renderStyledTab = ({
     value,
@@ -337,7 +327,7 @@ class JuiTabs extends PureComponent<Props, States> {
         ref={ref}
       />
     );
-  }
+  };
 
   private _renderForMeasure = () => {
     const { children } = this.props;
@@ -353,7 +343,7 @@ class JuiTabs extends PureComponent<Props, States> {
     );
     tabs.push(this._renderMore({ tooltipForceHide: false })); // add more tab
     return tabs;
-  }
+  };
 
   componentDidUpdate(prevProps: Props, prevState: States) {
     const { indexTabs, indexSelected, remeasure } = this.state;
@@ -386,6 +376,13 @@ class JuiTabs extends PureComponent<Props, States> {
       this.setState({ remeasure: false });
     }
   }
+  private _measureMoreWidth = () => {
+    const domMore = this._moreRef.current;
+    if (domMore) {
+      this._moreWidth = domMore.getBoundingClientRect().width;
+    }
+    // console.log('tabs', `_moreWidth: ${this._moreWidth}`);
+  };
 
   renderContainers = () => {
     const { children } = this.props;
@@ -408,7 +405,7 @@ class JuiTabs extends PureComponent<Props, States> {
         );
       },
     );
-  }
+  };
 
   renderTabs = () => {
     const { position, forceFlex } = this.props;
@@ -431,15 +428,15 @@ class JuiTabs extends PureComponent<Props, States> {
         position={position}
         value={index}
         onChange={this._handleChangeTab}
-        indicatorColor="primary"
-        textColor="primary"
+        indicatorColor='primary'
+        textColor='primary'
         classes={CLASSES.tabs}
         ref={this._containerRef}
       >
         {measure ? this._renderForMeasure() : this._renderForShow()}
       </StyledTabs>
     );
-  }
+  };
 
   render() {
     return (

@@ -16,7 +16,7 @@ import {
 } from '../entity';
 
 import { ContactType } from '../types';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE } from '../../sync/types';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 
 interface IPersonService {

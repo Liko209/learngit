@@ -6,6 +6,7 @@
 
 import { JError } from 'foundation';
 import { ERROR_TYPES } from '../types';
+
 export class JRCError extends JError {
   constructor(
     code: string,

@@ -105,12 +105,8 @@ export default class PostModel extends Base<Post> {
             };
         }
       })
-      .filter((item: any) => {
-        return !item.deactivated;
-      })
-      .map((item: any) => {
-        return item.id;
-      });
+      .filter((item: any) => !item.deactivated)
+      .map((item: any) => item.id);
   }
 
   @computed

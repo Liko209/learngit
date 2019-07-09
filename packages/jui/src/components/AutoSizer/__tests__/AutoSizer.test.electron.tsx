@@ -32,7 +32,7 @@ describe('AutoSizer', () => {
       <div style={{ width: 233, height: 666 }}>
         <JuiAutoSizer>
           {({ width, height }) => (
-            <div className="child">
+            <div className='child'>
               {width}x{height}
             </div>
           )}
@@ -49,7 +49,7 @@ describe('AutoSizer', () => {
       <div style={{ width: 233, minHeight: 666 }}>
         <JuiAutoSizer>
           {({ width, height }) => (
-            <div className="child">
+            <div className='child'>
               {width}x{height}
             </div>
           )}
@@ -66,7 +66,7 @@ describe('AutoSizer', () => {
       <div style={{ width: 233, maxHeight: 100 }}>
         <JuiAutoSizer>
           {({ width, height }) => (
-            <div className="child" style={{ height: 99999 }}>
+            <div className='child' style={{ height: 99999 }}>
               {width}x{height}
             </div>
           )}
@@ -83,7 +83,7 @@ describe('AutoSizer', () => {
       <div style={{ width: 233, maxHeight: '50%' }}>
         <JuiAutoSizer>
           {({ width, height }) => (
-            <div className="child" style={{ height: 99999 }}>
+            <div className='child' style={{ height: 99999 }}>
               {width}x{height}
             </div>
           )}

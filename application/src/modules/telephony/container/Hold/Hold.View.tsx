@@ -31,7 +31,7 @@ class HoldViewComponent extends Component<Props> {
       <JuiKeypadAction>
         <JuiIconButton
           color={held ? 'primary.600' : 'grey.900'}
-          disableToolTip={true}
+          disableToolTip
           onClick={this._handleHold}
           size="xxlarge"
           disabled={disabled}

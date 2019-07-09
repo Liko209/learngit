@@ -16,8 +16,6 @@ const StyledDialogContentText = styled(MuiDialogContentText)`
   overflow-wrap: break-word;
 `;
 
-const JuiDialogContentText = memo((props: JuiDialogContentTextProps) => {
-  return <StyledDialogContentText {...props} />;
-});
+const JuiDialogContentText = memo((props: JuiDialogContentTextProps) => <StyledDialogContentText {...props} />);
 
 export { JuiDialogContentText };

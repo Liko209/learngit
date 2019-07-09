@@ -37,16 +37,14 @@ const marquee = keyframes`
 const StyledNode = styled.span<NodeProps>`
   display: inline-block;
   text-indent: 0;
-  ${({ overflowWidth, time }) =>
-    overflowWidth > 0
-      ? css`
+  ${({ overflowWidth, time }) => (overflowWidth > 0
+    ? css`
           padding-left: 100%;
           animation: ${marquee} ${time}s linear infinite;
         `
-      : ''}
+    : '')}
   &:hover {
-    ${({ overflowWidth, hoverToStop }) =>
-      hoverToStop && overflowWidth > 0 ? 'animation-play-state: paused;' : ''};
+    ${({ overflowWidth, hoverToStop }) => (hoverToStop && overflowWidth > 0 ? 'animation-play-state: paused;' : '')};
   }
 `;
 
@@ -73,7 +71,9 @@ class JuiMarquee extends PureComponent<Props> {
 
   render() {
     const { overflowWidth } = this.state;
-    const { hoverToStop, time, text, className } = this.props;
+    const {
+      hoverToStop, time, text, className,
+    } = this.props;
     return (
       <StyledContainer className={className} ref={this.containerRef}>
         <StyledNode

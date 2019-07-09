@@ -90,7 +90,7 @@ class IconList extends React.Component {
   getIconList(svgData: string) {
     const re = /<title>(.+?)<\/title>/g;
     const matches: any = [];
-    svgData.replace(re, function (m: any, p1: any) {
+    svgData.replace(re, function(m: any, p1: any) {
       matches.push(p1);
     } as any);
     return matches;
@@ -159,7 +159,7 @@ class IconList extends React.Component {
           ))}
         </StyledList>
         <script
-          defer={true}
+          defer
           src={`https://i.icomoon.io/public/6483cc0f53/Jupiter/svgxuse-s3.js?${Math.random()}`}
         />
       </div>

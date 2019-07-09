@@ -8,7 +8,7 @@ import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { ENTITY_NAME } from '@/store';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { when } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
@@ -536,7 +536,7 @@ describe('ContactInfoViewModel', () => {
         async () => {
           expect(
             await personService.matchContactByPhoneNumber,
-          ).toHaveBeenCalledWith('+123', ContactType.GLIP_CONTACT);
+          ).toHaveBeenCalledWith('+123');
           expect(vm.personId).toBe(1);
           done();
         },
@@ -561,7 +561,7 @@ describe('ContactInfoViewModel', () => {
         async () => {
           expect(
             await personService.matchContactByPhoneNumber,
-          ).toHaveBeenCalledWith('101', ContactType.GLIP_CONTACT);
+          ).toHaveBeenCalledWith('101');
           expect(vm.personId).toBeUndefined();
           done();
         },

@@ -92,6 +92,7 @@ class Http extends BaseClient {
         let statusText: string = '';
         let responseHeaders: any;
         let retryAfter = 0;
+        /*eslint-disable */
         if (isAxiosError(err)) {
           const { response, message, code } = err;
           networkLogger.info('axios error: ', { message, code });

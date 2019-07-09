@@ -6,7 +6,6 @@
 import { DateFormatter } from '../utils/DateFormatter';
 
 export class SessionManager {
-  private constructor() {}
   private static _instance: SessionManager;
   static getInstance() {
     if (!SessionManager._instance) {
