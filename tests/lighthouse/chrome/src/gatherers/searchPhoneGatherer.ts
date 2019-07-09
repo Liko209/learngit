@@ -2,11 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { DialerPage } from "../pages";
 import { Config } from "../config";
+import * as bluebird from "bluebird";
 
-class SearchPhoneGatherer extends BaseGatherer {
+class SearchPhoneGatherer extends DebugGatherer {
   private keywords: Array<string>;
   private metricKeys: Array<string> = [
     'search_phone_number',
