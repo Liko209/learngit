@@ -665,7 +665,8 @@
       "record": "Record the call",
       "stopRecord": "Stop recording",
       "minimize": "Minimize the dialog",
-      "callActions": "Call actions"
+      "callActions": "Call actions",
+      "recentCall": "Show recent calls"
     },
     "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
