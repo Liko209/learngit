@@ -5,12 +5,7 @@
  */
 import { Base64 } from 'js-base64';
 import {
-  IToken,
-  IRequest,
-  IHandleType,
-  NETWORK_VIA,
-  NETWORK_HANDLE_TYPE,
-  ITokenHandler,
+  IToken, IRequest, IHandleType, NETWORK_VIA, NETWORK_HANDLE_TYPE, ITokenHandler
 } from './network';
 
 abstract class AbstractHandleType implements IHandleType {
@@ -26,14 +21,11 @@ abstract class AbstractHandleType implements IHandleType {
     });
   }
 
-  checkServerStatus = (
-    callback: (success: boolean, interval: number) => void,
-  ) => {
+  checkServerStatus = (callback: (success: boolean, interval: number) => void) => {
     callback(true, 0);
-  }
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  onRefreshTokenFailure = (forceLogout: boolean) => {
   };
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  onRefreshTokenFailure = (forceLogout: boolean) => {};
 
   basic() {
     return '';

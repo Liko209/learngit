@@ -325,6 +325,10 @@ export class GroupActionController {
     if (_.isEmpty(ids)) {
       return;
     }
+    mainLogger
+      .tags('GroupActionController')
+      .info(`delete groups ${ids} shouldNotify:${shouldNotify}`);
+
     const dao = daoManager.getDao(GroupDao);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
@@ -336,6 +340,7 @@ export class GroupActionController {
     if (!ids || !ids.length) {
       return;
     }
+    mainLogger.tags('GroupActionController').info(`delete teams ${ids}`);
     const postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     );

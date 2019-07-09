@@ -6,4 +6,5 @@
 
 export const CONFIG_KEYS = {
   ENV: 'ENV',
+  DISABLE_LD: 'DISABLE_LD',
 };

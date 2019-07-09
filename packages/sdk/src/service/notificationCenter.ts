@@ -11,23 +11,15 @@ export type NotificationEntityIds<IdType extends ModelIdType = number> = {
   ids: IdType[];
 };
 
-export type NotificationEntityBody<T, IdType extends ModelIdType = number> = NotificationEntityIds<
-IdType
-> & {
+export type NotificationEntityBody<T, IdType extends ModelIdType = number> = NotificationEntityIds<IdType> & {
   entities: Map<IdType, T>;
 };
 
-export type NotificationEntityUpdateBody<
-  T,
-  IdType extends ModelIdType = number
-> = NotificationEntityBody<T, IdType> & {
+export type NotificationEntityUpdateBody<T, IdType extends ModelIdType = number> = NotificationEntityBody<T, IdType> & {
   partials?: Map<IdType, Partial<Raw<T>>>;
 };
 
-export type NotificationEntityReplaceBody<
-  T,
-  IdType extends ModelIdType = number
-> = NotificationEntityBody<T, IdType> & {
+export type NotificationEntityReplaceBody<T, IdType extends ModelIdType = number> = NotificationEntityBody<T, IdType> & {
   isReplaceAll: boolean;
 };
 
@@ -69,9 +61,7 @@ export type NotificationEntityPayload<T, IdType extends ModelIdType = number> =
  * transform array to map structure
  * @param {array} entities
  */
-const transform2Map = <T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-  entities: T[],
-): Map<IdType, T> => {
+const transform2Map = <T extends IdModel<IdType>, IdType extends ModelIdType = number>(entities: T[]): Map<IdType, T> => {
   const map = new Map<IdType, T>();
   entities.forEach((item: T) => {
     map.set(item.id, item);
@@ -79,9 +69,7 @@ const transform2Map = <T extends IdModel<IdType>, IdType extends ModelIdType = n
   return map;
 };
 
-const transformPartial2Map = <T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-  entities: Partial<Raw<T>>[],
-): Map<IdType, Partial<Raw<T>>> => {
+const transformPartial2Map = <T extends IdModel<IdType>, IdType extends ModelIdType = number>(entities: Partial<Raw<T>>[]): Map<IdType, Partial<Raw<T>>> => {
   const map = new Map<IdType, Partial<Raw<T>>>();
   entities.forEach((item: Partial<Raw<T>>) => {
     let itemId;
@@ -105,11 +93,7 @@ class NotificationCenter extends EventEmitter2 {
     super({ wildcard: true });
   }
 
-  emitEntityUpdate<T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-    key: string,
-    entities: T[],
-    partials?: Partial<Raw<T>>[],
-  ): void {
+  emitEntityUpdate<T extends IdModel<IdType>, IdType extends ModelIdType = number>(key: string, entities: T[], partials?: Partial<Raw<T>>[]): void {
     const entityMap = transform2Map<T, IdType>(entities);
     const partialMap = partials ? transformPartial2Map<T, IdType>(partials) : undefined;
     const ids = Array.from(entityMap.keys());
@@ -127,18 +111,11 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  onEntityUpdate<T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-    event: string | string[],
-    listener: (payload: NotificationEntityUpdatePayload<T, IdType>) => void,
-  ) {
+  onEntityUpdate<T extends IdModel<IdType>, IdType extends ModelIdType = number>(event: string | string[], listener: (payload: NotificationEntityUpdatePayload<T, IdType>) => void) {
     this.on(event, payload => payload.type === EVENT_TYPES.UPDATE && listener(payload));
   }
 
-  emitEntityReplace<T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-    key: string,
-    payload: Map<IdType, T>,
-    isReplaceAll?: boolean,
-  ): void {
+  emitEntityReplace<T extends IdModel<IdType>, IdType extends ModelIdType = number>(key: string, payload: Map<IdType, T>, isReplaceAll?: boolean): void {
     const idsArr = Array.from(payload.keys());
 
     const notificationBody: NotificationEntityReplaceBody<T, IdType> = {
@@ -155,10 +132,7 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  onEntityReplace<T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-    event: string | string[],
-    listener: (payload: NotificationEntityReplacePayload<T, IdType>) => void,
-  ) {
+  onEntityReplace<T extends IdModel<IdType>, IdType extends ModelIdType = number>(event: string | string[], listener: (payload: NotificationEntityReplacePayload<T, IdType>) => void) {
     this.on(event, payload => payload.type === EVENT_TYPES.REPLACE && listener(payload));
   }
 
@@ -174,10 +148,7 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  onEntityDelete<IdType extends ModelIdType = number>(
-    event: string | string[],
-    listener: (payload: NotificationEntityDeletePayload<IdType>) => void,
-  ) {
+  onEntityDelete<IdType extends ModelIdType = number>(event: string | string[], listener: (payload: NotificationEntityDeletePayload<IdType>) => void) {
     this.on(event, payload => payload.type === EVENT_TYPES.DELETE && listener(payload));
   }
 
@@ -188,18 +159,11 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  onEntityReset(
-    event: string | string[],
-    listener: (payload: NotificationEntityResetPayload) => void,
-  ) {
+  onEntityReset(event: string | string[], listener: (payload: NotificationEntityResetPayload) => void) {
     this.on(event, payload => payload.type === EVENT_TYPES.RESET && listener(payload));
   }
 
-  emitEntityReload<IdType extends ModelIdType = number>(
-    key: string,
-    ids: IdType[],
-    isReloadAll?: boolean,
-  ): void {
+  emitEntityReload<IdType extends ModelIdType = number>(key: string, ids: IdType[], isReloadAll?: boolean): void {
     const notificationBody: NotificationEntityIds<IdType> = {
       ids,
     };
@@ -211,10 +175,7 @@ class NotificationCenter extends EventEmitter2 {
     this._notifyEntityChange(key, notification);
   }
 
-  onEntityReload(
-    event: string | string[],
-    listener: (payload: NotificationEntityReloadPayload) => void,
-  ) {
+  onEntityReload(event: string | string[], listener: (payload: NotificationEntityReloadPayload) => void) {
     this.on(event, payload => payload.type === EVENT_TYPES.RELOAD && listener(payload));
   }
 
@@ -226,10 +187,7 @@ class NotificationCenter extends EventEmitter2 {
     }
   }
 
-  private _notifyEntityChange<T extends IdModel<IdType>, IdType extends ModelIdType = number>(
-    key: string,
-    notification: NotificationEntityPayload<T, IdType>,
-  ): void {
+  private _notifyEntityChange<T extends IdModel<IdType>, IdType extends ModelIdType = number>(key: string, notification: NotificationEntityPayload<T, IdType>): void {
     this._trigger(key, notification);
   }
 
