@@ -28,12 +28,14 @@ class RecentCallBtnComponent extends React.Component<Props> {
           automationId="recentCallBtn"
           iconName="history"
           handleClick={jumpToRecentCall}
+          aria-label={t('telephony.accessibility.recentCall')}
         />
       ) : (
         <JuiRecentCallBtn
           iconName="dialer"
           handleClick={backToDialer}
           tooltipTitle={t('telephony.action.backToDialer')}
+          aria-label={t('telephony.action.backToDialer')}
           automationId="telephony-dialpad-btn"
         />
       ))
