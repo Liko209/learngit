@@ -46,7 +46,7 @@ test.meta(<ITestMeta>{
     members: [loginUser],
   };
 
-  await h(t).withLog('Given team named: "name" initial member only login user.', async (step) => {
+  await h(t).withLog('Given team named: "{name}" initial member only login user.', async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
   });
@@ -108,18 +108,15 @@ test.meta(<ITestMeta>{
     await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(1, 5), team.glipId);
   });
 
-  let itemHeight = await profileDialog.visualList.find('[data-id]').nth(0).clientHeight;
   await h(t).withLog('Then the member list just display 5.5 members and has scroll bar', async () => {
+    let itemHeight = await profileDialog.visualList.find('[data-id]').nth(0).clientHeight;
     await H.retryUntilPass(async () => {
       listClientHeight = await profileDialog.visualList.clientHeight;
       listScrollHeight = await profileDialog.visualList.scrollHeight;
-
       const hasScrollBar = listScrollHeight - listClientHeight > 0;
-      const displayMmberCount = listClientHeight / itemHeight === 5.5;
-
-      await t.expect(displayMmberCount).ok();
-      await t.expect(hasScrollBar).ok();
-
+      const displayFiveMemberCount = listClientHeight / itemHeight === 5.5;
+      assert.ok(hasScrollBar, "Error: no scroll bar");
+      assert.ok(displayFiveMemberCount, `Error: display members: ${listClientHeight / itemHeight}`)
     });
   });
 
