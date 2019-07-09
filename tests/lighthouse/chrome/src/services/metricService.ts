@@ -428,7 +428,7 @@ class MetricService {
     if (isDevelop || isRelease) {
       await LoadingTimeReleaseSummaryDto.destroy({
         where: {
-          name: summary.name, versionId: version.id, platform: platform
+          name: summary.name, version: versionName, platform: platform
         }
       });
 
@@ -518,7 +518,7 @@ class MetricService {
   }
 
   static async summaryMemory(sceneDto: SceneDto): Promise<void> {
-    if (sceneDto.name.startsWith('FPS.')
+    if (!sceneDto || sceneDto.name.startsWith('FPS.')
       || ['LoginScene', 'OfflineScene', 'RefreshScene'].indexOf(sceneDto.name) >= 0) {
       return;
     }
@@ -563,6 +563,8 @@ class MetricService {
     // for (let x = 0; x < n; x++) {
     //   arr2.push([x, k * x + b]);
     // }
+    // console.log(JSON.stringify(arr1));
+    // console.log(JSON.stringify(arr2));
 
     let startMemory = startArray.reduce((a, b) => a + b).valueOf() / startArray.length;
     let endMemory = endArray.reduce((a, b) => a + b).valueOf() / endArray.length;

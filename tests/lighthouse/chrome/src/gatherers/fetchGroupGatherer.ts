@@ -2,13 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { GroupPage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class FetchGroupGatherer extends BaseGatherer {
+class FetchGroupGatherer extends DebugGatherer {
   private metricKeys: Array<string> = [
     "group_section_fetch_teams",
     "group_section_fetch_favorites",
