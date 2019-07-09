@@ -29,7 +29,7 @@ import { GroupActionController } from '../GroupActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
-import { PERMISSION_ENUM } from '../../../../service';
+import { PERMISSION_ENUM, ENTITY } from '../../../../service';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountService } from '../../../account';
 
@@ -99,6 +99,11 @@ describe('GroupFetchDataController', () => {
         if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
           return { userConfig: AccountUserConfig.prototype };
         }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+        return;
       });
 
     buildRequestController.mockImplementation((params: any) => {
@@ -394,20 +399,47 @@ describe('GroupFetchDataController', () => {
       );
     });
   });
-  describe('removeTeamsByIds()', () => {
-    it('should not do notify', async () => {
-      daoManager.getDao.mockReturnValueOnce(groupDao);
-      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      await groupActionController.removeTeamsByIds([1], false);
-      expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
-      expect(notificationCenter.emitEntityDelete).toBeCalledTimes(0);
+
+  describe('handleRemovedFromTeam', () => {
+    it('should removeRelatedInfos and delete team', async () => {
+      groupActionController.deleteAllRelatedInfosOfTeam = jest.fn();
+      groupActionController[
+        'entitySourceController'
+      ].getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          { privacy: 'private', id: 5, members: [456, 789] },
+          { privacy: 'protected', id: 6, members: [456] },
+        ]);
+      groupActionController['entitySourceController'].bulkDelete = jest.fn();
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(456);
+      notificationCenter.emitEntityUpdate = jest.fn();
+
+      await groupActionController.handleRemovedFromTeam([5, 6]);
+      expect(groupActionController.deleteAllRelatedInfosOfTeam).toBeCalled();
+      expect(
+        groupActionController['entitySourceController'].getEntitiesLocally,
+      ).toBeCalled();
+      expect(
+        groupActionController['entitySourceController'].bulkDelete,
+      ).toBeCalledWith([5]);
+      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
+        { privacy: 'private', id: 5, members: [789] },
+      ]);
     });
-    it('should to notify', async () => {
-      daoManager.getDao.mockReturnValueOnce(groupDao);
-      daoManager.getDao.mockReturnValueOnce(groupConfigDao);
-      await groupActionController.removeTeamsByIds([1], true);
-      expect(groupDao.bulkDelete).toHaveBeenCalledWith([1]);
-      expect(notificationCenter.emitEntityDelete).toBeCalledTimes(1);
+  });
+
+  describe('deleteAllRelatedInfosOfTeam', () => {
+    it('should remove post and groupConfig', async () => {
+      postService.deletePostsByGroupIds = jest.fn();
+      groupActionController['groupService'].deleteGroupsConfig = jest.fn();
+      await groupActionController.deleteAllRelatedInfosOfTeam([4]);
+      expect(postService.deletePostsByGroupIds).toBeCalledWith([4], true);
+      expect(
+        groupActionController['groupService'].deleteGroupsConfig,
+      ).toBeCalledWith([4]);
     });
   });
 
