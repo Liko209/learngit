@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Post } from 'sdk/module/post/entity/Post';
 
 import { Router } from '../Router';
-import { IRequest, IRoute, IApi } from '../../../types';
+import { IJRequest, IRoute, IApi } from '../../../types';
 import { createResponse, String2Number } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
@@ -41,6 +41,7 @@ import { META_ROUTE } from '../../../decorators/constants';
 import { Route } from '../../../decorators/Route.decorator';
 const debug = createDebug('MockGlipServer');
 
+
 export class MockGlipServer {
   private _router: Router;
   postDao: GlipPostDao;
@@ -59,13 +60,14 @@ export class MockGlipServer {
   constructor() {
     this.socketServer = new MockSocketServer('https://glip.socket.com');
     this._router = new Router();
+    // todo apply Route from sub Controller
     const routeMetas = getMeta<IRoute<IApi>>(
       MockGlipServer.prototype,
       META_ROUTE,
     );
     routeMetas.map(({ key, meta }) => {
       const { method = 'get', path, query = {} } = meta;
-      this._router.use(method, path, (request, queryObject) => {
+      this._router.use(method, path, (request, queryObject = {}) => {
         const queryParams = { ...queryObject };
         Object.entries(query).forEach(([key, value]) => {
           queryParams[key] = (value as any)(queryObject[key]);
@@ -134,7 +136,7 @@ export class MockGlipServer {
     path: '/api/login',
     method: 'put',
   })
-  login(request: IRequest) {
+  login(request: IJRequest) {
     return createResponse({
       status: 200,
       statusText: '[mock] login success',
@@ -144,7 +146,7 @@ export class MockGlipServer {
   @Route({
     path: '/api/index',
   })
-  index(request: IRequest) {
+  index(request: IJRequest) {
     return createResponse({
       data: {},
       status: 200,
@@ -155,7 +157,7 @@ export class MockGlipServer {
   @Route({
     path: '/v1.0/desktop/remaining',
   })
-  remaining(request: IRequest) {
+  remaining(request: IJRequest) {
     return createResponse({
       data: {},
       status: 200,
@@ -166,7 +168,7 @@ export class MockGlipServer {
   @Route({
     path: '/v1.0/desktop/initial',
   })
-  async getInitialData(request: IRequest<any>) {
+  async getInitialData(request: IJRequest<any>) {
     const user = this.personDao.findOne();
     const company = this.companyDao.findOne();
     assert(company, 'company not found.');
@@ -201,7 +203,7 @@ export class MockGlipServer {
   @Route({
     path: '/api/posts',
   })
-  async getPosts(request: IRequest) {
+  async getPosts(request: IJRequest) {
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
       request,
@@ -215,7 +217,7 @@ export class MockGlipServer {
   @Route({
     path: '/api/posts_items_by_ids',
   })
-  async getPostsItemsByIds(request: IRequest) {
+  async getPostsItemsByIds(request: IJRequest) {
     const post_ids = request.params['post_ids']
       .split(',')
       .map((it: string) => Number(it));
@@ -234,7 +236,7 @@ export class MockGlipServer {
     path: '/api/post',
     method: 'post',
   })
-  async createPost(request: IRequest<Post>) {
+  async createPost(request: IJRequest<Post>) {
     const serverPost: GlipPost = { _id: genPostId(), ...request.data };
     const groupId = serverPost.group_id;
     const updateResult = this.postDao.put(serverPost);
@@ -280,7 +282,7 @@ export class MockGlipServer {
       id: String2Number,
     },
   })
-  saveStatePartial(request: IRequest<GlipState>, query: { id: number }) {
+  saveStatePartial(request: IJRequest<GlipState>, query: { id: number }) {
     debug('handle saveStatePartial -> request', query);
     const groupStates = parseState(request.data);
     if (groupStates && groupStates[0]) {
@@ -304,7 +306,7 @@ export class MockGlipServer {
     path: '/api/group',
     method: 'post',
   })
-  createGroup(request: IRequest<GlipGroup>) {
+  createGroup(request: IJRequest<GlipGroup>) {
     const serverGroup = this.dataHelper.group.factory.build(request.data);
     this.groupDao.put(serverGroup);
     this.socketServer.emitEntityCreate(serverGroup);
@@ -321,7 +323,7 @@ export class MockGlipServer {
       id: String2Number,
     },
   })
-  updateGroup(request: IRequest<GlipGroup>, routeParams: object) {
+  updateGroup(request: IJRequest<GlipGroup>, routeParams: object) {
     assert(routeParams['id'], 'update group lack ok id');
     return createResponse({
       request,
@@ -337,7 +339,7 @@ export class MockGlipServer {
     path: '/api/team',
     method: 'post',
   })
-  createTeam(request: IRequest<GlipGroup>) {
+  createTeam(request: IJRequest<GlipGroup>) {
     const serverTeam = this.dataHelper.team.factory.build(request.data);
     this.groupDao.put(serverTeam);
     this.socketServer.emitEntityCreate(serverTeam);
@@ -354,7 +356,7 @@ export class MockGlipServer {
       id: String2Number,
     },
   })
-  updateTeam(request: IRequest<GlipGroup>, routeParams: object) {
+  updateTeam(request: IJRequest<GlipGroup>, routeParams: object) {
     assert(routeParams['id'], 'update team lack ok id');
     return createResponse({
       request,
@@ -373,7 +375,7 @@ export class MockGlipServer {
       id: String2Number,
     },
   })
-  getProfile(request: IRequest<GlipProfile>, routeParams: object) {
+  getProfile(request: IJRequest<GlipProfile>, routeParams: object) {
     assert(routeParams['id'], 'get profile lack ok id');
     return createResponse({
       request,
@@ -388,7 +390,7 @@ export class MockGlipServer {
       id: String2Number,
     },
   })
-  updateProfile(request: IRequest<GlipProfile>, routeParams: object) {
+  updateProfile(request: IJRequest<GlipProfile>, routeParams: object) {
     assert(routeParams['id'], 'update profile lack ok id');
     return createResponse({
       request,

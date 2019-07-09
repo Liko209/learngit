@@ -4,7 +4,7 @@ import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';
 import { IApi } from 'shield/sdk/types';
-
+// xx.request.data.description
 itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {
   let groupService: GroupService;
 
@@ -21,10 +21,12 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {
     it('create team', async () => {
       const mockInfo = mockResponse(
         readJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
+        // xx,
         api => {
           const {
             response: { data },
           } = api;
+          // api.method
           return {
             id: data._id,
             creatorId: data.creator_id,

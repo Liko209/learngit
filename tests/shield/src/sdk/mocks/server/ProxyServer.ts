@@ -13,6 +13,7 @@ import {
 } from '../../utils/network/networkDataTool';
 import _ from 'lodash';
 import { createResponse } from './utils';
+import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 const debug = createDebug('ProxyServer', false);
 
@@ -23,12 +24,13 @@ export class ProxyServer implements IMockServer {
     path: string;
   }) {
     const { host, method, path } = request;
+    const pathRegexp = pathToRegexp(path);
     const pool = this.getRequestResponsePool();
     return pool.find(item => {
       return (
         item.host === host &&
-        item.path === path &&
-        item.request.method === method
+        item.request.method === method &&
+        (item.path === path || pathRegexp.test(item.path))
       );
     });
   }

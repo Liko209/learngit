@@ -5,10 +5,11 @@ import { PostService } from 'sdk/module/post';
 import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
+import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';
 jest.setTimeout(30 * 1000);
 itForSdk(
   'Send post test',
-  ({ data, sdk, currentUserId, mockResponse, createRequestResponse }) => {
+  ({ data, sdk, currentUserId, mockResponse, createErrorResponse }) => {
     let groupService: GroupService;
     let postService: PostService;
     let stateService: StateService;
@@ -52,13 +53,13 @@ itForSdk(
       let sendFailedPost: Post;
       it('send post 2: failed', async () => {
         mockResponse(
-          createRequestResponse(
+          createErrorResponse<IGlipTeamPost>(
             {
               host: 'glip',
               method: 'post',
-              path: '/api/post',
+              path: '/api/team/:id',
             },
-            createResponse<Post>({ status: 500 }),
+            { status: 500 },
           ),
         );
         await expect(

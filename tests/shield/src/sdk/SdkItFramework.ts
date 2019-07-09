@@ -16,6 +16,7 @@ import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
 import { IBaseResponse, IApi } from './types';
+import { createResponse } from './mocks/server/utils';
 
 blockExternalRequest();
 
@@ -30,23 +31,52 @@ function readJson<
   return json;
 }
 
-function createRequestResponse<T>(
+function createSuccessResponse<T extends IApi>(
   options: {
-    host: string;
-    method: string;
-    path: string;
+    host: T['host'];
+    method: T['method'];
+    path: T['path'];
   },
-  response: IBaseResponse<T>,
+  data: T['response'],
 ) {
   return {
-    response,
+    type: 'request-response',
+    via: 'mock',
+    response: createResponse({
+      data: data
+    }),
     request: {
       method: options.method,
-    },
+      path: options.path,
+    } as any,
     host: options.host,
     method: options.method,
     path: options.path,
-  } as IRequestResponse<any, T>;
+  } as IRequestResponse<T['request'], T['response']>;
+}
+
+function createErrorResponse<T extends IApi>(
+  options: {
+    host: T['host'];
+    method: T['method'];
+    path: T['path'];
+  },
+  response: {
+    status: number,
+    statusText?: string,
+  },
+) {
+  return {
+    type: 'request-response',
+    via: 'mock',
+    response: createResponse(response),
+    request: {
+      method: options.method,
+    } as any,
+    host: options.host,
+    method: options.method,
+    path: options.path,
+  } as IRequestResponse<any, any>;
 }
 
 type MockResponse = <
@@ -66,7 +96,8 @@ type ItContext = {
   currentCompanyId: () => number;
   mockResponse: MockResponse;
   readJson: typeof readJson;
-  createRequestResponse: typeof createRequestResponse;
+  createSuccessResponse: typeof createSuccessResponse;
+  createErrorResponse: typeof createErrorResponse;
   data: {
     template: {
       BASIC: InitialData;
@@ -198,7 +229,8 @@ export function itForSdk(
   // provide for it case to mock data.
   const itCtx: ItContext = {
     mockResponse,
-    createRequestResponse,
+    createSuccessResponse,
+    createErrorResponse,
     readJson,
     currentUserId: () => userId,
     currentCompanyId: () => companyId,

@@ -19,6 +19,7 @@ interface IApiContract<T extends IApi> {
 }
 
 interface IApi<Req = any, Res = any> {
+  host: string;
   path: string;
   method: string;
   query?: object;

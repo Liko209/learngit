@@ -81,7 +81,7 @@ type Header = {
 
 type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
 
-interface IBaseRequest<T = any> {
+interface IJRequest<T = any> {
   host: string;
   path: string;
   method: string;
@@ -96,7 +96,7 @@ interface IBaseResponse<T = any> {
   data: T;
 }
 
-interface IRequest<T = any> extends IBaseRequest<T> {
+interface IRequest<T = any> extends IJRequest<T> {
   readonly id: string;
   params: object;
   handlerType: IHandleType;
@@ -231,7 +231,7 @@ export {
   IToken,
   IClient,
   Header,
-  IBaseRequest,
+  IJRequest as IBaseRequest,
   IBaseResponse,
   IRequest,
   IResponse,

@@ -12,7 +12,7 @@ jest.setTimeout(30000);
 
 itForSdk(
   'Service Integration test',
-  ({ data, sdk, mockResponse, createRequestResponse }) => {
+  ({ data, sdk, mockResponse, createSuccessResponse: createRequestResponse }) => {
     let groupService: GroupService;
     let personService: PersonService;
     let searchService: SearchService;

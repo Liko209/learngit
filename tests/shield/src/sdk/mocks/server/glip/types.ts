@@ -1,9 +1,4 @@
 import * as Factory from 'factory.ts';
-// import {
-//   INetworkRequestExecutorListener,
-//   IRequest,
-//   IResponse,
-// } from 'foundation/network';
 import { Company } from 'sdk/module/company/entity';
 import { Group } from 'sdk/module/group/entity';
 import { Item } from 'sdk/module/item/entity';
