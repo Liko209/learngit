@@ -6,11 +6,9 @@ export const buildAction = ({
   handler = noop,
   title = '',
   icon = '',
-}: any) => {
-  return {
-    action,
-    title,
-    icon,
-    handler,
-  } as NotificationAction;
-};
+}: any) => ({
+  action,
+  title,
+  icon,
+  handler,
+} as NotificationAction);

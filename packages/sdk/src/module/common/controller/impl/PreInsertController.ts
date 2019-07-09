@@ -19,7 +19,7 @@ import { mainLogger } from 'foundation';
 const LOG_TAG = '[PreInsertController]';
 const UNIQUE_ID = 'unique_id';
 class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
-  implements IPreInsertController<T> {
+implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
 
   constructor(
@@ -56,11 +56,16 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     }
   }
 
+  getPreInsertId(uniqueId: string): number {
+    return this._preInsertIdController.getPreInsertId(uniqueId);
+  }
+
   private _deleteEntity(entity: T): number | undefined {
-    const preInsertId = entity.id;
     const preInsertKey = this._getPreInsertKey(entity);
     if (preInsertKey && this.isInPreInsert(preInsertKey)) {
-      const originalEntityId = Number(preInsertId);
+      const originalEntityId = this._preInsertIdController.getPreInsertId(
+        preInsertKey,
+      );
       const progressEntity = _.cloneDeep(entity);
       progressEntity.id > 0 && (progressEntity.id = originalEntityId);
       this._notifyChange(entity, originalEntityId);
@@ -70,7 +75,7 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     mainLogger
       .tags(LOG_TAG)
       .info(`delete() ${entity.id} is not in pre-insert list`);
-    return entity.id < 0 ? entity.id : undefined;
+    return undefined;
   }
 
   updateStatus(entity: T, status: PROGRESS_STATUS): void {
@@ -93,6 +98,8 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       case PROGRESS_STATUS.CANCELED:
         this.progressService.deleteProgress(entity.id);
         break;
+      default:
+        break;
     }
   }
 
@@ -103,10 +110,12 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     const entityMap: Map<number, string> = new Map();
     entities.map((entity: T) => {
       const originalEntityId = this._deleteEntity(entity);
-      const preInsertKey = this._getPreInsertKey(entity);
-      preInsertKey &&
-        originalEntityId &&
-        entityMap.set(originalEntityId, preInsertKey);
+      if (originalEntityId) {
+        const preInsertKey = this._getPreInsertKey(entity);
+        preInsertKey &&
+          originalEntityId &&
+          entityMap.set(originalEntityId, preInsertKey);
+      }
     });
     if (entityMap.size) {
       await this.dao.bulkDelete([...entityMap.keys()]);
@@ -135,7 +144,7 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
 
   private _getUniqueId(entity: T) {
     let preInsertId: string = '';
-    if (entity.hasOwnProperty(UNIQUE_ID)) {
+    if (Object.prototype.hasOwnProperty.call(entity, UNIQUE_ID)) {
       preInsertId = entity[UNIQUE_ID];
     }
     return preInsertId;

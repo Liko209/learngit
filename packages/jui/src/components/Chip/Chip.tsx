@@ -7,11 +7,15 @@ import * as React from 'react';
 import MuiChip, { ChipProps as MuiChipProps } from '@material-ui/core/Chip';
 import { JuiIconButton } from '../Buttons/IconButton';
 import styled from '../../foundation/styled-components';
-import { width, spacing, height, palette } from '../../foundation/utils/styles';
+import {
+  width, spacing, height, palette,
+} from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
+import remove from '../../assets/jupiter-icon/icon-delete_circle.svg';
 
 type JuiChipProps = {
   uid?: number;
+  deleteAutomationId?: string;
   PersonAvatar?: React.ComponentType<any>;
   GroupAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
@@ -29,8 +33,7 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
     padding: ${spacing(1)};
     box-sizing: border-box;
     overflow: hidden;
-    border-color: ${({ isError }) =>
-      isError && palette('semantic', 'negative')};
+    border-color: ${({ isError }) => isError && palette('semantic', 'negative')};
     color: ${({ isError }) => isError && palette('semantic', 'negative')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity * 1};
@@ -60,7 +63,16 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
 
 export const JuiChip: React.SFC<JuiChipProps> = React.memo(
   (props: JuiChipProps) => {
-    const { onDelete, PersonAvatar, GroupAvatar, isError, id, deleteTooltip, ...rest } = props;
+    const {
+      onDelete,
+      PersonAvatar,
+      GroupAvatar,
+      isError,
+      id,
+      deleteTooltip,
+      deleteAutomationId,
+      ...rest
+    } = props;
     const getAvatar = () => {
       if (PersonAvatar) {
         return <PersonAvatar size="small" uid={id} />;
@@ -88,9 +100,9 @@ export const JuiChip: React.SFC<JuiChipProps> = React.memo(
             variant="plain"
             tooltipTitle={deleteTooltip}
             color={isError ? 'semantic.negative' : 'grey.500'}
-          >
-            remove
-          </JuiIconButton>
+            data-test-automation-id={deleteAutomationId}
+            symbol={remove}
+          />
         }
       />
     );

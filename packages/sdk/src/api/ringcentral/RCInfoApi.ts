@@ -13,13 +13,13 @@ import {
   REQUEST_HEADER_KEYS,
   CONTENT_TYPES,
 } from 'foundation';
-import { RCClientInfo } from './types/RCClientInfo';
-import { RCAccountInfo } from './types/RCAccountInfo';
-import { RCExtensionInfo } from './types/RCExtensionInfo';
-import { RCRolePermissions } from './types/RCRolePermissions';
-import { AccountServiceInfo } from './types/AccountServiceInfo';
-import { RCExtensionForwardingNumberRCList } from './types/RCForwardingNumbers';
 import {
+  RCClientInfo,
+  RCAccountInfo,
+  RCExtensionInfo,
+  RCRolePermissions,
+  AccountServiceInfo,
+  RCExtensionForwardingNumberRCList,
   RCAPIVersion,
   ISpecialServiceRequest,
   ISpecialServiceNumber,
@@ -28,10 +28,16 @@ import {
   IPhoneNumberRequest,
   IExtensionPhoneNumberList,
   IForwardingNumberRequest,
-} from './types/common';
+  IExtensionCallerId,
+  IExtensionCallerIdRequest,
+  GetBlockNumberListParams,
+  BlockNumberListResponse,
+  BlockNumberItem,
+  AddBlockNumberParams,
+} from './types';
 
 class RCInfoApi extends Api {
-  private static _requestParameters(options: any) {
+  private static _getInfoRequestParams(options: any) {
     return {
       method: NETWORK_METHOD.GET,
       authFree: false,
@@ -41,7 +47,7 @@ class RCInfoApi extends Api {
     };
   }
   static requestRCAPIVersion() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_VERSION,
     });
 
@@ -49,35 +55,35 @@ class RCInfoApi extends Api {
   }
 
   static requestRCClientInfo() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_CLIENT_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCClientInfo>(query);
   }
 
   static requestRCAccountInfo() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_ACCOUNT_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCAccountInfo>(query);
   }
 
   static requestRCExtensionInfo() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<RCExtensionInfo>(query);
   }
 
   static requestRCRolePermissions() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_ROLE_PERMISSIONS,
     });
     return RCInfoApi.rcNetworkClient.http<RCRolePermissions>(query);
   }
 
   static getSpecialNumbers(request?: ISpecialServiceRequest) {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_SPECIAL_SERVICE_NUMBER,
       params: request,
     });
@@ -86,10 +92,11 @@ class RCInfoApi extends Api {
 
   static getPhoneParserData(localDataVersion: string) {
     const extraHeaders = {};
+    /* eslint-disable */
     const localDataVersionWithQuote = `\"${localDataVersion}\"`;
     extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
     extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_PHONE_PARSER_DATA,
       headers: extraHeaders,
     });
@@ -97,7 +104,7 @@ class RCInfoApi extends Api {
   }
 
   static getDialingPlan(request?: IDialingPlanRequest) {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_DIALING_PLAN,
       params: request,
     });
@@ -105,28 +112,73 @@ class RCInfoApi extends Api {
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_EXTENSION_PHONE_NUMBER,
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<IExtensionPhoneNumberList>(query);
   }
+  static getExtensionCallerId() {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
+    });
+    return RCInfoApi.rcNetworkClient.http<IExtensionCallerId>(query);
+  }
+  static setExtensionCallerId(request: IExtensionCallerIdRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
+      method: NETWORK_METHOD.PUT,
+      data: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<IExtensionCallerId>(query);
+  }
 
   static getAccountServiceInfo() {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_SERVICE_INFO,
     });
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
   static getForwardingNumbers(request?: IForwardingNumberRequest) {
-    const query = this._requestParameters({
+    const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<RCExtensionForwardingNumberRCList>(
       query,
     );
+  }
+
+  static getBlockNumberList(params: GetBlockNumberListParams) {
+    const query = this._getInfoRequestParams({
+      params,
+      path: RINGCENTRAL_API.BLOCKED_NUMBER,
+    });
+    return RCInfoApi.rcNetworkClient.http<BlockNumberListResponse>(query);
+  }
+
+  static deleteBlockNumbers(ids: string[]) {
+    const query = {
+      method: NETWORK_METHOD.DELETE,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
+      path: `${RINGCENTRAL_API.BLOCKED_NUMBER}/${ids.join(',')}`,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
+  }
+
+  static addBlockNumbers(data: AddBlockNumberParams) {
+    const query = {
+      data,
+      method: NETWORK_METHOD.POST,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
+      path: RINGCENTRAL_API.BLOCKED_NUMBER,
+    };
+    return RCInfoApi.rcNetworkClient.http<BlockNumberItem>(query);
   }
 }
 

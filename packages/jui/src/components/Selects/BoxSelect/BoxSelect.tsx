@@ -33,8 +33,8 @@ const StyledSelectBoxHeader = styled.div`
 `;
 
 class JuiBoxSelect extends PureComponent<
-  JuiBoxSelectProps,
-  { value: string | null }
+JuiBoxSelectProps,
+{ value: string | null }
 > {
   private _renderInput = () => {
     const { heightSize = 'default' } = this.props;
@@ -48,6 +48,7 @@ class JuiBoxSelect extends PureComponent<
       automationId,
       isFullWidth,
       className,
+      renderValue,
       ...rest
     } = this.props;
     return (
@@ -58,6 +59,7 @@ class JuiBoxSelect extends PureComponent<
           classes={CLASSES_SELECT}
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
+          renderValue={renderValue}
           {...rest}
         >
           {children}

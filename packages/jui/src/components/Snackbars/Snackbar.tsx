@@ -3,6 +3,7 @@
  * @Date: 2018-12-06 15:53:10
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable import/no-named-default */
 import * as React from 'react';
 import {
   default as MuiSnackbar,

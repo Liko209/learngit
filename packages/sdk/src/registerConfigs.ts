@@ -9,7 +9,7 @@ import {
   AutoAuthenticator,
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
-  ReLoginAuthenticator,
+  GlipAuthenticator,
 } from './authenticator';
 import { daoManager } from './dao';
 import DaoManager from './dao/DaoManager';
@@ -58,7 +58,7 @@ const registerConfigs = {
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     { name: AutoAuthenticator.name, value: AutoAuthenticator },
     { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
-    { name: ReLoginAuthenticator.name, value: ReLoginAuthenticator },
+    { name: GlipAuthenticator.name, value: GlipAuthenticator },
 
     // Account
     { name: RCAccount.name, value: RCAccount },
@@ -80,7 +80,10 @@ const registerConfigs = {
     {
       name: ServiceConfig.POST_SERVICE,
       value: PostService,
-      injects: [ServiceConfig.GROUP_SERVICE],
+      injects: [
+        ServiceConfig.GROUP_SERVICE,
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ],
     },
     { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
     { name: ServiceConfig.GROUP_SERVICE, value: GroupService },

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { observable } from 'mobx';
 import { Profile } from 'sdk/module/profile/entity';
 import {
@@ -103,7 +102,7 @@ export default class ProfileModel extends Base<Profile> {
     // settings
     this.callOption = data.calling_option || CALLING_OPTIONS.GLIP;
     this.newMessageBadges =
-      data.new_message_badges || NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
+      data.new_message_badges || NEW_MESSAGE_BADGES_OPTIONS.ALL;
     this.defaultNumberId = data.default_number;
     this.mobileDMNotification =
       data.want_push_people === NOTIFICATION_OPTIONS.ON;

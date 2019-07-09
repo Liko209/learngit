@@ -13,7 +13,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
-
+/* eslint-disable */
 class StateActionController {
   private _partialModifyController: IPartialModifyController<GroupState>;
   constructor(

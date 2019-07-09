@@ -14,15 +14,16 @@ import {
   ModuleClass,
   ModuleType,
   mainLogger,
+  PerformanceTracer,
 } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
-import { RC_INFO } from '../../service/eventKey';
+import { RC_INFO, SERVICE } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 import { StationSettingInfo } from './types';
 import { UndefinedAble } from 'sdk/types';
 import { MODULE_STATUS, COUNTRY_CODE } from './constants';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../performance';
+import { PHONE_PARSER_PERFORMANCE_KEYS } from './config/performanceKeys';
 
 const PhoneParserModule: ModuleClass = Module;
 
@@ -43,9 +44,9 @@ class PhoneParserUtility {
     );
   }
 
-  static onPhoneDataChange = () => {
+  static triggerInitPhoneParser = () => {
     PhoneParserUtility.initPhoneParser(true);
-  }
+  };
 
   static async loadModule(): Promise<boolean> {
     if (PhoneParserUtility._moduleStatus === MODULE_STATUS.LOADED) {
@@ -60,10 +61,15 @@ class PhoneParserUtility {
 
     notificationCenter.on(
       RC_INFO.PHONE_DATA,
-      PhoneParserUtility.onPhoneDataChange,
+      PhoneParserUtility.triggerInitPhoneParser,
     );
 
-    const performanceTracer = PerformanceTracer.initial();
+    notificationCenter.on(
+      SERVICE.RC_LOGIN,
+      PhoneParserUtility.triggerInitPhoneParser,
+    );
+
+    const performanceTracer = PerformanceTracer.start();
 
     return new Promise<boolean>(resolve => {
       PhoneParserUtility._moduleStatus = MODULE_STATUS.LOADING;
@@ -72,7 +78,7 @@ class PhoneParserUtility {
           mainLogger.debug('PhoneParserUtility: module loaded successfully.');
           PhoneParserUtility._moduleStatus = MODULE_STATUS.LOADED;
           performanceTracer.end({
-            key: PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
+            key: PHONE_PARSER_PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
             infos: true,
           });
           resolve(true);
@@ -86,9 +92,7 @@ class PhoneParserUtility {
             );
           });
         },
-        locateFile: (fileName: string) => {
-          return `/wasm/${fileName}`;
-        },
+        locateFile: (fileName: string) => `/wasm/${fileName}`,
       };
       PhoneParserUtility._phoneParserModule = new PhoneParserModule(params);
     }).catch(err => {
@@ -97,13 +101,18 @@ class PhoneParserUtility {
       );
       PhoneParserUtility._moduleStatus = MODULE_STATUS.IDLE;
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
+        key: PHONE_PARSER_PERFORMANCE_KEYS.LOAD_PHONE_PARSER,
         infos: false,
       });
 
       notificationCenter.off(
         RC_INFO.PHONE_DATA,
-        PhoneParserUtility.onPhoneDataChange,
+        PhoneParserUtility.triggerInitPhoneParser,
+      );
+
+      notificationCenter.off(
+        SERVICE.RC_LOGIN,
+        PhoneParserUtility.triggerInitPhoneParser,
       );
 
       PhoneParserUtility._loadingQueue.forEach(resolve => {
@@ -172,7 +181,7 @@ class PhoneParserUtility {
       return false;
     }
 
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
 
     return new Promise<boolean>(async resolve => {
       const result = PhoneParserUtility._phoneParserModule.ReadRootNodeByString(
@@ -191,7 +200,7 @@ class PhoneParserUtility {
 
       PhoneParserUtility._notifyReadPhoneDataFinished(true);
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
+        key: PHONE_PARSER_PERFORMANCE_KEYS.INIT_PHONE_PARSER,
         infos: result,
       });
 
@@ -199,7 +208,7 @@ class PhoneParserUtility {
     }).catch(err => {
       mainLogger.warn('PhoneParserUtility: init error: ', err);
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_PHONE_PARSER,
+        key: PHONE_PARSER_PERFORMANCE_KEYS.INIT_PHONE_PARSER,
         infos: false,
       });
 

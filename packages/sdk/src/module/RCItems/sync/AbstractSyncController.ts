@@ -79,7 +79,7 @@ abstract class AbstractSyncController<
           .warn(
             `do ISync failed, direction: ${direction}, count: ${recordCount}, error: ${reason}`,
           );
-        throw reason;
+        return [];
       });
     }
 
@@ -170,7 +170,7 @@ abstract class AbstractSyncController<
     }
     return result;
   }
-
+  /* eslint-disable */
   private async _startSync(
     isSilent: boolean,
     syncType: SYNC_TYPE,

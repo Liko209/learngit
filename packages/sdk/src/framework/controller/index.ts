@@ -6,7 +6,7 @@
 
 import { EntitySourceController } from './impl/EntitySourceController';
 import { daoManager, DeactivatedDao } from '../../dao';
-import { IDao } from '../../framework/dao';
+import { IDao } from '../dao';
 import { RequestController } from './impl/RequestController';
 import { PartialModifyController } from './impl/PartialModifyController';
 import { IdModel, ModelIdType } from '../model';
@@ -33,14 +33,16 @@ export function buildEntitySourceController<
   IdType extends ModelIdType = number
 >(
   entityPersistentController: IEntityPersistentController<T, IdType>,
-  requestController?: IRequestController<T, IdType>,
-  canSaveRemoteData?: boolean,
+  requestConfig?: {
+    requestController: IRequestController<T, IdType>;
+    canSaveRemoteData: boolean;
+    canRequest: () => boolean;
+  },
 ) {
   return new EntitySourceController<T, IdType>(
     entityPersistentController,
     daoManager.getDao(DeactivatedDao),
-    requestController,
-    canSaveRemoteData,
+    requestConfig,
   );
 }
 
@@ -52,8 +54,8 @@ export function buildRequestController<
   networkClient: NetworkClient;
 }): IRequestController<T, IdType> {
   const requestController: IRequestController<
-    T,
-    IdType
+  T,
+  IdType
   > = new RequestController<T, IdType>(networkConfig);
   return requestController;
 }
@@ -61,11 +63,10 @@ export function buildRequestController<
 export function buildEntityCacheController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
->() {
-  return new EntityCacheController<T, IdType>() as IEntityCacheController<
-    T,
-    IdType
-  >;
+>(entityName?: string) {
+  return new EntityCacheController<T, IdType>(
+    entityName,
+  ) as IEntityCacheController<T, IdType>;
 }
 
 export function buildEntityCacheSearchController<
@@ -73,8 +74,8 @@ export function buildEntityCacheSearchController<
   IdType extends ModelIdType = number
 >(entityCacheController: IEntityCacheController<T, IdType>) {
   const cacheSearchController: IEntityCacheSearchController<
-    T,
-    IdType
+  T,
+  IdType
   > = new EntityCacheSearchController<T, IdType>(entityCacheController);
   return cacheSearchController;
 }

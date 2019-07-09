@@ -23,4 +23,6 @@ enum ToastMessageAlign {
 }
 
 type ToastViewProps = ToastProps;
-export { ToastProps, ToastViewProps, ToastType, ToastMessageAlign };
+export {
+  ToastProps, ToastViewProps, ToastType, ToastMessageAlign,
+};

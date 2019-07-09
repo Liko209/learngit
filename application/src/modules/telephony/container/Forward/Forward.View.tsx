@@ -5,12 +5,10 @@
  */
 import React, { createRef, RefObject } from 'react';
 import { observer } from 'mobx-react';
-import { JuiHeaderContainer, JuiTitleBar } from 'jui/pattern/Dialer';
-import { DialerHeader } from '../DialerHeader';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { DialerContainer } from '../DialerContainer';
+import { GenericDialerPanel } from '../GenericDialerPanel';
 import { ViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { JuiFabButton, JuiIconButton } from 'jui/components/Buttons';
 
 type Props = ViewProps & WithTranslation;
 @observer
@@ -31,18 +29,36 @@ class ForwardViewComponent extends React.Component<Props> {
         previous
       </JuiIconButton>
     );
-  }
+  };
+
+  private _ForwardBtn = () => {
+    const { t, makeForwardCall } = this.props;
+    return (
+      <JuiFabButton
+        color="semantic.positive"
+        size="moreLarge"
+        showShadow={false}
+        tooltipPlacement="top"
+        iconName="forwardcall"
+        data-test-automation-id="telephony-forward-btn"
+        aria-label={t('telephony.action.forward')}
+        tooltipTitle={t('telephony.action.forward')}
+        onClick={makeForwardCall}
+      />
+    );
+  };
   render() {
-    const { t } = this.props;
+    const { forward } = this.props;
 
     return (
-      <>
-        <JuiHeaderContainer>
-          <JuiTitleBar label={t('telephony.forwardCall')} />
-          <DialerHeader Back={this._Back} ref={this.dialerHeaderRef} />
-        </JuiHeaderContainer>
-        <DialerContainer dialerHeaderRef={this.dialerHeaderRef} />
-      </>
+      <GenericDialerPanel
+        inputStringProps="forwardString"
+        onInputEnterKeyDown={forward}
+        CallActionBtn={this._ForwardBtn}
+        displayCallerIdSelector={false}
+        onContactSelected={forward}
+        Back={this._Back}
+      />
     );
   }
 }

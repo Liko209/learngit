@@ -20,7 +20,7 @@ type WatchScrollStateType = {
   lastY: number;
   _eventHandler: () => void;
 };
-
+/* eslint-disable */
 function binarySearchFirstItem(items: viewItemType[], condition: any) {
   let minIndex = 0;
   let maxIndex = items.length - 1;
@@ -158,7 +158,7 @@ const scrollIntoViewWithContainer = (
   containerEl: HTMLDivElement,
   spot: number,
 ) => {
-  const targetEl = target.div;
+  const targetEl = target && target.div;
   if (targetEl && containerEl) {
     containerEl.scrollTop = targetEl.offsetTop + spot;
   }
@@ -234,8 +234,14 @@ const watchScroll = (
   callback: (state: WatchScrollStateType) => void,
 ) => {
   let rAF: number | null = null;
-
-  const debounceScroll = function () {
+  const debounceScroll = function() {
+    const state = {
+      right: true,
+      down: true,
+      lastX: viewAreaElement.scrollLeft,
+      lastY: viewAreaElement.scrollTop,
+      _eventHandler: debounceScroll,
+    };
     if (rAF) {
       return;
     }
@@ -258,7 +264,6 @@ const watchScroll = (
       callback(state);
     });
   };
-
   const state = {
     right: true,
     down: true,
@@ -266,7 +271,6 @@ const watchScroll = (
     lastY: viewAreaElement.scrollTop,
     _eventHandler: debounceScroll,
   };
-
   viewAreaElement.addEventListener('scroll', debounceScroll, true);
   return state;
 };

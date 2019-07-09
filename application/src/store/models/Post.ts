@@ -36,7 +36,7 @@ export default class PostModel extends Base<Post> {
   @observable
   groupId: number;
   @observable
-  itemData?: { version_map: {} };
+  itemData?: { version_map?: {} };
   @observable
   source?: string;
   @observable
@@ -44,6 +44,8 @@ export default class PostModel extends Base<Post> {
   @observable
   deactivated?: boolean;
   @observable icon?: string;
+  @observable isTeamMention?: boolean;
+  @observable isAdminMention?: boolean;
 
   constructor(data: Post) {
     super(data);
@@ -63,12 +65,14 @@ export default class PostModel extends Base<Post> {
       parent_id,
       deactivated,
       icon,
+      is_admin_mention,
+      is_team_mention,
     } = data;
     this.createdAt = created_at;
     this.creatorId = creator_id;
     this.activityData = activity_data;
     this.activity = activity;
-    this.text = text;
+    this.text = text || '';
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
     this.itemIds = item_ids || [];
@@ -79,6 +83,8 @@ export default class PostModel extends Base<Post> {
     this.parentId = parent_id;
     this.deactivated = deactivated;
     this.icon = icon;
+    this.isAdminMention = is_admin_mention;
+    this.isTeamMention = is_team_mention;
   }
 
   @computed
@@ -99,12 +105,8 @@ export default class PostModel extends Base<Post> {
             };
         }
       })
-      .filter((item: any) => {
-        return !item.deactivated;
-      })
-      .map((item: any) => {
-        return item.id;
-      });
+      .filter((item: any) => !item.deactivated)
+      .map((item: any) => item.id);
   }
 
   @computed
@@ -132,7 +134,9 @@ export default class PostModel extends Base<Post> {
     const isFileItemReady = fileItem.id > 0;
     if (!isFileItemReady) return 1;
 
-    const version = this.itemData.version_map[fileItem.id];
+    const version =
+      this.itemData.version_map && this.itemData.version_map[fileItem.id];
+
     if (!version) {
       // should not come here, due to exist bug, some data's version_map is incorrect. bug ticket: FIJI-6596
       mainLogger.error('can not find version info in post itemData', {

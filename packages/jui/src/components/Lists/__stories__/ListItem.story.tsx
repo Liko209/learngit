@@ -19,6 +19,9 @@ import {
   JuiListItemSecondaryAction,
 } from '../index';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
+import download from '../../../assets/jupiter-icon/icon-download.svg';
+import info from '../../../assets/jupiter-icon/icon-info.svg';
+import star from '../../../assets/jupiter-icon/icon-star.svg';
 
 class TwoLineItem extends React.PureComponent {
   state = {
@@ -26,10 +29,10 @@ class TwoLineItem extends React.PureComponent {
   };
   handleMouseEnter = () => {
     this.setState({ isHover: true });
-  }
+  };
   handleMouseLeave = () => {
     this.setState({ isHover: false });
-  }
+  };
   render() {
     const primary = text('primary', 'Two-line item name');
     const secondaryText = text('secondaryText', 'Secondary text');
@@ -43,7 +46,7 @@ class TwoLineItem extends React.PureComponent {
         onMouseLeave={this.handleMouseLeave}
       >
         <JuiListItemIcon>
-          <JuiThumbnail iconType="pdf" />
+          <JuiThumbnail iconType='pdf' />
         </JuiListItemIcon>
         <JuiListItemText
           primary={primary}
@@ -58,19 +61,16 @@ class TwoLineItem extends React.PureComponent {
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
               <JuiIconButton
-                variant="plain"
-                tooltipTitle="Download"
+                variant='plain'
+                tooltipTitle='Download'
                 disabled={disabled}
-              >
-                get_app
-              </JuiIconButton>
+                symbol={download}
+              />
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>
         ) : (
           <JuiListItemSecondaryAction>
-            <JuiIconButton variant="plain" disabled={disabled}>
-              info
-            </JuiIconButton>
+            <JuiIconButton variant='plain' disabled={disabled} symbol={info} />
           </JuiListItemSecondaryAction>
         )}
       </JuiListItem>
@@ -79,15 +79,14 @@ class TwoLineItem extends React.PureComponent {
 }
 
 storiesOf('Components/Lists/ListItem', module)
-  // .addDecorator(withInfoDecorator(JuiListItem, { inline: true }))
   .add('Single-line item with Avatar and controls', () => {
     const primary = text('primary', 'Single-line item name');
 
     return (
       <JuiList>
-        <JuiListItem singleLine={true}>
+        <JuiListItem singleLine>
           <JuiListItemAvatar>
-            <JuiAvatar size="small" src={avatar} />
+            <JuiAvatar size='small' src={avatar} />
           </JuiListItemAvatar>
           <JuiListItemText primary={primary} />
           <JuiListItemSecondaryAction>
@@ -102,11 +101,13 @@ storiesOf('Components/Lists/ListItem', module)
 
     return (
       <JuiList>
-        <JuiListItem singleLine={true}>
+        <JuiListItem singleLine>
           <JuiListItemIcon>
-            <JuiIconButton variant="plain" tooltipTitle="favorite">
-              favorite
-            </JuiIconButton>
+            <JuiIconButton
+              variant='plain'
+              tooltipTitle='favorite'
+              symbol={star}
+            />
           </JuiListItemIcon>
           <JuiListItemText primary={primary} />
         </JuiListItem>

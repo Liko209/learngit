@@ -15,6 +15,7 @@ import {
   PERMISSION_CONTROLLED_BY,
   PERMISSION_PLATFORM,
 } from './PermissionControlledBy';
+
 class PermissionController {
   private splitIOController: SplitIOController;
   private launchDarklyController: LaunchDarklyController;

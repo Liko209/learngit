@@ -5,6 +5,7 @@
  */
 
 import { Progress } from '../entity';
+
 interface IProgressService {
   addProgress(id: number, status: Progress): void;
 

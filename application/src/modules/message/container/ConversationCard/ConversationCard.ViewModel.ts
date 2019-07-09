@@ -96,9 +96,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get integrationItems() {
     if (this.post.itemIds) {
-      return this.post.itemIds.filter((id: number) =>
-        GlipTypeUtil.isIntegrationType(id),
-      );
+      return this.post.itemIds.filter((id: number) => GlipTypeUtil.isIntegrationType(id));
     }
     return [];
   }
@@ -115,7 +113,7 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
           ENTITY_NAME.ITEM,
           integrationItemID as number,
         );
-        return item.activity;
+        return item.activity || this.creator.userDisplayName;
       }
       return `${this.creator.userDisplayName} ${i18nP('message.sharedItems')}`;
     }

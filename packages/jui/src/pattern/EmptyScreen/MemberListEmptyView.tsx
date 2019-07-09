@@ -5,7 +5,9 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, width, height, grey } from '../../foundation/utils';
+import {
+  spacing, width, height, grey,
+} from '../../foundation/utils';
 import { JuiMemberListEmptyViewProps } from './types';
 
 const Wrapper = styled.div`

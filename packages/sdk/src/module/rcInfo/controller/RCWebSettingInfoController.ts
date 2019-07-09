@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ERCWebSettingUri } from '../types';
+import { ERCWebUris } from '../types';
 import { RCAuthApi, RCClientInfo } from 'sdk/api';
 import { RCInfoFetchController } from './RCInfoFetchController';
 import { mainLogger } from 'foundation';
 import { UndefinedAble } from 'sdk/types';
 import { JOB_KEY, jobScheduler } from 'sdk/framework/utils/jobSchedule';
-
+/* eslint-disable */
 const LOG_TAG = 'RCWebSettingInfoController';
 const SAFE_SYNC_INTERVAL = 5 * 60 * 1000;
 const DEFAULT_TTL = 5 * 60;
@@ -20,17 +20,28 @@ const MILLISECONDS_IN_ONE_SECOND = 1000;
 class RCWebSettingInfoController {
   constructor(private _rcInfoFetchController: RCInfoFetchController) {}
 
-  async generateRCAuthCodeUri(type: ERCWebSettingUri) {
-    let finalUri = '';
+  async getRCWebUriByType(type: ERCWebUris) {
     try {
-      const clientInfo = await this._clientInfo();
-      if (!clientInfo) {
-        return finalUri;
-      }
+      let finalUri = '';
+      do {
+        const clientInfo = await this._clientInfo();
+        if (!clientInfo) {
+          break;
+        }
+        const srcUri = await this._getWebSettingUri(type, clientInfo);
+        if (!srcUri) {
+          break;
+        }
 
-      const clientId = await this._getInteropClientId(type, clientInfo);
-      const srcUri = await this._getWebSettingUri(type, clientInfo);
-      if (clientId && srcUri) {
+        if (!this._isAuthCodeNeeded(srcUri)) {
+          finalUri = srcUri;
+          break;
+        }
+
+        const clientId = await this._getInteropClientId(type, clientInfo);
+        if (!clientId) {
+          break;
+        }
         const authInfo = await RCAuthApi.generateRCCode(clientId, DEFAULT_TTL);
         mainLogger.tags(LOG_TAG).log('success to request RC auth code', {
           authInfo,
@@ -38,18 +49,21 @@ class RCWebSettingInfoController {
           clientId,
         });
         finalUri = this._buildRCAuthCodeUri(srcUri, authInfo.code);
-      }
+      } while (false);
+
       return finalUri;
     } catch (error) {
-      mainLogger
-        .tags(LOG_TAG)
-        .warn('failed to generateRCAuthCodeUri', { error });
+      mainLogger.tags(LOG_TAG).warn('failed to getRCWebUriByType', { error });
       throw error;
     }
   }
 
+  private _isAuthCodeNeeded(uri: string) {
+    return uri.includes(AUTH_REPLACE_HOLDER);
+  }
+
   private async _getInteropClientId(
-    type: ERCWebSettingUri,
+    type: ERCWebUris,
     clientInfo: RCClientInfo,
   ) {
     let clientId: string | undefined;
@@ -60,12 +74,12 @@ class RCWebSettingInfoController {
     ) {
       const ids = clientInfo.provisioning.interopClientIds;
       switch (type) {
-        case ERCWebSettingUri.BILLING_URI:
-        case ERCWebSettingUri.PHONE_SYSTEM_URI:
-        case ERCWebSettingUri.EXTENSION_URI:
+        case ERCWebUris.BILLING_URI:
+        case ERCWebUris.PHONE_SYSTEM_URI:
+        case ERCWebUris.EXTENSION_URI:
           clientId = ids.serviceWeb;
           break;
-        case ERCWebSettingUri.ANALYTIC_PORTAL_URI:
+        case ERCWebUris.ANALYTIC_PORTAL_URI:
           clientId = ids.analyticsPortal;
           break;
         default:
@@ -75,32 +89,16 @@ class RCWebSettingInfoController {
     return clientId;
   }
 
-  private _getWebSettingUri(type: ERCWebSettingUri, clientInfo: RCClientInfo) {
-    let uri: string | undefined;
+  private _getWebSettingUri(type: ERCWebUris, clientInfo: RCClientInfo) {
     if (
       clientInfo &&
       clientInfo.provisioning &&
       clientInfo.provisioning.webUris
     ) {
       const webUris = clientInfo.provisioning.webUris;
-      switch (type) {
-        case ERCWebSettingUri.ANALYTIC_PORTAL_URI:
-          uri = webUris.analyticsPortal;
-          break;
-        case ERCWebSettingUri.BILLING_URI:
-          uri = webUris.serviceWebBilling;
-          break;
-        case ERCWebSettingUri.EXTENSION_URI:
-          uri = webUris.serviceWebUserSettings;
-          break;
-        case ERCWebSettingUri.PHONE_SYSTEM_URI:
-          uri = webUris.serviceWebPhoneSystem;
-          break;
-        default:
-          break;
-      }
+      return webUris[type];
     }
-    return uri;
+    return undefined;
   }
 
   private async _clientInfo() {

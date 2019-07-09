@@ -8,6 +8,7 @@ import { TAB_TYPE } from '../../ItemList/types';
 import { shallow } from 'enzyme';
 import { FullSearchView } from '../FullSearch.View';
 import history from '@/history';
+
 jest.mock('@/modules/message/container/ConversationSheet', () => ({}));
 
 describe('FullSearch.View', () => {

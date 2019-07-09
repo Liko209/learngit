@@ -3,11 +3,14 @@
  * @Date: 2018-12-11 15:08:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { Item, ItemVersions } from 'sdk/module/item/entity';
+import { Item, ItemVersions, ItemVersionPage } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Thumbs } from 'sdk/module/item/module/base/entity/Item';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { PostService } from 'sdk/module/post';
+import moize from 'moize';
 
 enum FileType {
   image = 0,
@@ -23,13 +26,10 @@ type ExtendFileItem = {
 
 export default class FileItemModel extends ItemModel {
   @observable type: string;
-  @observable name: string;
   @observable isDocument?: boolean;
   @observable isNew: boolean;
   @observable creatorId: number;
-  @observable versions: Item['versions'];
   @observable deactivated: Item['deactivated'];
-  @observable createdAt: number;
 
   constructor(data: Item) {
     super(data);
@@ -56,51 +56,49 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
-  get thumbs(): Thumbs | null {
-    return this.getVersionsValue('thumbs');
+  get thumbs() {
+    return this.getVersionsValue<Thumbs>('thumbs');
   }
 
   @computed
-  get pages() {
-    if (!this.hasVersions()) return null;
-    const { pages } = this.latestVersion;
-    return pages && pages.length > 0 ? pages : null;
+  get pages(): ItemVersionPage[] {
+    const pages = this.latestVersion && this.latestVersion.pages;
+    return pages || [];
   }
 
   @computed
-  get versionUrl(): string | null {
-    return this.getVersionsValue('url');
+  get versionUrl() {
+    return this.getVersionsValue<string>('url') || '';
   }
 
   @computed
   get size() {
-    return this.getVersionsValue('size');
+    return this.getVersionsValue<number>('size') || 0;
   }
 
   @computed
   get downloadUrl() {
-    return this.getVersionsValue('download_url');
+    return this.getVersionsValue<string>('download_url') || '';
   }
 
   @computed
   get status() {
-    if (!this.hasVersions()) return null;
-    return this.getVersionsValue('status');
+    return this.getVersionsValue<string>('status') || '';
   }
 
   @computed
   get origHeight() {
-    return this.getVersionsValue('orig_height');
+    return this.getVersionsValue<number>('orig_height') || 0;
   }
 
   @computed
   get origWidth() {
-    return this.getVersionsValue('orig_width');
+    return this.getVersionsValue<number>('orig_width') || 0;
   }
 
   @computed
   get storeFileId() {
-    return this.getVersionsValue('stored_file_id');
+    return this.getVersionsValue<number>('stored_file_id') || 0;
   }
 
   @computed
@@ -109,9 +107,22 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
-  get latestVersion(): ItemVersions {
-    return this.versions.find(item => !item.deactivated)!;
+  get latestVersion(): ItemVersions | undefined {
+    return this.versions && this.versions.find(item => !item.deactivated);
   }
+
+  getDirectRelatedPostInGroup(groupId: number) {
+    return this._getDirectRelatedPostInGroup(groupId);
+  }
+
+  private _getDirectRelatedPostInGroup = moize.promise(
+    (groupId: number) => {
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
+      return postService.getLatestPostIdByItem(groupId, this.id);
+    },
+  );
 
   static fromJS(data: Item) {
     return new FileItemModel(data);

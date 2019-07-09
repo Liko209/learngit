@@ -4,11 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { useRef, useState, useEffect, memo, useCallback } from 'react';
+import {
+  useRef, useState, useEffect, memo, useCallback,
+} from 'react';
 import { useMountState } from './hooks';
 import { noop } from '../../foundation/utils';
 import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
-import { IndexRange, Direction, IndexConstraint, Delta } from './types';
+import {
+  IndexRange, Direction, IndexConstraint, Delta,
+} from './types';
 
 type JuiDataLoaderProps = {
   threshold?: number;
@@ -45,28 +49,29 @@ const JuiDataLoader = ({
   const loading = loadingUp || loadingDown || loadingInitial;
   const isMountedRef = useMountState();
 
-  const getMap = useCallback(() => {
-    return {
-      up: {
-        setLoading: setLoadingUp,
-        load: (count: number) => loadMore('up', count),
-        onFailed: noop,
-      },
-      down: {
-        setLoading: setLoadingDown,
-        load: (count: number) => loadMore('down', count),
-        onFailed: noop,
-      },
-      initial: {
-        setLoading: setLoadingInitial,
-        load: (count: number) => loadInitialData(),
-        onFailed: setLoadingInitialFailed,
-      },
-    };
-  },                         [loadMore, loadMore, loadInitialData]);
+  const getMap = useCallback(() => ({
+    up: {
+      setLoading: setLoadingUp,
+      load: (count: number) => loadMore('up', count),
+      onFailed: noop,
+    },
+    down: {
+      setLoading: setLoadingDown,
+      load: (count: number) => loadMore('down', count),
+      onFailed: noop,
+    },
+    initial: {
+      setLoading: setLoadingInitial,
+      load: () => loadInitialData(),
+      onFailed: setLoadingInitialFailed,
+    },
+  }), [loadMore, loadMore, loadInitialData]);
 
   const loadData = useCallback(
     _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+      if (!isMountedRef.current) {
+        return;
+      }
       let success: boolean = false;
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
@@ -83,7 +88,7 @@ const JuiDataLoader = ({
       }
 
       return success;
-    },         1000),
+    }, 1000),
     [getMap],
   );
 
@@ -118,10 +123,13 @@ const JuiDataLoader = ({
     loadData('initial').then((result: boolean) => {
       if (result && isMountedRef.current) {
         const preloadInfo = loadMoreStrategy.getPreloadInfo();
-        preloadInfo && loadData(preloadInfo.direction!, preloadInfo.count);
+
+        preloadInfo &&
+          hasMore(preloadInfo.direction!) &&
+          loadData(preloadInfo.direction!, preloadInfo.count);
       }
     });
-  },        []);
+  }, [loadInitialData]);
 
   const childrenElement = children({
     loadingInitial,

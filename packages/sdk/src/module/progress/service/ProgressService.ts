@@ -8,11 +8,12 @@ import { Progress } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { ProgressCacheController } from '../controller/ProgressCacheController';
 import { IProgressService } from './IProgressService';
+
 class ProgressService extends EntityBaseService<Progress>
   implements IProgressService {
   private _progressCacheController: ProgressCacheController;
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
   }
 
   protected get progressCacheController() {

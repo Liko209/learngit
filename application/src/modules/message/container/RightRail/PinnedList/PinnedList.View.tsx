@@ -34,15 +34,11 @@ type Props = PinnedListViewProps & PinnedListProps & WithTranslation;
 @observer
 class PinnedListComponent extends React.Component<Props> {
   private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
-  private _renderItems = () => {
-    return this.props.ids.map((itemId: number) => (
+  private _renderItems = () => this.props.ids.map((itemId: number) => (
       <PinnedCell id={itemId} key={itemId} />
-    ));
-  }
+  ))
 
-  renderEmptyContent = () => {
-    return <EmptyView type={RIGHT_RAIL_ITEM_TYPE.PIN_POSTS} />;
-  }
+  renderEmptyContent = () => <EmptyView type={RIGHT_RAIL_ITEM_TYPE.PIN_POSTS} />
 
   hasMore = (direction: string) => {
     if (direction === 'up') {
@@ -52,16 +48,14 @@ class PinnedListComponent extends React.Component<Props> {
     return ids.length !== totalCount;
   }
 
-  defaultLoading = () => {
-    return <JuiRightRailContentLoading />;
-  }
+  defaultLoading = () => <JuiRightRailContentLoading />
 
-  defaultLoadingMore = () => {
-    return <JuiRightRailLoadingMore />;
-  }
+  defaultLoadingMore = () => <JuiRightRailLoadingMore />
 
   render() {
-    const { totalCount, ids, height, t } = this.props;
+    const {
+      totalCount, ids, height, t,
+    } = this.props;
     return (
       <JuiRightShelfContent>
         {totalCount > 0 && ids.length > 0 && (
@@ -77,9 +71,9 @@ class PinnedListComponent extends React.Component<Props> {
             loadMoreStrategy={this._loadMoreStrategy}
             loadInitialData={this.props.loadInitialData}
             loadMore={this.props.loadMore}
-            loadingRenderer={this.defaultLoading()}
+            loadingRenderer={this.defaultLoading}
             hasMore={this.hasMore}
-            loadingMoreRenderer={this.defaultLoadingMore()}
+            loadingMoreRenderer={this.defaultLoadingMore}
             noRowsRenderer={this.renderEmptyContent()}
             stickToLastPosition={false}
           >

@@ -3,13 +3,11 @@
  * @Date: 2019-04-23 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-// import React from 'react';
 import {
   ISettingService,
   SETTING_ITEM_TYPE,
   SelectSettingItem,
 } from '@/interface/setting';
-import { CallerIdSelectSourceItem } from './CallerIdSettingItem';
 import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import {
   SETTING_PAGE__PHONE,
@@ -21,10 +19,34 @@ import {
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
   SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
 } from './constant';
+import {
+  CallerIdSelectSourceItem,
+  CallerIdSelectValue,
+} from './CallerIdSettingItem';
 import { RegionSettingItem } from './RegionSettingItem';
-import { DefaultPhoneAppSelectItem } from './DefaultPhoneAppSettingItem';
+import {
+  DefaultPhoneAppSelectItem,
+  beforeDefaultPhoneAppSettingSave,
+} from './DefaultPhoneAppSettingItem';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
+
+const DefaultPhoneAppDataTrackingOption: {
+  [key in CALLING_OPTIONS]: string
+} = {
+  glip: 'Use RingCentral App (this app)',
+  ringcentral: 'Use RingCentral Phone',
+};
+
+const CallerIDDataTrackingOption: {
+  [key in IPhoneNumberRecord['usageType']]: string
+} = {
+  DirectNumber: '"DID", personal direct number',
+  MainCompanyNumber: '"companyMain", company main number',
+  Blocked: 'blocked',
+  CompanyOther:
+    '"companyOther", company number with nick name or company fax number',
+};
 
 class TelephonySettingManager {
   private _scope = Symbol('TelephonySettingManager');
@@ -52,6 +74,12 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 100,
               sourceRenderer: DefaultPhoneAppSelectItem,
+              beforeSaving: beforeDefaultPhoneAppSettingSave,
+              dataTracking: {
+                name: 'defaultPhoneApp',
+                type: 'phoneGeneral',
+                optionTransform: value => DefaultPhoneAppDataTrackingOption[value],
+              },
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
@@ -62,6 +90,13 @@ class TelephonySettingManager {
               type: SETTING_ITEM_TYPE.SELECT,
               weight: 200,
               sourceRenderer: CallerIdSelectSourceItem,
+              valueRenderer: CallerIdSelectValue,
+              dataTracking: {
+                name: 'callerID',
+                type: 'phoneGeneral',
+                optionTransform: value => CallerIDDataTrackingOption[value.usageType] ||
+                  CallerIDDataTrackingOption.CompanyOther,
+              },
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
               id: SETTING_ITEM__PHONE_REGION,
@@ -76,6 +111,10 @@ class TelephonySettingManager {
               description: 'setting.phone.general.extensions.description',
               type: SETTING_ITEM_TYPE.LINK,
               weight: 400,
+              dataTracking: {
+                name: 'extensionSettings',
+                type: 'phoneGeneral',
+              },
             },
           ],
         },
@@ -93,6 +132,10 @@ class TelephonySettingManager {
           'setting.notificationAndSounds.desktopNotifications.incomingCalls.description',
         type: SETTING_ITEM_TYPE.TOGGLE,
         weight: 300,
+        dataTracking: {
+          name: 'incomingCall',
+          type: 'desktopNotificationSettings',
+        },
       },
     );
     this._settingService.registerItem(
@@ -107,6 +150,10 @@ class TelephonySettingManager {
           'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.description',
         type: SETTING_ITEM_TYPE.TOGGLE,
         weight: 400,
+        dataTracking: {
+          name: 'missedCall',
+          type: 'desktopNotificationSettings',
+        },
       },
     );
   }

@@ -7,6 +7,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
+import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
 import { Header } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
@@ -18,15 +19,18 @@ import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
-import { TelephonyDialog, TelephonyMinimizeWindow } from './TelephonyDialog';
+import { TelephonyDialog, TelephonyMinimizeWindow, ContactSearchList } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 import { SearchDialog, JoinTeamDialog } from './SearchDialog';
 import { SettingTab } from './SettingTab';
 import { LogoutDialog } from './LogoutDialog';
-import { MoreActionOnFile } from './MoreActionOnFile';
+import { MoreActionOnFile, MoreActionOnViewer } from './MoreActionOnFile';
 import { PhoneTab } from './PhoneTab';
 import { DeleteVoicemailDialog } from './PhoneTab/Voicemail';
+import { DeleteAllCalllDialog } from './PhoneTab/CallHistory';
+import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
+import { BlockNumberDialog } from './PhoneTab/index';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -58,6 +62,10 @@ export class HomePage extends BaseWebComponent {
 
   get messageTab() {
     return this.getComponent(MessageTab);
+  }
+
+  get postDeleteConfirmDialog() {
+    return this.getComponent(PostDeleteConfirmDialog);
   }
 
   get phoneTab() {
@@ -164,6 +172,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(TelephonyDialog);
   }
 
+  get contactSearchList() {
+    return this.getComponent(ContactSearchList);
+  }
+
   get minimizeCallWindow() {
     return this.getComponent(TelephonyMinimizeWindow);
   }
@@ -188,8 +200,23 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(MoreActionOnFile);
   }
 
+  get moreActionOnViewer() {
+    return this.getComponent(MoreActionOnViewer);
+  }
+
   get deleteVoicemailDialog() {
     return this.getComponent(DeleteVoicemailDialog);
   }
 
+  get blockNumberDialog() {
+    return this.getComponent(BlockNumberDialog)
+  }
+
+  get deleteAllCalllDialog() {
+    return this.getComponent(DeleteAllCalllDialog);
+  }
+
+  get deleteCallHistoryDialog() {
+    return this.getComponent(DeleteCallHistoryDialog);
+  }
 }

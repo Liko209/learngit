@@ -8,7 +8,7 @@ import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { ENTITY_NAME } from '@/store';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { when } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
@@ -269,7 +269,7 @@ describe('ContactInfoViewModel', () => {
         () => !!vm.personId,
         () => {
           expect(vm.isExt).toEqual(true);
-          expect(vm.displayNumber).toEqual('Ext. 101');
+          expect(vm.displayNumber).toEqual('telephony.Ext 101');
           done();
         },
       );
@@ -502,7 +502,9 @@ describe('ContactInfoViewModel', () => {
       expect(personService.matchContactByPhoneNumber).not.toHaveBeenCalled();
     }
 
-    @test('should not call matchContactByPhoneNumber if not extensionNumber and phoneNumber')
+    @test(
+      'should not call matchContactByPhoneNumber if not extensionNumber and phoneNumber',
+    )
     @mockService(personService, 'matchContactByPhoneNumber')
     async t2() {
       const caller = {
@@ -532,10 +534,9 @@ describe('ContactInfoViewModel', () => {
       await when(
         () => !!vm['_caller'],
         async () => {
-          expect(await personService.matchContactByPhoneNumber).toHaveBeenCalledWith(
-            '+123',
-            ContactType.GLIP_CONTACT,
-          );
+          expect(
+            await personService.matchContactByPhoneNumber,
+          ).toHaveBeenCalledWith('+123');
           expect(vm.personId).toBe(1);
           done();
         },
@@ -558,10 +559,9 @@ describe('ContactInfoViewModel', () => {
       await when(
         () => !!vm['_caller'],
         async () => {
-          expect(await personService.matchContactByPhoneNumber).toHaveBeenCalledWith(
-            '101',
-            ContactType.GLIP_CONTACT,
-          );
+          expect(
+            await personService.matchContactByPhoneNumber,
+          ).toHaveBeenCalledWith('101');
           expect(vm.personId).toBeUndefined();
           done();
         },

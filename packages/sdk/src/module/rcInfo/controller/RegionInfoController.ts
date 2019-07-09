@@ -49,26 +49,31 @@ const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
+  private _notificationKeys: string[];
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
     private _rcAccountInfoController: RCAccountInfoController,
     private _accountServiceInfoController: AccountServiceInfoController,
     private _callerIdController: RCCallerIdController,
-  ) {}
+  ) {
+    this._notificationKeys = [
+      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
+      RC_INFO.ACCOUNT_INFO,
+      RC_INFO.RC_SERVICE_INFO,
+    ];
+  }
 
   init() {
-    notificationCenter.on(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.on(key, this.updateStationLocation);
+    });
   }
 
   dispose() {
-    notificationCenter.off(
-      RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
-      this.updateStationLocation,
-    );
+    this._notificationKeys.forEach((key: string) => {
+      notificationCenter.off(key, this.updateStationLocation);
+    });
   }
 
   updateStationLocation = () => {
@@ -198,24 +203,18 @@ class RegionInfoController {
     isoCode: string,
   ): Promise<UndefinedAble<DialingCountryInfo>> {
     const recordsInDialing = await this._getDialingPlanCountryRecords();
-    const record = recordsInDialing.find((x: DialingPlanCountryRecord) => {
-      return x.isoCode === isoCode;
-    });
+    const record = recordsInDialing.find((x: DialingPlanCountryRecord) => x.isoCode === isoCode);
     return record;
   }
 
   private _getDefaultCountryInfoByISOCode(isoCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => {
-      return info.isoCode === isoCode;
-    });
+    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.isoCode === isoCode);
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }
 
   private _getDefaultCountryInfoByCallingCode(callingCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => {
-      return info.callingCode === callingCode;
-    });
+    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.callingCode === callingCode);
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }

@@ -29,7 +29,8 @@ export default class CallLogModel extends Base<CallLog, string> {
   @observable legs: CallLog['legs'];
   @observable message: CallLog['message'];
   @observable deleted: CallLog['deleted'];
-
+  @observable timestamp: CallLog['__timestamp'];
+  @observable deactivated: CallLog['__deactivated'];
   constructor(data: CallLog) {
     super(data);
 
@@ -53,6 +54,8 @@ export default class CallLogModel extends Base<CallLog, string> {
       legs,
       message,
       deleted,
+      __timestamp,
+      __deactivated,
     } = data;
 
     this.uri = uri;
@@ -74,6 +77,8 @@ export default class CallLogModel extends Base<CallLog, string> {
     this.legs = legs;
     this.message = message;
     this.deleted = deleted;
+    this.timestamp = __timestamp;
+    this.deactivated = __deactivated;
   }
 
   static fromJS(data: CallLog) {

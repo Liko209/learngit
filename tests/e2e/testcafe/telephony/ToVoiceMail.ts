@@ -9,7 +9,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
-import { WebphoneSession } from '../v2/webphone/session';
+import { WebphoneSession } from 'webphone-client';
 
 fixture('Telephony/ToVoiceMail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -22,6 +22,7 @@ test.meta(<ITestMeta>{
   keywords: ['VoiceMail']
 })('Can should the tooltip when hovering on the to voicemail button', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).scenarioHelper.resetProfile(loginUser);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const tooltipText = 'Send to voicemail';
@@ -57,6 +58,7 @@ test.meta(<ITestMeta>{
   keywords: ['VoiceMail']
 })('User can receive the new incoming call  when user ignored the incoming call', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).scenarioHelper.resetProfile(loginUser);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const loginUserWebPhone = await h(t).newWebphoneSession(loginUser);
@@ -100,6 +102,7 @@ test.meta(<ITestMeta>{
   keywords: ['VoiceMail']
 })('Can send to voicemail when receiving an incoming call', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).scenarioHelper.resetProfile(loginUser);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   let callerWebPhone: WebphoneSession;

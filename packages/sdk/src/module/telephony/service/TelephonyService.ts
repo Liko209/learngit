@@ -6,32 +6,40 @@
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TelephonyEngineController } from '../controller';
 import {
-  ITelephonyCallDelegate,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
-} from './ITelephonyCallDelegate';
-import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
+  ITelephonyDelegate,
+} from './index';
+
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 import { MAKE_CALL_ERROR_CODE } from '../types';
-import { IdModel } from '../../../framework/model';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting';
 import { PhoneSetting } from '../setting';
 import { ITelephonyService } from './ITelephonyService';
+import { HealthModuleController } from 'sdk/framework/controller/impl/HealthModuleController';
+import { MODULE_NAME, MODULE_IDENTIFY } from '../constants';
 
-class TelephonyService extends EntityBaseService<IdModel>
+class TelephonyService extends EntityBaseService<Call>
   implements ITelephonyService {
   private _telephonyEngineController: TelephonyEngineController;
   private _userConfig: TelephonyUserConfig;
   private _phoneSetting: PhoneSetting;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: true, entityName: 'CALL' });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SERVICE.LOGOUT]: this.handleLogOut,
+      }),
+    );
+
+    this.setHealthModuleController(
+      new HealthModuleController(MODULE_IDENTIFY, MODULE_NAME, {
+        VoIP: () => ({ state: this.getVoipState() }),
       }),
     );
     this._init();
@@ -39,12 +47,14 @@ class TelephonyService extends EntityBaseService<IdModel>
 
   protected onStarted() {
     super.onStarted();
+    this.telephonyController.createAccount();
     ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
     ).registerModuleSetting(this.phoneSetting);
   }
 
   protected onStopped() {
+    this.telephonyController.logout();
     super.onStopped();
     if (this._phoneSetting) {
       ServiceLoader.getInstance<SettingService>(
@@ -56,16 +66,15 @@ class TelephonyService extends EntityBaseService<IdModel>
 
   handleLogOut = async () => {
     this.telephonyController.logout();
-  }
+  };
 
-  getVoipCallPermission = async () => {
-    return this.telephonyController.getVoipCallPermission();
-  }
+  getVoipCallPermission = async () => this.telephonyController.getVoipCallPermission();
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
       this._telephonyEngineController = new TelephonyEngineController(
         this.userConfig,
+        this.getEntityCacheController(),
       );
     }
     return this._telephonyEngineController;
@@ -82,19 +91,16 @@ class TelephonyService extends EntityBaseService<IdModel>
     return this._userConfig;
   }
 
-  createAccount = (
-    accountDelegate: ITelephonyAccountDelegate,
-    callDelegate: ITelephonyCallDelegate,
-  ) => {
-    this.telephonyController.createAccount(accountDelegate, callDelegate);
-  }
+  setTelephonyDelegate = (accountDelegate: ITelephonyDelegate) => {
+    this.telephonyController.setAccountDelegate(accountDelegate);
+  };
 
   getAllCallCount = () => {
     const accountController = this.telephonyController.getAccountController();
     return accountController ? accountController.getCallCount() : 0;
-  }
+  };
 
-  makeCall = async (toNumber: string, fromNumber: string) => {
+  makeCall = async (toNumber: string, fromNumber?: string) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
       return this.telephonyController
@@ -102,80 +108,70 @@ class TelephonyService extends EntityBaseService<IdModel>
         .makeCall(toNumber, fromNumber);
     }
     return MAKE_CALL_ERROR_CODE.INVALID_STATE;
-  }
+  };
 
-  hangUp = (callId: string) => {
+  hangUp = (callId: number) => {
     this.telephonyController.getAccountController().hangUp(callId);
-  }
+  };
 
-  mute = (callId: string) => {
+  mute = (callId: number) => {
     this.telephonyController.getAccountController().mute(callId);
-  }
+  };
 
-  unmute = (callId: string) => {
+  unmute = (callId: number) => {
     this.telephonyController.getAccountController().unmute(callId);
-  }
+  };
 
-  hold = (callId: string) => {
-    this.telephonyController.getAccountController().hold(callId);
-  }
+  hold = async (callId: number) => await this.telephonyController.getAccountController().hold(callId);
 
-  unhold = (callId: string) => {
-    this.telephonyController.getAccountController().unhold(callId);
-  }
+  unhold = async (callId: number) => await this.telephonyController.getAccountController().unhold(callId);
 
-  startRecord = (callId: string) => {
-    this.telephonyController.getAccountController().startRecord(callId);
-  }
+  startRecord = async (callId: number) => await this.telephonyController
+    .getAccountController()
+    .startRecord(callId);
 
-  stopRecord = (callId: string) => {
-    this.telephonyController.getAccountController().stopRecord(callId);
-  }
+  stopRecord = async (callId: number) => await this.telephonyController
+    .getAccountController()
+    .stopRecord(callId);
 
-  dtmf = (callId: string, digits: string) => {
+  dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
-  }
+  };
 
-  answer = (callId: string) => {
+  answer = (callId: number) => {
     this.telephonyController.getAccountController().answer(callId);
-  }
+  };
 
-  sendToVoiceMail = (callId: string) => {
+  sendToVoiceMail = (callId: number) => {
     this.telephonyController.getAccountController().sendToVoiceMail(callId);
-  }
+  };
 
-  ignore = (callId: string) => {
+  ignore = (callId: number) => {
     this.telephonyController.getAccountController().ignore(callId);
-  }
+  };
 
-  startReply = (callId: string) => {
+  startReply = (callId: number) => {
     this.telephonyController.getAccountController().startReply(callId);
-  }
+  };
 
-  replyWithMessage = (callId: string, message: string) => {
+  replyWithMessage = (callId: number, message: string) => {
     this.telephonyController
       .getAccountController()
       .replyWithMessage(callId, message);
-  }
+  };
 
-  park = async (callId: string) => {
-    return await this.telephonyController.getAccountController().park(callId);
-  }
+  park = async (callId: number) => await this.telephonyController.getAccountController().park(callId);
 
-  flip = async (callId: string, flipNumber: number) => {
-    return await this.telephonyController
-      .getAccountController()
-      .flip(callId, flipNumber);
-  }
+  flip = async (callId: number, flipNumber: number) => await this.telephonyController
+    .getAccountController()
+    .flip(callId, flipNumber);
 
-  forward = async (callId: string, phoneNumber: string) => {
-    return await this.telephonyController
-      .getAccountController()
-      .forward(callId, phoneNumber);
-  }
+  forward = async (callId: number, phoneNumber: string) => await this.telephonyController
+    .getAccountController()
+    .forward(callId, phoneNumber);
 
   replyWithPattern = (
-    callId: string,
+    callId: number,
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
@@ -183,12 +179,14 @@ class TelephonyService extends EntityBaseService<IdModel>
     this.telephonyController
       .getAccountController()
       .replyWithPattern(callId, pattern, time, timeUnit);
-  }
+  };
 
-  getLastCalledNumber = () => {
+  getRingerDevicesList = () => this.telephonyController.getRingerDevicesList();
+
+  getVoipState = () => {
     const accountController = this.telephonyController.getAccountController();
-    return accountController ? accountController.getLastCalledNumber() : '';
-  }
+    return accountController ? accountController.getVoipState() : '';
+  };
 
   get phoneSetting() {
     if (!this._phoneSetting) {

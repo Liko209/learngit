@@ -31,6 +31,7 @@ import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { JuiDivider } from '../../../components/Divider/Divider';
 import { JuiIconButton } from '../../../components/Buttons/IconButton';
+import remove from '../../../assets/jupiter-icon/icon-remove.svg';
 
 storiesOf('Pattern/TeamSetting', module)
   .add('Admin', () => {
@@ -40,26 +41,26 @@ storiesOf('Pattern/TeamSetting', module)
     const descMaxLength = number('description max length', 1000);
     return (
       <JuiModal
-        fillContent={true}
-        open={true}
+        fillContent
+        open
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: forbidSave }}
-        title="Settings"
+        title='Settings'
         onCancel={action('on cancel')}
         onOK={action('on ok')}
-        okText="Save"
-        cancelText="Cancel"
+        okText='Save'
+        cancelText='Cancel'
       >
         <JuiTeamSettingEditSection>
           <JuiTeamSettingEditSectionLeft>
-            <JuiAvatar size="xlarge" src={defaultTeamAvatar} />
+            <JuiAvatar size='xlarge' src={defaultTeamAvatar} />
           </JuiTeamSettingEditSectionLeft>
           <JuiTeamSettingEditSectionRight>
             <JuiTextField
-              id="names"
-              label="Team name"
-              fullWidth={true}
+              id='names'
+              label='Team name'
+              fullWidth
               error={nameTakenError}
               inputProps={{
                 maxLength: nameMaxLength,
@@ -72,12 +73,12 @@ storiesOf('Pattern/TeamSetting', module)
               onChange={action('on name change')}
             />
             <JuiTextarea
-              id="Description"
-              label="Team description"
+              id='Description'
+              label='Team description'
               inputProps={{
                 maxLength: descMaxLength,
               }}
-              fullWidth={true}
+              fullWidth
               onChange={action('on description change')}
             />
           </JuiTeamSettingEditSectionRight>
@@ -88,43 +89,41 @@ storiesOf('Pattern/TeamSetting', module)
             Allow team members to
           </JuiTeamSettingSubSectionTitle>
           <JuiTeamSettingSubSectionList>
-            <JuiTeamSettingSubSectionListItem label="Add team members">
+            <JuiTeamSettingSubSectionListItem label='Add team members'>
               <JuiToggleButton onChange={action('on allowMemberAdd change')} />
             </JuiTeamSettingSubSectionListItem>
             <JuiDivider />
-            <JuiTeamSettingSubSectionListItem label="Post messages">
+            <JuiTeamSettingSubSectionListItem label='Post messages'>
               <JuiToggleButton onChange={action('on allowMemberPost change')} />
             </JuiTeamSettingSubSectionListItem>
             <JuiDivider />
-            <JuiTeamSettingSubSectionListItem label="Pin posts">
+            <JuiTeamSettingSubSectionListItem label='Pin posts'>
               <JuiToggleButton onChange={action('on allowMemberPin change')} />
             </JuiTeamSettingSubSectionListItem>
           </JuiTeamSettingSubSectionList>
         </JuiTeamSettingSubSection>
         <JuiDivider />
         <JuiTeamSettingButtonList>
-          <JuiTeamSettingButtonListItem color="semantic.negative">
-            <JuiTeamSettingButtonListItemText color="semantic.negative">
+          <JuiTeamSettingButtonListItem color='semantic.negative'>
+            <JuiTeamSettingButtonListItemText color='semantic.negative'>
               Delete team
             </JuiTeamSettingButtonListItemText>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
-            >
-              remove
-            </JuiIconButton>
+              variant='plain'
+              tooltipTitle='Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit.'
+              symbol={remove}
+            />
           </JuiTeamSettingButtonListItem>
           <JuiDivider />
-          <JuiTeamSettingButtonListItem color="semantic.negative">
-            <JuiTeamSettingButtonListItemText color="semantic.negative">
+          <JuiTeamSettingButtonListItem color='semantic.negative'>
+            <JuiTeamSettingButtonListItemText color='semantic.negative'>
               Archive team
             </JuiTeamSettingButtonListItemText>
             <JuiIconButton
-              variant="plain"
-              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
-            >
-              remove
-            </JuiIconButton>
+              variant='plain'
+              tooltipTitle='Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit.'
+              symbol={remove}
+            />
           </JuiTeamSettingButtonListItem>
           <JuiDivider />
         </JuiTeamSettingButtonList>
@@ -134,20 +133,20 @@ storiesOf('Pattern/TeamSetting', module)
   .add('Non-admin', () => {
     return (
       <JuiModal
-        fillContent={true}
-        open={true}
+        fillContent
+        open
         size={'medium'}
         modalProps={{ scroll: 'body' }}
-        title="Settings"
+        title='Settings'
         onCancel={action('on cancel')}
         onOK={action('on ok')}
-        okText="Save"
-        cancelText="Cancel"
+        okText='Save'
+        cancelText='Cancel'
       >
         <JuiDivider />
         <JuiTeamSettingButtonList>
-          <JuiTeamSettingButtonListItem color="semantic.negative">
-            <JuiTeamSettingButtonListItemText color="semantic.negative">
+          <JuiTeamSettingButtonListItem color='semantic.negative'>
+            <JuiTeamSettingButtonListItemText color='semantic.negative'>
               Leave team
             </JuiTeamSettingButtonListItemText>
           </JuiTeamSettingButtonListItem>

@@ -6,6 +6,7 @@
 import { Replacer, ChildrenType } from './types';
 import React from 'react';
 import _ from 'lodash';
+import { getComplementRanges } from './utils';
 
 class ParseContent {
   private _originalStr: string;
@@ -25,39 +26,30 @@ class ParseContent {
       return str;
     }
     const children: ChildrenType = [];
+    const plainStringReplacers: Replacer[] = [];
+    getComplementRanges(this._replacers, str.length).forEach(range => {
+      (range as Replacer).element = str.substr(range.startIndex, range.length);
+      plainStringReplacers.push(range);
+    });
+    this.addReplacers(plainStringReplacers);
+
     let elementCount = 0;
-    const addElement = (element: React.ReactChild | null) => {
-      if (React.isValidElement(element)) {
-        children.push(React.cloneElement(element, { key: elementCount }));
-        elementCount += 1;
-      } else {
-        children.push(element);
+    const pushChild = (element: React.ReactChild | null | undefined) => {
+      if (element) {
+        children.push(
+          React.isValidElement(element)
+            ? React.cloneElement(element, { key: elementCount++ })
+            : element,
+        );
       }
     };
-    let cursor = 0; // position of current character in the original string
-    let currentIndex = 0; // position of current replacer in the array
-    let currentReplacer = this._replacers[currentIndex];
-    while (cursor < str.length) {
-      if (currentReplacer && cursor === currentReplacer.startIndex) {
-        // need to be replaced, add the elements to the children[] array
-        const { element, length } = currentReplacer;
-        if (Array.isArray(element)) {
-          element.forEach(elem => addElement(elem));
-        } else {
-          addElement(element);
-        }
-        cursor += length;
-        currentIndex += 1;
-        currentReplacer = this._replacers[currentIndex];
-      } else {
-        // no need to be replaced, add the sub-string to the children[] array
-        const subEnd = currentReplacer
-          ? currentReplacer.startIndex
-          : str.length;
-        children.push(str.substring(cursor, subEnd));
-        cursor = subEnd;
-      }
-    }
+
+    this._replacers
+      .sort((a, b) => a.startIndex - b.startIndex)
+      .forEach(({ element }) => (Array.isArray(element)
+        ? element.forEach(pushChild)
+        : pushChild(element)));
+
     if (children.length === 1 && typeof children[0] === 'string') {
       return children[0];
     }
@@ -69,9 +61,7 @@ class ParseContent {
   }
 
   addReplacers(replacers: Replacer[]) {
-    this._replacers = this._replacers
-      .concat(replacers)
-      .sort((a, b) => a.startIndex - b.startIndex);
+    this._replacers = this._replacers.concat(replacers);
   }
 
   removeReplacersBy(identifier: (replacer: Replacer) => boolean) {

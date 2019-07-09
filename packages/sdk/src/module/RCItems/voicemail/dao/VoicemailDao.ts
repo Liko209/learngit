@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao, QUERY_DIRECTION, daoManager } from 'sdk/dao';
+import { BaseDao, daoManager } from 'sdk/dao';
 import { Voicemail } from '../entity';
 import { IDatabase } from 'foundation';
 import { VoicemailViewDao } from './VoicemailViewDao';
+import { FetchDataOptions } from '../../types';
 
 class VoicemailDao extends BaseDao<Voicemail> {
   static COLLECTION_NAME = 'voicemail';
@@ -91,9 +92,7 @@ class VoicemailDao extends BaseDao<Voicemail> {
   }
 
   private async _bulkUpdateVoicemailViews(partialItems: Partial<Voicemail>[]) {
-    const viewVMs = partialItems.map(vm =>
-      this._voicemailViewDao.toPartialVoicemailView(vm),
-    );
+    const viewVMs = partialItems.map(vm => this._voicemailViewDao.toPartialVoicemailView(vm));
     this._voicemailViewDao.bulkUpdate(viewVMs);
   }
 
@@ -105,9 +104,7 @@ class VoicemailDao extends BaseDao<Voicemail> {
 
   private async _bulkPutVoicemailView(array: Voicemail[]) {
     await this._voicemailViewDao.bulkPut(
-      array.map((vm: Voicemail) => {
-        return this._voicemailViewDao.toVoicemailView(vm);
-      }),
+      array.map((vm: Voicemail) => this._voicemailViewDao.toVoicemailView(vm)),
     );
   }
 
@@ -130,15 +127,9 @@ class VoicemailDao extends BaseDao<Voicemail> {
   }
 
   async queryVoicemails(
-    limit: number,
-    direction: QUERY_DIRECTION = QUERY_DIRECTION.OLDER,
-    anchorId?: number,
+    options: FetchDataOptions<Voicemail>,
   ): Promise<Voicemail[]> {
-    const vmIds = await this._voicemailViewDao.queryVoicemails(
-      limit,
-      direction,
-      anchorId,
-    );
+    const vmIds = await this._voicemailViewDao.queryVoicemails(options);
     const voicemails =
       (vmIds.length && (await this.batchGet(vmIds, true))) || [];
     return voicemails;

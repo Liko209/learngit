@@ -10,6 +10,7 @@ import {
   GroupStateHandleTask,
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
+  INIT_STATUS,
 } from '../../types';
 import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
@@ -36,18 +37,16 @@ const LOG_TAG = 'TotalUnreadController';
 
 class TotalUnreadController {
   private _taskArray: DataHandleTask[];
-  private _unreadInitialized: boolean;
+  private _initStatus: INIT_STATUS;
   private _singleGroupBadges: Map<number, GroupBadge>;
   private _badgeMap: Map<string, GroupBadge>;
   private _favoriteGroupIds: number[];
   private _changedBadges: Set<string>;
+  private _initQueue: ((status: boolean) => void)[] = [];
   constructor(
     private _groupService: IGroupService,
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {
-    this._taskArray = [];
-    this._unreadInitialized = false;
-    this._favoriteGroupIds = [];
     this.reset();
   }
 
@@ -75,6 +74,9 @@ class TotalUnreadController {
       mentionCount: 0,
     });
     this._changedBadges = new Set();
+    this._taskArray = [];
+    this._favoriteGroupIds = [];
+    this._initStatus = INIT_STATUS.IDLE;
   }
 
   getSingleGroupBadge(id: number): UndefinedAble<GroupBadge> {
@@ -116,17 +118,16 @@ class TotalUnreadController {
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     try {
+      if (!(await this.initializeTotalUnread())) {
+        return;
+      }
       this._changedBadges.clear();
-      if (!this._unreadInitialized) {
-        await this._initializeTotalUnread();
+      if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
+        await this._updateTotalUnreadByStateChanges(task.data);
+      } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
+        await this._updateTotalUnreadByGroupChanges(task.data);
       } else {
-        if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
-          await this._updateTotalUnreadByStateChanges(task.data);
-        } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
-          await this._updateTotalUnreadByGroupChanges(task.data);
-        } else {
-          await this._updateTotalUnreadByProfileChanges(task.data);
-        }
+        await this._updateTotalUnreadByProfileChanges(task.data);
       }
       this._updateBadge();
     } catch (err) {
@@ -153,7 +154,7 @@ class TotalUnreadController {
       });
     }
   }
-
+  /* eslint-disable */
   private async _updateTotalUnreadByGroupChanges(
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
@@ -250,28 +251,56 @@ class TotalUnreadController {
     groupUnread.id = to;
   }
 
-  private async _initializeTotalUnread(): Promise<void> {
-    this.reset();
+  async initializeTotalUnread(): Promise<boolean> {
+    if (this._initStatus === INIT_STATUS.INITIALIZED) {
+      return true;
+    }
 
-    const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    );
-    const groups = await this._groupService.getEntities();
-    this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const glipId = userConfig.getGlipUserId();
+    if (this._initStatus === INIT_STATUS.INITIALIZING) {
+      return new Promise<boolean>(resolve => {
+        this._initQueue.push(resolve);
+      });
+    }
 
-    const groupsMap = new Map<number, Group>();
-    groups.forEach((group: Group) => {
-      if (this._groupService.isValid(group) && group.members.includes(glipId)) {
-        groupsMap.set(group.id, group);
-      }
+    let result = false;
+    try {
+      this.reset();
+      this._initStatus = INIT_STATUS.INITIALIZING;
+
+      const profileService = ServiceLoader.getInstance<ProfileService>(
+        ServiceConfig.PROFILE_SERVICE,
+      );
+      const groups = await this._groupService.getEntities();
+      this._favoriteGroupIds =
+        (await profileService.getFavoriteGroupIds()) || [];
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      const glipId = userConfig.getGlipUserId();
+
+      const groupsMap = new Map<number, Group>();
+      groups.forEach((group: Group) => {
+        if (
+          this._groupService.isValid(group) &&
+          group.members.includes(glipId)
+        ) {
+          groupsMap.set(group.id, group);
+        }
+      });
+      await this._addNewGroupsUnread(groupsMap);
+      this._registerBadge();
+      this._updateBadge();
+      this._initStatus = INIT_STATUS.INITIALIZED;
+      result = true;
+    } catch (err) {
+      mainLogger.error(`TotalUnreadController, init error, ${err}`);
+      this._initStatus = INIT_STATUS.IDLE;
+    }
+    this._initQueue.forEach(resolve => {
+      resolve(result);
     });
-    await this._addNewGroupsUnread(groupsMap);
-    this._registerBadge();
-    this._unreadInitialized = true;
+    this._initQueue = [];
+    return result;
   }
 
   private async _addNewGroupsUnread(groupsMap: Map<number, Group>) {

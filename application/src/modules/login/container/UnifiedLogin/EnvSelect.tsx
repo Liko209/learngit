@@ -47,7 +47,7 @@ class EnvSelect extends React.Component<Props, States> {
     );
     AppEnvSetting.switchEnv(value, accountService);
     this.setState({ value });
-    location.reload();
+    window.location.reload();
   }
 }
 

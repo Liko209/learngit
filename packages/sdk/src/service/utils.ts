@@ -9,20 +9,23 @@ import { mainLogger } from 'foundation';
 import { IdModel } from '../framework/model';
 import { shouldEmitNotification } from '../utils/notificationUtils';
 
-const isObject = (value: any) =>
-  Object.prototype.toString.call(value) === '[object Object]';
+const isObject = (value: any) => Object.prototype.toString.call(value) === '[object Object]';
 // const isArray = value => Object.prototype.toString.call(value) === '[object Array]';
 // const isBoolean = value => Object.prototype.toString.call(value) === '[object Boolean]';
 // const isNumber = value => Object.prototype.toString.call(value) === '[object Number]';
 // const isString = value => Object.prototype.toString.call(value) === '[object String]';
 // const isNull = value => Object.prototype.toString.call(value) === '[object Null]';
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
-const isFunction = (value: any) =>
-  Object.prototype.toString.call(value) === '[object Function]';
+const isFunction = (value: any) => Object.prototype.toString.call(value) === '[object Function]';
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
 const isIEOrEdge =
   typeof navigator !== 'undefined' &&
-  /(MSIE|Trident|Edge)/.test(navigator.userAgent);
+  /(MSIE|Trident|Edge?)/.test(navigator.userAgent);
+
+const isChrome =
+  !isIEOrEdge &&
+  /Chrome/.test(navigator.userAgent) &&
+  /Google Inc/.test(navigator.vendor);
 
 const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 
@@ -42,7 +45,9 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
+  {
+    data, dao, eventKey, noSavingToDB, source, changeMap,
+  }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -65,8 +70,10 @@ const baseHandleData = async (
     });
 
     if (deactivatedData.length > 0) {
-      await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-      await dao.bulkDelete(deactivatedData.map((item: any) => item.id));
+      await Promise.all([
+        daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData),
+        dao.bulkDelete(deactivatedData.map((item: any) => item.id)),
+      ]);
     }
 
     if (normalData.length > 0) {
@@ -91,12 +98,10 @@ const baseHandleData = async (
             }
           },
         );
+      } else if (changeMap) {
+        changeMap.set(eventKey, { entities: data });
       } else {
-        if (changeMap) {
-          changeMap.set(eventKey, { entities: data });
-        } else {
-          notificationCenter.emitEntityUpdate(eventKey, data);
-        }
+        notificationCenter.emitEntityUpdate(eventKey, data);
       }
     }
     return normalData;
@@ -112,5 +117,6 @@ export {
   baseHandleData,
   isFunction,
   isIEOrEdge,
+  isChrome,
   isFirefox,
 };

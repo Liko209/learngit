@@ -30,4 +30,6 @@ enum SEARCH_SCOPE {
   CONVERSATION,
 }
 
-export { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE, SearchItemTypes };
+export {
+  TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE, SearchItemTypes,
+};

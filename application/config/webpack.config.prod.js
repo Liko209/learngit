@@ -7,7 +7,6 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const resolve = require('resolve');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
@@ -19,7 +18,6 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
@@ -29,8 +27,9 @@ const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const appPackage = require(paths.appPackageJson);
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const eslintRules = require('../../.eslintrc');
+
 const argv = process.argv;
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -168,6 +167,15 @@ module.exports = {
           test: /[\\/]codemirror[\\/]/,
           name: 'codemirror',
         },
+        svgChunks: {
+          test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
+          name: 'svg.iconChunks',
+          minChunks: 1,
+        },
+        countryChunks: {
+          test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+          name: 'svg.countryFlagChunks',
+        },
       },
       name: false,
     },
@@ -223,6 +231,36 @@ module.exports = {
     rules: [
       // Disable require.ensure as it's not a standard language feature.
       { parser: { requireEnsure: false } },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /\.test.(ts|tsx)$/,
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
+        ],
+        enforce: 'pre',
+        use: [
+          {
+            options: {
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
+              eslintPath: require.resolve('eslint'),
+              baseConfig: {
+                extends: require.resolve('../../eslint-config'),
+              },
+              ignore: true,
+              failOnError: true,
+              cache: true,
+              emitError: true,
+              ...eslintRules,
+            },
+            loader: require.resolve('eslint-loader'),
+          },
+        ],
+      },
       {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
@@ -322,16 +360,13 @@ module.exports = {
             // See https://github.com/webpack/webpack/issues/6571
             sideEffects: true,
           },
-          // country flag svg loader
           {
-            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            test: /jui\/src\/assets\/.*\.svg$/,
             use: [
               {
                 loader: 'svg-sprite-loader',
                 options: {
-                  extract: true,
-                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
-                  symbolId: 'country-flag-[name]',
+                  symbolId: 'icon-[name]',
                 },
               },
               {
@@ -340,31 +375,7 @@ module.exports = {
                   plugins: [
                     { removeTitle: true },
                     { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
-                    { reusePaths: true },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
-            use: [
-              {
-                loader: 'svg-sprite-loader',
-                options: {
-                  extract: true,
-                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
-                  symbolId: 'jupiter-[name]',
-                },
-              },
-              {
-                loader: 'svgo-loader',
-                options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathDtata: true },
+                    { convertPathData: true },
                     { reusePaths: true },
                   ],
                 },
@@ -475,38 +486,11 @@ module.exports = {
     // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    // Perform type checking and linting in a separate process to speed up compilation
-    new ForkTsCheckerWebpackPlugin({
-      typescript: resolve.sync('typescript', {
-        basedir: paths.appNodeModules,
-      }),
-      async: false,
-      useTypescriptIncrementalApi: true,
-      checkSyntacticErrors: true,
-      tsconfig: paths.appTsConfig,
-      tslint: paths.appTsLint,
-      reportFiles: [
-        '**',
-        '!**/*.json',
-        '!**/__tests__/**',
-        '!**/?(*.)(spec|test).*',
-        '!**/src/setupProxy.*',
-        '!**/src/setupTests.*',
-      ],
-      watch: paths.appSrc,
-      silent: true,
-      // The formatter is invoked directly in WebpackDevServerUtils during development
-      // formatter: typescriptFormatter,
-    }),
-    // svg sprite loader plugin
-    new SpriteLoaderPlugin(),
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
       navigateFallback: publicUrl + '/index.html',
       navigateFallbackBlacklist: [
-        // Exclude URLs starting with /_, as they're likely an API call
-        new RegExp('^/_'),
         // Exclude URLs containing a dot, as they're likely a resource in
         // public/ and not a SPA route
         new RegExp('/[^/]+\\.[^/]+$'),
@@ -517,8 +501,9 @@ module.exports = {
       modifyURLPrefix: {
         '': '/',
       },
-      runtimeCaching,
+      cleanupOutdatedCaches: true,
       importScripts: ['sw-notification.js'],
+      runtimeCaching,
     }),
     shouldUploadMapToSentry
       ? new SentryWebpackPlugin({

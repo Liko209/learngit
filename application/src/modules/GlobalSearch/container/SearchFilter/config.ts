@@ -7,6 +7,7 @@ import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { TypeDictionary } from 'sdk/utils';
 
 import { DATE_DICTIONARY } from './types';
+
 const TYPE_MAP = [
   { id: '', name: 'All', value: ESearchContentTypes.ALL },
   {

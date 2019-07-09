@@ -7,7 +7,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { text, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiMenu, JuiMenuList, JuiMenuItem, JuiSubMenu } from '..';
 
 import { JuiAvatar } from '../../Avatar';
@@ -18,11 +17,10 @@ import { JuiListItemText } from '../../Lists';
 const Avatar = <JuiAvatar src={avatar} />;
 
 storiesOf('Components/Menus', module)
-  .addDecorator(withInfoDecorator(JuiMenu, { inline: true }))
   .add('Simple Menu', () => (
     <JuiMenu open={boolean('open', true)}>
       <JuiMenuList>
-        <JuiMenuItem disabled={true} onClick={action('onClick Profile')}>
+        <JuiMenuItem disabled onClick={action('onClick Profile')}>
           Profile
         </JuiMenuItem>
         <JuiMenuItem onClick={action('onClick My account')}>
@@ -36,7 +34,7 @@ storiesOf('Components/Menus', module)
     <JuiMenuItem onClick={action('onClick Profile')}>Profile</JuiMenuItem>
   ))
   .add('Text MenuItem With Icon', () => (
-    <JuiMenuItem onClick={action('onClick Profile')} icon="star">
+    <JuiMenuItem onClick={action('onClick Profile')} icon='star'>
       Profile
     </JuiMenuItem>
   ))
@@ -52,20 +50,20 @@ storiesOf('Components/Menus', module)
   .add('SubMenu', () => {
     return (
       <JuiMenuList style={{ width: '180px' }}>
-        <JuiSubMenu title="Sub Menu" disabled={boolean('disabled', false)}>
-          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+        <JuiSubMenu title='Sub Menu' disabled={boolean('disabled', false)}>
+          <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
-          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
-          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
-          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
-          <JuiMenuItem disabled={true}>Profile</JuiMenuItem>
+          <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>
         </JuiSubMenu>

@@ -5,7 +5,7 @@
  */
 import { UserConfig } from '../../config/UserConfig';
 import { SYNC_CONFIG_KEYS } from './configKeys';
-import { AccountGlobalConfig } from '../../../module/account/config';
+import { AccountGlobalConfig } from '../../account/config';
 
 class SyncUserConfig extends UserConfig {
   constructor() {
@@ -30,6 +30,14 @@ class SyncUserConfig extends UserConfig {
 
   getReconnectSocketServerHost() {
     return this.get(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
+  }
+
+  getLastCanReconnectTime() {
+    return this.get(SYNC_CONFIG_KEYS.LAST_CAN_RECONNECT_TIME);
+  }
+
+  setLastCanReconnectTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.LAST_CAN_RECONNECT_TIME, time);
   }
 
   removeReconnectSocketServerHost() {

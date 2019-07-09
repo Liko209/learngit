@@ -5,7 +5,7 @@
  */
 
 import { ACCOUNT_KEYS } from './configKeys';
-import { UserConfig } from '../../../module/config';
+import { UserConfig } from '../../config';
 import { AccountGlobalConfig } from './AccountGlobalConfig';
 
 class AccountUserConfig extends UserConfig {

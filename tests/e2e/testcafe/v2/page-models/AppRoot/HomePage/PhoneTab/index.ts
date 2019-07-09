@@ -1,6 +1,7 @@
 import { BaseWebComponent, Umi } from "../../../BaseWebComponent";
 import { LeftRail } from './LeftRail';
 import { VoicemailPage } from "./Voicemail";
+import { CallHistoryPage } from './CallHistory';
 
 class Entry extends BaseWebComponent {
   async enter() {
@@ -57,4 +58,41 @@ export class PhoneTab extends BaseWebComponent {
   get voicemailPage() {
     return this.getComponent(VoicemailPage);
   }
+
+  get callHistoryPage() {
+    return this.getComponent(CallHistoryPage);
+  }
+}
+
+
+
+export class BlockNumberDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId("blockNumberConfirmDialog");
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId("DialogTitle", this.self)
+  }
+
+  get content() {
+    return this.getSelectorByAutomationId("DialogContent", this.self)
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId("blockNumberCancelButton", this.self)
+  }
+
+  get blockButton() {
+    return this.getSelectorByAutomationId("blockNumberOkButton", this.self)
+  }
+
+  async clickCancelButton() {
+    return this.t.click(this.cancelButton);
+  }
+
+  async clickBlockButton() {
+    return this.t.click(this.blockButton);
+  }
+
 }

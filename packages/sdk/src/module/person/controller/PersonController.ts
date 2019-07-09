@@ -3,7 +3,6 @@
  * @Date: 2019-01-21 17:18:00
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   Person,
   HeadShotModel,
@@ -20,7 +19,6 @@ import { AccountService } from 'sdk/module/account/service';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
-import { ContactType } from '../types';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { SYNC_SOURCE, ChangeModel } from 'sdk/module/sync/types';
@@ -105,7 +103,7 @@ class PersonController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).authUserConfig;
     const token = auth.getGlipToken();
-    const glipToken = token && token.replace(/\"/g, '');
+    const glipToken = token && token.replace(/"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({
         uid,
@@ -116,7 +114,7 @@ class PersonController {
     }
     return '';
   }
-
+  /* eslint-disable no-continue */
   private _getHighestResolutionHeadshotUrlFromThumbs(
     thumbs: { key: string; value: string }[],
     desiredSize: number,
@@ -270,14 +268,12 @@ class PersonController {
     );
   }
 
-  isCacheValid = (person: Person) => {
-    return (
-      !this._isUnregistered(person) &&
+  isCacheValid = (person: Person) => (
+    !this._isUnregistered(person) &&
       this._isServicePerson(person) &&
       !person.is_pseudo_user &&
       !this._hasBogusEmail(person)
-    );
-  }
+  );
 
   isVisible(person: Person): boolean {
     return (
@@ -320,7 +316,6 @@ class PersonController {
 
   async matchContactByPhoneNumber(
     phoneNumber: string,
-    contactType: ContactType,
   ): Promise<Person | null> {
     if (!phoneNumber) {
       return null;
@@ -354,7 +349,10 @@ class PersonController {
       const companyId = userConfig.getCurrentCompanyId();
 
       numberList.forEach((item: string) => {
-        const person = cacheController.getPersonByPhoneNumber(item);
+        const person = cacheController.getPersonByPhoneNumber(
+          item,
+          isShortNumber,
+        );
         if (
           person &&
           !this._isDeactivated(person) &&

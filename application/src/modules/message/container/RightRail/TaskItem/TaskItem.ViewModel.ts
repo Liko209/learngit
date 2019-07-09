@@ -36,10 +36,8 @@ class TaskItemViewModel extends AbstractViewModel<TaskProps> {
     const { assignedToIds } = this.task;
     if (assignedToIds) {
       const personName = assignedToIds
-        .map((personId: number) => {
-          return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, personId)
-            .userDisplayName;
-        })
+        .map((personId: number) => getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, personId)
+          .userDisplayName)
         .join(', ');
       return personName;
     }

@@ -17,54 +17,42 @@ import React, {
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
-import { IndexRange, JuiVirtualizedListProps } from './types';
+import {
+  IndexRange,
+  JuiVirtualizedListProps,
+  VirtualizedListChild,
+} from './types';
 import {
   useRange,
   useRowManager,
   useScroll,
   PartialScrollPosition,
   useForceUpdate,
+  useIsFirstRenderRef,
+  ScrollPosition,
 } from './hooks';
 import {
-  createKeyMapper,
-  createRange,
-  getChildren,
-  isRangeIn,
-  isRangeEqual,
+  createKeyMapper, createRange, getChildren, isRangeIn,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
-type Props = {
-  height: number;
-  minRowHeight: number;
-  overscan: number;
-  initialScrollToIndex: number;
-  stickToBottom?: boolean;
-  onScroll: (event: React.UIEvent<HTMLElement>) => void;
-  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange: (range: IndexRange) => void;
-  onRenderedRangeChange: (range: IndexRange) => void;
-  before?: React.ReactNode;
-  after?: React.ReactNode;
-  children: JSX.Element[];
-  contentStyle: React.CSSProperties;
-  stickToLastPosition?: boolean;
-  fixedWrapper?: boolean;
-};
+
 type JuiVirtualizedListHandles = {
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
   getVisibleRange: () => IndexRange;
   getPrevVisibleRange: () => IndexRange;
+  scrollToPosition: (scrollPosition: PartialScrollPosition) => void;
+  getScrollPosition: () => ScrollPosition;
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
-  JuiVirtualizedListHandles,
-  JuiVirtualizedListProps
+JuiVirtualizedListHandles,
+JuiVirtualizedListProps
 > = (
   {
     height,
@@ -79,14 +67,17 @@ const JuiVirtualizedList: RefForwardingComponent<
     before = null,
     after = null,
     stickToBottom,
+    style,
     contentStyle,
+    onBottomStatusChange = noop,
     stickToLastPosition = true,
-    fixedWrapper,
-  }: Props,
+  }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
   const shouldUseNativeImplementation = true;
   // TODO use useCallback to optimize performance
+  // need andy to fix
+  /* eslint-disable no-use-before-define */
   const computeVisibleRange = () => {
     let result: IndexRange;
     if (ref.current) {
@@ -119,7 +110,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
-    prevStartChild: JSX.Element | null,
+    prevStartChild: VirtualizedListChild | null,
   ) => {
     let result = 0;
     if (
@@ -131,7 +122,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       const _prevStartChild = prevStartChild;
       result =
         children.findIndex(
-          (child: JSX.Element) => child.key === _prevStartChild.key,
+          (child: VirtualizedListChild) => child.key === _prevStartChild.key,
         ) - prevStartIndex;
     }
     return result;
@@ -141,7 +132,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     renderedRange: IndexRange,
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
-    prevStartChild: JSX.Element | null,
+    prevStartChild: VirtualizedListChild | null,
   ) => {
     let { startIndex, stopIndex } = renderedRange;
 
@@ -213,13 +204,9 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
-  const shouldUpdateRange = () => {
-    return !isRangeIn(renderedRange, computeVisibleRange());
-  };
+  const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
 
-  const updateRange = ({
-    forceUpdate = false,
-  }: { forceUpdate?: boolean } = {}) => {
+  const updateRange = () => {
     if (ref.current) {
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
@@ -238,7 +225,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
-      updateRange({ forceUpdate: true });
+      updateRange();
     }
   };
 
@@ -250,17 +237,21 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Forward ref
   //
-  useImperativeHandle(forwardRef, () => ({
-    scrollToBottom,
-    isAtBottom: () => {
-      return prevAtBottomRef.current;
-    },
-    scrollToIndex: (index: number) => {
-      jumpToPosition({ index });
-    },
-    getVisibleRange: computeVisibleRange,
-    getPrevVisibleRange: () => prevVisibleRange,
-  }));
+  useImperativeHandle(
+    forwardRef,
+    () => ({
+      scrollToBottom,
+      scrollToPosition: jumpToPosition,
+      getScrollPosition: () => scrollPosition,
+      isAtBottom: () => prevAtBottomRef.current,
+      scrollToIndex: (index: number, options?: boolean) => {
+        jumpToPosition({ index, options });
+      },
+      getVisibleRange: computeVisibleRange,
+      getPrevVisibleRange: () => prevVisibleRange,
+    }),
+    [computeVisibleRange, jumpToPosition],
+  );
 
   //
   // HtmlElement ref
@@ -271,6 +262,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollEffectTriggerRef = useRef(0);
   const prevAtBottomRef = useRef(false);
+  const isFirstRenderRef = useIsFirstRenderRef();
 
   //
   // State
@@ -318,7 +310,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       rowManager.flushCache();
       scrollEffectTriggerRef.current++;
       forceUpdate();
-    },       300),
+    }, 300),
     [],
   );
   //
@@ -327,7 +319,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     const height = beforeRef.current ? beforeRef.current.offsetHeight : 0;
     rowManager.setBeforeHeight(height);
-  },              [!!before]);
+  }, [!!before]);
 
   //
   // Update height cache and observe dynamic rows
@@ -355,7 +347,6 @@ const JuiVirtualizedList: RefForwardingComponent<
         }
         result.diff = diff;
       }
-
       return result;
     };
 
@@ -379,18 +370,25 @@ const JuiVirtualizedList: RefForwardingComponent<
     let rowElements: Element[] = getChildren(contentRef.current);
 
     if (!shouldUseNativeImplementation) {
-      rowElements = compact(rowElements.map((i) => i.firstElementChild));
+      rowElements = compact(rowElements.map(i => i.firstElementChild));
     }
 
     rowElements.forEach(handleRowSizeChange);
-    const observers = rowElements.map(observeDynamicRow);
+
+    type Observers = {
+      observer: ResizeObserver;
+      cb: (entries: ResizeObserverEntry[]) => void;
+    }[];
+
+    let observers: Observers | undefined = rowElements.map(observeDynamicRow);
     return () => {
-      observers.forEach((observer) => {
+      (observers as Observers).forEach(observer => {
         observer.observer.disconnect();
         delete observer.cb;
       });
+      observers = undefined;
     };
-  },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
+  }, [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
   //
   // Scroll to last remembered position,
@@ -399,12 +397,10 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     if (shouldScrollToBottom()) {
       scrollToBottom();
-    } else {
-      if (stickToLastPosition) {
-        scrollToPosition(scrollPosition);
-      }
+    } else if (stickToLastPosition) {
+      scrollToPosition(scrollPosition);
     }
-  },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
+  }, [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // TEMP SOLUTION
@@ -419,33 +415,47 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (ref.current) {
         ref.current.style.pointerEvents = 'auto';
       }
-    },                         10);
+    }, 10);
     return () => clearTimeout(timeout);
-  },              [scrollEffectTriggerRef.current, height, childrenCount]);
+  }, [scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // Emit visible range change
   //
-  useEffect(() => {
-    if (!isRangeEqual(visibleRange, initialVisibleRange)) {
+  useLayoutEffect(() => {
+    if (isFirstRenderRef.current) {
+      // [THE RANGE PROBLEM]
+      // The first time list rendered, initial visible range was computed
+      // from height/minRowHeight, which is not really represent what
+      // the user can see. Sot, we need to recompute visible range before
+      // Emit visible range change event.
+      onVisibleRangeChange(computeVisibleRange());
+    } else {
       onVisibleRangeChange(visibleRange);
     }
-  },        [
-    visibleRange.startIndex,
-    visibleRange.stopIndex,
-    initialVisibleRange.startIndex,
-    initialVisibleRange.stopIndex,
-  ]);
+  }, [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
 
-  useEffect(() => {
-    onRenderedRangeChange(renderedRange);
-  },        [renderedRange.startIndex, renderedRange.stopIndex]);
+  //
+  // Emit rendered range change
+  //
+  useLayoutEffect(() => {
+    if (isFirstRenderRef.current) {
+      // The first time list rendered, initial rendered range has same problem
+      // as initial visible range. See [THE RANGE PROBLEM] for more.
+      onRenderedRangeChange(computeRenderedRange(computeVisibleRange()));
+    } else {
+      onRenderedRangeChange(renderedRange);
+    }
+  }, [keyMapper(renderedRange.startIndex), keyMapper(renderedRange.stopIndex)]);
 
   //
   // Update prevAtBottom
   //
   useEffect(() => {
+    const original = prevAtBottomRef.current;
     prevAtBottomRef.current = computeAtBottom();
+    const current = prevAtBottomRef.current;
+    if (original !== current) onBottomStatusChange(current);
   });
   //
   // Ensure no blank area
@@ -453,10 +463,10 @@ const JuiVirtualizedList: RefForwardingComponent<
   useEffect(() => {
     ensureNoBlankArea();
   });
+
   //
   // Scrolling
   //
-
   const handleScroll = (event: React.UIEvent<HTMLElement>) => {
     if (ref.current) {
       if (event.target !== ref.current || ref.current.offsetTop < 0) {
@@ -467,47 +477,58 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
+  const wrappedBefore = before ? <div ref={beforeRef}>{before()}</div> : null;
   const heightBeforeStartRow = rowManager.getRowsHeight(
     minIndex,
     startIndex - 1,
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
-  let childrenToRender = children.filter((_, i) => {
-    return startIndex <= i && i <= stopIndex;
-  });
 
+  const emptyDiv = <div style={{ height: minRowHeight }} />;
+  const childrenToRender = children
+    .filter((_, i) => startIndex <= i && i <= stopIndex)
+    .map(child => (child.type ? child : emptyDiv));
+
+  let childrenNode: React.ReactNode = childrenToRender;
   if (!shouldUseNativeImplementation) {
-    childrenToRender = childrenToRender.map((comp: JSX.Element, i) => {
+    childrenNode = childrenToRender.map((comp: any, i) => {
       const style = {
         height: rowManager.getRowHeight(startIndex + i),
         overflow: 'hidden',
       };
-      if (comp.props[WRAPPER_IDENTIFIER]) {
-        const concatStyle = comp.props.style
-          ? Object.assign({}, style, comp.props.style)
-          : style;
-        return cloneElement(comp, {
-          style: concatStyle,
-        });
+      if (comp.type) {
+        if (comp.props[WRAPPER_IDENTIFIER]) {
+          const concatStyle = comp.props.style
+            ? Object.assign({}, style, comp.props.style)
+            : style;
+          return cloneElement(comp as JSX.Element, {
+            style: concatStyle,
+          });
+        }
+        return (
+          <section style={style} key={comp.key ? comp.key : undefined}>
+            {comp}
+          </section>
+        );
       }
-      return (
-        <section style={style} key={comp.key ? comp.key : undefined}>
-          {comp}
-        </section>
-      );
+      return <section style={style} key={comp.key ? comp.key : undefined} />;
     });
   }
 
-  const wrapperStyle: React.CSSProperties = {
-    height,
-    overflow: 'auto',
-    // Prevent repaints on scroll
-    transform: 'translateZ(0)',
-    // Prevent chrome's default behavior
-    overflowAnchor: 'none',
-    WebkitOverflowScrolling: 'touch',
-  };
+  const wrapperStyle: React.CSSProperties = Object.assign(
+    {
+      height: '100%',
+      maxHeight: '100%',
+      minHeight: 'inherit',
+      overflow: 'auto',
+      // Prevent repaints on scroll
+      transform: 'translateZ(0)',
+      // Prevent chrome's default behavior
+      overflowAnchor: 'none',
+      WebkitOverflowScrolling: 'touch',
+    },
+    style,
+  );
 
   return (
     <div
@@ -520,10 +541,10 @@ const JuiVirtualizedList: RefForwardingComponent<
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
       <div style={contentStyle} ref={contentRef}>
-        {childrenToRender}
+        {childrenNode}
       </div>
       <div style={{ height: heightAfterStopRow }} />
-      {after}
+      {after && after()}
     </div>
   );
 };
@@ -531,9 +552,9 @@ const JuiVirtualizedList: RefForwardingComponent<
 const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
-  >
+React.ForwardRefExoticComponent<
+JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
+>
 >;
 
 export {

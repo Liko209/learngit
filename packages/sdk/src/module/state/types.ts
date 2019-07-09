@@ -14,6 +14,7 @@ import { Badge } from '../badge/entity';
 type StateHandleTask = {
   type: TASK_DATA_TYPE.STATE;
   data: Partial<State>[];
+  ignoreCursorValidate?: boolean;
 };
 
 type GroupStateHandleTask = {
@@ -24,6 +25,7 @@ type GroupStateHandleTask = {
 type GroupCursorHandleTask = {
   type: TASK_DATA_TYPE.GROUP_CURSOR;
   data: Partial<Group>[];
+  ignoreCursorValidate?: boolean;
 };
 
 type GroupEntityHandleTask = {
@@ -41,6 +43,12 @@ type GroupBadge = Badge & {
   isTeam?: boolean;
 };
 
+enum INIT_STATUS {
+  IDLE,
+  INITIALIZING,
+  INITIALIZED,
+}
+
 export {
   StateHandleTask,
   GroupStateHandleTask,
@@ -48,4 +56,5 @@ export {
   GroupEntityHandleTask,
   ProfileEntityHandleTask,
   GroupBadge,
+  INIT_STATUS,
 };

@@ -19,7 +19,9 @@ import { PERMISSION_ENUM } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
+import { Person } from 'sdk/module/person/entity';
 
+/* eslint-disable */
 export default class GroupModel extends Base<Group> {
   @observable
   isTeam?: boolean;
@@ -142,7 +144,10 @@ export default class GroupModel extends Base<Group> {
     const diffMembers = _.difference(members, [currentUserId]);
 
     if (this.type === CONVERSATION_TYPES.ME) {
-      const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        currentUserId,
+      );
       const meGroup = this.translation['message.meGroup'] || 'message.meGroup';
       return `${person.userDisplayNameForGroupName || ''} (${meGroup})`;
     }
@@ -151,7 +156,10 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ||
       this.type === CONVERSATION_TYPES.SMS
     ) {
-      const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        diffMembers[0],
+      );
       return person.userDisplayNameForGroupName || '';
     }
 
@@ -211,7 +219,10 @@ export default class GroupModel extends Base<Group> {
 
     if (members.length === 2) {
       const otherId = _.difference(members, [currentUserId])[0];
-      const otherMember = getEntity(ENTITY_NAME.PERSON, otherId);
+      const otherMember = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        otherId,
+      );
       if (otherMember && otherMember.isPseudoUser) {
         return CONVERSATION_TYPES.SMS;
       }
@@ -298,7 +309,10 @@ export default class GroupModel extends Base<Group> {
 
   isThePersonGuest(personId: number) {
     if (this.guestUserCompanyIds && this.guestUserCompanyIds.length > 0) {
-      const person = getEntity(ENTITY_NAME.PERSON, personId);
+      const person = getEntity<Person, PersonModel>(
+        ENTITY_NAME.PERSON,
+        personId,
+      );
       if (person) {
         return this.guestUserCompanyIds.some(
           (x: number) => x === person.companyId,

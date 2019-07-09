@@ -2,13 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { GroupPage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class FetchGroupGatherer extends BaseGatherer {
+class FetchGroupGatherer extends DebugGatherer {
   private metricKeys: Array<string> = [
     "group_section_fetch_teams",
     "group_section_fetch_favorites",
@@ -33,14 +33,16 @@ class FetchGroupGatherer extends BaseGatherer {
     const browser = await groupPage.browser();
 
     this.beginGathererConsole();
-    let authUrl, page, item, cnt, flag;
+    let authUrl, page, cnt, flag;
     let lengthMap = {};
     for (let i = 0; i < Config.sceneRepeatCount; i++) {
       try {
         cnt = 10;
 
+        this.clearTmpGatherer(this.metricKeys);
+
         for (let k of this.metricKeys) {
-          lengthMap[k] = this.consoleMetrics[k].length;
+          lengthMap[k] = this.tmpConsoleMetrics[k].length;
         }
 
         await driver.clearDataForOrigin(url);
@@ -56,7 +58,7 @@ class FetchGroupGatherer extends BaseGatherer {
           flag = true;
 
           for (let k of this.metricKeys) {
-            if (lengthMap[k] >= this.consoleMetrics[k].length) {
+            if (lengthMap[k] >= this.tmpConsoleMetrics[k].length) {
               flag = false;
               break;
             }
@@ -69,6 +71,8 @@ class FetchGroupGatherer extends BaseGatherer {
 
           break;
         }
+
+        this.pushGatherer(this.metricKeys);
 
         await groupPage.close();
         page = undefined;

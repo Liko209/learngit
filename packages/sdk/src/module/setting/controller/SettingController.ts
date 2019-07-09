@@ -4,15 +4,30 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import _ from 'lodash';
+
+import { UserSettingEntity } from '../entity';
 import { IModuleSetting } from '../moduleSetting/types';
-import { findFirst } from '../utils';
+
+type SettingItemRequest<T> = {
+  id: number;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason: any) => void;
+};
 
 class SettingController {
   private _moduleSettings: IModuleSetting[] = [];
+  private _requestPool: SettingItemRequest<UserSettingEntity>[] = [];
 
   registerModuleSetting(moduleSetting: IModuleSetting) {
     moduleSetting.init();
     this._moduleSettings.push(moduleSetting);
+    const requestsCanBeHandled = this._requestPool.filter(r => moduleSetting.has(r.id));
+    this._requestPool = this._requestPool.filter(r => !moduleSetting.has(r.id));
+
+    requestsCanBeHandled.map(r => moduleSetting.getById(r.id).then(result => {
+      result ? r.resolve(result) : r.reject(result);
+    }));
   }
 
   unRegisterModuleSetting(moduleSetting: IModuleSetting) {
@@ -23,11 +38,17 @@ class SettingController {
   }
 
   async getById(id: number) {
-    return findFirst(
-      this._moduleSettings,
-      async provider => provider.getById(id),
-      item => !!item,
-    );
+    const moduleSetting = _.find(this._moduleSettings, it => it.has(id));
+    if (moduleSetting) {
+      return await moduleSetting.getById(id);
+    }
+    return new Promise((resolve, reject) => {
+      this._requestPool.push({
+        id,
+        resolve,
+        reject,
+      });
+    });
   }
 
   init() {

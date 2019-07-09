@@ -8,12 +8,14 @@ import { PersonService } from '../PersonService';
 import { PersonController } from '../../controller/PersonController';
 import { Raw } from '../../../../framework/model';
 import { Person } from '../../entity';
-import { SYNC_SOURCE } from '../../../../module/sync';
+import { SYNC_SOURCE } from '../../../sync';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../controller/PersonController');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
+jest.mock('sdk/module/sync/config');
 
 describe('PersonService', () => {
   it('should call controller with correct parameter', async () => {});
@@ -65,7 +67,7 @@ describe('PersonService', () => {
     it('should call controller with correct parameter', async () => {
       const persons: Raw<Person>[] = [];
       await personService.handleIncomingData(persons, SYNC_SOURCE.INDEX);
-      expect(personController.handleIncomingData).toBeCalledWith(
+      expect(personController.handleIncomingData).toHaveBeenCalledWith(
         persons,
         SYNC_SOURCE.INDEX,
         undefined,
@@ -73,10 +75,57 @@ describe('PersonService', () => {
     });
   });
 
+  describe('handleSocketIOData', () => {
+    it('should call controller with correct parameter', async () => {
+      const persons: Raw<Person>[] = [];
+      await personService.handleSocketIOData(persons);
+      expect(personController.handleIncomingData).toHaveBeenCalledWith(
+        persons,
+        SYNC_SOURCE.SOCKET,
+      );
+    });
+  });
+
+  describe('canRequest()', () => {
+    it('should return true', () => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.SYNC_SERVICE) {
+            return {
+              getUserConfig: jest.fn().mockReturnValue({
+                getFetchedRemaining: jest.fn().mockReturnValue(true),
+              }),
+            };
+          }
+          return null;
+        });
+      const result = personService['canRequest']();
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false', () => {
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.SYNC_SERVICE) {
+            return {
+              getUserConfig: jest.fn().mockReturnValue({
+                getFetchedRemaining: jest.fn().mockReturnValue(false),
+              }),
+            };
+          }
+          return null;
+        });
+      const result = personService['canRequest']();
+      expect(result).toBeFalsy();
+    });
+  });
+
   describe('getPersonsByIds', () => {
     it('should call controller with correct parameter', async () => {
       await personService.getPersonsByIds([1, 2, 3, 4, 5, 6]);
-      expect(personController.getPersonsByIds).toBeCalledWith([
+      expect(personController.getPersonsByIds).toHaveBeenCalledWith([
         1,
         2,
         3,
@@ -90,14 +139,14 @@ describe('PersonService', () => {
   describe('getAllCount', () => {
     it('should call controller with correct parameter', async () => {
       await personService.getAllCount();
-      expect(personController.getAllCount).toBeCalled();
+      expect(personController.getAllCount).toHaveBeenCalled();
     });
   });
 
   describe('getHeadShotWithSize', () => {
     it('should call controller with correct parameter', async () => {
       personService.getHeadShotWithSize(1, '1111', '', 150);
-      expect(personController.getHeadShotWithSize).toBeCalledWith(
+      expect(personController.getHeadShotWithSize).toHaveBeenCalledWith(
         1,
         '1111',
         '',
@@ -109,7 +158,7 @@ describe('PersonService', () => {
   describe('buildPersonFeatureMap', () => {
     it('should call controller with correct parameter', async () => {
       await personService.buildPersonFeatureMap(1);
-      expect(personController.buildPersonFeatureMap).toBeCalledWith(1);
+      expect(personController.buildPersonFeatureMap).toHaveBeenCalledWith(1);
     });
   });
 
@@ -117,20 +166,20 @@ describe('PersonService', () => {
     it('should call controller with correct parameter', async () => {
       const person = getPerson();
       personService.getName(person);
-      expect(personController.getName).toBeCalledWith(person);
+      expect(personController.getName).toHaveBeenCalledWith(person);
 
       personService.getEmailAsName(person);
-      expect(personController.getEmailAsName).toBeCalledWith(person);
+      expect(personController.getEmailAsName).toHaveBeenCalledWith(person);
 
       personService.getFullName(person);
-      expect(personController.getFullName).toBeCalledWith(person);
+      expect(personController.getFullName).toHaveBeenCalledWith(person);
     });
   });
 
   describe('getAvailablePhoneNumbers', () => {
     it('should call controller with correct parameter', async () => {
       await personService.getAvailablePhoneNumbers(123);
-      expect(personController.getAvailablePhoneNumbers).toBeCalledWith(
+      expect(personController.getAvailablePhoneNumbers).toHaveBeenCalledWith(
         123,
         undefined,
         undefined,
@@ -141,12 +190,12 @@ describe('PersonService', () => {
   describe('refreshPersonData', () => {
     it('should call controller with correct parameter', async () => {
       personService.refreshPersonData(111);
-      expect(personController.refreshPersonData).toBeCalledWith(111);
+      expect(personController.refreshPersonData).toHaveBeenCalledWith(111);
     });
   });
 
   describe('getById', () => {
-    it('shoule receive null when id is not correct person id', async () => {
+    it('should receive null when id is not correct person id', async () => {
       try {
         await personService.getById(1);
       } catch (e) {
@@ -160,7 +209,7 @@ describe('PersonService', () => {
       const person = getPerson();
       const eachPhoneNumberFunc = (phoneNumber: PhoneNumber) => {};
       personService.getPhoneNumbers(person, eachPhoneNumberFunc);
-      expect(personController.getPhoneNumbers).toBeCalledWith(
+      expect(personController.getPhoneNumbers).toHaveBeenCalledWith(
         person,
         eachPhoneNumberFunc,
       );

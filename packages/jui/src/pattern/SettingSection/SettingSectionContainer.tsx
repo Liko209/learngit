@@ -18,29 +18,29 @@ const MIN_BREAKPOINT = 400;
 const JuiSettingSectionContainer = styled.div<JuiSettingSectionContainerProps>`
   && {
     ${({ containerWidth = 0 }) => {
-      if (containerWidth > MAX_BREAKPOINT) {
-        return css`
+    if (containerWidth >= MAX_BREAKPOINT) {
+      return css`
           padding: ${spacing(4)} ${(containerWidth - MAX_WIDTH) / 2}px;
           > div {
             width: ${spacing(200)};
           }
         `;
-      }
-      if (containerWidth < MAX_BREAKPOINT && containerWidth > MIN_BREAKPOINT) {
-        return css`
+    }
+    if (containerWidth < MAX_BREAKPOINT && containerWidth > MIN_BREAKPOINT) {
+      return css`
           padding: ${spacing(4)} ${spacing(12.5)};
           > div {
             flex: 1;
           }
         `;
-      }
-      return css`
+    }
+    return css`
         padding: ${spacing(4)};
         > div {
           width: ${spacing(92)};
         }
       `;
-    }};
+  }};
   }
 `;
 

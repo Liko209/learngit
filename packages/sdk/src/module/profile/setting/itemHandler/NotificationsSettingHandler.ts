@@ -21,9 +21,10 @@ import { ENTITY, APPLICATION } from 'sdk/service';
 import { Pal } from 'sdk/pal';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
+import { mainLogger } from 'foundation';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
-  DesktopNotificationsSettingModel
+DesktopNotificationsSettingModel
 > {
   id = SettingEntityIds.Notification_Browser;
 
@@ -36,9 +37,7 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
     this.on<NotificationPermission>(
       APPLICATION.NOTIFICATION_PERMISSION_CHANGE,
       payload => this.onNotificationPermissionUpdate(payload),
@@ -48,7 +47,9 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
   async updateValue(model: Partial<DesktopNotificationsSettingModel>) {
     const { isGranted } = Pal.instance.getNotificationPermission();
     const profile = await this._profileService.getProfile();
-    const wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
+    const wantNotifications = profile
+      ? profile[SETTING_KEYS.DESKTOP_NOTIFICATION]
+      : undefined;
     if (
       isGranted &&
       model.desktopNotifications !== undefined &&
@@ -112,10 +113,12 @@ class NotificationsSettingHandler extends AbstractSettingEntityHandler<
     }
   }
   private async _getWantNotifications() {
-    const profile = await this._profileService.getProfile();
-    let wantNotifications = profile[SETTING_KEYS.DESKTOP_NOTIFICATION];
-    if (wantNotifications === undefined) {
-      wantNotifications = true;
+    const profile = await this._profileService.getProfile().catch(() => {
+      mainLogger.warn('_getWantNotifications failed');
+    });
+    let wantNotifications = true;
+    if (profile && profile.want_desktop_notifications !== undefined) {
+      wantNotifications = profile.want_desktop_notifications;
     }
     return wantNotifications;
   }

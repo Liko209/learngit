@@ -55,7 +55,7 @@ class ContentSearchResultViewModel
 
   @computed
   get isEmpty() {
-    return !!(this.searchState.requestId && !this.postsCount);
+    return !!(this.searchState.requestId !== null && !this.postsCount);
   }
 
   @observable
@@ -90,28 +90,26 @@ class ContentSearchResultViewModel
   @computed
   private get _searchParams(): ContentSearchParams {
     return Object.keys(this.searchOptions).reduce(
-      (acc, key) =>
-        this.searchOptions[key] === null
-          ? acc
-          : { ...acc, [key]: this.searchOptions[key] },
+      (acc, key) => (this.searchOptions[key] === null
+        ? acc
+        : { ...acc, [key]: this.searchOptions[key] }),
       {},
     );
   }
 
   @action
-  setSearchOptions = async (
-    options: ContentSearchOptions,
-    isInitial: boolean = false,
-  ) => {
+  setSearchOptions = async (options: ContentSearchOptions) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
     this.showResult = false;
 
-    !isInitial && (await this.onSearchEnd());
-
-    this._setSearchState({ requestId: null, postIds: [] });
-
-    this.showResult = true;
+    await new Promise(resolve => {
+      setTimeout(() => {
+        this._setSearchState({ requestId: null, postIds: [] });
+        this.showResult = true;
+        resolve();
+      });
+    });
   }
 
   onPostsFetch = async () => {
@@ -132,7 +130,7 @@ class ContentSearchResultViewModel
     return { hasMore, data: posts };
   }
 
-  onSearchEnd = async () => await this._postService.endPostSearch();
+  onSearchEnd = async () => await this._postService.endPostSearch(this.searchOptions.q!)
 
   @action
   private _onSearchInit() {
@@ -142,7 +140,7 @@ class ContentSearchResultViewModel
     const group_id =
       this._searchScope === SEARCH_SCOPE.CONVERSATION ? currentGroupId : null;
 
-    this.setSearchOptions({ q, group_id }, true);
+    this.setSearchOptions({ q, group_id });
   }
 
   @action
@@ -166,25 +164,17 @@ class ContentSearchResultViewModel
   @action
   private _onPostsInit = async () => {
     const { type, ...rest } = this._searchParams;
-    const asyncPosts = this._postService.searchPosts({ ...rest, type });
-    const asyncContent = this._postService.getSearchContentsCount(rest);
-    const [contentsCount, result] = await Promise.all([
-      asyncContent,
-      asyncPosts,
-    ]);
-
+    const searchRes = await this._postService.searchPosts({ ...rest, type });
+    const contentsCount = { ...searchRes.contentCount };
     contentsCount[TYPE_ALL] = _.sum(Object.values(contentsCount));
 
-    this._setSearchState({ contentsCount, requestId: result.requestId });
-
-    return result;
+    this._setSearchState({ contentsCount, requestId: searchRes.requestId });
+    return searchRes;
   }
 
   private _onPostsScroll = async () => {
-    const { requestId } = this.searchState;
-
     const result = await this._postService.scrollSearchPosts(
-      requestId as number,
+      this._searchParams.q!,
     );
 
     return result;

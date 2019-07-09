@@ -6,7 +6,6 @@
 
 import { MakeCallController } from '../MakeCallController';
 import { MAKE_CALL_ERROR_CODE, E911_STATUS } from '../../types';
-import { PhoneParserUtility } from '../../../../utils/phoneParser';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
@@ -21,247 +20,119 @@ describe('MakeCallController', () => {
     jest.resetModules();
     jest.restoreAllMocks();
   }
+  const mockAccountService = {
+    isRCOnlyMode: jest.fn(),
+  };
+  const mockPersonService = {
+    matchContactByPhoneNumber: jest.fn(),
+  };
+  const mockRcInfoService = {
+    getRCExtensionInfo: jest.fn(),
+    getSpecialNumberRule: jest.fn(),
+  };
+  const mockPhoneNumberService = {
+    getE164PhoneNumber: jest.fn(),
+  };
 
   beforeEach(() => {
     clearMocks();
+    ServiceLoader.getInstance = jest.fn().mockImplementation((data: string) => {
+      if (data === ServiceConfig.ACCOUNT_SERVICE) {
+        return mockAccountService;
+      }
+      if (data === ServiceConfig.PERSON_SERVICE) {
+        return mockPersonService;
+      }
+      if (data === ServiceConfig.RC_INFO_SERVICE) {
+        return mockRcInfoService;
+      }
+      if (data === ServiceConfig.PHONE_NUMBER_SERVICE) {
+        return mockPhoneNumberService;
+      }
+      return;
+    });
     makeCallController = new MakeCallController();
   });
-  it('should return error when there is no internet connection', async () => {
-    jest
-      .spyOn(makeCallController, '_checkInternetConnection')
-      .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
-    const result = await makeCallController.tryMakeCall('123');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
-  });
-
-  it('should return error when users have no voip calling permission ', async () => {
-    const extInfo = {
-      serviceFeatures: [{ featureName: 'VoipCalling', enabled: true }],
-    };
-
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
-      getSpecialNumberRule: jest.fn(),
-    });
-    const spy = jest.spyOn(makeCallController, '_checkVoipN11Number');
-
-    jest
-      .spyOn(makeCallController, '_getRCE911Status')
-      .mockReturnValue(E911_STATUS.DISCLINED);
-
-    const result = await makeCallController.tryMakeCall('102');
-    expect(spy).not.toBeCalled();
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED);
-  });
-
-  it('should return error when N11 is declined with N11 101', async () => {
-    const specialNumberRule = {
-      records: [
-        {
-          description: 'Public Information/Referral',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '211',
-        },
-        {
-          description: 'Weather & Travel Information',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '511',
-        },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn(),
-      getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
-    });
-    const result = await makeCallController.tryMakeCall('211');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_101);
-  });
-
-  it('should return error when N11 is declined with N11 102', async () => {
-    const specialNumberRule = {
-      records: [
-        {
-          description: 'Public Information/Referral',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '211',
-        },
-        {
-          description: 'Weather & Travel Information',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-102',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '511',
-        },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn(),
-      getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
-    });
-    const result = await makeCallController.tryMakeCall('511');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_102);
-  });
-
-  it('should return error when N11 is declined with N11 102', async () => {
-    const specialNumberRule = {
-      records: [
-        {
-          description: 'Public Information/Referral',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-101',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '211',
-        },
-        {
-          description: 'Weather & Travel Information',
-          features: {
-            sms: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Message to this service is unavailable',
-              },
-            },
-            voip: {
-              enabled: false,
-              reason: {
-                id: 'N11-103',
-                message: 'Call to this service is unavailable',
-              },
-            },
-          },
-          phoneNumber: '511',
-        },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn(),
-      getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
-    });
-    const result = await makeCallController.tryMakeCall('511');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_OTHERS);
-  });
-
-  it('should return error when users try to make an international call without permission ', async () => {
-    const extInfo = {
-      serviceFeatures: [
-        { featureName: 'VoipCalling', enabled: false },
-        { featureName: 'InternationalCalling', enabled: false },
-      ],
-    };
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
-      getSpecialNumberRule: jest.fn(),
+  describe('tryMakeCall', () => {
+    it('should return error when there is no internet connection', async () => {
+      jest
+        .spyOn(makeCallController, '_checkInternetConnection')
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
+      const result = await makeCallController.tryMakeCall('123');
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
     });
 
-    PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
-      isInternationalDialing: jest.fn().mockReturnValue(true),
-      getE164: jest.fn(),
-      isShortNumber: jest.fn(),
-    });
-    const result = await makeCallController.tryMakeCall('+8618950150021');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION);
-  });
+    it('should return error when users have no voip calling permission ', async () => {
+      const extInfo = {
+        serviceFeatures: [{ featureName: 'VoipCalling', enabled: true }],
+      };
 
-  it('should return error when contact is not matched ', async () => {
-    PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
-      isInternationalDialing: jest.fn().mockReturnValue(true),
-      getE164: jest.fn(),
-      isShortNumber: jest.fn().mockReturnValue(true),
-    });
-
-    const extInfo = {
-      serviceFeatures: [
-        { featureName: 'VoipCalling', enabled: false },
-        { featureName: 'InternationalCalling', enabled: false },
-      ],
-    };
-    ServiceLoader.getInstance = jest
-      .fn()
-      .mockImplementation((serviceName: string) => {
-        if (serviceName === ServiceConfig.PERSON_SERVICE) {
-          return {
-            matchContactByPhoneNumber: jest.fn().mockReturnValue(null),
-          };
-        }
-        return {
-          getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
-          getSpecialNumberRule: jest.fn(),
-        };
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
+        getSpecialNumberRule: jest.fn(),
       });
+      const spy = jest.spyOn(makeCallController, '_checkVoipN11Number');
 
-    const result = await makeCallController.tryMakeCall('213');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER);
+      jest
+        .spyOn(makeCallController, '_getRCE911Status')
+        .mockReturnValue(E911_STATUS.DISCLINED);
+
+      const result = await makeCallController.tryMakeCall('102');
+      expect(spy).not.toBeCalled();
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED);
+    });
+
+    it('should return error when dialing out N11 numbers [JPT-1923]', async () => {
+      const specialNumberRule = {
+        records: [
+          {
+            description: 'Public Information/Referral',
+            features: {
+              sms: {
+                enabled: false,
+                reason: {
+                  id: 'N11-103',
+                  message: 'Message to this service is unavailable',
+                },
+              },
+              voip: {
+                enabled: false,
+                reason: {
+                  id: 'N11-101',
+                  message: 'Call to this service is unavailable',
+                },
+              },
+            },
+            phoneNumber: '211',
+          },
+          {
+            description: 'Weather & Travel Information',
+            features: {
+              sms: {
+                enabled: false,
+                reason: {
+                  id: 'N11-103',
+                  message: 'Message to this service is unavailable',
+                },
+              },
+              voip: {
+                enabled: false,
+                reason: {
+                  id: 'N11-101',
+                  message: 'Call to this service is unavailable',
+                },
+              },
+            },
+            phoneNumber: '511',
+          },
+        ],
+      };
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        getRCExtensionInfo: jest.fn(),
+        getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
+      });
+      const result = await makeCallController.tryMakeCall('211');
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER);
+    });
   });
 });

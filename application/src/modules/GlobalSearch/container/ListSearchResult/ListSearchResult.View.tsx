@@ -27,8 +27,8 @@ export const RecentSearchType = {
 };
 
 type Props = ListSearchResultViewProps &
-  WithTranslation &
-  ListSearchResultProps;
+WithTranslation &
+ListSearchResultProps;
 
 @observer
 class ListSearchResultViewComponent extends Component<Props> {
@@ -64,7 +64,7 @@ class ListSearchResultViewComponent extends Component<Props> {
         {searchResult.length === 0 ? (
           <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
         ) : (
-          <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
+          <ItemList ids={searchResult} type={RecentSearchType[currentTab]} />
         )}
       </JuiListSearchResult>
     );

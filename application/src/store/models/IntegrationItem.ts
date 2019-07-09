@@ -6,6 +6,7 @@
 import ItemModel from './Item';
 import { IntegrationItem } from 'sdk/module/item/entity';
 import { observable } from 'mobx';
+
 export default class IntegrationItemModel extends ItemModel {
   @observable activity: string;
   @observable title: string;

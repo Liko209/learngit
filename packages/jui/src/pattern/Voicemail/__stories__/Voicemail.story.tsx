@@ -7,8 +7,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean, number } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
-// import { VoicemailActions } from '../VoicemailActions';
 
 const knobs = {
   displayName: () => text('displayName', 'Two-line item name'),
@@ -17,11 +15,6 @@ const knobs = {
   maxCount: () => number('maxCount', 0),
 };
 
-storiesOf('Pattern/Voicemail', module)
-  // .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
-  .add('Actions', () => (
-    <div style={{ padding: '20px' }}>
-      1324
-    </div>
-  ))
-  ;
+storiesOf('Pattern/Voicemail', module).add('Actions', () => (
+  <div style={{ padding: '20px' }}>1324</div>
+));

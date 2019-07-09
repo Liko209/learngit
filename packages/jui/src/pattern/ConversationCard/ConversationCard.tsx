@@ -42,8 +42,7 @@ const StyledRightSection = styled('div')`
   width: 100%;
 `;
 
-const navigationStyles = ({ mode }: { mode?: string }) =>
-  css`
+const navigationStyles = () => css`
     position: relative;
     &:hover {
       ${StyledNavigationButton} {
@@ -53,8 +52,8 @@ const navigationStyles = ({ mode }: { mode?: string }) =>
   `;
 
 const StyledConversationCard = styled<
-  { mode?: string; highlight?: boolean },
-  'div'
+{ mode?: string; highlight?: boolean },
+'div'
 >('div')`
   position: relative;
   display: flex;
@@ -65,10 +64,9 @@ const StyledConversationCard = styled<
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
 `;
-const highlightBg = ({ theme }: any) =>
-  tinycolor(palette('semantic', 'critical')({ theme }))
-    .setAlpha(theme.palette.action.hoverOpacity)
-    .toRgbString();
+const highlightBg = ({ theme }: any) => tinycolor(palette('semantic', 'critical')({ theme }))
+  .setAlpha(theme.palette.action.hoverOpacity)
+  .toRgbString();
 const HighlightStyle = createGlobalStyle<{}>`
   .highlight {
     animation: highlight 3s cubic-bezier(0.575, 0.105, 0.835, 0.295);
@@ -80,6 +78,9 @@ const HighlightStyle = createGlobalStyle<{}>`
         background: ${palette('common', 'white')};
       }
     }
+  }
+  .emoji-mart-emoji {
+    vertical-align: middle;
   }
 `;
 
@@ -97,7 +98,7 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
       this.setState({ highlight: true }, () => {
         this._timer = setTimeout(() => {
           this.setState({ highlight: false });
-        },                       ANIMATION_DURATION);
+        }, ANIMATION_DURATION);
       });
   }
 
@@ -129,7 +130,9 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   }
 
   render() {
-    const { children, Avatar, mode, ...rest } = this.props;
+    const {
+      children, Avatar, mode, ...rest
+    } = this.props;
     const { highlight } = this.state;
     return (
       <StyledConversationCard

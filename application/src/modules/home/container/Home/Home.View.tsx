@@ -25,18 +25,19 @@ import { AboutView } from '@/containers/About';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
+  private _homeStore: HomeStore = container.get(HomeStore);
+
   constructor(props: HomeViewProps) {
     super(props);
   }
-  private _homeStore: HomeStore = container.get(HomeStore);
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
-    if (window.jupiterElectron && window.jupiterElectron.handleUpgradeCheck) {
-      window.jupiterElectron.handleUpgradeCheck();
+    if (window.jupiterElectron && window.jupiterElectron.onCheckNativeUpgrade) {
+      window.jupiterElectron.onCheckNativeUpgrade();
     }
   }
 
@@ -60,7 +61,7 @@ class HomeView extends Component<HomeViewProps> {
 
       window.location.reload();
     }
-  }
+  };
 
   render() {
     const { showGlobalSearch } = this.props;

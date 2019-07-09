@@ -14,7 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import { getPostType, POST_TYPE } from '@/common/getPostType';
 
 class ConversationPostViewModel extends AbstractViewModel<
-  ConversationPostProps
+ConversationPostProps
 > {
   @computed
   get id() {
@@ -40,6 +40,11 @@ class ConversationPostViewModel extends AbstractViewModel<
   get type(): POST_TYPE {
     const { key } = this._activityData;
     return getPostType(key);
+  }
+
+  @computed
+  get isTeamMention(): boolean {
+    return !!this._post.isTeamMention;
   }
 }
 

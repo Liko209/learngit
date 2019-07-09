@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SocketFSM, StateHandlerType } from './SocketFSM';
-import notificationCenter from '../../service/notificationCenter';
-import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
-import { mainLogger } from 'foundation';
+import notificationCenter from '../notificationCenter';
+import { CONFIG, SOCKET, SERVICE } from '../eventKey';
+import { mainLogger, HealthModuleManager, BaseHealthModule } from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { SyncService } from '../../module/sync/service';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -27,11 +28,24 @@ export class SocketManager {
   private _isFirstInit: boolean = true;
   private _currentId: number = 0;
   private _canReconnectController: SocketCanConnectController | undefined;
+  private _reconnectRetryCount: number = 0;
 
   private constructor() {
     this._logPrefix = `[${SOCKET_LOGGER} manager]`;
 
     this._subscribeExternalEvent();
+    HealthModuleManager.getInstance().register(
+      new BaseHealthModule(MODULE_IDENTIFY, MODULE_NAME),
+    );
+
+    HealthModuleManager.getInstance()
+      .get(MODULE_IDENTIFY)!
+      .register({
+        name: 'SocketConnectState',
+        getStatus: () => ({
+          state: this.activeFSM ? this.activeFSM.state : 'none',
+        }),
+      });
   }
 
   public static getInstance() {
@@ -103,11 +117,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
-      if (isRCOnlyMode) {
-        return;
-      }
-      this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
+      success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {
@@ -149,12 +160,12 @@ export class SocketManager {
   }
 
   private _onSocketError(errMsg: string) {
-    this.error('socket connect error, clearing socket address', errMsg);
-    const socketUserConfig = ServiceLoader.getInstance<SyncService>(
-      ServiceConfig.SYNC_SERVICE,
-    ).userConfig;
-    socketUserConfig.setIndexSocketServerHost('');
-    socketUserConfig.setReconnectSocketServerHost('');
+    this._reconnectRetryCount = this._reconnectRetryCount + 1;
+    this.error(
+      `${errMsg}, clearing socket address$ and re do index, nth:${
+        this._reconnectRetryCount
+      }`,
+    );
   }
 
   private _onLogin() {
@@ -252,6 +263,12 @@ export class SocketManager {
       return;
     }
 
+    // reset to default state
+    this._reconnectRetryCount = 0;
+    if (this._canReconnectController) {
+      this._canReconnectController.cleanup();
+    }
+
     this._restartFSM();
   }
 
@@ -282,7 +299,6 @@ export class SocketManager {
   private _onLockScreen() {
     if (!this.activeFSM) {
       this.info('No activeFSM when lock screen.');
-      return;
     }
   }
 
@@ -298,7 +314,6 @@ export class SocketManager {
     if (this._hasLoggedIn && !this._isOffline) {
       this.info('Will renew socketFSM due to unlocking screen.');
       this._restartFSM();
-      return;
     }
   }
 
@@ -319,13 +334,20 @@ export class SocketManager {
 
     if (!this._canReconnectController) {
       this._currentId = getCurrentTime();
+      const socketUserConfig = ServiceLoader.getInstance<SyncService>(
+        ServiceConfig.SYNC_SERVICE,
+      ).userConfig;
+      const lastTime = socketUserConfig.getLastCanReconnectTime() || 0;
+      socketUserConfig.setLastCanReconnectTime(this._currentId);
       this._canReconnectController = new SocketCanConnectController(
         this._currentId,
       );
-      this._canReconnectController.doCanConnectApi(
-        this._canConnectCallback.bind(this),
-        this._isFirstInit,
-      );
+      this._canReconnectController.doCanConnectApi({
+        interval: this._currentId - lastTime,
+        callback: this._canConnectCallback.bind(this),
+        forceOnline: this._isFirstInit,
+        nthCount: this._reconnectRetryCount,
+      });
     } else {
       this.warn('this._canReconnectController should be null');
     }
@@ -366,6 +388,11 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
+      this._stateHandler({
+        name: this.activeFSM.name,
+        state: 'disconnected',
+        isManualStopped: true,
+      });
       this._clearReconnectSocketHost();
       this.activeFSM.stopFSM();
       this.activeFSM = null;
@@ -397,6 +424,7 @@ export class SocketManager {
     );
 
     if (state === 'connected') {
+      this._reconnectRetryCount = 0;
       const activeState = this.activeFSM && this.activeFSM.state;
       if (state === activeState) {
         const activeUrl = this.activeFSM.serverUrl;

@@ -7,6 +7,11 @@
 import { RCCallerIdController } from '../RCCallerIdController';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { CALLER_ID_FEATURE_NAME } from '../../config/constants';
+import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { RC_INFO } from 'sdk/service';
+import { RCInfoApi } from 'sdk/api';
+jest.mock('sdk/api');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -32,7 +37,24 @@ const expectResult = [
     phoneNumber: 'Blocked',
     label: 'Blocked',
   },
-  { id: 3, usageType: 'NickName', phoneNumber: '1', label: 'nickname' },
+  {
+    id: 3,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'CompanyNumberWithNickname',
+  },
+  {
+    id: 4,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'DirectNumberWithNickname',
+  },
+  {
+    id: 5,
+    usageType: 'NickName',
+    phoneNumber: '1',
+    label: 'MainCompanyNumberWithNickname',
+  },
   {
     id: 4,
     usageType: 'CompanyNumber',
@@ -67,7 +89,7 @@ describe('RCInfoFetchController', () => {
     setUp();
   });
 
-  describe('getExtensionPhoneNumberList', () => {
+  describe('getCallerIdList', () => {
     it('should return value as expect order when get caller id list', async () => {
       rcCallerIdController._rcInfoFetchController.getExtensionPhoneNumberList = jest
         .fn()
@@ -81,13 +103,28 @@ describe('RCInfoFetchController', () => {
               id: 3,
               usageType: 'CompanyNumber',
               phoneNumber: '1',
-              label: 'nickname',
+              label: 'CompanyNumberWithNickname',
             },
+
             { id: 1, usageType: 'DirectNumber', phoneNumber: '1' },
             { id: 8, usageType: 'ForwardedCompanyNumber', phoneNumber: '1' },
+
             { id: 5, usageType: 'AdditionalCompanyNumber', phoneNumber: '1' },
+            {
+              id: 4,
+              usageType: 'DirectNumber',
+              phoneNumber: '1',
+              label: 'DirectNumberWithNickname',
+            },
             { id: 9, usageType: 'ContactCenterNumber', phoneNumber: '1' },
+
             { id: 4, usageType: 'CompanyNumber', phoneNumber: '1' },
+            {
+              id: 5,
+              usageType: 'MainCompanyNumber',
+              phoneNumber: '1',
+              label: 'MainCompanyNumberWithNickname',
+            },
           ],
         });
       const result = await rcCallerIdController.getCallerIdList();
@@ -244,6 +281,192 @@ describe('RCInfoFetchController', () => {
         id: 3,
         usageType: 'MainCompanyNumber',
       });
+    });
+  });
+
+  describe('getDefaultCallerId()', () => {
+    const caller = {
+      id: '1',
+      phoneNumber: '1',
+    };
+    it('should return expect caller when extension caller id is not null', async () => {
+      rcCallerIdController.getExtensionCallerId = jest
+        .fn()
+        .mockResolvedValue('1');
+      rcCallerIdController.getCallerById = jest.fn().mockResolvedValue(caller);
+      const result = await rcCallerIdController.getDefaultCallerId();
+      expect(result).toEqual(caller);
+    });
+    it('should return expect caller when extension caller id is null', async () => {
+      rcCallerIdController.getExtensionCallerId = jest
+        .fn()
+        .mockResolvedValue(null);
+      rcCallerIdController.getFirstDidCaller = jest
+        .fn()
+        .mockResolvedValue(caller);
+      const result = await rcCallerIdController.getDefaultCallerId();
+      expect(result).toEqual(caller);
+    });
+    it('should return expect caller when extension caller id is null and first did is null', async () => {
+      rcCallerIdController.getExtensionCallerId = jest
+        .fn()
+        .mockResolvedValue(null);
+      rcCallerIdController.getFirstDidCaller = jest
+        .fn()
+        .mockResolvedValue(null);
+      rcCallerIdController.getCompanyMainCaller = jest
+        .fn()
+        .mockResolvedValue(caller);
+      const result = await rcCallerIdController.getDefaultCallerId();
+      expect(result).toEqual(caller);
+    });
+  });
+
+  describe('getExtensionCallerId()', () => {
+    it('should return id is 1 when extension caller id type is phoneNumber', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue({
+        byFeature: [
+          {
+            feature: CALLER_ID_FEATURE_NAME,
+            callerId: {
+              type: 'PhoneNumber',
+              phoneInfo: {
+                id: '1',
+                phoneNumber: '1',
+              },
+            },
+          },
+        ],
+      });
+
+      const result = await rcCallerIdController.getExtensionCallerId();
+      expect(result).toBe(1);
+    });
+    it('should return id is 0 when extension caller id type is blocked', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue({
+        byFeature: [
+          {
+            feature: CALLER_ID_FEATURE_NAME,
+            callerId: {
+              type: PhoneNumberType.Blocked,
+            },
+          },
+        ],
+      });
+
+      const result = await rcCallerIdController.getExtensionCallerId();
+      expect(result).toBe(0);
+    });
+    it('should return id is 1 when extension callerInfo is undefined', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue({
+        byFeature: [],
+      });
+      const result = await rcCallerIdController.getExtensionCallerId();
+      expect(result).toBeNull();
+    });
+    it('should return null when extension caller id is null', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue(null);
+
+      const result = await rcCallerIdController.getExtensionCallerId();
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('setDefaultCallerId()', () => {
+    const normalId = RC_INFO.EXTENSION_CALLER_ID;
+    const originalModel = {
+      id: normalId,
+      byFeature: [
+        {
+          feature: CALLER_ID_FEATURE_NAME,
+          callerId: { phoneInfo: { id: '1' } },
+        },
+      ],
+    };
+    let requestParams = {
+      byFeature: [
+        {
+          feature: CALLER_ID_FEATURE_NAME,
+          callerId: { phoneInfo: { id: '2' } },
+        },
+      ],
+    };
+    it('should update caller id when caller id is not blocked', async () => {
+      const partialModifyController =
+        rcCallerIdController['_partialModifyController'];
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+              id: normalId,
+              ...requestParams,
+            });
+            doUpdateFunc({ id: normalId, ...requestParams });
+          },
+        );
+      await rcCallerIdController.setDefaultCallerId(2);
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+    });
+
+    it('should update caller id when caller id is blocked', async () => {
+      requestParams = {
+        byFeature: [
+          {
+            feature: CALLER_ID_FEATURE_NAME,
+            callerId: { type: PhoneNumberType.Blocked },
+          },
+        ],
+      };
+      const partialModifyController =
+        rcCallerIdController['_partialModifyController'];
+      partialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+              id: normalId,
+              ...requestParams,
+            });
+            doUpdateFunc({ id: normalId, ...requestParams });
+          },
+        );
+      await rcCallerIdController.setDefaultCallerId(0);
+      expect(partialModifyController.updatePartially).toBeCalledTimes(1);
+      expect(RCInfoApi.setExtensionCallerId).toBeCalledWith(requestParams);
+    });
+  });
+  describe('hasSetCallerId()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return true when has set caller id to user config', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue({});
+
+      expect(await rcCallerIdController.hasSetCallerId()).toBeTruthy();
+    });
+
+    it('should return false when has not set caller id to user config', async () => {
+      rcCallerIdController[
+        '_rcInfoFetchController'
+      ].getExtensionCallerId = jest.fn().mockResolvedValue(null);
+
+      expect(await rcCallerIdController.hasSetCallerId()).toBeFalsy();
     });
   });
 });

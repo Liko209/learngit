@@ -21,7 +21,7 @@ import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 @observer
 class ProfileMiniCardGroupFooter extends Component<
   WithTranslation & ProfileMiniCardGroupFooterViewProps
-> {
+  > {
   onClickMessage = () => {
     const { id } = this.props;
     const result = goToConversationWithLoading({ id });
@@ -44,7 +44,9 @@ class ProfileMiniCardGroupFooter extends Component<
   }
 
   render() {
-    const { id, t, showMessage, group } = this.props;
+    const {
+      id, t, showMessage, group,
+    } = this.props;
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
@@ -64,7 +66,7 @@ class ProfileMiniCardGroupFooter extends Component<
               onClick={this.onClickMessage}
               ariaLabel={t(this.getAriaLabelKey(), { name: group.displayName })}
             >
-              chat_bubble
+              chat
             </JuiIconButton>
           )}
         </JuiProfileMiniCardFooterRight>

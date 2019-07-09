@@ -3,11 +3,15 @@
  * @Date: 2018-11-27 14:33:02
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { observer } from 'mobx-react';
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { ANALYTICS_KEY } from '../constants';
+
 import {
   JuiProfileDialogContentMemberListItem,
   JuiProfileDialogContentMemberListItemName,
@@ -17,9 +21,11 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { Menu } from '../Menu';
 import { MembersViewProps } from './types';
+
 type State = {
   isHover: boolean;
 };
+
 @observer
 class MemberListItem extends React.Component<
   WithTranslation & MembersViewProps,
@@ -32,19 +38,37 @@ class MemberListItem extends React.Component<
     this.setState({
       isHover: true,
     });
-  }
+  };
 
   private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     this.setState({
       isHover: false,
     });
-  }
+  };
 
   private _onMenuClose = () => {
     this.setState({
       isHover: false,
     });
-  }
+  };
+
+  onClickAvatar = async (event: React.MouseEvent) => {
+    const { pid } = this.props;
+    event.stopPropagation();
+    const anchor = event.currentTarget as HTMLElement;
+    const {
+      ProfileMiniCard,
+    } = await import('@/modules/message/container/MiniCard/Profile');
+
+    const profileMiniCard = new ProfileMiniCard();
+
+    profileMiniCard.show({
+      anchor,
+      id: pid,
+    });
+
+    analyticsCollector.openMiniProfile(ANALYTICS_KEY);
+  };
 
   render() {
     const {
@@ -60,7 +84,7 @@ class MemberListItem extends React.Component<
       isTeam,
     } = this.props;
     const { isHover } = this.state;
-    const presence = <Presence uid={pid} borderSize="medium" />;
+    const presence = <Presence uid={pid} borderSize='medium' />;
     const ListItem = JuiProfileDialogContentMemberListItem;
     const ListItemName = JuiProfileDialogContentMemberListItemName;
     const ListItemAdmin = JuiProfileDialogContentMemberListItemAdmin;
@@ -77,16 +101,16 @@ class MemberListItem extends React.Component<
         onMouseLeave={this._handleMouseLeave}
       >
         <Avatar uid={pid} presence={presence} />
-        <ListItemName data-test-automation-id="profileDialogMemberListItemPersonName">
+        <ListItemName data-test-automation-id='profileDialogMemberListItemPersonName'>
           {person.userDisplayName}
         </ListItemName>
         {isThePersonAdmin && (
-          <ListItemAdmin data-test-automation-id="profileDialogMemberListItemPersonAdmin">
+          <ListItemAdmin data-test-automation-id='profileDialogMemberListItemPersonAdmin'>
             {t('people.profile.admin')}
           </ListItemAdmin>
         )}
         {isThePersonGuest && (
-          <ListItemGuest data-test-automation-id="profileDialogMemberListItemPersonGuest">
+          <ListItemGuest data-test-automation-id='profileDialogMemberListItemPersonGuest'>
             {t('people.profile.guest')}
           </ListItemGuest>
         )}

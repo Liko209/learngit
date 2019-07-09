@@ -8,9 +8,10 @@ import {
   palette,
 } from '../../../foundation/utils/styles';
 
-const Wrapper = styled.div<{
+type WrapperProps = {
   isEditMode?: boolean;
-}>`
+}
+const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   left: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
   right: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
@@ -19,7 +20,7 @@ const Wrapper = styled.div<{
   overflow-y: auto;
   border-radius: ${shape('borderRadius')};
   background-color: ${palette('common', 'white')};
-  z-index: ${({ theme }) => theme.zIndex.loading};
+  z-index: ${({ theme }) => theme.zIndex.dragging};
 `;
 
 type Props = {

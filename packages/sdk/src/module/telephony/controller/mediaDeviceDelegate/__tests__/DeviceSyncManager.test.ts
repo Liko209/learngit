@@ -157,6 +157,25 @@ describe('DeviceSyncManger', () => {
       expect(mockStorage.set).not.toBeCalled();
       expect(mockDeviceManager.setDeviceId).not.toBeCalled();
     });
+    it('should handle default specially', () => {
+      deviceSyncManager.setDevice({
+        source: SOURCE_TYPE.DEFAULT,
+        deviceId: 'AAA',
+      });
+      expect(mockDeviceManager.setDeviceId).toBeCalledWith('AAA');
+      expect(mockStorage.set).toBeCalledWith('default');
+      expect(mockLatUsedDeviceManager.record).toBeCalledWith('default');
+    });
+    it('should handle default specially', () => {
+      mockDeviceManager.getDefaultDeviceId.mockReturnValue('AAA');
+      deviceSyncManager.setDevice({
+        source: SOURCE_TYPE.STORAGE,
+        deviceId: 'default',
+      });
+      expect(mockDeviceManager.setDeviceId).toBeCalledWith('AAA');
+      expect(mockStorage.set).toBeCalledWith('default');
+      expect(mockLatUsedDeviceManager.record).toBeCalledWith('default');
+    });
     it('should not save to storage again when deviceId not change', () => {
       expect(mockStorage.set).not.toBeCalled();
       mockStorage.get.mockReturnValue('AAA');
@@ -206,7 +225,7 @@ describe('DeviceSyncManger', () => {
         deviceId: '',
       });
     });
-    it('should use storage when storage device available(exist && in devices) [JPT-2113]', () => {
+    it('should use storage when storage device available(exist && in devices) [JPT-2113] [JPT-2481]', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',
@@ -279,6 +298,7 @@ describe('DeviceSyncManger', () => {
       ]);
       mockStorage.get.mockReturnValue('BBB');
       mockDeviceManager.getDeviceId.mockReturnValue('BBB');
+      mockDeviceManager.getDefaultDeviceId.mockReturnValue(mockDefaultDeviceId);
       mockLatUsedDeviceManager.getLastAvailableUsedDevice.mockReturnValue(
         undefined,
       );

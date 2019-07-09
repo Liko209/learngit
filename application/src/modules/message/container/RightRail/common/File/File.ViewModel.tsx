@@ -15,7 +15,7 @@ import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
 import { FileViewModelProps, FileViewProps } from './File.types';
 
-class FileViewModel extends AbstractViewModel<FileViewModelProps>
+class FileViewModel<P = {}> extends AbstractViewModel<FileViewModelProps & P>
   implements FileViewProps {
   @computed
   get id() {
@@ -39,7 +39,8 @@ class FileViewModel extends AbstractViewModel<FileViewModelProps>
 
   @computed
   get _person(): any {
-    const creatorId = this.file.latestVersion.creator_id;
+    const creatorId =
+      this.file.latestVersion && this.file.latestVersion.creator_id;
     if (creatorId) {
       return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, creatorId);
     }
@@ -54,7 +55,8 @@ class FileViewModel extends AbstractViewModel<FileViewModelProps>
   @computed
   get modifiedTime() {
     const { createdAt } = this.file;
-    const modifiedTime = this.file.latestVersion.date;
+    const modifiedTime =
+      this.file.latestVersion && this.file.latestVersion.date;
     if (modifiedTime && typeof modifiedTime === 'number') {
       return dateFormatter.date(modifiedTime);
     }

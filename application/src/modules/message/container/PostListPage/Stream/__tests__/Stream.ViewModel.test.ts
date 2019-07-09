@@ -11,6 +11,7 @@ import * as utils from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { transform2Map } from '@/store/utils';
 
 jest.mock('sdk/module/post');
 
@@ -90,7 +91,8 @@ describe('StreamViewModel', () => {
       type: 'delete',
     });
   });
-  it('should fetch initial data if the postIds added while the previous postIds is empty', async () => {
+  it('should use _fetchInitialPosts if the postIds added while the previous postIds is empty', async () => {
+    expect(vm.fetchInitialPosts).not.toBe(vm._fetchInitialPosts);
     const localProps = { ...newProps };
     postService.getPostsByIds.mockResolvedValue({
       posts: [
@@ -101,10 +103,59 @@ describe('StreamViewModel', () => {
     });
     vm._postIds = [];
     await vm.onReceiveProps(localProps);
-    expect(mockedSortableListHandler.fetchData).toBeCalledWith(
-      QUERY_DIRECTION.NEWER,
-    );
+    expect(vm.fetchInitialPosts).toBe(vm._fetchInitialPosts);
     expect(vm._postIds).toEqual([1, 2]);
+  });
+
+  describe('shouldShowErrorPage', () => {
+    it('should be false when fetching post succeed at first page', async () => {
+      const vm = new StreamViewModel();
+      (vm.props.postFetcher = jest
+        .fn()
+        .mockImplementation(() =>
+          Promise.resolve({ data: [], hasMore: true }),
+        )),
+        expect(vm.shouldShowErrorPage).toBeFalsy();
+      await vm._postProvider.fetchData();
+      expect(vm.shouldShowErrorPage).toBeFalsy();
+    });
+    it('should be true when fetchData fail on first page', async () => {
+      const vm = new StreamViewModel();
+      (vm.props.postFetcher = jest.fn().mockImplementation(() => {
+        throw new Error('error');
+      })),
+        expect(vm.shouldShowErrorPage).toBeFalsy();
+      await vm._postProvider.fetchData();
+      expect(vm.shouldShowErrorPage).toBeTruthy();
+    });
+    it('should be false when fetchData fail on second page', async () => {
+      const vm = new StreamViewModel();
+      let i = 0;
+      (vm.props.postFetcher = jest.fn().mockImplementation(() => {
+        if (!i) {
+          i++;
+          vm._initial = false;
+          return Promise.resolve({ data: [], hasMore: true });
+        } else {
+          throw new Error('error');
+        }
+      })),
+        expect(vm.shouldShowErrorPage).toBeFalsy();
+      await vm._postProvider.fetchData();
+      await vm._postProvider.fetchData();
+      expect(vm.shouldShowErrorPage).toBeFalsy();
+    });
+  });
+
+  describe('tryAgain()', () => {
+    it('should reset _initial to true and shouldShowErrorPage to false when being called', () => {
+      const vm = new StreamViewModel();
+      vm._initial = false;
+      vm.shouldShowErrorPage = true;
+      vm.tryAgain();
+      expect(vm._initial).toBeTruthy();
+      expect(vm.shouldShowErrorPage).toBeFalsy();
+    });
   });
 });
 
@@ -113,27 +164,17 @@ describe('Posts order', () => {
     notificationCenter.removeAllListeners();
   });
   it('should have _index as sortValue when handle data change', () => {
-    jest.spyOn(utils, 'transform2Map').mockImplementation(a => a);
     const vm = new StreamViewModel();
     vm._postIds = [4, 1, 2, 5];
     jest
       .spyOn(vm._sortableListHandler, 'onDataChanged')
       .mockImplementationOnce(() => {});
-    notificationCenter.emitEntityUpdate(`${ENTITY.POST}.*`, [
-      { id: 1 },
-      { id: 2 },
-      { id: 4 },
-      { id: 5 },
-    ]);
+    const entities = [{ id: 1 }, { id: 2 }, { id: 4 }, { id: 5 }];
+    notificationCenter.emitEntityUpdate(`${ENTITY.POST}.*`, entities);
     expect(vm._sortableListHandler.onDataChanged).toHaveBeenCalledWith({
       body: {
         ids: [1, 2, 4, 5],
-        entities: [
-          { _index: 1, id: 1 },
-          { _index: 2, id: 2 },
-          { _index: 0, id: 4 },
-          { _index: 3, id: 5 },
-        ],
+        entities: transform2Map(entities),
       },
       type: 'update',
     });

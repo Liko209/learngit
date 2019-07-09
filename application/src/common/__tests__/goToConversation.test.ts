@@ -6,7 +6,12 @@
 import history from '@/history';
 import { service } from 'sdk';
 import { GroupService } from 'sdk/module/group';
-import { JNetworkError, ERROR_CODES_NETWORK, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import {
   goToConversationWithLoading,
@@ -84,7 +89,7 @@ describe('goToConversation()', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: undefined,
       error: true,
-      errorType: ERROR_TYPES.UNKNOWN
+      errorType: ERROR_TYPES.UNKNOWN,
     });
   });
 });
@@ -110,25 +115,25 @@ describe('getConversationId() with person type conversationId', () => {
 
   it('groupService should return backend err [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
-      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
+      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'),
     );
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
-      errorType: ERROR_TYPES.BACKEND
+      errorType: ERROR_TYPES.BACKEND,
     });
   });
 
   it('groupService should return network err [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
-      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
+      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
     );
     expect(await goToConversationWithLoading({ id: 1 })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
-      errorType: ERROR_TYPES.NETWORK
+      errorType: ERROR_TYPES.NETWORK,
     });
   });
 });
@@ -152,31 +157,31 @@ describe('getConversationId() with multiple person type conversationId', () => {
 
   it('groupService should return backend err [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
-      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
+      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'),
     );
     expect(await goToConversationWithLoading({ id: [1, 2, 3] })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
-      errorType: ERROR_TYPES.BACKEND
+      errorType: ERROR_TYPES.BACKEND,
     });
   });
 
   it('groupService should return network err [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
-      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
+      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
     );
     expect(await goToConversationWithLoading({ id: [1, 2, 3] })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
-      errorType: ERROR_TYPES.NETWORK
+      errorType: ERROR_TYPES.NETWORK,
     });
   });
 });
 
 describe('getConversationId() with message', () => {
-  it('should show loading then open the conversation and send the message when success [JPT-692/JPT-697]', async () => {
+  it('should show loading then open the conversation and send the message when success [JPT-692/JPT-697/JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
@@ -205,10 +210,10 @@ describe('getConversationId() with message', () => {
     );
   });
 
-  it('should show loading then show error page if failed [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
+  it('should show loading then show error page if failed [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087/JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
-      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
+      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'),
     );
     expect(
       await goToConversationWithLoading({ id: [1, 2, 3], message: 'hahahah' }),
@@ -222,14 +227,14 @@ describe('getConversationId() with message', () => {
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
-      errorType: ERROR_TYPES.BACKEND
+      errorType: ERROR_TYPES.BACKEND,
     });
   });
 
-  it('should show loading then show error page if failed(network error) [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088]', async () => {
+  it('should show loading then show error page if failed(network error) [JPT-2084/JPT-2248/JPT-2068/JPT-429/JPT-428/JPT-2088/JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(
-      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK')
+      new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK'),
     );
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
@@ -259,14 +264,14 @@ describe('getConversationId() with message', () => {
         hasBeforeJumpFun: true,
       },
       error: true,
-      errorType: ERROR_TYPES.NETWORK
+      errorType: ERROR_TYPES.NETWORK,
     });
   });
 
-  it('should show loading then show error page if failed(server error) [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087]', async () => {
+  it('should show loading then show error page if failed(server error) [JPT-2081/JPT-2247/JPT-2067/JPT-430/JPT-427/JPT-2087/JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(
-      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL')
+      new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL'),
     );
     (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
       id: 2,
@@ -296,7 +301,7 @@ describe('getConversationId() with message', () => {
         hasBeforeJumpFun: true,
       },
       error: true,
-      errorType: ERROR_TYPES.BACKEND
+      errorType: ERROR_TYPES.BACKEND,
     });
   });
 });
@@ -310,7 +315,7 @@ describe('has loading component', () => {
             resolve({
               id: 1,
             });
-          },         DELAY_LOADING * 2);
+          }, DELAY_LOADING * 2);
         });
       },
     );

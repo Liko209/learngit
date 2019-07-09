@@ -41,7 +41,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     super(props);
     props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
     this.state = {
-      initialOptions: this.props.initialOptions,
       switched: false,
       imageInited: false,
     };
@@ -63,13 +62,13 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     ) {
       event.preventDefault();
     }
-  }
+  };
 
   _handlerScroll = (event: MouseEvent) => {
     if (event.ctrlKey) {
       event.preventDefault();
     }
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('keydown', this._handlerKeydown, {
@@ -97,7 +96,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         this.setState({ switched: true });
       }
     }
-  }
+  };
 
   switchNextImage = () => {
     if (this._canSwitchNext()) {
@@ -107,10 +106,17 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         this.setState({ switched: true });
       }
     }
-  }
+  };
 
-  onCurrentItemDeleted = () => {
-    const { t } = this.props;
+  onCurrentItemDeleted = (nextItemId: number) => {
+    const { t, deleteItem } = this.props;
+    if (deleteItem) {
+      if (nextItemId === -1) {
+        this.context();
+      }
+      return;
+    }
+
     mainLogger.tags('ImageViewer').info('onCurrentItemDeleted');
     Notification.flashToast({
       message: t('viewer.ImageDeleted'),
@@ -120,7 +126,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       dismissible: false,
     });
     this.context();
-  }
+  };
 
   private _onZoomImageContentChange = () => {
     if (!this.state.imageInited) {
@@ -128,17 +134,17 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
         imageInited: true,
       });
     }
-  }
+  };
 
   private _canSwitchPrevious = () => {
     const { hasPrevious, isLoadingMore } = this.props;
     return !isLoadingMore && hasPrevious;
-  }
+  };
 
   private _canSwitchNext = () => {
     const { hasNext, isLoadingMore } = this.props;
     return !isLoadingMore && hasNext;
-  }
+  };
 
   render() {
     const {
@@ -184,7 +190,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     fitHeight,
                     notifyContentSizeChange,
                     canDrag,
-                    isDragging,
                     transform,
                   }) => {
                     const imageStyle = {
@@ -204,6 +209,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         height={fitHeight || imageHeight}
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}
+                        onLoad={value.onContentLoad}
+                        onError={value.onContentError}
                         thumbnailSrc={thumbnailSrc}
                       />
                     );

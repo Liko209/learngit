@@ -3,7 +3,7 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, ComponentType } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonFooterViewProps } from './types';
@@ -30,33 +30,35 @@ class ProfileMiniCardPersonFooter extends Component<
     const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
+      portalManager.addShouldCloseStatus();
     }
-  }
+  };
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
     return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
-  }
+  };
 
   handleCloseMiniCard = () => {
     portalManager.dismissLast();
-  }
+    portalManager.addShouldCloseStatus();
+  };
 
   private get _ActionButtons() {
     const { id, t, person } = this.props;
     const IconButton = (
       <JuiIconButton
-        key="go to conversation"
-        size="medium"
-        color="primary"
-        variant="plain"
+        key='go to conversation'
+        size='medium'
+        color='primary'
+        variant='plain'
         tooltipTitle={t('message.Messages')}
         onClick={this.onClickMessage}
         ariaLabel={t(this.getAriaLabelKey(), {
           name: person.userDisplayName,
         })}
       >
-        chat_bubble
+        chat
       </JuiIconButton>
     );
 
@@ -65,10 +67,10 @@ class ProfileMiniCardPersonFooter extends Component<
       (Comp: ComponentType<any>) => (
         <Comp
           key={`MESSAGE_PROFILE_FOOTER_EXTENSION_${Comp.displayName}`}
-          color="primary"
-          variant="plain"
+          color='primary'
+          variant='plain'
           id={id}
-          analysisSource="mini-profile"
+          analysisSource='mini-profile'
         />
       ),
     );

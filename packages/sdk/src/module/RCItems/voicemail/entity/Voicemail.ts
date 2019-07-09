@@ -4,19 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RCMessage, Caller } from '../../types';
+import { RCMessage, CallerView } from '../../types';
 import { VM_TRANSCRIPTION_STATUS } from '../../constants';
 import { IdModel } from 'sdk/framework/model';
 
 type Voicemail = RCMessage & {
   vmTranscriptionStatus: VM_TRANSCRIPTION_STATUS;
+  __timestamp: number;
 };
 
 type VoicemailView = IdModel & {
-  creationTime: string;
-  lastModifiedTime: string;
-  from: Caller;
-  to: Caller;
+  __timestamp: number;
+  from?: CallerView;
 };
 
 export { Voicemail, VoicemailView };

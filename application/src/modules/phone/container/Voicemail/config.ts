@@ -6,7 +6,8 @@
 const VOICE_MAIL_ITEM_HEIGHT = 64;
 const INITIAL_COUNT = 20;
 const TOP_BAR_HEIGHT = 64; // global top bar height
-const VOICEMAIL_HEADER = 48; // voicemail header height
+const VOICEMAIL_HEADER = 49; // voicemail header height (include 1px border)
+const CALL_HISTORY_USED_HEIGHT = 49 + 8 + 33; // call history top bar + margin + call history tabs
 const LOADING_DELAY = 500;
 
 export {
@@ -15,4 +16,5 @@ export {
   TOP_BAR_HEIGHT,
   VOICEMAIL_HEADER,
   LOADING_DELAY,
+  CALL_HISTORY_USED_HEIGHT,
 };

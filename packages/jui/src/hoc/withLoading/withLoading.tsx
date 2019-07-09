@@ -8,6 +8,7 @@ import styled from '../../foundation/styled-components';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { withDelay } from '../withDelay';
 import { palette } from '../../foundation/utils';
+
 type WithLoadingProps = {
   loading: boolean;
   variant?: 'circular';
@@ -28,20 +29,17 @@ const StyledLoadingPage = styled('div')<LoaderProps>`
   justify-content: center;
   top: 0px;
   left: 0px;
-  opacity: ${({ backgroundType, theme }) =>
-    backgroundType ? theme.palette.action.hoverOpacity * 5 : 1};
+  opacity: ${({ backgroundType, theme }) => (backgroundType ? theme.palette.action.hoverOpacity * 5 : 1)};
   background: ${palette('common', 'white')};
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
 const DefaultLoadingWithDelay = withDelay(
-  ({ backgroundType, size }: LoaderProps) => {
-    return (
+  ({ backgroundType, size }: LoaderProps) => (
       <StyledLoadingPage backgroundType={backgroundType}>
         <RuiCircularProgress size={size} />
       </StyledLoadingPage>
-    );
-  },
+  ),
 );
 
 const MAP = { circular: DefaultLoadingWithDelay };
@@ -49,9 +47,9 @@ const MAP = { circular: DefaultLoadingWithDelay };
 const withLoading = <
   P extends { loading: boolean; style?: React.CSSProperties }
 >(
-  Component: ComponentType<P>,
-  CustomizedLoading?: ComponentType<any>,
-): React.SFC<P & WithLoadingProps> => {
+    Component: ComponentType<P>,
+    CustomizedLoading?: ComponentType<any>,
+  ): React.SFC<P & WithLoadingProps> => {
   const CustomizedLoadingWithDelay =
     CustomizedLoading && withDelay(CustomizedLoading);
   return React.memo(
@@ -82,4 +80,16 @@ const withLoading = <
   );
 };
 
-export { withLoading, WithLoadingProps, DefaultLoadingWithDelay };
+const Loader = () => (
+  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
+);
+const Loading = withLoading(
+  (props: { loading: boolean; children: React.ReactNode }) => (
+    <>{props.children}</>
+  ),
+  Loader,
+);
+
+export {
+  withLoading, WithLoadingProps, DefaultLoadingWithDelay, Loading,
+};

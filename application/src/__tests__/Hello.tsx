@@ -3,14 +3,14 @@
  * @Date: 2019-03-12 15:17:15
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 type HelloProps = { message: string };
 
-class Hello extends Component<HelloProps> {
+class Hello extends PureComponent<HelloProps> {
   render() {
     return (
-      <div id="hello" style={{ height: 20 }}>
+      <div id='hello' style={{ height: 20 }}>
         Hello {this.props.message}
       </div>
     );

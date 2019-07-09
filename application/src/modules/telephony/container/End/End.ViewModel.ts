@@ -6,6 +6,7 @@
 
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
+import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { EndProps, EndViewProps } from './types';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
@@ -17,13 +18,15 @@ class EndViewModel extends StoreViewModel<EndProps> implements EndViewProps {
     TELEPHONY_SERVICE,
   );
 
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+
   constructor(props: EndProps) {
     super(props);
   }
 
   end = () => {
     if (
-      +new Date() - this._telephonyService.uiCallStartTime <
+      Date.now() - this._telephonyStore.activeCallTime <
       ACTIVATION_CALL_TIME
     ) {
       return;

@@ -24,8 +24,7 @@ const StyledExpansionPanel = styled(ExpansionPanel)`
   }
 `;
 
-const JuiExpansionPanel = React.memo((props: JuiExpansionPanelProps) => {
-  return (
+const JuiExpansionPanel = React.memo((props: JuiExpansionPanelProps) => (
     <StyledExpansionPanel
       classes={{
         root: 'root',
@@ -33,7 +32,6 @@ const JuiExpansionPanel = React.memo((props: JuiExpansionPanelProps) => {
       }}
       {...props}
     />
-  );
-});
+));
 
 export { JuiExpansionPanel, JuiExpansionPanelProps };

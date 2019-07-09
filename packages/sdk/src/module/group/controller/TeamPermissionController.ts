@@ -3,8 +3,7 @@
  * @Date: 2019-01-14 14:08:02
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-
+/* eslint-disable */
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 

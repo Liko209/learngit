@@ -3,6 +3,7 @@
  * @Date: 2018-12-09 10:10:02
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -18,6 +19,9 @@ class DeleteViewComponent extends React.Component<Props> {
   private _handleDelete = () => {
     const { deletePost, t } = this.props;
     Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'deleteConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'deleteOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'deleteCancelButton' },
       title: t('message.prompt.deletePostTitle'),
       content: t('message.prompt.deletePostContent'),
       okText: t('common.dialog.delete'),
@@ -29,14 +33,15 @@ class DeleteViewComponent extends React.Component<Props> {
         });
       },
     });
-  }
+  };
   render() {
     const { disabled, t } = this.props;
     return (
       <JuiMenuItem
         onClick={this._handleDelete}
         disabled={disabled}
-        icon="delete"
+        icon='delete'
+        data-test-automation-id='message-action-delete'
       >
         {t('message.action.deletePost')}
       </JuiMenuItem>

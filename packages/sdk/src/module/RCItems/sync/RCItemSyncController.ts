@@ -13,15 +13,15 @@ import { notificationCenter, WINDOW, SERVICE } from 'sdk/service';
 import { IRCItemSyncConfig } from '../config/IRCItemSyncConfig';
 import { RCItemSyncInfo } from 'sdk/api/ringcentral/types/RCItemSync';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { AccountService } from 'sdk/module/account';
 
-const VISIBLE = 'visible';
 abstract class RCItemSyncController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 > extends AbstractSyncController<T, IdType> {
   private _lastRequestSyncTime = 0;
   private _triggerSilentFetchKeys = [
-    SERVICE.LOGIN,
+    SERVICE.RC_LOGIN,
     WINDOW.FOCUS,
     WINDOW.ONLINE,
   ];
@@ -49,8 +49,8 @@ abstract class RCItemSyncController<
 
   handleNotification = async () => {
     await this.doSync(true, SYNC_DIRECTION.NEWER);
-  }
-
+  };
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean {
     return true;
   }
@@ -63,7 +63,10 @@ abstract class RCItemSyncController<
   }
 
   protected canDoSilentSync(): boolean {
-    return document.visibilityState === VISIBLE && window.navigator.onLine;
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    return window.navigator.onLine && accountService.isLoggedIn();
   }
 
   protected async hasPermission(): Promise<boolean> {

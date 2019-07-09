@@ -12,18 +12,30 @@ import styled, {
   css,
   createGlobalStyle,
 } from '../../foundation/styled-components';
-import { Palette } from '../../foundation/styles/';
+import { Theme, Color } from '../../foundation/styles/';
 
 const placementTopMargin = '16px 0';
 const placementBottomMargin = '12px 0';
 const placementLeftMargin = '0 2px';
 const placementRightMargin = '0 2px';
 
+type RuiTooltipBaseProps = Pick<
+  MuiTooltipProps,
+  | 'title'
+  | 'children'
+  | 'placement'
+  | 'TransitionComponent'
+  | 'open'
+  | 'disableFocusListener'
+  | 'disableHoverListener'
+  | 'disableTouchListener'
+  | 'enterDelay'
+>;
+
 type RuiTooltipProps = {
-  placement?: string;
   tooltipForceHide?: boolean;
-  color?: Palette['tooltip'];
-} & MuiTooltipProps;
+  color?: Color;
+} & RuiTooltipBaseProps;
 
 const baseSize = 7;
 
@@ -42,7 +54,8 @@ const TooltipArrow = styled.span`
   }
 `;
 
-const tooltipColor = ({ theme, color }: any) => theme.palette['tooltip'][color];
+const tooltipColor = ({ theme, color }: { theme: Theme; color: Color }) =>
+  theme.palette[color[0]][color[1]];
 
 const bottom = css`
   top: 0;
@@ -94,10 +107,14 @@ const left = css`
   }
 `;
 
-const GlobalToolTipStyle = createGlobalStyle`
+const GlobalToolTipStyle = createGlobalStyle<{
+  color: Color;
+  suppressMultiMountWarning: boolean;
+}>`
 
   .popper.popper > *{
-    background-color: ${({ theme, color }) => theme.palette.tooltip[color]};
+    background-color: ${({ theme, color }) =>
+      theme.palette[color[0]][color[1]]};
   }
 
   .popper[x-placement='right'] ${TooltipArrow}{
@@ -130,15 +147,15 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     this.setState({
       arrowRef: node,
     });
-  }
+  };
 
   handleTooltipClose = () => {
     this.setState({ open: false });
-  }
+  };
 
   handleTooltipOpen = () => {
     this.setState({ open: true });
-  }
+  };
 
   componentDidUpdate() {
     if (this.props.tooltipForceHide === true) {
@@ -150,9 +167,9 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     const {
       title,
       children,
-      placement = 'bottom',
-      color = 'dark',
       tooltipForceHide,
+      placement = 'bottom',
+      color = ['grey', 700] as Color,
       open: propOpen,
       ...rest
     } = this.props;
@@ -161,7 +178,6 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     return (
       <React.Fragment>
         <MuiTooltip
-          {...rest}
           open={open}
           onClose={this.handleTooltipClose}
           onOpen={this.handleTooltipOpen}
@@ -186,6 +202,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
               },
             },
           }}
+          {...rest}
         >
           {children}
         </MuiTooltip>

@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 17:23:25
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, ComponentType } from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
@@ -49,7 +49,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   private _renderMenu = () => {
     const { groupId } = this.props;
     return <Menu id={groupId} key={groupId} />;
-  }
+  };
 
   @computed
   private get _ActionButtons() {
@@ -80,9 +80,9 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     return (
       <JuiConversationPageHeaderSubtitle>
         <JuiButtonBar overlapSize={2}>
-          <Favorite id={groupId} size="medium" />
+          <Favorite key={groupId} id={groupId} size='medium' />
           {type === CONVERSATION_TYPES.TEAM ? (
-            <Privacy id={groupId} size="medium" />
+            <Privacy id={groupId} size='medium' />
           ) : null}
           <Member id={groupId} />
         </JuiButtonBar>
@@ -107,7 +107,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
     return (
       <JuiConversationPageHeader
-        data-test-automation-id="conversation-page-header"
+        data-test-automation-id='conversation-page-header'
         title={title}
         status={customStatus}
         SubTitle={this._SubTitle()}

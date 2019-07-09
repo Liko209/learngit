@@ -2,11 +2,12 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { DialerPage } from "../pages";
 import { Config } from "../config";
+import * as bluebird from "bluebird";
 
-class SearchPhoneGatherer extends BaseGatherer {
+class SearchPhoneGatherer extends DebugGatherer {
   private keywords: Array<string>;
   private metricKeys: Array<string> = [
     'search_phone_number',
@@ -26,7 +27,7 @@ class SearchPhoneGatherer extends BaseGatherer {
     let dialerPage = new DialerPage(passContext);
 
     // pre loaded
-    await this.search(dialerPage);
+    await this.search(dialerPage,  Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -67,8 +68,12 @@ class SearchPhoneGatherer extends BaseGatherer {
     let keyword,
       index = 0;
     while (index < searchCount) {
+      this.clearTmpGatherer(this.metricKeys);
+
       keyword = this.keywords[index++ % this.keywords.length];
       await page.searchByPhone(keyword);
+
+      this.pushGatherer(this.metricKeys);
     }
 
     await page.closeDialer();

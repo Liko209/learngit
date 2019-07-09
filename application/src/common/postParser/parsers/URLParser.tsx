@@ -3,7 +3,7 @@
  * @Date: 2019-05-31 15:40:49
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React from 'react';
 import { IPostParser, ParserType, URLParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
@@ -12,11 +12,6 @@ import { Markdown } from 'glipdown';
 
 class URLParser extends PostParser implements IPostParser {
   type = ParserType.URL;
-  ignoredRangeTypes = [
-    ParserType.AT_MENTION,
-    ParserType.EMOJI,
-    ParserType.FILE_NAME,
-  ];
   content: ParseContent;
 
   constructor(public options: URLParserOption) {
@@ -25,7 +20,7 @@ class URLParser extends PostParser implements IPostParser {
 
   getReplaceElement(strValue: string) {
     const execResult = this.getRegexp().exec(strValue);
-    if (!execResult) {
+    if (!execResult || !execResult[0]) {
       return strValue;
     }
     const maybeEmail = execResult[2];
@@ -37,7 +32,7 @@ class URLParser extends PostParser implements IPostParser {
         : (protocol ? '' : 'http://') + link;
     const text = (maybeEmail ? maybeEmail : '') + link;
     const linkElem = (
-      <a href={fullLink} target="_blank" rel="noreferrer">
+      <a href={fullLink} target='_blank' rel='noreferrer'>
         {this.options.innerContentParser
           ? this.options.innerContentParser(text)
           : text}

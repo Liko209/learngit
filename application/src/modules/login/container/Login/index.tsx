@@ -8,28 +8,12 @@ import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 interface IProps extends RouteComponentProps<any> {}
 
-interface IStates {
-  btnDisabled: boolean;
-  btnText: string;
-  username: string;
-  extension: string;
-  password: string;
-  errors: string[];
-}
-
-class Login extends React.Component<IProps, IStates> {
+class Login extends React.Component<IProps> {
   constructor(props: IProps) {
     super(props);
-    this.state = {
-      btnDisabled: false,
-      btnText: 'Login',
-      username: '',
-      extension: '',
-      password: '',
-      errors: [],
-    };
     this.onClick = this.onClick.bind(this);
     this._checkIfLogin();
   }
@@ -53,7 +37,9 @@ class Login extends React.Component<IProps, IStates> {
     return (
       <div>
         login page
-        <button onClick={this.onClick}>Login</button>
+        <button onClick={this.onClick} type="button">
+          Login
+        </button>
       </div>
     );
   }

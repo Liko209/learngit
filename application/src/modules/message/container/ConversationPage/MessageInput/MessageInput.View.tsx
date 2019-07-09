@@ -14,31 +14,33 @@ import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventD
 import { observer } from 'mobx-react';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
+import { InputFooter } from './InputFooter';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
+import moize from 'moize';
 import { ImageDownloader } from '@/common/ImageDownloader';
-import { IImageDownloadedListener } from 'sdk/pal';
-import { PRELOAD_ITEM } from './ColonEmoji/constants';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
+
 type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
+const sheetSize = 64;
+const set = 'emojione';
 @observer
 class MessageInputViewComponent extends Component<
   Props,
   {
     modules: object;
   }
-> {
+  > {
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
   private _imageDownloader: ImageDownloader;
-  private _listner: IImageDownloadedListener;
   state = {
     modules: {},
   };
 
   componentDidMount() {
-    this._imageDownloader = new ImageDownloader();
     this.updateModules();
     this.props.addOnPostCallback(() => {
       const { current } = this._attachmentsRef;
@@ -46,7 +48,11 @@ class MessageInputViewComponent extends Component<
         current.vm.cleanFiles();
       }
     });
-    this._imageDownloader.download(PRELOAD_ITEM, this._listner);
+    this._imageDownloader = new ImageDownloader();
+    this._imageDownloader.download({
+      id: -1,
+      url: backgroundImageFn(set, sheetSize),
+    });
   }
 
   componentWillUnmount() {
@@ -87,21 +93,21 @@ class MessageInputViewComponent extends Component<
     if (current) {
       current.vm.autoUploadFiles(array);
     }
-  }
+  };
 
   handleCopyPasteFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files, false);
     }
-  }
+  };
 
   handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files);
     }
-  }
+  };
 
   private _getMenus() {
     const { t } = this.props;
@@ -139,25 +145,47 @@ class MessageInputViewComponent extends Component<
     };
   }
 
-  render() {
-    const { draft, contentChange, error, id, t, insertEmoji } = this.props;
-    const { modules } = this.state;
-
-    const toolbarNode = (
+  private _getToolbarNode = moize(
+    (t: Props['t'], insertEmoji: Props['insertEmoji']) => (
       <MessageActionBar>
         <AttachmentView
           menus={this._getMenus()}
           fileMenu={this._getFileMenu()}
           tooltip={t('message.action.attachFile')}
+          title={t('message.inputMenus.uploadFileMenuTitle')}
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
-        <Emoji handleEmojiClick={insertEmoji} sheetSize={64} set="emojione" />
+        <Emoji
+          tooltip={t('message.emoji.emojiTooltip')}
+          handleEmojiClick={insertEmoji}
+          sheetSize={sheetSize}
+          set={set}
+        />
       </MessageActionBar>
-    );
-    const attachmentsNode = (
-      <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
-    );
+    ),
+  );
+
+  private _getAttachmentsNode = moize((id: number) => (
+    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft />
+  ));
+
+  private _getFooterNode = moize((hasInput: boolean) => (
+    <InputFooter hasInput={hasInput} />
+  ));
+
+  render() {
+    const {
+      draft,
+      contentChange,
+      error,
+      id,
+      t,
+      insertEmoji,
+      hasInput,
+    } = this.props;
+    const { modules } = this.state;
+
     return (
       <JuiMessageInput
         value={draft}
@@ -165,8 +193,9 @@ class MessageInputViewComponent extends Component<
         error={error ? t(error) : error}
         modules={modules}
         id={id}
-        toolbarNode={toolbarNode}
-        attachmentsNode={attachmentsNode}
+        toolbarNode={this._getToolbarNode(t, insertEmoji)}
+        footerNode={this._getFooterNode(hasInput)}
+        attachmentsNode={this._getAttachmentsNode(id)}
         didDropFile={this.handleCopyPasteFile}
         placeholder={t('message.action.typeNewMessage')}
       >

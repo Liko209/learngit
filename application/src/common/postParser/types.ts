@@ -6,12 +6,11 @@
 
 import { ParseContent } from './ParseContent';
 import { createContext } from 'react';
-import { CustomEmojiMap } from '../emojiHelpers';
 
 type ChildrenType = React.ReactChild | null | (React.ReactChild | null)[];
 
 type ParserOption = {
-  innerContentParser?: FullParser;
+  innerContentParser?: (fullText: string) => ChildrenType;
 };
 
 type AtMentionsMapType = {
@@ -23,14 +22,12 @@ type AtMentionsMapType = {
 
 type AtMentionParserOption = ParserOption & {
   map?: AtMentionsMapType;
-  isEscaped?: boolean;
   customReplaceFunc?: (
     match: string,
     id: string,
     name: string,
     isCurrent: boolean,
   ) => ChildrenType;
-  textEncoded?: boolean;
 };
 
 enum EmojiConvertType {
@@ -40,12 +37,8 @@ enum EmojiConvertType {
   EMOJI_ONE,
 }
 
-type EmojiParserOption = ParserOption & {
-  customEmojiMap?: CustomEmojiMap;
+type EmojiTransformerOption = ParserOption & {
   unicodeOnly?: boolean;
-  convertType: EmojiConvertType;
-  hostName?: string;
-  isEscaped?: boolean;
 };
 
 type FileNameParserOption = ParserOption & {
@@ -54,9 +47,12 @@ type FileNameParserOption = ParserOption & {
 };
 
 type HTMLParserOption = ParserOption & {
-  exclude?: RegExp;
   withGlipdown?: boolean;
   containerTag?: string;
+  innerContentParser?: (
+    fullText: string,
+    containerTag?: string,
+  ) => ChildrenType;
 };
 
 type KeywordHighlightParserOption = ParserOption & {
@@ -67,21 +63,20 @@ type PhoneNumberParserOption = ParserOption & {};
 
 type URLParserOption = ParserOption & {};
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
 type PostParserOptions = {
   fileName?: boolean | FileNameParserOption;
   keyword?: KeywordHighlightParserOption['keyword'];
   url?: boolean;
   phoneNumber?: boolean;
   atMentions?: AtMentionParserOption;
-  emoji?: Omit<EmojiParserOption, 'convertType'>;
+  emoji?: EmojiTransformerOption;
   html?: boolean | HTMLParserOption;
+  emojiTransformed?: boolean;
+  atMentionTransformed?: boolean;
 };
 
 interface IPostParser {
   type: ParserType;
-  ignoredRangeTypes: ParserType[];
   content: ParseContent;
   setContent: (content: ParseContent) => void;
   parseToReplacers: () => Replacer[];
@@ -109,7 +104,7 @@ type TextRange = {
 };
 
 type Replacer = TextRange & {
-  element: ChildrenType;
+  element?: ChildrenType;
 };
 
 type HighlightContextInfo = {
@@ -137,7 +132,7 @@ export {
   ParserOption,
   PostParserOptions,
   AtMentionParserOption,
-  EmojiParserOption,
+  EmojiTransformerOption,
   FileNameParserOption,
   HTMLParserOption,
   KeywordHighlightParserOption,

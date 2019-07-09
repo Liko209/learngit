@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IntegrationItemService } from './IntegrationItemService';
+
 export { IntegrationItemService };

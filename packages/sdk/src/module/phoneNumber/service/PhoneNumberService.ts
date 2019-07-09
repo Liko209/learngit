@@ -11,9 +11,12 @@ import { ENTITY } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { Person } from 'sdk/module/person/entity';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+
 class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
+  private _phoneNumberController: PhoneNumberController;
+
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [ENTITY.PERSON]: this._handlePersonPayload,
@@ -21,7 +24,6 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
     );
   }
 
-  private _phoneNumberController: PhoneNumberController;
   async getById(id: string): Promise<PhoneNumber | null> {
     const phoneNumber: PhoneNumber = {
       id,
@@ -69,9 +71,7 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
 
   private _handlePersonPayload = (
     payload: NotificationEntityPayload<Person>,
-  ) => {
-    return this.getPhoneNumberController().handlePersonPayload(payload);
-  }
+  ) => this.getPhoneNumberController().handlePersonPayload(payload);
 }
 
 export { PhoneNumberService };

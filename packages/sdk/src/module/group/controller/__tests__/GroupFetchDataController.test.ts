@@ -34,6 +34,7 @@ import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
 import { SearchService } from 'sdk/module/search';
+import { PermissionService } from 'sdk/module/permission';
 
 const soundex = require('soundex-code');
 jest.mock('../../../../dao');
@@ -71,6 +72,7 @@ describe('GroupFetchDataController', () => {
   const companyService = new CompanyService();
   const groupConfigService = new GroupConfigService();
   const searchService = new SearchService();
+  const permissionService = new PermissionService();
   const mockUserId = 1;
 
   function prepareRecentData(groupIds: number[], time = Date.now()) {
@@ -206,7 +208,7 @@ describe('GroupFetchDataController', () => {
         members: i % 2 === 0 ? [userId, i, i + 1000] : [i, i + 1000],
         company_id: i,
         is_company_team: false,
-        set_abbreviation: `this is a team name${i.toString()}`,
+        set_abbreviation: `this is a team name ${i.toString()}`,
         email_friendly_abbreviation: '',
         most_recent_content_modified_at: i,
       };
@@ -249,6 +251,7 @@ describe('GroupFetchDataController', () => {
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
       [ServiceConfig.GROUP_CONFIG_SERVICE, groupConfigService as any],
       [ServiceConfig.SEARCH_SERVICE, searchService as any],
+      [ServiceConfig.PERMISSION_SERVICE, permissionService as any],
       [
         ServiceConfig.ACCOUNT_SERVICE,
         { userConfig: AccountUserConfig.prototype } as any,
@@ -353,6 +356,78 @@ describe('GroupFetchDataController', () => {
         20,
       );
       expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
+    });
+
+    it('should return all groups if has show all group permission', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 85; i++) {
+        mock.push({ id: 1 });
+      }
+      jest.spyOn(permissionService, 'hasPermission').mockResolvedValue(true);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(result3).toEqual(mock);
+    });
+
+    it('should return limit groups if has not show all group permission', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 85; i++) {
+        mock.push({ id: 1 });
+      }
+      const spy = jest.spyOn(permissionService, 'hasPermission');
+      spy.mockResolvedValue(false);
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(spy).toBeCalled();
+      expect(result3).toEqual(mock.slice(0, 80));
+    });
+
+    it('should not call has permission api if result count < 80', async () => {
+      const mock: any[] = [];
+      for (let i = 0; i < 20; i++) {
+        mock.push({ id: 1 });
+      }
+      const spy = jest.spyOn(permissionService, 'hasPermission');
+      jest.spyOn(
+        groupFetchDataController.groupHandleDataController,
+        'filterGroups',
+      );
+      groupFetchDataController.groupHandleDataController.filterGroups.mockResolvedValueOnce(
+        mock,
+      );
+      // GROUP_QUERY_TYPE.GROUP && GROUP_QUERY_TYPE.TEAM
+      groupDao.queryGroups.mockResolvedValue(mock);
+      const result3 = await groupFetchDataController.getGroupsByType(
+        GROUP_QUERY_TYPE.GROUP,
+        0,
+        20,
+      );
+      expect(spy).not.toBeCalled();
+      expect(result3).toEqual(mock.slice(0, 20));
     });
   });
 
@@ -513,8 +588,8 @@ describe('GroupFetchDataController', () => {
     });
 
     it('do fuzzy search of groups, recent contact should at top', async () => {
-      const ids = [11021, 11025, 11023];
-      prepareRecentData([11021, 11025, 11023]);
+      const ids = [11493, 11013, 11025];
+      prepareRecentData([11493, 11013, 11025]);
       const result = await groupFetchDataController.doFuzzySearchGroups(
         'ben, tu',
         undefined,
@@ -597,20 +672,17 @@ describe('GroupFetchDataController', () => {
     });
 
     it('fetch all matched groups and recent should at top ', async () => {
-      const ids = [12022, 12024, 12026];
+      const ids = [12002, 12006, 13006];
       prepareRecentData(ids);
-      const result: any = await groupFetchDataController.doFuzzySearchAllGroups(
+      const result = await groupFetchDataController.doFuzzySearchAllGroups(
         'name',
         false,
         false,
         true,
       );
       expect(result.sortableModels.length).toEqual(505);
-      expect([
-        result.sortableModels[0].id,
-        result.sortableModels[1].id,
-        result.sortableModels[2].id,
-      ]).toEqual(ids);
+      const expectedModels = result.sortableModels.slice(0, 4);
+      expect(expectedModels.map(x => x.id)).toEqual([...ids, 13002]);
     });
   });
 
@@ -724,6 +796,7 @@ describe('GroupFetchDataController', () => {
 
     beforeEach(() => {
       entityCacheController.clear();
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
       prepareGroupsForSearch();
     });
 
@@ -1005,16 +1078,36 @@ describe('GroupFetchDataController', () => {
     it('do fuzzy search of teams with single term, team include me should in front', async () => {
       groupService.getTeamIdsIncludeMe = jest
         .fn()
-        .mockReturnValue(new Set([12506, 12508, 12510]));
+        .mockReturnValue(new Set([12004, 12006, 12008]));
       const result = await groupFetchDataController.doFuzzySearchTeams(
         'thiaaas',
       );
       expect(result.sortableModels.length).toBe(500);
+      const expectedModels = result.sortableModels.slice(0, 4);
+      expect(expectedModels.map(x => x.id)).toEqual([
+        12004,
+        12006,
+        12008,
+        12002,
+      ]);
+    });
 
-      expect(result.sortableModels[0].id).toBe(12506);
-      expect(result.sortableModels[1].id).toBe(12508);
-      expect(result.sortableModels[2].id).toBe(12510);
-      expect(result.sortableModels[3].id).toBe(12002);
+    it('do fuzzy search of teams with single term, team include me should in front even when multiple terms matched', async () => {
+      groupService.getTeamIdsIncludeMe = jest
+        .fn()
+        .mockReturnValue(new Set([12006, 12008]));
+      const result = await groupFetchDataController.doFuzzySearchTeams(
+        'i i a n',
+      );
+      expect(result.sortableModels.length).toBe(500);
+
+      const expectedModels = result.sortableModels.slice(0, 4);
+      expect(expectedModels.map(x => x.id)).toEqual([
+        12006,
+        12008,
+        12002,
+        12004,
+      ]);
     });
 
     it('do fuzzy search of teams with searchKey is empty', async () => {
@@ -1072,8 +1165,9 @@ describe('GroupFetchDataController', () => {
         person1,
         person2,
       ]);
-      expect(res).toBe('1, 2');
+      expect(res).toEqual({ groupName: '1, 2', memberNames: ['1', '2'] });
     });
+
     it('should filter out when members are deactivated', async () => {
       const person1: Person = {
         id: 1,
@@ -1111,7 +1205,7 @@ describe('GroupFetchDataController', () => {
         person1,
         person2,
       ]);
-      expect(res).toBe('1');
+      expect(res).toEqual({ groupName: '1', memberNames: ['1'] });
     });
 
     it('should filter out when members flag are deactivated', async () => {
@@ -1152,7 +1246,7 @@ describe('GroupFetchDataController', () => {
         person1,
         person2,
       ]);
-      expect(res).toBe('2');
+      expect(res).toEqual({ groupName: '2', memberNames: ['2'] });
     });
   });
 

@@ -8,7 +8,9 @@ import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
 
-import { ItemFile, Item, StoredFile, NoteItem } from '../../module/item/entity';
+import {
+  ItemFile, Item, StoredFile, NoteItem,
+} from '../../module/item/entity';
 
 import { RequestHolder } from '../requestHolder';
 import {
@@ -119,7 +121,7 @@ class ItemAPI extends Api {
     });
   }
 
-  static getNote(id: number) {
+  static getNoteBody(id: number) {
     return this.glipNetworkClient.get<Raw<NoteItem>>({
       path: `/pages_body/${id}`,
     });

@@ -33,6 +33,10 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithTranslation;
 
+type TriggerButtonState = {
+  show: boolean;
+};
+
 // height of conversation header & tabs, pass these constant height to list;
 // since resize observer in resize observer will cause UI performance issue.
 const HEADER_HEIGHT = 48;
@@ -44,27 +48,52 @@ const CONTAINER_IDS = {
   RIGHT_RAIL_HEADER: 'right-rail-header',
 };
 
-class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
+class TriggerButtonComponent extends React.Component<
+TriggerButtonProps,
+TriggerButtonState
+> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
     return isOpen
       ? 'message.conversationDetailsHide'
       : 'message.conversationDetailsShow';
-  }
+  };
 
   private _getIconKey = () => {
     const { isOpen } = this.props;
     return isOpen ? 'double_chevron_right' : 'double_chevron_left';
+  };
+
+  private _timerId: NodeJS.Timeout;
+
+  state = {
+    show: false,
+  };
+
+  constructor(props: TriggerButtonProps) {
+    super(props);
+    this._timerId = setTimeout(() => {
+      this.setState({
+        show: true,
+      });
+    }, 0);
+  }
+
+  componentWillUnmount() {
+    if (this._timerId) {
+      clearTimeout(this._timerId);
+    }
   }
 
   render() {
+    const { show } = this.state;
     const { t, isOpen, onClick } = this.props;
     const container = document.getElementById(
       isOpen
         ? CONTAINER_IDS.RIGHT_RAIL_HEADER
         : CONTAINER_IDS.CONVERSATION_HEADER,
     );
-    if (!container) {
+    if (!container || !show) {
       return null;
     }
     return ReactDOM.createPortal(
@@ -73,6 +102,7 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
           tooltipTitle={t(this._getTooltipKey())}
           ariaLabel={t(this._getTooltipKey())}
           onClick={onClick}
+          data-test-automation-id="right_rail_trigger_button"
         >
           {this._getIconKey()}
         </JuiIconButton>
@@ -94,11 +124,11 @@ class RightRailComponent extends React.Component<Props> {
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
-  }
+  };
 
   private _handleTabChanged = (index: number) => {
     this.setState({ tabIndex: index });
-  }
+  };
 
   private _renderListView = (
     type: RIGHT_RAIL_ITEM_TYPE,
@@ -119,13 +149,13 @@ class RightRailComponent extends React.Component<Props> {
         height={height}
       />
     );
-  }
-
+  };
+  /* eslint-disable react/no-array-index-key */
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+      <ReactResizeDetector handleWidth handleHeight>
         {({ width: w, height: h }: { width: number; height: number }) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
@@ -168,7 +198,7 @@ class RightRailComponent extends React.Component<Props> {
         }}
       </ReactResizeDetector>
     );
-  }
+  };
 
   render() {
     const { id } = this.props;

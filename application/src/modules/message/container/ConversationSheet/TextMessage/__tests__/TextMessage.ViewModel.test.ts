@@ -11,12 +11,9 @@ import * as commonModule from '@/modules/common/module.config';
 import { Jupiter, container } from 'framework';
 import * as utils from '@/store/utils';
 import { AuthUserConfig } from 'sdk/module/account/config/AuthUserConfig';
-import { TelephonyService } from '@/modules/telephony/service';
-import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import Backend from 'i18next-xhr-backend';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
-import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { renderToStaticMarkup } from 'react-dom/server';
 
 jest.mock('@/utils/i18nT', () => ({
@@ -48,10 +45,15 @@ const mockPersonData = {
   userDisplayName: 'Person name',
 };
 
+const mockCallData = {
+  callId: '1',
+};
+
 const mockMap = {
   [ENTITY_NAME.POST]: mockPostData,
   [ENTITY_NAME.GROUP]: mockGroupData,
   [ENTITY_NAME.PERSON]: mockPersonData,
+  [ENTITY_NAME.CALL]: mockCallData,
 };
 
 let vm: TextMessageViewModel;
@@ -75,23 +77,6 @@ describe('TextMessageViewModel', () => {
     AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
       endpoint_id: 12345,
     });
-    vm = new TextMessageViewModel({ id: 123 });
-    jest.spyOn(vm, 'getGroup');
-    jest.spyOn(vm, 'getPerson');
-  });
-  it('should called directCall while directCall called', () => {
-    const telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
-    telephonyService.directCall = jest.fn();
-    vm.directCall('12345678');
-    expect(telephonyService.directCall).toHaveBeenCalledTimes(1);
-  });
-  it('should update canUseTelephony while called updateCanUseTelephony', () => {
-    const featuresFlagsService: FeaturesFlagsService = container.get(
-      FeaturesFlagsService,
-    );
-    featuresFlagsService.canUseTelephony = jest.fn();
-    vm.canUseTelephony();
-    expect(featuresFlagsService.canUseTelephony).toHaveBeenCalledTimes(1);
   });
   describe('html', () => {
     beforeAll(() => {
@@ -101,21 +86,24 @@ describe('TextMessageViewModel', () => {
     });
     it('should be get url format text when text has link', () => {
       mockPostData.text = 'https://www.baidu.com';
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `<a href="https://www.baidu.com" target="_blank" rel="noreferrer">https://www.baidu.com</a>`,
       );
     });
 
     it('should be get email format text when text has email', () => {
       mockPostData.text = 'xxx@163.com';
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `<a href="mailto:xxx@163.com" target="_blank" rel="noreferrer">xxx@163.com</a>`,
       );
     });
 
     it('should be get bold font format text when there are two asterisks before and after', () => {
       mockPostData.text = '**awesome**';
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         '<b>awesome</b>',
       );
     });
@@ -123,7 +111,8 @@ describe('TextMessageViewModel', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(true);
 
       mockPostData.text = `${phoneNumber}`;
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockPhoneNumberLink: ${phoneNumber}`,
       );
     });
@@ -144,10 +133,10 @@ describe('TextMessageViewModel', () => {
         (err, t) => {},
       );
       i18next.loadLanguages('en', () => {});
-      // const renderVideoCall = `Dial-in Number: ${phoneLink}`;
-      expect(
-        renderToStaticMarkup(vm.getContent() as React.ReactElement),
-      ).toMatch(`Dial-in Number: MockPhoneNumberLink: ${phoneNumber}`);
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toMatch(
+        `Dial-in Number: MockPhoneNumberLink: ${phoneNumber}`,
+      );
     });
   });
 
@@ -160,18 +149,18 @@ describe('TextMessageViewModel', () => {
       jest.spyOn(utils, 'getGlobalValue').mockReturnValue(false);
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: Person name`,
       );
-      expect(vm.getGroup).toHaveBeenCalledTimes(0);
-      expect(vm.getPerson).toHaveBeenCalledTimes(1);
     });
 
     it('should be get new person name link when person name be changed', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockPersonData.userDisplayName = 'New person name';
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: New person name`,
       );
     });
@@ -184,18 +173,18 @@ describe('TextMessageViewModel', () => {
     it('should be get team name link when at mention a team', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: ${mockGroupData.displayName}`,
       );
-      expect(vm.getGroup).toHaveBeenCalledTimes(1);
-      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
 
     it('should be get new team name link when team name be changed', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockGroupData.displayName = 'New team name';
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: ${mockGroupData.displayName}`,
       );
     });
@@ -209,12 +198,10 @@ describe('TextMessageViewModel', () => {
     it('should be get original text when at mention an unknown item', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
-      expect(renderToStaticMarkup(vm.getContent() as React.ReactElement)).toBe(
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+      expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: @${originalText}`,
       );
-
-      expect(vm.getGroup).toHaveBeenCalledTimes(0);
-      expect(vm.getPerson).toHaveBeenCalledTimes(0);
     });
   });
 });

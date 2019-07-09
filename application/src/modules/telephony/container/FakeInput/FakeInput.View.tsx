@@ -3,7 +3,7 @@
  * @Date: 2019-04-09 12:36:01
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
@@ -61,6 +61,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: text;
     `;
 
     const Inner = styled.div`

@@ -6,11 +6,8 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../foundation/utils/decorators';
-import { JuiLink, JuiLinkProps } from '../';
+import { alignCenterDecorator } from '../../../foundation/utils/decorators';
+import { JuiLink, JuiLinkProps } from '..';
 
 function getKnobs() {
   const content = text('content', 'button');
@@ -42,7 +39,6 @@ function getKnobs() {
 
 storiesOf('Components', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiLink, { inline: true }))
   .add('Link', () => {
     const { content, ...rest } = getKnobs();
     return (

@@ -7,30 +7,41 @@ import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
 import { AccountService } from '../../module/account/service';
-import { mainLogger } from 'foundation';
+import { mainLogger, getSpartaRandomTime } from 'foundation';
 import { SyncService } from '../../module/sync/service';
 import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
-const NEXT_RECONNECT_TIME = 500;
-const MAX_RECONNECT_INTERVAL_TIME = 60 * 1000;
+const INTERVAL = 3000;
 
 const TAG = '[Socket SocketCanConnectController]';
 
+export type CanReconnectAPIType = {
+  interval: number;
+  callback: (id: number) => void;
+  forceOnline: boolean;
+  nthCount: number;
+};
+
 class SocketCanConnectController {
-  private _reconnectIntervalTime = NEXT_RECONNECT_TIME;
   private _canConnectTimeOutId?: NodeJS.Timeout;
 
   private _managerId: number = 0;
+  private _retryCount: number = 0;
   private _isDoingCanConnect: boolean = false;
   constructor(id: number) {
     this._managerId = id;
   }
 
-  async doCanConnectApi(callback: (id: number) => void, forceOnline: boolean) {
-    this._reconnectIntervalTime = NEXT_RECONNECT_TIME;
+  async doCanConnectApi(options: CanReconnectAPIType) {
+    this._retryCount = 0;
     this._isDoingCanConnect = true;
-    mainLogger.log(TAG, ' start checkCanConnectToServer');
-    await this._doCanConnectApi(callback, forceOnline);
+    const time = this._getStartedTime(options.nthCount, options.interval);
+    mainLogger.log(TAG, `start checkCanConnectToServer ${time} later`);
+    this._tryToCheckCanConnectAfterTime(
+      options.callback,
+      options.forceOnline,
+      time,
+    );
   }
 
   isDoingCanConnect() {
@@ -73,13 +84,21 @@ class SocketCanConnectController {
     forceOnline: boolean,
   ) {
     mainLogger.log(TAG, ' handleRequestSuccess:', result);
-    if (result && result['reconnect_retry_in']) {
-      // request success but need to waiting a second
-      const time: number = result['reconnect_retry_in'];
-      await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
+    if (typeof result === 'object') {
+      if (result && result['reconnect_retry_in']) {
+        // request success but need to waiting a second
+        const time: number = result['reconnect_retry_in'];
+        await this._tryToCheckCanConnectAfterTime(callback, forceOnline, time);
+      } else {
+        callback(this._managerId);
+        this._isDoingCanConnect = false;
+      }
     } else {
-      callback(this._managerId);
-      this._isDoingCanConnect = false;
+      this._onCanConnectApiFailure(
+        'invalid result type',
+        callback,
+        forceOnline,
+      );
     }
   }
 
@@ -88,16 +107,10 @@ class SocketCanConnectController {
     callback: (id: number) => void,
     forceOnline: boolean,
   ) {
-    mainLogger.log(TAG, ' handleRequestFail:', e);
-    this._reconnectIntervalTime = this._reconnectIntervalTime * 2;
-    if (this._reconnectIntervalTime >= MAX_RECONNECT_INTERVAL_TIME) {
-      this._reconnectIntervalTime = MAX_RECONNECT_INTERVAL_TIME;
-    }
-    this._tryToCheckCanConnectAfterTime(
-      callback,
-      forceOnline,
-      this._reconnectIntervalTime,
-    );
+    this._retryCount = this._retryCount + 1;
+    const delayTime = getSpartaRandomTime(this._retryCount, true);
+    mainLogger.log(TAG, ' handleRequestFail:', e, ' retry after:', delayTime);
+    this._tryToCheckCanConnectAfterTime(callback, forceOnline, delayTime);
     // may need to handle 401 error to force user logout
   }
 
@@ -109,7 +122,7 @@ class SocketCanConnectController {
     if (!this._canConnectTimeOutId) {
       this._canConnectTimeOutId = setTimeout(() => {
         this._handleReTry(callback, forceOnline);
-      },                                     time);
+      }, time);
     } else {
       mainLogger.warn(TAG, ' has already exits time out id');
     }
@@ -175,6 +188,13 @@ class SocketCanConnectController {
       presence === PRESENCE.NOTREADY;
 
     return shouldBeOnline ? 'online' : presence || '';
+  }
+
+  private _getStartedTime(nthCount: number, interval: number) {
+    if (nthCount === 0) {
+      return interval > INTERVAL ? 0 : INTERVAL - interval;
+    }
+    return getSpartaRandomTime(nthCount, true);
   }
 }
 

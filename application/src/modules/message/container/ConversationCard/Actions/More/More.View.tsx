@@ -19,8 +19,8 @@ type State = { open: boolean; anchorEl: EventTarget & Element | null };
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
-  [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
   [MENU_LIST_ITEM_TYPE.EDIT]: Edit,
+  [MENU_LIST_ITEM_TYPE.DELETE]: Delete,
 };
 
 @observer
@@ -76,15 +76,17 @@ class More extends React.Component<MoreViewProps, State> {
         onClose={this.closePopper}
       >
         <JuiMenuList onClick={this.closePopper}>
-          {Object.keys(menuItems).map((key: string) => {
-            const { permission, shouldShowAction } = permissionsMap[key];
-            const Component = menuItems[key];
-            return (
-              shouldShowAction && (
-                <Component id={id} key={key} disabled={!permission} />
-              )
-            );
-          })}
+          {Object.keys(menuItems)
+            .sort((a: string, b: string) => Number(a) - Number(b))
+            .map((key: string) => {
+              const { permission, shouldShowAction } = permissionsMap[key];
+              const Component = menuItems[key];
+              return (
+                shouldShowAction && (
+                  <Component id={id} key={key} disabled={!permission} />
+                )
+              );
+            })}
         </JuiMenuList>
       </JuiPopperMenu>
     );

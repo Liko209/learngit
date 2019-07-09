@@ -3,6 +3,7 @@
  * @Date: 2018-11-08 14:50:05
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -34,11 +35,11 @@ class RecordViewComponent extends Component<Props> {
           color={recording ? 'semantic.negative' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleRecord}
-          size="xxlarge"
+          size='xxlarge'
           disabled={disabled}
           awake={recording}
           shouldPersistBg={recording}
-          data-test-automation-id="telephony-record-btn"
+          data-test-automation-id='telephony-record-btn'
           aria-label={
             recording
               ? t('telephony.accessibility.stopRecord')

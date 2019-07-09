@@ -9,7 +9,8 @@ import { IPostParser, ParserType, AtMentionParserOption } from '../types';
 import { ParseContent } from '../ParseContent';
 import { JuiAtMention } from 'jui/components/AtMention';
 import { PostParser } from './PostParser';
-import { AT_MENTION_ESCAPED, AT_MENTION_REGEX } from '../utils';
+import { AT_MENTION_REGEX } from '../utils';
+import { AtMentionTransformer } from './AtMentionTransformer';
 
 class AtMentionParser extends PostParser implements IPostParser {
   type = ParserType.AT_MENTION;
@@ -19,20 +20,15 @@ class AtMentionParser extends PostParser implements IPostParser {
   }
 
   getReplaceElement(strValue: string) {
-    const {
-      map = {},
-      customReplaceFunc,
-      innerContentParser,
-      textEncoded,
-    } = this.options;
+    const { map = {}, customReplaceFunc, innerContentParser } = this.options;
     const result = this.getRegexp().exec(strValue);
-    if (!result) {
+    if (!result || !result[0]) {
       return strValue;
     }
     const id = result[1];
     const user = map[id] || {};
     const { name, isCurrent } = user;
-    const text = name || (textEncoded ? atob(result[2]) : result[2]);
+    const text = name || AtMentionTransformer.atMentionDataMap[id];
     if (customReplaceFunc) {
       return customReplaceFunc(strValue, id, text, !!isCurrent);
     }
@@ -46,9 +42,7 @@ class AtMentionParser extends PostParser implements IPostParser {
   }
 
   getRegexp() {
-    return new RegExp(
-      this.options.isEscaped ? AT_MENTION_ESCAPED : AT_MENTION_REGEX,
-    );
+    return new RegExp(AT_MENTION_REGEX);
   }
 }
 

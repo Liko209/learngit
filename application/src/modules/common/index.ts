@@ -4,5 +4,5 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 export * from './container';
-export * from '../common/service';
+export * from './service';
 export * from './module.config';

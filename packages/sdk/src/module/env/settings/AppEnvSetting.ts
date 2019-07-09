@@ -5,7 +5,7 @@
  */
 
 import { EnvConfig } from '../config';
-import { AccountService } from '../../../module/account';
+import { AccountService } from '../../account';
 
 class AppEnvSetting {
   static getEnv() {
@@ -26,7 +26,7 @@ class AppEnvSetting {
       return false;
     }
 
-    if (oldEnv && accountService) {
+    if (oldEnv && accountService && accountService.isLoggedIn()) {
       await accountService.logout();
     }
 

@@ -13,9 +13,8 @@ import {
   INDICATES_RECORDING_MODE,
   CALL_TRANSPORT,
   LEG_TYPE,
-  CALL_LOG_SOURCE,
 } from '../constants';
-import { Caller, UriModel } from '../../types';
+import { Caller, CallerView, UriModel } from '../../types';
 import { CALL_DIRECTION } from '../../constants';
 
 type CallRecording = UriModel<string> & {
@@ -66,14 +65,14 @@ type CallLog = IdModel<string> & {
     uri: string;
   };
   deleted?: boolean;
-  __source: CALL_LOG_SOURCE;
+  __localInfo: number;
   __timestamp: number;
   __deactivated: boolean;
 };
 
 type CallLogView = IdModel<string> & {
-  result: CALL_RESULT;
-  __source: CALL_LOG_SOURCE;
+  caller?: CallerView;
+  __localInfo: number;
   __timestamp: number;
 };
 

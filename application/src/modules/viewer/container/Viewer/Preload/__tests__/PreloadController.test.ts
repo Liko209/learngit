@@ -31,7 +31,7 @@ jest.mock('@/common/ImageDownloader', () => {
 jest.mock('sdk/module/item/service');
 jest.mock('@/common/getThumbnailURL', () => {
   return {
-    getThumbnailURL: jest.fn().mockReturnValue('http://xxx'),
+    getLargeRawImageURL: jest.fn().mockReturnValue('http://xxx'),
   };
 });
 
@@ -48,11 +48,20 @@ describe('PreloadController', () => {
   describe('pending ids', () => {
     it('Should have the prioritized ids around the index', () => {
       const preloadCtrl = new PreloadController();
-      preloadCtrl.replacePreload([0, 1, 2, 3, 4, 5, 6], 3);
-      expect(preloadCtrl.getInProgressId()).toEqual(4);
-      expect(preloadCtrl.getPendingIds()).toEqual([2, 5, 1]);
+      preloadCtrl.replacePreload([1, 2, 3, 4, 5, 6, 7], 3);
+      expect(preloadCtrl.getInProgressId()).toEqual(0);
+
+      preloadCtrl.setIsAllowed(true);
+      expect(preloadCtrl.getInProgressId()).toEqual(5);
+      expect(preloadCtrl.getPendingIds()).toEqual([3, 6, 2]);
+
+      preloadCtrl.onSuccess({ id: preloadCtrl.getInProgressId() }, 0, 0);
+      expect(preloadCtrl.getInProgressId()).toEqual(3);
 
       preloadCtrl.stop();
+      expect(preloadCtrl.getPendingIds()).toEqual([]);
+
+      preloadCtrl._startPreload();
       expect(preloadCtrl.getPendingIds()).toEqual([]);
     });
   });

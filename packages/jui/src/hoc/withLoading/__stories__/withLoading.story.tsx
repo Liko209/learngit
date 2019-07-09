@@ -125,7 +125,7 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
           </DemoWrapper>
           always show component:
           <DemoWrapper>
-            <ListLoadingWithMask loading={_loading} alwaysComponentShow={true}>
+            <ListLoadingWithMask loading={_loading} alwaysComponentShow>
               {children}
             </ListLoadingWithMask>
           </DemoWrapper>
@@ -175,7 +175,7 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
               { id: 11 },
             ],
           });
-        },         3000);
+        }, 3000);
       });
     }
   }

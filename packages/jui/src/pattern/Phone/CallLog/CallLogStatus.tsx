@@ -16,15 +16,17 @@ import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
 
 type Props = {
-  isUnread: boolean;
   icon: string;
   callType: string;
   duration: string;
   isMissedCall: boolean;
+  isShowCallInfo: boolean;
 };
 
 const CallLogStatus = (props: Props) => {
-  const { isUnread, icon, callType, duration, isMissedCall } = props;
+  const {
+    icon, callType, duration, isMissedCall, isShowCallInfo,
+  } = props;
   const color: IconColor = isMissedCall
     ? ['accent', 'tomato']
     : ['grey', '600'];
@@ -34,24 +36,31 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem disableButton={true} isUnread={isUnread}>
+    <ContactItem disableButton isUnread={false}>
       <JuiListItemAvatar>
         <JuiIconography iconSize="medium" iconColor={color}>
           {icon}
         </JuiIconography>
       </JuiListItemAvatar>
-      <JuiListItemText
-        alignCenter={true}
-        primary={callType}
-        primaryColor={textColor}
-        secondary={duration}
-      />
+      {isShowCallInfo && (
+        <JuiListItemText
+          alignCenter
+          primary={callType}
+          primaryColor={textColor}
+          secondary={isMissedCall ? null : duration}
+        />
+      )}
     </ContactItem>
   );
 };
 
 const StyledCallLogStatusWrapper = styled.div`
   flex: 1;
+  max-width: 25%;
+  width: 25%;
+  && li:first-child {
+    margin-left: 20%;
+  }
 `;
 
 export { CallLogStatus, StyledCallLogStatusWrapper };

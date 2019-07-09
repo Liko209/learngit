@@ -7,6 +7,7 @@
 import { IModuleSetting, SettingEntityIds, IUserSettingHandler } from './types';
 import { UserSettingEntity } from '../entity';
 import { Nullable } from 'sdk/types';
+
 abstract class BaseModuleSetting<
   T extends Partial<Record<SettingEntityIds, IUserSettingHandler>>
 > implements IModuleSetting {
@@ -27,6 +28,10 @@ abstract class BaseModuleSetting<
       });
       delete this._handlerMap;
     }
+  }
+
+  has(id: SettingEntityIds): boolean {
+    return !!(this._handlerMap && this._handlerMap[id]);
   }
 
   async getById<T>(

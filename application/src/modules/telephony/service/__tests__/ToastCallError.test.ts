@@ -111,10 +111,38 @@ describe('ToastCallError', () => {
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 
-  it('should display park error', () => {
+  it('should display permission error', () => {
     ToastCallError.toast = jest.fn();
-    const i18nkey = 'telephony.prompt.ParkError';
-    ToastCallError.toastParkError();
+    const i18nkey = 'telephony.prompt.NoCallPermission';
+    ToastCallError.toastPermissionError();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display country block error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.CountryBlock';
+    ToastCallError.toastCountryBlockError();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display voip unavailable error', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.VoipUnavailable';
+    ToastCallError.toastVoipUnavailableError();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display on-demand error [JPT-2427]', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.OnDemandRecording';
+    ToastCallError.toastOnDemandRecording();
+    expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
+  });
+
+  it('should display auto-recording error [JPT-2428]', () => {
+    ToastCallError.toast = jest.fn();
+    const i18nkey = 'telephony.prompt.AutoRecording';
+    ToastCallError.toastAutoRecording();
     expect(ToastCallError.toast).toHaveBeenCalledWith(i18nkey, 3000);
   });
 });

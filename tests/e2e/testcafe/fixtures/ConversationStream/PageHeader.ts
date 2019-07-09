@@ -271,7 +271,7 @@ test.meta(<ITestMeta>{
     members: [loginUser, otherUser, groupUser],
   };
   const chat = <IGroup>{
-    type: 'Personal',
+    type: 'DirectMessage',
     owner: loginUser,
     members: [loginUser, otherUser],
   };

@@ -3,7 +3,7 @@
  * @Date: 2019-05-30 10:34:43
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, createRef } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -15,6 +15,7 @@ import { ContactSearchListViewProps } from './types';
 import { observer } from 'mobx-react';
 import { ContactSearchItem } from '../ContactSearchItem';
 import { HotKeys } from 'jui/hoc/HotKeys';
+import { ROW_HEIGHT } from './constants';
 
 type Props = WithTranslation & ContactSearchListViewProps;
 type ContactSearchListState = {
@@ -22,7 +23,6 @@ type ContactSearchListState = {
 };
 
 const MENU_PADDING = 2;
-const ROW_HEIGHT = 44;
 
 const ContactSearchListContainer = styled.div`
   flex: 1;
@@ -49,15 +49,13 @@ class ContactSearchListViewComponent extends Component<
 > {
   private _containerRef: React.RefObject<any> = createRef();
   private _listRef: React.RefObject<any> = createRef();
-  private _startIndex: number;
-  private _stopIndex: number;
 
   state = {
     height: 0,
-    initialScrollToIndex: 0,
   };
 
   componentDidMount() {
+    /* eslint-disable react/no-find-dom-node */
     const container = ReactDOM.findDOMNode(this._containerRef.current);
     if (container) {
       this.setState({
@@ -66,33 +64,32 @@ class ContactSearchListViewComponent extends Component<
       });
     }
   }
-
-  private _handleVisibilityChanged = (range: {
-    startIndex: number;
-    stopIndex: number;
-  }) => {
-    const { startIndex, stopIndex } = range;
-    this._startIndex = startIndex;
-    this._stopIndex = stopIndex;
+  componentDidUpdate({ trimmedInputString }: Props) {
+    if (
+      this.props.trimmedInputString !== trimmedInputString &&
+      this._listRef.current
+    ) {
+      this._listRef.current.scrollToIndex(0);
+    }
   }
-
   private _scrollToView = (f: () => void) => () => {
-    const { focusIndex, dialerFocused } = this.props;
+    const { dialerFocused } = this.props;
     if (!dialerFocused) {
       return;
     }
     f();
-
-    if (
-      (focusIndex < this._startIndex || focusIndex >= this._stopIndex) &&
-      this._listRef.current
-    ) {
-      this._listRef.current.scrollToIndex(focusIndex);
+    const newFS = this.props.focusIndex;
+    const { startIndex, stopIndex } = this._listRef.current.getVisibleRange();
+    if (this._listRef.current) {
+      if (newFS <= startIndex) {
+        this._listRef.current.scrollToIndex(newFS, false);
+      } else if (newFS >= stopIndex) {
+        this._listRef.current.scrollToIndex(newFS, true);
+      }
     }
-  }
+  };
 
   private onUpKeyDown = this._scrollToView(this.props.decreaseFocusIndex);
-
   private onDownKeyDown = this._scrollToView(this.props.increaseFocusIndex);
 
   render() {
@@ -111,7 +108,10 @@ class ContactSearchListViewComponent extends Component<
     const hasResult = !!displayedSearchResult.length;
 
     return (
-      <ContactSearchListContainer ref={this._containerRef}>
+      <ContactSearchListContainer
+        ref={this._containerRef}
+        className='contact-search-list-container'
+      >
         {hasResult ? (
           <HotKeys
             keyMap={{
@@ -120,17 +120,14 @@ class ContactSearchListViewComponent extends Component<
               enter: onEnter,
             }}
           >
-            <StyledList data-test-automation-id="telephony-contact-search-list">
+            <StyledList data-test-automation-id='telephony-contact-search-list'>
               <JuiInfiniteList
                 height={this.state.height}
                 minRowHeight={ROW_HEIGHT}
                 loadMore={loadMore}
                 loadInitialData={loadInitialData}
-                loadingMoreRenderer={<></>}
-                loadingRenderer={<></>}
                 hasMore={hasMore}
                 initialScrollToIndex={focusIndex === -1 ? 0 : focusIndex}
-                onVisibleRangeChange={this._handleVisibilityChanged}
                 ref={this._listRef}
               >
                 {displayedSearchResult.map((searchItem, idx) => {

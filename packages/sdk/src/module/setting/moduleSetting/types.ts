@@ -5,6 +5,7 @@
  */
 import { UserSettingEntity } from '../entity';
 import { Nullable, UndefinedAble } from 'sdk/types';
+
 interface IUserSettingHandler<T = any> {
   id: number;
   userSettingEntityCache: UndefinedAble<UserSettingEntity<T>>;
@@ -22,6 +23,7 @@ interface IUserSettingHandler<T = any> {
 }
 
 interface IModuleSetting {
+  has(id: SettingEntityIds): boolean;
   getById<T>(id: SettingEntityIds): Promise<Nullable<UserSettingEntity<T>>>;
   init(): void;
   dispose(): void;

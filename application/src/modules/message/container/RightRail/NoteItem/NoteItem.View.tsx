@@ -11,11 +11,16 @@ import {
   JuiListItemIcon,
 } from 'jui/components/Lists';
 import { JuiIconWrapper, JuiNoteIcon } from 'jui/pattern/RightShelf';
+import { openNoteViewer } from '../../ConversationDetailViewer';
 import { NoteItemProps } from './types';
 import { observer } from 'mobx-react';
 
 @observer
 class NoteItemView extends Component<NoteItemProps> {
+  _handleClick = async () => {
+    const { title, id } = this.props;
+    openNoteViewer(title, id);
+  }
   render() {
     const { disabled, title, subTitle } = this.props;
 
@@ -24,7 +29,7 @@ class NoteItemView extends Component<NoteItemProps> {
         disabled={disabled}
         data-test-automation-id="rightRail-note-item"
       >
-        <JuiListItemIcon>
+        <JuiListItemIcon onClick={this._handleClick}>
           <JuiIconWrapper>
             <JuiNoteIcon />
           </JuiIconWrapper>

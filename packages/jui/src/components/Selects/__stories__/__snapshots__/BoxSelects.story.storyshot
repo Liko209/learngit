@@ -1,0 +1,136 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Selects BoxSelect: Components/Selects BoxSelect 1`] = `
+.c2 .root {
+  height: 100%;
+}
+
+.c2 .icon {
+  color: #9e9e9e;
+}
+
+.c2 .selectMenu {
+  padding: 6px 24px 6px 8px;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.c3.root {
+  height: 32px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: #eeeeee;
+  border: 1px solid #eeeeee;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  color: #212121;
+  width: 200px;
+  height: 40px;
+}
+
+.c3:hover {
+  background-color: #f5f6fb;
+  border: 1px solid #f5f6fb;
+}
+
+.c3.disabled {
+  background-color: rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.26);
+}
+
+.c3.focused {
+  background-color: #eeeeee;
+  border: 1px solid #0684bd;
+}
+
+.c0 {
+  width: 100%;
+  text-align: left;
+  padding-bottom: 12px;
+  max-width: 232px;
+}
+
+.c1 {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  padding-bottom: 8px;
+}
+
+<div
+  style={
+    Object {
+      "textAlign": "center",
+    }
+  }
+>
+  <div
+    style={
+      Object {
+        "padding": "0 30%",
+      }
+    }
+  >
+    <div
+      className="c0"
+    >
+      <div
+        className="c1"
+      >
+        Select Demo
+      </div>
+      <div
+        className="MuiInputBase-root root c2 c3"
+        data-test-automation-id="demo"
+        onClick={[Function]}
+        style={Object {}}
+      >
+        <div
+          className="MuiSelect-root root"
+        >
+          <div
+            aria-haspopup="true"
+            aria-pressed="false"
+            className="MuiSelect-select MuiSelect-selectMenu selectMenu MuiInputBase-input"
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onKeyDown={[Function]}
+            role="button"
+            tabIndex={0}
+          >
+            One
+          </div>
+          <input
+            type="hidden"
+            value={1}
+          />
+          <svg
+            aria-hidden="true"
+            className="MuiSvgIcon-root MuiSelect-icon icon"
+            focusable="false"
+            role="presentation"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M7 10l5 5 5-5z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

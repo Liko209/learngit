@@ -6,8 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiTopBar, JuiLogo, JuiAvatarActions } from '..';
+import { JuiTopBar, JuiLogo, JuiAvatarActions, JuiNewActions } from '..';
 import {
   JuiIconButton,
   JuiIconButtonProps,
@@ -15,19 +14,21 @@ import {
 import { MenuListCompositionProps } from '../../MenuListComposition';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiMenuList, JuiMenuItem } from '../../../components';
-import { JuiNewActions } from '../../../pattern/TopBar';
-import {
-  JuiHistoryOperation,
-  OPERATION,
-} from '../../../pattern/HistoryOperation';
+
+import { JuiHistoryOperation, OPERATION } from '../../HistoryOperation';
+import bulletedMenu from '../../../assets/jupiter-icon/icon-bubble_lines.svg';
+import newActions from '../../../assets/jupiter-icon/icon-zoom-in.svg';
 
 const fakeHandler = () => null;
 
 const MainMenu = (props: JuiIconButtonProps) => {
   return (
-    <JuiIconButton size="medium" tooltipTitle="Main menu" {...props}>
-      bulleted_menu
-    </JuiIconButton>
+    <JuiIconButton
+      size='medium'
+      tooltipTitle='Main menu'
+      {...props}
+      symbol={bulletedMenu}
+    />
   );
 };
 
@@ -37,9 +38,12 @@ const Logo = () => {
 
 const AddIconButton = (props: JuiIconButtonProps) => {
   return (
-    <JuiIconButton size="medium" tooltipTitle="Add" {...props}>
-      new_actions
-    </JuiIconButton>
+    <JuiIconButton
+      size='medium'
+      tooltipTitle='Add'
+      {...props}
+      symbol={newActions}
+    />
   );
 };
 
@@ -56,7 +60,7 @@ const NewActions = (props: MenuListCompositionProps) => {
         horizontal: 'center',
       }}
     >
-      <JuiMenuItem data-test-automation-id="viewYourProfile">
+      <JuiMenuItem data-test-automation-id='viewYourProfile'>
         Profile
       </JuiMenuItem>
     </JuiNewActions>
@@ -65,7 +69,7 @@ const NewActions = (props: MenuListCompositionProps) => {
 
 const Avatar = (props: JuiIconButtonProps) => {
   return (
-    <JuiAvatar size="large" color="tomato">
+    <JuiAvatar size='large' color='tomato'>
       DL
     </JuiAvatar>
   );
@@ -85,7 +89,7 @@ const AvatarActions = (props: MenuListCompositionProps) => {
       }}
     >
       <JuiMenuList>
-        <JuiMenuItem data-test-automation-id="viewYourProfile">
+        <JuiMenuItem data-test-automation-id='viewYourProfile'>
           Profile
         </JuiMenuItem>
       </JuiMenuList>
@@ -116,21 +120,19 @@ const BackNForward = () => {
   );
 };
 
-storiesOf('Pattern/TopBar', module)
-  .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
-  .add('TopBar', () => (
-    <div style={{ padding: '20px', background: 'silver' }}>
-      <JuiTopBar
-        openGlobalSearch={() => {}}
-        searchKey={''}
-        searchPlaceholder={'search'}
-        onClear={() => {}}
-        NewActions={NewActions}
-        MainMenu={MainMenu}
-        Dialpad={NewActions}
-        Logo={Logo}
-        BackNForward={BackNForward}
-        AvatarActions={AvatarActions}
-      />
-    </div>
-  ));
+storiesOf('Pattern/TopBar', module).add('TopBar', () => (
+  <div style={{ padding: '20px', background: 'silver' }}>
+    <JuiTopBar
+      openGlobalSearch={() => {}}
+      searchKey={''}
+      searchPlaceholder={'search'}
+      onClear={() => {}}
+      NewActions={NewActions}
+      MainMenu={MainMenu}
+      Dialpad={NewActions}
+      Logo={Logo}
+      BackNForward={BackNForward}
+      AvatarActions={AvatarActions}
+    />
+  </div>
+));

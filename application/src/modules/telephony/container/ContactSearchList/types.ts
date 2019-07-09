@@ -12,7 +12,10 @@ type Direction = 'up' | 'down';
 
 type SearchResult = SearchItem[];
 
-type ContactSearchListProps = {};
+type ContactSearchListProps = {
+  onContactSelected: (phoneNumber: string) => void;
+  inputStringProps: 'forwardString' | 'inputString';
+};
 
 type ContactSearchListViewProps = {
   displayedSearchResult: SearchResult;
@@ -26,6 +29,7 @@ type ContactSearchListViewProps = {
   onEnter: () => void;
   onClick: (focusIndex: number) => void;
   dialerFocused: boolean;
+  trimmedInputString: string;
 };
 
 export {

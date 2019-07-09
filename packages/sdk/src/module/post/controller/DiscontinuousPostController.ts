@@ -5,7 +5,7 @@
  */
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Post } from '../entity';
-import { Item } from '../../../module/item/entity';
+import { Item } from '../../item/entity';
 import { ItemService } from '../../item';
 import PostAPI from '../../../api/glip/post';
 import { Raw } from '../../../framework/model';
@@ -32,18 +32,19 @@ class DiscontinuousPostController {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
-    const localPosts = await this._getPostFromLocal(ids);
+    const validIds = ids.filter(
+      (id: number) => id !== null && id !== undefined,
+    );
+    const localPosts = await this._getPostFromLocal(validIds);
     const result = {
       posts: localPosts.filter((post: Post) => !post.deactivated),
       items: await itemService.getByPosts(localPosts),
     };
 
-    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
+    const restIds = _.difference(validIds, localPosts.map(({ id }) => id));
     if (restIds.length) {
       const remoteData = await PostAPI.requestByIds(restIds);
-      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) =>
-        transform<Post>(item),
-      );
+      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
 
       const notAchievedIds = _.difference(
         restIds,
@@ -90,9 +91,7 @@ class DiscontinuousPostController {
 
   private _mockDeactivatedPosts(ids: number[]): Post[] {
     mainLogger.info('_mockDeactivatedPosts ids:', ids);
-    return ids.map((id: number) => {
-      return { id, deactivated: true } as Post;
-    });
+    return ids.map((id: number) => ({ id, deactivated: true } as Post));
   }
 
   private async _savePosts(posts: Post[]): Promise<Post[]> {

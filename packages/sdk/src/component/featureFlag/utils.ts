@@ -1,8 +1,6 @@
 type Option = { equal: Function } | null;
-function strictDiff(subjects: object[]) {
-  return diff(null, subjects);
-}
 
+/* eslint-disable */
 function diff(opts: Option, subjects: object[]) {
   const length = subjects.length;
   const ref = subjects[0];
@@ -32,6 +30,10 @@ function diff(opts: Option, subjects: object[]) {
 
 function isStrictEqual(a: any, b: any) {
   return a === b;
+}
+
+function strictDiff(subjects: object[]) {
+  return diff(null, subjects);
 }
 
 export { diff, strictDiff };

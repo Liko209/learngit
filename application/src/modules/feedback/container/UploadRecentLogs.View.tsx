@@ -14,26 +14,20 @@ import {
   UploadRecentLogsViewProps,
   TaskStatus,
 } from './types';
-import { Notification } from '@/containers/Notification';
+import { Notification, NotificationProps } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
+import { Loading } from 'jui/hoc/withLoading';
 
 type State = {};
 
-type Props = UploadRecentLogsViewProps & UploadRecentLogsViewModelProps & WithTranslation;
+type Props = UploadRecentLogsViewProps &
+UploadRecentLogsViewModelProps &
+WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -41,6 +35,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
 
   focusInputRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
+  _dismiss: (() => void) | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -52,7 +47,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
   private _onSendFeedbackDoneCallback = (taskStatus: TaskStatus) => {
     const { t } = this.props;
     const isSuccess = taskStatus === TaskStatus.SUCCESS;
-    Notification.flashToast({
+    this._flashToast({
       message: isSuccess
         ? t('feedback.sendFeedbackSuccess')
         : t('feedback.sendFeedbackFailed'),
@@ -61,6 +56,12 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       fullWidth: false,
       dismissible: false,
     });
+  };
+
+  private _flashToast(props: NotificationProps) {
+    this._dismiss && this._dismiss();
+    const { dismiss } = Notification.flashToast(props);
+    this._dismiss = dismiss;
   }
 
   componentDidMount() {
@@ -71,7 +72,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       if (node) {
         node.focus();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -83,7 +84,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
     sendFeedback();
 
     // sendingInBackground
-    Notification.flashToast({
+    this._flashToast({
       message: t('feedback.sendingInBackground'),
       type: ToastType.INFO,
       messageAlign: ToastMessageAlign.LEFT,
@@ -91,15 +92,17 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       dismissible: false,
     });
     this.onClose();
-  }
+  };
 
   onClose = () => this.context();
 
   render() {
-    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
+    const {
+      handleTitleChange, handleDescChange, isLoading, t,
+    } = this.props;
     return (
       <JuiModal
-        open={true}
+        open
         size={'medium'}
         title={t('feedback.uploadRecentLogsDialogHeader')}
         onCancel={this.onClose}
@@ -108,11 +111,11 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
         cancelText={t('common.dialog.cancel')}
         loading={isLoading}
       >
-        <Loading loading={isLoading} alwaysComponentShow={true} delay={0}>
+        <Loading loading={isLoading} alwaysComponentShow delay={0}>
           <JuiTextField
             id={t('feedback.issueTitle')}
             label={t('feedback.issueTitle')}
-            fullWidth={true}
+            fullWidth
             inputProps={{
               maxLength: 200,
             }}
@@ -125,7 +128,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
             inputProps={{
               maxLength: 1000,
             }}
-            fullWidth={true}
+            fullWidth
             onChange={handleDescChange}
           />
         </Loading>
@@ -136,6 +139,8 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
 
 // const UploadRecentLogsComponent = UploadRecentLogsView;
 
-const UploadRecentLogsView = withTranslation('translations')(UploadRecentLogsComponent);
+const UploadRecentLogsView = withTranslation('translations')(
+  UploadRecentLogsComponent,
+);
 
 export { UploadRecentLogsView, UploadRecentLogsComponent };

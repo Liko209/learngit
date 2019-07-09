@@ -10,14 +10,11 @@ function isDexieCollection(collection: any): collection is Dexie.Collection {
   return collection.and !== undefined;
 }
 
-const equalIgnoreCase = (a: string, b: string) =>
-  a.toLowerCase() === b.toLowerCase();
+const equalIgnoreCase = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
-const includesIgnoreCase = (arr: string[], a: string) =>
-  arr.some(val => equalIgnoreCase(val, a));
+const includesIgnoreCase = (arr: string[], a: string) => arr.some(val => equalIgnoreCase(val, a));
 
-const startsWithIgnoreCase = (val: string, a: string) =>
-  val.toLowerCase().indexOf(a.toLowerCase()) === 0;
+const startsWithIgnoreCase = (val: string, a: string) => val.toLowerCase().indexOf(a.toLowerCase()) === 0;
 
 class CollectionWhereClause {
   private coll: Dexie.Collection;
@@ -35,15 +32,12 @@ class CollectionWhereClause {
   }
   equals(val: any): Dexie.Collection {
     return this.coll.filter(
-      item =>
-        val === item[this.key] ||
+      item => val === item[this.key] ||
         (Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0),
     );
   }
   equalsIgnoreCase(val: string): Dexie.Collection {
-    return this.coll.filter((item: any) =>
-      equalIgnoreCase(item[this.key], val),
-    );
+    return this.coll.filter((item: any) => equalIgnoreCase(item[this.key], val));
   }
   notEqual(val: any): Dexie.Collection {
     return this.coll.filter((item: any) => val !== item[this.key]);
@@ -52,9 +46,7 @@ class CollectionWhereClause {
     return this.coll.filter((item: any) => item[this.key].indexOf(val) === 0);
   }
   startsWithIgnoreCase(val: string): Dexie.Collection {
-    return this.coll.filter((item: any) =>
-      startsWithIgnoreCase(item[this.key], val),
-    );
+    return this.coll.filter((item: any) => startsWithIgnoreCase(item[this.key], val));
   }
   between(
     lower: any,
@@ -63,25 +55,20 @@ class CollectionWhereClause {
     includeUpper?: boolean,
   ): Dexie.Collection {
     const key = this.key;
-    return this.coll.filter((item: any) => {
-      return !!(
-        (lower < item[key] && item[key] < upper) ||
+    return this.coll.filter((item: any) => !!(
+      (lower < item[key] && item[key] < upper) ||
         (includeLower && lower === item[key]) ||
         (includeUpper && upper === item[key])
-      );
-    });
+    ));
   }
   contains(val: any): Dexie.Collection {
     return this.coll.filter(
-      (item: any) =>
-        Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0,
+      (item: any) => Array.isArray(item[this.key]) && item[this.key].indexOf(val) >= 0,
     );
   }
 }
 
-const collectionWhere = (coll: Dexie.Collection, key: string) => {
-  return new CollectionWhereClause(coll, key);
-};
+const collectionWhere = (coll: Dexie.Collection, key: string) => new CollectionWhereClause(coll, key);
 
 export {
   CollectionTable,

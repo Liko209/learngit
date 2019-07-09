@@ -13,9 +13,10 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import { ContactSearchItemViewProps } from './types';
 import { observer } from 'mobx-react';
 import { ContactSearchItemContent as ItemContent } from 'jui/pattern/Dialer';
+import { ROW_HEIGHT } from '../ContactSearchList/constants';
 
 type Props = WithTranslation & ContactSearchItemViewProps;
-
+/* eslint-disable */
 @observer
 class ContactSearchItemViewComponent extends Component<Props> {
   private _ref: RefObject<JuiMenuItem> = createRef();
@@ -44,33 +45,34 @@ class ContactSearchItemViewComponent extends Component<Props> {
 
     return (
       <JuiMenuItem
+        style={{ height: ROW_HEIGHT }}
         selected={selected}
         avatar={
           <Avatar
             uid={uid}
             showDefaultAvatar={!uid}
-            size="medium"
-            data-test-automation-id="telephony-contact-search-list_item-avatar"
+            size='medium'
+            data-test-automation-id='telephony-contact-search-list_item-avatar'
           />
         }
         onClick={onClick}
         ref={this._ref}
-        data-test-automation-id="telephony-contact-search-list_item"
+        data-test-automation-id='telephony-contact-search-list_item'
       >
         <ItemContent>
           <JuiListItemText
             primary={showDialIcon ? t('telephony.dial') : name}
             secondary={
-              isExt ? `${t('telephony.Ext')}${phoneNumber}` : phoneNumber}
+              isExt ? `${t('telephony.Ext')} ${phoneNumber}` : phoneNumber
+            }
           />
           {showDialIcon && (
             <JuiIconButton
-              variant="plain"
-              color="primary.600"
-              size="medium"
-              onClick={onClick}
+              variant='plain'
+              color='primary.600'
+              size='medium'
               disableToolTip={true}
-              data-test-automation-id="telephony-contact-search-list_item-dial_button"
+              data-test-automation-id='telephony-contact-search-list_item-dial_button'
             >
               dial
             </JuiIconButton>

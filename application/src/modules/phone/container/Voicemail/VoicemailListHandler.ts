@@ -3,46 +3,40 @@
  * @Date: 2019-05-30 16:35:54
  * Copyright © RingCentral. All rights reserved.
  */
+import { SortUtils } from 'sdk/framework/utils';
+import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
+import { ENTITY } from 'sdk/service/eventKey';
 import {
   FetchSortableDataListHandler,
   ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
-import { SortUtils } from 'sdk/framework/utils';
-import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { FetchVoicemailData, VoicemailFilterFunc } from './types';
 
-import { VoicemailDataProvider } from './VoicemailDataProvider';
-import { MESSAGE_AVAILABILITY } from 'sdk/module/RCItems/constants';
-import { ENTITY } from 'sdk/service/eventKey';
+const defaultMatchFunc = (model: Voicemail) => !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
 
 class VoicemailListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<Voicemail>;
-  constructor() {
-    const isMatchFunc = (model: Voicemail) => {
-      return !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
-    };
+
+  constructor(fetchData: FetchVoicemailData, filterFunc: VoicemailFilterFunc) {
+    const isMatchFunc = filterFunc || defaultMatchFunc;
 
     const transformFunc = (
       model: Voicemail,
-    ): ISortableModelWithData<string> => {
-      return {
-        id: model.id,
-        sortValue: model.id,
-        data: model.creationTime,
-      };
-    };
+    ): ISortableModelWithData<string> => ({
+      id: model.id,
+      sortValue: model.id,
+      data: model.creationTime,
+    });
 
     const sortFunc = (
       lhs: ISortableModelWithData<string>,
       rhs: ISortableModelWithData<string>,
-    ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, ['data'], true);
-    };
-
-    const dataProvider = new VoicemailDataProvider();
+    ): number => SortUtils.sortModelByKey(lhs, rhs, ['data'], true);
 
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
-      dataProvider,
+      { fetchData },
       {
         isMatchFunc,
         transformFunc,

@@ -43,6 +43,18 @@ describe('PreInsertIdController()', () => {
         ids: [],
       });
     });
+    it('should clear old invalid data without error when they existed', () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
+        setUserId: jest.fn(),
+        get: jest.fn().mockReturnValueOnce(['-61480964']),
+        put: jest.fn(),
+      });
+      const controller = getController();
+      expect(controller.getAll()).toEqual({
+        uniqueIds: [],
+        ids: [],
+      });
+    });
   });
 
   describe('insert()', () => {
@@ -54,6 +66,15 @@ describe('PreInsertIdController()', () => {
         uniqueIds: ['1001'],
         ids: [10],
       });
+    });
+  });
+
+  describe('getPreInsertId()', () => {
+    it('should return pre-insert id if unique id in pre-insert list', async () => {
+      const controller = getController();
+      await controller.insert('1001', 10);
+      const result = controller.getPreInsertId('1001');
+      expect(result).toEqual(10);
     });
   });
 

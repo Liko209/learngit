@@ -9,11 +9,12 @@ import {
   IDatabase,
   IDatabaseCollection,
   KVStorageManager,
+  PerformanceTracer,
 } from 'foundation';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { configManager } from '../../config';
 import schema, { TABLE_LOG } from './schema';
 import { ILogPersistent, PersistentLogEntity } from './types';
+import { UPLOAD_LOG_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 export class LogPersistent implements ILogPersistent {
   private _kvStorageManager: KVStorageManager;
@@ -39,25 +40,25 @@ export class LogPersistent implements ILogPersistent {
         configManager.getConfig().persistentLimit,
       );
     }
-  }
+  };
 
   put = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.put(item);
-  }
+  };
 
   bulkPut = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkPut(array);
-  }
+  };
 
   get = async (key: number) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     return await this._collection.get(key);
-  }
+  };
 
   getAll = async (limit?: number) => {
     await this._ensureInit();
@@ -77,35 +78,33 @@ export class LogPersistent implements ILogPersistent {
       criteria,
     });
     return array;
-  }
+  };
 
   delete = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.delete(item.id);
-  }
+  };
 
   bulkDelete = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkDelete(
-      array.map((item: PersistentLogEntity) => {
-        return item.id;
-      }),
+      array.map((item: PersistentLogEntity) => item.id),
     );
-  }
+  };
 
   count = async () => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     return await this._collection.count();
-  }
-
+  };
+  /* eslint-disable */
   cleanPersistentWhenReachLimit = async (maxPersistentSize: number) => {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     const logs = await this.getAll();
     performanceTracer.end({
-      key: PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      key: UPLOAD_LOG_PERFORMANCE_KEYS.GET_ALL_LOGS_FROM_DB,
     });
     if (!logs) return;
     let size = 0;
@@ -123,5 +122,5 @@ export class LogPersistent implements ILogPersistent {
         }
       }
     }
-  }
+  };
 }

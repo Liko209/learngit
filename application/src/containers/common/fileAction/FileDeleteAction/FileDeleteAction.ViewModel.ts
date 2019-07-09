@@ -10,10 +10,23 @@ import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
+import { Post } from 'sdk/module/post/entity';
+import PostModel from '@/store/models/Post';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
 
 class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
   conversationId: number;
+
+  @computed
+  get post() {
+    const { postId } = this.props;
+    if (postId) {
+      return getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
+    }
+    return null;
+  }
 
   @computed
   get canDelete() {
@@ -21,7 +34,10 @@ class FileDeleteActionViewModel extends FileActionViewModel {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const currentUserId = userConfig.getGlipUserId();
-    return this._currentItemVersion.creator_id === currentUserId;
+    return (
+      this._currentItemVersion &&
+      this._currentItemVersion.creator_id === currentUserId
+    );
   }
 
   @catchError.flash({
@@ -29,7 +45,9 @@ class FileDeleteActionViewModel extends FileActionViewModel {
     server: 'message.prompt.deleteFileBackendError',
   })
   handleDeleteFile = async () => {
-    if (this._currentItemVersion.deactivated) return;
+    if (!this._currentItemVersion || this._currentItemVersion.deactivated) {
+      return;
+    }
 
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -42,7 +60,7 @@ class FileDeleteActionViewModel extends FileActionViewModel {
         .indexOf(this._currentItemVersion) + 1,
     );
     return true;
-  }
+  };
 
   private get _currentItemVersion() {
     const fileInConversation = !!this.post;

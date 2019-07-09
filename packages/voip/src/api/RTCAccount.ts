@@ -3,7 +3,7 @@
  * @Date: 2018-12-06 13:12:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { Listener } from 'eventemitter2';
 import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
@@ -20,7 +20,6 @@ import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
-  RTC_STATUS_CODE,
   RTCUserInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
@@ -32,7 +31,6 @@ import {
   RTC_NETWORK_STATE,
   RTC_SLEEP_MODE_EVENT,
 } from '../utils/types';
-import { Listener } from 'eventemitter2';
 
 const LOG_TAG = 'RTCAccount';
 
@@ -41,6 +39,7 @@ class RTCAccount implements IRTCAccount {
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
   private _postponeProvisioning: RTCSipProvisionInfo | null;
+  private _postponeSwitchBackProxy: boolean = false;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
@@ -86,21 +85,21 @@ class RTCAccount implements IRTCAccount {
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ): RTC_STATUS_CODE {
+  ): RTCCall | null {
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return RTC_STATUS_CODE.NUMBER_INVALID;
+      return null;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return RTC_STATUS_CODE.MAX_CALLS_REACHED;
+      return null;
     }
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
       rtcLogger.warn(
         LOG_TAG,
         'Failed to make call. Account is in Unregistered state',
       );
-      return RTC_STATUS_CODE.INVALID_STATE;
+      return null;
     }
     let callOption: RTCCallOptions;
     if (options) {
@@ -119,22 +118,19 @@ class RTCAccount implements IRTCAccount {
       this._userInfo,
     );
     this._callManager.addCall(call);
-    if (this._delegate) {
-      this._delegate.onMadeOutgoingCall(call);
-    }
     if (this.isReady()) {
       call.onAccountReady();
     } else {
       call.onAccountNotReady();
     }
-    return RTC_STATUS_CODE.OK;
+    return call;
   }
 
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ) {
+  ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
       optionsWithAnonymous = options;
@@ -143,7 +139,7 @@ class RTCAccount implements IRTCAccount {
       optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
     rtcLogger.debug(LOG_TAG, 'make anonymous call');
-    this.makeCall(toNumber, delegate, optionsWithAnonymous);
+    return this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
@@ -176,16 +172,25 @@ class RTCAccount implements IRTCAccount {
 
   removeCallFromCallManager(uuid: string): void {
     this._callManager.removeCall(uuid);
-    if (this._callManager.callCount() === 0 && this._postponeProvisioning) {
-      rtcLogger.debug(
-        LOG_TAG,
-        "There's no active call. Process postpone provisioning info",
-      );
-      this._regManager.provisionReady(
-        this._postponeProvisioning,
-        kRTCProvisioningOptions,
-      );
-      this._postponeProvisioning = null;
+    if (!this._callManager.callCount()) {
+      if (this._postponeProvisioning) {
+        rtcLogger.debug(
+          LOG_TAG,
+          "There's no active call. Process postpone provisioning info",
+        );
+        this._regManager.provisionReady(
+          this._postponeProvisioning,
+          kRTCProvisioningOptions,
+        );
+        this._postponeProvisioning = null;
+      } else if (this._postponeSwitchBackProxy) {
+        rtcLogger.debug(
+          LOG_TAG,
+          "There's no active call. Process postpone switch back to main proxy",
+        );
+        this._regManager.reRegister(true);
+        this._postponeSwitchBackProxy = false;
+      }
     }
   }
 
@@ -202,20 +207,19 @@ class RTCAccount implements IRTCAccount {
         this._onAccountStateChanged(state);
       },
     );
-
     this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
       this._onLogoutAction();
     });
-
     this._regManager.on(REGISTRATION_EVENT.REFRESH_PROV, () => {
       this._refreshProv();
     });
-
+    this._regManager.on(REGISTRATION_EVENT.SWITCH_BACK_PROXY_ACTION, () => {
+      this._switchBackProxy();
+    });
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
       this._delegate.onReceiveNewProvFlags(info.sipFlags);
     });
-
     RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
@@ -316,6 +320,19 @@ class RTCAccount implements IRTCAccount {
 
   private _refreshProv() {
     this._provManager.refreshSipProv();
+  }
+
+  private _switchBackProxy() {
+    if (this.callCount()) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There're active calls. Postpone switch back to main proxy",
+      );
+      this._postponeSwitchBackProxy = true;
+    } else {
+      rtcLogger.debug(LOG_TAG, 'Switch back to main proxy');
+      this._regManager.reRegister(true);
+    }
   }
 }
 

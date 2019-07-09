@@ -88,13 +88,13 @@ describe('ProgressActionsViewModel', () => {
   describe('resend()', () => {
     it('should be called on post service method when invoke it', async () => {
       await nvm.resend();
-      expect(postService.reSendPost).toBeCalled();
+      expect(postService.reSendPost).toHaveBeenCalled();
     });
 
     it('should not call Notification when reSendPost failed JPT-617', async () => {
       postService.reSendPost.mockRejectedValueOnce(new Error());
       expect(nvm.resend()).rejects.toThrow();
-      expect(Notification.flashToast).not.toBeCalled();
+      expect(Notification.flashToast).not.toHaveBeenCalled();
     });
 
     it('should not call resend when has failed items JPT-617', async () => {
@@ -102,15 +102,15 @@ describe('ProgressActionsViewModel', () => {
         false,
       );
       await nvm.resend();
-      expect(postService.reSendPost).toBeCalledTimes(0);
-      expect(Notification.flashToast).toBeCalled();
+      expect(postService.reSendPost).toHaveBeenCalledTimes(0);
+      expect(Notification.flashToast).toHaveBeenCalled();
     });
   });
 
   describe('delete()', () => {
     it('should be called on post service method when invoke it', async () => {
       await nvm.deletePost();
-      expect(postService.deletePost).toBeCalled();
+      expect(postService.deletePost).toHaveBeenCalled();
     });
   });
 });

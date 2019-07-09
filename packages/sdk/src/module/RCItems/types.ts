@@ -15,7 +15,9 @@ import {
   RC_MESSAGE_TYPE,
   READ_STATUS,
 } from './constants';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
+import { CALL_LOG_SOURCE } from './callLog/constants';
+import { QUERY_DIRECTION } from 'sdk/dao';
 
 type UriModel<T> = {
   id: T;
@@ -30,6 +32,12 @@ type Caller = {
   device?: UriModel<string>;
   messageStatus?: MESSAGE_STATUS; // outbound fax messages
   faxErrorCode?: FAX_ERROR_CODE; // Fax
+};
+
+type CallerView = {
+  phoneNumber?: string;
+  extensionNumber?: string;
+  name?: string;
 };
 
 type Attachment = UriModel<number> & {
@@ -69,4 +77,29 @@ type FetchResult<T> = {
   hasMore: boolean;
 };
 
-export { UriModel, Caller, RCMessage, FetchResult, Attachment };
+type FilterOptions<T> = {
+  filterKey?: string;
+  callLogSource?: CALL_LOG_SOURCE;
+};
+
+type FetchDataOptions<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> = {
+  limit?: number;
+  direction?: QUERY_DIRECTION;
+  anchorId?: IdType;
+  filterFunc?: (data: T) => boolean;
+  callLogSource?: CALL_LOG_SOURCE;
+};
+
+export {
+  UriModel,
+  Caller,
+  CallerView,
+  RCMessage,
+  FetchResult,
+  Attachment,
+  FilterOptions,
+  FetchDataOptions,
+};

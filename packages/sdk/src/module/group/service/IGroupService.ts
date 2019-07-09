@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { Raw, SortableModel } from '../../../framework/model';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
@@ -10,7 +8,7 @@ import {
   TeamSetting,
   GroupCanBeShownResponse,
 } from '../types';
-import { SYNC_SOURCE } from '../../../module/sync/types';
+import { SYNC_SOURCE } from '../../sync/types';
 import { Post } from 'sdk/module/post/entity';
 
 interface IGroupService {
@@ -47,8 +45,7 @@ interface IGroupService {
 
   hasMorePostInRemote(
     groupId: number,
-    direction: QUERY_DIRECTION,
-  ): Promise<boolean>;
+  ): Promise<{ older: boolean; newer: boolean; both: boolean }>;
 
   updateHasMore(
     groupId: number,
@@ -135,6 +132,8 @@ interface IGroupService {
   getTeamIdsIncludeMe(): Set<number>;
 
   handleGroupFetchedPosts(groupId: number, posts: Post[]): void;
+
+  sendTypingEvent(groupId: number, isClear: boolean): void;
 }
 
 export { IGroupService };

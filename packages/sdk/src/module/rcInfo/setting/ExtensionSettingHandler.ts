@@ -3,7 +3,6 @@
  * @Date: 2019-05-24 13:33:49
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { RCExtensionInfo } from 'sdk/api';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
@@ -15,10 +14,10 @@ import {
 import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { RC_INFO } from 'sdk/service';
 import { IRCInfoService } from '../service/IRCInfoService';
-import { ERCWebSettingUri } from '../types';
+import { ERCWebUris } from '../types';
 
 export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
-  string
+string
 > {
   id = SettingEntityIds.Phone_Region;
 
@@ -33,7 +32,7 @@ export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
     });
   }
 
-  async updateValue(value: string) {}
+  async updateValue() {}
 
   async fetchUserSettingEntity() {
     return this._getExtensionSetting();
@@ -44,11 +43,9 @@ export class ExtensionSettingHandler extends AbstractSettingEntityHandler<
       id: SettingEntityIds.Phone_Extension,
       weight: SettingModuleIds.ExtensionSetting.weight,
       valueType: ESettingValueType.LINK,
-      valueGetter: () => {
-        return this._rcInfoService.generateWebSettingUri(
-          ERCWebSettingUri.EXTENSION_URI,
-        );
-      },
+      valueGetter: () => this._rcInfoService.generateWebSettingUri(
+        ERCWebUris.EXTENSION_URI,
+      ),
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
       state: ESettingItemState.ENABLE,
     };

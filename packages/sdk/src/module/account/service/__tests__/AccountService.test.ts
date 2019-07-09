@@ -12,6 +12,7 @@ import { AccountUserConfig } from '../../config/AccountUserConfig';
 import { ServiceLoader } from '../../../serviceLoader';
 import { setRCToken } from '../../../../authenticator/utils';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
+import { generateUUID } from '../../../../utils/mathUtils';
 jest.mock('../../../serviceLoader');
 jest.mock('../../../person');
 jest.mock('../../../../api');
@@ -76,6 +77,40 @@ describe('AccountService', () => {
     });
   });
 
+  describe('getUserEmail', () => {
+    it('should return correct email when has valid userInfo', async () => {
+      accountService.getCurrentUserInfo = jest
+        .fn()
+        .mockResolvedValue({ email: 'jajaja' });
+      expect(await accountService.getUserEmail()).toEqual('jajaja');
+    });
+
+    it('should return null when has invalid userInfo', async () => {
+      accountService.getCurrentUserInfo = jest
+        .fn()
+        .mockResolvedValue(undefined);
+      expect(await accountService.getUserEmail()).toEqual(null);
+    });
+  });
+
+  describe('getClientId', () => {
+    it('should return id directly when id is in userConfig', () => {
+      accountService.userConfig.getClientId = jest
+        .fn()
+        .mockReturnValue('12345');
+      expect(accountService.getClientId()).toEqual('12345');
+    });
+
+    it('should generate uuid when id is not in userConfig', () => {
+      accountService.userConfig.getClientId = jest
+        .fn()
+        .mockReturnValue(undefined);
+      generateUUID = jest.fn().mockReturnValue('155');
+      expect(accountService.getClientId()).toEqual('155');
+      expect(generateUUID).toBeCalled();
+    });
+  });
+
   describe('refreshRCToken()', () => {
     const result = {
       timestamp: 1,
@@ -111,11 +146,12 @@ describe('AccountService', () => {
       });
     });
 
-    it('should return null when refresh token error', async () => {
-      RCAuthApi.refreshToken.mockRejectedValueOnce('error');
+    it('should throw error when refresh token error', async () => {
+      RCAuthApi.refreshToken.mockRejectedValueOnce('error2');
       expect.assertions(1);
-      const result = await accountService.refreshRCToken();
-      expect(result).toBe(null);
+      const result = await accountService.refreshRCToken().catch(reason => {
+        expect(reason).toEqual('error2');
+      });
     });
 
     it('should only refresh token once when has multiple request to refresh token', async () => {
@@ -191,6 +227,83 @@ describe('AccountService', () => {
       const result = await accountService.getRCToken();
       expect(accountService['refreshRCToken']).toBeCalled();
       expect(result).toEqual({ id: 1 });
+    });
+  });
+
+  describe('unifiedLogin', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        unifiedLogin: mockFunc,
+      });
+      await accountService.unifiedLogin({});
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('loginGlip', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        loginGlip: mockFunc,
+      });
+      await accountService.loginGlip({} as any);
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('makeSureUserInWhitelist', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        makeSureUserInWhitelist: mockFunc,
+      });
+      await accountService.makeSureUserInWhitelist();
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('logout', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        logout: mockFunc,
+      });
+      await accountService.logout();
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('isLoggedIn', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        isLoggedIn: mockFunc,
+      });
+      await accountService.isLoggedIn();
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('isRCOnlyMode', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        isRCOnlyMode: mockFunc,
+      });
+      await accountService.isRCOnlyMode();
+      expect(mockFunc).toBeCalled();
+    });
+  });
+
+  describe('startLoginGlip', () => {
+    it('should call auth controller', async () => {
+      const mockFunc = jest.fn();
+      accountService.getAuthController = jest.fn().mockReturnValue({
+        startLoginGlip: mockFunc,
+      });
+      await accountService.startLoginGlip();
+      expect(mockFunc).toBeCalled();
     });
   });
 });

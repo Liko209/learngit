@@ -6,12 +6,13 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiCheckboxButton, JuiCheckboxButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
+import star from '../../../../assets/jupiter-icon/icon-star.svg';
+import starBorder from '../../../../assets/jupiter-icon/icon-star_border.svg';
+import lock from '../../../../assets/jupiter-icon/icon-lock.svg';
+import unlock from '../../../../assets/jupiter-icon/icon-unlock.svg';
 
 const Wrapper = styled.div`
   .checkboxButtonWrapper {
@@ -55,30 +56,23 @@ function getKnobs() {
 
 storiesOf('Components/CheckboxButton', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiCheckboxButton, { inline: true }))
   .add('CheckboxButton', () => {
     const { content, ...rest } = getKnobs();
     return (
       <Wrapper>
         <JuiCheckboxButton
-          className="checkboxButtonWrapper"
-          iconName="favorite_border"
-          checkedIconName="favorite"
-          tooltipTitle="like"
+          className='checkboxButtonWrapper'
+          icon={starBorder}
+          checkedIcon={star}
+          tooltipTitle='like'
+          checked
           {...rest}
         />
         <JuiCheckboxButton
-          className="checkboxButtonWrapper"
-          iconName="unlock"
-          checkedIconName="lock"
-          tooltipTitle="lock"
-          {...rest}
-        />
-        <JuiCheckboxButton
-          className="checkboxButtonWrapper"
-          iconName="star_border"
-          checkedIconName="star"
-          tooltipTitle="favorite"
+          className='checkboxButtonWrapper'
+          icon={unlock}
+          checkedIcon={lock}
+          tooltipTitle='lock'
           {...rest}
         />
       </Wrapper>

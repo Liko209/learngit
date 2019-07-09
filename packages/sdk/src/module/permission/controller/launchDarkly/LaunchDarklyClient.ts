@@ -3,15 +3,16 @@
  * @Date: 2019-02-18 14:54:09
  * Copyright © RingCentral. All rights reserved.
  */
+import { initialize, LDUser, LDFlagSet } from 'launchdarkly-js-client-sdk';
+import UserPermissionType from '../../types';
+import { mainLogger } from 'foundation';
+
 type Options = {
   clientId: string;
   user: LDUser;
   readyCallback: () => void;
   updateCallback: (settings: LDFlagSet) => void;
 };
-import { initialize, LDUser, LDFlagSet } from 'ldclient-js';
-import UserPermissionType from '../../types';
-import { mainLogger } from 'foundation';
 
 class LaunchDarklyClient {
   private _ldclient: any;

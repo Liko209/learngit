@@ -1,0 +1,403 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c5.c5 .c2,
+.c5.c5 .c2 svg {
+  font-size: 20px;
+}
+
+.c5.c5:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c5.c5:active .c2 {
+  color: #9e9e9e;
+}
+
+.c5.c5.c5.c5.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #9e9e9e;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .c2,
+.c7.c7 .c2 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c7.c7:active .c2 {
+  color: #0684bd;
+}
+
+.c7.c7.c7.c7.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .c2,
+.c8.c8 .c2 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c8.c8:active .c2 {
+  color: #0684bd;
+}
+
+.c8.c8.c8.c8.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c9.c9 .c2,
+.c9.c9 .c2 svg {
+  font-size: 20px;
+}
+
+.c9.c9:hover .c2 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c9.c9:active .c2 {
+  color: #edb63c;
+}
+
+.c9.c9.c9.c9.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c10.c10 .c2,
+.c10.c10 .c2 svg {
+  font-size: 16px;
+}
+
+.c10.c10:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c10.c10:active .c2 {
+  color: #9e9e9e;
+}
+
+.c10.c10.c10.c10.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c11.c11 .c2,
+.c11.c11 .c2 svg {
+  font-size: 20px;
+}
+
+.c11.c11:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c11.c11:active .c2 {
+  color: #0684bd;
+}
+
+.c11.c11.c11.c11.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c1.c1 {
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  color: #0684bd;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c1.c1 .c2,
+.c1.c1 .c2 svg {
+  font-size: 16px;
+}
+
+.c1.c1:hover {
+  background-color: transparent;
+}
+
+.c1.c1:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c1.c1:active .c2 {
+  color: #0684bd;
+}
+
+.c1.c1.c1.c1.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c1.c1 .rippleVisible {
+  color: #0684bd;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c0.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 16px;
+  background-color: #fff;
+  -webkit-transition: box-shadow 0.3s ease-in;
+  transition: box-shadow 0.3s ease-in;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2),0 1px 1px 0 rgba(0,0,0,0.14),0 2px 1px -1px rgba(0,0,0,0.12);
+}
+
+.c0.c0:hover {
+  box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2),0px 5px 8px 0px rgba(0,0,0,0.14),0px 1px 14px 0px rgba(0,0,0,0.12);
+}
+
+.c0.c0 button {
+  width: 28px;
+  height: 28px;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+<div
+  style={
+    Object {
+      "height": "50px",
+      "position": "relative",
+      "width": "150px",
+    }
+  }
+>
+  <div
+    className="c0"
+    onClick={[Function]}
+  >
+    <button
+      aria-describedby={null}
+      className="MuiButtonBase-root MuiIconButton-root c1"
+      data-name="actionBarLike"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      size="small"
+      tabIndex="0"
+      title={null}
+      type="button"
+      variant="plain"
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className="c2  icon c3"
+          size="small"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+      </span>
+    </button>
+    <button
+      aria-describedby={null}
+      className="MuiButtonBase-root MuiIconButton-root c1"
+      data-name="actionBarLike"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      size="small"
+      tabIndex="0"
+      title={null}
+      type="button"
+      variant="plain"
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className="c2  icon c3"
+          size="small"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+      </span>
+    </button>
+    <button
+      aria-describedby={null}
+      className="MuiButtonBase-root MuiIconButton-root c1"
+      data-name="actionBarLike"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      size="small"
+      tabIndex="0"
+      title={null}
+      type="button"
+      variant="plain"
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className="c2  icon c3"
+          size="small"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+      </span>
+    </button>
+    <button
+      aria-describedby={null}
+      className="MuiButtonBase-root MuiIconButton-root c1"
+      data-name="actionBarLike"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseOver={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      size="small"
+      tabIndex="0"
+      title={null}
+      type="button"
+      variant="plain"
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className="c2  icon c3"
+          size="small"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+      </span>
+    </button>
+  </div>
+</div>
+`;

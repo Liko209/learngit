@@ -318,7 +318,7 @@ describe('SectionGroupHandler', () => {
           id: 11111,
           is_team: false,
           created_at: 0,
-          creator_id: 1,
+          creator_id: 3,
           members: [3],
         },
       ];
@@ -686,7 +686,7 @@ describe('SectionGroupHandler', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'people.prompt.conversationPrivate',
+            message: 'people.prompt.noLongerAMemberOfThisTeam',
           }),
         );
         done();
@@ -753,7 +753,7 @@ describe('SectionGroupHandler', () => {
           id: 11111,
           is_team: false,
           created_at: 0,
-          creator_id: 1,
+          creator_id: 3,
           members: [3],
         },
       ];
@@ -962,15 +962,16 @@ describe('SectionGroupHandler', () => {
       SectionGroupHandler.getInstance()['_handlersMap'] = {};
       SectionGroupHandler.getInstance()['_handlersMap'][
         SECTION_TYPE.DIRECT_MESSAGE
-] = {};
+      ] = {};
       getEntity.mockReturnValueOnce({ unreadCount: 1 });
       jest
         .spyOn(SectionGroupHandler.getInstance(), 'getGroupIdsByType')
         .mockReturnValueOnce([123, 456, 789]);
       SectionGroupHandler.getInstance()['_removeByIds'] = jest.fn();
       SectionGroupHandler.getInstance()['_updateUrl'] = jest.fn();
-      SectionGroupHandler.getInstance()[ '_removeGroupsIfExistedInHiddenGroups'
-]();
+      SectionGroupHandler.getInstance()[
+        '_removeGroupsIfExistedInHiddenGroups'
+      ]();
       expect(SectionGroupHandler.getInstance()['_removeByIds']).toBeCalledWith(
         SECTION_TYPE.DIRECT_MESSAGE,
         [456],

@@ -1,6 +1,8 @@
-import getDocTitle from '../getDocTitle';
+import { getDocTitle } from '../getDocTitle';
 
-jest.mock('@/utils/i18nT', () => (key: string) => key);
+jest.mock('@/utils/i18nT', () => ({
+  i18nP: (key: string) => key,
+}));
 
 jest.mock('@/store/utils', () => ({
   getEntity: (name: string, id: number) => ({
@@ -21,6 +23,23 @@ describe('get doc title', () => {
     });
   });
 
+  describe('get phone title', () => {
+    it('should return current title when pathname not have id', async () => {
+      const title = await getDocTitle('/phone');
+      expect(title).toEqual('telephony.Phone');
+    });
+
+    it('should return current title when pathname have id', async () => {
+      const title = await getDocTitle('/phone/callhistory');
+      expect(title).toEqual('telephony.Phone - phone.tab.callHistory');
+    });
+
+    it('should return current title when pathname have id', async () => {
+      const title = await getDocTitle('/phone/voicemail');
+      expect(title).toEqual('telephony.Phone - phone.voicemail');
+    });
+  });
+
   describe('get others title', () => {
     it('should return current page title title when get diff page', async () => {
       let title = await getDocTitle('/dashboard');
@@ -37,9 +56,7 @@ describe('get doc title', () => {
       title = await getDocTitle('/settings/general');
       expect(title).toEqual('setting.Settings - setting.general');
       title = await getDocTitle('/settings/notification_and_sounds');
-      expect(title).toEqual(
-        'setting.Settings - setting.notificationAndSounds.title',
-      );
+      expect(title).toEqual('setting.Settings - setting.notificationAndSounds.title');
     });
   });
 });

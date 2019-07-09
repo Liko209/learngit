@@ -40,11 +40,13 @@ function getStyle(
   }
 }
 
-const StyledContainer = styled('div')<{
+type ContainerProps = {
   state: TransitionStatus;
   option: AnimationOptions;
   animation: Keyframes;
-}>`
+}
+
+const StyledContainer = styled('div')<ContainerProps>`
   ${({ state, option, animation }) => getStyle(state, option, animation)}
 `;
 

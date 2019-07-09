@@ -6,10 +6,12 @@
 
 import { RCInfoService } from '../RCInfoService';
 import { RCInfoController } from '../../controller/RCInfoController';
-import { AccountUserConfig } from '../../../../module/account/config/AccountUserConfig';
+import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CompanyService } from 'sdk/module/company';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { AccountService } from 'sdk/module/account';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 jest.mock('sdk/module/setting/service/SettingService', () => {
   const mock: SettingService = {
@@ -25,7 +27,8 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
-jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/account');
+jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
 
 function clearMocks() {
@@ -37,11 +40,15 @@ function clearMocks() {
 describe('RCInfoService', () => {
   let rcInfoService: RCInfoService;
   let rcInfoController: RCInfoController;
-  let userConfig: AccountUserConfig;
   let mockSettingService: SettingService;
+  let mockAccountService: AccountService;
   let companyService: CompanyService;
 
   function setup() {
+    mockAccountService = new AccountService(null);
+    mockAccountService.userConfig = {
+      getAccountType: jest.fn(),
+    };
     companyService = new CompanyService();
     ServiceLoader.getInstance = jest
       .fn()
@@ -52,6 +59,9 @@ describe('RCInfoService', () => {
         if (serviceName === ServiceConfig.SETTING_SERVICE) {
           return mockSettingService;
         }
+        if (serviceName === ServiceConfig.ACCOUNT_SERVICE) {
+          return mockAccountService;
+        }
       });
   }
 
@@ -61,18 +71,16 @@ describe('RCInfoService', () => {
     mockSettingService = new SettingService();
     let rawGetInstance = (key: string) => ServiceLoader.getInstance(key);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
-      console.log('TCL: key', key);
       if (key === ServiceConfig.SETTING_SERVICE) {
         return mockSettingService;
       }
       return rawGetInstance(key);
     });
     rcInfoService = new RCInfoService();
-    rcInfoController = new RCInfoController();
+    rcInfoController = new RCInfoController({} as any);
     setup();
-    Object.assign(rcInfoService, {
-      _rcInfoController: rcInfoController,
-    });
+    rcInfoService['_DBConfig'] = {} as any;
+    rcInfoService['_rcInfoController'] = rcInfoController;
   });
   describe('getRCClientInfo()', () => {
     it('should call controller with correct parameter', () => {
@@ -200,6 +208,33 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDefaultCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().getDefaultCallerId,
+      ).toBeCalled();
+    });
+  });
+
+  describe('setDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.setDefaultCallerId(1);
+      expect(
+        rcInfoController.getRCCallerIdController().setDefaultCallerId,
+      ).toBeCalledWith(1);
+    });
+  });
+
+  describe('getDefaultCallerId()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.hasSetCallerId();
+      expect(
+        rcInfoController.getRCCallerIdController().hasSetCallerId,
+      ).toBeCalled();
+    });
+  });
+
   describe('isRCFeaturePermissionEnabled()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isRCFeaturePermissionEnabled(1);
@@ -213,14 +248,16 @@ describe('RCInfoService', () => {
   describe('getCountryList()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getCountryList();
-      expect(rcInfoService.regionInfoController.getCountryList).toBeCalled();
+      expect(rcInfoService['regionInfoController'].getCountryList).toBeCalled();
     });
   });
 
   describe('getCurrentCountry()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getCurrentCountry();
-      expect(rcInfoService.regionInfoController.getCurrentCountry).toBeCalled();
+      expect(
+        rcInfoService['regionInfoController'].getCurrentCountry,
+      ).toBeCalled();
     });
   });
 
@@ -228,21 +265,21 @@ describe('RCInfoService', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.setDefaultCountry('1');
       expect(
-        rcInfoService.regionInfoController.setDefaultCountry,
+        rcInfoService['regionInfoController'].setDefaultCountry,
       ).toBeCalledWith('1');
     });
   });
   describe('getAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getAreaCode();
-      expect(rcInfoService.regionInfoController.getAreaCode).toBeCalled();
+      expect(rcInfoService['regionInfoController'].getAreaCode).toBeCalled();
     });
   });
 
   describe('setAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.setAreaCode('1');
-      expect(rcInfoService.regionInfoController.setAreaCode).toBeCalledWith(
+      expect(rcInfoService['regionInfoController'].setAreaCode).toBeCalledWith(
         '1',
       );
     });
@@ -250,7 +287,7 @@ describe('RCInfoService', () => {
   describe('hasAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.hasAreaCode('1');
-      expect(rcInfoService.regionInfoController.hasAreaCode).toBeCalledWith(
+      expect(rcInfoService['regionInfoController'].hasAreaCode).toBeCalledWith(
         '1',
       );
     });
@@ -258,9 +295,9 @@ describe('RCInfoService', () => {
   describe('isAreaCodeValid()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.isAreaCodeValid('1');
-      expect(rcInfoService.regionInfoController.isAreaCodeValid).toBeCalledWith(
-        '1',
-      );
+      expect(
+        rcInfoService['regionInfoController'].isAreaCodeValid,
+      ).toBeCalledWith('1');
     });
   });
 
@@ -291,6 +328,29 @@ describe('RCInfoService', () => {
     });
   });
 
+  describe('isVoipCallingAvailable', () => {
+    it('should return false when user is not rc account and not permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(false);
+      const result = await rcInfoService.isVoipCallingAvailable();
+      expect(result).toBeFalsy();
+    });
+    it('should return true when user is rc account and has permission', async () => {
+      mockAccountService.userConfig = {
+        getAccountType: jest.fn().mockReturnValue(ACCOUNT_TYPE_ENUM.RC),
+      };
+      rcInfoService.isRCFeaturePermissionEnabled = jest
+        .fn()
+        .mockResolvedValue(true);
+      const result = await rcInfoService.isVoipCallingAvailable();
+      expect(result).toBeTruthy();
+    });
+  });
+
   describe('onStart', () => {
     it('should call registerModuleSetting', () => {
       rcInfoService['_rcInfoSettings'] = {} as any;
@@ -306,6 +366,36 @@ describe('RCInfoService', () => {
       // mockProfileSetting.unsubscribe = jest.fn();
       rcInfoService['onStopped']();
       expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith({});
+    });
+  });
+
+  describe('isNumberBlocked()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.isNumberBlocked('1123');
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .isNumberBlocked,
+      ).toBeCalledWith('1123');
+    });
+  });
+
+  describe('deleteBlockedNumbers()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.deleteBlockedNumbers(['1123', '6']);
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .deleteBlockedNumbers,
+      ).toBeCalledWith(['1123', '6']);
+    });
+  });
+
+  describe('addBlockedNumber()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.addBlockedNumber('1123');
+      expect(
+        rcInfoService['getRCInfoController']().blockNumberController
+          .addBlockedNumber,
+      ).toBeCalledWith('1123');
     });
   });
 });

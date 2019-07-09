@@ -7,11 +7,11 @@ import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, ellipsis } from '../../../foundation/utils';
 
-type FieldProps = {
+interface IFieldProps {
   title: React.ReactChild | null | (React.ReactChild | null)[];
   value: React.ReactChild | null | (React.ReactChild | null)[];
   short?: boolean;
-};
+}
 
 const FieldWrapper = styled.div`
   float: left;
@@ -26,7 +26,7 @@ const ValueWrapper = styled.div`
   ${typography('body1')};
 `;
 
-const Field = (props: FieldProps) => {
+const Field = (props: IFieldProps) => {
   const { title, value, short } = props;
   const width = short ? '50%' : '100%';
   const marginBottom = short ? '10px' : '20px';
@@ -40,4 +40,4 @@ const Field = (props: FieldProps) => {
 
 const FieldsWrapper = styled.div``;
 
-export { Field, FieldProps, FieldsWrapper };
+export { Field, IFieldProps, FieldsWrapper };

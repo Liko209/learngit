@@ -3,6 +3,7 @@
  * @Date: 2019-03-27 19:47:26
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
 import { observable, computed } from 'mobx';
@@ -22,7 +23,7 @@ const TASK_NAME = {
 };
 
 export const isTaskInQueue = (taskStatus: TaskStatus) => {
-  return [TaskStatus.PENDING, TaskStatus.EXECUTING].indexOf(taskStatus) > -1;
+  return [TaskStatus.PENDING, TaskStatus.EXECUTING].includes(taskStatus);
 };
 
 export class UploadRecentLogsViewModel
@@ -60,7 +61,7 @@ export class UploadRecentLogsViewModel
         logger.debug('upload recent logs failed', error);
       },
     });
-  }
+  };
 
   private _createSendFeedbackTask = () => {
     return new Task({
@@ -83,7 +84,7 @@ export class UploadRecentLogsViewModel
           this._onSendFeedbackDoneCallback(TaskStatus.FAILED);
       },
     });
-  }
+  };
 
   private _sendFeedback = async (): Promise<void> => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
@@ -102,7 +103,7 @@ export class UploadRecentLogsViewModel
         .catch();
       throw 'upload step failed, can not send feedback.';
     }
-  }
+  };
 
   private _uploadRecentLogs = async () => {
     const feedbackService: FeedbackService = container.get(FeedbackService);
@@ -114,7 +115,7 @@ export class UploadRecentLogsViewModel
       logger.debug('Upload recent logs failed.');
       throw 'Upload recent logs failed.';
     }
-  }
+  };
 
   @computed get isLoading() {
     return isTaskInQueue(this.sendFeedbackStatus);
@@ -122,10 +123,15 @@ export class UploadRecentLogsViewModel
 
   onSendFeedbackDone = (callback: (taskStatus: TaskStatus) => void) => {
     this._onSendFeedbackDoneCallback = callback;
-  }
+  };
 
   sendFeedback = () => {
-    if (!isTaskInQueue(this.uploadLogsStatus)) {
+    if (
+      !(
+        isTaskInQueue(this.uploadLogsStatus) ||
+        this.uploadLogsStatus === TaskStatus.SUCCESS
+      )
+    ) {
       this.uploadLogsStatus = TaskStatus.PENDING;
       this._taskQueue.addTail(this._createUploadLogsTask());
     }
@@ -133,13 +139,13 @@ export class UploadRecentLogsViewModel
       this.sendFeedbackStatus = TaskStatus.PENDING;
       this._taskQueue.addTail(this._createSendFeedbackTask());
     }
-  }
+  };
 
   handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.issueTitle = e.target.value.trim();
-  }
+  };
 
   handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.issueDescription = e.target.value.trim();
-  }
+  };
 }

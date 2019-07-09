@@ -23,6 +23,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     });
   }
 
+  get header() {
+    return this.getSelectorByAutomationId('ViewerHeader');
+  }
+
   get avatar() {
     return this.getSelectorByAutomationId('previewerSenderAvatar');
   }
@@ -51,12 +55,35 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return this.title.find('span').nth(1);
   }
 
-  get PreviewerDiv() {
+  get imageCanvas() {
     return this.getSelectorByAutomationId('previewerCanvas')
+  }
+
+  get previewDiv() {
+    this.warnFlakySelector();
+    return this.imageCanvas.parent(2);
+  }
+
+  async expectImageAllIsVisible() {
+    await H.retryUntilPass(async () => {
+      const { left, right, top, bottom } = await this.imageCanvas.boundingClientRect;
+      const headerBottom = await this.header.getBoundingClientRectProperty('bottom');
+      const windowSize = await ClientFunction(() => {
+        return {
+          width: window.innerWidth || document.body.clientWidth,
+          height: window.innerHeight || document.body.clientHeight
+        }
+      })();
+      assert.ok(top > headerBottom && left > 0 && right < windowSize.width && bottom < windowSize.height, "image is not all  visible");
+    })
   }
 
   get downloadIcon() {
     return this.getSelectorByIcon('download', this.self);
+  }
+
+  get downloadButton() {
+    return this.downloadIcon.parent('a');
   }
 
   get closeButton() {
@@ -147,5 +174,32 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     await this.t
       .expect(this.zoomInButton.hasAttribute('disabled')).notOk()
       .hover(this.zoomInButton);
+  }
+
+  get zoomResetIcon() {
+    return this.getSelectorByIcon('reset_zoom', this.self);
+  }
+
+  get zoomResetButton() {
+    return this.zoomResetIcon.parent('button');
+  }
+
+  async clickZoomResetButton() {
+    await this.t
+      .expect(this.zoomResetButton.hasAttribute('disabled')).notOk()
+      .click(this.zoomResetButton);
+  }
+
+  async zoomResetButtonIsDisabled() {
+    await this.t
+      .expect(this.zoomResetButton.hasAttribute('disabled')).ok();
+  }
+
+  get zoomPercentageText() {
+    return this.self.find('.zoomGroup').child('div').nth(1).textContent;
+  }
+
+  async hoverPreviewer() {
+    await this.t.hover(this.imageCanvas);
   }
 }

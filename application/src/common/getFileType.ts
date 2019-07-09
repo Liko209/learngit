@@ -8,8 +8,47 @@ import FileItemModel, {
   ExtendFileItem,
   FileType,
 } from '@/store/models/FileItem';
-
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+
+function image(item: FileItemModel) {
+  const { type, versionUrl, name } = item;
+  const images = {
+    isImage: false,
+    previewUrl: '',
+  };
+
+  // In order to show image
+  // If upload doc and image together, image will not has thumbs
+  // FIXME: FIJI-2565
+  let isImage = false;
+  let t = '';
+  if (type) {
+    t = type.toLowerCase();
+  } else if (name) {
+    t = (name && name.split('.').pop()) || '';
+    t = t.toLowerCase();
+  }
+
+  isImage = FileItemUtils.isSupportPreview({ type: t }) || t.includes('image/');
+  if (isImage) {
+    images.isImage = true;
+    images.previewUrl = versionUrl;
+  }
+  return images;
+}
+
+function documentType(item: FileItemModel) {
+  const { pages } = item;
+  const doc = {
+    isDocument: false,
+    previewUrl: '',
+  };
+  if (pages.length > 0) {
+    doc.isDocument = true;
+    doc.previewUrl = pages[0].url;
+  }
+  return doc;
+}
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
@@ -32,46 +71,6 @@ function getFileType(item: FileItemModel): ExtendFileItem {
 
   fileType.type = FileType.others;
   return fileType;
-}
-
-function image(item: FileItemModel) {
-  const { type, versionUrl, name } = item;
-  const image = {
-    isImage: false,
-    previewUrl: '',
-  };
-
-  // In order to show image
-  // If upload doc and image together, image will not has thumbs
-  // FIXME: FIJI-2565
-  let isImage = false;
-  let t = '';
-  if (type) {
-    t = type.toLowerCase();
-  } else if (name) {
-    t = (name && name.split('.').pop()) || '';
-    t = t.toLowerCase();
-  }
-
-  isImage = FileItemUtils.isSupportPreview({ type: t }) || t.includes('image/');
-  if (isImage) {
-    image.isImage = true;
-    image.previewUrl = versionUrl || '';
-  }
-  return image;
-}
-
-function documentType(item: FileItemModel) {
-  const { pages } = item;
-  const doc = {
-    isDocument: false,
-    previewUrl: '',
-  };
-  if (pages && pages.length > 0) {
-    doc.isDocument = true;
-    doc.previewUrl = pages[0].url;
-  }
-  return doc;
 }
 
 const VIEWER_SUPPORT_TYPE = ['doc', 'docx', 'ppt', 'pptx'];

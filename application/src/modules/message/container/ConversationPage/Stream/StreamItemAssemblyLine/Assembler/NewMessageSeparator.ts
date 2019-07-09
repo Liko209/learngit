@@ -3,6 +3,7 @@
  * @Date: 2018-10-23 18:21:59
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
 import { ISortableModel } from '@/store/base';
@@ -52,14 +53,14 @@ class NewMessageSeparatorHandler extends Assembler {
     this._oldestPost = _.first(postList);
     /*
      * (1)
-     * If the `New Messages` separator already existed,
+     * If the `New messages` separator already existed,
      * it will never be modified when receive new posts
      */
     if (this.separatorId) return args;
 
     /*
      * (2)
-     * Check if there should be a `New Messages` separator
+     * Check if there should be a `New messages` separator
      */
     const lastPost = _.last(postList);
     const hasSeparator = !!lastPost && lastPost.id > this._readThrough;
@@ -102,7 +103,7 @@ class NewMessageSeparatorHandler extends Assembler {
       return { ...args, streamItemList: items };
     }
     return args;
-  }
+  };
 
   onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
     if (!this.separatorId) {
@@ -118,7 +119,7 @@ class NewMessageSeparatorHandler extends Assembler {
       );
     }
     return { ...args, streamItemList: filteredStreamItemList };
-  }
+  };
 
   updateReadThrough(readThrough: number) {
     if (this._hasNewMessagesSeparator) return;
@@ -127,7 +128,7 @@ class NewMessageSeparatorHandler extends Assembler {
 
   /**
    * When the user received a new post, and the user is at the
-   * bottom of stream, we should not add `New Messages` separator.
+   * bottom of stream, we should not add `New messages` separator.
    */
   disable() {
     this._disabled = true;

@@ -3,6 +3,7 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -34,10 +35,10 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
   }
   private _didResize = () => {
     this.forceUpdate();
-  }
+  };
   setShowEmpty = (flag: boolean) => {
     this.setState({ showEmpty: flag });
-  }
+  };
   componentWillUnmount() {
     this._sizeManager.removeAllCallback();
     delete this._sizeManager;
@@ -55,14 +56,14 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
       >
         <JuiDialogHeader
           data-profile-type={group.isTeam ? 'team' : 'group'}
-          data-test-automation-id="profileDialogTitle"
+          data-test-automation-id='profileDialogTitle'
         >
           <ProfileDialogGroupTitle id={id} />
         </JuiDialogHeader>
         <JuiDivider />
         <JuiDialogContentWithFill
           noPaddingFix={true}
-          data-test-automation-id="profileDialogContent"
+          data-test-automation-id='profileDialogContent'
         >
           <ProfileDialogGroupContent id={id} />
         </JuiDialogContentWithFill>

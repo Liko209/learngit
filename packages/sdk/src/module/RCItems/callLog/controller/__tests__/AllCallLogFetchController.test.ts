@@ -6,10 +6,12 @@
 
 import { AllCallLogFetchController } from '../AllCallLogFetchController';
 import { mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE } from '../../constants';
+import { CALL_RESULT, LOCAL_INFO_TYPE } from '../../constants';
 import { RCItemApi } from 'sdk/api';
 import { SYNC_TYPE } from 'sdk/module/RCItems/sync';
 import { notificationCenter } from 'sdk/service';
+import { CALL_DIRECTION } from 'sdk/module/RCItems/constants';
+import { daoManager } from 'sdk/dao';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -49,8 +51,13 @@ describe('AllLogFetchController', () => {
       const mockTime = '2011-10-05T14:48:00.000Z';
       const mockData = {
         records: [
-          { id: '1', startTime: mockTime, sessionId: 'sessionId1' },
-          { id: '2', startTime: mockTime },
+          {
+            id: '1',
+            startTime: mockTime,
+            sessionId: 'sessionId1',
+            result: CALL_RESULT.MISSED,
+          },
+          { id: '2', startTime: mockTime, direction: CALL_DIRECTION.OUTBOUND },
         ],
         syncInfo: {
           syncType: SYNC_TYPE.ISYNC,
@@ -66,20 +73,22 @@ describe('AllLogFetchController', () => {
           id: '1',
           startTime: mockTime,
           sessionId: 'sessionId1',
-          __source: CALL_LOG_SOURCE.ALL,
+          result: CALL_RESULT.MISSED,
+          __localInfo: LOCAL_INFO_TYPE.IS_INBOUND | LOCAL_INFO_TYPE.IS_MISSED,
           __timestamp: Date.parse(mockTime),
           __deactivated: false,
         },
         {
           id: '2',
           startTime: mockTime,
-          __source: CALL_LOG_SOURCE.ALL,
+          direction: CALL_DIRECTION.OUTBOUND,
+          __localInfo: 0,
           __timestamp: Date.parse(mockTime),
           __deactivated: false,
         },
       ]);
-      expect(mockSourceController.bulkDelete).toBeCalledWith(['pseudo1']);
-      expect(mockUserConfig.setPseudoCallLogInfo).toBeCalledWith({});
+      expect(mockSourceController.bulkDelete).toHaveBeenCalledWith(['pseudo1']);
+      expect(mockUserConfig.setPseudoCallLogInfo).toHaveBeenCalledWith({});
     });
   });
 
@@ -87,9 +96,21 @@ describe('AllLogFetchController', () => {
     it('should call api', async () => {
       RCItemApi.syncCallLog = jest.fn();
       await controller['sendSyncRequest'](SYNC_TYPE.FSYNC);
-      expect(RCItemApi.syncCallLog).toBeCalledWith({
+      expect(RCItemApi.syncCallLog).toHaveBeenCalledWith({
         syncType: SYNC_TYPE.FSYNC,
       });
+    });
+  });
+
+  describe('fetchAllUniquePhoneNumberCalls', () => {
+    it('should call queryAllUniquePhoneNumberCalls', async () => {
+      const calls = [{ id: '1' }];
+      daoManager.getDao = jest.fn().mockReturnValue({
+        queryAllUniquePhoneNumberCalls: jest.fn().mockResolvedValue(calls),
+      });
+
+      const result = await controller.fetchAllUniquePhoneNumberCalls();
+      expect(result).toEqual(calls);
     });
   });
 });

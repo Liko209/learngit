@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
+import { ISubItemService } from './ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { Item, SanitizedItem } from '../entity';
@@ -20,7 +20,7 @@ class BaseSubItemService<K extends Item, T extends SanitizedItem>
     dao?: BaseDao<K>,
     networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
-    super(false, dao, networkConfig);
+    super({ isSupportedCache: false }, dao, networkConfig);
   }
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {

@@ -5,7 +5,7 @@
  */
 
 import {
-  JuiVirtualizedList,
+  // JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
@@ -13,19 +13,28 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { DataList } from '@/modules/common/container/DataList';
+import {
+  JuiRightRailContentLoading,
+  JuiRightRailLoadingMore,
+} from 'jui/pattern/RightShelf';
 
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
-import { LIST_OUTTER_HEIGHT } from '../ContentSearchResult/constants';
-
-const MAX_COUNT = 12;
-const ITEM_HEIGHT = 40;
-const FULLSCREEN_WIDTH = 640;
+import { USED_HEIGHT, MIN_HEIGHT_FIX } from '../ContentSearchResult/constants';
+import { PerformanceTracer } from 'sdk';
+import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
+import {
+  MAX_COUNT,
+  ITEM_HEIGHT,
+  FULLSCREEN_WIDTH,
+  LOADING_DELAY,
+} from './config';
 
 type Props = ItemListProps &
-  ItemListViewProps &
-  WithTranslation & { terms: string[] };
+ItemListViewProps &
+WithTranslation & { terms: string[] };
 
 type State = {
   width?: number;
@@ -34,13 +43,23 @@ type State = {
 
 @observer
 class ItemListViewComponent extends Component<Props, State> {
+  private _infiniteListProps = {
+    minRowHeight: ITEM_HEIGHT,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
+    stickToLastPosition: false,
+  };
+
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
-    JuiVirtualizedListHandles
+  JuiVirtualizedListHandles
   > = React.createRef();
+  private _dataList = React.createRef<DataList>();
 
   state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
+
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -51,54 +70,54 @@ class ItemListViewComponent extends Component<Props, State> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
-  hoverHighlight = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
-  }
+  hoverHighlight = (index: number) => this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
-  }
+  selectIndexChange = (index: number) => this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
 
   scrollToView = () => {
-    const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
+    const {
+      selectIndex, startIndex, stopIndex, setRangeIndex,
+    } = this.props;
+    if (selectIndex >= stopIndex) {
+      this._dataList.current &&
+        this._dataList.current.loadMore('down', MAX_COUNT);
+    }
+
     if (
       (selectIndex < startIndex || selectIndex >= stopIndex) &&
       this._listRef.current
     ) {
       this._listRef.current.scrollToIndex(selectIndex);
+
       setRangeIndex({
         startIndex: selectIndex,
         stopIndex: selectIndex + MAX_COUNT,
       });
     }
-  }
+  };
 
   onKeyUp = () => {
     const { onKeyUp } = this.props;
     onKeyUp();
     this.scrollToView();
-  }
+  };
 
   onKeyDown = () => {
-    const { onKeyDown, list } = this.props;
-    onKeyDown(list);
+    const { onKeyDown, ids } = this.props;
+    onKeyDown(ids);
     this.scrollToView();
-  }
+  };
 
   onEnter = (evt: KeyboardEvent) => {
-    const { onEnter, list, type } = this.props;
-    onEnter(evt, list, type);
+    const { onEnter, ids, type } = this.props;
+    onEnter(evt, ids, type);
     this.scrollToView();
-  }
+  };
 
-  createSearchItem = (config: {
-    id: number | string;
-    index: number;
-    type: string;
-  }) => {
+  createSearchItem = (config: { id: number; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 
@@ -116,27 +135,47 @@ class ItemListViewComponent extends Component<Props, State> {
         key={id}
       />
     );
-  }
+  };
 
   private _handleSizeUpdate = (size: Size) => {
     const width = size.width;
     let height = size.height;
     if (size.width < FULLSCREEN_WIDTH) {
-      height = size.height - LIST_OUTTER_HEIGHT;
+      height = size.height - USED_HEIGHT;
     } else {
-      height = Math.min(
-        ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.list.length),
-        size.height - LIST_OUTTER_HEIGHT,
+      height = Math.max(
+        Math.min(
+          ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.ids.length),
+          size.height - USED_HEIGHT,
+        ),
+        MIN_HEIGHT_FIX,
       );
     }
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
+  };
+
+  componentDidUpdate() {
+    this._performanceTracer.end({
+      key: GLOBAL_SEARCH_PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
+      count: this.props.ids.length,
+    });
+  }
+
+  private _renderItems() {
+    const { listHandler, type } = this.props;
+    return listHandler.sortableListStore.getIds.map(
+      (id: number, index: number) => this.createSearchItem({
+        id,
+        type,
+        index,
+      }),
+    );
   }
 
   render() {
-    const { type, setRangeIndex, list } = this.props;
-
+    const { type, setRangeIndex, listHandler } = this.props;
     if (!type) {
       return null;
     }
@@ -150,20 +189,20 @@ class ItemListViewComponent extends Component<Props, State> {
         }}
       >
         <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
-        <JuiVirtualizedList
-          height={this.state.height as number}
-          minRowHeight={ITEM_HEIGHT}
-          ref={this._listRef}
-          onVisibleRangeChange={setRangeIndex}
-        >
-          {list.map((id: number, index: number) => {
-            return this.createSearchItem({
-              id,
-              type,
-              index,
-            });
+        <DataList
+          ref={this._dataList}
+          initialDataCount={30}
+          listHandler={listHandler}
+          reverse
+          InfiniteListProps={Object.assign(this._infiniteListProps, {
+            height: this.state.height,
+            ref: this._listRef,
+            overscan: 20,
+            onVisibleRangeChange: setRangeIndex,
           })}
-        </JuiVirtualizedList>
+        >
+          {this._renderItems()}
+        </DataList>
       </HotKeys>
     );
   }

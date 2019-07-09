@@ -15,13 +15,14 @@ import {
   JuiItemContent,
   JuiItemTextValue,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { MEETING_URL, SUCCESS_URL } from './constant';
+import { MEETING_URL } from './constant';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 import {
   postParser,
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+
 type meetingProps = WithTranslation & ViewProps;
 
 @observer
@@ -37,7 +38,6 @@ class Meeting extends React.Component<meetingProps> {
         <JuiItemContent title={t('item.meeting.meetingUrl')}>
           <JuiLink size="small" handleOnClick={() => window.open(joinUrl)}>
             {postParser(joinUrl, {
-              url: true,
               keyword: this.context.keyword,
             })}
           </JuiLink>
@@ -61,18 +61,9 @@ class Meeting extends React.Component<meetingProps> {
             {t('item.globalNumber')}
           </JuiLink>
         </JuiItemContent>
-        <JuiItemContent title={t('item.meeting.help')}>
-          <JuiItemTextValue
-            description={t('item.meeting.installProblems') as string}
-          />
-          <JuiItemConjunctionText description="" />
-          <JuiLink size="small" handleOnClick={() => window.open(SUCCESS_URL)}>
-            {t('item.meeting.readThis')}
-          </JuiLink>
-        </JuiItemContent>
       </>
     );
-  }
+  };
   private _renderContent() {
     return null;
   }
@@ -89,7 +80,9 @@ class Meeting extends React.Component<meetingProps> {
     }
   }
   render() {
-    const { t, meetingTitle, meetingItem, duration } = this.props;
+    const {
+      t, meetingTitle, meetingItem, duration,
+    } = this.props;
     const { status } = meetingItem;
     const isEnded = status === MEETING_STATUS.ENDED;
     return (

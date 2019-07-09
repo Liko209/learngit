@@ -17,7 +17,6 @@ import { containsRange, hasIntersection } from '../utils';
 
 abstract class PostParser implements IPostParser {
   type: ParserType;
-  ignoredRangeTypes: ParserType[];
   content: ParseContent;
   protected innerContentParser: FullParser | null;
 
@@ -47,6 +46,15 @@ abstract class PostParser implements IPostParser {
 
   parseToReplacers() {
     const str = this.content.getOriginalStr();
+    if (
+      this.content
+        .getReplacers()
+        .some(
+          ({ startIndex, length }) => startIndex === 0 && length === str.length,
+        )
+    ) {
+      return [];
+    }
     const regexp = this.getRegexp();
     if (!regexp) {
       return [
@@ -60,7 +68,7 @@ abstract class PostParser implements IPostParser {
     }
     const replacers: Replacer[] = [];
     let result = regexp.exec(str);
-    while (result !== null) {
+    while (result && result[0]) {
       const matchedStr = result[0];
       const range = {
         startIndex: result.index,
@@ -70,7 +78,7 @@ abstract class PostParser implements IPostParser {
       if (this.isValidMatch(matchedStr, result) && this.isValidRange(range)) {
         replacers.push({
           ...range,
-          element: this.getReplaceElement(matchedStr),
+          element: this.getReplaceElement(matchedStr, result),
         });
         this.removeReplacersInsideRange(range);
       }
@@ -80,40 +88,37 @@ abstract class PostParser implements IPostParser {
     return replacers;
   }
 
-  getIgnoredRanges() {
-    return this.content
-      .getReplacers()
-      .filter(
-        ({ parserType }) =>
-          parserType !== undefined &&
-          this.ignoredRangeTypes.includes(parserType),
-      );
-  }
-
   removeReplacersInsideRange(range: TextRange) {
     // remove existing replacers that are inside the range.
-    this.content.removeReplacersBy(({ element, ...rg }) =>
-      containsRange(range, rg),
-    );
+    this.content.removeReplacersBy(({ element, ...rg }) => containsRange(range, rg));
+  }
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  checkPreCondition(str: string) {
+    return true;
   }
 
   isValidMatch(value: string, execResult?: RegExpExecArray) {
     return true;
   }
 
+  // false if the range has intersection with one of the already-processed-ranges, except when it is containing
   isValidRange(range: TextRange) {
-    return !this.getIgnoredRanges().some(
-      ignoredRange =>
-        hasIntersection(ignoredRange, range) &&
-        !containsRange(range, ignoredRange),
-    );
+    return !this.content
+      .getReplacers()
+      .some(
+        ignoredRange => hasIntersection(ignoredRange, range) &&
+          !containsRange(range, ignoredRange),
+      );
   }
 
   getRegexp(): RegExp | null {
     return null;
   }
 
-  abstract getReplaceElement(value: string): ChildrenType;
+  abstract getReplaceElement(
+    value: string,
+    execResult?: RegExpExecArray,
+  ): ChildrenType;
 }
 
 export { PostParser };

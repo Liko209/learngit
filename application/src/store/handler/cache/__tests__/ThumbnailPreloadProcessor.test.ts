@@ -5,7 +5,10 @@
  */
 
 import { ThumbnailPreloadProcessor } from '../ThumbnailPreloadProcessor';
-import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { ItemService } from 'sdk/module/item';
 import { mainLogger } from 'sdk';
@@ -15,7 +18,9 @@ describe('ThumbnailPreloadProcessor', () => {
   let thumbnailPreloadProcessor: ThumbnailPreloadProcessor;
   let _sequenceProcessorHandler: SequenceProcessorHandler;
   beforeEach(() => {
-    _sequenceProcessorHandler = new SequenceProcessorHandler('test');
+    _sequenceProcessorHandler = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name: 'test' },
+    );
     thumbnailPreloadProcessor = new ThumbnailPreloadProcessor(
       _sequenceProcessorHandler,
       { id: 1 },

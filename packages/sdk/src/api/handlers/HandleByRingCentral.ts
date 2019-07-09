@@ -8,9 +8,10 @@ import {
   IToken,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
+  ERROR_CODES_NETWORK,
 } from 'foundation';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
-
+/* eslint-disable */
 const HandleByRingCentral = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.RINGCENTRAL;
   defaultVia = NETWORK_VIA.HTTP;
@@ -46,7 +47,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
     };
   }
 
-  doRefreshToken(token: IToken) {
+  doRefreshToken() {
     return new Promise<IToken>(async (resolve, reject) => {
       try {
         if (this.platformHandleDelegate) {
@@ -55,8 +56,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
         } else {
           reject();
         }
-      } catch (errorCode) {
-        reject(errorCode);
+      } catch (reason) {
+        reject(
+          reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
+            reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED,
+        );
       }
     });
   }
@@ -69,14 +73,14 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       return;
     }
     this.platformHandleDelegate.checkServerStatus(callback);
-  }
+  };
 
   onRefreshTokenFailure = (forceLogout: boolean) => {
     if (!this.platformHandleDelegate) {
       return;
     }
     this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
-  }
+  };
 }();
 
 export default HandleByRingCentral;

@@ -16,7 +16,7 @@ const StyledDialer = styled('div')`
   && {
     width: ${width(70)};
     margin: ${spacing(8)};
-    box-shadow: ${({ theme }) => theme.boxShadow.val16};
+    box-shadow: ${({ theme }) => theme.shadows[16]};
     border-radius: ${({ theme }) => theme.radius.xl};
     overflow: auto;
     outline: none;
@@ -26,7 +26,12 @@ const StyledDialer = styled('div')`
 
 class JuiDialer extends PureComponent<Props> {
   render() {
-    return <StyledDialer {...this.props} data-test-automation-id="dialer-container"/>;
+    return (
+      <StyledDialer
+        {...this.props}
+        data-test-automation-id="dialer-container"
+      />
+    );
   }
 }
 

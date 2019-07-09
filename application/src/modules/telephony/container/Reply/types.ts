@@ -16,7 +16,7 @@ type ViewProps = {
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
-  ) => () => void;
+  ) => void;
   replyWithMessage: () => void;
   startReply: () => void;
   quitReply: () => void;
@@ -24,6 +24,10 @@ type ViewProps = {
   setShiftKeyDown: (down: boolean) => void;
   shiftKeyStatus: boolean;
   customReplyMessage: string;
+  isExt: boolean;
+  phone?: string;
+  uid?: number;
+  name?: string;
 };
 
 export { Props, ViewProps };

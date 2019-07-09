@@ -10,12 +10,11 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiRightRailLoading } from '../';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiRightRailLoading } from '..';
 
-storiesOf('Pattern/ConversationLoading', module)
-  .addDecorator(withInfoDecorator(JuiRightRailLoading, { inline: true }))
-  .add('JuiRightRailLoading', () => {
+storiesOf('Pattern/ConversationLoading', module).add(
+  'JuiRightRailLoading',
+  () => {
     class Test extends React.PureComponent {
       render() {
         return (
@@ -26,4 +25,5 @@ storiesOf('Pattern/ConversationLoading', module)
       }
     }
     return <Test />;
-  });
+  },
+);

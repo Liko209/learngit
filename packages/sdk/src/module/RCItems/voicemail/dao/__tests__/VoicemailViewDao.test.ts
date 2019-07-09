@@ -28,14 +28,14 @@ describe('VoicemailViewDao', () => {
     it('toVoicemailView', () => {
       const expectedData = {
         id: 123,
-        from: { phone: '123' },
-        to: { phone: '123' },
-        creationTime: '123123',
-        lastModifiedTime: '123123',
+        from: { phoneNumber: '123' },
+        __timestamp: 123,
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: { phoneNumber: '123', location: 'loc' },
       };
       const result = voicemailViewDao.toVoicemailView(data);
       expect(result).toEqual(expectedData);
@@ -46,14 +46,22 @@ describe('VoicemailViewDao', () => {
     it('toVoicemailView', () => {
       const expectedData = {
         id: 123,
-        from: { phone: '123' },
-        to: { phone: '123' },
-        creationTime: '123123',
-        lastModifiedTime: '123123',
+        from: { phoneNumber: '123', extensionNumber: '333' },
+        __timestamp: 123,
       };
       const data: any = {
         ...expectedData,
         data: 'test',
+        lastModifiedTime: '123123',
+        to: {
+          phone: '123',
+        },
+        from: {
+          phoneNumber: '123',
+          extensionNumber: '333',
+          location: 'location',
+        },
+        __timestamp: 123,
       };
       const result = voicemailViewDao.toPartialVoicemailView(data);
       expect(result).toEqual(expectedData);
@@ -73,11 +81,11 @@ describe('VoicemailViewDao', () => {
 
     it('should return empty when can not get anchor and direction is newer', async () => {
       voicemailViewDao['get'] = jest.fn().mockResolvedValue(undefined);
-      const result = await voicemailViewDao.queryVoicemails(
-        10,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
+      const result = await voicemailViewDao.queryVoicemails({
+        limit: 10,
+        direction: QUERY_DIRECTION.NEWER,
+        anchorId: 1,
+      });
       expect(result).toEqual([]);
     });
 
@@ -86,11 +94,11 @@ describe('VoicemailViewDao', () => {
         .fn()
         .mockResolvedValue({ id: 1, creationTime: '2013-07-14T19:00:00Z' });
       voicemailViewDao['getAll'] = jest.fn().mockResolvedValue([]);
-      const result = await voicemailViewDao.queryVoicemails(
-        10,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
+      const result = await voicemailViewDao.queryVoicemails({
+        limit: 10,
+        direction: QUERY_DIRECTION.NEWER,
+        anchorId: 1,
+      });
       expect(result).toEqual([]);
     });
 
@@ -99,11 +107,11 @@ describe('VoicemailViewDao', () => {
         .fn()
         .mockResolvedValue({ id: 1, creationTime: '2013-07-14T19:00:00Z' });
       voicemailViewDao['getAll'] = jest.fn().mockResolvedValue(allData);
-      const result = await voicemailViewDao.queryVoicemails(
-        10,
-        QUERY_DIRECTION.NEWER,
-        1,
-      );
+      const result = await voicemailViewDao.queryVoicemails({
+        limit: 10,
+        direction: QUERY_DIRECTION.NEWER,
+        anchorId: 1,
+      });
       expect(result).toEqual([2, 3]);
     });
   });

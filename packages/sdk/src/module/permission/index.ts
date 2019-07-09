@@ -5,4 +5,5 @@
  */
 import { PermissionService } from './service/PermissionService';
 import UserPermissionType from './types';
+
 export { PermissionService, UserPermissionType };

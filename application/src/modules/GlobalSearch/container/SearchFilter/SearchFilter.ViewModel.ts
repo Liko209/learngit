@@ -28,7 +28,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     if (value !== currentType) {
       this.props.setSearchOptions({ type: value as ESearchContentTypes });
     }
-  }
+  };
   @action
   handleSearchPostDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const beginTime = this.props.searchOptions.begin_time || null;
@@ -38,21 +38,21 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     if (TimeStamp !== beginTime) {
       this.props.setSearchOptions({ begin_time: TimeStamp });
     }
-  }
+  };
   @action
   handleSearchPersonChange = (items: SelectedItem[]) => {
     if (items.length) {
       return this.props.setSearchOptions({ creator_id: items[0].id });
     }
     return this.props.setSearchOptions({ creator_id: null });
-  }
+  };
   @action
   handleSearchGroupChange = (items: SelectedItem[]) => {
     if (items.length) {
       return this.props.setSearchOptions({ group_id: items[0].id });
     }
     return this.props.setSearchOptions({ group_id: null });
-  }
+  };
   @computed
   get timeType() {
     const beginTime = this.props.searchOptions.begin_time;
@@ -79,14 +79,12 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @computed
   get typeFilter() {
     const contentTypeItems: SearchContentTypeItem[] = TYPE_MAP.map(
-      ({ id, value, name }) => {
-        return {
-          id,
-          value,
-          name,
-          count: this.getContentsCount(id),
-        };
-      },
+      ({ id, value, name }) => ({
+        id,
+        value,
+        name,
+        count: this.getContentsCount(id),
+      }),
     );
 
     return contentTypeItems;
@@ -126,8 +124,9 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
         return moment()
           .startOf('year')
           .valueOf();
+      default:
+        return null;
     }
-    return null;
   }
 }
 

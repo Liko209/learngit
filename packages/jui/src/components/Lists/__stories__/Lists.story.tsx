@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiDivider } from '../../Divider';
 import { JuiIconButton } from '../../Buttons/IconButton';
@@ -16,32 +15,33 @@ import {
   JuiListItemText,
   JuiListItemSecondaryAction,
 } from '../index';
+import inbox from '../../../assets/jupiter-icon/icon-inbox.svg';
+import draft from '../../../assets/jupiter-icon/icon-draft.svg';
 
 storiesOf('Components/Lists', module)
-  .addDecorator(withInfoDecorator(JuiList, { inline: true }))
   .add('Simple List', () => (
     <div>
       <JuiList>
-        <JuiListItem button={true}>
+        <JuiListItem button>
           <JuiListItemIcon>
-            <JuiIconography>inbox</JuiIconography>
+            <JuiIconography symbol={inbox} />
           </JuiListItemIcon>
-          <JuiListItemText primary="Inbox" />
+          <JuiListItemText primary='Inbox' />
         </JuiListItem>
-        <JuiListItem button={true}>
+        <JuiListItem button>
           <JuiListItemIcon>
-            <JuiIconography>drafts</JuiIconography>
+            <JuiIconography symbol={draft} />
           </JuiListItemIcon>
-          <JuiListItemText primary="Drafts" />
+          <JuiListItemText primary='Drafts' />
         </JuiListItem>
       </JuiList>
       <JuiDivider />
       <JuiList>
-        <JuiListItem button={true}>
-          <JuiListItemText primary="Trash" />
+        <JuiListItem button>
+          <JuiListItemText primary='Trash' />
         </JuiListItem>
-        <JuiListItem button={true}>
-          <JuiListItemText primary="Spam" />
+        <JuiListItem button>
+          <JuiListItemText primary='Spam' />
         </JuiListItem>
       </JuiList>
     </div>
@@ -50,12 +50,14 @@ storiesOf('Components/Lists', module)
     <div>
       <JuiList>
         {[0, 1, 2, 3].map(value => (
-          <JuiListItem key={value} button={true}>
+          <JuiListItem key={value} button>
             <JuiListItemText primary={`Line item ${value + 1}`} />
             <JuiListItemSecondaryAction>
-              <JuiIconButton size="small" aria-label="Comments">
-                inbox
-              </JuiIconButton>
+              <JuiIconButton
+                size='small'
+                aria-label='Comments'
+                symbol={inbox}
+              />
             </JuiListItemSecondaryAction>
           </JuiListItem>
         ))}

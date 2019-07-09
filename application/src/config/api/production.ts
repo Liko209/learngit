@@ -1,4 +1,5 @@
 import { ApiConfig, DeepPartial } from 'sdk/types';
+
 const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://platform.ringcentral.com',
@@ -22,6 +23,11 @@ const config: DeepPartial<ApiConfig> = {
   },
   splitio: {
     clientSecret: 'fo81g08vhro235qg0c6chlh45vo7ejang4bs',
+  },
+  sumologic: {
+    server: 'https://collectors.sumologic.com/receiver/v1/http/',
+    uniqueHttpCollectorCode:
+      'ZaVnC4dhaV3dzvBaY1wZqHcCh6D_2Ai3S-v_j39KpeGfbifz6Ir-C_hqAy0SaJROQ8A6tBsgSOKrmgynKRSZW9CCGvcqfYV1crTV9x0NDS6bYSZIC7Z4jw==',
   },
 };
 export default config;

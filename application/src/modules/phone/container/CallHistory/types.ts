@@ -1,3 +1,5 @@
+import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
+
 enum CallHistoryTypes {
   All,
   Missed,
@@ -7,4 +9,8 @@ type CallHistoryViewProps = {
   clearUMI: () => void;
 };
 
-export { CallHistoryTypes, CallHistoryViewProps };
+interface IUseFilter {
+  (initial: string): [string, IJuiChangePhoneFilter];
+}
+
+export { CallHistoryTypes, CallHistoryViewProps, IUseFilter };

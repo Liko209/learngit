@@ -22,7 +22,8 @@ import { TELEPHONY_SERVICE } from '../interface/constant';
 
 const FOCUS_IN_EVT = 'focusin';
 const BLUR = 'blur';
-
+const SYNC_DIALER_ENTERED = 300;
+/*eslint-disable*/
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
     if (styleSheet.cssRules) {
@@ -128,7 +129,7 @@ function withDialogOrNewWindow<T>(
       `;
 
       return backdrop;
-    }
+    };
 
     private _backdrop = this._createBackdrop();
 
@@ -147,21 +148,32 @@ function withDialogOrNewWindow<T>(
         });
         this._window.document.body.appendChild(this._div);
       }
-    }
+    };
 
     private _closeWindow = () => {
       if (this._window) {
         this._window.close();
       }
-    }
+    };
+
+    private _handleEntered = () => {
+      setTimeout(
+        () => this._telephonyStore.syncDialerEntered(true),
+        SYNC_DIALER_ENTERED,
+      );
+    };
+
+    private _handleExited = () => {
+      this._telephonyStore.syncDialerEntered(false);
+    };
 
     private _handleStart = () => {
       document.body.appendChild(this._backdrop);
-    }
+    };
 
     private _handleStop = () => {
       document.body.removeChild(this._backdrop);
-    }
+    };
 
     private _onFocus = (e: FocusEvent) => {
       const el = ReactDOM.findDOMNode(this._containerRef.current);
@@ -174,7 +186,7 @@ function withDialogOrNewWindow<T>(
         return;
       }
       this._telephonyStore.onDialerBlur();
-    }
+    };
 
     private _onBlur = (e: FocusEvent) => {
       const el = ReactDOM.findDOMNode(this._containerRef.current);
@@ -190,7 +202,7 @@ function withDialogOrNewWindow<T>(
         this._telephonyStore.onDialerBlur();
         return;
       }
-    }
+    };
 
     componentDidUpdate() {
       const { startMinimizeAnimation } = this._telephonyStore;
@@ -224,10 +236,10 @@ function withDialogOrNewWindow<T>(
         } else {
           window.removeEventListener('resize', this._handleResize);
         }
-      },         300);
+      }, 300);
     }
 
-    componentWillUnMount() {
+    componentWillUnmount() {
       this._telephonyStore.onDialerBlur();
       window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
       window.removeEventListener(BLUR, this._onBlur);
@@ -261,6 +273,8 @@ function withDialogOrNewWindow<T>(
           onStart={this._handleStart}
           onStop={this._handleStop}
           ref={this._containerRef}
+          onEntered={this._handleEntered}
+          onExited={this._handleExited}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

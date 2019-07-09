@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
-import { BaseWebComponent } from "../../../BaseWebComponent";
+import { BaseWebComponent } from '../../../BaseWebComponent';
 
 export class RightRail extends BaseWebComponent {
   get self() {
@@ -8,8 +8,7 @@ export class RightRail extends BaseWebComponent {
   }
 
   get expandStatusButton() {
-    this.warnFlakySelector();
-    return this.getSelectorByIcon('double_chevron_right').parent('button[aria-label="Hide details"]');
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
   }
 
   get expandStatusButtonByClass() {
@@ -18,8 +17,23 @@ export class RightRail extends BaseWebComponent {
   }
 
   get foldStatusButton() {
+    return this.getSelectorByAutomationId('right_rail_trigger_button');
+  }
+
+  get title() {
     this.warnFlakySelector();
-    return this.getSelector('button[aria-label="Show details"]');
+    return this.self
+      .find('#right-rail-header')
+      .child()
+      .nth(0);
+  }
+
+  async shouldBeFolded() {
+    await this.t.expect(this.self.clientWidth).eql(0);
+  }
+
+  async shouldBeExpanded() {
+    await this.t.expect(this.self.clientWidth).gt(0);
   }
 
   get foldStatusButtonByClass() {
@@ -43,7 +57,6 @@ export class RightRail extends BaseWebComponent {
     await this.t.hover(this.expandStatusButtonByClass);
   }
 
-
   async expand() {
     await this.t.click(this.foldStatusButton);
   }
@@ -53,7 +66,11 @@ export class RightRail extends BaseWebComponent {
   }
 
   get tabList() {
-    return this.self.find('[role="tablist"]')
+    return this.self.find('[role="tablist"]');
+  }
+
+  get displayedTabButtons() {
+    return this.tabList.find('button[role="tab"]');
   }
 
   get listSubTitle() {
@@ -65,7 +82,10 @@ export class RightRail extends BaseWebComponent {
   }
 
   getEntry(automationId: string) {
-    return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
+    return this.getComponent(
+      TabEntry,
+      this.getSelectorByAutomationId(automationId),
+    );
   }
 
   get pinnedEntry() {
@@ -101,30 +121,37 @@ export class RightRail extends BaseWebComponent {
   }
 
   get moreButton() {
-    return this.getSelectorByAutomationId('right-shelf-more')
+    return this.getSelectorByAutomationId('right-shelf-more');
   }
-
 
   get expandStatusButtonDisplayed() {
     return this.expandStatusButtonByClass.exists;
   }
 
   async clickMoreButton() {
-    if (!await this.expandStatusButtonDisplayed) {
+    if (!(await this.expandStatusButtonDisplayed)) {
       await this.clickFoldStatusButton();
     }
-   await this.t.click(this.moreButton);
+    await this.t.click(this.moreButton);
   }
 
   async hoverMoreButton() {
-    if (!await this.expandStatusButtonDisplayed) {
+    if (!(await this.expandStatusButtonDisplayed)) {
       await this.clickFoldStatusButton();
     }
-   await this.t.hover(this.moreButton);
+    await this.t.hover(this.moreButton);
   }
 
   async openMore() {
     await this.t.click(this.moreButton);
+  }
+
+  get moreTabsMenu() {
+    return this.getSelector('ul[role="menu"]');
+  }
+
+  get moreTabsMenuEntries() {
+    return this.moreTabsMenu.find('li[role="menuitem"]');
   }
 
   get imagesTab() {
@@ -181,7 +208,10 @@ class BaseTab extends BaseWebComponent {
 
   getSubTitle(name: string) {
     const reg = new RegExp(`^${name}`);
-    return this.getSelectorByAutomationId('rightRail-list-subtitle', this.self).withText(reg);
+    return this.getSelectorByAutomationId(
+      'rightRail-list-subtitle',
+      this.self,
+    ).withText(reg);
   }
 
   async countOnSubTitleShouldBe(n: number) {
@@ -200,7 +230,6 @@ class BaseTab extends BaseWebComponent {
     await this.t.expect(this.items.count).eql(n);
   }
 
-
   get titles() {
     return this.items.find('.list-item-primary');
   }
@@ -214,9 +243,9 @@ class BaseTab extends BaseWebComponent {
   }
 
   async nthItemTitleShouldBe(n: number, title: string) {
-    await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
-      `n: ${n} , title: ${title}`
-    );
+    await this.t
+      .expect(this.titles.nth(n).withText(title).exists)
+      .ok(`n: ${n} , title: ${title}`);
   }
 
   async shouldHasTitle(title: string) {
@@ -237,8 +266,6 @@ class BaseTab extends BaseWebComponent {
 }
 
 class FilesTab extends BaseTab {
-
-
   get subTitle() {
     return this.getSubTitle('Files');
   }
@@ -250,7 +277,6 @@ class FilesTab extends BaseTab {
   nthItem(n: number) {
     return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
-
 }
 class ImagesTab extends BaseTab {
   get subTitle() {
@@ -264,7 +290,6 @@ class ImagesTab extends BaseTab {
   nthItem(n: number) {
     return this.getComponent(ImageAndFileItem, this.items.nth(n));
   }
-
 }
 
 class EventsTab extends BaseTab {
@@ -287,14 +312,24 @@ class NotesTab extends BaseTab {
   }
 
   get secondaryText() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
-
 }
 
 class ImageAndFileItem extends BaseWebComponent {
-  get thumbnail() {
+  get imageThumbnail() {
     return this.getSelectorByAutomationId('thumbnail', this.self);
+  }
+
+  get fileThumbnail() {
+    return this.getSelectorByAutomationId('iconThumbnail', this.self);
+  }
+
+  get docIcon() {
+    return this.getSelectorByIcon('doc', this.self);
   }
 
   get name() {
@@ -305,16 +340,19 @@ class ImageAndFileItem extends BaseWebComponent {
     await this.t.expect(this.name.withText(name).exists).ok();
   }
 
-  get more(){
-    return this.getSelectorByAutomationId('fileActionMore',this.self);
+  get more() {
+    return this.getSelectorByAutomationId('fileActionMore', this.self);
   }
 
-  async clickMore(){
+  async clickMore() {
     await this.t.click(this.more);
   }
 
   get secondaryText() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
 
   get creator() {
@@ -332,7 +370,6 @@ class ImageAndFileItem extends BaseWebComponent {
   get previewIcon() {
     return this.getSelectorByIcon('image_preview', this.self);
   }
-
 }
 
 class LinksTab extends BaseTab {
@@ -349,7 +386,10 @@ class LinksTab extends BaseTab {
   }
 
   get secondaryTexts() {
-    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+    return this.getSelectorByAutomationId(
+      'list-item-secondary-text',
+      this.self,
+    );
   }
 }
 
@@ -373,15 +413,20 @@ class PinnedTab extends BaseTab {
   }
 
   nthItem(n: number) {
-    return this.getComponent(PinnedItem, this.items.nth(n))
+    return this.getComponent(PinnedItem, this.items.nth(n));
   }
 
   itemByPostId(postId: string) {
-    return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
+    return this.getComponent(
+      PinnedItem,
+      this.items.filter(`[data-postid="${postId}"]`),
+    );
   }
 
   async shouldContainPostItem(postId: string) {
-    await this.t.expect(this.items.withAttribute('data-postid', postId).exists).ok();
+    await this.t
+      .expect(this.items.withAttribute('data-postid', postId).exists)
+      .ok();
   }
 }
 
@@ -390,19 +435,19 @@ class PinnedItem extends BaseWebComponent {
     return this.self.getAttribute('data-postid');
   }
   get creator() {
-    return this.getSelectorByAutomationId("pinned-creator", this.self);
+    return this.getSelectorByAutomationId('pinned-creator', this.self);
   }
 
   get createTime() {
-    return this.getSelectorByAutomationId("pinned-createTime", this.self);
+    return this.getSelectorByAutomationId('pinned-createTime', this.self);
   }
 
   get postText() {
-    return this.getSelectorByAutomationId("pinned-text", this.self);
+    return this.getSelectorByAutomationId('pinned-text', this.self);
   }
 
   get attachmentIcons() {
-    return this.getSelectorByAutomationId("pinned-item-icon", this.self);
+    return this.getSelectorByAutomationId('pinned-item-icon', this.self);
   }
 
   get nonFileOrImageAttachmentsTexts() {
@@ -414,7 +459,7 @@ class PinnedItem extends BaseWebComponent {
   }
 
   get moreAttachmentsInfo() {
-    return // TODO
+    return; // TODO
   }
 
   async shouldBePostId(postId: string) {
@@ -426,22 +471,22 @@ class PinnedItem extends BaseWebComponent {
   }
 
   async postTextShouldBe(text: string | RegExp) {
-    if (typeof text == "string") {
+    if (typeof text == 'string') {
       await this.t.expect(this.postText.withText(text).exists).ok();
     } else {
       await this.t.expect(this.postText.textContent).match(text);
     }
-
   }
 
   async shouldHasFileOrImage(fileName: string) {
-    await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
+    await this.t
+      .expect(this.fileOrImageFileNames.withText(fileName).exists)
+      .ok();
   }
 
   async shouldHasAttachmentsText(text: string) {
-    await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
+    await this.t
+      .expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists)
+      .ok();
   }
-
-
-
 }

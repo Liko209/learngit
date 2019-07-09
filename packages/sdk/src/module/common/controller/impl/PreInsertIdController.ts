@@ -5,10 +5,11 @@
  */
 
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
-import { AccountGlobalConfig } from '../../../../module/account/config';
-import { UserConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../account/config';
+import { UserConfigService } from '../../../config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
-
+import { mainLogger } from 'foundation';
+/* eslint-disable */
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
 class PreInsertIdController implements IPreInsertIdController {
@@ -29,7 +30,15 @@ class PreInsertIdController implements IPreInsertIdController {
       PREINSERT_KEY_ID,
     );
     if (preInsertKeysIds) {
-      this._preInsertIds = JSON.parse(preInsertKeysIds);
+      try {
+        this._preInsertIds = JSON.parse(preInsertKeysIds);
+      } catch (e) {
+        mainLogger.log(
+          `PreInsertIdController Json parser error ${preInsertKeysIds}`,
+        );
+        this._preInsertIds = {};
+        this._syncDataDB();
+      }
     }
   }
 
@@ -47,6 +56,10 @@ class PreInsertIdController implements IPreInsertIdController {
 
   isInPreInsert(uniqueId: string): boolean {
     return this._preInsertIds.hasOwnProperty(uniqueId);
+  }
+
+  getPreInsertId(uniqueId: string): number {
+    return this._preInsertIds[uniqueId];
   }
 
   async insert(uniqueId: string, preInsertId: number): Promise<void> {

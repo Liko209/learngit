@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 13:00:22
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 async function findFirst<R, T>(
   arr: R[],
   transform: (rawItem: R) => Promise<T>,

@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { daoManager } from '../../../../dao';
 import { StateDao } from '../../dao';
 import { GroupState, MyState } from '../../entity/State';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { StateService } from '../../service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 class StateFetchDataController {
   private _myStateId: number;
   constructor(
@@ -25,9 +25,7 @@ class StateFetchDataController {
     ids: number[],
   ): Promise<GroupState[]> {
     const groupStates = await this.getAllGroupStatesFromLocal(ids);
-    return groupStates.filter((groupState: GroupState) => {
-      return groupState.unread_count || groupState.unread_mentions_count;
-    });
+    return groupStates.filter((groupState: GroupState) => groupState.unread_count || groupState.unread_mentions_count);
   }
 
   async getMyState(): Promise<MyState | null> {

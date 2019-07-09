@@ -74,6 +74,18 @@ describe('PostFetchController()', () => {
     });
   }
 
+  function getMockHasMore({
+    older = true,
+    newer = true,
+    both = true,
+  }: {
+    older?: boolean;
+    newer?: boolean;
+    both?: boolean;
+  }) {
+    return { older, newer, both };
+  }
+
   afterAll(() => {
     clearMocks();
   });
@@ -96,7 +108,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: true,
+        hasMore: getMockHasMore({}),
         items: mockItems,
         posts: mockPosts,
         limit: 2,
@@ -116,7 +128,9 @@ describe('PostFetchController()', () => {
         ],
         items: [{ id: 12 }, { id: 23 }],
       };
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
@@ -136,7 +150,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
         posts: [
           { id: 1, version: 1, unique_id: '1' },
@@ -155,7 +169,9 @@ describe('PostFetchController()', () => {
         posts: [{ id: 3, version: 3 }, { id: 4, version: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
@@ -175,7 +191,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
         posts: [
           { id: 1, version: 1 },
@@ -194,7 +210,9 @@ describe('PostFetchController()', () => {
         posts: [],
         items: [],
       };
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
@@ -211,7 +229,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [],
         posts: [],
         limit: 20,
@@ -233,7 +251,9 @@ describe('PostFetchController()', () => {
           ...data,
         });
 
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
 
@@ -243,7 +263,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: mockItems,
         posts: mockPosts,
         limit: 20,
@@ -265,7 +285,9 @@ describe('PostFetchController()', () => {
           ...data,
         });
 
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
 
@@ -275,7 +297,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: data.items,
         posts: data.posts,
         limit: 20,
@@ -294,7 +316,9 @@ describe('PostFetchController()', () => {
           hasMore: false,
           ...data,
         });
-
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
       itemService.handleIncomingData = jest
         .fn()
@@ -308,7 +332,7 @@ describe('PostFetchController()', () => {
       expect(result).toEqual({
         posts: data.posts,
         items: data.items,
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         limit: 20,
       });
     });
@@ -321,7 +345,9 @@ describe('PostFetchController()', () => {
         items: [],
       };
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
 
@@ -338,7 +364,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [],
         posts: [],
         limit: 20,
@@ -358,7 +384,9 @@ describe('PostFetchController()', () => {
         ],
         items: [{ id: 12 }, { id: 23 }],
       };
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest
@@ -378,7 +406,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [{ id: 11 }, { id: 22 }, { id: 12 }, { id: 23 }],
         posts: [
           { id: 2, version: 101, unique_id: '101' },
@@ -397,7 +425,9 @@ describe('PostFetchController()', () => {
         items: [],
       };
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       itemService.getByPosts.mockResolvedValue(mockItems);
 
       jest
@@ -423,7 +453,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ both: false }),
         items: [],
         posts: [],
         limit: 20,
@@ -437,7 +467,9 @@ describe('PostFetchController()', () => {
         posts: [],
         items: [],
       };
-      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
       postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
 
@@ -463,7 +495,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ older: false }),
         items: [],
         posts: [],
         limit: 20,
@@ -495,7 +527,7 @@ describe('PostFetchController()', () => {
       expect(localSpy).not.toBeCalled();
       expect(remoteSpy).not.toBeCalled();
       expect(result).toEqual({
-        hasMore: true,
+        hasMore: getMockHasMore({}),
         items: [],
         posts: [],
         limit: 500,
@@ -520,7 +552,7 @@ describe('PostFetchController()', () => {
       expect(localSpy).not.toBeCalled();
       expect(remoteSpy).not.toBeCalled();
       expect(result).toEqual({
-        hasMore: true,
+        hasMore: getMockHasMore({}),
         items: [],
         posts: [],
         limit: 500,
@@ -541,7 +573,7 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: true,
+        hasMore: getMockHasMore({}),
         items: mockItems,
         posts: mockPosts,
         limit: 500,
@@ -573,10 +605,45 @@ describe('PostFetchController()', () => {
       });
 
       expect(result).toEqual({
-        hasMore: false,
+        hasMore: getMockHasMore({ newer: false }),
         items: mockItems,
         posts: mockPosts,
         limit: 500,
+      });
+    });
+
+    it('should call getRemotePostsByGroupId with shouldSaveToDb as true', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      const getRemotePostsSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+
+      getRemotePostsSpy.mockResolvedValueOnce({
+        success: true,
+        hasMore: false,
+        posts: mockPosts,
+        items: mockItems,
+      });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(mockItems);
+
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        unreadCount: 500,
+      });
+      expect(getRemotePostsSpy).toBeCalledWith({
+        groupId: 1,
+        limit: 1000,
+        postId: 1,
+        direction: QUERY_DIRECTION.NEWER,
+        shouldSaveToDb: true,
       });
     });
   });

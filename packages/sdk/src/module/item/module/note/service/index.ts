@@ -5,4 +5,5 @@
  */
 
 import { NoteItemService } from './NoteItemService';
+
 export { NoteItemService };

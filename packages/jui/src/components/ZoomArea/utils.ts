@@ -3,8 +3,8 @@
  * @Date: 2019-03-04 12:42:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { ElementRect, ZoomRatio, Position } from './types';
 import _ from 'lodash';
+import { ElementRect, ZoomRatio, Position } from './types';
 
 export function getCenterPosition(react: ElementRect) {
   return {
@@ -14,10 +14,11 @@ export function getCenterPosition(react: ElementRect) {
 }
 
 function isZoomRatio(arg: any): arg is ZoomRatio {
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
   return (
     Object.prototype.toString.call(arg) === '[object Object]' &&
-    (<Object>arg).hasOwnProperty('fromRatio') &&
-    (<Object>arg).hasOwnProperty('toRatio')
+    hasOwnProperty.call(arg, 'fromRatio') &&
+    hasOwnProperty.call(arg, 'toRatio')
   );
 }
 

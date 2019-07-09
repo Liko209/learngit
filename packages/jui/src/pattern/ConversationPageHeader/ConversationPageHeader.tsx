@@ -25,11 +25,11 @@ import { JuiDivider } from '../../components/Divider/Divider';
 
 type JuiConversationPageHeaderProps = {
   title?: string;
-  status?: string | null;
+  status?: string | React.ReactNode;
   SubTitle?: React.ReactNode;
   Right?: React.ReactNode;
 } & MuiToolbarProps &
-  MuiAppBarProps;
+MuiAppBarProps;
 
 const TitleWrapper = styled<JuiTextProps>(JuiText)`
   && {
@@ -82,9 +82,9 @@ const TitleAndStatusWrapper = styled('div')`
 `;
 
 type IJuiConversationPageHeader = React.PureComponent<
-  JuiConversationPageHeaderProps
+JuiConversationPageHeaderProps
 > &
-  Dependencies;
+Dependencies;
 
 class JuiConversationPageHeader
   extends React.PureComponent<JuiConversationPageHeaderProps>
@@ -113,7 +113,6 @@ class JuiConversationPageHeader
     const titleElement = (
       <TitleWrapper
         tooltipTitle={title}
-        variant="title"
         component="h6"
         data-test-automation-id="conversation-page-header-title"
       >
@@ -125,7 +124,7 @@ class JuiConversationPageHeader
         data-test-automation-id="conversation-page-header"
         position="static"
         elevation={0}
-        square={true}
+        square
         {...rest}
       >
         <MuiToolbar className="mui-toolbar" variant="dense">

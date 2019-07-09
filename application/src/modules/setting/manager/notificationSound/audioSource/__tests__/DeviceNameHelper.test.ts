@@ -34,7 +34,7 @@ describe('DeviceNameHelper', () => {
       expect(result).toBe('setting.builtInSpeaker');
     });
 
-    it('should return setting.default for a default device', () => {
+    it('should return setting.useDefault for a default device', () => {
       const device: MediaDeviceInfo = {
         deviceId: 'default',
         groupId: '0',
@@ -42,10 +42,10 @@ describe('DeviceNameHelper', () => {
         kind: 'audiooutput',
       };
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
-      expect(result).toBe('setting.default');
+      expect(result).toBe('setting.useDefault');
     });
 
-    it('should return setting.default for a device with label that contains "default"', () => {
+    it('should return setting.useDefault for a device with label that contains "default"', () => {
       const device: MediaDeviceInfo = {
         deviceId: DEVICE_1,
         groupId: '0',
@@ -53,10 +53,10 @@ describe('DeviceNameHelper', () => {
         kind: 'audiooutput',
       };
       const result = DeviceNameHelper.getDeviceName(device, [], fakeT);
-      expect(result).toBe('setting.default');
+      expect(result).toBe('setting.useDefault');
     });
 
-    it('should return setting.default for the special "No Devices" device [JPT-2098]', () => {
+    it('should return setting.useDefault for the special "No Devices" device [JPT-2098]', () => {
       const device: MediaDeviceInfo = {
         deviceId: '',
         groupId: '0',
@@ -78,7 +78,7 @@ describe('DeviceNameHelper', () => {
       expect(result).toBe('BeatsStudio Wireless');
     });
 
-    describe('when device.label is empty', () => {
+    describe('when device.label is empty [JPT-2418]', () => {
       it('should return device order', () => {
         const speaker1: MediaDeviceInfo = {
           deviceId: DEVICE_1,

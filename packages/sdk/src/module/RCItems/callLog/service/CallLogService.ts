@@ -6,10 +6,9 @@
 
 import { CallLog } from '../entity';
 import { EntityBaseService } from 'sdk/framework';
-import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
-import { DEFAULT_FETCH_SIZE } from '../../constants';
-import { FetchResult } from '../../types';
+import { FetchResult, FetchDataOptions, FilterOptions } from '../../types';
 import { CALL_LOG_SOURCE, MODULE_NAME } from '../constants';
 import { CallLogController } from '../controller/CallLogController';
 import { RCItemUserConfig } from '../../config';
@@ -27,7 +26,7 @@ class CallLogService extends EntityBaseService<CallLog, string> {
   private _missedCallUserConfig: RCItemUserConfig;
 
   constructor() {
-    super(false, daoManager.getDao(CallLogDao));
+    super({ isSupportedCache: false }, daoManager.getDao(CallLogDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.PRESENCE_WITH_TELEPHONY_DETAIL]: this
@@ -35,6 +34,11 @@ class CallLogService extends EntityBaseService<CallLog, string> {
         [SUBSCRIPTION.MISSED_CALLS]: this._handleMissedCallEvent,
       }),
     );
+  }
+
+  onRCLogin() {
+    super.onRCLogin();
+    this._initBadge();
   }
 
   onStarted() {
@@ -82,26 +86,25 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     this.callLogController.allCallLogFetchController.requestSync();
   }
 
-  async fetchCallLogs(
-    source: CALL_LOG_SOURCE,
-    anchorId?: string,
-    limit = DEFAULT_FETCH_SIZE,
-    direction = QUERY_DIRECTION.OLDER,
-  ): Promise<FetchResult<CallLog>> {
-    if (source === CALL_LOG_SOURCE.ALL) {
-      return this.callLogController.allCallLogFetchController.fetchCallLogs(
-        source,
-        anchorId,
-        limit,
-        direction,
-      );
-    }
-    return this.callLogController.missedCallLogFetchController.fetchCallLogs(
-      source,
-      anchorId,
-      limit,
-      direction,
+  async buildFilterFunc(
+    options: FilterOptions<CallLog>,
+  ): Promise<(callLog: CallLog) => boolean> {
+    return this.callLogController.allCallLogFetchController.buildFilterFunc(
+      options,
     );
+  }
+
+  async fetchCallLogs(
+    options: FetchDataOptions<CallLog, string>,
+  ): Promise<FetchResult<CallLog>> {
+    const { callLogSource = CALL_LOG_SOURCE.ALL } = options;
+    return callLogSource === CALL_LOG_SOURCE.ALL
+      ? this.callLogController.allCallLogFetchController.fetchData(options)
+      : this.callLogController.missedCallLogFetchController.fetchData(options);
+  }
+
+  async fetchRecentCallLogs() {
+    return this.callLogController.allCallLogFetchController.fetchAllUniquePhoneNumberCalls();
   }
 
   async clearUnreadMissedCall() {
@@ -123,17 +126,25 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.missedCallLogFetchController.internalReset();
   }
 
+  async getTotalCount(): Promise<number> {
+    return await this.getEntitySource().getTotalCount();
+  }
+
   private _handleMissedCallEvent = async (payload: MissedCallEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
       payload,
     );
-  }
+  };
 
   private _handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
       payload,
     );
-  }
+  };
+
+  private _initBadge = async () => {
+    await this.callLogController.callLogBadgeController.initializeUnreadCount();
+  };
 }
 
 export { CallLogService };

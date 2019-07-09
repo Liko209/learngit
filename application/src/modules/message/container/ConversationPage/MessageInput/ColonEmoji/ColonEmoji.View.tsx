@@ -3,21 +3,19 @@
  * @Date: 2019-06-02 16:43:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { ColonEmojiViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
 import { JuiMentionPanelSection } from 'jui/pattern/MessageInput/Mention/MentionPanelSection';
-import { JuiMentionPanelSectionHeader } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionHeader';
 import { EmojiItem } from './EmojiItem';
 import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
-import { ITEM_HEIGHT, MAX_ITEM_NUMBER, TITLE_HEIGHT } from './constants';
-import { i18nP } from '@/utils/i18nT';
+import { ITEM_HEIGHT, MAX_ITEM_NUMBER } from './constants';
 
 type State = {
   width?: number;
@@ -40,7 +38,7 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
     if (height !== this.state.height || width !== this.state.width) {
       this.setState({ height, width });
     }
-  }
+  };
 
   componentDidUpdate(prevProps: ColonEmojiViewProps) {
     const { currentIndex } = this.props;
@@ -55,7 +53,6 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
       ids,
       isEditMode,
       members,
-      searchTerm,
       currentIndex,
       selectHandler,
     } = this.props;
@@ -66,19 +63,15 @@ class ColonEmojiView extends Component<ColonEmojiViewProps, State> {
           ? MAX_ITEM_NUMBER * ITEM_HEIGHT
           : ITEM_HEIGHT * memberIdsLength;
       return (
-        <JuiMentionPanel automationId="ColonEmojiPanel" isEditMode={isEditMode}>
+        <JuiMentionPanel automationId='ColonEmojiPanel' isEditMode={isEditMode}>
           <JuiMentionPanelSection>
             <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
             <JuiVirtualizedList
               minRowHeight={ITEM_HEIGHT}
               ref={this._listRef}
-              height={colonEmojiHeight + TITLE_HEIGHT}
-              data-test-automation-id="colon-emoji-list"
+              height={colonEmojiHeight}
+              data-test-automation-id='colon-emoji-list'
             >
-              <JuiMentionPanelSectionHeader
-                key={'emoji-select-header'}
-                title={`${i18nP('message.emoji.emojiMatching')} ${searchTerm}`}
-              />
               {members.map((emoji: any, index: number) => {
                 return (
                   <EmojiItem

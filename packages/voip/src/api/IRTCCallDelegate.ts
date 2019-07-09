@@ -8,13 +8,14 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
 } from './types';
+
 interface IRTCCallDelegate {
   onCallStateChange(state: RTC_CALL_STATE): void;
   onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ): void;
-  onCallActionFailed(callAction: RTC_CALL_ACTION): void;
+  onCallActionFailed(callAction: RTC_CALL_ACTION, code: number): void;
 }
 
 export { IRTCCallDelegate };

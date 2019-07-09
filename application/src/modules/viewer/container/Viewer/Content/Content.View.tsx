@@ -10,20 +10,18 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
 import { JuiImageViewerContent } from 'jui/pattern/ImageViewer';
+
 type ResponsiveProps = {
   content: ReactElement;
 };
 
-const LeftResponsive = withResponsive((props: ResponsiveProps) => {
-  return React.cloneElement(props.content);
-},                                    {});
+const LeftResponsive = withResponsive((props: ResponsiveProps) => React.cloneElement(props.content), {});
 
 const RightResponsive = withResponsive(
-  (props: ResponsiveProps) => {
-    return React.cloneElement(props.content);
-  },
+  (props: ResponsiveProps) => React.cloneElement(props.content),
   {
     visualMode: VISUAL_MODE.BOTH,
+    maxWidth: 0,
     enable: {
       left: true,
     },
@@ -33,7 +31,7 @@ const RightResponsive = withResponsive(
 @observer
 class ViewerContentViewComponent extends Component<
   WithTranslation & ViewerContentViewProps
-> {
+  > {
   render() {
     return (
       <JuiImageViewerContent>
