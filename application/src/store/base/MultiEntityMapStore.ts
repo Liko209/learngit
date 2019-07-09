@@ -20,7 +20,7 @@ export default class MultiEntityMapStore<
   IdType extends ModelIdType = number
 > extends BaseStore {
   @observable.shallow
-  private _data: { [id: string]: K } = {};
+  private _data: Map<IdType, K> = new Map();
   private _usedIds: Set<IdType> = new Set();
 
   private _getService: Function | [Function, string];
@@ -51,9 +51,7 @@ export default class MultiEntityMapStore<
   }
 
   private _getDataKeys(): IdType[] {
-    return Object.values(this._data).map((value: K) => {
-      return value.id;
-    });
+    return Array.from(this._data.keys());
   }
 
   handleIncomingData(payload: NotificationEntityPayload<T, IdType>) {
@@ -116,7 +114,7 @@ export default class MultiEntityMapStore<
   }
 
   private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: IdType) {
-    const model = this._data[id];
+    const model = this._data.get(id);
     if (model) {
       Object.keys(partialEntity).forEach((key: string) => {
         const camelCaseKey = _.camelCase(key);
@@ -153,7 +151,7 @@ export default class MultiEntityMapStore<
 
     const { id } = model;
 
-    this._data[id] = model;
+    this._data.set(id, model);
     this._registerHook(id);
 
     if (refreshCache) {
@@ -169,13 +167,13 @@ export default class MultiEntityMapStore<
   }
 
   private _replace(oldId: IdType, entity: T) {
-    if (entity && this._data[oldId]) {
+    if (entity && this._data.has(oldId)) {
       this._setOrUpdate(entity);
     }
   }
 
   private _setOrUpdate(entity: T) {
-    const model = this._data[entity.id];
+    const model = this._data.get(entity.id);
     if (!model) {
       this._set(entity);
     } else {
@@ -186,7 +184,7 @@ export default class MultiEntityMapStore<
   @action
   remove(id: IdType) {
     setTimeout(() => {
-      delete this._data[id];
+      this._data.delete(id);
     },         0);
   }
 
@@ -194,25 +192,25 @@ export default class MultiEntityMapStore<
   batchRemove(ids: IdType[]) {
     setTimeout(() => {
       ids.forEach((id: IdType) => {
-        delete this._data[id];
+        this._data.delete(id);
       });
     },         0);
   }
 
   @action
   clearAll() {
-    this._data = {};
+    this._data.clear();
   }
 
   get(id: IdType) {
-    let model = this._data[id];
+    let model = this._data.get(id);
     if (!model) {
       this.set({ id, isMocked: true } as T);
-      model = this._data[id] as K;
+      model = this._data.get(id) as K;
       const found = this.getByServiceSynchronously(id);
       if (found) {
         this.partialUpdate(found, id);
-        model = this._data[id] as K;
+        model = this._data.get(id) as K;
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
@@ -228,7 +226,7 @@ export default class MultiEntityMapStore<
         } else {
           if (res) {
             this.partialUpdate(res as T, id);
-            model = this._data[id] as K;
+            model = this._data.get(id) as K;
           }
         }
       }
@@ -238,11 +236,11 @@ export default class MultiEntityMapStore<
   }
 
   has(id: IdType): boolean {
-    return !!this._data[id];
+    return !!this._data.get(id);
   }
 
   hasValid(id: IdType): boolean {
-    const model = this._data[id];
+    const model = this._data.get(id);
     return !!(model && !model.isMocked);
   }
 
@@ -294,7 +292,7 @@ export default class MultiEntityMapStore<
   @action
   reset() {
     this._usedIds.forEach((id: IdType) => {
-      const singleData = this._data[id];
+      const singleData = this._data.get(id);
       if (singleData && singleData.reset) {
         singleData.reset();
       }
@@ -335,8 +333,8 @@ export default class MultiEntityMapStore<
   }
 
   private _registerHook(id: IdType) {
-    onBecomeObserved(this._data, `${id}`, this._addUsedIds(id));
-    onBecomeUnobserved(this._data, `${id}`, this._delUsedIds(id));
+    onBecomeObserved(this._data, id, this._addUsedIds(id));
+    onBecomeUnobserved(this._data, id, this._delUsedIds(id));
   }
 
   private _addUsedIds(id: IdType) {
@@ -364,7 +362,7 @@ export default class MultiEntityMapStore<
       });
       const diffKeys = _.difference(existKeys, allUsedIds);
       diffKeys.forEach((id: IdType) => {
-        delete this._data[id];
+        this._data.delete(id);
       });
     },         100);
   }

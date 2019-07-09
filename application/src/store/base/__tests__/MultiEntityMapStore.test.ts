@@ -106,9 +106,9 @@ describe('MultiEntityMapStore', () => {
       instance.handleIncomingData(data);
       const models = instance.getData();
       setTimeout(() => {
-        expect(Object.keys(models)).toHaveLength(0);
+        expect(Array.from(models.keys())).toHaveLength(0);
         done();
-      },         0);
+      }, 0);
     });
   });
 
@@ -116,9 +116,9 @@ describe('MultiEntityMapStore', () => {
     it('get', () => {
       postService.getById.mockResolvedValueOnce({ id: '1' });
       instance.get(1);
-      const models = instance.getData();
-      expect(Object.keys(models)).toHaveLength(1);
-      expect(Object.keys(models).includes('1')).toBeTruthy();
+      const keys = Array.from(instance.getData().keys());
+      expect(keys).toHaveLength(1);
+      expect(keys.includes(1)).toBeTruthy();
     });
   });
 
@@ -177,12 +177,13 @@ describe('MultiEntityMapStore', () => {
       instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
 
       instance.batchSet([{ id: 1 }]);
-      expect(Object.keys(instance.getData())).toEqual(['1']);
+
+      expect(Array.from(instance.getData().keys())).toEqual([1]);
 
       setTimeout(() => {
-        expect(Object.keys(instance.getData())).toEqual(['1']);
+        expect(Array.from(instance.getData().keys())).toEqual([1]);
         done();
-      },         120);
+      }, 120);
     });
 
     it('should not clear cache when document is not hidden', async (done: any) => {
@@ -191,12 +192,12 @@ describe('MultiEntityMapStore', () => {
       instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
 
       instance.batchSet([{ id: 1 }, { id: 2 }]);
-      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      expect(Array.from(instance.getData().keys())).toEqual([1, 2]);
 
       setTimeout(() => {
-        expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+        expect(Array.from(instance.getData().keys())).toEqual([1, 2]);
         done();
-      },         120);
+      }, 120);
     });
 
     it('should refresh cache when cache is oversized and app is hidden', async (done: any) => {
@@ -204,11 +205,11 @@ describe('MultiEntityMapStore', () => {
       setting.cacheCount = 1;
       instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
       instance.batchSet([{ id: 1 }, { id: 2 }]);
-      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      expect(Array.from(instance.getData().keys())).toEqual([1, 2]);
       setTimeout(() => {
-        expect(Object.keys(instance.getData())).toEqual([]);
+        expect(Array.from(instance.getData().keys())).toEqual([]);
         done();
-      },         120);
+      }, 120);
     });
 
     it('should not refresh cache when refreshCache is false in batchSet ', async (done: any) => {
@@ -216,11 +217,11 @@ describe('MultiEntityMapStore', () => {
       setting.cacheCount = 1;
       instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
       instance.batchSet([{ id: 1 }, { id: 2 }]);
-      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      expect(Array.from(instance.getData().keys())).toEqual([1, 2]);
       setTimeout(() => {
-        expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+        expect(Array.from(instance.getData().keys())).toEqual([1, 2]);
         done();
-      },         120);
+      }, 120);
     });
   });
 });
