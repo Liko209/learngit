@@ -215,7 +215,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async hasMorePostInRemote(groupId: number) {
-    console.log('----------111--------', this._groupConfigService);
     return this._groupConfigService.hasMorePostInRemote(groupId);
   }
 
