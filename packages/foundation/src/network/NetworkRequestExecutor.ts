@@ -35,7 +35,7 @@ const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
 const LOG_TAG = 'NetworkRequestExecutor';
 
 export class NetworkRequestExecutor
-  implements INetworkRequestExecutorListener, INetworkRequestExecutor {
+implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
@@ -44,7 +44,7 @@ export class NetworkRequestExecutor
   retryStrategy: RetryStrategy;
   client: BaseClient;
   status: NETWORK_REQUEST_EXECUTOR_STATUS =
-    NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
+  NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
   isComplete: boolean = false;
   responseListener: IResponseListener;
   listener?: INetworkRequestConsumerListener;
@@ -260,11 +260,9 @@ export class NetworkRequestExecutor
     if (hasErrorProperty) {
       const errors = data.errors;
       if (Array.isArray(errors)) {
-        return errors.some((error: any) => {
-          return (
-            hasErrorCodeProperty && error.errorCode === errorCode
-          );
-        });
+        return errors.some((error: any) => (
+          hasErrorCodeProperty && error.errorCode === errorCode
+        ));
       }
     }
     return false;

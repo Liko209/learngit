@@ -92,9 +92,7 @@ class PhoneParserUtility {
             );
           });
         },
-        locateFile: (fileName: string) => {
-          return `/wasm/${fileName}`;
-        },
+        locateFile: (fileName: string) => `/wasm/${fileName}`,
       };
       PhoneParserUtility._phoneParserModule = new PhoneParserModule(params);
     }).catch(err => {

@@ -6,7 +6,9 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { container } from 'framework';
-import { computed, observable, action, comparer } from 'mobx';
+import {
+  computed, observable, action, comparer,
+} from 'mobx';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';

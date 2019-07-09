@@ -45,9 +45,8 @@ class CompanyController {
       const serviceParameters = company.rc_service_parameters;
       if (serviceParameters) {
         const infoIndex = serviceParameters.findIndex(
-          (value: CompanyServiceParameter) => {
-            return value.id === 430; // 430 means tier edition
-          },
+          (value: CompanyServiceParameter) => value.id === 430 // 430 means tier edition
+          ,
         );
         if (infoIndex !== -1) {
           return serviceParameters[infoIndex].value;

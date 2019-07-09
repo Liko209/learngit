@@ -36,11 +36,11 @@ type Props = WithTranslation & GenericDialerPanelViewProps;
 class GenericDialerPanelViewComponent extends React.Component<
   Props,
   GenericDialerPanelViewState
-> {
+  > {
   private _dialerHeaderRef: RefObject<any> = createRef();
   private _timer: NodeJS.Timeout;
   private _shouldShowToolTip =
-    !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
+  !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
 
   state = {
     shouldShowToolTip: true,

@@ -31,7 +31,9 @@ import {
   useIsFirstRenderRef,
   ScrollPosition,
 } from './hooks';
-import { createKeyMapper, createRange, getChildren, isRangeIn } from './utils';
+import {
+  createKeyMapper, createRange, getChildren, isRangeIn,
+} from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
@@ -49,8 +51,8 @@ type JuiVirtualizedListHandles = {
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
-  JuiVirtualizedListHandles,
-  JuiVirtualizedListProps
+JuiVirtualizedListHandles,
+JuiVirtualizedListProps
 > = (
   {
     height,
@@ -202,9 +204,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
-  const shouldUpdateRange = () => {
-    return !isRangeIn(renderedRange, computeVisibleRange());
-  };
+  const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
 
   const updateRange = () => {
     if (ref.current) {
@@ -243,9 +243,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       scrollToBottom,
       scrollToPosition: jumpToPosition,
       getScrollPosition: () => scrollPosition,
-      isAtBottom: () => {
-        return prevAtBottomRef.current;
-      },
+      isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
         jumpToPosition({ index, options });
       },
@@ -537,7 +535,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref={ref}
       style={wrapperStyle}
       onWheel={onWheel}
-      data-test-automation-id='virtualized-list'
+      data-test-automation-id="virtualized-list"
       onScroll={handleScroll}
     >
       {wrappedBefore}
@@ -554,9 +552,9 @@ const JuiVirtualizedList: RefForwardingComponent<
 const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
-  >
+React.ForwardRefExoticComponent<
+JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
+>
 >;
 
 export {

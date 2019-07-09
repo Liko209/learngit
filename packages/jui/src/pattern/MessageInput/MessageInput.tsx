@@ -21,10 +21,10 @@ const MessageInputDropZoneClasses: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
 };
-
-const Wrapper = styled.div<{
+type WrapperProps = {
   isEditMode?: boolean;
-}>`
+}
+const Wrapper = styled.div<WrapperProps>`
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
   padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   min-height: ${props => !props.isEditMode && height(22)};
@@ -150,7 +150,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
       editor = this._inputRef.current.getEditor();
     } else {
       editor = {
-        enable: (enabled: boolean) => {},
+        enable: () => {},
       };
     }
 
@@ -219,11 +219,11 @@ class JuiMessageInput extends React.PureComponent<Props> {
     } = this.props;
     const reactQuillValueProp = defaultValue
       ? {
-          defaultValue,
-        }
+        defaultValue,
+      }
       : {
-          value,
-        };
+        value,
+      };
 
     // initialReadOnly should be true when autofocus is false to avoid auto focus and trigger
     // browser's scroll behavior.

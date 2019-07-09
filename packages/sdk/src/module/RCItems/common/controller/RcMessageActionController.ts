@@ -61,10 +61,7 @@ class RcMessageActionController<T extends RCMessage> {
 
     const preHandlePartialEntity = (
       partialEntity: Partial<Raw<T>>,
-      originalEntity: T,
-    ) => {
-      return { ...partialEntity, readStatus: toStatus };
-    };
+    ) => ({ ...partialEntity, readStatus: toStatus });
 
     const doUpdateEntity = async (updatedEntity: T) => {
       const newVm = await RCItemApi.updateMessageReadStatus<T>(

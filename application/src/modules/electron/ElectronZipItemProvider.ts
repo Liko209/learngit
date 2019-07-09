@@ -17,9 +17,7 @@ export class ElectronZipItemProvider implements IZipItemProvider {
       (window.jupiterElectron.getLogs && window.jupiterElectron.getLogs()) ||
       [];
     const logContent = logs
-      .map((log: { message: string }) => {
-        return log.message;
-      })
+      .map((log: { message: string }) => log.message)
       .join('\n');
     return [
       {

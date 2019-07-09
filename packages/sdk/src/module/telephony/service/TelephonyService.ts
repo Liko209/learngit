@@ -68,9 +68,7 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.logout();
   };
 
-  getVoipCallPermission = async () => {
-    return this.telephonyController.getVoipCallPermission();
-  };
+  getVoipCallPermission = async () => this.telephonyController.getVoipCallPermission();
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
@@ -124,25 +122,17 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.getAccountController().unmute(callId);
   };
 
-  hold = async (callId: number) => {
-    return await this.telephonyController.getAccountController().hold(callId);
-  };
+  hold = async (callId: number) => await this.telephonyController.getAccountController().hold(callId);
 
-  unhold = async (callId: number) => {
-    return await this.telephonyController.getAccountController().unhold(callId);
-  };
+  unhold = async (callId: number) => await this.telephonyController.getAccountController().unhold(callId);
 
-  startRecord = async (callId: number) => {
-    return await this.telephonyController
-      .getAccountController()
-      .startRecord(callId);
-  };
+  startRecord = async (callId: number) => await this.telephonyController
+    .getAccountController()
+    .startRecord(callId);
 
-  stopRecord = async (callId: number) => {
-    return await this.telephonyController
-      .getAccountController()
-      .stopRecord(callId);
-  };
+  stopRecord = async (callId: number) => await this.telephonyController
+    .getAccountController()
+    .stopRecord(callId);
 
   dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
@@ -170,21 +160,15 @@ class TelephonyService extends EntityBaseService<Call>
       .replyWithMessage(callId, message);
   };
 
-  park = async (callId: number) => {
-    return await this.telephonyController.getAccountController().park(callId);
-  };
+  park = async (callId: number) => await this.telephonyController.getAccountController().park(callId);
 
-  flip = async (callId: number, flipNumber: number) => {
-    return await this.telephonyController
-      .getAccountController()
-      .flip(callId, flipNumber);
-  };
+  flip = async (callId: number, flipNumber: number) => await this.telephonyController
+    .getAccountController()
+    .flip(callId, flipNumber);
 
-  forward = async (callId: number, phoneNumber: string) => {
-    return await this.telephonyController
-      .getAccountController()
-      .forward(callId, phoneNumber);
-  };
+  forward = async (callId: number, phoneNumber: string) => await this.telephonyController
+    .getAccountController()
+    .forward(callId, phoneNumber);
 
   replyWithPattern = (
     callId: number,
@@ -197,9 +181,7 @@ class TelephonyService extends EntityBaseService<Call>
       .replyWithPattern(callId, pattern, time, timeUnit);
   };
 
-  getRingerDevicesList = () => {
-    return this.telephonyController.getRingerDevicesList();
-  };
+  getRingerDevicesList = () => this.telephonyController.getRingerDevicesList();
 
   getVoipState = () => {
     const accountController = this.telephonyController.getAccountController();

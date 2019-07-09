@@ -42,7 +42,7 @@ class IndexTaskController {
     mainLogger.tags(LOG_TAG).info('new task arrived');
     const task = this._taskControllerQueue[0];
     if (task && !task.isExecuting()) {
-      task.start((success: boolean) => {
+      task.start(() => {
         const value = this._taskControllerQueue.shift();
         value && value.clear();
         this._onTaskArrived();

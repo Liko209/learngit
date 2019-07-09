@@ -7,7 +7,7 @@
 import { IResponse, RESPONSE_STATUS_CODE, IRequest } from './network';
 
 abstract class BaseResponse<R extends IRequest = IRequest>
-  implements IResponse {
+implements IResponse {
   request: R;
   constructor(
     readonly data: any,

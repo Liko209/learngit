@@ -95,10 +95,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
     const {
       children,
       in: inProp,
-      onEnter,
-      onExit,
       style,
-      theme,
       ...other
     } = this.props;
 
@@ -110,19 +107,17 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
         onExit={this.handleExit}
         {...other}
       >
-        {(state: TransitionStatus, childProps: any) => {
-          return React.cloneElement(children, {
-            style: {
-              transform: 'scale(0)',
-              opacity: state === 'entering' ? 0 : 1,
-              visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
-              ...styles[state],
-              ...style,
-              ...children.props.style,
-            },
-            ...childProps,
-          });
-        }}
+        {(state: TransitionStatus, childProps: any) => React.cloneElement(children, {
+          style: {
+            transform: 'scale(0)',
+            opacity: state === 'entering' ? 0 : 1,
+            visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
+            ...styles[state],
+            ...style,
+            ...children.props.style,
+          },
+          ...childProps,
+        })}
       </Transition>
     );
   }

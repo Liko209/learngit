@@ -64,9 +64,7 @@ class PersonDataController {
     if (persons.length === 0) {
       return;
     }
-    const transformedData: Person[] = persons.map((item: Raw<Person>) =>
-      transform(item),
-    );
+    const transformedData: Person[] = persons.map((item: Raw<Person>) => transform(item));
     this.handleTeamRemovedIds(transformedData, changeMap);
     this._saveDataAndDoNotification(transformedData, source, changeMap);
   };

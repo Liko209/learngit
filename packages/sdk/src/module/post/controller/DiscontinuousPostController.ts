@@ -44,9 +44,7 @@ class DiscontinuousPostController {
     const restIds = _.difference(validIds, localPosts.map(({ id }) => id));
     if (restIds.length) {
       const remoteData = await PostAPI.requestByIds(restIds);
-      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) =>
-        transform<Post>(item),
-      );
+      let remotePosts: Post[] = remoteData.posts.map((item: Raw<Post>) => transform<Post>(item));
 
       const notAchievedIds = _.difference(
         restIds,
@@ -93,9 +91,7 @@ class DiscontinuousPostController {
 
   private _mockDeactivatedPosts(ids: number[]): Post[] {
     mainLogger.info('_mockDeactivatedPosts ids:', ids);
-    return ids.map((id: number) => {
-      return { id, deactivated: true } as Post;
-    });
+    return ids.map((id: number) => ({ id, deactivated: true } as Post));
   }
 
   private async _savePosts(posts: Post[]): Promise<Post[]> {

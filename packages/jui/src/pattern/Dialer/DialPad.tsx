@@ -24,15 +24,14 @@ const KEY_UP = 'keyup';
 const KEY_DOWN = 'keydown';
 
 const THROTTLE_TIME = 30;
-const throttledHandler = (f: any) =>
-  _.debounce(f, THROTTLE_TIME, {
-    trailing: true,
-    leading: true,
-  });
+const throttledHandler = (f: any) => _.debounce(f, THROTTLE_TIME, {
+  trailing: true,
+  leading: true,
+});
 
 export class DialPad extends React.Component<
-  DialPadViewProps,
-  DialPadViewState
+DialPadViewProps,
+DialPadViewState
 > {
   static defaultProps = {
     shouldHandleKeyboardEvts: true,
@@ -158,9 +157,9 @@ export class DialPad extends React.Component<
                   shouldPersistBg={pressedKeys.includes(KEY_2_ICON_MAP[str])}
                   disableToolTip
                   onMouseDown={_onclick}
-                  size='xxlarge'
+                  size="xxlarge"
                   key={str}
-                  color='grey.900'
+                  color="grey.900"
                   stretchIcon
                 >
                   {str}
@@ -176,9 +175,9 @@ export class DialPad extends React.Component<
                 }
                 onMouseDown={this._onMouseDownForZero}
                 onMouseUp={this._onMouseupForZero}
-                size='xxlarge'
+                size="xxlarge"
                 key={str}
-                color='grey.900'
+                color="grey.900"
                 stretchIcon
               >
                 {str}

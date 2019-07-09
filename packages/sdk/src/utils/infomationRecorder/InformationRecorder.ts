@@ -5,7 +5,9 @@
  */
 import { AbstractRecord } from './AbstractRecord';
 import { Nullable } from 'sdk/types';
-import { ILogger, logManager, stringifyParams, LOG_LEVEL } from 'foundation';
+import {
+  ILogger, logManager, stringifyParams, LOG_LEVEL,
+} from 'foundation';
 import { toText } from '../stringUtils';
 import _ from 'lodash';
 
@@ -97,9 +99,7 @@ export class InformationRecorder<R> {
     this._ensureInTransaction();
     this._currentRecord!.addLogs(stringifyParams(...params).join(' '));
     this._options.logIntegration &&
-      this._options.logger
-        .tags(...this._getLogTag())
-        [LOG_LEVEL_MAP[level]](...params);
+      this._options.logger.tags(...this._getLogTag())[LOG_LEVEL_MAP[level]](...params);
     return this;
   }
 

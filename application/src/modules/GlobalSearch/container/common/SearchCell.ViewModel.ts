@@ -49,10 +49,10 @@ class SearchCellViewModel<T> extends SearchViewModel<T> {
     currentItemValue: number | string,
     currentItemType: SearchItemTypes,
     params?:
-      | {
-        groupId?: number;
-      }
-      | undefined,
+    | {
+      groupId?: number;
+    }
+    | undefined,
   ) => {
     if (!currentItemValue) {
       return;

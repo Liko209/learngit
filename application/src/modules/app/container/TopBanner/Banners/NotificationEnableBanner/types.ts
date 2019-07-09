@@ -9,10 +9,10 @@ import { WithTranslation } from 'react-i18next';
 type NotificationEnableBannerProps = {};
 
 type NotificationEnableBannerViewProps = WithTranslation &
-  NotificationEnableBannerProps & {
-    isShow: boolean;
-    isBlocked: boolean;
-    handleClose: () => void;
-  };
+NotificationEnableBannerProps & {
+  isShow: boolean;
+  isBlocked: boolean;
+  handleClose: () => void;
+};
 
 export { NotificationEnableBannerProps, NotificationEnableBannerViewProps };

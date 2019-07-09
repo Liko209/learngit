@@ -27,7 +27,7 @@ const JuiConversationPageInit = React.memo((props: JuiEmptyScreenProps) => {
               <EmptyScreen.ActionWrapper key={inx}>
                 {action}
               </EmptyScreen.ActionWrapper>
-            ))
+          ))
           : actions}
       </EmptyScreen.Actions>
     </EmptyScreen.Wrapper>

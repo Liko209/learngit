@@ -16,9 +16,7 @@ class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
 
   constructor() {
     super(daoManager.getDao<TaskItemDao>(TaskItemDao));
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TASK);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TASK));
   }
 
   protected get taskItemController() {

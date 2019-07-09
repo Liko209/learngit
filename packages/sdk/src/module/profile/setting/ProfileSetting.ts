@@ -3,7 +3,6 @@
  * @Date: 2019-05-09 17:21:43
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   SettingEntityIds,
   BaseModuleSetting,
@@ -35,16 +34,16 @@ type HandlerMap = {
   [SettingEntityIds.Notification_IncomingCalls]: IncomingCallsSettingHandler;
   [SettingEntityIds.Notification_MissCallAndNewVoiceMails]: NewVoicemailsSettingHandler;
   [SettingEntityIds.Notification_DirectMessages]: ProfileSubscribeEntityHandler<
-    EMAIL_NOTIFICATION_OPTIONS
+  EMAIL_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_Mentions]: ProfileSubscribeEntityHandler<
-    NOTIFICATION_OPTIONS
+  NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_Teams]: ProfileSubscribeEntityHandler<
-    EMAIL_NOTIFICATION_OPTIONS
+  EMAIL_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
-    NOTIFICATION_OPTIONS
+  NOTIFICATION_OPTIONS
   >;
 };
 
@@ -104,26 +103,26 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Notification_Mentions]:
         // prettier-ignore
         new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
-        this._profileService,
-        {
-          id: SettingEntityIds.Notification_Mentions,
-          setting_key: SETTING_KEYS.EMAIL_MENTION,
-        },
-      ),
+          this._profileService,
+          {
+            id: SettingEntityIds.Notification_Mentions,
+            setting_key: SETTING_KEYS.EMAIL_MENTION,
+          },
+        ),
       [SettingEntityIds.Notification_Teams]:
         // prettier-ignore
         new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
-        this._profileService,
-        {
-          id: SettingEntityIds.Notification_Teams,
-          setting_key: SETTING_KEYS.EMAIL_TEAM,
-          source: [
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
-            EMAIL_NOTIFICATION_OPTIONS.OFF,
-          ],
-        },
-      ),
+          this._profileService,
+          {
+            id: SettingEntityIds.Notification_Teams,
+            setting_key: SETTING_KEYS.EMAIL_TEAM,
+            source: [
+              EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+              EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+              EMAIL_NOTIFICATION_OPTIONS.OFF,
+            ],
+          },
+        ),
       // prettier-ignore
       [SettingEntityIds.Notification_DailyDigest]: new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
         this._profileService,

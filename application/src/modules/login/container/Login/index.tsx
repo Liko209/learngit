@@ -37,7 +37,7 @@ class Login extends React.Component<IProps> {
     return (
       <div>
         login page
-        <button onClick={this.onClick} type='button'>
+        <button onClick={this.onClick} type="button">
           Login
         </button>
       </div>

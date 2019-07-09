@@ -79,8 +79,11 @@ function formatVersionInfo(versionInfo: versionInfoType) {
 
 async function fetchVersionInfo() {
   const versionInfo = (await import(/*
-    webpackChunkName: "versionInfo" */ './versionInfo.json'))
+    webpackChunkName: "versionInfo" */ './versionInfo.json'
+  ))
     .data;
   return formatVersionInfo(versionInfo);
 }
-export { versionInfoType, formatDate, fetchVersionInfo, formatVersionInfo };
+export {
+  versionInfoType, formatDate, fetchVersionInfo, formatVersionInfo,
+};

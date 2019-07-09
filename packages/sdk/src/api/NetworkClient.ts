@@ -78,8 +78,8 @@ export default class NetworkClient {
   networkRequests: INetworkRequests;
   pathPrefix?: string;
   apiMap: Map<
-    string,
-    { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
+  string,
+  { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;

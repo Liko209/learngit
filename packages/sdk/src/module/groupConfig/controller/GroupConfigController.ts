@@ -10,7 +10,6 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { buildPartialModifyController } from '../../../framework/controller';
-import { Raw } from '../../../framework/model';
 import { mainLogger } from 'foundation';
 import { Post } from 'sdk/module/post/entity';
 
@@ -30,15 +29,8 @@ class GroupConfigController {
       );
       await partialModifyController.updatePartially(
         params.id,
-        (
-          partialModel: Partial<Raw<GroupConfig>>,
-          originalModel: GroupConfig,
-        ) => {
-          return params;
-        },
-        async (updatedModel: GroupConfig) => {
-          return updatedModel;
-        },
+        () => params,
+        async (updatedModel: GroupConfig) => updatedModel,
       );
       return true;
     } catch (error) {
@@ -143,9 +135,7 @@ class GroupConfigController {
       );
 
       for (const post of posts) {
-        const groupConfig = groupConfigs.find(x =>
-          x ? x.id === post.group_id : false,
-        );
+        const groupConfig = groupConfigs.find(x => (x ? x.id === post.group_id : false));
         const lastPostTime =
           (groupConfig && groupConfig.my_last_post_time) || 0;
         if (post.created_at > lastPostTime) {

@@ -41,9 +41,7 @@ class ProfileSubscribeEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
   }
 
   async updateValue(value: T) {

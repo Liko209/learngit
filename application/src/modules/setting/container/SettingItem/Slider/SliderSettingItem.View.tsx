@@ -13,8 +13,8 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { catchError } from '@/common/catchError';
 
 type Props = SliderSettingItemViewProps &
-  SliderSettingItemProps &
-  WithTranslation;
+SliderSettingItemProps &
+WithTranslation;
 
 @observer
 class SliderSettingItemViewComponent extends Component<Props> {
@@ -33,7 +33,9 @@ class SliderSettingItemViewComponent extends Component<Props> {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
     const { value } = settingItemEntity;
-    const { min, max, step, tipRenderer, Left, Right } = settingItem;
+    const {
+      min, max, step, tipRenderer, Left, Right,
+    } = settingItem;
 
     return (
       <RuiSlider
@@ -54,7 +56,9 @@ class SliderSettingItemViewComponent extends Component<Props> {
     );
   }
   render() {
-    const { t, id, disabled, settingItem } = this.props;
+    const {
+      t, id, disabled, settingItem,
+    } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}

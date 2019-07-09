@@ -58,9 +58,9 @@ const ZoomWrapper = styled.div`
 function ensureOptions(zoomOptions?: Partial<JuiZoomOptions>): JuiZoomOptions {
   return zoomOptions
     ? {
-        ...DEFAULT_OPTIONS,
-        ...zoomOptions,
-      }
+      ...DEFAULT_OPTIONS,
+      ...zoomOptions,
+    }
     : DEFAULT_OPTIONS;
 }
 
@@ -190,8 +190,8 @@ class JuiZoomComponent extends React.Component<JuiZoomProps> {
 }
 
 class JuiZoomArea extends React.Component<
-  Omit<JuiZoomProps, 'transform' | 'onTransformChange'>,
-  { transform: Transform }
+Omit<JuiZoomProps, 'transform' | 'onTransformChange'>,
+{ transform: Transform }
 > {
   constructor(props: Omit<JuiZoomProps, 'transform' | 'onTransformChange'>) {
     super(props);

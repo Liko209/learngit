@@ -52,7 +52,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
 
     return (
       <JuiEmptyPage
-        data-test-automation-id='recentCallsEmptyPage'
+        data-test-automation-id="recentCallsEmptyPage"
         image={noCallLogImage}
         message={t('telephony.noCallLogAvailable')}
       />
@@ -81,7 +81,9 @@ class RecentCallsComponent extends React.Component<Props, State> {
   // }
 
   scrollToView = () => {
-    const { focusIndex, startIndex, stopIndex, setRangeIndex } = this.props;
+    const {
+      focusIndex, startIndex, stopIndex, setRangeIndex,
+    } = this.props;
 
     if (focusIndex >= stopIndex) {
       this._dataList.current &&
@@ -122,19 +124,19 @@ class RecentCallsComponent extends React.Component<Props, State> {
   private _renderItems() {
     const { listHandler, focusIndex } = this.props;
     return listHandler
-      ? listHandler.sortableListStore.getIds.map((itemId: string, index) => {
-          return (
+      ? listHandler.sortableListStore.getIds.map((itemId: string, index) => (
             <RecentCallItem
               id={itemId}
               key={itemId}
               selected={focusIndex === index}
             />
-          );
-        })
+      ))
       : [];
   }
   render() {
-    const { listHandler, isError, onErrorReload, setRangeIndex } = this.props;
+    const {
+      listHandler, isError, onErrorReload, setRangeIndex,
+    } = this.props;
     const { height } = this.state;
 
     return (

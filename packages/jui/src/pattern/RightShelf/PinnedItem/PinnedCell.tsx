@@ -96,28 +96,28 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
       <CellWrapper
         button
         data-postid={postId}
-        data-test-automation-id='pinned-section'
+        data-test-automation-id="pinned-section"
         onClick={onClick}
       >
         <HeadWrapper>
           <IconWrapper>
-            <JuiIconography iconSize='inherit' iconColor={['grey', '500']}>
+            <JuiIconography iconSize="inherit" iconColor={['grey', '500']}>
               pin
             </JuiIconography>
           </IconWrapper>
           <JuiListItemText
-            data-test-automation-id='pinned-creator'
+            data-test-automation-id="pinned-creator"
             primary={creator}
             primaryColor={['grey', '900']}
           />
-          <TimeWrapper data-test-automation-id='pinned-createTime'>
+          <TimeWrapper data-test-automation-id="pinned-createTime">
             {createTime}
           </TimeWrapper>
         </HeadWrapper>
         <ContentWrapper>
           {content && (
             <TextWrapper
-              data-test-automation-id='pinned-text'
+              data-test-automation-id="pinned-text"
               lineCount={lineCount}
             >
               {content}

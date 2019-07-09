@@ -52,9 +52,7 @@ class FileItemController {
     const dao = daoManager.getDao(ItemDao) as ItemDao;
     const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
     return files.length > 0
-      ? files.some((x: ItemFile) => {
-          return x.post_ids.length > 0;
-        })
+      ? files.some((x: ItemFile) => x.post_ids.length > 0)
       : false;
   }
 }

@@ -55,7 +55,9 @@ class JuiEventCollapse extends React.PureComponent<Props, States> {
   };
 
   render() {
-    const { children, hideText, showText, ...rest } = this.props;
+    const {
+      children, hideText, showText, ...rest
+    } = this.props;
     const { isShow } = this.state;
     return (
       <Fragment>

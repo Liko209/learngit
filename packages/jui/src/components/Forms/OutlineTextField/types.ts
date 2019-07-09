@@ -15,4 +15,6 @@ type InputRadiusKeys = keyof InputRadius;
 
 type OutlineTextSize = 'small' | 'medium' | 'large';
 
-export { IconPosition, InputRadius, InputRadiusKeys, OutlineTextSize };
+export {
+  IconPosition, InputRadius, InputRadiusKeys, OutlineTextSize,
+};

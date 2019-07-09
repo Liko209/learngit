@@ -138,7 +138,6 @@ class Container {
     registration: IRegisterConfig,
     injections: Injectable[],
   ): Promise<T> {
-
     let result: any = null;
 
     if (registration.type === RegisterType.Instance &&

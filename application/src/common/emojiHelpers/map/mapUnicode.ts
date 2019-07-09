@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* tslint:disable */
+/* eslint-disable */
 const mapUnicode = {
   "👩‍❤️‍💋‍👩": "1f469-200d-2764-fe0f-200d-1f48b-200d-1f469",
   "👩❤💋👩": "1f469-2764-1f48b-1f469",

@@ -54,8 +54,8 @@ export function buildRequestController<
   networkClient: NetworkClient;
 }): IRequestController<T, IdType> {
   const requestController: IRequestController<
-    T,
-    IdType
+  T,
+  IdType
   > = new RequestController<T, IdType>(networkConfig);
   return requestController;
 }
@@ -74,8 +74,8 @@ export function buildEntityCacheSearchController<
   IdType extends ModelIdType = number
 >(entityCacheController: IEntityCacheController<T, IdType>) {
   const cacheSearchController: IEntityCacheSearchController<
-    T,
-    IdType
+  T,
+  IdType
   > = new EntityCacheSearchController<T, IdType>(entityCacheController);
   return cacheSearchController;
 }

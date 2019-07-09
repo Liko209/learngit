@@ -18,9 +18,7 @@ export class ConsoleLogPrettier implements IConsoleLogPrettier {
 
   addColor(tags: string[]): string[] {
     const tagString = `%c${tags.join('%c ')}`;
-    const colors = tags.map((tag, index) => {
-      return `color: ${COLORS[index % COLORS.length]}`;
-    });
+    const colors = tags.map((tag, index) => `color: ${COLORS[index % COLORS.length]}`);
     return [tagString, ...colors];
   }
 }

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import _ from 'lodash';
 import { container } from 'framework';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -15,9 +14,7 @@ import { HomeStore } from '../../store';
 import { NavConfig } from '../../types';
 import { LeftNavProps } from './types';
 
-const getItem = (item: string) => {
-  return localStorage.getItem(item);
-};
+const getItem = (item: string) => localStorage.getItem(item);
 
 const removePlacement = ({ placement, ...navItem }: NavConfig) => navItem;
 

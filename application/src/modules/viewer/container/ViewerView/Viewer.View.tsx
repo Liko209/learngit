@@ -50,9 +50,7 @@ type ViewerViewType = {
 };
 
 const LeftResponsive = withResponsive(
-  (props: any) => {
-    return cloneElement(props.content);
-  },
+  (props: any) => cloneElement(props.content),
   {
     tag: 'sideBar',
     minWidth: LEFT_WIDTH,
@@ -67,9 +65,7 @@ const LeftResponsive = withResponsive(
 );
 
 const DocumentResponsive = withResponsive(
-  (props: any) => {
-    return cloneElement(props.content);
-  },
+  (props: any) => cloneElement(props.content),
   {
     tag: 'document',
     minWidth: 400,

@@ -33,13 +33,13 @@ type StatusProps = {
 };
 
 type AttachmentItemProps = StatusProps &
-  IconProps & {
-    progress?: number;
-    name: React.ReactChild | null | (React.ReactChild | null)[];
-    hideRemoveButton?: boolean;
-    onClickDeleteButton?: (event: MouseEvent) => void;
-    fileIcon: string;
-  };
+IconProps & {
+  progress?: number;
+  name: React.ReactChild | null | (React.ReactChild | null)[];
+  hideRemoveButton?: boolean;
+  onClickDeleteButton?: (event: MouseEvent) => void;
+  fileIcon: string;
+};
 
 const StatusMap = {
   [ITEM_STATUS.NORMAL]: grey('900'),
@@ -91,25 +91,25 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = memo(
   (props: AttachmentItemActionProps) => (
     <ActionWrapper
       onClick={!props.hideRemoveButton ? props.onClick : undefined}
-      data-test-automation-id='attachment-action-button'
+      data-test-automation-id="attachment-action-button"
     >
       {typeof props.value !== 'undefined' &&
         props.status === ITEM_STATUS.LOADING && (
           <ProgressWrapper>
             <RuiCircularProgress
-              variant='static'
+              variant="static"
               size={24}
               value={props.value}
             />
           </ProgressWrapper>
-        )}
+      )}
       <IconWrapper>
         {typeof props.icon === 'string'
           ? !props.hideRemoveButton && (
-              <JuiIconButton variant='plain' tooltipTitle={i18next.t('Remove')}>
+              <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
                 close
               </JuiIconButton>
-            )
+          )
           : props.icon}
       </IconWrapper>
     </ActionWrapper>
@@ -134,7 +134,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
         loading={loading}
         value={progress}
         hideRemoveButton={hideRemoveButton}
-        icon='close'
+        icon="close"
       />
     );
     return (

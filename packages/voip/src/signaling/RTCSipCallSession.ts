@@ -234,7 +234,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     /* eslint-disable new-cap */
     if (local_stream && remote_stream) {
       this._session.mediaStreams = new MediaStreams.default(this._session);
-      this.getMediaStats((report: any, session: any) => {
+      this.getMediaStats((report: any) => {
         this._mediaStatsManager.setMediaStatsReport(report);
       }, kRTCGetStatsInterval * 1000);
     }

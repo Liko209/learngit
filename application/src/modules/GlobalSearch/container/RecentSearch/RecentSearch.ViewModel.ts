@@ -118,13 +118,15 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     this.recentRecord = [];
   }
 
-  isValidGroup (value?: number) {
+  isValidGroup(value?: number) {
     if (!value) {
       return false;
     }
     try {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, value);
-      const { isMember, deactivated, isArchived, isTeam, privacy } = group;
+      const {
+        isMember, deactivated, isArchived, isTeam, privacy,
+      } = group;
       const isPrivate = isTeam && privacy === 'private';
       const shouldHidden = deactivated || isArchived || (!isMember && isPrivate);
       return shouldHidden !== undefined && !shouldHidden;

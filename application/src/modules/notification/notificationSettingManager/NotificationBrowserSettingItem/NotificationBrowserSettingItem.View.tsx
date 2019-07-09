@@ -31,7 +31,7 @@ type State = {
 class NotificationBrowserSettingItemViewComponent extends Component<
   Props,
   State
-> {
+  > {
   private get _permission(): INotificationPermission {
     return jupiter.get(INotificationPermission);
   }

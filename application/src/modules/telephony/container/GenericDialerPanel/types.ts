@@ -17,8 +17,8 @@ interface ICallerPhoneNumber {
 
 export type CallerIdSelectorProps = {
   tooltipProps: Pick<
-    RuiTooltipProps,
-    Exclude<keyof RuiTooltipProps, 'children'>
+  RuiTooltipProps,
+  Exclude<keyof RuiTooltipProps, 'children'>
   >;
   callerIdProps: CallerIdSelectorProps;
 };
@@ -55,12 +55,12 @@ export type GenericDialerPanelViewProps = {
   onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
   shouldDisplayRecentCalls: boolean;
 } & Pick<
-  GenericDialerPanelProps,
-  | 'onContactSelected'
-  | 'displayCallerIdSelector'
-  | 'CallActionBtn'
-  | 'Back'
-  | 'inputStringProps'
+GenericDialerPanelProps,
+| 'onContactSelected'
+| 'displayCallerIdSelector'
+| 'CallActionBtn'
+| 'Back'
+| 'inputStringProps'
 >;
 
 export type GenericDialerPanelViewState = {

@@ -42,8 +42,8 @@ const HiddenImage = styled.img`
 const DelayLoadingPage = withDelay(StyledLoadingPage);
 
 type JuiImageProps = React.DetailedHTMLProps<
-  React.ImgHTMLAttributes<HTMLImageElement>,
-  HTMLImageElement
+React.ImgHTMLAttributes<HTMLImageElement>,
+HTMLImageElement
 > & {
   imageRef?: RefObject<HTMLImageElement>;
   loadingPlaceHolder?: ComponentType<any>;
@@ -107,9 +107,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     }
     return _.cloneDeep(JuiImageView.initState);
   }
-  getImageRef = (): RefObject<HTMLImageElement> => {
-    return this.props.imageRef || this._imageRef;
-  };
+  getImageRef = (): RefObject<HTMLImageElement> => this.props.imageRef || this._imageRef;
 
   private _loadingView() {
     return (
@@ -122,7 +120,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography iconSize='extraLarge' iconColor={['grey', '400']}>
+        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>

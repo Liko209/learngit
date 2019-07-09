@@ -27,7 +27,7 @@ export default class PhoneNumberModel extends Base<PhoneNumber, string> {
         },
         { fireImmediately: true },
       );
-    },         0);
+    }, 0);
   }
 
   static fromJS(data: PhoneNumber) {

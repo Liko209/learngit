@@ -15,9 +15,7 @@ export class ContextInfoZipItemProvider implements IZipItemProvider {
   getZipItems = async () => {
     const contextInfo = await getAppContextInfo();
     const contextContent = Object.keys(contextInfo)
-      .map((key: string) => {
-        return `${key}: ${contextInfo[key]}`;
-      })
+      .map((key: string) => `${key}: ${contextInfo[key]}`)
       .join('\n');
     return [
       {

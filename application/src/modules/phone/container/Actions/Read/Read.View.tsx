@@ -55,7 +55,7 @@ class ReadViewComponent extends Component<Props> {
     const { type, isRead, entity } = this.props;
     return (
       <ActionButton
-        key='voicemail-read'
+        key="voicemail-read"
         icon={isRead ? 'read' : 'unread'}
         type={type}
         tooltip={this.title}

@@ -35,24 +35,20 @@ class AllCallsListHandler {
   ) {
     const isMatchFunc = filterFunc || getDefaultMatchFunc(type);
 
-    const transformFunc = (model: CallLog): ISortableModel<string> => {
-      return {
-        id: model.id as any,
-        sortValue: model.__timestamp,
-      };
-    };
+    const transformFunc = (model: CallLog): ISortableModel<string> => ({
+      id: model.id as any,
+      sortValue: model.__timestamp,
+    });
 
     const sortFunc = (
       lhs: ISortableModel<string>,
       rhs: ISortableModel<string>,
-    ): number => {
-      return SortUtils.sortModelByKey<ISortableModel<string>, string>(
-        lhs,
-        rhs,
-        ['sortValue'],
-        true,
-      );
-    };
+    ): number => SortUtils.sortModelByKey<ISortableModel<string>, string>(
+      lhs,
+      rhs,
+      ['sortValue'],
+      true,
+    );
 
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
       { fetchData },

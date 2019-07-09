@@ -23,7 +23,5 @@ export function omitLocalProperties(
     return data.map(item => omitLocalProperties(item));
   }
   const localDataKeys = ['id', '_delta'];
-  return _.omitBy(data, (value, key) => {
-    return key.startsWith('__') || localDataKeys.indexOf(key) >= 0;
-  });
+  return _.omitBy(data, (value, key) => key.startsWith('__') || localDataKeys.indexOf(key) >= 0);
 }

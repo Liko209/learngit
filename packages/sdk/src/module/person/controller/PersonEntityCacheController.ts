@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { Person } from '../entity';
 import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 import { IPersonService } from '../service/IPersonService';
@@ -103,9 +102,7 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     if (this._personService.isVisiblePerson(person)) {
       const name = this._personService.getName(person);
       if (name) {
-        soundexResult = SearchUtils.getTermsFromText(name).map(item =>
-          soundex(item),
-        );
+        soundexResult = SearchUtils.getTermsFromText(name).map(item => soundex(item));
       } else {
         soundexResult = [soundex(person.email)];
       }

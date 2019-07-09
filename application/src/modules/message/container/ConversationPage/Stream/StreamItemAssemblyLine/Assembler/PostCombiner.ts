@@ -5,7 +5,6 @@
  */
 import { Assembler } from './Assembler';
 
-import _ from 'lodash';
 import { AssemblerDelFunc, AssemblerAddFunc } from './types';
 
 export class PostCombiner extends Assembler {
@@ -16,21 +15,17 @@ export class PostCombiner extends Assembler {
     streamItemList,
     readThrough,
     ...rest
-  }) => {
-    return {
-      streamItemList,
-      postList,
-      readThrough,
-      added,
-      ...rest,
-    };
-  };
+  }) => ({
+    streamItemList,
+    postList,
+    readThrough,
+    added,
+    ...rest,
+  });
 
-  onDelete: AssemblerDelFunc = ({ deleted, streamItemList, ...rest }) => {
-    return {
-      deleted,
-      streamItemList,
-      ...rest,
-    };
-  };
+  onDelete: AssemblerDelFunc = ({ deleted, streamItemList, ...rest }) => ({
+    deleted,
+    streamItemList,
+    ...rest,
+  });
 }

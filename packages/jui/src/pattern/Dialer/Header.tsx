@@ -130,11 +130,10 @@ const StyledInputContainer = styled('div')`
   }
 `;
 
-const colorTransition = ({ theme }: { theme: Theme }) =>
-  theme.transitions.create(['color'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.standard,
-  });
+const colorTransition = ({ theme }: { theme: Theme }) => theme.transitions.create(['color'], {
+  easing: theme.transitions.easing.easeInOut,
+  duration: theme.transitions.duration.standard,
+});
 
 const SearchInput = styled(JuiTextField)<any>`
   && {
@@ -203,7 +202,9 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _renderCallInfo() {
     const { showHoverActions } = this.state;
-    const { Back, Avatar, name, phone, HoverActions } = this.props;
+    const {
+      Back, Avatar, name, phone, HoverActions,
+    } = this.props;
     return (
       <>
         <StyledLeft>
@@ -214,11 +215,11 @@ class JuiHeader extends PureComponent<Props, State> {
           )}
           {Avatar && <Avatar />}
           <StyledInfoContainer>
-            <StyledName data-test-automation-id='telephony-dialer-header-name'>
+            <StyledName data-test-automation-id="telephony-dialer-header-name">
               {name}
             </StyledName>
             {phone && (
-              <StyledPhone data-test-automation-id='telephony-dialer-header-phone'>
+              <StyledPhone data-test-automation-id="telephony-dialer-header-phone">
                 {phone}
               </StyledPhone>
             )}
@@ -391,18 +392,18 @@ class JuiHeader extends PureComponent<Props, State> {
           }}
           onKeyDown={onKeyDown || fakeFunc}
           autoFocus
-          autoComplete='off'
+          autoComplete="off"
           ref={this._inputRef}
         />
         <StyledDialerBtnContainer>
           {dialerValue && dialerValue.length && (
             <JuiIconButton
-              variant='plain'
-              color='common.white'
+              variant="plain"
+              color="common.white"
               disableToolTip={false}
               onMouseDown={this._handleMouseDown}
               onMouseUp={this._handleMounseUp}
-              size='large'
+              size="large"
               tooltipTitle={ariaLabelForDelete}
               ariaLabel={ariaLabelForDelete}
             >
@@ -426,7 +427,7 @@ class JuiHeader extends PureComponent<Props, State> {
       <StyledHeader
         onMouseEnter={this._handleMouseEvent}
         onMouseLeave={this._handleMouseEvent}
-        data-test-automation-id='telephony-dialer-header'
+        data-test-automation-id="telephony-dialer-header"
       >
         {RecentCallBtn && <RecentCallBtn />}
         {showDialerInputField

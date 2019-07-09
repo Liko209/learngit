@@ -9,9 +9,7 @@ import { configManager } from './config';
 export class LogEntityProcessor implements ILogEntityProcessor {
   process(initLogEntity: LogEntity): LogEntity {
     const { decorators } = configManager.getConfig();
-    const logEntity: LogEntity = decorators.reduce((preEntity, curLoader) => {
-      return curLoader.decorate(preEntity);
-    },                                             initLogEntity);
+    const logEntity: LogEntity = decorators.reduce((preEntity, curLoader) => curLoader.decorate(preEntity), initLogEntity);
     return logEntity;
   }
 }

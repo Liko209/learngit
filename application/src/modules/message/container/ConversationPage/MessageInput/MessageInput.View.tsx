@@ -31,7 +31,7 @@ class MessageInputViewComponent extends Component<
   {
     modules: object;
   }
-> {
+  > {
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
@@ -154,7 +154,7 @@ class MessageInputViewComponent extends Component<
           tooltip={t('message.action.attachFile')}
           title={t('message.inputMenus.uploadFileMenuTitle')}
           onFileChanged={this._autoUploadFile}
-          data-test-automation-id='message-action-bar-attachment'
+          data-test-automation-id="message-action-bar-attachment"
         />
         <Emoji
           tooltip={t('message.emoji.emojiTooltip')}

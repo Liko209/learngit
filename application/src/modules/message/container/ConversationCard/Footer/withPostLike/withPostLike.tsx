@@ -45,8 +45,7 @@ function withPostLike<P>(
 
     @computed
     get likedUsers(): PersonModel[] {
-      const handler = (id: number) =>
-        getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
+      const handler = (id: number) => getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
 
       return this._likes.map(handler);
     }
@@ -68,17 +67,13 @@ function withPostLike<P>(
       network: 'message.prompt.notAbleToUnlikeForNetworkIssue',
       server: 'message.prompt.notAbleToUnlikeForServerIssue',
     })
-    private handleUnlike = () => {
-      return this._handleToggle();
-    }
+    private handleUnlike = () => this._handleToggle()
 
     @catchError.flash({
       network: 'message.prompt.notAbleToLikeThisMessageForNetworkIssue',
       server: 'message.prompt.notAbleToLikeThisMessageForServerIssue',
     })
-    private handleLike = () => {
-      return this._handleToggle();
-    }
+    private handleLike = () => this._handleToggle()
 
     render() {
       const { postId, ...rest } = this.props;

@@ -80,12 +80,14 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   };
   render() {
-    const { html, title, url, onLinkItemClose } = this.props;
+    const {
+      html, title, url, onLinkItemClose,
+    } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
           <Title>
-            <a href={url} target='_blank' rel='noopener noreferrer'>
+            <a href={url} target="_blank" rel="noopener noreferrer">
               {title}
             </a>
           </Title>
@@ -98,7 +100,7 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
         {onLinkItemClose && (
           <JuiIconButton
             disableToolTip
-            variant='plain'
+            variant="plain"
             onClick={this.onLinkItemClose}
           >
             close

@@ -76,20 +76,14 @@ class VoicemailViewDao extends BaseDao<VoicemailView> {
     const performanceTracer = PerformanceTracer.start();
 
     const sortedIds = allVMs
-      .filter((view: VoicemailView) => {
-        return !filterFunc || filterFunc(this._translate2VMForFilter(view));
-      })
-      .sort((vmA: VoicemailView, vmB: VoicemailView) => {
-        return SortUtils.sortModelByKey<VoicemailView, number>(
-          vmA,
-          vmB,
-          ['__timestamp'],
-          false,
-        );
-      })
-      .map((value: VoicemailView) => {
-        return value.id;
-      });
+      .filter((view: VoicemailView) => !filterFunc || filterFunc(this._translate2VMForFilter(view)))
+      .sort((vmA: VoicemailView, vmB: VoicemailView) => SortUtils.sortModelByKey<VoicemailView, number>(
+        vmA,
+        vmB,
+        ['__timestamp'],
+        false,
+      ))
+      .map((value: VoicemailView) => value.id);
 
     const voicemailIds = ArrayUtils.sliceIdArray(
       sortedIds,

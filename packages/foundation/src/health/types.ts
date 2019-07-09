@@ -20,7 +20,7 @@ interface IHealthModuleManager extends IRegisterItemManager<IHealthModule> {}
 
 interface IHealthModule
   extends UniqueItem,
-    IRegisterItemManager<IHealthStatusItem> {
+  IRegisterItemManager<IHealthStatusItem> {
   identify: Symbol;
 }
 

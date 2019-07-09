@@ -6,7 +6,9 @@
 import React from 'react';
 import { JuiListItem, JuiListItemProps } from '../../components/Lists';
 import styled, { css } from '../../foundation/styled-components';
-import { primary, spacing, width, height } from '../../foundation/utils';
+import {
+  primary, spacing, width, height,
+} from '../../foundation/utils';
 
 type ContactItemProps = {
   isUnread: boolean;
@@ -24,10 +26,10 @@ const StyledContactItem = styled<ContactItemProps>(Wrapper)`
     .list-item-primary {
       color: ${({ isUnread }) => (isUnread ? primary('main') : null)};
       ${({ isUnread }) => {
-        if (!isUnread) {
-          return;
-        }
-        return css`
+    if (!isUnread) {
+      return;
+    }
+    return css`
           &:before {
             content: '';
             display: inline-block;
@@ -38,7 +40,7 @@ const StyledContactItem = styled<ContactItemProps>(Wrapper)`
             margin: ${spacing(0, 1, 0, 0)};
           }
         `;
-      }}
+  }}
     }
   }
 `;

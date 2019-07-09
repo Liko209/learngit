@@ -6,7 +6,6 @@
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import { IdModel, Raw, ModelIdType } from '../../model';
-import _ from 'lodash';
 
 enum CACHE_INITIAL_STATUS {
   NONE,

@@ -25,8 +25,7 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   align-items: center;
   border: none;
   padding: 0;
-  height: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size] * 2)({ theme })};
+  height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
   cursor: pointer;
@@ -41,10 +40,10 @@ const StyledConversationPageMember = styled.button<MemberProps>`
 
   :hover {
     color: ${({
-      theme: {
-        palette: { tonalOffset, grey },
-      },
-    }) => darken(grey['500'], tonalOffset)};
+    theme: {
+      palette: { tonalOffset, grey },
+    },
+  }) => darken(grey['500'], tonalOffset)};
   }
 
   > span {
@@ -53,7 +52,7 @@ const StyledConversationPageMember = styled.button<MemberProps>`
 `;
 
 class JuiConversationPageMember extends PureComponent<
-  JuiConversationPageMemberProps
+JuiConversationPageMemberProps
 > {
   render() {
     const {
@@ -73,7 +72,7 @@ class JuiConversationPageMember extends PureComponent<
           onClick={onClick}
           size={size}
         >
-          <JuiIconography iconSize='medium'>member_count</JuiIconography>
+          <JuiIconography iconSize="medium">member_count</JuiIconography>
           {children}
         </StyledConversationPageMember>
       </RuiTooltip>
