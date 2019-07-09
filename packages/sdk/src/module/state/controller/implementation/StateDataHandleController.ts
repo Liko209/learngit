@@ -18,7 +18,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
-import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
@@ -119,6 +119,7 @@ class StateDataHandleController {
           return;
         }
         const groupState: GroupState = { id: groupId };
+        /* eslint-disable */
         Object.keys(group).forEach((key: string) => {
           switch (key) {
             case '__trigger_ids': {
@@ -257,11 +258,7 @@ class StateDataHandleController {
             mainLogger
               .tags(LOG_TAG)
               .info(
-                `umi:${resultGroupState.unread_count}->${updateUnread}, id:${
-                  groupState.id
-                }, lastPoster:${resultGroupState.last_author_id}, mark:${
-                  resultGroupState.marked_as_unread
-                }`,
+                `umi:${resultGroupState.unread_count}->${updateUnread}, id:${groupState.id}, lastPoster:${resultGroupState.last_author_id}, mark:${resultGroupState.marked_as_unread}`,
               );
             resultGroupState.unread_count = updateUnread;
             stateChanged = true;
@@ -289,9 +286,7 @@ class StateDataHandleController {
         mainLogger
           .tags(LOG_TAG)
           .info(
-            `invalid GCursor:${updateState.group_post_cursor}, DCursor:${
-              updateState.group_post_drp_cursor
-            }, id:${updateState.id}`,
+            `invalid GCursor:${updateState.group_post_cursor}, DCursor:${updateState.group_post_drp_cursor}, id:${updateState.id}`,
           );
         return true;
       }
@@ -300,9 +295,7 @@ class StateDataHandleController {
         mainLogger
           .tags(LOG_TAG)
           .info(
-            `invalid GCursor:${updateState.group_post_cursor}, id:${
-              updateState.id
-            }`,
+            `invalid GCursor:${updateState.group_post_cursor}, id:${updateState.id}`,
           );
         return true;
       }
@@ -314,9 +307,7 @@ class StateDataHandleController {
         mainLogger
           .tags(LOG_TAG)
           .info(
-            `invalid DCursor:${updateState.group_post_drp_cursor}, id:${
-              updateState.id
-            }`,
+            `invalid DCursor:${updateState.group_post_drp_cursor}, id:${updateState.id}`,
           );
         return true;
       }
@@ -349,11 +340,7 @@ class StateDataHandleController {
       mainLogger
         .tags(LOG_TAG)
         .info(
-          `GCursor:${localState.group_post_cursor}->${
-            updateState.group_post_cursor
-          }, DCursor: ${localState.group_post_drp_cursor}->${
-            updateState.group_post_drp_cursor
-          }, id:${updateState.id}`,
+          `GCursor:${localState.group_post_cursor}->${updateState.group_post_cursor}, DCursor: ${localState.group_post_drp_cursor}->${updateState.group_post_drp_cursor}, id:${updateState.id}`,
         );
       return true;
     }
@@ -364,9 +351,7 @@ class StateDataHandleController {
       mainLogger
         .tags(LOG_TAG)
         .info(
-          `GCursor:${localState.group_post_cursor}->${
-            updateState.group_post_cursor
-          }, id:${updateState.id}`,
+          `GCursor:${localState.group_post_cursor}->${updateState.group_post_cursor}, id:${updateState.id}`,
         );
       return true;
     }
@@ -377,9 +362,7 @@ class StateDataHandleController {
       mainLogger
         .tags(LOG_TAG)
         .info(
-          `DCursor:${localState.group_post_drp_cursor}->${
-            updateState.group_post_drp_cursor
-          }, id:${updateState.id}`,
+          `DCursor:${localState.group_post_drp_cursor}->${updateState.group_post_drp_cursor}, id:${updateState.id}`,
         );
       return true;
     }
@@ -390,9 +373,7 @@ class StateDataHandleController {
       mainLogger
         .tags(LOG_TAG)
         .info(
-          `SCursor:${localState.post_cursor}->${updateState.post_cursor}, id:${
-            updateState.id
-          }`,
+          `SCursor:${localState.post_cursor}->${updateState.post_cursor}, id:${updateState.id}`,
         );
       return true;
     }

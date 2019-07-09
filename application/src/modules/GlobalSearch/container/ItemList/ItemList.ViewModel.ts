@@ -13,6 +13,7 @@ import { ItemListViewProps, SearchItemTypes } from './types';
 import { SearchCellViewModel } from '../common/SearchCell.ViewModel';
 import { changeToRecordTypes } from '../common/changeTypes';
 import { ENTITY_MAP } from './config';
+
 class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
   @observable startIndex: number = 0;
   @observable stopIndex: number = 0;
@@ -21,14 +22,14 @@ class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
   setRangeIndex = (range: IndexRange) => {
     this.startIndex = range.startIndex;
     this.stopIndex = range.stopIndex;
-  }
+  };
 
   @action
   onKeyDown = (list: number[]) => {
     const selectIndex = this.selectIndex;
     const len = list.length - 1;
     this.selectIndex = selectIndex === len ? len : selectIndex + 1;
-  }
+  };
 
   @action
   onEnter = (
@@ -39,7 +40,7 @@ class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
     const currentItemValue = list[this.selectIndex];
     this.onSelectItem(e, currentItemValue, currentItemType);
     this.addRecentRecord(currentItemType, currentItemValue);
-  }
+  };
 
   addRecentRecord = (
     currentItemType: SearchItemTypes,
@@ -50,7 +51,7 @@ class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
       ServiceConfig.SEARCH_SERVICE,
     );
     searchService.addRecentSearchRecord(type, value);
-  }
+  };
 
   @computed
   get listHandler() {

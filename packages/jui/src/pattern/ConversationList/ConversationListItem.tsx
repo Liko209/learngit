@@ -11,7 +11,9 @@ import MuiMenuItem, {
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { spacing, grey, palette, width, height } from '../../foundation/utils';
+import {
+  spacing, grey, palette, width, height,
+} from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
@@ -46,8 +48,7 @@ const WrapperListItem = ({
 }: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
 
 const hoverStyle = css`
-  background-color: ${({ theme }) =>
-    fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
+  background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
     display: inline-flex;
   }
@@ -74,11 +75,10 @@ const StyledListItem = styled(WrapperListItem)`
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      ${({ theme }) =>
-        theme.transitions.create('background-color', {
-          duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeInOut,
-        })};
+      ${({ theme }) => theme.transitions.create('background-color', {
+    duration: theme.transitions.duration.shortest,
+    easing: theme.transitions.easing.easeInOut,
+  })};
   }
   &&&& {
     ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
@@ -103,8 +103,7 @@ const StyledListItem = styled(WrapperListItem)`
   }
 
   &&.selected {
-    background-color: ${({ theme }) =>
-      fade(grey('700')({ theme }), theme.opacity['1'])};
+    background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'])};
     p {
       color: ${palette('primary', 'main')};
     }

@@ -9,11 +9,10 @@ import { notificationCenter, SERVICE, WINDOW } from '../../../../service';
 import { AccountService } from '../../../account/service';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
-import { LDFlagSet } from 'launchdarkly-js-client-sdk';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';
-import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 class LaunchDarklyController {
   private isClientReady = false;
@@ -36,7 +35,7 @@ class LaunchDarklyController {
   }
 
   private _subscribeNotifications() {
-    notificationCenter.on(SERVICE.LOGIN, async () => {
+    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
       await this._initClient();
     });
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, async () => {
@@ -93,7 +92,7 @@ class LaunchDarklyController {
         this.launchDarklyCallback && this.launchDarklyCallback();
         mainLogger.log('incoming event launchDarklyreadyCallback');
       },
-      updateCallback: (settings: LDFlagSet): void => {
+      updateCallback: (): void => {
         this.isClientReady = true;
         this.launchDarklyCallback && this.launchDarklyCallback();
         mainLogger.log('incoming event launchDarklyUpdateCallback');

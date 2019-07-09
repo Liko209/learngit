@@ -2,13 +2,13 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { PhonePage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class CallLogGatherer extends BaseGatherer {
+class CallLogGatherer extends DebugGatherer {
   private metricKeys: Array<string> = [
     "init_call_log_badge",
     "fetch_call_log",

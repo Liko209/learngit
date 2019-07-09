@@ -3,6 +3,7 @@
  * @Date: 2019-03-05 13:44:31
  */
 import { BaseGatherer } from './baseGatherer';
+import { DebugGatherer } from './debugGatherer';
 import { ProcessGatherer, PerformanceMetric } from './processGatherer';
 import { ProcessGatherer2 } from './processGatherer2';
 import { FetchGroupGatherer } from './fetchGroupGatherer';
@@ -18,6 +19,7 @@ import { CallLogGatherer } from './callLogGatherer';
 
 export {
   BaseGatherer,
+  DebugGatherer,
   ProcessGatherer,
   ProcessGatherer2,
   PerformanceMetric,

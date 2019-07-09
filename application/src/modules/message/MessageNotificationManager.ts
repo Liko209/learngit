@@ -3,6 +3,7 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+import { buildAtMentionMap } from '../../common/buildAtMentionMap';
 import { UserSettingEntity } from 'sdk/module/setting';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from '../../common/getPostType';
@@ -33,8 +34,6 @@ import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
-import { Company } from 'sdk/module/company/entity';
-import CompanyModel from '../../store/models/Company';
 import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -46,6 +45,7 @@ import {
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
+import { HTMLUnescape } from '@/common/postParser/utils';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -172,9 +172,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
       logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because post type is not message`,
+        `notification for ${post.id} is not permitted because post type is not message`,
       );
       return false;
     }
@@ -185,9 +183,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     if (!group) {
       logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because group of the post does not exist`,
+        `notification for ${post.id} is not permitted because group of the post does not exist`,
       );
       return false;
     }
@@ -201,9 +197,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
         if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
           logger.info(
-            `notification for ${
-              post.id
-            } is not permitted because in team conversation, only post mentioning current user will show notification`,
+            `notification for ${post.id} is not permitted because in team conversation, only post mentioning current user will show notification`,
           );
           return false;
         }
@@ -235,7 +229,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       isOne2One || isActivity
         ? group.displayName
         : await i18nT('notification.group', translationArgs);
-    let body = this.handlePostContent(post.text);
+    let body = this.handlePostContent(post);
     if (this.isMyselfAtMentioned(post)) {
       if (isOne2One) {
         title = await i18nT('notification.mentionedOne2One', translationArgs);
@@ -249,29 +243,23 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return { body, title };
   }
 
-  handlePostContent(text: string) {
-    const _text = Remove_Markdown(text, { dont_escape: true });
-    const staticServer = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
-    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-    const company =
-      (currentCompanyId &&
-        getEntity<Company, CompanyModel>(
-          ENTITY_NAME.COMPANY,
-          currentCompanyId,
-        )) ||
-      {};
+  handlePostContent(post: PostModel) {
+    const _text = Remove_Markdown(post.text, { dont_escape: true });
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,
+        map: buildAtMentionMap(post),
       },
       emoji: {
-        hostName: staticServer,
-        customEmojiMap: company.customEmoji,
         unicodeOnly: true,
       },
     });
-
-    return renderToStaticMarkup(parsedResult as React.ReactElement);
+    if (typeof parsedResult === 'string') {
+      return parsedResult;
+    }
+    return HTMLUnescape(
+      renderToStaticMarkup(parsedResult as React.ReactElement),
+    );
   }
 
   isMyselfAtMentioned(post: PostModel) {
@@ -283,7 +271,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   getIcon(
-    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
+    {
+      id, headshotVersion = '', headshot = '', hasHeadShot,
+    }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {

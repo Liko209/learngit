@@ -28,16 +28,14 @@ type Props = WithTranslation & EventUpdateViewProps;
 class EventUpdate extends React.Component<Props> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
-  private _isShowTime = (value: any) => {
-    return (
-      value.start ||
+  private _isShowTime = (value: any) => (
+    value.start ||
       value.end ||
       value.repeat ||
       value.repeat_ending_after ||
       value.repeat_ending_on ||
       value.repeat_ending
-    );
-  }
+  )
 
   private _getLocation = (value: any) => value.location;
 

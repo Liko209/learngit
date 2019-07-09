@@ -31,7 +31,7 @@ class TypingListHandler {
                   delete this.typingListStore[user_id];
                 }
               }
-            },                           CHECKING_INTERVAL);
+            }, CHECKING_INTERVAL);
           } else {
             clearInterval(this._interval);
           }

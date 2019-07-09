@@ -3,7 +3,7 @@
  * @Date: 2018-06-20 10:48:13
  */
 
-import { SOCKET, DOCUMENT, WINDOW } from '../service/eventKey';
+import { SOCKET, DOCUMENT, WINDOW } from './eventKey';
 import notificationCenter from './notificationCenter';
 
 window.addEventListener(

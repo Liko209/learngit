@@ -30,8 +30,8 @@ const StyledAnchorWrapper = styled.div`
 `;
 
 class JuiPopoverMenu extends React.PureComponent<
-  PopoverMenuProps,
-  { anchorEl: HTMLElement | null }
+PopoverMenuProps,
+{ anchorEl: HTMLElement | null }
 > {
   constructor(props: PopoverMenuProps) {
     super(props);

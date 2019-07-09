@@ -33,18 +33,14 @@ function toText(arg: any, level: number = 0): string {
   if (_.isArray(arg)) {
     const space = repeatString(' ', level + 1);
     return `[\n${space}${arg
-      .filter(it =>
-        SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(it)),
-      )
+      .filter(it => SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(it)))
       .map(it => `${toText(it, level + 1)}`)
       .join(`\n${space}`)}\n${repeatString(' ', level)}]`;
   }
   if (_.isObject(arg)) {
     const space = repeatString(' ', level);
     return Object.entries(arg)
-      .filter(([, value]) =>
-        SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(value)),
-      )
+      .filter(([, value]) => SUPPORT_TO_TEXT_TYPES.includes(Object.prototype.toString.call(value)))
       .map(([key, value]) => {
         const valueType = Object.prototype.toString.call(value);
         if (COMPLEX_TYPE.includes(valueType)) {

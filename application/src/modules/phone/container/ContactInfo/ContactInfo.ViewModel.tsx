@@ -9,7 +9,7 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { PersonService, ContactType } from 'sdk/module/person';
+import { PersonService } from 'sdk/module/person';
 import { Person, PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import PhoneNumberModel from '@/store/models/PhoneNumber';
@@ -189,7 +189,6 @@ class ContactInfoViewModel extends StoreViewModel<ContactInfoProps>
 
     const person = await this._personService.matchContactByPhoneNumber(
       matchNumber,
-      ContactType.GLIP_CONTACT,
     );
     this.personId = person ? person.id : undefined;
   }

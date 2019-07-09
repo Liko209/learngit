@@ -35,16 +35,16 @@ describe('CallLogDao', () => {
       dao['_putCallLogView'] = jest.fn();
 
       await dao.put(mockCallLog);
-      expect(BaseDao.prototype.put).toBeCalled();
-      expect(dao['_putCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.put).toHaveBeenCalled();
+      expect(dao['_putCallLogView']).toHaveBeenCalled();
     });
 
     it('should put array in dao and viewDao', async () => {
       dao['_bulkPutCallLogView'] = jest.fn();
 
       await dao.put([mockCallLog]);
-      expect(BaseDao.prototype.put).toBeCalled();
-      expect(dao['_bulkPutCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.put).toHaveBeenCalled();
+      expect(dao['_bulkPutCallLogView']).toHaveBeenCalled();
     });
   });
 
@@ -53,16 +53,16 @@ describe('CallLogDao', () => {
       dao['_bulkPutCallLogView'] = jest.fn();
 
       await dao.bulkPut([mockCallLog]);
-      expect(BaseDao.prototype.bulkPut).toBeCalled();
-      expect(dao['_bulkPutCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.bulkPut).toHaveBeenCalled();
+      expect(dao['_bulkPutCallLogView']).toHaveBeenCalled();
     });
   });
 
   describe('clear', () => {
     it('should clear in dao and viewDao', async () => {
       await dao.clear();
-      expect(BaseDao.prototype.clear).toBeCalled();
-      expect(viewDao.clear).toBeCalled();
+      expect(BaseDao.prototype.clear).toHaveBeenCalled();
+      expect(viewDao.clear).toHaveBeenCalled();
     });
   });
 
@@ -71,8 +71,8 @@ describe('CallLogDao', () => {
       const mockKey = 'mockKey';
 
       await dao.delete(mockKey);
-      expect(BaseDao.prototype.delete).toBeCalled();
-      expect(viewDao.delete).toBeCalled();
+      expect(BaseDao.prototype.delete).toHaveBeenCalled();
+      expect(viewDao.delete).toHaveBeenCalled();
     });
   });
 
@@ -80,8 +80,8 @@ describe('CallLogDao', () => {
     it('should bulkDelete in dao and viewDao', async () => {
       const mockKeys = ['mockKey'];
       await dao.bulkDelete(mockKeys);
-      expect(BaseDao.prototype.bulkDelete).toBeCalled();
-      expect(viewDao.bulkDelete).toBeCalled();
+      expect(BaseDao.prototype.bulkDelete).toHaveBeenCalled();
+      expect(viewDao.bulkDelete).toHaveBeenCalled();
     });
   });
 
@@ -90,16 +90,16 @@ describe('CallLogDao', () => {
       dao['_updateCallLogView'] = jest.fn();
 
       await dao.update(mockCallLog);
-      expect(BaseDao.prototype.update).toBeCalled();
-      expect(dao['_updateCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.update).toHaveBeenCalled();
+      expect(dao['_updateCallLogView']).toHaveBeenCalled();
     });
 
     it('should update array in dao and viewDao', async () => {
       dao['_bulkUpdateCallLogView'] = jest.fn();
 
       await dao.update([mockCallLog]);
-      expect(BaseDao.prototype.update).toBeCalled();
-      expect(dao['_bulkUpdateCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.update).toHaveBeenCalled();
+      expect(dao['_bulkUpdateCallLogView']).toHaveBeenCalled();
     });
   });
 
@@ -108,15 +108,15 @@ describe('CallLogDao', () => {
       dao['_bulkUpdateCallLogView'] = jest.fn();
 
       await dao.bulkUpdate([mockCallLog]);
-      expect(BaseDao.prototype.bulkUpdate).toBeCalled();
-      expect(dao['_bulkUpdateCallLogView']).toBeCalled();
+      expect(BaseDao.prototype.bulkUpdate).toHaveBeenCalled();
+      expect(dao['_bulkUpdateCallLogView']).toHaveBeenCalled();
     });
   });
 
   describe('queryCallLogs', () => {
     it('should queryCallLogs in viewDao', async () => {
       await dao.queryCallLogs({});
-      expect(viewDao.queryCallLogs).toBeCalled();
+      expect(viewDao.queryCallLogs).toHaveBeenCalled();
     });
   });
 
@@ -128,7 +128,7 @@ describe('CallLogDao', () => {
         .mockReturnValue({ count: jest.fn().mockReturnValue(mockCount) });
 
       expect(await dao.callLogCount()).toEqual(mockCount);
-      expect(dao.createQuery).toBeCalled();
+      expect(dao.createQuery).toHaveBeenCalled();
     });
   });
 
@@ -141,7 +141,7 @@ describe('CallLogDao', () => {
       });
 
       expect(await dao.queryCallLogBySessionId('session')).toEqual(mockCallLog);
-      expect(dao.createQuery).toBeCalled();
+      expect(dao.createQuery).toHaveBeenCalled();
     });
   });
 
@@ -151,7 +151,7 @@ describe('CallLogDao', () => {
       viewDao.queryOldestTimestamp = jest.fn().mockReturnValue(time);
 
       expect(await dao.queryOldestTimestamp()).toEqual(time);
-      expect(viewDao.queryOldestTimestamp).toBeCalled();
+      expect(viewDao.queryOldestTimestamp).toHaveBeenCalled();
     });
   });
 
@@ -160,35 +160,35 @@ describe('CallLogDao', () => {
       dao.batchGet = jest.fn().mockReturnValue(mockCallLog);
 
       expect(await dao['_fetchCallLogsFunc']([])).toEqual(mockCallLog);
-      expect(dao.batchGet).toBeCalled();
+      expect(dao.batchGet).toHaveBeenCalled();
     });
   });
 
   describe('_putCallLogView', () => {
     it('should put in viewDao', async () => {
       await dao['_putCallLogView'](mockCallLog);
-      expect(viewDao.put).toBeCalled();
+      expect(viewDao.put).toHaveBeenCalled();
     });
   });
 
   describe('_bulkPutCallLogView', () => {
     it('should bulkPut in viewDao', async () => {
       await dao['_bulkPutCallLogView']([mockCallLog]);
-      expect(viewDao.bulkPut).toBeCalled();
+      expect(viewDao.bulkPut).toHaveBeenCalled();
     });
   });
 
   describe('_updateCallLogView', () => {
     it('should update in viewDao', async () => {
       await dao['_updateCallLogView'](mockCallLog, true);
-      expect(viewDao.update).toBeCalled();
+      expect(viewDao.update).toHaveBeenCalled();
     });
   });
 
   describe('_bulkUpdateCallLogView', () => {
     it('should bulkUpdate in viewDao', async () => {
       await dao['_bulkUpdateCallLogView']([mockCallLog], true);
-      expect(viewDao.bulkUpdate).toBeCalled();
+      expect(viewDao.bulkUpdate).toHaveBeenCalled();
     });
   });
 
@@ -202,7 +202,7 @@ describe('CallLogDao', () => {
       expect(
         await dao.queryAllUniquePhoneNumberCalls(CALL_LOG_SOURCE.ALL),
       ).toEqual(result);
-      expect(viewDao.getAllUniquePhoneNumberCalls).toBeCalledWith(
+      expect(viewDao.getAllUniquePhoneNumberCalls).toHaveBeenCalledWith(
         CALL_LOG_SOURCE.ALL,
       );
     });

@@ -4,6 +4,10 @@ exports[`Storyshots Components/Buttons Contained Button: Components/Buttons Cont
 .c0.c0 {
   min-width: 104px;
   padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   text-transform: none;
   font-size: 0.875rem;
   font-weight: 500;
@@ -277,6 +281,10 @@ exports[`Storyshots Components/Buttons Text Button: Components/Buttons Text Butt
 .c0.c0 {
   min-width: 104px;
   padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   text-transform: none;
   font-size: 0.875rem;
   font-weight: 500;

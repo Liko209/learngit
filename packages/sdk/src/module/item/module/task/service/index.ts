@@ -5,4 +5,5 @@
  */
 
 import { TaskItemService } from './TaskItemService';
+
 export { TaskItemService };

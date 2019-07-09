@@ -5,7 +5,7 @@
  */
 function ajax(url: string, callback: (responseText: string, x: XMLHttpRequest) => void) {
   try {
-    const x = new XMLHttpRequest;
+    const x = new XMLHttpRequest();
     x.open('GET', url, true);
     x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

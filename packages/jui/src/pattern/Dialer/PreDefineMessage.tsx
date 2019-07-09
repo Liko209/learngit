@@ -102,7 +102,9 @@ const JuiPreDefineItem = React.memo(
 );
 
 const JuiPreDefineMessage = React.memo((props: Props) => {
-  const { text, children, handleClick, automationId } = props;
+  const {
+    text, children, handleClick, automationId,
+  } = props;
   return children && children.length > 0 ? (
     <JuiPopoverMenu
       Anchor={() => (

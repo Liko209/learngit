@@ -31,6 +31,9 @@ const StyledDialog = styled(
         restProps.maxWidth = false;
         restProps.fullScreen = true;
         break;
+      default:
+        restProps.maxWidth = 'xs';
+        break;
     }
 
     const initClasses = {

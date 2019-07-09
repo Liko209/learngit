@@ -85,7 +85,7 @@ class HistoryStack {
         cursors.push(index);
       }
       return cursors;
-    },                                 []);
+    }, []);
     cursors.forEach((value: number) => {
       if (value <= this._cursor) {
         current -= 1;
@@ -103,7 +103,7 @@ class HistoryStack {
         stack.push(pathname);
       }
       return stack;
-    },                               []);
+    }, []);
     return stack;
   }
 

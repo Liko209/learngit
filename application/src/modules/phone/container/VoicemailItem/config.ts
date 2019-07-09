@@ -6,6 +6,7 @@
 
 import { JuiAudioMode } from 'jui/pattern/AudioPlayer';
 import { BREAK_POINT_MAP } from './types';
+
 const voiceMailDefaultResponsiveInfo = {
   audioMode: JuiAudioMode.FULL,
   buttonToShow: 3,
@@ -19,8 +20,7 @@ const responsiveByBreakPoint = [
     info: voiceMailDefaultResponsiveInfo,
   },
   {
-    checker: (width: number) =>
-      width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL,
+    checker: (width: number) => width >= BREAK_POINT_MAP.EXPAND && width < BREAK_POINT_MAP.FULL,
     info: {
       audioMode: JuiAudioMode.FULL,
       buttonToShow: 2,
@@ -29,8 +29,7 @@ const responsiveByBreakPoint = [
     },
   },
   {
-    checker: (width: number) =>
-      width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND,
+    checker: (width: number) => width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.EXPAND,
     info: {
       audioMode: JuiAudioMode.MINI,
       buttonToShow: 2,

@@ -24,17 +24,13 @@ class BookmarkViewComponent extends Component<Props> {
     network: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
     server: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
   })
-  private _handleRemoveBookmark = () => {
-    return this._handleToggleBookmark();
-  }
+  private _handleRemoveBookmark = () => this._handleToggleBookmark()
 
   @catchError.flash({
     network: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
     server: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
   })
-  private _handleBookmark = () => {
-    return this._handleToggleBookmark();
-  }
+  private _handleBookmark = () => this._handleToggleBookmark()
 
   render() {
     const { isBookmark, t } = this.props;

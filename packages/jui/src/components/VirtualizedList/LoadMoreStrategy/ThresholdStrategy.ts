@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 13:14:44
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   ILoadMoreStrategy,
   LoadMoreStrategyParams,
@@ -11,6 +10,8 @@ import {
 } from './ILoadMoreStrategy';
 
 import { UndefinedAble } from '../types';
+
+const PRELOAD_COUNT_LIMIT = 50;
 
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
@@ -70,6 +71,13 @@ class ThresholdStrategy implements ILoadMoreStrategy {
 
   getPreloadInfo(): UndefinedAble<LoadMoreInfo> {
     return this._preloadInfo;
+  }
+
+  updatePreloadCount(count: number) {
+    if (this._preloadInfo) {
+      this._preloadInfo.count =
+        count > PRELOAD_COUNT_LIMIT ? PRELOAD_COUNT_LIMIT : count;
+    }
   }
 }
 

@@ -6,6 +6,7 @@
 import { SoundOptions, MediaEventName } from '@/interface/media';
 import { Utils } from './Utils';
 
+/* eslint-disable */
 class Sound {
   private _id: SoundOptions['id'];
   private _url: SoundOptions['url'];

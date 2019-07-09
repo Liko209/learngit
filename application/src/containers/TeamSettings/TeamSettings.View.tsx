@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -81,19 +82,19 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     if (shouldClose) {
       this.handleClose();
     }
-  }
+  };
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       name: e.target.value,
     });
-  }
+  };
 
   handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({
       description: e.target.value,
     });
-  }
+  };
 
   handleAllowMemberAddMemberChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -102,7 +103,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     this.setState({
       allowMemberAddMember: checked,
     });
-  }
+  };
 
   handleAllowMemberPostChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -112,7 +113,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       allowMemberPost: checked,
       allowMemberPin: checked,
     });
-  }
+  };
 
   handleAllowMemberPinChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -121,7 +122,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     this.setState({
       allowMemberPin: checked,
     });
-  }
+  };
 
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
     const { t, groupName } = this.props;
@@ -136,9 +137,9 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       content: (
         <JuiDialogContentText>
           <Trans
-            i18nKey="people.team.leaveTeamConfirmContent"
+            i18nKey='people.team.leaveTeamConfirmContent'
             values={{ teamName: groupName }}
-            components={[<strong key="0" />]}
+            components={[<strong key='0' />]}
           />
         </JuiDialogContentText>
       ),
@@ -146,7 +147,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: this.leaveTeamOKButtonHandler,
     });
-  }
+  };
 
   onTeamDelete = () => teamActionHandler.onTeamDelete(this.props.id);
 
@@ -155,7 +156,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   leaveTeamOKButtonHandler = async () => {
     portalManager.dismissLast();
     this.props.leaveTeam();
-  }
+  };
 
   renderEditSection() {
     const { t, id, nameErrorMsg } = this.props;
@@ -165,14 +166,14 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         <EditSectionLeft>
           <GroupAvatar
             cid={id}
-            size="xlarge"
-            data-test-automation-id="teamAvatar"
+            size='xlarge'
+            data-test-automation-id='teamAvatar'
           />
         </EditSectionLeft>
         <EditSectionRight>
           <JuiTextField
             label={t('people.team.teamName')}
-            data-test-automation-id="teamName"
+            data-test-automation-id='teamName'
             value={this.state.name}
             fullWidth={true}
             error={!!nameErrorMsg}
@@ -182,7 +183,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           />
           <JuiTextarea
             label={t('people.team.teamDescription')}
-            data-test-automation-id="teamDescription"
+            data-test-automation-id='teamDescription'
             value={this.state.description}
             inputProps={TeamSettings.DESCRIPTION_INPUT_PROPS}
             fullWidth={true}
@@ -198,39 +199,39 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     return (
       <>
         <JuiDivider />
-        <SubSection data-test-automation-id="memberPermission">
-          <SubSectionTitle data-test-automation-id="memberPermissionTitle">
+        <SubSection data-test-automation-id='memberPermission'>
+          <SubSectionTitle data-test-automation-id='memberPermissionTitle'>
             {t('people.team.allowTeamMembersTo')}
           </SubSectionTitle>
-          <SubSectionList data-test-automation-id="memberPermissionList">
+          <SubSectionList data-test-automation-id='memberPermissionList'>
             <SubSectionListItem
-              data-test-automation-id="memberPermissionItem"
+              data-test-automation-id='memberPermissionItem'
               label={t('people.team.addTeamMembers')}
             >
               <JuiToggleButton
-                data-test-automation-id="allowAddTeamMemberToggle"
+                data-test-automation-id='allowAddTeamMemberToggle'
                 checked={this.state.allowMemberAddMember}
                 onChange={this.handleAllowMemberAddMemberChange}
               />
             </SubSectionListItem>
             <JuiDivider />
             <SubSectionListItem
-              data-test-automation-id="memberPermissionItem"
+              data-test-automation-id='memberPermissionItem'
               label={t('people.team.postMessages')}
             >
               <JuiToggleButton
-                data-test-automation-id="allowPostToggle"
+                data-test-automation-id='allowPostToggle'
                 checked={this.state.allowMemberPost}
                 onChange={this.handleAllowMemberPostChange}
               />
             </SubSectionListItem>
             <JuiDivider />
             <SubSectionListItem
-              data-test-automation-id="memberPermissionItem"
+              data-test-automation-id='memberPermissionItem'
               label={t('people.team.pinPosts')}
             >
               <JuiToggleButton
-                data-test-automation-id="allowPinToggle"
+                data-test-automation-id='allowPinToggle'
                 checked={this.state.allowMemberPin}
                 disabled={!this.state.allowMemberPost}
                 onChange={this.handleAllowMemberPinChange}
@@ -250,12 +251,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       <ButtonList>
         {!noLeave && (
           <ButtonListItem
-            data-test-automation-id="leaveTeamButton"
-            color="semantic.negative"
+            data-test-automation-id='leaveTeamButton'
+            color='semantic.negative'
             onClick={this.handleLeaveTeamClick}
             hide={noLeave}
           >
-            <ButtonListItemText color="semantic.negative">
+            <ButtonListItemText color='semantic.negative'>
               {t('people.team.leaveTeam')}
             </ButtonListItemText>
           </ButtonListItem>
@@ -263,17 +264,17 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         {noLeave ? null : <JuiDivider />}
         {!noDelete && (
           <ButtonListItem
-            data-test-automation-id="archiveTeamButton"
-            color="semantic.negative"
+            data-test-automation-id='archiveTeamButton'
+            color='semantic.negative'
             onClick={this.onTeamArchive}
             hide={noDelete}
           >
-            <ButtonListItemText color="semantic.negative">
+            <ButtonListItemText color='semantic.negative'>
               {t('people.team.archiveTeam')}
             </ButtonListItemText>
             <JuiIconButton
-              variant="plain"
-              data-test-automation-id="archiveTeamToolTipButton"
+              variant='plain'
+              data-test-automation-id='archiveTeamToolTipButton'
               tooltipTitle={t('people.team.archiveTeamToolTip')}
             >
               info
@@ -283,17 +284,17 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         {noDelete ? null : <JuiDivider />}
         {!noDelete && (
           <ButtonListItem
-            data-test-automation-id="deleteTeamButton"
-            color="semantic.negative"
+            data-test-automation-id='deleteTeamButton'
+            color='semantic.negative'
             onClick={this.onTeamDelete}
             hide={noDelete}
           >
-            <ButtonListItemText color="semantic.negative">
+            <ButtonListItemText color='semantic.negative'>
               {t('people.team.deleteTeam')}
             </ButtonListItemText>
             <JuiIconButton
-              variant="plain"
-              data-test-automation-id="deleteTeamToolTipButton"
+              variant='plain'
+              data-test-automation-id='deleteTeamToolTipButton'
               tooltipTitle={t('people.team.deleteTeamToolTip')}
             >
               info

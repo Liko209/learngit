@@ -12,19 +12,17 @@ import { daoManager } from '../../../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 
 class ConferenceItemService extends BaseSubItemService<
-  ConferenceItem,
-  SanitizedConferenceItem
+ConferenceItem,
+SanitizedConferenceItem
 > {
   private _conferenceItemController: ConferenceItemController;
 
   constructor() {
     super(daoManager.getDao<ConferenceItemDao>(ConferenceItemDao));
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(
-        id,
-        TypeDictionary.TYPE_ID_CONFLUENCE_ITEM,
-      );
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(
+      id,
+      TypeDictionary.TYPE_ID_CONFLUENCE_ITEM,
+    ));
   }
 
   protected get conferenceItemController() {

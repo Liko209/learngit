@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcLogger } from './RTCLoggerProxy';
 
 function isNotEmptyString(data: any): boolean {
   return typeof data === 'string' && data.length > 0;

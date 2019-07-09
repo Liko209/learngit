@@ -3,6 +3,7 @@
  * @Date: 2018-09-05 10:05:20
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import debounce from 'lodash/debounce';
 import { RawPresence } from '../entity';
 import { SubscribeRequestController } from './SubscribeRequestController';
@@ -27,7 +28,7 @@ class SubscribeController {
     this.subscribeIds = debounce(async () => {
       const ids: number[] = this.queue.splice(-threshold, threshold);
       await this.subscribeRequestController.execute(ids);
-    },                           interval);
+    }, interval);
   }
 
   appendId(id: number) {
@@ -75,7 +76,6 @@ class SubscribeController {
     });
     this.subscribeIds();
   }
-
   onSubscribeRequestSuccess(RawPresence: RawPresence[]) {
     const successArr: RawPresence[] = [];
 

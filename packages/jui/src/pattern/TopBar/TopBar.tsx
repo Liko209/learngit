@@ -39,10 +39,10 @@ class JuiTopBar extends React.PureComponent<Props, States> {
   }
 
   showSearchBar = () => {
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       isShowSearchBar: !prevState.isShowSearchBar,
     }));
-  }
+  };
 
   render() {
     const {
@@ -79,7 +79,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               tooltipTitle={searchPlaceholder}
               size="medium"
               color="common.white"
-              disableRipple={true}
+              disableRipple
               iconName="search"
             />
             {Dialpad && <Dialpad />}

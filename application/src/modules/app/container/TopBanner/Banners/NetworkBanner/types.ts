@@ -9,8 +9,8 @@ import { WithTranslation } from 'react-i18next';
 type NetworkBannerProps = {};
 
 type NetworkBannerViewProps = WithTranslation &
-  NetworkBannerProps & {
-    isShow: boolean;
-  };
+NetworkBannerProps & {
+  isShow: boolean;
+};
 
 export { NetworkBannerProps, NetworkBannerViewProps };

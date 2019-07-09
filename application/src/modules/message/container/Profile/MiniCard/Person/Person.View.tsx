@@ -18,7 +18,7 @@ import { ProfileMiniCardPersonFooter } from './Footer';
 @observer
 class ProfileMiniCardPersonView extends Component<
   ProfileMiniCardPersonViewProps
-> {
+  > {
   render() {
     const { id, isMe } = this.props;
     return (

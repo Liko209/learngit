@@ -12,7 +12,7 @@ import { grey } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 
 export type JuiDividerProps = Omit<MuiDividerProps, 'innerRef'> &
-  React.HTMLAttributes<HTMLHRElement>;
+React.HTMLAttributes<HTMLHRElement>;
 
 export const JuiDivider = React.memo(styled<JuiDividerProps>(MuiDivider)`
   && {

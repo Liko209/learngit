@@ -25,7 +25,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
-  NOTIFICATION_OPTIONS
+NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_IncomingCalls;
 
@@ -39,12 +39,8 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
-      this.onSettingEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {
@@ -64,7 +60,10 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
     if (!desktopNotifications && !PlatformUtils.isElectron()) {
       state = ESettingItemState.DISABLE;
     }
-    if (profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL) {
+    if (
+      profile &&
+      profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL
+    ) {
       state = ESettingItemState.INVISIBLE;
     }
     return state;
@@ -109,9 +108,9 @@ class IncomingCallsSettingHandler extends AbstractSettingEntityHandler<
   }
   private async _getDesktopCall() {
     const profile = await this._profileService.getProfile();
-    let desktopCall = profile[SETTING_KEYS.DESKTOP_CALL];
-    if (desktopCall === undefined) {
-      desktopCall = NOTIFICATION_OPTIONS.ON;
+    let desktopCall = NOTIFICATION_OPTIONS.ON;
+    if (profile && profile.desktop_notifications_incoming_calls !== undefined) {
+      desktopCall = profile.desktop_notifications_incoming_calls;
     }
     return desktopCall;
   }

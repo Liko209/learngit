@@ -19,14 +19,14 @@ class TaskController implements ITaskController {
   private _isExecuting: boolean = false;
   private _executeFunc: () => any;
   private _taskFunc: (callback: (successful: boolean) => void) => any;
-  private _outerCallback: (successful: boolean) => void;
+  private _outerCallback?: (successful: boolean) => void;
 
   constructor(strategy: ITaskStrategy, executeFunc: () => any) {
     this._strategy = strategy;
     this._executeFunc = executeFunc;
   }
 
-  async start(outerCallback: (successful: boolean) => void) {
+  async start(outerCallback?: (successful: boolean) => void) {
     this._outerCallback = outerCallback;
     if (!this._isExecuting) {
       this._start();
@@ -50,7 +50,7 @@ class TaskController implements ITaskController {
       this._strategy.reset();
       jobScheduler.cancelJob(JOB_KEY.INDEX_DATA);
       await this._doExecuting();
-      this._outerCallback(true);
+      this._outerCallback && this._outerCallback(true);
     } catch (err) {
       mainLogger.tags(LOG_TAG).info('_execute failed:', err);
       this._setExecuting(false);
@@ -102,12 +102,12 @@ class TaskController implements ITaskController {
         mainLogger
           .tags(LOG_TAG)
           .info('_taskCallback can not continue the next task');
-        this._outerCallback(false);
+        this._outerCallback && this._outerCallback(false);
       }
     } else {
-      this._outerCallback(true);
+      this._outerCallback && this._outerCallback(true);
     }
-  }
+  };
 
   private _canNext() {
     return this._strategy && this._strategy.canNext();

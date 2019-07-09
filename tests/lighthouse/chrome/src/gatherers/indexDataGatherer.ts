@@ -3,13 +3,13 @@
  * @Date: 2019-04-19 17:04:24
  */
 
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { GroupPage } from "../pages";
 import { JupiterUtils } from "../utils";
 import { Config } from "../config";
 import * as bluebird from 'bluebird';
 
-class IndexDataGatherer extends BaseGatherer {
+class IndexDataGatherer extends DebugGatherer {
   private metricKeys: Array<string> = [
     "handle_initial_incoming_account",
     "handle_initial_incoming_company",
@@ -109,6 +109,7 @@ class IndexDataGatherer extends BaseGatherer {
         ui: []
       };
     }
+
     return result;
   }
 }

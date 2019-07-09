@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, Raw, ModelIdType } from '../../../framework/model';
+import { IdModel, Raw, ModelIdType } from '../../model';
 import { IEntityPersistentController } from './IEntityPersistentController';
 
 interface IEntityCacheController<

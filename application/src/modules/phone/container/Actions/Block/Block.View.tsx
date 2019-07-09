@@ -3,7 +3,7 @@
  * @Date: 2019-06-24 13:13:44
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
@@ -32,7 +32,7 @@ class BlockViewComponent extends Component<Props> {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
 
   private _handleUnblock = async () => {
     const { tabName, unblock } = this.props;
@@ -43,7 +43,7 @@ class BlockViewComponent extends Component<Props> {
       return;
     }
     this.notifyActionSuccess('phone.prompt.numberHasBeenUnblocked');
-  }
+  };
 
   private _handleBlock = () => {
     const { t, tabName } = this.props;
@@ -64,7 +64,7 @@ class BlockViewComponent extends Component<Props> {
       cancelText: t('common.dialog.cancel'),
       onOK: () => this.onBlockConfirm(dialog),
     });
-  }
+  };
 
   onBlockConfirm = async (dialog: any) => {
     const { block } = this.props;
@@ -77,7 +77,7 @@ class BlockViewComponent extends Component<Props> {
     }
     this.notifyActionSuccess('phone.prompt.numberHasBeenBlocked');
     return true;
-  }
+  };
 
   _handleClick = async () => {
     const { isBlocked } = this.props;
@@ -86,7 +86,7 @@ class BlockViewComponent extends Component<Props> {
     } else {
       await this._handleBlock();
     }
-  }
+  };
 
   get _source() {
     const { entity } = this.props;

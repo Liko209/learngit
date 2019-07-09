@@ -37,7 +37,7 @@ const Wrapper = styled.div`
 `;
 
 const DEFAULT_FILE_ICON = 'default_file';
-
+/* eslint-disable */
 class AttachmentList extends PureComponent<AttachmentListProps> {
   private _lastItemRef: RefObject<any> = createRef();
   componentDidUpdate() {
@@ -58,7 +58,7 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
     } = this.props;
     const count = files.length;
     return (
-      <Wrapper data-test-automation-id="attachment-list">
+      <Wrapper data-test-automation-id='attachment-list'>
         {files.map((looper: ItemInfo, idx: number) => {
           let content;
           const fileName = fileNames[idx]

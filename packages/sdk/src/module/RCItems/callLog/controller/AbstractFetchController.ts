@@ -24,8 +24,8 @@ import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { RCItemFetchController } from '../../common/controller/RCItemFetchController';
 
 abstract class AbstractFetchController extends RCItemFetchController<
-  CallLog,
-  string
+CallLog,
+string
 > {
   constructor(
     syncName: string,

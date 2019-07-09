@@ -76,7 +76,7 @@ class PortalManager extends EventEmitter2 {
     typeof afterDismiss === 'function' && afterDismiss();
   }
 
-  wrapper(component: ComponentType<any>, container?: Element) {
+  wrapper(component: ComponentType<any>) {
     let hasShow = false;
     const wrapperComponent = {
       key: -1,
@@ -86,7 +86,7 @@ class PortalManager extends EventEmitter2 {
         typeof afterDismiss === 'function' && afterDismiss();
       },
       show: (props?: any) => {
-        const dismiss = wrapperComponent.dismiss;
+        const { dismiss } = wrapperComponent;
 
         if (hasShow) {
           return {

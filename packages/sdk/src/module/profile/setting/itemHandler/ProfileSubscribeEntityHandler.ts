@@ -18,6 +18,7 @@ import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 import { AccountService } from 'sdk/module/account';
 import { SettingValue } from '../../types';
+
 class ProfileSubscribeEntityHandler<
   T extends SettingValue
 > extends AbstractSettingEntityHandler<T> {
@@ -40,9 +41,7 @@ class ProfileSubscribeEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
   }
 
   async updateValue(value: T) {
@@ -57,7 +56,7 @@ class ProfileSubscribeEntityHandler<
       valueType: 1,
       parentModelId: 1,
       source: this.source,
-      value: profile[this.setting_key] as T,
+      value: profile ? (profile[this.setting_key] as T) : undefined,
       id: this.id,
       state: ESettingItemState.ENABLE,
       valueSetter: value => this.updateValue(value),

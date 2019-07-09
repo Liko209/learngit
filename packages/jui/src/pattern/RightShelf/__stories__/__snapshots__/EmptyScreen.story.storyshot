@@ -4,6 +4,10 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
 .c6.c6 {
   min-width: 104px;
   padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
   text-transform: none;
   font-size: 0.875rem;
   font-weight: 500;

@@ -15,6 +15,7 @@ import {
 import { LogEntity, SessionManager } from 'foundation';
 import { ZipConsumer } from './ZipConsumer';
 import { createWorker } from './utils';
+
 const DEFAULT_LIMIT = 5;
 
 export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
@@ -36,18 +37,14 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
     const zipItems: ZipItem[] = [
       ...this.zipConsumer.getUploading(),
       ...this.zips,
-    ].map(zip => {
-      return {
-        type: '.zip',
-        name: zip.name,
-        folder: 'zip',
-        content: zip.blob,
-      };
-    });
+    ].map(zip => ({
+      type: '.zip',
+      name: zip.name,
+      folder: 'zip',
+      content: zip.blob,
+    }));
     const uploadedContent = this.uploaded
-      .map(item => {
-        return `index: ${item.index}\nfileId: ${item.fileId}\nurl: ${item.url}`;
-      })
+      .map(item => `index: ${item.index}\nfileId: ${item.fileId}\nurl: ${item.url}`)
       .join('\n');
     uploadedContent &&
       zipItems.push({
@@ -57,7 +54,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
         content: uploadedContent,
       });
     return zipItems;
-  }
+  };
 
   produce() {
     return this.zips.shift() || null;
@@ -68,9 +65,7 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
     this.index += 1;
     const zipName = `RC_LOG_${SessionManager.getInstance().getSession()}_${index}`;
     const logContent = logs
-      .map(log => {
-        return log.message;
-      })
+      .map(log => log.message)
       .join('\n');
     const zipItems: ZipItem[] = [
       {
@@ -94,5 +89,5 @@ export class ZipLogZipItemProvider implements IZipItemProvider, IZipProducer {
       this.zips.shift();
     }
     this.zipConsumer.consume();
-  }
+  };
 }

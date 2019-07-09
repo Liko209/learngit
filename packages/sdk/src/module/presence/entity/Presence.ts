@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PRESENCE } from '../../../module/presence/constant';
+import { PRESENCE } from '../constant';
 import { IdModel } from '../../../framework/model';
 
 export type RawPresence = {

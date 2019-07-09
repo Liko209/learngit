@@ -44,7 +44,7 @@ class MoreViewComponent extends Component<Props, State> {
         more_horiz
       </JuiIconButton>
     );
-  }
+  };
 
   openPopper = (event: MouseEvent) => {
     event.stopPropagation();
@@ -53,13 +53,13 @@ class MoreViewComponent extends Component<Props, State> {
       anchorEl: currentTarget,
       open: !state.open,
     }));
-  }
+  };
 
   closePopper = () => {
     this.setState({
       open: false,
     });
-  }
+  };
 
   render() {
     const { anchorEl, open } = this.state;

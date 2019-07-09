@@ -30,8 +30,8 @@ export enum Direction {
 
 export type CallerIdViewProps = {
   tooltipProps: Pick<
-    RuiTooltipProps,
-    Exclude<keyof RuiTooltipProps, 'children' | 'title'>
+  RuiTooltipProps,
+  Exclude<keyof RuiTooltipProps, 'children' | 'title'>
   >;
   callerIdProps: CallerIdSelectorProps;
 };

@@ -16,6 +16,8 @@ import { CompanyService } from 'sdk/module/company';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { E_ACCOUNT_TYPE } from 'sdk/module/company/entity';
 
+/* eslint-disable */
+
 class RCPermissionController {
   private _featurePermissionMap: Map<
     ERCServiceFeaturePermission,

@@ -18,7 +18,9 @@ type JuiListItemProps = MuiListItemProps & {
 };
 
 const WrappedListItem = React.memo(
-  ({ width, isInline, singleLine, disableButton, ...rests }: JuiListItemProps) => (
+  ({
+    width, isInline, singleLine, disableButton, ...rests
+  }: JuiListItemProps) => (
     <MuiListItem {...rests} />
   ),
 );
@@ -32,13 +34,11 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   }
 `;
 
-const JuiListItemComponent = (props: JuiListItemProps) => {
-  return (
+const JuiListItemComponent = (props: JuiListItemProps) => (
     <StyledListItem button={!props.disableButton && true} {...props}>
       {props.children}
     </StyledListItem>
-  );
-};
+);
 
 JuiListItemComponent.defaultProps = {
   singleLine: false,

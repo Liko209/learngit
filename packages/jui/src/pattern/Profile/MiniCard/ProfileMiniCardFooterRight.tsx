@@ -24,8 +24,6 @@ const Wrapper = styled('div')`
   }
 `;
 
-const JuiProfileMiniCardFooterRight = memo(({ children }: Props) => {
-  return <Wrapper>{children}</Wrapper>;
-});
+const JuiProfileMiniCardFooterRight = memo(({ children }: Props) => <Wrapper>{children}</Wrapper>);
 
 export { JuiProfileMiniCardFooterRight };

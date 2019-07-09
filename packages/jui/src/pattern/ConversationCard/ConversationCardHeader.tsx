@@ -70,21 +70,17 @@ type ConversationCardHeaderProps = {
 };
 
 class JuiConversationCardHeader extends React.PureComponent<
-  ConversationCardHeaderProps,
-  { headerItemMaxWidth: null | number }
+ConversationCardHeaderProps
 > {
   leftSection: HTMLDivElement | null;
   constructor(props: ConversationCardHeaderProps) {
     super(props);
-    this.state = {
-      headerItemMaxWidth: null,
-    };
     this.leftSection = null;
   }
 
   setLeftSectionRef = (element: any) => {
     this.leftSection = element;
-  }
+  };
 
   setHeaderItemMaxWidth() {
     if (!this.leftSection) {
@@ -113,8 +109,7 @@ class JuiConversationCardHeader extends React.PureComponent<
       }
     });
     shareChildren.forEach(
-      shareChild =>
-        ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
+      shareChild => ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
     );
   }
 
@@ -132,7 +127,9 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   render() {
-    const { name, status, notification, from, time, children } = this.props;
+    const {
+      name, status, notification, from, time, children,
+    } = this.props;
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>

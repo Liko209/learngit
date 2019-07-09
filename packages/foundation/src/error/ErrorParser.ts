@@ -30,5 +30,4 @@ export class ErrorParser implements IErrorParser {
     }
     return new JError(ERROR_TYPES.UNDEFINED, '', error.message);
   }
-
 }

@@ -42,12 +42,10 @@ class VoicemailFetchController extends RCItemFetchController<Voicemail> {
     option: FilterOptions<Voicemail>,
   ): Promise<(voicemail: Voicemail) => boolean> {
     const filterFunc = await super.buildFilterFunc(option);
-    return (voicemail: Voicemail): boolean => {
-      return (
-        voicemail.availability === MESSAGE_AVAILABILITY.ALIVE &&
+    return (voicemail: Voicemail): boolean => (
+      voicemail.availability === MESSAGE_AVAILABILITY.ALIVE &&
         filterFunc(voicemail)
-      );
-    };
+    );
   }
 
   protected isTokenInvalidError(reason: JError): boolean {

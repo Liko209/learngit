@@ -15,7 +15,7 @@ class DialerPanelViewComponent extends React.Component<Props> {
         inputStringProps="inputString"
         onInputEnterKeyDown={makeCall}
         CallActionBtn={DialBtn}
-        displayCallerIdSelector={true}
+        displayCallerIdSelector
         onContactSelected={makeCall}
         onAfterMount={onAfterDialerOpen}
       />

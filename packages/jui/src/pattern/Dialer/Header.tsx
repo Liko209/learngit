@@ -130,11 +130,10 @@ const StyledInputContainer = styled('div')`
   }
 `;
 
-const colorTransition = ({ theme }: { theme: Theme }) =>
-  theme.transitions.create(['color'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.standard,
-  });
+const colorTransition = ({ theme }: { theme: Theme }) => theme.transitions.create(['color'], {
+  easing: theme.transitions.easing.easeInOut,
+  duration: theme.transitions.duration.standard,
+});
 
 const SearchInput = styled(JuiTextField)<any>`
   && {
@@ -187,7 +186,7 @@ class JuiHeader extends PureComponent<Props, State> {
   state = {
     showHoverActions: false,
   };
-
+  /* eslint-disable react/sort-comp */
   private _handleMouseEvent = () => {
     const { HoverActions, showDialerInputField } = this.props;
     if (showDialerInputField) {
@@ -199,11 +198,13 @@ class JuiHeader extends PureComponent<Props, State> {
         showHoverActions: !showHoverActions,
       });
     }
-  }
+  };
 
   private _renderCallInfo() {
     const { showHoverActions } = this.state;
-    const { Back, Avatar, name, phone, HoverActions } = this.props;
+    const {
+      Back, Avatar, name, phone, HoverActions,
+    } = this.props;
     return (
       <>
         <StyledLeft>
@@ -245,9 +246,9 @@ class JuiHeader extends PureComponent<Props, State> {
       }
       deleteAllInputString();
       this._clearTimeout();
-    },                                  1000);
-  }
-
+    }, 1000);
+  };
+  /* eslint-disable react/no-find-dom-node */
   private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -296,7 +297,7 @@ class JuiHeader extends PureComponent<Props, State> {
     }
     this._clearTimeout();
     delete this._mouseDownTime;
-  }
+  };
 
   private _moveCaretToPos = debounce(moveCaretToPos, 17, {
     leading: false,
@@ -343,12 +344,12 @@ class JuiHeader extends PureComponent<Props, State> {
   private _clearTimeout = () => {
     clearTimeout(this._timerForClearAll);
     delete this._timerForClearAll;
-  }
+  };
 
   private _handleMouseDownOnInput = (e: React.MouseEvent<any>) => {
     // prevent drag & drop
     e.stopPropagation();
-  }
+  };
 
   private _renderDialerInput() {
     const {
@@ -364,6 +365,7 @@ class JuiHeader extends PureComponent<Props, State> {
     const fakeFunc = () => {};
 
     // TODO: change delete button's icon
+    /* eslint-disable react/jsx-no-duplicate-props */
     return (
       <StyledInputContainer draggable={false}>
         <StyledDialerBtnContainer>
@@ -389,7 +391,7 @@ class JuiHeader extends PureComponent<Props, State> {
             disableUnderline: true,
           }}
           onKeyDown={onKeyDown || fakeFunc}
-          autoFocus={true}
+          autoFocus
           autoComplete="off"
           ref={this._inputRef}
         />
@@ -418,7 +420,6 @@ class JuiHeader extends PureComponent<Props, State> {
       this._clearTimeout();
     }
   }
-
   render() {
     const { showDialerInputField, RecentCallBtn } = this.props;
 

@@ -47,7 +47,9 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
 `;
 
 const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
-  const { primary, primaryColor, secondary, ...rest } = props;
+  const {
+    primary, primaryColor, secondary, ...rest
+  } = props;
   return (
     <StyledListItemText
       primaryColor={primaryColor}

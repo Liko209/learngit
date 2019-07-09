@@ -88,8 +88,7 @@ const JuiProfileDialogContentFormValue = styled<PropsFormValue, 'div'>('div')`
   ${ellipsis()};
   padding-right: ${spacing(4)};
   margin-top: ${spacing(1)};
-  color: ${({ emphasize }: PropsFormValue) =>
-    emphasize ? primary('700') : grey('900')};
+  color: ${({ emphasize }: PropsFormValue) => (emphasize ? primary('700') : grey('900'))};
 `;
 
 const JuiProfileDialogContentFormLink = styled('div')`

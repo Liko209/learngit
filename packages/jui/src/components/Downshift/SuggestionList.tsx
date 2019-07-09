@@ -26,8 +26,8 @@ type JuiDownshiftSuggestionListState = {
 };
 
 class JuiDownshiftSuggestionList extends React.PureComponent<
-  JuiDownshiftSuggestionListProps,
-  JuiDownshiftSuggestionListState
+JuiDownshiftSuggestionListProps,
+JuiDownshiftSuggestionListState
 > {
   state = {
     renderedRange: { startIndex: 0, stopIndex: 0 },
@@ -35,25 +35,7 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
 
   private _handleRenderedRangeChange = (renderedRange: IndexRange) => {
     this.setState({ renderedRange });
-  }
-
-  render() {
-    const { automationId, suggestionItems, minRowHeight } = this.props;
-
-    return (
-      <StyledPaper square={true} data-test-automation-id={automationId}>
-        <VirtualizedListWithAutoSizer
-          minRowHeight={minRowHeight}
-          onRenderedRangeChange={this._handleRenderedRangeChange}
-          style={VL_STYLE}
-        >
-          {suggestionItems.map((suggestionItem: SelectedItem, index: number) =>
-            this._renderItem(suggestionItem, index),
-          )}
-        </VirtualizedListWithAutoSizer>
-      </StyledPaper>
-    );
-  }
+  };
 
   private _renderItem(suggestionItem: SelectedItem, index: number) {
     const { MenuItem, highlightedIndex, getItemProps } = this.props;
@@ -66,13 +48,28 @@ class JuiDownshiftSuggestionList extends React.PureComponent<
       return (
         <MenuItem
           {...getItemProps({ item: suggestionItem })}
-          itemId={suggestionItem.id}
+          uid={suggestionItem.id}
           key={suggestionItem.id}
           isHighlighted={isHighlighted}
         />
       );
     }
     return { key: suggestionItem.id || 0 };
+  }
+  render() {
+    const { automationId, suggestionItems, minRowHeight } = this.props;
+
+    return (
+      <StyledPaper square data-test-automation-id={automationId}>
+        <VirtualizedListWithAutoSizer
+          minRowHeight={minRowHeight}
+          onRenderedRangeChange={this._handleRenderedRangeChange}
+          style={VL_STYLE}
+        >
+          {suggestionItems.map((suggestionItem: SelectedItem, index: number) => this._renderItem(suggestionItem, index))}
+        </VirtualizedListWithAutoSizer>
+      </StyledPaper>
+    );
   }
 }
 

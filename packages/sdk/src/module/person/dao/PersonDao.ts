@@ -54,19 +54,15 @@ class PersonDao extends BaseDao<Person> {
     // more than 1 part
     const q1 = this.createQuery()
       .startsWith('first_name', keywordParts[0], true)
-      .filter((item: Person) =>
-        item.last_name
-          ? item.last_name.toLowerCase().startsWith(keywordParts[1])
-          : false,
-      );
+      .filter((item: Person) => (item.last_name
+        ? item.last_name.toLowerCase().startsWith(keywordParts[1])
+        : false));
 
     const q2 = this.createQuery()
       .startsWith('display_name', fullKeyword, true)
-      .filter((item: Person) =>
-        item.last_name
-          ? item.last_name.toLowerCase().startsWith(keywordParts[1])
-          : false,
-      );
+      .filter((item: Person) => (item.last_name
+        ? item.last_name.toLowerCase().startsWith(keywordParts[1])
+        : false));
 
     return q1.or(q2).toArray();
   }

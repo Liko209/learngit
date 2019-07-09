@@ -24,7 +24,9 @@ type Props = {
 };
 
 const CallLogStatus = (props: Props) => {
-  const { icon, callType, duration, isMissedCall, isShowCallInfo } = props;
+  const {
+    icon, callType, duration, isMissedCall, isShowCallInfo,
+  } = props;
   const color: IconColor = isMissedCall
     ? ['accent', 'tomato']
     : ['grey', '600'];
@@ -34,7 +36,7 @@ const CallLogStatus = (props: Props) => {
     : ['grey', '900'];
 
   return (
-    <ContactItem disableButton={true} isUnread={false}>
+    <ContactItem disableButton isUnread={false}>
       <JuiListItemAvatar>
         <JuiIconography iconSize="medium" iconColor={color}>
           {icon}
@@ -42,7 +44,7 @@ const CallLogStatus = (props: Props) => {
       </JuiListItemAvatar>
       {isShowCallInfo && (
         <JuiListItemText
-          alignCenter={true}
+          alignCenter
           primary={callType}
           primaryColor={textColor}
           secondary={isMissedCall ? null : duration}

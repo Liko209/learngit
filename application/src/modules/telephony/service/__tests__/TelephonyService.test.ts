@@ -109,6 +109,7 @@ describe('TelephonyService', () => {
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
+      isVoipCallingAvailable: jest.fn().mockReturnValue(true),
       hasSetCallerId: jest.fn(),
     };
 
@@ -248,7 +249,7 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
 
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       (telephonyService as TelephonyService).holdOrUnhold();
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
@@ -281,7 +282,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.hold).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -315,7 +316,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -341,7 +342,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -371,7 +372,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
@@ -383,7 +384,7 @@ describe('TelephonyService', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       await (telephonyService as TelephonyService).startOrStopRecording();
 
       expect(
@@ -417,7 +418,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.startRecord).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -453,7 +454,7 @@ describe('TelephonyService', () => {
       ).toBe(false);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -465,7 +466,7 @@ describe('TelephonyService', () => {
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
       await (telephonyService as TelephonyService).holdOrUnhold();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -833,6 +834,15 @@ describe('TelephonyService', () => {
     telephonyService.flip(phoneNumber);
     expect(mockedServerTelephonyService.flip).toHaveBeenCalled();
     telephonyService._callId = undefined;
+  });
+
+  it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
+    initializeCallerId();
+    mockedRCInfoService.isVoipCallingAvailable = jest
+      .fn()
+      .mockReturnValue(false);
+    await (telephonyService as TelephonyService).makeCall(v4());
+    expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
   });
 
   describe(`onReceiveIncomingCall()`, () => {
