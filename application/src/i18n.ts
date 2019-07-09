@@ -8,6 +8,27 @@ import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
+const momentLocaleFileName = [
+  'en-u',
+  'de',
+  'en-au',
+  'en-gb',
+  'es-do',
+  'es',
+  'fr-ca',
+  'fr',
+  'it-ch',
+  'ja',
+  'pt-br',
+  'zh-cn',
+  'zh-hk',
+  'zh-tw',
+];
+
+momentLocaleFileName.map(name => {
+  import(`moment/locale/${name}.js`);
+});
+
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
