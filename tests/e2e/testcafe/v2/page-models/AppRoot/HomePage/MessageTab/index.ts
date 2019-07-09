@@ -177,8 +177,12 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(moreButton);
   }
 
+  get draftIcon() {
+    return this.getSelectorByIcon('draft', this.self);
+  }
+
   get hasDraftMessage() {
-    return this.getSelectorByIcon('draft').exists;
+    return this.draftIcon.exists;
   }
 
   async enter() {

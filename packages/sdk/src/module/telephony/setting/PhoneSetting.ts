@@ -3,7 +3,6 @@
  * @Date: 2019-05-29 23:28:04
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { BaseModuleSetting, SettingEntityIds } from 'sdk/module/setting';
 import RTCEngine from 'voip';
 

@@ -5,23 +5,61 @@
  */
 
 // import { computed } from 'mobx';
-// import { ENTITY_NAME } from '@/store';
-// import { getEntity } from '@/store/utils';
+import { TelephonyService } from '../../service';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { container } from 'framework';
+import { Notification } from '@/containers/Notification';
+import { catchError } from '@/common/catchError';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { ToastCallError } from '../../service/ToastCallError';
 
 class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+  private _telephonyService: TelephonyService = container.get<TelephonyService>(
+    TELEPHONY_SERVICE,
+  );
+
+  private _onActionSuccess = (message: string) => {
+    Notification.flashToast({
+      message,
+      type: ToastType.SUCCESS,
+      messageAlign: ToastMessageAlign.CENTER,
+      fullWidth: false,
+      dismissible: false,
+    });
+  };
+
+  makeForwardCall = () => {
+    this.forward(this._telephonyStore.forwardString);
+  };
+
+  @catchError.flash({
+    server: 'telephony.prompt.ForwardBackendError',
+  })
+  forward = async (val: string) => {
+    const { isValid } = await this._telephonyService.isValidNumber(val);
+    if (!isValid) {
+      ToastCallError.toastInvalidNumber();
+      return false;
+    }
+    await this._telephonyService.forward(val);
+    this._onActionSuccess('telephony.prompt.ForwardCallSuccess');
+    return true;
+  };
 
   quitForward = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 
   dispose = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 }
 
 export { ForwardViewModel };

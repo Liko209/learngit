@@ -31,8 +31,7 @@ const StyledExpansionPanelSummary = styled(ExpansionPanelSummary)`
 `;
 
 const JuiExpansionPanelSummary = React.memo(
-  (props: JuiExpansionPanelSummaryProps) => {
-    return (
+  (props: JuiExpansionPanelSummaryProps) => (
       <StyledExpansionPanelSummary
         classes={{
           root: 'root',
@@ -42,8 +41,7 @@ const JuiExpansionPanelSummary = React.memo(
         }}
         {...props}
       />
-    );
-  },
+  ),
 );
 
 // https://github.com/mui-org/material-ui/blob/v3.x/packages/material-ui/src/ExpansionPanel/ExpansionPanel.js#L134-L141

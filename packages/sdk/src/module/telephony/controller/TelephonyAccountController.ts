@@ -13,7 +13,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
-import { TelephonyCallController } from '../controller/TelephonyCallController';
+import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
 import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
 import { telephonyLogger } from 'foundation';
@@ -61,7 +61,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         }
       });
     }
-  }
+  };
 
   private _subscribeNotifications() {
     notificationCenter.on(ENTITY.CALL, this._handleCallStateChanged);
@@ -82,7 +82,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _checkVoipStatus(): MAKE_CALL_ERROR_CODE {
     let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const sipProvFlag = this._rtcAccount.getSipProvFlags();
-
+    /* eslint-disable */
     do {
       if (!sipProvFlag) {
         res = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
@@ -114,6 +114,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       return MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
     }
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
+  }
+
+  getVoipState() {
+    return this._rtcAccount.state();
   }
 
   setLastCalledNumber(num: string) {
@@ -151,6 +155,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this.setLastCalledNumber(toNumber);
 
     let result: MAKE_CALL_ERROR_CODE = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    /* eslint-disable no-await-in-loop */
     do {
       result = this._checkVoipStatus();
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -161,7 +166,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-
       result = await this._makeCallController.tryMakeCall(e164ToNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;

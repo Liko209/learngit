@@ -24,8 +24,8 @@ type SectionStates = {
 };
 
 class JuiConversationListSection extends PureComponent<
-  SectionProps,
-  SectionStates
+SectionProps,
+SectionStates
 > {
   static defaultProps = {
     onExpand: noop,
@@ -42,7 +42,9 @@ class JuiConversationListSection extends PureComponent<
   }
 
   render() {
-    const { umi, onExpand, onCollapse, ...restProps } = this.props;
+    const {
+      umi, onExpand, onCollapse, ...restProps
+    } = this.props;
     const { expanded } = this.state;
 
     return (

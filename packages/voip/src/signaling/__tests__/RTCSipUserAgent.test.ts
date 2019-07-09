@@ -10,8 +10,17 @@ import { EventEmitter2 } from 'eventemitter2';
 import { opusModifier } from './../../utils/utils';
 
 class MockUserAgent extends EventEmitter2 {
+  public transport: any;
+  public configuration: any;
   constructor(provisionData: any, mockOptions: any) {
     super();
+    this.transport = new EventEmitter2();
+    this.transport.disconnect = jest.fn();
+    this.transport.isSipErrorCode = jest
+      .fn()
+      .mockImplementation((message: string) => {
+        return false;
+      });
     let modifiers: any = [];
     if (mockOptions && mockOptions.modifiers) {
       modifiers = mockOptions.modifiers;
@@ -39,15 +48,21 @@ class MockEventReceiver {
     this._userAgent.on(UA_EVENT.REG_FAILED, (response: any, cause: any) => {
       this.registerFailed(response, cause);
     });
+    this._userAgent.on(UA_EVENT.SWITCH_BACK_PROXY, () => {
+      this.switchBackProxy();
+    });
   }
   registerSuccess = jest.fn();
   registerFailed = jest.fn();
+  switchBackProxy = jest.fn();
 }
 
 jest.mock('ringcentral-web-phone', () => {
-  return jest.fn().mockImplementation((provisionData, mockOptions) => {
-    return new MockWebPhone(provisionData, mockOptions);
-  });
+  return {
+    default: (provisionData: any, mockOptions: any) => {
+      return new MockWebPhone(provisionData, mockOptions);
+    },
+  };
 });
 
 const provisionData = 'provisionData';
@@ -63,19 +78,26 @@ describe('RTCSipUserAgent', () => {
     expect(eventReceiver.registerSuccess).toBeCalled();
   });
 
-  it('should emit registerFailed event withe cause and response when webphone tells register is failed. [JPT-600]', () => {
+  it('should emit registerFailed event with cause and response when webphone tells register is failed. [JPT-600]', () => {
     const userAgent = new RTCSipUserAgent();
     userAgent._createWebPhone(provisionData, options);
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.emit(
       'registrationFailed',
-      { text: 'mockFailed' },
+      { data: '500' },
       500,
     );
-    expect(eventReceiver.registerFailed).toBeCalledWith(
-      { text: 'mockFailed' },
-      500,
-    );
+    expect(eventReceiver.registerFailed).toBeCalledWith({ data: '500' }, 500);
+  });
+
+  it('should emit switchBackProxy when webphone notify switchBackProxy in [1, 3] min. [JPT-2305]', () => {
+    jest.useFakeTimers();
+    const userAgent = new RTCSipUserAgent();
+    userAgent._createWebPhone(provisionData, options);
+    const eventReceiver = new MockEventReceiver(userAgent);
+    userAgent._webphone.userAgent.transport.emit('switchBackProxy');
+    jest.advanceTimersByTime(3 * 60 * 1000);
+    expect(eventReceiver.switchBackProxy).toBeCalled();
   });
 
   describe('reRegister()', () => {

@@ -10,9 +10,14 @@ import { testable, test } from 'shield';
 import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { Notification } from '@/containers/Notification';
-import { Caller } from 'sdk/module/RCItems/types';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
+import { Caller } from 'sdk/module/RCItems/types';
 import { BlockViewModel } from '../Block.ViewModel';
 
 jest.mock('@/containers/Notification');
@@ -40,9 +45,8 @@ const checkNotification = (message: string) => ({
   type: 'error',
 });
 
-const mockCaller = {
-  phoneNumber: '+1234567890'
-} as Caller;
+const phoneNumber = '+1234567890';
+const caller = { phoneNumber } as Caller;
 
 describe('BlockViewModel', () => {
   @testable
@@ -50,7 +54,12 @@ describe('BlockViewModel', () => {
     @test('should isBlocked be undefined when init')
     @mockService(RCInfoService, 'isNumberBlocked', true)
     async t1(done: jest.DoneCallback) {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+      });
       expect(vm.isBlocked).toBeUndefined();
       await when(
         () => vm.isBlocked !== undefined,
@@ -67,54 +76,87 @@ describe('BlockViewModel', () => {
     @test('should isBlocked be true when isNumberBlocked returns true')
     @mockService(RCInfoService, 'isNumberBlocked', true)
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
-      await vm.fetchNumberStatus(mockCaller);
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+      });
+      await vm.fetchNumberStatus();
       expect(vm.isBlocked).toEqual(true);
     }
 
     @test('should isBlocked be false when isNumberBlocked returns false')
     @mockService(RCInfoService, 'isNumberBlocked', false)
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.MENU_ITEM, caller: mockCaller });
-      await vm.fetchNumberStatus(mockCaller);
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.MENU_ITEM,
+      });
+      await vm.fetchNumberStatus();
       expect(vm.isBlocked).toEqual(false);
     }
   }
 
   @testable
   class block {
-
-    @test('should toast error when block number fail for network issue [JPT-2410]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: false,
-    }, {
-      method: 'addBlockedNumber',
-      data: networkErrorFunc,
-    }])
+    @test(
+      'should toast error when block number fail for network issue [JPT-2410]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: false,
+      },
+      {
+        method: 'addBlockedNumber',
+        data: networkErrorFunc,
+      },
+    ])
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+      });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(
+        phoneNumber,
+      );
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForNetworkIssue'),
       );
     }
 
-    @test('should toast error when block number fail for server issue [JPT-2411]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: false,
-    }, {
-      method: 'addBlockedNumber',
-      data: serverErrorFunc,
-    }])
+    @test(
+      'should toast error when block number fail for server issue [JPT-2411]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: false,
+      },
+      {
+        method: 'addBlockedNumber',
+        data: serverErrorFunc,
+      },
+    ])
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+      });
       await vm.block();
       expect(rcInfoService.addBlockedNumber.mock.calls).toHaveLength(1);
-      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(mockCaller.phoneNumber);
+      expect(rcInfoService.addBlockedNumber.mock.calls[0][0]).toEqual(
+        phoneNumber,
+      );
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToBlockForServerIssue'),
       );
@@ -123,41 +165,64 @@ describe('BlockViewModel', () => {
 
   @testable
   class unblock {
-
-    @test('should toast error when unblock number fail for network issue [JPT-2412]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: true,
-    }, {
-      method: 'deleteBlockedNumbers',
-      data: networkErrorFunc,
-    }])
+    @test(
+      'should toast error when unblock number fail for network issue [JPT-2412]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: true,
+      },
+      {
+        method: 'deleteBlockedNumbers',
+        data: networkErrorFunc,
+      },
+    ])
     async t1() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+      });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([
+        phoneNumber,
+      ]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForNetworkIssue'),
       );
     }
 
-    @test('should toast error when unblock number fail for server issue [JPT-2413]')
-    @mockService(rcInfoService, [{
-      method: 'isNumberBlocked',
-      data: true,
-    }, {
-      method: 'deleteBlockedNumbers',
-      data: serverErrorFunc,
-    }])
+    @test(
+      'should toast error when unblock number fail for server issue [JPT-2413]',
+    )
+    @mockService(rcInfoService, [
+      {
+        method: 'isNumberBlocked',
+        data: true,
+      },
+      {
+        method: 'deleteBlockedNumbers',
+        data: serverErrorFunc,
+      },
+    ])
     async t2() {
-      const vm = new BlockViewModel({ id: 2031622, type: BUTTON_TYPE.ICON, caller: mockCaller });
+      const vm = new BlockViewModel({
+        phoneNumber,
+        caller,
+        id: 2031622,
+        type: BUTTON_TYPE.ICON,
+      });
       await vm.unblock();
       expect(rcInfoService.deleteBlockedNumbers.mock.calls).toHaveLength(1);
-      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([mockCaller.phoneNumber]);
+      expect(rcInfoService.deleteBlockedNumbers.mock.calls[0][0]).toEqual([
+        phoneNumber,
+      ]);
       expect(Notification.flashToast).toHaveBeenCalledWith(
         checkNotification('phone.prompt.notAbleToUnblockForServerIssue'),
       );
     }
   }
-})
+});

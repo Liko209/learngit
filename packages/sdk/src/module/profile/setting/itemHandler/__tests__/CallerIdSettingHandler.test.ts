@@ -10,14 +10,13 @@ import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
 import {
   SettingEntityIds,
   UserSettingEntity,
-  SettingModuleIds,
   SettingService,
 } from 'sdk/module/setting';
-import { ProfileService } from 'sdk/module/profile';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
+import { RC_INFO_KEYS } from 'sdk/module/rcInfo/config/constants';
 
 jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('sdk/module/profile');
@@ -30,7 +29,6 @@ function clearMocks() {
 }
 
 describe('CallerIdSettingHandler ', () => {
-  let iProfileService: ProfileService;
   let rcInfoService: RCInfoService;
   let settingService: SettingService;
   const profileId = 111;
@@ -64,16 +62,18 @@ describe('CallerIdSettingHandler ', () => {
         return settingService;
       }
     });
-    iProfileService = new ProfileService();
     rcInfoService.getCallerIdList = jest
       .fn()
       .mockResolvedValue([{ id: 1 }, { id: 2 }]);
-    iProfileService.getDefaultCaller = jest.fn().mockResolvedValue({ id: 2 });
-    iProfileService.updateSettingOptions = jest.fn();
+    rcInfoService.DBConfig = {
+      on: jest.fn(),
+      off: jest.fn(),
+    };
+    rcInfoService.getDefaultCallerId = jest.fn().mockResolvedValue({ id: 2 });
     AccountUserConfig.prototype.getCurrentUserProfileId.mockReturnValue(
       profileId,
     );
-    callerIdSettingHandler = new CallerIdSettingHandler(iProfileService);
+    callerIdSettingHandler = new CallerIdSettingHandler();
     callerIdSettingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -93,51 +93,6 @@ describe('CallerIdSettingHandler ', () => {
   describe('handleProfileUpdated()', () => {
     afterEach(() => {
       cleanUp();
-    });
-    it('should emit update when has default default phone number in cache and comes new number', (done: jest.DoneCallback) => {
-      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
-      callerIdSettingHandler.getUserSettingEntity = jest
-        .fn()
-        .mockResolvedValue({});
-
-      notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
-        {
-          id: profileId,
-          default_number: { id: 888, phoneNumber: '123' },
-        },
-      ]);
-      setTimeout(() => {
-        expect(callerIdSettingHandler.getUserSettingEntity).toBeCalled();
-        done();
-      });
-    });
-    it('should not emit when can not get profile from payload', (done: jest.DoneCallback) => {
-      callerIdSettingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
-      callerIdSettingHandler.getUserSettingEntity = jest
-        .fn()
-        .mockResolvedValue({});
-
-      notificationCenter.emitEntityUpdate(ENTITY.PROFILE, []);
-      setTimeout(() => {
-        expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        done();
-      });
-    });
-    it('should not emit when has no cache', (done: jest.DoneCallback) => {
-      callerIdSettingHandler.getUserSettingEntity = jest
-        .fn()
-        .mockResolvedValue({});
-
-      notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
-        {
-          id: profileId,
-          default_number: { id: 888, phoneNumber: '123' },
-        },
-      ]);
-      setTimeout(() => {
-        expect(callerIdSettingHandler.getUserSettingEntity).not.toBeCalled();
-        done();
-      });
     });
   });
 
@@ -197,12 +152,7 @@ describe('CallerIdSettingHandler ', () => {
       await callerIdSettingHandler.updateValue({
         id: 111,
       } as any);
-      expect(iProfileService.updateSettingOptions).toBeCalledWith([
-        {
-          key: 'default_number',
-          value: 111,
-        },
-      ]);
+      expect(rcInfoService.setDefaultCallerId).toBeCalledWith(111);
     });
   });
 

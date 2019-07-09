@@ -58,7 +58,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
       <PreloadImg
         url={accelerateURL(headShotUrl)}
         placeholder={AvatarWithName}
-        animationForLoad={true}
+        animationForLoad
       >
         <JuiAvatar
           src={accelerateURL(headShotUrl)}

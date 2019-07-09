@@ -22,7 +22,7 @@ class SettingService extends AbstractService {
 
   async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
     return (await this.settingController.getById(id)) as Nullable<
-      UserSettingEntity<T>
+    UserSettingEntity<T>
     >;
   }
 

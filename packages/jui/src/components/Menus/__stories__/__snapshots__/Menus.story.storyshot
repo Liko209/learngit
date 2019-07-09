@@ -162,7 +162,6 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c3 {
@@ -354,7 +353,6 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {

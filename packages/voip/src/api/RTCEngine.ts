@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 10:41:15
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
 import { RTCUserInfo } from './types';
 import { RTCAccount } from './RTCAccount';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
@@ -12,7 +12,6 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { RTCDaoManager } from '../utils/RTCDaoManager';
 import { RTCMediaDeviceManager } from './RTCMediaDeviceManager';
-import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 

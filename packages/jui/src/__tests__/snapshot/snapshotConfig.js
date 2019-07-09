@@ -88,10 +88,23 @@ const excludeDomSnapshot = {
      * use style-component selector
      */
     'Section',
+    /**
+     * jui title component problem: didn't handle action key prop well
+     */
+    'Reply Call',
+
+    /**
+     * ailed prop type: Material-UI: the `fab` variant will be removed in the next major release. The `<Fab>` component is equivalent and should be used instead.
+     */
+    'Round Button',
+    /**
+     *     Warning: Failed prop type: Material-UI: you are using a deprecated typography variant: `title` that will be removed in the next major release.
+     */
+    'ConversationPageHeader',
   ],
   matchFunction: ({ name, kind }) => {
     return /HoC/.test(kind);
   },
 };
 
-export { excludeDomSnapshot, excludeImageSnapshot, fullScreenStory };
+export { excludeDomSnapshot };

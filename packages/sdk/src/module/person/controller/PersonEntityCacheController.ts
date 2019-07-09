@@ -4,19 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
-import { Person, PhoneNumberModel } from '../entity';
+import { Person } from '../entity';
 import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 import { IPersonService } from '../service/IPersonService';
 import { SearchUtils } from 'sdk/framework/utils/SearchUtils';
-import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const soundex = require('soundex-code');
 
 class PersonEntityCacheController extends EntityCacheController<Person> {
   private _soundexValue: Map<number, string[]> = new Map();
-  private _phoneNumberCache: Map<string, Person> = new Map();
-  private _companyId: number = 0;
+  private _shortNumberCache: Map<string, Person> = new Map();
+  private _longNumberCache: Map<string, Person> = new Map();
 
   static buildPersonEntityCacheController(personService: IPersonService) {
     return new PersonEntityCacheController(personService);
@@ -29,34 +28,30 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
   async clear(): Promise<void> {
     super.clear();
     this._soundexValue.clear();
-    this._phoneNumberCache.clear();
-    this._companyId = 0;
+    this._shortNumberCache.clear();
+    this._longNumberCache.clear();
   }
 
   public getSoundexById(id: number): string[] {
     return this._soundexValue.get(id) || [];
   }
 
-  public getPersonByPhoneNumber(phoneNumber: string) {
-    return this._phoneNumberCache.get(phoneNumber);
+  public getPersonByPhoneNumber(phoneNumber: string, isShortNumber: boolean) {
+    return isShortNumber
+      ? this._shortNumberCache.get(phoneNumber)
+      : this._longNumberCache.get(phoneNumber);
   }
 
   private _removePhoneNumbersByPerson(person: Person) {
     if (!person) {
       return;
     }
-    if (person.sanitized_rc_extension) {
-      const ext = person.sanitized_rc_extension.extensionNumber;
-      this._phoneNumberCache.has(ext) &&
-        person.company_id === this._companyId &&
-        this._phoneNumberCache.delete(ext);
-    }
-    person.rc_phone_numbers &&
-      person.rc_phone_numbers.forEach((phoneNumberModel: PhoneNumberModel) => {
-        const phoneNumber = phoneNumberModel.phoneNumber;
-        this._phoneNumberCache.has(phoneNumber) &&
-          this._phoneNumberCache.delete(phoneNumber);
-      });
+
+    this._personService.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
+      phoneNumber.phoneNumberType === PhoneNumberType.Extension
+        ? this._shortNumberCache.delete(phoneNumber.id)
+        : this._longNumberCache.delete(phoneNumber.id);
+    });
   }
 
   private _removePhoneNumbersByPersonId(id: number) {
@@ -80,7 +75,9 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     }
 
     this._personService.getPhoneNumbers(person, (phoneNumber: PhoneNumber) => {
-      this._phoneNumberCache.set(phoneNumber.id, person);
+      phoneNumber.phoneNumberType === PhoneNumberType.Extension
+        ? this._shortNumberCache.set(phoneNumber.id, person)
+        : this._longNumberCache.set(phoneNumber.id, person);
     });
   }
 
@@ -105,9 +102,7 @@ class PersonEntityCacheController extends EntityCacheController<Person> {
     if (this._personService.isVisiblePerson(person)) {
       const name = this._personService.getName(person);
       if (name) {
-        soundexResult = SearchUtils.getTermsFromText(name).map(item =>
-          soundex(item),
-        );
+        soundexResult = SearchUtils.getTermsFromText(name).map(item => soundex(item));
       } else {
         soundexResult = [soundex(person.email)];
       }

@@ -3,8 +3,11 @@
  * @Date: 2019-01-17 14:03:39
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
+
 import { ReactNode } from 'react';
 import { observable } from 'mobx';
+
 class MessageStore {
   @observable conversationHeaderExtensions: ReactNode[] = [];
   @observable draftMap: Map<number, string> = new Map();

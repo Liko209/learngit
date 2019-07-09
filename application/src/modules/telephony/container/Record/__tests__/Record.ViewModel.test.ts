@@ -26,7 +26,7 @@ beforeAll(() => {
     matchContactByPhoneNumber: jest.fn(),
   });
   (getEntity as jest.Mock).mockReturnValue({
-    recordState: RECORD_STATE.DISABLE,
+    recordState: RECORD_STATE.DISABLED,
   });
   recordViewModel = new RecordViewModel();
 });

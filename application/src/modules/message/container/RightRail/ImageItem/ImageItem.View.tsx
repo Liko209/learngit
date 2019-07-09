@@ -3,7 +3,7 @@
  * @Date: 2019-01-15 11:07:53
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -19,10 +19,10 @@ import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { postParser } from '@/common/postParser';
-
-const SQUARE_SIZE = 36;
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+
+const SQUARE_SIZE = 36;
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
@@ -35,7 +35,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
           <Thumbnail
             ref={this._thumbnailRef}
             id={id}
-            type="image"
+            type='image'
             onClick={this._handleImageClick}
           />
         </JuiListItemIcon>
@@ -59,7 +59,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         )}
       </>
     );
-  }
+  };
 
   _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
     const { id, groupId } = this.props;
@@ -70,7 +70,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
       initialHeight: SQUARE_SIZE,
       originElement: target,
     });
-  }
+  };
 
   render() {
     const { file } = this.props;
@@ -80,7 +80,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     return (
       <JuiListItemWithHover
         render={this._renderItem}
-        data-test-automation-id="rightRail-image-item"
+        data-test-automation-id='rightRail-image-item'
       />
     );
   }

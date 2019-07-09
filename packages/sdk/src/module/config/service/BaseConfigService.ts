@@ -58,6 +58,7 @@ class BaseConfigService extends AbstractService {
 
   clear() {
     const st = store.namespace(`${this._ns}`);
+    /* eslint-disable no-constant-condition */
     do {
       const arr = st.keys();
       if (arr.length === 0) {

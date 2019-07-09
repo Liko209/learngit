@@ -1,7 +1,7 @@
 import React from 'react';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiMenuItem } from '../../../components/Menus';
-import { JuiActionIconWrapper } from '../VoicemailItem/Actions';
+import { JuiActionIconWrapper } from './Actions';
 
 enum BUTTON_TYPE {
   ICON,

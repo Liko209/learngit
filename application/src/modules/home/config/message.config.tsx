@@ -13,28 +13,26 @@ const config: SubModuleConfig = {
   route: {
     path: '/messages',
     component: lazyComponent({
-      loader: () =>
-        import(/*
-        webpackChunkName: "c.message" */ './lazy/Message'),
+      loader: () => import(/*
+        webpackChunkName: "c.message" */ './lazy/Message'
+      ),
     }),
   },
-  nav: async () => {
-    return {
-      url: '/messages',
-      Icon: (
+  nav: async () => ({
+    url: '/messages',
+    Icon: (
         <JuiIconography iconColor={['grey', '900']}>
           messages_border
         </JuiIconography>
-      ),
-      IconSelected: <JuiIconography>messages</JuiIconography>,
-      title: 'message.Messages',
-      umi: <MessageUmi />,
-      placement: 'top',
-    };
-  },
-  moduleConfigLoader: () =>
-    import(/*
-    webpackChunkName: "m.message" */ '@/modules/message'),
+    ),
+    IconSelected: <JuiIconography>messages</JuiIconography>,
+    title: 'message.Messages',
+    umi: <MessageUmi />,
+    placement: 'top',
+  }),
+  moduleConfigLoader: () => import(/*
+    webpackChunkName: "m.message" */ '@/modules/message'
+  ),
 };
 
 export { config };

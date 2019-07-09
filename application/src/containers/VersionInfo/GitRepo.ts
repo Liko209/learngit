@@ -190,7 +190,7 @@ class RunGitInfoIntoFile {
   }
 
   writeInfoToFile(callback: Function) {
-    let info = '/* tslint:disable */ \n\n';
+    let info = '/* eslint-disable */ \n\n';
     info += 'export const gitCommitInfo = { \n';
     info += `currentBranch: '${this.currentBranch}',\n`;
     info += 'commitInfo:\n[';

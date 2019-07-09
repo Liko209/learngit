@@ -37,8 +37,7 @@ const JuiLeftRailListItemIconWrapper = ({
 }: JuiLeftRailListItemIconProps) => <JuiListItemIcon {...rest} />;
 
 const JuiLeftRailListItemIcon = styled(JuiLeftRailListItemIconWrapper)`
-  opacity: ${({ disabled, theme }) =>
-    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
+  opacity: ${({ disabled, theme }) => (disabled ? theme.palette.action.hoverOpacity * 3 : 1)};
 `;
 
 export {

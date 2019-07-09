@@ -10,6 +10,10 @@ import { JuiTextWithHighlight } from 'jui/components/TextWithHighlight';
 import { PhoneLink } from '@/modules/message/container/ConversationSheet/PhoneLink';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
+import { EmojiTransformer } from '../parsers/EmojiTransformer';
+import * as utils from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 const hostName = 'https://d2rbro28ib85bu.cloudfront.net';
 const customEmoji = {
@@ -21,11 +25,23 @@ const customEmoji = {
     data:
       'https://glip-vault-1.s3.amazonaws.com/web/customer_files/96005824524/congrats.gif',
   },
-  ['google.com']: {
+  'google.com': {
     data:
       'https://glip-vault-1.s3.amazonaws.com/web/customer_files/96005824524/congrats.gif',
   },
 };
+
+beforeAll(() => {
+  jest
+    .spyOn(EmojiTransformer, 'customEmojiMap', 'get')
+    .mockReturnValue(customEmoji);
+  jest.spyOn(utils, 'getGlobalValue').mockImplementation(key => {
+    if (key === GLOBAL_KEYS.STATIC_HTTP_SERVER) {
+      return hostName;
+    }
+    return utils.getGlobalValue(key);
+  });
+});
 
 describe('non-glipdown text', () => {
   it('should return original text if there is no actual string content', () => {
@@ -423,9 +439,7 @@ describe('glipdown text', () => {
           postParser(atmention('121', 'Admin'), {
             atMentions: { map },
           }),
-        ).toEqual([
-          <JuiAtMention key={0} id='121' isCurrent={true} name='Admin' />,
-        ]);
+        ).toEqual([<JuiAtMention key={0} id='121' isCurrent name='Admin' />]);
       });
 
       it('should return array with AtMention - with extra string', () => {
@@ -444,7 +458,7 @@ describe('glipdown text', () => {
       it('should parse emoji one with special character', () => {
         expect(
           postParser(':+1: :-1:', {
-            emoji: { hostName, unicodeOnly: true },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual('👍 👎');
       });
@@ -452,27 +466,29 @@ describe('glipdown text', () => {
       it('should return array with only unicode emoji', () => {
         expect(
           postParser('😁', {
-            emoji: { hostName, unicodeOnly: true },
+            emoji: {
+              unicodeOnly: true,
+            },
           }),
         ).toEqual('😁');
         expect(
           postParser(':-/', {
-            emoji: { hostName, unicodeOnly: true },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual('😕');
         expect(
           postParser(':a_bash:', {
-            emoji: { hostName, unicodeOnly: true, customEmojiMap: customEmoji },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual(':a_bash:');
         expect(
           postParser(':a_bash:', {
-            emoji: { hostName, unicodeOnly: true, customEmojiMap: customEmoji },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual(':a_bash:');
         expect(
           postParser(':joy:', {
-            emoji: { hostName, unicodeOnly: true },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual('😂');
       });
@@ -480,10 +496,17 @@ describe('glipdown text', () => {
       it('should return unicode emoji even after the same emoji transformation for non-unicode is cached [BUG-FIJI-7086]', () => {
         expect(
           postParser(':joy:hahahah', {
-            emoji: { hostName, unicodeOnly: false },
+            emoji: { unicodeOnly: false },
           }),
         ).toEqual([
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
           'hahahah',
@@ -491,45 +514,67 @@ describe('glipdown text', () => {
 
         expect(
           postParser(':joy:hahahah', {
-            emoji: { hostName, unicodeOnly: true },
+            emoji: { unicodeOnly: true },
           }),
         ).toEqual('😂hahahah');
       });
 
       it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
-        expect(postParser('😁', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='grin' skin={1} set={'emojione'} size={30} key={0}>
+        expect(postParser('😁', { emoji: {} })).toEqual([
+          <Emoji
+            emoji='grin'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😁
           </Emoji>,
         ]);
-        expect(postParser(':-/', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='confused' skin={1} set={'emojione'} size={30} key={0}>
+        expect(postParser(':-/', { emoji: {} })).toEqual([
+          <Emoji
+            emoji='confused'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😕
           </Emoji>,
         ]);
         expect(
           postParser(':a_bash:', {
-            emoji: { hostName, customEmojiMap: customEmoji },
+            emoji: {},
           }),
         ).toEqual([
           <img
             className='emoji enlarge-emoji'
+            alt='emoji'
             src={customEmoji['a_bash'].data}
             key={0}
           />,
         ]);
         expect(
           postParser(':joy:', {
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={30} key={0}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
         expect(
           postParser(':thinking_face::purse::shallow_pan_of_food:', {
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
           <Emoji
@@ -538,10 +583,18 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={0}
+            backgroundImageFn={backgroundImageFn}
           >
             🤔
           </Emoji>,
-          <Emoji emoji='purse' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='purse'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             👛
           </Emoji>,
           <Emoji
@@ -550,6 +603,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={2}
+            backgroundImageFn={backgroundImageFn}
           >
             🥘
           </Emoji>,
@@ -557,8 +611,15 @@ describe('glipdown text', () => {
       });
 
       it('should parse multiple ascii emojis[JPT-2396, JPT-2387]', () => {
-        expect(postParser(':-/ -_- <3', { emoji: { hostName } })).toEqual([
-          <Emoji emoji='confused' skin={1} set={'emojione'} size={20} key={0}>
+        expect(postParser(':-/ -_- <3', { emoji: {} })).toEqual([
+          <Emoji
+            emoji='confused'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😕
           </Emoji>,
           ' ',
@@ -568,22 +629,31 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
           ' ',
-          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='heart'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             ❤
           </Emoji>,
         ]);
 
-        expect(postParser('-_- -_- -_-', { emoji: { hostName } })).toEqual([
+        expect(postParser('-_- -_- -_-', { emoji: {} })).toEqual([
           <Emoji
             emoji='expressionless'
             skin={1}
             set={'emojione'}
             size={20}
             key={0}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -594,6 +664,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -604,6 +675,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={2}
+            backgroundImageFn={backgroundImageFn}
           >
             😑
           </Emoji>,
@@ -611,12 +683,12 @@ describe('glipdown text', () => {
       });
 
       it("should not parse ascii emoji when it's part of words", () => {
-        expect(
-          postParser(`ID: 123`, { emoji: { hostName }, html: true }),
-        ).toEqual('ID: 123');
+        expect(postParser(`ID: 123`, { emoji: {}, html: true })).toEqual(
+          'ID: 123',
+        );
         expect(
           postParser(`app:///webpack:/src/main/main.ts`, {
-            emoji: { hostName },
+            emoji: {},
             html: true,
           }),
         ).toEqual('app:///webpack:/src/main/main.ts');
@@ -625,11 +697,18 @@ describe('glipdown text', () => {
       it('should return array with image emoji and other text[JPT-2392, JPT-2396]', () => {
         expect(
           postParser(`hahah😁123___🏳️‍🌈++ ':( :joy:`, {
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
           'hahah',
-          <Emoji emoji='grin' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='grin'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             😁
           </Emoji>,
           '123___',
@@ -641,11 +720,25 @@ describe('glipdown text', () => {
             key={1}
           />,
           '++ ',
-          <Emoji emoji='sweat' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='sweat'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             😓
           </Emoji>,
           ' ',
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={3}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={3}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -655,10 +748,17 @@ describe('glipdown text', () => {
         expect(
           postParser(`<3 ':)`, {
             html: true,
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
-          <Emoji emoji='heart' skin={1} set={'emojione'} size={20} key={0}>
+          <Emoji
+            emoji='heart'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
             ❤
           </Emoji>,
           ' ',
@@ -668,6 +768,7 @@ describe('glipdown text', () => {
             set={'emojione'}
             size={20}
             key={1}
+            backgroundImageFn={backgroundImageFn}
           >
             😅
           </Emoji>,
@@ -777,7 +878,7 @@ Veniam anim velit amet aliqua proident.`}
             `<a class='at_mention_compose' rel='{"id":187817987}'>@Jesse</a> :joy:`,
             {
               atMentions: { map },
-              emoji: { hostName },
+              emoji: {},
               html: true,
             },
           ),
@@ -789,7 +890,14 @@ Veniam anim velit amet aliqua proident.`}
             name='@Jesse'
           />,
           ' ',
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -803,7 +911,7 @@ Veniam anim velit amet aliqua proident.`}
 :joy:`,
             {
               atMentions: { map },
-              emoji: { hostName },
+              emoji: {},
               html: true,
             },
           ),
@@ -816,7 +924,14 @@ Veniam anim velit amet aliqua proident.`}
           />,
           ' wrote:',
           <q key={1}>sdfsadf</q>,
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={2}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={2}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -826,7 +941,7 @@ Veniam anim velit amet aliqua proident.`}
         expect(
           postParser(`sdds${atmention('122', ':joy:')}123  ss`, {
             atMentions: { map },
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
           'sdds',
@@ -839,7 +954,7 @@ Veniam anim velit amet aliqua proident.`}
         expect(
           postParser(`sdds${atmention('12244', '🤣')}123  ss`, {
             atMentions: { map },
-            emoji: { hostName },
+            emoji: {},
           }),
         ).toEqual([
           'sdds',
@@ -1046,16 +1161,20 @@ Veniam anim velit amet aliqua proident.`}
         expect(
           postParser(`[code][some link](http://heynow.com):joy:[/code]`, {
             html: true,
-            emoji: {
-              hostName,
-              customEmojiMap: customEmoji,
-            },
+            emoji: {},
           }),
         ).toEqual([
           <pre className='codesnippet' key={0}>
             &lt;a href='http://heynow.com' target='_blank'
             rel='noreferrer'&gt;some link&lt;/a&gt;
-            <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={0}>
+            <Emoji
+              emoji='joy'
+              skin={1}
+              set={'emojione'}
+              size={20}
+              key={0}
+              backgroundImageFn={backgroundImageFn}
+            >
               😂
             </Emoji>
           </pre>,
@@ -1085,7 +1204,7 @@ Veniam anim velit amet aliqua proident.`}
         expect(
           postParser(
             `https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790:joy:`,
-            { emoji: { hostName }, html: true },
+            { emoji: {}, html: true },
           ),
         ).toEqual([
           <a
@@ -1096,7 +1215,14 @@ Veniam anim velit amet aliqua proident.`}
           >
             https://mr-bug-fiji-6728.fiji.gliprc.com/messages/42614790
           </a>,
-          <Emoji emoji='joy' skin={1} set={'emojione'} size={20} key={1}>
+          <Emoji
+            emoji='joy'
+            skin={1}
+            set={'emojione'}
+            size={20}
+            key={1}
+            backgroundImageFn={backgroundImageFn}
+          >
             😂
           </Emoji>,
         ]);
@@ -1105,7 +1231,7 @@ Veniam anim velit amet aliqua proident.`}
       it('should parse correcly when quote an emoji', () => {
         expect(
           renderToStaticMarkup(postParser('> :joy:', {
-            emoji: { hostName },
+            emoji: {},
             html: true,
           }) as any),
         ).toMatch(

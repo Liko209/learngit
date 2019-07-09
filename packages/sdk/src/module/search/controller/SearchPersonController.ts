@@ -3,7 +3,7 @@
  * @Date: 2019-03-14 16:13:52
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import _ from 'lodash';
 import { ISearchService } from '../service/ISearchService';
 import { GroupService } from '../../group';
@@ -26,11 +26,12 @@ import {
   FormattedTerms,
 } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
-import { MY_LAST_POST_VALID_PERIOD } from '../constants';
+import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { mainLogger } from 'foundation/src';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
+import { SortUtils } from 'sdk/framework/utils';
 
 type MatchedInfo = {
   nameMatched: boolean;
@@ -158,31 +159,12 @@ class SearchPersonController {
     return result;
   }
 
-  private get _sortByKeyFunc() {
-    return (personA: SortableModel<Person>, personB: SortableModel<Person>) => {
-      if (personA.firstSortKey > personB.firstSortKey) {
-        return -1;
-      }
-      if (personA.firstSortKey < personB.firstSortKey) {
-        return 1;
-      }
-
-      if (personA.secondSortKey > personB.secondSortKey) {
-        return -1;
-      }
-      if (personA.secondSortKey < personB.secondSortKey) {
-        return 1;
-      }
-
-      if (personA.thirdSortKey < personB.thirdSortKey) {
-        return -1;
-      }
-      if (personA.thirdSortKey > personB.thirdSortKey) {
-        return 1;
-      }
-      return 0;
-    };
-  }
+  private _sortByKeyFunc = (
+    personA: SortableModel<Person>,
+    personB: SortableModel<Person>,
+  ) => {
+    return SortUtils.compareSortableModel<Person>(personA, personB);
+  };
 
   private _getMostRecentViewTime(
     personId: number,
@@ -198,10 +180,10 @@ class SearchPersonController {
       groupConfigService.getSynchronously(individualGroup.id);
 
     const lastSearchTime = (record && record.time_stamp) || 0;
-    let lastPostTime = (config && config.my_last_post_time) || 0;
-    lastPostTime =
-      now - lastPostTime > MY_LAST_POST_VALID_PERIOD ? 0 : lastPostTime;
-    return Math.max(lastPostTime, lastSearchTime);
+    const lastPostTime = (config && config.my_last_post_time) || 0;
+
+    const maxAccessTime = Math.max(lastPostTime, lastSearchTime);
+    return now - maxAccessTime > LAST_ACCESS_VALID_PERIOD ? 0 : maxAccessTime;
   }
 
   private _generateMatchedInfo(
@@ -274,6 +256,9 @@ class SearchPersonController {
     return matchedInfo;
   }
 
+  // Rule:
+  // The search results should be ranked as follows: perfect match>start with> fuzzy search/Soundex search/email matched
+  // If there are multiple results fall in each of the categories, they should be ordered by most recent (searched and tapped/sent message to in the last 30 days)>alphabetical
   private async _getTransFromPersonToSortableModelFunc(
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
@@ -371,7 +356,7 @@ class SearchPersonController {
           personName = personService.getEmailAsName(person);
           personNameLowerCase = personName.toLowerCase();
         }
-        const firstSortKey = recentFirst
+        const recentViewTime = recentFirst
           ? this._getMostRecentViewTime(
               person.id,
               groupConfigService,
@@ -380,11 +365,10 @@ class SearchPersonController {
             )
           : 0;
         return {
-          firstSortKey,
           id: person.id,
           displayName: personName,
-          secondSortKey: sortValue,
-          thirdSortKey: personNameLowerCase,
+          lowerCaseName: personNameLowerCase,
+          sortWeights: [sortValue, recentViewTime],
           entity: person,
           extraData: matchedNumbers,
         };

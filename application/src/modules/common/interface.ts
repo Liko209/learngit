@@ -6,6 +6,10 @@
 const CLIENT_SERVICE = 'window_service';
 interface IClientService {
   focus: () => void;
-  invokeApp: (url: string) => void;
+  invokeApp: (url: string, options: InvokeAppOpts) => void;
+  open: (url: string) => void;
 }
-export { CLIENT_SERVICE, IClientService };
+interface InvokeAppOpts {
+  fallback: Function;
+}
+export { CLIENT_SERVICE, IClientService, InvokeAppOpts };

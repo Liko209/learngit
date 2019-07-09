@@ -8,8 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CallViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 
 type Props = CallViewProps & WithTranslation;
 
@@ -26,24 +25,18 @@ class CallViewComponent extends Component<Props> {
   }
 
   render() {
-    const { doCall, entity } = this.props;
+    const { doCall, entity, type } = this.props;
 
     return (
-      <JuiActionIconWrapper>
-        <JuiIconButton
-          color="common.white"
-          variant="round"
-          autoFocus={false}
-          size="small"
-          key="call-button"
-          onClick={doCall}
-          data-test-automation-id={`${entity}-call-button`}
-          tooltipTitle={this.title}
-          ariaLabel={this.screenreaderText}
-        >
-          answer
-        </JuiIconButton>
-      </JuiActionIconWrapper>
+      <ActionButton
+        key="call-button"
+        icon="phone"
+        type={type}
+        tooltip={this.title}
+        onClick={doCall}
+        screenReader={this.screenreaderText}
+        automationId={`${entity}-call-button`}
+      />
     );
   }
 }

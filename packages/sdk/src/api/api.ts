@@ -15,6 +15,7 @@ import {
   HandleByCustom,
 } from './handlers';
 import { ApiConfiguration } from './config';
+
 const types = [
   HandleByGlip,
   HandleByRingCentral,
@@ -90,7 +91,7 @@ class Api {
         type.defaultVia,
         this.networkManager,
       );
-      this.httpSet.set(name, networkClient);
+      this.httpSet.set(host, networkClient);
     }
     return networkClient;
   }

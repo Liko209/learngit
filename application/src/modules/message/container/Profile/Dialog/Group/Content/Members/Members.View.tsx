@@ -3,7 +3,7 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { MembersViewProps, MembersProps } from './types';
@@ -30,13 +30,13 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
     if (size.width !== this.state.width || size.height !== this.state.height) {
       this.setState(size);
     }
-  }
+  };
   handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { changeSearchInputDebounce } = this.props;
     const { value } = event.target;
     this.setState({ searchInput: value });
     changeSearchInputDebounce(value);
-  }
+  };
 
   componentWillUnmount() {
     this.props.dispose();
@@ -72,8 +72,6 @@ class MembersView extends Component<MembersViewProps & MembersProps> {
         <MemberList
           id={id}
           searchInput={searchInput}
-          width={width}
-          height={preferHeight}
           setShowEmpty={setShowEmpty}
           loadInitialData={this.props.loadInitialData}
           loadMore={this.props.loadMore}

@@ -3,9 +3,11 @@ import { observer } from 'mobx-react';
 import { GenericDialerPanel } from '../GenericDialerPanel';
 import { DialerPanelViewProps } from './types';
 import { DialBtn } from '../DialBtn';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
+type Props = DialerPanelViewProps & WithTranslation;
 @observer
-export class DialerPanelView extends React.Component<DialerPanelViewProps> {
+class DialerPanelViewComponent extends React.Component<Props> {
   render() {
     const { makeCall, onAfterDialerOpen } = this.props;
     return (
@@ -13,10 +15,16 @@ export class DialerPanelView extends React.Component<DialerPanelViewProps> {
         inputStringProps="inputString"
         onInputEnterKeyDown={makeCall}
         CallActionBtn={DialBtn}
-        displayCallerIdSelector={true}
+        displayCallerIdSelector
         onContactSelected={makeCall}
         onAfterMount={onAfterDialerOpen}
       />
     );
   }
 }
+
+const DialerPanelView = withTranslation('translations')(
+  DialerPanelViewComponent,
+);
+
+export { DialerPanelView };

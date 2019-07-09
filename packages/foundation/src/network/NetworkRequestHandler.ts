@@ -26,7 +26,7 @@ import { networkLogger } from '../log';
 import { NetworkRequestBuilder } from './client';
 
 class NetworkRequestHandler
-  implements IResponseListener, INetworkRequestProducer {
+implements IResponseListener, INetworkRequestProducer {
   pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
   consumers: Map<NETWORK_VIA, INetworkRequestConsumerListener>;
   isPause: boolean;

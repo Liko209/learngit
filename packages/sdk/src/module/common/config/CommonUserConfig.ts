@@ -5,7 +5,7 @@
  */
 
 import { UserConfig } from '../../config';
-import { AccountGlobalConfig } from '../../../module/account/config';
+import { AccountGlobalConfig } from '../../account/config';
 
 class CommonUserConfig extends UserConfig {
   constructor() {

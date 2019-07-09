@@ -33,13 +33,13 @@ type StatusProps = {
 };
 
 type AttachmentItemProps = StatusProps &
-  IconProps & {
-    progress?: number;
-    name: React.ReactChild | null | (React.ReactChild | null)[];
-    hideRemoveButton?: boolean;
-    onClickDeleteButton?: (event: MouseEvent) => void;
-    fileIcon: string;
-  };
+IconProps & {
+  progress?: number;
+  name: React.ReactChild | null | (React.ReactChild | null)[];
+  hideRemoveButton?: boolean;
+  onClickDeleteButton?: (event: MouseEvent) => void;
+  fileIcon: string;
+};
 
 const StatusMap = {
   [ITEM_STATUS.NORMAL]: grey('900'),
@@ -102,14 +102,14 @@ const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = memo(
               value={props.value}
             />
           </ProgressWrapper>
-        )}
+      )}
       <IconWrapper>
         {typeof props.icon === 'string'
           ? !props.hideRemoveButton && (
               <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
                 close
               </JuiIconButton>
-            )
+          )
           : props.icon}
       </IconWrapper>
     </ActionWrapper>

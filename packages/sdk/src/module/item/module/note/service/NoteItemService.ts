@@ -16,9 +16,7 @@ class NoteItemService extends BaseSubItemService<NoteItem, SanitizedNoteItem> {
 
   constructor() {
     super(daoManager.getDao<NoteItemDao>(NoteItemDao));
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PAGE);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PAGE));
   }
 
   protected get noteItemController() {

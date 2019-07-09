@@ -13,8 +13,9 @@ import {
   JuiSnackbarContent,
   JuiSnackbarsType,
 } from '../../../components/Snackbars';
+
 function transitionDown(props: any) {
-  return <Slide {...props} direction="down" />;
+  return <Slide {...props} direction='down' />;
 }
 storiesOf('Pattern/ToastWrapper', module).add('ToastWrapper', () => {
   const message = text(
@@ -46,8 +47,8 @@ storiesOf('Pattern/ToastWrapper', module).add('ToastWrapper', () => {
       {arr.map(item => (
         <JuiSnackbar
           key={item.key}
-          noFix={true}
-          open={true}
+          noFix
+          open
           TransitionComponent={transitionDown}
         >
           <JuiSnackbarContent {...item} />

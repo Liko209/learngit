@@ -17,7 +17,7 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { AccountService } from '../../account/service';
 import { SortableModel, ModelIdType } from '../../../framework/model';
-import { CompanyService } from '../../../module/company';
+import { CompanyService } from '../../company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
 import {
@@ -39,12 +39,17 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupConfigService } from '../../groupConfig';
 import { SearchService } from '../../search';
 import { RecentSearchTypes, RecentSearchModel } from '../../search/entity';
-import { MY_LAST_POST_VALID_PERIOD } from '../../search/constants';
+import { LAST_ACCESS_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { SortUtils } from 'sdk/framework/utils';
 
-const kTeamIncludeMe: number = 1000;
+/* eslint-disable */
+const LOG_TAG = '[GroupFetchDataController]';
+const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
+const MAX_LEFT_RAIL_GROUP: number = 80;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -110,9 +115,22 @@ export class GroupFetchDataController {
       }
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
+    let count = result.length;
+    mainLogger
+      .tags(LOG_TAG)
+      .info('getGroupsByType() result origin count:', count);
+    if (count > MAX_LEFT_RAIL_GROUP) {
+      const permissionService = ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      );
+      const canShowAll = await permissionService.hasPermission(
+        UserPermissionType.CAN_SHOW_ALL_GROUP,
+      );
+      count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
+    }
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
-      : result.slice(0, result.length > 50 ? 50 : result.length);
+      : result.slice(0, count);
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
@@ -158,7 +176,7 @@ export class GroupFetchDataController {
   }
 
   async isFavored(id: number, type: number): Promise<boolean> {
-    let groupId: number | undefined = undefined;
+    let groupId: number | undefined;
     switch (type) {
       case TypeDictionary.TYPE_ID_PERSON: {
         const group = await this.getLocalGroup([id]);
@@ -204,22 +222,7 @@ export class GroupFetchDataController {
       undefined,
       searchKey,
       undefined,
-      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey > groupB.firstSortKey) {
-          return -1;
-        }
-        if (groupA.firstSortKey < groupB.firstSortKey) {
-          return 1;
-        }
-
-        if (groupA.secondSortKey < groupB.secondSortKey) {
-          return -1;
-        }
-        if (groupA.secondSortKey > groupB.secondSortKey) {
-          return 1;
-        }
-        return 0;
-      },
+      this._sortGroupFunc,
     );
     performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_ALL_GROUP });
     return {
@@ -244,10 +247,10 @@ export class GroupFetchDataController {
     const record = recentSearchedGroups!.get(groupId);
     const config = groupConfigService.getSynchronously(groupId);
     const lastSearchTime = (record && record.time_stamp) || 0;
-    let lastPostTime = (config && config.my_last_post_time) || 0;
-    lastPostTime =
-      now - lastPostTime > MY_LAST_POST_VALID_PERIOD ? 0 : lastPostTime;
-    return Math.max(lastPostTime, lastSearchTime);
+    const lastPostTime = (config && config.my_last_post_time) || 0;
+
+    const maxAccessTime = Math.max(lastPostTime, lastSearchTime);
+    return now - maxAccessTime > LAST_ACCESS_VALID_PERIOD ? 0 : maxAccessTime;
   }
 
   private get _groupConfigService() {
@@ -266,17 +269,21 @@ export class GroupFetchDataController {
       : undefined;
 
     return (group: Group, terms: Terms) => {
-      if (this._isValidGroup(group) && group.members.length > 2) {
+      do {
+        if (!this._isValidGroup(group) || group.members.length <= 2) {
+          break;
+        }
+
         const persons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
 
         if (persons.invisiblePersons.length) {
-          return null;
+          break;
         }
 
-        const groupName = this.getGroupNameByMultiMembers(
+        const { groupName, memberNames } = this.getGroupNameByMultiMembers(
           persons.visiblePersons,
         );
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
@@ -291,27 +298,34 @@ export class GroupFetchDataController {
               this.getSoundexValueOfGroup(persons.visiblePersons),
               searchKeyTermsToSoundex,
             ));
-        if (
+
+        const isMatched =
           (searchKeyTerms.length > 0 && isFuzzyMatched) ||
-          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
-        ) {
-          const firstSortKey = recentFirst
-            ? this._getMostRecentViewTime(
-                group.id,
-                groupConfigService,
-                recentSearchedGroups!,
-              )
-            : 0;
-          return {
-            firstSortKey,
-            secondSortKey: group.members.length,
-            id: group.id,
-            displayName: groupName,
-            thirdSortKey: lowerCaseGroupName,
-            entity: group,
-          };
+          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0);
+        if (!isMatched) {
+          break;
         }
-      }
+
+        const keyWeight = this._getSplitKeyWeight(
+          memberNames.map(x => x.toLowerCase()),
+          searchKeyTerms,
+        );
+        const mostRecentViewTime = recentFirst
+          ? this._getMostRecentViewTime(
+              group.id,
+              groupConfigService,
+              recentSearchedGroups!,
+            )
+          : 0;
+        return {
+          id: group.id,
+          lowerCaseName: lowerCaseGroupName,
+          displayName: groupName,
+          sortWeights: [keyWeight, mostRecentViewTime, -group.members.length],
+          entity: group,
+        };
+      } while (false);
+
       return null;
     };
   }
@@ -331,29 +345,7 @@ export class GroupFetchDataController {
       undefined,
       searchKey,
       undefined,
-      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey > groupB.firstSortKey) {
-          return -1;
-        }
-        if (groupA.firstSortKey < groupB.firstSortKey) {
-          return 1;
-        }
-
-        if (groupA.secondSortKey < groupB.secondSortKey) {
-          return -1;
-        }
-        if (groupA.secondSortKey > groupB.secondSortKey) {
-          return 1;
-        }
-
-        if (groupA.thirdSortKey < groupB.thirdSortKey) {
-          return -1;
-        }
-        if (groupA.thirdSortKey > groupB.thirdSortKey) {
-          return 1;
-        }
-        return 0;
-      },
+      this._sortGroupFunc,
     );
     performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_GROUP });
     return {
@@ -361,6 +353,13 @@ export class GroupFetchDataController {
       sortableModels: result.sortableModels,
     };
   }
+
+  private _sortGroupFunc = (
+    groupA: SortableModel<Group>,
+    groupB: SortableModel<Group>,
+  ) => {
+    return SortUtils.compareSortableModel<Group>(groupA, groupB);
+  };
 
   private async _getRecentSearchGroups(types: RecentSearchTypes[]) {
     const searchService = ServiceLoader.getInstance<SearchService>(
@@ -396,7 +395,7 @@ export class GroupFetchDataController {
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
-      let sortValue: number = 0;
+      let keyWeight: number = 0;
       do {
         if (!this.groupService.isValid(group)) {
           break;
@@ -439,7 +438,8 @@ export class GroupFetchDataController {
           if (persons.invisiblePersons.length) {
             break;
           }
-          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons);
+          groupName = this.getGroupNameByMultiMembers(persons.visiblePersons)
+            .groupName;
           lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
@@ -456,13 +456,13 @@ export class GroupFetchDataController {
           break;
         }
 
-        sortValue = this._getSortKeyWeight(lowerCaseName, searchKeyTerms);
+        keyWeight = this._getNameMatchWeight(lowerCaseName, searchKeyTerms);
 
         isMatched = true;
       } while (false);
 
       if (isMatched) {
-        const firstSortKey = recentFirst
+        const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
               group.id,
               groupConfigService,
@@ -470,11 +470,10 @@ export class GroupFetchDataController {
             )
           : 0;
         return {
-          firstSortKey,
+          lowerCaseName,
           id: group.id,
           displayName: groupName,
-          secondSortKey: sortValue,
-          thirdSortKey: lowerCaseName,
+          sortWeights: [keyWeight, mostRecentViewTime],
           entity: group,
         };
       }
@@ -482,19 +481,19 @@ export class GroupFetchDataController {
     };
   }
 
-  private _getSortKeyWeight(lowerCaseName: string, searchKeyTerms: string[]) {
-    const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
-      lowerCaseName,
-    );
+  private _getSplitKeyWeight(
+    lowerCaseSplitNames: string[],
+    searchKeyTerms: string[],
+  ) {
     let sortValue = 0;
 
     const setKeyMatched: Set<string> = new Set();
-    for (let i = 0; i < splitNames.length; ++i) {
+    for (let i = 0; i < lowerCaseSplitNames.length; ++i) {
       for (let j = 0; j < searchKeyTerms.length; ++j) {
         if (
           !setKeyMatched.has(searchKeyTerms[j]) &&
           this.entityCacheSearchController.isStartWithMatched(
-            splitNames[i].toLowerCase(),
+            lowerCaseSplitNames[i],
             [searchKeyTerms[j]],
           )
         ) {
@@ -510,6 +509,15 @@ export class GroupFetchDataController {
     return sortValue;
   }
 
+  private _getNameMatchWeight(lowerCaseName: string, searchKeyTerms: string[]) {
+    const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
+      lowerCaseName,
+    );
+    return this._getSplitKeyWeight(splitNames, searchKeyTerms);
+  }
+
+  // The search results should be ranked as follows: perfect match>start with> fuzzy search> Soundex search
+  // If there are multiple results all in each of the categories, they should be ordered by most recent(searched and tapped/sent message to in the last 30 days)>teams I'm in>alphabetical
   private async _getTransformTeamsFunc(
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
@@ -522,7 +530,7 @@ export class GroupFetchDataController {
     const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
-      let sortValue: number = 0;
+      let keyWeight: number = 0;
       do {
         if (!this._idValidTeam(team)) {
           break;
@@ -558,17 +566,17 @@ export class GroupFetchDataController {
           break;
         }
 
-        sortValue = this._getSortKeyWeight(
+        keyWeight = this._getNameMatchWeight(
           lowerCaseAbbreviation,
           searchKeyTerms,
         );
-        const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
-        sortValue += isMeInTeam;
+
         isMatched = true;
       } while (false);
 
       if (isMatched) {
-        const firstSortKey = recentFirst
+        const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
+        const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
               team.id,
               groupConfigService,
@@ -576,11 +584,10 @@ export class GroupFetchDataController {
             )
           : 0;
         return {
-          firstSortKey,
-          secondSortKey: sortValue,
-          thirdSortKey: team.set_abbreviation.toLowerCase(),
           id: team.id,
+          lowerCaseName: team.set_abbreviation.toLowerCase(),
           displayName: team.set_abbreviation,
+          sortWeights: [keyWeight, mostRecentViewTime, isMeInTeam],
           entity: team,
         };
       }
@@ -603,30 +610,7 @@ export class GroupFetchDataController {
       undefined,
       searchKey,
       undefined,
-      (groupA: SortableModel<Group>, groupB: SortableModel<Group>) => {
-        if (groupA.firstSortKey > groupB.firstSortKey) {
-          return -1;
-        }
-        if (groupA.firstSortKey < groupB.firstSortKey) {
-          return 1;
-        }
-
-        if (groupA.secondSortKey > groupB.secondSortKey) {
-          return -1;
-        }
-        if (groupA.secondSortKey < groupB.secondSortKey) {
-          return 1;
-        }
-
-        if (groupA.thirdSortKey < groupB.thirdSortKey) {
-          return -1;
-        }
-        if (groupA.secondSortKey > groupB.secondSortKey) {
-          return 1;
-        }
-
-        return 0;
-      },
+      this._sortGroupFunc,
     );
     performanceTracer.end({ key: GROUP_PERFORMANCE_KEYS.SEARCH_TEAM });
     return {
@@ -684,10 +668,13 @@ export class GroupFetchDataController {
       }
     });
 
-    return names
-      .sort(compareName)
-      .concat(emails.sort(compareName))
-      .join(', ');
+    return {
+      groupName: names
+        .sort(compareName)
+        .concat(emails.sort(compareName))
+        .join(', '),
+      memberNames: names.concat(emails),
+    };
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission) {
@@ -713,9 +700,7 @@ export class GroupFetchDataController {
       if (companyReplyDomain) {
         const envDomain = this._getENVDomain();
         if (group.email_friendly_abbreviation) {
-          email = `${
-            group.email_friendly_abbreviation
-          }@${companyReplyDomain}.${envDomain}`;
+          email = `${group.email_friendly_abbreviation}@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

@@ -6,7 +6,6 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c9 {
@@ -204,7 +203,7 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
 
 .c20.c20 .c8,
 .c20.c20 .c8 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c20.c20:hover .c8 {
@@ -216,23 +215,6 @@ exports[`Storyshots Pattern/SearchBar SearchInput: Pattern/SearchBar SearchInput
 }
 
 .c20.c20.c20.c20.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c21.c21 .c8,
-.c21.c21 .c8 svg {
-  font-size: 20px;
-}
-
-.c21.c21:hover .c8 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c21.c21:active .c8 {
-  color: #fff;
-}
-
-.c21.c21.c21.c21.disabled .c8 {
   color: rgba(0,0,0,0.12);
 }
 

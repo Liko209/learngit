@@ -23,11 +23,10 @@ type SearchWrapperType = {
   hasValue?: boolean;
 };
 
-const colorTransition = ({ theme }: { theme: Theme }) =>
-  theme.transitions.create(['color'], {
-    easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.standard,
-  });
+const colorTransition = ({ theme }: { theme: Theme }) => theme.transitions.create(['color'], {
+  easing: theme.transitions.easing.easeInOut,
+  duration: theme.transitions.duration.standard,
+});
 
 const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   height: ${height(10)};
@@ -36,36 +35,31 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   display: flex;
   position: relative;
   box-sizing: border-box;
-  background: ${({ theme, focus }) =>
-    focus
-      ? palette('common', 'white')
-      : fade(palette('common', 'white')({ theme }), 0.22)};
+  background: ${({ theme, focus }) => (focus
+    ? palette('common', 'white')
+    : fade(palette('common', 'white')({ theme }), 0.22))};
 
-  ${({ hasValue, focus }) => {
-    return hasValue && focus
-      ? css`
+  ${({ hasValue, focus }) => (hasValue && focus
+    ? css`
           border-top-right-radius: ${spacing(1)};
           border-top-left-radius: ${spacing(1)};
         `
-      : css`
+    : css`
           border-radius: ${spacing(1)};
-        `;
-  }};
+        `)};
 
-  ${({ focus }) =>
-    focus
-      ? css`
+  ${({ focus }) => (focus
+    ? css`
           border-bottom: 1px solid ${grey('200')};
         `
-      : null};
+    : null)};
 
   z-index: ${({ theme }) => theme.zIndex.drawer + 12};
 
   transition: ${colorTransition};
 
   &:hover {
-    background: ${({ focus, theme }) =>
-      focus ? undefined : fade(palette('common', 'white')({ theme }), 0.32)};
+    background: ${({ focus, theme }) => (focus ? undefined : fade(palette('common', 'white')({ theme }), 0.32))};
   }
 `;
 
@@ -100,4 +94,6 @@ const SearchInput = styled(JuiTextField)`
   }
 ` as typeof MuiTextField;
 
-export { SearchWrapper, CloseBtn, SearchInput, SearchIcon };
+export {
+  SearchWrapper, CloseBtn, SearchInput, SearchIcon,
+};

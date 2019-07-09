@@ -9,6 +9,7 @@ import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';
 import { getAppContextInfo } from './helper';
 import { isProductionVersion, isStage, isHotfix } from '@/common/envUtils';
+
 function generalErrorHandler(error: Error) {
   const jErr = ErrorParserHolder.getErrorParser().parse(error);
   mainLogger.error(jErr.message);

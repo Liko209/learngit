@@ -60,8 +60,8 @@ async function getThumbnailURLWithType(
     if (item.id < 0) {
       return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
     }
-    const origWidth = item.origWidth;
-    const origHeight = item.origHeight;
+    const { origWidth } = item;
+    const { origHeight } = item;
     let url = '';
     if (!item.type) {
       return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
@@ -150,19 +150,15 @@ async function getThumbnailURLWithType(
 
 function getMaxThumbnailURLInfo(item: FileItemModel) {
   if (item.thumbs && item.storeFileId) {
-    const urlKeys = Object.keys(item.thumbs).filter((key: string) =>
-      key.startsWith(`${item.storeFileId}`),
-    );
+    const urlKeys = Object.keys(item.thumbs).filter((key: string) => key.startsWith(`${item.storeFileId}`));
     // {storeFileId}[size={width}x{height}] size info is option
     const maxInfo = {
       urlKey: '',
       width: 0,
       height: 0,
     };
-    const getWidthKey = (width: number, height: number) =>
-      `width-${item.storeFileId}size=${width}x${height}`;
-    const getHeightKey = (width: number, height: number) =>
-      `height-${item.storeFileId}size=${width}x${height}`;
+    const getWidthKey = (width: number, height: number) => `width-${item.storeFileId}size=${width}x${height}`;
+    const getHeightKey = (width: number, height: number) => `height-${item.storeFileId}size=${width}x${height}`;
     const toNumber = (value: number | string) => {
       if (_.isNumber(value)) {
         return value;

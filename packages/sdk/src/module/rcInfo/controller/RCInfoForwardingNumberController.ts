@@ -18,6 +18,7 @@ import {
   EForwardingFlipNumberType,
   EForwardingNumberFeatureType,
 } from '../types';
+
 const ForwardingNumberTypeMap = {
   Home: EForwardingFlipNumberType.HOME,
   Work: EForwardingFlipNumberType.WORK,
@@ -43,7 +44,7 @@ class RCInfoForwardingNumberController {
     forwardingNumbers &&
       (await this.rcInfoUserConfig.setForwardingNumbers(forwardingNumbers));
     notificationCenter.emit(RC_INFO.RC_FORWARDING_NUMBERS, forwardingNumbers);
-  }
+  };
 
   async getForwardingFlipNumbers(
     type: EForwardingNumberFeatureType,
@@ -79,7 +80,7 @@ class RCInfoForwardingNumberController {
     }
     return result;
   }
-
+  /* eslint-disable no-prototype-builtins */
   private _convertForwardingNumberTypeToEnum(type: string) {
     return ForwardingNumberTypeMap.hasOwnProperty(type)
       ? ForwardingNumberTypeMap[type]

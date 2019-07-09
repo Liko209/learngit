@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { DialPad, JuiHeaderContainer, JuiContainer } from 'jui/pattern/Dialer';
@@ -24,7 +25,7 @@ class KeypadPanelView extends React.Component<KeypadPanelViewProps> {
         shouldHandleKeyboardEvts={dialerFocused}
       />
     );
-  }
+  };
 
   private _onFocus = () => {
     if (!this._dialerHeaderRef.current) {
@@ -36,7 +37,7 @@ class KeypadPanelView extends React.Component<KeypadPanelViewProps> {
     ) as HTMLDivElement).querySelector('[tabindex="0"]') as HTMLDivElement;
 
     fakeInput && fakeInput.focus();
-  }
+  };
 
   render() {
     return (

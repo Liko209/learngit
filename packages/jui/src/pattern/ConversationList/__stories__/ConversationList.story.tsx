@@ -20,7 +20,7 @@ import {
   JuiConversationList as List,
   JuiConversationListItem as ListItem,
   JuiConversationListSection as Section,
-} from '../';
+} from '..';
 
 import StoryWrapper from './StoryWrapper';
 
@@ -30,7 +30,7 @@ storiesOf('Pattern/ConversationList', module)
   .add('Section', () => (
     <StoryWrapper>
       <Section
-        icon="star"
+        icon='star'
         title={text('title', 'Favorite')}
         expanded={boolean('expanded', true)}
         umi={
@@ -53,42 +53,42 @@ storiesOf('Pattern/ConversationList', module)
       >
         <List onChange={action('onChange')}>
           <ListItem
-            title="Matthew"
+            title='Matthew'
             presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
             umi={<JuiUmi unreadCount={10} />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
-            title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
+            title='Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello'
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
-            umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
+            umi={<JuiUmi unreadCount={12} variant='auto' important />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
-            title="Maria"
+            title='Maria'
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={9} />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
-            title="Jupiter Team"
+            title='Jupiter Team'
             presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
-            title="Michael"
+            title='Michael'
             presence={<JuiPresence presence={PRESENCE.DND} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
           />
           <ListItem
-            title="Steve"
+            title='Steve'
             presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
             indicator={<span />}
             moreTooltipTitle={moreTooltipTitle}
@@ -102,42 +102,42 @@ storiesOf('Pattern/ConversationList', module)
     <StoryWrapper>
       <List onChange={action('onChange')}>
         <ListItem
-          title="Matthew"
+          title='Matthew'
           presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
           umi={<JuiUmi unreadCount={10} />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
         />
         <ListItem
-          title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
+          title='Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello'
           presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
-          umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
+          umi={<JuiUmi unreadCount={12} variant='auto' important />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
         />
         <ListItem
-          title="Maria"
+          title='Maria'
           presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
           umi={<JuiUmi unreadCount={9} />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
         />
         <ListItem
-          title="Jupiter Team"
+          title='Jupiter Team'
           presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
           umi={<JuiUmi unreadCount={0} />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
         />
         <ListItem
-          title="Michael"
+          title='Michael'
           presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
           umi={<JuiUmi unreadCount={0} />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
         />
         <ListItem
-          title="Steve"
+          title='Steve'
           presence={<JuiPresence presence={PRESENCE.ONCALL} />}
           indicator={<span />}
           moreTooltipTitle={moreTooltipTitle}
@@ -175,7 +175,7 @@ storiesOf('Pattern/ConversationList', module)
             {
               title: 'Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello',
               presence: <JuiPresence presence={PRESENCE.UNAVAILABLE} />,
-              umi: <JuiUmi unreadCount={12} variant="auto" important={true} />,
+              umi: <JuiUmi unreadCount={12} variant='auto' important />,
             },
             {
               title: 'Maria',

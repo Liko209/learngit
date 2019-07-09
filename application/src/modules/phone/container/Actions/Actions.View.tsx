@@ -2,16 +2,30 @@ import React, { ComponentType, Component } from 'react';
 import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ActionsProps, ActionsViewProps } from './types';
 import { JuiButtonBar } from 'jui/components/Buttons';
+import { PHONE_TAB } from '@/AnalyticsCollector/constants';
 import { More } from './More';
 import { Read } from './Read';
 import { Block } from './Block';
 import { Delete } from './Delete';
 import { Download } from './Download';
-import { ENTITY_TYPE } from '../constants';
+import { ENTITY_TYPE, BUTTON_BUFFER_COUNT } from '../constants';
 import { Message } from './Message';
 import { Call } from './Call';
 
+/* eslint-disable */
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
+  get tabName() {
+    const { entity } = this.props;
+    switch (entity) {
+      case ENTITY_TYPE.CALL_LOG:
+        return PHONE_TAB.CALL_HISTORY;
+      case ENTITY_TYPE.VOICEMAIL:
+        return PHONE_TAB.VOICEMAIL;
+      default:
+        return;
+    }
+  }
+
   get _actions() {
     const { entity, shouldShowBlock, person, showCall, isBlock } = this.props;
 
@@ -26,12 +40,13 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   }
 
   getButtons = (buttons: (false | ComponentType<any>)[], type: BUTTON_TYPE) => {
-    const { id, hookAfterClick, entity, caller, person } = this.props;
+    const { id, entity, caller, person, phoneNumber } = this.props;
     return buttons.map((ButtonComponent: ComponentType<any>, index: number) => {
       return (
         <ButtonComponent
+          tabName={this.tabName}
           key={`${id}-${type}-${index}`}
-          hookAfterClick={hookAfterClick}
+          phoneNumber={phoneNumber}
           entity={entity}
           caller={caller}
           person={person}
@@ -40,12 +55,12 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
         />
       );
     });
-  }
+  };
 
   getButtonsConfig = () => {
     const { maxButtonCount } = this.props;
 
-    if (maxButtonCount < this._actions.length) {
+    if (maxButtonCount + BUTTON_BUFFER_COUNT < this._actions.length) {
       const buttons = this._actions.slice(0, maxButtonCount);
       const dropdownItems = this._actions.slice(
         maxButtonCount,
@@ -61,7 +76,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
       buttons: this.getButtons(this._actions, BUTTON_TYPE.ICON),
       dropdownItems: null,
     };
-  }
+  };
 
   renderButtons = () => {
     const { buttons, dropdownItems } = this.getButtonsConfig();
@@ -69,13 +84,13 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
     if (dropdownItems) {
       buttons.push(
-        <More key="more" automationId={`${entity}-more-button`}>
+        <More key='more' automationId={`${entity}-more-button`}>
           {dropdownItems}
         </More>,
       );
     }
     return buttons;
-  }
+  };
 
   render() {
     return <JuiButtonBar overlapSize={0}>{this.renderButtons()}</JuiButtonBar>;

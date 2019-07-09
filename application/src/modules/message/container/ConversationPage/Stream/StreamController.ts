@@ -36,9 +36,9 @@ class StreamController {
   );
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
-    StreamItem,
-    number,
-    IStreamItemSortableModel
+  StreamItem,
+  number,
+  IStreamItemSortableModel
   >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;

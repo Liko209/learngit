@@ -20,7 +20,7 @@ describe('VoicemailItem.View', () => {
     // switch tab should be pause
     @test('should be pause if unmount component [JPT-2219]')
     t1() {
-      const props = {};
+      const props = { voiceMailResponsiveMap: { dateFormat: 'full' } };
       const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
@@ -35,9 +35,12 @@ describe('VoicemailItem.View', () => {
   class componentDidUpdate {
     @test('should not be called if selected is true [JPT-2222]')
     t1() {
-      const wrapper = shallow(<VoicemailItemView />, {
-        disableLifecycleMethods: true,
-      });
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+        {
+          disableLifecycleMethods: true,
+        },
+      );
       wrapper.setProps({
         selected: true,
       });
@@ -46,9 +49,12 @@ describe('VoicemailItem.View', () => {
 
     @test('should not be called if shouldPause is false [JPT-2222]')
     t2() {
-      const wrapper = shallow(<VoicemailItemView />, {
-        disableLifecycleMethods: true,
-      });
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+        {
+          disableLifecycleMethods: true,
+        },
+      );
       wrapper.setProps({
         selected: false,
       });
@@ -59,9 +65,12 @@ describe('VoicemailItem.View', () => {
       'should not be called if shouldPause is false && selected is true [JPT-2222]',
     )
     t3() {
-      const wrapper = shallow(<VoicemailItemView />, {
-        disableLifecycleMethods: true,
-      });
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+        {
+          disableLifecycleMethods: true,
+        },
+      );
       wrapper.setProps({
         selected: true,
         shouldPause: false,
@@ -73,9 +82,12 @@ describe('VoicemailItem.View', () => {
       'should not be called if shouldPause is true && selected is false [JPT-2222]',
     )
     t4() {
-      const wrapper = shallow(<VoicemailItemView />, {
-        disableLifecycleMethods: true,
-      });
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+        {
+          disableLifecycleMethods: true,
+        },
+      );
       wrapper.setProps({
         selected: false,
         shouldPause: true,
@@ -85,9 +97,12 @@ describe('VoicemailItem.View', () => {
 
     @test('should not be called if current is null [JPT-2222]')
     t5() {
-      const wrapper = shallow(<VoicemailItemView />, {
-        disableLifecycleMethods: true,
-      });
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+        {
+          disableLifecycleMethods: true,
+        },
+      );
       const inst = wrapper.instance();
       inst._AudioPlayer = {
         current: null,
@@ -100,7 +115,9 @@ describe('VoicemailItem.View', () => {
 
     @test('should be called if shouldPause is true && has current [JPT-2222]')
     t6() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+      );
       const inst = wrapper.instance();
       inst._AudioPlayer = audioPlayer;
       wrapper.setProps({
@@ -111,7 +128,9 @@ describe('VoicemailItem.View', () => {
 
     @test('should be called if selected is false && has current [JPT-2222]')
     t7() {
-      const wrapper = shallow(<VoicemailItemView />);
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
+      );
       const inst = wrapper.instance();
       inst._AudioPlayer = audioPlayer;
       wrapper.setProps({
@@ -124,35 +143,51 @@ describe('VoicemailItem.View', () => {
   @testable
   class playerMode {
     @test(
-      'should player progress show when playing and hide after pause. [JPT-2377]',
+      'should player progress show when hover and playing, and still show after pause, finally hide after not hover. [JPT-2377]',
     )
     t1() {
-      const props = { isAudioActive: false };
+      const props = {
+        isAudioActive: true,
+        isHover: true,
+        voiceMailResponsiveMap: {
+          audioMode: JuiAudioMode.FULL,
+          buttonToShow: 3,
+          dateFormat: 'full',
+        },
+      };
 
       const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
       const instance: any = wrapper.instance();
 
-      expect(instance.playerMode).toBe(JuiAudioMode.MINI);
-
-      wrapper.setProps({ isAudioActive: true });
-
       expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+
+      wrapper.setProps({ isAudioActive: false });
+      expect(instance.playerMode).toBe(JuiAudioMode.FULL);
+
+      wrapper.setProps({ isHover: false });
+      expect(instance.playerMode).toBe(JuiAudioMode.MINI);
     }
 
     @test(
       'should player progress show when hover and keep show after playing. [JPT-2374]',
     )
     t2() {
-      const props = { isAudioActive: false };
+      const props = {
+        isAudioActive: false,
+        isHover: true,
+        voiceMailResponsiveMap: {
+          audioMode: JuiAudioMode.FULL,
+          buttonToShow: 3,
+          dateFormat: 'full',
+        },
+      };
 
       const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
       const instance: any = wrapper.instance();
-
-      wrapper.setState({ isHover: true });
 
       expect(instance.playerMode).toBe(JuiAudioMode.FULL);
 

@@ -3,6 +3,7 @@
  * @Date: 2018-10-07 00:50:11
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import _ from 'lodash';
 import { transaction, action } from 'mobx';
 import { IdModel, ModelIdType } from 'sdk/framework/model';
@@ -246,7 +247,7 @@ export class FetchSortableDataListHandler<
     );
 
     this._updateTotalCount();
-  }
+  };
 
   @action
   handleDataUpdateReplace = (
@@ -378,7 +379,7 @@ export class FetchSortableDataListHandler<
     if (entities.size > 0) {
       this._updateTotalCount();
     }
-  }
+  };
 
   @action
   handleDataReload = (payload: NotificationEntityReloadPayload<IdType>) => {
@@ -401,7 +402,7 @@ export class FetchSortableDataListHandler<
     });
     this._defaultHasMoreUp && this.fetchData(QUERY_DIRECTION.OLDER);
     this._defaultHasMoreDown && this.fetchData(QUERY_DIRECTION.NEWER);
-  }
+  };
 
   onDataChanged(payload: NotificationEntityPayload<Model, IdType>) {
     switch (payload.type) {

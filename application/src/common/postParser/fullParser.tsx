@@ -36,11 +36,11 @@ import {
   MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH,
 } from './utils';
 import { URLParser } from './parsers/URLParser';
-import _ from 'lodash';
 import moize from 'moize';
 import { mainLogger } from 'sdk';
 import { AtMentionTransformer } from './parsers/AtMentionTransformer';
 
+/* eslint-disable */
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
   {
@@ -146,12 +146,7 @@ const _transformEmoji = (
     );
   }
 
-  if (
-    !emojiOptions.unicodeOnly &&
-    emojiOptions.customEmojiMap &&
-    Object.keys(emojiOptions.customEmojiMap).length &&
-    /:.+:/.test(fullText)
-  ) {
+  if (!emojiOptions.unicodeOnly && /:.+:/.test(fullText)) {
     _fullText = EmojiTransformer.replace(
       _fullText,
       emojiOptions,
@@ -261,9 +256,17 @@ const postParser: FullParser = (
 };
 
 const moizePostParser = moize(postParser, {
-  maxSize: 1000,
+  maxSize: 300,
+  maxAge: 300e3,
+  updateExpire: true,
   transformArgs: ([text, options]) => {
-    return [text, JSON.stringify(options)];
+    return [
+      `${text} ${options.keyword} ${options.html} ${
+        options.phoneNumber
+      } ${Object.values(options.atMentions.map)
+        .map(({ name }) => name)
+        .join(',')}`,
+    ];
   },
 });
 

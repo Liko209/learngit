@@ -10,7 +10,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiSearchTitle } from '../';
+import { JuiSearchTitle } from '..';
 import { text, boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module).add('SearchTitle', () => {

@@ -318,7 +318,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor['_callXApiResponseCallback'](mockResponse);
       expect(
         networkExecutor['_handle401XApiCompletionCallback'],
-      ).toBeCalledWith(mockResponse);
+      ).toBeCalled();
     });
 
     it('should call _handle502XApiCompletionCallback when status is BAD_GATEWAY', () => {
@@ -331,7 +331,7 @@ describe('NetworkRequestExecutor', () => {
       networkExecutor['_callXApiResponseCallback'](mockResponse);
       expect(
         networkExecutor['_handle502XApiCompletionCallback'],
-      ).toBeCalledWith(mockResponse);
+      ).toBeCalled();
       expect(networkExecutor['_callXApiCompletionCallback']).toBeCalledWith(
         mockResponse,
       );

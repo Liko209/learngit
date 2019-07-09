@@ -15,10 +15,12 @@ function normalizeLineEndings(str: string) {
   return str.replace(/\r\n|\r/g, '\n');
 }
 
-const StyledEditorWrapper = styled('div')<{
+type StyledEditorWrapperProps = {
   maxHeight: number;
   initAnimation: boolean;
-}>`
+};
+
+const StyledEditorWrapper = styled('div')<StyledEditorWrapperProps>`
   max-height: ${({ maxHeight }) => maxHeight}px;
   transition: max-height ${({ initAnimation }) => (initAnimation ? 0.75 : 0)}s
     ease-in-out;
@@ -185,6 +187,7 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
           prevScrollPosition.top,
         );
       }
+      /* eslint-disable no-prototype-builtins */
       if (typeof nextProps.codeMirrorOption === 'object') {
         for (const optionName in nextProps.codeMirrorOption) {
           if (
@@ -242,7 +245,9 @@ export class CodeEditor extends React.Component<CodeEditorProp, State> {
   }
 
   render() {
-    const { isCollapse, shouldCollapse, maxLine, collapseTo } = this.props;
+    const {
+      isCollapse, shouldCollapse, maxLine, collapseTo,
+    } = this.props;
     const { initAnimation } = this.state;
     const height = this.calcHeight(
       isCollapse,

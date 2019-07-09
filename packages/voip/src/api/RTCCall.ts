@@ -6,13 +6,11 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
-import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
   kRTCAnonymous,
   kRTCHangupInvalidCallInterval,
-  kRTCGetStatsInterval,
 } from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
@@ -63,7 +61,6 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
-  private _rtcMediaStatsManager: RTCMediaStatsManager;
   private _isReinviteForHoldOrUnhold: boolean;
 
   constructor(
@@ -114,8 +111,6 @@ class RTCCall {
       { key: CALL_REPORT_PROPS.UA, value: userInfo },
     ]);
     CallReport.instance().updateEstablishment(establishmentKey);
-
-    this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
   }
 
@@ -131,7 +126,7 @@ class RTCCall {
         RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       this.hangup();
-    },                                        kRTCHangupInvalidCallInterval * 1000);
+    }, kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
@@ -224,8 +219,8 @@ class RTCCall {
   }
 
   hangup(): void {
-    this._account.removeCallFromCallManager(this._callInfo.uuid);
     this._fsm.hangup();
+    this._account.removeCallFromCallManager(this._callInfo.uuid);
   }
 
   flip(target: number): void {
@@ -399,9 +394,6 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
       this._clearHangupTimer();
-      this._callSession.getMediaStats((report: any, session: any) => {
-        this._rtcMediaStatsManager.setMediaStatsReport(report);
-      },                              kRTCGetStatsInterval * 1000);
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -739,9 +731,7 @@ class RTCCall {
       );
       return;
     }
-    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => {
-      return sub.split('=');
-    });
+    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => sub.split('='));
     this._callInfo.partyId = idMap[0][1];
     this._callInfo.sessionId = idMap[1][1];
     CallReport.instance().update(
@@ -750,9 +740,7 @@ class RTCCall {
     );
     rtcLogger.info(
       LOG_TAG,
-      `Got party id=${this._callInfo.partyId} session id=${
-        this._callInfo.sessionId
-      }`,
+      `Got party id=${this._callInfo.partyId} session id=${this._callInfo.sessionId}`,
     );
   }
 }

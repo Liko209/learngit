@@ -30,6 +30,7 @@ class PreloadController implements IImageDownloadedListener {
   private _cachedIds: Set<number>;
   private _pendingIds: number[] = [];
   private _inProgressId: number = 0;
+  private _isAllowed: boolean = false;
   private _downloader: ImageDownloader;
   private _sequenceHandler: SequenceProcessorHandler;
 
@@ -60,6 +61,16 @@ class PreloadController implements IImageDownloadedListener {
     this._downloader.cancelLoadingImage();
   }
 
+  setIsAllowed(allowed: boolean) {
+    const shouldStart = allowed && !this._isAllowed;
+    if (allowed !== this._isAllowed) {
+      this._logger.info(`Will switch _isAllowed to ${allowed}`);
+    }
+    this._isAllowed = allowed;
+
+    shouldStart && this._startPreload();
+  }
+
   getPendingIds() {
     return this._pendingIds;
   }
@@ -68,14 +79,14 @@ class PreloadController implements IImageDownloadedListener {
     return this._inProgressId;
   }
 
-  onSuccess(item: DownloadItemInfo, width: number, height: number): void {
+  onSuccess(item: DownloadItemInfo): void {
     this._logger.info(`onSuccess ${item.id}`);
     this._cachedIds.add(item.id);
 
     this._doNextPreload();
   }
 
-  onFailure(item: DownloadItemInfo, errorCode: number): void {
+  onFailure(item: DownloadItemInfo): void {
     this._logger.info(`onFailure ${item.id}`);
 
     this._doNextPreload();
@@ -104,9 +115,7 @@ class PreloadController implements IImageDownloadedListener {
   }
 
   private _filterOutCachedIds(itemIds: number[]) {
-    return itemIds.filter((itemId: number) => {
-      return !this._cachedIds.has(itemId);
-    });
+    return itemIds.filter((itemId: number) => !this._cachedIds.has(itemId));
   }
 
   @action
@@ -162,6 +171,10 @@ class PreloadController implements IImageDownloadedListener {
   }
 
   private _startPreload() {
+    if (!this._isAllowed) {
+      this._logger.info('Not allow to preload');
+      return;
+    }
     if (this._inProgressId) {
       this._logger.info(`In progress: ${this._inProgressId}`);
       return;

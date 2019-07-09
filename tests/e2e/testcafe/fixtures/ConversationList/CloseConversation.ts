@@ -378,8 +378,8 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
 
 test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'ConversationList']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  const otherUser = users[5];
+  const loginUser = users[1];
+  const otherUser = users[0];
 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();

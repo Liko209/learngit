@@ -5,6 +5,7 @@
  */
 import { mainLogger } from 'foundation';
 import { LOG_LEVEL, IRTCLogger } from './IRTCLogger';
+
 class RTCLoggerProxy {
   private _logger: IRTCLogger;
 
@@ -50,6 +51,8 @@ class RTCLoggerProxy {
         return 'Info';
       case LOG_LEVEL.TRACE:
         return 'Trace';
+      default:
+        return 'Warning';
     }
   }
 
@@ -89,6 +92,8 @@ class RTCLoggerProxy {
         break;
       case 'error':
         this.error(tag, content);
+        break;
+      default:
         break;
     }
   }

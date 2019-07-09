@@ -3,6 +3,7 @@
  * @Date: 2019-01-16 17:32:18
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React from 'react';
 import { JuiCodeSnippetBody } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
@@ -51,13 +52,13 @@ class CodeSnippet extends React.Component<
 
   handleCopy = () => {
     copy(this.props.postItem.body);
-  }
+  };
 
   handleDownload = () => {
     const name = `${this.props.postItem.title}.txt`;
     const blob = new Blob([this.props.postItem.body], { type: 'text/plain' });
     saveBlob(name, blob);
-  }
+  };
 
   _getHeaderActions = memoize(() => {
     const { t } = this.props;
@@ -107,29 +108,29 @@ class CodeSnippet extends React.Component<
     }
 
     return actions;
-  }
+  };
 
   handleMouseEnter = () => {
     this.setState({ showHeaderActions: true, hover: true });
-  }
+  };
 
   handleMouseLeave = () => {
     this.setState({ showHeaderActions: false, hover: false });
-  }
+  };
 
   handleExpand = () => {
     this.setState({ isCollapse: false });
     this.props.setCollapse(false);
-  }
+  };
 
   handleCollapse = () => {
     this.setState({ isCollapse: true });
     this.props.setCollapse(true);
-  }
+  };
 
   calcTotalLines = (content: string) => {
     return (content.match(/\r?\n/g) || '').length + 1;
-  }
+  };
 
   render() {
     const { title, mode: language, mimeType, body = '' } = this.props.postItem;
@@ -140,7 +141,7 @@ class CodeSnippet extends React.Component<
 
     return (
       <JuiConversationItemCard
-        Icon="code"
+        Icon='code'
         title={postParser(title, { keyword: this.context.keyword })}
         contentHasPadding={false}
         headerActions={this._getHeaderActions()}
@@ -162,7 +163,7 @@ class CodeSnippet extends React.Component<
         >
           <CodeEditor
             value={body}
-            mode="view"
+            mode='view'
             maxLine={MAX_EDITOR_LINES}
             collapseTo={COLLAPSE_TO}
             defaultLineLimit={DEFAULT_LINE_LIMIT}

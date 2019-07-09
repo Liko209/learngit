@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, CSSProperties, RefObject, createRef } from 'react';
+import React, {
+  Component, CSSProperties, RefObject, createRef,
+} from 'react';
 import portalManager from '@/common/PortalManager';
 
 type Return = {

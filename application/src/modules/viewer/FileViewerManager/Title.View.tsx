@@ -14,6 +14,7 @@ import {
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
   JuiDialogHeaderSubtitle,
+  JuiDialogHeaderTitleMainTitle,
 } from 'jui/components/Dialog/DialogHeader';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { Avatar } from '@/containers/Avatar';
@@ -25,9 +26,9 @@ import { TitleType } from '../container/ViewerView/interface';
 import { Download } from '@/containers/common/Download';
 
 type Type = TitleType &
-  WithTranslation & {
-    closeViewer: () => void;
-  };
+WithTranslation & {
+  closeViewer: () => void;
+};
 
 @observer
 class ViewerTitleViewComponent extends Component<Type> {
@@ -49,20 +50,31 @@ class ViewerTitleViewComponent extends Component<Type> {
     return (
       <>
         <JuiDialogHeaderMeta>
-          <JuiDialogHeaderMetaLeft>
-            <Avatar uid={uid} data-test-automation-id={'viewerSenderAvatar'} />
-          </JuiDialogHeaderMetaLeft>
-          <JuiDialogHeaderMetaRight
-            title={userDisplayName}
-            data-test-automation-id={'viewerSenderInfo'}
-            subtitle={createdAt}
-          />
+          {uid && (
+            <>
+              <JuiDialogHeaderMetaLeft>
+                <Avatar
+                  uid={uid}
+                  data-test-automation-id={'viewerSenderAvatar'}
+                />
+              </JuiDialogHeaderMetaLeft>
+              <JuiDialogHeaderMetaRight
+                title={userDisplayName}
+                data-test-automation-id={'viewerSenderInfo'}
+                subtitle={createdAt}
+              />
+            </>
+          )}
         </JuiDialogHeaderMeta>
         <JuiDialogHeaderTitle
           variant="responsive"
           data-test-automation-id={'viewerTitle'}
         >
-          <span data-test-automation-id={'viewerFileName'}>{name}</span>
+          <JuiDialogHeaderTitleMainTitle
+            data-test-automation-id={'viewerFileName'}
+          >
+            {name}
+          </JuiDialogHeaderTitleMainTitle>
           <JuiDialogHeaderSubtitle data-test-automation-id={'viewerPageCount'}>
             <JuiViewerTitleWrap>
               <JuiTextField
@@ -79,9 +91,15 @@ class ViewerTitleViewComponent extends Component<Type> {
           </JuiDialogHeaderSubtitle>
         </JuiDialogHeaderTitle>
         <JuiDialogHeaderActions data-test-automation-id={'viewerActions'}>
-          <JuiButtonBar overlapSize={-2}>
-            <Download url={downloadUrl} />
-            <FileActionMenu fileId={fileId} disablePortal={true} />
+          <JuiButtonBar overlapSize={2}>
+            <Download url={downloadUrl} variant="round" />
+            <FileActionMenu
+              showViewInPostAction
+              groupId={this.props.groupId}
+              fileId={fileId}
+              disablePortal
+              variant="round"
+            />
             <JuiIconButton
               onClick={closeViewer}
               aria-label={t('common.dialog.close')}

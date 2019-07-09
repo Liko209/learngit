@@ -147,15 +147,15 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     this.setState({
       arrowRef: node,
     });
-  }
+  };
 
   handleTooltipClose = () => {
     this.setState({ open: false });
-  }
+  };
 
   handleTooltipOpen = () => {
     this.setState({ open: true });
-  }
+  };
 
   componentDidUpdate() {
     if (this.props.tooltipForceHide === true) {
@@ -167,6 +167,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     const {
       title,
       children,
+      tooltipForceHide,
       placement = 'bottom',
       color = ['grey', 700] as Color,
       open: propOpen,

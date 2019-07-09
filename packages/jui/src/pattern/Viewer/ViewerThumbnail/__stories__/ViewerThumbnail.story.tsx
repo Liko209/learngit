@@ -23,17 +23,17 @@ storiesOf('Pattern/Viewer', module).add('ViewerThumbnail', () => {
       <JuiViewerThumbnail thumbnailNumber={0} onSelected={handleSelected}>
         <img
           style={{ width: '100%' }}
-          src="https://via.placeholder.com/800x400.png?text=Viewer+Thumbnail+image+placeholder"
+          src='https://via.placeholder.com/800x400.png?text=Viewer+Thumbnail+image+placeholder'
         />
       </JuiViewerThumbnail>
       <JuiViewerThumbnail
         thumbnailNumber={1}
-        selected={true}
+        selected
         onSelected={handleSelected}
       >
         <img
           style={{ width: '100%' }}
-          src="https://via.placeholder.com/800x200.png?text=Viewer+Thumbnail+image+placeholder"
+          src='https://via.placeholder.com/800x200.png?text=Viewer+Thumbnail+image+placeholder'
         />
       </JuiViewerThumbnail>
       <JuiViewerThumbnail
@@ -43,7 +43,7 @@ storiesOf('Pattern/Viewer', module).add('ViewerThumbnail', () => {
       >
         <img
           style={{ width: '100%' }}
-          src="https://via.placeholder.com/350x500.png?text=Viewer+Thumbnail+image+placeholder"
+          src='https://via.placeholder.com/350x500.png?text=Viewer+Thumbnail+image+placeholder'
         />
       </JuiViewerThumbnail>
     </div>

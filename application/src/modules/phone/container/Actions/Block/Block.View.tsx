@@ -3,10 +3,10 @@
  * @Date: 2019-06-24 13:13:44
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { ActionButton, BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { Notification } from '@/containers/Notification';
 import { Dialog } from '@/containers/Dialog';
 import React, { Component } from 'react';
@@ -16,6 +16,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { PHONE_ITEM_ACTIONS } from '@/AnalyticsCollector/constants';
 import { SOURCE } from '../../constants';
 import { BlockViewProps } from './types';
 
@@ -31,19 +32,22 @@ class BlockViewComponent extends Component<Props> {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
 
   private _handleUnblock = async () => {
+    const { tabName, unblock } = this.props;
     analyticsCollector.unblockNumber(this._source);
-    const result = await this.props.unblock();
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.UNBLOCK);
+    const result = await unblock();
     if (!result) {
       return;
     }
     this.notifyActionSuccess('phone.prompt.numberHasBeenUnblocked');
-  }
+  };
 
   private _handleBlock = () => {
-    const { t } = this.props;
+    const { t, tabName } = this.props;
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.BLOCK);
     const dialog = Dialog.confirm({
       modalProps: { 'data-test-automation-id': 'blockNumberConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'blockNumberOkButton' },
@@ -60,31 +64,29 @@ class BlockViewComponent extends Component<Props> {
       cancelText: t('common.dialog.cancel'),
       onOK: () => this.onBlockConfirm(dialog),
     });
-  }
+  };
 
   onBlockConfirm = async (dialog: any) => {
+    const { block } = this.props;
     dialog.startLoading();
     analyticsCollector.blockNumber(this._source);
-    const result = await this.props.block();
+    const result = await block();
     dialog.stopLoading();
     if (!result) {
       return false;
     }
     this.notifyActionSuccess('phone.prompt.numberHasBeenBlocked');
     return true;
-  }
+  };
 
   _handleClick = async () => {
-    const { isBlocked, hookAfterClick, type } = this.props;
+    const { isBlocked } = this.props;
     if (isBlocked) {
       await this._handleUnblock();
     } else {
       await this._handleBlock();
     }
-    if (type === BUTTON_TYPE.MENU_ITEM && hookAfterClick) {
-      hookAfterClick();
-    }
-  }
+  };
 
   get _source() {
     const { entity } = this.props;

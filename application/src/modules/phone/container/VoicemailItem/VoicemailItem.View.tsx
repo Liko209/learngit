@@ -3,6 +3,7 @@
  * @Date: 2019-06-01 14:56:34
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -12,17 +13,26 @@ import {
   VoicemailSummary,
   StyledAudioPlayerWrapper,
   StyledContactWrapper,
+  StyledActionWrapper,
   // StyledVoicemailDetail,
 } from 'jui/pattern/Phone/VoicemailItem';
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
-import { VoicemailViewProps, JuiAudioMode } from './types';
-import { ENTITY_TYPE, MAX_BUTTON_COUNT } from '../constants';
+import {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioMode,
+  ResponsiveObject,
+} from './types';
+import { ENTITY_TYPE } from '../constants';
+import { getCreateTime } from '@/utils/date';
 
-type VoicemailItemProps = VoicemailViewProps & WithTranslation & { id: number };
+type VoicemailItemProps = VoicemailViewProps &
+  VoicemailProps &
+  WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
+
 type State = {
-  isHover: boolean;
   showCall: boolean;
 };
 
@@ -31,7 +41,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   private _AudioPlayer = React.createRef<JuiAudioPlayer>();
 
   state = {
-    isHover: false,
     showCall: false,
   };
 
@@ -46,10 +55,16 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   }
 
   get playerMode() {
-    const { isHover } = this.state;
-    const { isAudioActive } = this.props;
+    const {
+      isHover,
+      isAudioActive,
+      voiceMailResponsiveMap: voiceMailResponsiveMap,
+    } = this.props;
 
-    return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+    if (voiceMailResponsiveMap.audioMode === JuiAudioMode.FULL) {
+      return isHover || isAudioActive ? JuiAudioMode.FULL : JuiAudioMode.MINI;
+    }
+    return voiceMailResponsiveMap.audioMode;
   }
 
   componentDidUpdate() {
@@ -63,14 +78,6 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
     if (this._AudioPlayer.current) {
       this._AudioPlayer.current.pause();
     }
-  }
-
-  handleMouseOver = () => {
-    this.setState({ isHover: true });
-  }
-
-  handleMouseLeave = () => {
-    this.setState({ isHover: false });
   }
 
   private _getTips() {
@@ -105,22 +112,26 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       createTime,
       direction,
       canEditBlockNumbers,
+      onMouseOver,
+      onMouseLeave,
+      isHover,
+      voiceMailResponsiveMap: voiceMailResponsiveMap,
       // onChange,
       // selected,
     } = this.props;
-    const { isHover, showCall } = this.state;
+    const { showCall } = this.state;
 
     return (
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class="voicemail-item"
+        data-test-automation-class='voicemail-item'
         expanded={false}
       >
         <VoicemailSummary
           isUnread={isUnread}
-          onMouseOver={this.handleMouseOver}
-          onMouseLeave={this.handleMouseLeave}
+          onMouseLeave={onMouseLeave}
+          onMouseOver={onMouseOver}
         >
           <StyledContactWrapper>
             <ContactInfo
@@ -133,6 +144,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
           {audio && (
             <StyledAudioPlayerWrapper>
               <JuiAudioPlayer
+                responsiveSize={voiceMailResponsiveMap}
                 ref={this._AudioPlayer}
                 onBeforePlay={onBeforePlay}
                 onBeforeAction={onBeforeAction}
@@ -152,19 +164,20 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
           )}
           {!isHover && (
             <StyledTime data-test-automation-id={`voicemail-${id}-time`}>
-              {createTime}
+              {getCreateTime(createTime, voiceMailResponsiveMap.dateFormat)}
             </StyledTime>
           )}
           {isHover && (
-            <Actions
-              id={id}
-              caller={caller}
-              entity={ENTITY_TYPE.VOICEMAIL}
-              maxButtonCount={MAX_BUTTON_COUNT}
-              hookAfterClick={this.handleMouseLeave}
-              canEditBlockNumbers={canEditBlockNumbers}
-              showCall={showCall}
-            />
+            <StyledActionWrapper>
+              <Actions
+                id={id}
+                caller={caller}
+                entity={ENTITY_TYPE.VOICEMAIL}
+                maxButtonCount={voiceMailResponsiveMap.buttonToShow}
+                canEditBlockNumbers={canEditBlockNumbers}
+                showCall={showCall}
+              />
+            </StyledActionWrapper>
           )}
         </VoicemailSummary>
         {/* <StyledVoicemailDetail> */}

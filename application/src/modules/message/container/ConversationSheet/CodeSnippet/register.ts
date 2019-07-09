@@ -5,7 +5,7 @@
  */
 
 import { TypeDictionary } from 'sdk/utils';
-import { CodeSnippet } from './';
+import { CodeSnippet } from '.';
 
 export default {
   priority: 0,

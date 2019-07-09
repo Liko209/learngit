@@ -10,7 +10,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiRightRailLoading } from '../';
+import { JuiRightRailLoading } from '..';
 
 storiesOf('Pattern/ConversationLoading', module).add(
   'JuiRightRailLoading',

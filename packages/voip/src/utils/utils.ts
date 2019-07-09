@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { rtcLogger } from './RTCLoggerProxy';
 
 function isNotEmptyString(data: any): boolean {
   return typeof data === 'string' && data.length > 0;
@@ -13,6 +13,15 @@ function isNotEmptyString(data: any): boolean {
 function isFireFox() {
   const userAgent = navigator.userAgent;
   return userAgent && userAgent.indexOf('Firefox') > -1;
+}
+
+function isSafari() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  return (
+    userAgent &&
+    userAgent.indexOf('safari') > -1 &&
+    userAgent.indexOf('chrome') < 0
+  );
 }
 
 function opusPTInRtpmap(sdp: any): string {
@@ -80,10 +89,16 @@ function opusModifier(RTCSessionDescription: any): any {
   return Promise.resolve(RTCSessionDescription);
 }
 
+function randomBetween(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 export {
   isNotEmptyString,
   opusModifier,
   customizedOpusFmtp,
   opusPTInRtpmap,
   isFireFox,
+  isSafari,
+  randomBetween,
 };

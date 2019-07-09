@@ -13,7 +13,7 @@ import {
   grey,
 } from '../../foundation/utils';
 import * as EmptyScreen from './style';
-import { JuiEmptyScreenProps } from './';
+import { JuiEmptyScreenProps } from './types';
 
 const Wrapper = styled(EmptyScreen.Wrapper)`
   width: ${width(67)};
@@ -46,20 +46,26 @@ const JuiFlexWrapper = styled.div`
 `;
 
 const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
-  const { image, text, content, actions } = props;
-
+  const {
+    image, text, content, actions,
+  } = props;
+  /* eslint-disable react/no-array-index-key */
   return (
     <Wrapper>
       <Pic src={image} />
-      <Text data-test-automation-id="right-shelf-empty-screen-text">{text}</Text>
-      <Content data-test-automation-id="right-shelf-empty-screen-content">{content}</Content>
+      <Text data-test-automation-id="right-shelf-empty-screen-text">
+        {text}
+      </Text>
+      <Content data-test-automation-id="right-shelf-empty-screen-content">
+        {content}
+      </Content>
       <EmptyScreen.Actions>
         {actions.length
           ? actions.map((action, inx) => (
               <EmptyScreen.ActionWrapper key={inx}>
                 {action}
               </EmptyScreen.ActionWrapper>
-            ))
+          ))
           : actions}
       </EmptyScreen.Actions>
     </Wrapper>

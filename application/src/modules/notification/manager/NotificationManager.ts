@@ -3,7 +3,9 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { INotificationService, NotificationOpts } from './../interface';
+
 type NotificationId = number | string;
 
 export abstract class AbstractNotificationManager {

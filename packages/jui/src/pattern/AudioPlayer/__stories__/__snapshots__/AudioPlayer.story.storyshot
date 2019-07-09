@@ -6,7 +6,6 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c5 {
@@ -196,12 +195,12 @@ exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
-  color: #9e9e9e;
+  color: #757575;
 }
 
 .c7.c7 {
-  margin: 0px 16px;
-  width: 120px;
+  margin: 0px 10px;
+  width: 90px;
 }
 
 .c7 > div > div {

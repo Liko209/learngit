@@ -7,7 +7,9 @@ type Parameter = {
   user: string;
 };
 
-export default ({ verb, adjective, noun, user }: Parameter) => {
+export default ({
+  verb, adjective, noun, user,
+}: Parameter) => {
   const parameter = {
     verb,
     noun,

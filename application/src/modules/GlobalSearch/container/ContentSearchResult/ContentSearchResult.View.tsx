@@ -23,7 +23,7 @@ import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 
 type Props = ContentSearchResultViewProps &
-  WithTranslation & { isShow: boolean };
+WithTranslation & { isShow: boolean };
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
@@ -37,7 +37,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
     if (height !== this.state.height || size.width !== this.state.width) {
       this.setState({ height, width: size.width });
     }
-  }
+  };
   render() {
     const {
       t,
@@ -80,7 +80,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
                       isShow={isShow}
                       postIds={searchState.postIds}
                       postFetcher={onPostsFetch}
-                      selfProvide={true}
+                      selfProvide
                     />
                   </SearchHighlightContext.Provider>
                 )}

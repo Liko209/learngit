@@ -8,6 +8,7 @@ import {
   extractHiddenGroupIds,
   extractHiddenGroupIdsWithoutUnread,
 } from './service/ProfileUtils';
+
 export {
   ProfileService,
   extractHiddenGroupIds,

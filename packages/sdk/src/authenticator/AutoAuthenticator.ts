@@ -92,10 +92,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
         data: glipToken,
       });
     } else {
-      // todo: for now, ui can not support the rc only mode
-      // so will return false to logout when glip is down
-      // response.isRCOnlyMode = true;
-      return { success: false };
+      response.isRCOnlyMode = true;
     }
 
     return response;

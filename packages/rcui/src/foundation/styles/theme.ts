@@ -14,7 +14,11 @@ import { Transitions } from '@material-ui/core/styles/transitions';
 import { Shadows } from '@material-ui/core/styles/shadows';
 import { ZIndex as MuiZIndex } from '@material-ui/core/styles/zIndex';
 import { Spacing as MuiSpacing } from '@material-ui/core/styles/spacing';
-import { Typography as MuiTypography } from '@material-ui/core/styles/createTypography';
+import {
+  TypographyStyle,
+  FontStyle,
+  TypographyUtils,
+} from '@material-ui/core/styles/createTypography';
 import {
   Palette as MuiPalette,
   PaletteColor,
@@ -24,15 +28,34 @@ import {
 
 export type Palette = { [P in keyof typeof palette]: PaletteColor } &
   MuiPalette;
-export type Typography = typeof typography & MuiTypography;
+
+export type ThemeStyle =
+  | 'display4'
+  | 'display3'
+  | 'display2'
+  | 'display1'
+  | 'headline'
+  | 'title2'
+  | 'title1'
+  | 'subheading3'
+  | 'subheading2'
+  | 'subheading1'
+  | 'body2'
+  | 'body1'
+  | 'caption2'
+  | 'caption1'
+  | 'button';
+
+// tslint:disable-next-line: interface-name
+export interface Typography
+  extends Record<ThemeStyle, TypographyStyle>,
+    FontStyle,
+    TypographyUtils {}
+
 export type Opacity = typeof opacity;
 export type Radius = typeof radius;
 export type Spacing = typeof spacing & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
-export type size = {
-  width: number;
-  height: number;
-};
 
 export { Transitions, Shadows };
 
@@ -43,7 +66,6 @@ export type Theme = {
   radius: Radius;
   spacing: Spacing;
   zIndex: ZIndex;
-  size: size;
 } & MuiTheme;
 
 export type PaletteOptions = typeof palette;
@@ -55,7 +77,7 @@ export type ZIndexOptions = typeof zIndex;
 export type BreakpointsOptions = typeof breakpoints;
 export type Color = [
   keyof PaletteOptions | 'grey',
-  keyof ColorPartial | keyof SimplePaletteColorOptions
+  keyof ColorPartial | keyof SimplePaletteColorOptions,
 ];
 
 export type ThemeOptions = {

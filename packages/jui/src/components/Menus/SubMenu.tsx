@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useState, useCallback } from 'react';
-import { StyledMenuItem } from '../Menus/MenuItem';
-import { JuiMenuList } from '../Menus/MenuList';
+import { StyledMenuItem } from './MenuItem';
+import { JuiMenuList } from './MenuList';
 import { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
 import { JuiIconography } from '../../foundation/Iconography';
@@ -40,7 +40,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
 
   const Anchor = useCallback(() => {
     if (disabled) {
-      return <StyledMenuItem disabled={true}>{title}</StyledMenuItem>;
+      return <StyledMenuItem disabled>{title}</StyledMenuItem>;
     }
     return (
       <StyledSubMenuItem {...rest}>
@@ -50,7 +50,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
         </JuiIconography>
       </StyledSubMenuItem>
     );
-  },                         [disabled]);
+  }, [disabled]);
 
   const open = Boolean(anchorEl);
 
@@ -63,7 +63,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
       onMouseEnter={openPopper}
       onMouseLeave={closePopper}
       onClose={closePopper}
-      noTransition={true}
+      noTransition
     >
       <JuiMenuList>{props.children}</JuiMenuList>
     </JuiPopperMenu>

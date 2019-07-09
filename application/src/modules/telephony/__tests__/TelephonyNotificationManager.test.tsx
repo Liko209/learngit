@@ -125,7 +125,7 @@ describe('TelephonyNotificationManager', () => {
       Object.assign(telephonyStore, {
         isContactMatched: true,
       });
-      expect(telephonyNotificationManager._showNotification).toBeCalled();
+      expect(telephonyNotificationManager._showNotification).toHaveBeenCalled();
     });
     it('should not call _showNotification() when incomingCallsSettingItem value is off', () => {
       jest
@@ -138,7 +138,9 @@ describe('TelephonyNotificationManager', () => {
       });
       setUpMock(NOTIFICATION_OPTIONS.OFF);
       telephonyNotificationManager.init();
-      expect(telephonyNotificationManager._showNotification).not.toBeCalled();
+      expect(
+        telephonyNotificationManager._showNotification,
+      ).not.toHaveBeenCalled();
     });
 
     it.each`
@@ -158,7 +160,9 @@ describe('TelephonyNotificationManager', () => {
         Object.assign(telephonyStore, {
           isContactMatched: false,
         });
-        expect(telephonyNotificationManager._closeNotification).toBeCalled();
+        expect(
+          telephonyNotificationManager._closeNotification,
+        ).toHaveBeenCalled();
       },
     );
     it('should call show() with body contains "belle" when the call is from a caller which has a match in contacts', async () => {

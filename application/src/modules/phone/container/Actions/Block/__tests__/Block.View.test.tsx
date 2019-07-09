@@ -43,22 +43,27 @@ const checkNotification = (message: string) => ({
   type: 'success',
 });
 
+const phoneNumber = '+1234567890';
+
 const mockProps = {
+  phoneNumber,
   id: 1234,
   block: () => jest.fn().mockReturnValue(true),
   unblock: () => jest.fn().mockReturnValue(true),
-  caller: {} as Caller,
+  caller: {
+    phoneNumber,
+  } as Caller,
 };
 
 describe('Block', () => {
   @testable
   class init {
     @test(
-      'should render correct when button is icon type under block status [JPT-2408-Step1]',
+      'should render correct when button is icon type under block status [JPT-2408-Step1/JPT-2462]',
     )
     t1() {
       const wrapper = mountWithTheme(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />,
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked />,
       );
       const buttonProps = wrapper.find(JuiIconButton).props();
       expect(buttonProps.children).toBe('unblocked');
@@ -67,7 +72,7 @@ describe('Block', () => {
     }
 
     @test(
-      'should render correct when button is icon type under unblock status [JPT-2409-Step1]',
+      'should render correct when button is icon type under unblock status [JPT-2409-Step1/JPT-2462]',
     )
     t2() {
       const wrapper = mountWithTheme(
@@ -84,11 +89,7 @@ describe('Block', () => {
     )
     t3() {
       const wrapper = mountWithTheme(
-        <BlockView
-          {...mockProps}
-          type={BUTTON_TYPE.MENU_ITEM}
-          isBlocked={true}
-        />,
+        <BlockView {...mockProps} type={BUTTON_TYPE.MENU_ITEM} isBlocked />,
       );
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
@@ -172,7 +173,7 @@ describe('Block', () => {
     )
     async t1() {
       const wrapper = shallow(
-        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked={true} />,
+        <BlockView {...mockProps} type={BUTTON_TYPE.ICON} isBlocked />,
       );
       await wrapper.simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -184,7 +185,7 @@ describe('Block', () => {
     async t2() {
       const fn = () => false;
       const wrapper = shallow(
-        <BlockView unblock={fn} type={BUTTON_TYPE.ICON} isBlocked={true} />,
+        <BlockView unblock={fn} type={BUTTON_TYPE.ICON} isBlocked />,
       );
       await wrapper.simulate('click');
       expect(Notification.flashToast).not.toHaveBeenCalled();

@@ -8,6 +8,7 @@ import { ItemUtils, FileItemUtils } from './utils';
 import { ItemService } from './service';
 import { ITEM_SORT_KEYS } from './constants';
 import { ItemQueryOptions } from './types';
+
 export {
   ItemService,
   ITEM_SORT_KEYS,

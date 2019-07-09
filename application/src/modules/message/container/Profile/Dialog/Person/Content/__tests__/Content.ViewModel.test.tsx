@@ -11,7 +11,6 @@ import { PHONE_NUMBER_TYPE } from 'sdk/module/person/entity';
 import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
 jest.mock('@/store/utils');
-jest.mock('foundation');
 jest.mock('sdk/module/phoneNumber/service/PhoneNumberService');
 jest.mock('@/store/models/PhoneNumber');
 jest.mock('@/modules/common/container/PhoneNumberFormat');
@@ -93,7 +92,9 @@ describe('MemberListItemViewModel', () => {
       (formatPhoneNumber as jest.Mock).mockImplementationOnce(() => {
         return phoneNumber;
       });
-      expect(vm.directNumbers).toMatchObject( [{"phoneNumber": phoneNumber, "type": 0}])
+      expect(vm.directNumbers).toMatchObject([
+        { phoneNumber: phoneNumber, type: 0 },
+      ]);
     });
   });
 });

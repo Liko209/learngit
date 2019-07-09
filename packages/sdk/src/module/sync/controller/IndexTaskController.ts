@@ -7,6 +7,7 @@ import { TaskController } from '../../../framework/controller/impl/TaskControlle
 import { ITaskStrategy } from '../../../framework/strategy/ITaskStrategy';
 import { IndexDataTaskStrategy } from '../strategy/IndexDataTaskStrategy';
 import { mainLogger } from 'foundation';
+
 const MAX_COUNT = 2;
 
 const LOG_TAG = 'INDEX_TASK_CONTROLLER';
@@ -41,7 +42,7 @@ class IndexTaskController {
     mainLogger.tags(LOG_TAG).info('new task arrived');
     const task = this._taskControllerQueue[0];
     if (task && !task.isExecuting()) {
-      task.start((success: boolean) => {
+      task.start(() => {
         const value = this._taskControllerQueue.shift();
         value && value.clear();
         this._onTaskArrived();

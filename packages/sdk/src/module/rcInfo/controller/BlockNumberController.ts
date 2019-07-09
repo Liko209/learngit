@@ -64,12 +64,10 @@ class BlockNumberController {
 
   async addBlockedNumber(phoneNumber: string): Promise<void> {
     const blockNumberList = (await this._DBConfig.getBlockNumbers()) || [];
-    const isExist = blockNumberList.some((blockNumber: BlockNumberItem) => {
-      return (
-        this._isValidBlockNumber(blockNumber) &&
+    const isExist = blockNumberList.some((blockNumber: BlockNumberItem) => (
+      this._isValidBlockNumber(blockNumber) &&
         blockNumber.phoneNumber === phoneNumber
-      );
-    });
+    ));
 
     if (isExist) {
       mainLogger
@@ -90,7 +88,7 @@ class BlockNumberController {
   }
 
   private async _getBlockNumberMap(): Promise<
-    UndefinedAble<Map<string, string>>
+  UndefinedAble<Map<string, string>>
   > {
     if (!this._blockNumberMap) {
       const blockNumberList = await this._DBConfig.getBlockNumbers();

@@ -13,8 +13,8 @@ import {
   JuiConversationCardFooter,
 } from '..';
 import { JuiAvatar } from '../../../components/Avatar';
-import JuiConversationCardFrom from '../ConversationCardFrom';
-import JuiConversationCardBody from '../ConversationCardBody';
+import { JuiConversationCardFrom } from '../ConversationCardFrom';
+import { JuiConversationCardBody } from '../ConversationCardBody';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { noop } from '../../../foundation/utils';
 import team from '../../../assets/jupiter-icon/icon-team.svg';
@@ -31,32 +31,32 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
       preposition={<>in</>}
       onClick={noop}
       name={groupName}
-      prefix={<JuiIconography iconSize="small" symbol={team} />}
+      prefix={<JuiIconography iconSize='small' symbol={team} />}
       disabled={disabled}
     />
   );
-  const card = (
+  const card = (key: string) => (
     <JuiConversationCard
       Avatar={
-        <JuiAvatar color="lake" size="medium">
+        <JuiAvatar color='lake' size='medium'>
           SH
         </JuiAvatar>
       }
       mode={mode}
-      key={1}
+      key={key}
     >
       <JuiConversationCardHeader
         name={name}
         status={status}
-        time="3:15 PM"
+        time='3:15 PM'
         from={from}
         notification={<span>{activity}</span>}
       />
       <JuiConversationCardBody>any content</JuiConversationCardBody>
       <JuiConversationCardFooter>
         <JuiConversationPostLike
-          title="like"
-          iLiked={true}
+          title='like'
+          iLiked
           likedUsersCount={10}
           onClick={() => {}}
         />
@@ -65,8 +65,8 @@ storiesOf('Pattern', module).add('ConversationCard', () => {
   );
   return (
     <>
-      {card}
-      {card}
+      {card('1')}
+      {card('2')}
     </>
   );
 });

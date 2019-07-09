@@ -8,12 +8,14 @@ import React, { memo } from 'react';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import { spacing, grey, typography, height } from '../../foundation/utils';
+import {
+  spacing, grey, typography, height,
+} from '../../foundation/utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import {
   JuiToggleButton,
   JuiToggleButtonProps,
-} from './../../components/Buttons/ToggleButton';
+} from '../../components/Buttons/ToggleButton';
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
@@ -40,12 +42,14 @@ type IConversationListItem = {
 
 const JuiConversationListFilter: IConversationListItem = memo(
   (props: JuiConversationListFilterProps) => {
-    const { label, checked, onChange, disabled, ...rest } = props;
+    const {
+      label, checked, onChange, disabled, ...rest
+    } = props;
 
     return (
       <StyledListItem
         classes={{ selected: 'selected' }}
-        disableRipple={true}
+        disableRipple
         {...rest}
       >
         <ItemText>{label}</ItemText>

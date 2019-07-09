@@ -7,9 +7,8 @@
 export type SortableModel<T> = {
   id: number;
   displayName: string;
-  firstSortKey?: any;
-  secondSortKey?: any;
-  thirdSortKey?: any;
+  sortWeights: number[];
+  lowerCaseName: string;
   entity: T;
   extraData?: any[];
 };

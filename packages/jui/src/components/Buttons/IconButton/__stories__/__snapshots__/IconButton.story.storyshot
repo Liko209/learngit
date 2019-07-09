@@ -6,7 +6,6 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {
@@ -161,7 +160,6 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {

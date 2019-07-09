@@ -18,7 +18,9 @@ class PhoneLinkView extends React.Component<PhoneLinkViewProps> {
   private _handlePhoneClick = async (
     evt: React.MouseEvent<HTMLAnchorElement>,
   ) => {
-    const { canUseTelephony, isRCUser, directCall, text } = this.props;
+    const {
+      canUseTelephony, isRCUser, directCall, text,
+    } = this.props;
     if (isRCUser && canUseTelephony && isSupportWebRTC()) {
       evt.preventDefault();
       directCall(text);
@@ -26,7 +28,9 @@ class PhoneLinkView extends React.Component<PhoneLinkViewProps> {
   }
 
   render() {
-    const { canUseTelephony, text, key, isRCUser, ...rest } = this.props;
+    const {
+      canUseTelephony, text, key, isRCUser, ...rest
+    } = this.props;
     const href = handleHrefAttribute({
       canUseTelephony,
       content: text,

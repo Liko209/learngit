@@ -3,6 +3,8 @@
  * @Date: 2019-05-30 15:44:14
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer, Observer } from 'mobx-react';
@@ -29,13 +31,16 @@ import {
 } from './config';
 import noVoicemailImage from '../images/no-voicemail.svg';
 import noResultImage from '../images/no-result.svg';
+import { HoverControllerBaseProps } from '../HoverController';
 
 const DELAY_DEBOUNCE = 300;
 
-type Props = VoicemailViewProps & WithTranslation;
+type Props = VoicemailViewProps & WithTranslation & HoverControllerBaseProps;
 
 @observer
-class VoicemailWrapper extends Component<Props & { height: number }> {
+class VoicemailWrapper extends Component<
+  Props & { height: number; width: number }
+> {
   private _infiniteListProps = {
     minRowHeight: VOICE_MAIL_ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
@@ -60,7 +65,7 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
 
     return (
       <JuiEmptyPage
-        data-test-automation-id="voicemailEmptyPage"
+        data-test-automation-id='voicemailEmptyPage'
         image={image}
         message={message}
         height={this._height}
@@ -83,10 +88,31 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
   private _onFilterChange = debounce(this.props.onFilterChange, DELAY_DEBOUNCE);
 
   private _renderItems() {
-    const { listHandler } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: number) => {
-      return <VoicemailItem key={itemId} id={itemId} />;
-    });
+    const {
+      onVoicemailPlay,
+      activeVoicemailId,
+      listHandler,
+      resetSelectIndex,
+      width,
+      isHover,
+    } = this.props;
+
+    return listHandler.sortableListStore.getIds.map(
+      (itemId: number, cellIndex: number) => {
+        return (
+          <VoicemailItem
+            id={itemId}
+            key={itemId}
+            width={width}
+            activeVoicemailId={activeVoicemailId}
+            onVoicemailPlay={onVoicemailPlay}
+            onMouseLeave={resetSelectIndex}
+            isHover={isHover(cellIndex)}
+            onMouseOver={this.props.selectIndexChange(cellIndex)}
+          />
+        );
+      },
+    );
   }
 
   render() {
@@ -96,7 +122,7 @@ class VoicemailWrapper extends Component<Props & { height: number }> {
       <>
         <JuiConversationPageHeader
           title={t('phone.voicemail')}
-          data-test-automation-id="VoicemailPageHeader"
+          data-test-automation-id='VoicemailPageHeader'
           Right={this._filterRenderer}
         />
         <PhoneWrapper>
@@ -129,10 +155,18 @@ class VoicemailComp extends Component<Props> {
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {({
+          width: width,
+          height: height,
+        }: {
+          width: number;
+          height: number;
+        }) => (
           <Observer>
-            {() => <VoicemailWrapper height={height} {...this.props} />}
+            {() => (
+              <VoicemailWrapper height={height} width={width} {...this.props} />
+            )}
           </Observer>
         )}
       </ReactResizeDetector>

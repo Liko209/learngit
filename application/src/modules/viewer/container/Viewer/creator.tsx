@@ -8,7 +8,7 @@ import { Dialog } from '@/containers/Dialog';
 import { Viewer } from './Viewer';
 import { ImageViewer, ImageViewerOptions } from './Content/Image';
 import { JuiDialogOpenTransition } from 'jui/components/Dialog';
-import { ViewerViewModelProps } from './types';
+import { ViewerViewProps } from './types';
 import { VIEWER_ITEM_TYPE } from './constants';
 
 export const showImageViewer = (
@@ -25,9 +25,7 @@ export const showImageViewer = (
       type={VIEWER_ITEM_TYPE.IMAGE_FILES}
       isNavigation={mode === 'navigation'}
       postId={postId}
-      contentLeftRender={(props: ViewerViewModelProps) => {
-        return <ImageViewer {...props} initialOptions={initialOptions} />;
-      }}
+      contentLeftRender={(props: ViewerViewProps) => <ImageViewer {...props} initialOptions={initialOptions} />}
       viewerDestroyer={() => dismiss()}
     />,
     {

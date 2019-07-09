@@ -36,8 +36,8 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     );
   }
 
-  onLogin() {
-    super.onLogin();
+  onRCLogin() {
+    super.onRCLogin();
     this._initBadge();
   }
 
@@ -103,6 +103,10 @@ class CallLogService extends EntityBaseService<CallLog, string> {
       : this.callLogController.missedCallLogFetchController.fetchData(options);
   }
 
+  async fetchRecentCallLogs() {
+    return this.callLogController.allCallLogFetchController.fetchAllUniquePhoneNumberCalls();
+  }
+
   async clearUnreadMissedCall() {
     await this.callLogController.callLogActionController.clearUnreadMissedCall();
   }
@@ -130,17 +134,17 @@ class CallLogService extends EntityBaseService<CallLog, string> {
     await this.callLogController.callLogHandleDataController.handleMissedCallEvent(
       payload,
     );
-  }
+  };
 
   private _handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
     await this.callLogController.callLogHandleDataController.handleRCPresenceEvent(
       payload,
     );
-  }
+  };
 
   private _initBadge = async () => {
     await this.callLogController.callLogBadgeController.initializeUnreadCount();
-  }
+  };
 }
 
 export { CallLogService };
