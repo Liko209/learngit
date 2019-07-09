@@ -10,7 +10,7 @@ import {
   INotificationPermission,
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
-// import { SWNotification } from '../agent/SWNotification';
+import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
@@ -33,8 +33,7 @@ class NotificationService implements INotificationService {
   private _maximumTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
-    // temp solution for solving crash problem
-    // this._notificationDistributors.set('sw', new SWNotification());
+    this._notificationDistributors.set('sw', new SWNotification());
     this._notificationDistributors.set('desktop', new DeskTopNotification());
   }
 
