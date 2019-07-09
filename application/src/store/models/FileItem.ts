@@ -25,24 +25,16 @@ type ExtendFileItem = {
 };
 
 export default class FileItemModel extends ItemModel {
-  @observable type: string;
-  @observable isDocument?: boolean;
-  @observable isNew: boolean;
-  @observable creatorId: number;
-  @observable deactivated: Item['deactivated'];
+  @observable type: string | undefined;
+  @observable isDocument?: boolean | undefined;
+  @observable isNew: boolean | undefined;
+  @observable creatorId: number | undefined;
+  @observable deactivated: Item['deactivated'] | undefined;
 
   constructor(data: Item) {
     super(data);
     const {
-      type,
-      name,
-      versions,
-      is_document,
-      is_new,
-      deactivated,
-      creator_id,
-      created_at,
-      modified_at,
+      type, name, versions, is_document, is_new, deactivated, creator_id, created_at, modified_at
     } = data;
     this.type = type;
     this.name = name;
@@ -115,14 +107,10 @@ export default class FileItemModel extends ItemModel {
     return this._getDirectRelatedPostInGroup(groupId);
   }
 
-  private _getDirectRelatedPostInGroup = moize.promise(
-    (groupId: number) => {
-      const postService = ServiceLoader.getInstance<PostService>(
-        ServiceConfig.POST_SERVICE,
-      );
-      return postService.getLatestPostIdByItem(groupId, this.id);
-    },
-  );
+  private _getDirectRelatedPostInGroup = moize.promise((groupId: number) => {
+    const postService = ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE);
+    return postService.getLatestPostIdByItem(groupId, this.id);
+  });
 
   static fromJS(data: Item) {
     return new FileItemModel(data);

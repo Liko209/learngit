@@ -8,13 +8,13 @@ import { observable, computed } from 'mobx';
 import Base from './Base';
 
 export default class ItemModel extends Base<Item> {
-  @observable typeId: number;
-  @observable modifiedAt: number;
-  @observable creatorId: number;
-  @observable name: string;
-  @observable versions: Item['versions'];
-  @observable createdAt: number;
-  @observable atMentionPostIds?: number[];
+  @observable typeId: number | undefined;
+  @observable modifiedAt: number | undefined;
+  @observable creatorId: number | undefined;
+  @observable name: string | undefined;
+  @observable versions: Item['versions'] | undefined;
+  @observable createdAt: number | undefined;
+  @observable atMentionPostIds: number[] | undefined;
 
   constructor(data: Item) {
     super(data);
@@ -50,7 +50,7 @@ export default class ItemModel extends Base<Item> {
 
   @computed
   get latestVersion(): ItemVersions | undefined {
-    return this.versions.find(item => !item.deactivated);
+    return this.versions && this.versions.find(item => !item.deactivated);
   }
 
   static fromJS(data: Item) {
