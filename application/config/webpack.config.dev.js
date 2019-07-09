@@ -164,7 +164,7 @@ module.exports = {
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
       // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
+      // This often causes confusion because we only process files within src/ with ts-loader.
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
@@ -212,31 +212,11 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept([
-              'jui',
-              'sdk',
-              'foundation',
-              'ringcentral-web-phone.+ts$',
-            ]),
+            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
             use: {
-              loader: require.resolve('babel-loader'),
+              loader: require.resolve('ts-loader'),
               options: {
-                cacheDirectory: true,
-                // cacheCompression: isEnvProduction,
-                // compact: isEnvProduction,
-                babelrc: false,
-                presets: [['react-app', { flow: false, typescript: true }]],
-                plugins: [
-                  ['@babel/plugin-syntax-dynamic-import'],
-                  [
-                    'babel-plugin-styled-components',
-                    {
-                      ssr: false,
-                      displayName: true,
-                    },
-                  ],
-                  'react-hot-loader/babel',
-                ],
+                transpileOnly: true,
               },
             },
           },
@@ -316,19 +296,13 @@ module.exports = {
       },
       {
         test: /\.worker\.ts$/,
-        // include: paths.appSrc,
         exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
         use: [
           { loader: 'workerize-loader', options: { inline: false } },
           {
-            loader: require.resolve('babel-loader'),
+            loader: require.resolve('ts-loader'),
             options: {
-              cacheDirectory: true,
-              // cacheCompression: isEnvProduction,
-              // compact: isEnvProduction,
-              babelrc: false,
-              presets: [['react-app', { flow: false, typescript: true }]],
-              plugins: [['@babel/plugin-syntax-dynamic-import']],
+              transpileOnly: true,
             },
           },
         ],
@@ -408,9 +382,9 @@ module.exports = {
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      onDetected({ module: webpackModuleRecord, paths, compilation }) {
-        compilation.errors.push(new Error(paths.join(' -> ')));
-      },
+      // onDetected({ module: webpackModuleRecord, paths, compilation }) {
+      //   compilation.errors.push(new Error(paths.join(' -> ')));
+      // },
     }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without

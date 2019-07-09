@@ -6,7 +6,6 @@
 import _ from 'lodash';
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { hot } from 'react-hot-loader/root';
 import { container } from 'framework';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { HighlightStyle } from 'jui/pattern/ConversationCard';
@@ -48,7 +47,6 @@ class App extends React.Component {
     );
   }
 }
-const HotApp = hot(App);
 
-export { HotApp as App };
-export default HotApp;
+export { App };
+export default App;

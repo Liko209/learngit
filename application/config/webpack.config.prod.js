@@ -98,49 +98,49 @@ module.exports = {
   },
   optimization: {
     minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          parse: {
-            // we want terser to parse ecma 8 code. However, we don't want it
-            // to apply any minfication steps that turns valid ecma 5 code
-            // into invalid ecma 5 code. This is why the 'compress' and 'output'
-            // sections only apply transformations that are ecma 5 safe
-            // https://github.com/facebook/create-react-app/pull/4234
-            ecma: 8,
-          },
-          compress: {
-            ecma: 5,
-            warnings: false,
-            // Disabled because of an issue with Uglify breaking seemingly valid code:
-            // https://github.com/facebook/create-react-app/issues/2376
-            // Pending further investigation:
-            // https://github.com/mishoo/UglifyJS2/issues/2011
-            comparisons: false,
-            // Disabled because of an issue with Terser breaking valid code:
-            // https://github.com/facebook/create-react-app/issues/5250
-            // Pending futher investigation:
-            // https://github.com/terser-js/terser/issues/120
-            inline: 2,
-          },
-          // mangle: {
-          //   safari10: true
-          // },
-          mangle: false,
-          output: {
-            ecma: 5,
-            comments: false,
-            // Turned on because emoji and regex is not minified properly using default
-            // https://github.com/facebook/create-react-app/issues/2488
-            ascii_only: true,
-          },
-        },
-        // Use multi-process parallel running to improve the build speed
-        // Default number of concurrent runs: os.cpus().length - 1
-        parallel: true,
-        // Enable file caching
-        cache: true,
-        sourceMap: shouldUseSourceMap,
-      }),
+      // new TerserPlugin({
+      //   terserOptions: {
+      //     parse: {
+      //       // we want terser to parse ecma 8 code. However, we don't want it
+      //       // to apply any minfication steps that turns valid ecma 5 code
+      //       // into invalid ecma 5 code. This is why the 'compress' and 'output'
+      //       // sections only apply transformations that are ecma 5 safe
+      //       // https://github.com/facebook/create-react-app/pull/4234
+      //       ecma: 8,
+      //     },
+      //     compress: {
+      //       ecma: 5,
+      //       warnings: false,
+      //       // Disabled because of an issue with Uglify breaking seemingly valid code:
+      //       // https://github.com/facebook/create-react-app/issues/2376
+      //       // Pending further investigation:
+      //       // https://github.com/mishoo/UglifyJS2/issues/2011
+      //       comparisons: false,
+      //       // Disabled because of an issue with Terser breaking valid code:
+      //       // https://github.com/facebook/create-react-app/issues/5250
+      //       // Pending futher investigation:
+      //       // https://github.com/terser-js/terser/issues/120
+      //       inline: 2,
+      //     },
+      //     // mangle: {
+      //     //   safari10: true
+      //     // },
+      //     mangle: false,
+      //     output: {
+      //       ecma: 5,
+      //       comments: false,
+      //       // Turned on because emoji and regex is not minified properly using default
+      //       // https://github.com/facebook/create-react-app/issues/2488
+      //       ascii_only: true,
+      //     },
+      //   },
+      //   // Use multi-process parallel running to improve the build speed
+      //   // Default number of concurrent runs: os.cpus().length - 1
+      //   parallel: true,
+      //   // Enable file caching
+      //   cache: true,
+      //   sourceMap: shouldUseSourceMap,
+      // }),
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           parser: safePostCssParser,
@@ -162,6 +162,7 @@ module.exports = {
     // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
     splitChunks: {
       chunks: 'all',
+      name: false,
       cacheGroups: {
         codeMirror: {
           test: /[\\/]codemirror[\\/]/,
@@ -176,8 +177,15 @@ module.exports = {
           test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
           name: 'svg.countryFlagChunks',
         },
+        packages: {
+          test: /[\\/]packages[\\/]/,
+          name: 'packages',
+        },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+        },
       },
-      name: false,
     },
     // Keep the runtime chunk seperated to enable long term caching
     // https://twitter.com/wSokra/status/969679223278505985
@@ -207,7 +215,7 @@ module.exports = {
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
       // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
+      // This often causes confusion because we only process files within src/ with ts-loader.
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
@@ -250,24 +258,13 @@ module.exports = {
             test: /\.mjs$/,
             type: 'javascript/auto',
           },
-          // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept([
-              'jui',
-              'sdk',
-              'foundation',
-              'ringcentral-web-phone.+ts$',
-            ]),
+            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
             use: {
-              loader: 'babel-loader',
+              loader: require.resolve('ts-loader'),
               options: {
-                cacheDirectory: true,
-                cacheCompression: true,
-                compact: true,
-                babelrc: false,
-                presets: [['react-app', { flow: false, typescript: true }]],
-                plugins: ['@babel/plugin-syntax-dynamic-import'],
+                transpileOnly: true,
               },
             },
           },
@@ -374,19 +371,13 @@ module.exports = {
       },
       {
         test: /\.worker\.ts$/,
-        // include: paths.appSrc,
         exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
         use: [
           { loader: 'workerize-loader', options: { inline: false } },
           {
-            loader: require.resolve('babel-loader'),
+            loader: require.resolve('ts-loader'),
             options: {
-              cacheDirectory: true,
-              // cacheCompression: isEnvProduction,
-              // compact: isEnvProduction,
-              babelrc: false,
-              presets: [['react-app', { flow: false, typescript: true }]],
-              plugins: [['@babel/plugin-syntax-dynamic-import']],
+              transpileOnly: true,
             },
           },
         ],

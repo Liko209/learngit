@@ -15,7 +15,10 @@ module.exports = [
       },
       // Configure which responses are considered cacheable.
       cacheableResponse: {
-        statuses: [0, 200],
+        statuses: [200],
+      },
+      fetchOptions: {
+        mode: 'cors',
       },
     },
   },
