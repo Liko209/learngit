@@ -16,9 +16,10 @@ type InputFooterItemProps = {
   align: 'left' | 'right' | 'center';
 };
 
-const InputFooterItemWrapper = styled(JuiFade)<{
+type FadeProps = {
   align: InputFooterItemProps['align'];
-}>`
+}
+const InputFooterItemWrapper = styled(JuiFade)<FadeProps>`
   position: absolute;
   left: 0;
   right: 0;
@@ -41,8 +42,8 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
     this.setState({
       exited: true,
     });
-  }
-
+  };
+  /* eslint-disable react/no-did-update-set-state */
   componentDidUpdate({ show }: InputFooterItemProps) {
     if (!show && this.props.show) {
       this.setState({
@@ -52,7 +53,9 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
   }
 
   render() {
-    const { show, align, content, ...rest } = this.props;
+    const {
+      show, align, content, ...rest
+    } = this.props;
     const { exited } = this.state;
     return (
       !exited && (
@@ -61,7 +64,7 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
           show={show}
           duration="standard"
           easing="sharp"
-          appear={true}
+          appear
           onExited={this.onExited}
           {...rest}
         >

@@ -32,7 +32,9 @@ class Conference extends React.Component<conferenceViewProps> {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   render() {
-    const { conference, isHostByMe, globalNumber, phoneNumber, t } = this.props;
+    const {
+      conference, isHostByMe, globalNumber, phoneNumber, t,
+    } = this.props;
     const { hostCode, participantCode } = conference;
 
     return (

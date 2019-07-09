@@ -3,6 +3,7 @@
  * @Date: 2019-05-24 07:27:21
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -27,7 +28,7 @@ class DownloadViewComponent extends Component<Props> {
     }
     aLinkDom.setAttribute('href', downloadLink);
     aLinkDom.click();
-  }
+  };
 
   render() {
     const { t, type, entity } = this.props;
@@ -35,8 +36,8 @@ class DownloadViewComponent extends Component<Props> {
       <>
         <a id={DOWNLOAD_ID} download={true} />
         <ActionButton
-          key="voicemail-download"
-          icon="download-call"
+          key='voicemail-download'
+          icon='download-call'
           type={type}
           onClick={this._handleClick}
           screenReader={t('voicemail.downloadVoicemail')}

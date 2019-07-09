@@ -8,5 +8,4 @@ import { dataAnalysis } from 'foundation';
 
 const name = 'Jup_Web/DT_phone_call_media_report';
 
-export default (info: string) =>
-  dataAnalysis.track(name, { info, type: 'call' });
+export default (info: string) => dataAnalysis.track(name, { info, type: 'call' });

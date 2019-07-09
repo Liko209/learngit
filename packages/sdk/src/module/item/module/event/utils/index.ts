@@ -5,4 +5,5 @@
  */
 
 import { EventUtils } from './EventUtils';
+
 export { EventUtils };

@@ -3,6 +3,7 @@
  * @Date: 2019-05-23 14:26:14
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 
 import { MeetingItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';

@@ -117,6 +117,10 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
   get uid() {
     return this._telephonyStore.uid;
   }
+  @computed
+  get name() {
+    return this._telephonyStore.displayName;
+  }
 }
 
 export { ReplyViewModel };

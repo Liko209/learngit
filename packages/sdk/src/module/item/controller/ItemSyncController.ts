@@ -103,9 +103,7 @@ class ItemSyncController {
   ) => {
     let result: IProcessor[] = totalProcessors;
     if (existed) {
-      result = result.filter((item: IProcessor) => {
-        return item.name() !== newProcessor.name();
-      });
+      result = result.filter((item: IProcessor) => item.name() !== newProcessor.name());
     }
     result.unshift(newProcessor);
     return result;

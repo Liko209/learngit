@@ -13,7 +13,6 @@ import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { SyncService } from '../module/sync/service';
 import { jobScheduler } from '../framework/utils/jobSchedule';
 import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
@@ -24,7 +23,7 @@ import { IDBObserver } from './IDBObserver';
 const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
-  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
 > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
@@ -128,7 +127,8 @@ class DaoManager extends Manager<
     // remove relevant config
     if (AccountGlobalConfig.getUserDictionary()) {
       // TODO FIJI-4396
-      const synConfig = ServiceLoader.getInstance<SyncService>(
+      // 'any' because of circular reference
+      const synConfig = ServiceLoader.getInstance<any>(
         ServiceConfig.SYNC_SERVICE,
       ).userConfig;
       synConfig.clearSyncConfigsForDBUpgrade();

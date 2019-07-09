@@ -11,7 +11,7 @@ const useIsFirstRenderRef = () => {
     setTimeout(() => {
       ref.current = false;
     });
-  },              []);
+  }, []);
   return ref;
 };
 

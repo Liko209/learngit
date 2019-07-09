@@ -99,8 +99,8 @@ const MultipleDownshift = () => {
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
-      inputLabel="Downshift"
-      inputPlaceholder="placeholder"
+      inputLabel='Downshift'
+      inputPlaceholder='placeholder'
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}

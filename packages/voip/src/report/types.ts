@@ -99,13 +99,13 @@ export type MediaReportItem<T> = {
 export type MediaReportItemType = MediaReportItem<number>;
 
 export type MediaReportOutCome = MediaReportItem<
-  MediaReportOutcomeItem<number>
+MediaReportOutcomeItem<number>
 >;
 
 export type MediaStatusReport = {
   inboundRtpReport: Pick<
-    MediaReportItemType,
-    'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
+  MediaReportItemType,
+  'packetsReceived' | 'bytesReceived' | 'packetsLost' | 'jitter'
   >;
   outboundRtpReport: Pick<MediaReportItemType, 'packetsSent' | 'bytesSent'>;
 };

@@ -3,7 +3,6 @@
  * @Date: 2019-05-24 13:33:49
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   UserSettingEntity,
   AbstractSettingEntityHandler,
@@ -21,7 +20,7 @@ import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { RC_INFO_KEYS } from 'sdk/module/rcInfo/config/constants';
 
 export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
-  PhoneNumberModel
+PhoneNumberModel
 > {
   id = SettingEntityIds.Phone_CallerId;
 
@@ -36,9 +35,7 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
-      this.onSettingEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
 
     this.rcInfoConfig().on(RC_INFO_KEYS.EXTENSION_CALLER_ID, () => {
       this.onRcInfoEntityUpdate();

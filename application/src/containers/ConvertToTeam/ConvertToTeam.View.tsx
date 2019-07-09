@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -112,7 +113,7 @@ class ConvertToTeam extends Component<Props, State> {
       if (node) {
         node.select();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -121,7 +122,7 @@ class ConvertToTeam extends Component<Props, State> {
 
   private _handleClose = () => {
     portalManager.dismissLast();
-  }
+  };
 
   private _handleOk = async () => {
     // const { items } = this.state;
@@ -156,7 +157,7 @@ class ConvertToTeam extends Component<Props, State> {
         dismissible: false,
       });
     }
-  }
+  };
 
   // private _handleSwitchChange = (
   //   item: JuiListToggleItemProps,
@@ -197,7 +198,7 @@ class ConvertToTeam extends Component<Props, State> {
     return (
       <JuiModal
         open={true}
-        size="medium"
+        size='medium'
         title={t('people.team.convertToTeam')}
         onCancel={this._handleClose}
         onOK={this._handleOk}

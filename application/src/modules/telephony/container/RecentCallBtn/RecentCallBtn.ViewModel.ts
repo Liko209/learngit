@@ -31,12 +31,12 @@ class RecentCallBtnViewModel extends StoreViewModel<Props>
   jumpToRecentCall = () => {
     analyticsCollector.recentCallLogs();
     this._telephonyStore.jumpToRecentCall();
-  }
+  };
 
   @action
   backToDialer = () => {
     this._telephonyStore.backToDialer();
-  }
+  };
 }
 
 export { RecentCallBtnViewModel };

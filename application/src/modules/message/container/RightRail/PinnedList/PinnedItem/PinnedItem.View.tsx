@@ -12,7 +12,9 @@ import { postParser } from '@/common/postParser';
 @observer
 class PinnedItemView extends Component<PinnedItemViewProps> {
   render() {
-    const { id, icon, text, isFile, deleted } = this.props;
+    const {
+      id, icon, text, isFile, deleted,
+    } = this.props;
     if (deleted) {
       return null;
     }

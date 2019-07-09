@@ -3,6 +3,7 @@ import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { Post } from 'sdk/module/post/entity/Post';
 import { ENTITY_NAME } from '@/store';
+
 type Hooks = {
   onCreate: Function;
   onUpdate?: Function;

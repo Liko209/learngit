@@ -72,7 +72,7 @@ describe('CallLogService', () => {
     it('should get userConfig', async () => {
       const config = callLogService['userConfig'];
       expect(config instanceof CallLogUserConfig).toBeTruthy();
-      expect(CallLogUserConfig).toBeCalledWith(
+      expect(CallLogUserConfig).toHaveBeenCalledWith(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.ALL}`,
       );
     });
@@ -82,7 +82,7 @@ describe('CallLogService', () => {
     it('should get missedCallUserConfig', async () => {
       const config = callLogService['missedCallUserConfig'];
       expect(config instanceof RCItemUserConfig).toBeTruthy();
-      expect(RCItemUserConfig).toBeCalledWith(
+      expect(RCItemUserConfig).toHaveBeenCalledWith(
         `${MODULE_NAME}.${CALL_LOG_SOURCE.MISSED}`,
       );
     });
@@ -93,7 +93,7 @@ describe('CallLogService', () => {
       await callLogService.requestSyncNewer();
       expect(
         callLogController.allCallLogFetchController.requestSync,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -102,7 +102,7 @@ describe('CallLogService', () => {
       await callLogService.buildFilterFunc({});
       expect(
         callLogController.allCallLogFetchController.buildFilterFunc,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -111,7 +111,7 @@ describe('CallLogService', () => {
       await callLogService.fetchCallLogs({});
       expect(
         callLogController.allCallLogFetchController.fetchData,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
 
     it('should call missed fetch controller when source is missed', async () => {
@@ -120,7 +120,7 @@ describe('CallLogService', () => {
       });
       expect(
         callLogController.missedCallLogFetchController.fetchData,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -129,7 +129,7 @@ describe('CallLogService', () => {
       await callLogService.clearUnreadMissedCall();
       expect(
         callLogController.callLogActionController.clearUnreadMissedCall,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -139,14 +139,16 @@ describe('CallLogService', () => {
       await callLogService.deleteCallLogs(ids);
       expect(
         callLogController.callLogActionController.deleteCallLogs,
-      ).toBeCalledWith(ids);
+      ).toHaveBeenCalledWith(ids);
     });
   });
 
   describe('clearAllCallLogs', () => {
     it('clearAllCallLogs', async () => {
       await callLogService.clearAllCallLogs();
-      expect(callLogController.allCallLogFetchController.clearAll).toBeCalled();
+      expect(
+        callLogController.allCallLogFetchController.clearAll,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -156,7 +158,7 @@ describe('CallLogService', () => {
       expect(
         callLogController.allCallLogFetchController
           .fetchAllUniquePhoneNumberCalls,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -165,10 +167,10 @@ describe('CallLogService', () => {
       await callLogService.resetFetchControllers();
       expect(
         callLogController.allCallLogFetchController.internalReset,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
       expect(
         callLogController.missedCallLogFetchController.internalReset,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -179,7 +181,7 @@ describe('CallLogService', () => {
         .fn()
         .mockReturnValue({ getTotalCount: mockFunc });
       expect(await callLogService.getTotalCount()).toEqual(5);
-      expect(mockFunc).toBeCalled();
+      expect(mockFunc).toHaveBeenCalled();
     });
   });
 
@@ -189,7 +191,7 @@ describe('CallLogService', () => {
       await callLogService['_handleMissedCallEvent'](mockData);
       expect(
         callLogController.callLogHandleDataController.handleMissedCallEvent,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -199,7 +201,7 @@ describe('CallLogService', () => {
       await callLogService['_handleRCPresenceEvent'](mockData);
       expect(
         callLogController.callLogHandleDataController.handleRCPresenceEvent,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -208,7 +210,7 @@ describe('CallLogService', () => {
       await callLogService['_initBadge']();
       expect(
         callLogController.callLogBadgeController.initializeUnreadCount,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 });

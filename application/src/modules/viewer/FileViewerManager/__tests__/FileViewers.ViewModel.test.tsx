@@ -5,13 +5,12 @@
  */
 
 import { getEntity } from '@/store/utils';
-jest.mock('@/store/utils');
 import { FileViewerViewModel } from '../FileViewer.ViewModel';
 import { Notification } from '@/containers/Notification';
 import { ENTITY_NAME } from '@/store';
 import * as mobx from 'mobx';
-jest.mock('@/store/utils');
 
+jest.mock('@/store/utils');
 jest.mock('@/containers/Notification');
 jest.mock('@/utils/error');
 const dismiss = jest.fn();

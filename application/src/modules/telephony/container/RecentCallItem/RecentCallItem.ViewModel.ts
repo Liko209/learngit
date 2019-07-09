@@ -117,7 +117,7 @@ class RecentCallItemViewModel extends StoreViewModel<Props>
       });
       this._telephonyStore.end();
     }
-  }
+  };
 }
 
 export { RecentCallItemViewModel };

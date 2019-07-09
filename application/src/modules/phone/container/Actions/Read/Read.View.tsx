@@ -25,7 +25,7 @@ class ReadViewComponent extends Component<Props> {
     const tabName = this.props.tabName;
     analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.MARK_UNREAD);
     return this.props.read();
-  }
+  };
 
   @catchError.flash({
     network: 'voicemail.prompt.notAbleToReadVoicemailForNetworkIssue',
@@ -35,7 +35,7 @@ class ReadViewComponent extends Component<Props> {
     const tabName = this.props.tabName;
     analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.MARK_READ);
     return this.props.read();
-  }
+  };
 
   private _handleClick = () => {
     const { isRead } = this.props;
@@ -44,7 +44,7 @@ class ReadViewComponent extends Component<Props> {
     } else {
       this._handleRead();
     }
-  }
+  };
 
   get title() {
     const { isRead, t } = this.props;

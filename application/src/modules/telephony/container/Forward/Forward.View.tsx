@@ -29,7 +29,7 @@ class ForwardViewComponent extends React.Component<Props> {
         previous
       </JuiIconButton>
     );
-  }
+  };
 
   private _ForwardBtn = () => {
     const { t, makeForwardCall } = this.props;
@@ -46,7 +46,7 @@ class ForwardViewComponent extends React.Component<Props> {
         onClick={makeForwardCall}
       />
     );
-  }
+  };
   render() {
     const { forward } = this.props;
 

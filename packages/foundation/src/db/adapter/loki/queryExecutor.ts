@@ -7,7 +7,9 @@ import Loki from 'lokijs';
 import CriteriaParser from '../CriteriaParser';
 // import LokiCollection from './LokiCollection';
 // import { array } from 'prop-types';
-import { IQuery, ICriteria, IRange, IEqual, IContain, IFilter } from '../../db';
+import {
+  IQuery, ICriteria, IRange, IEqual, IContain, IFilter,
+} from '../../db';
 
 function isLokiCollection(collection: any): collection is Loki.Collection {
   return collection.chain !== undefined;
@@ -45,7 +47,9 @@ export const execQuery = <T extends {}>(
   });
 
   ranges.forEach(
-    ({ key, lower, upper, includeLower, includeUpper }: IRange) => {
+    ({
+      key, lower, upper, includeLower, includeUpper,
+    }: IRange) => {
       const $and: any[] = [];
       if (lower) {
         const condition = {

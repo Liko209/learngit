@@ -3,6 +3,8 @@
  * @Date: 2019-02-12 09:00:00
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -35,7 +37,7 @@ class MenuViewComponent extends Component<Props, State> {
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
     await removeFromTeam();
-  }
+  };
 
   @catchError.flash({
     network: 'people.prompt.revokeTeamAdminNetworkError',
@@ -44,7 +46,7 @@ class MenuViewComponent extends Component<Props, State> {
   private _revokeTeamAdminHandle = async () => {
     const { toggleTeamAdmin } = this.props;
     await toggleTeamAdmin();
-  }
+  };
 
   @catchError.flash({
     network: 'people.prompt.makeTeamAdminNetworkError',
@@ -53,7 +55,7 @@ class MenuViewComponent extends Component<Props, State> {
   private _makeTeamAdminHandle = async () => {
     const { toggleTeamAdmin } = this.props;
     await toggleTeamAdmin();
-  }
+  };
 
   private _toggleTeamAdmin = async (event: MouseEvent<HTMLElement>) => {
     event && event.stopPropagation();
@@ -62,20 +64,20 @@ class MenuViewComponent extends Component<Props, State> {
     await (isThePersonAdmin
       ? this._revokeTeamAdminHandle()
       : this._makeTeamAdminHandle());
-  }
+  };
 
   private _Anchor = () => {
     return (
-      <JuiIconography data-test-automation-id="moreIcon" iconSize="small">
+      <JuiIconography data-test-automation-id='moreIcon' iconSize='small'>
         more_horiz
       </JuiIconography>
     );
-  }
+  };
 
   private _onClose = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     this.props.onMenuClose();
-  }
+  };
   render() {
     const {
       isCurrentUserSelf,
@@ -100,7 +102,7 @@ class MenuViewComponent extends Component<Props, State> {
         <JuiMenuList>
           {!isCurrentUserSelf && (
             <JuiMenuItem
-              data-test-automation-id="removeFromTeam"
+              data-test-automation-id='removeFromTeam'
               onClick={this._handleRemoveFromTeam}
             >
               {t('people.team.removeFromTeam')}
@@ -108,7 +110,7 @@ class MenuViewComponent extends Component<Props, State> {
           )}
           {!isThePersonGuest && isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id="revokeTeamAdmin"
+              data-test-automation-id='revokeTeamAdmin'
               onClick={this._toggleTeamAdmin}
             >
               {t('people.team.revokeTeamAdmin')}
@@ -116,7 +118,7 @@ class MenuViewComponent extends Component<Props, State> {
           )}
           {!isThePersonGuest && !isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id="makeTeamAdmin"
+              data-test-automation-id='makeTeamAdmin'
               onClick={this._toggleTeamAdmin}
             >
               {t('people.team.makeTeamAdmin')}

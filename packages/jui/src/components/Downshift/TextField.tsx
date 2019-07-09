@@ -46,21 +46,21 @@ type JuiDownshiftTextFieldProps = {
 };
 
 class JuiDownshiftTextField extends React.PureComponent<
-  JuiDownshiftTextFieldProps,
-  JuiDownshiftTextFieldStates
+JuiDownshiftTextFieldProps,
+JuiDownshiftTextFieldStates
 > {
   state: JuiDownshiftTextFieldStates = {
     showPlaceholder: true,
   };
   handleFocus = () => {
     const { inputValue, openMenu } = this.props;
-    if (!!inputValue) {
+    if (inputValue) {
       openMenu();
     }
     this.setState({
       showPlaceholder: false,
     });
-  }
+  };
   handleBlur = () => {
     const { inputValue, selectedItems } = this.props;
     if (!inputValue.length && !selectedItems.length) {
@@ -68,7 +68,7 @@ class JuiDownshiftTextField extends React.PureComponent<
         showPlaceholder: true,
       });
     }
-  }
+  };
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       autoSwitchEmail,
@@ -106,27 +106,29 @@ class JuiDownshiftTextField extends React.PureComponent<
 
       onInputChange('');
     }
-  }
+  };
   handleKeyDown = (event: JuiDownshiftTextFieldKeyDownEvent) => {
-    const { onSelectChange, inputValue, selectedItems, onKeyDown } = this.props;
+    const {
+      onSelectChange, inputValue, selectedItems, onKeyDown,
+    } = this.props;
     if (selectedItems.length && !inputValue.length && event.keyCode === 8) {
       onSelectChange(selectedItems.slice(0, selectedItems.length - 1));
     }
 
     onKeyDown && onKeyDown(event);
-  }
+  };
 
   handleCompositionStart = () => {
     this.props.onComposition(true);
-  }
+  };
 
   handleCompositionEnd = () => {
     this.props.onComposition(false);
     const { inputValue, openMenu } = this.props;
-    if (!!inputValue) {
+    if (inputValue) {
       openMenu();
     }
-  }
+  };
 
   handleDelete = (item: SelectedItem) => () => {
     const { onSelectChange, inputValue } = this.props;
@@ -139,7 +141,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       showPlaceholder,
     });
     onSelectChange(selectedItems);
-  }
+  };
 
   render() {
     const {
@@ -159,17 +161,17 @@ class JuiDownshiftTextField extends React.PureComponent<
     const { showPlaceholder } = this.state;
     const placeholderText =
       selectedItems.length === 0 && showPlaceholder ? placeholder : '';
+    /* eslint-disable react/jsx-no-duplicate-props */
     return (
       <StyledTextField
         label={label}
-        fullWidth={true}
+        fullWidth
         error={nameError}
         helperText={nameError ? helperText : ''}
         InputProps={{
           ...getInputProps({
             autoFocus,
-            startAdornment: selectedItems.map((item: SelectedItem) => {
-              return InputItem ? (
+            startAdornment: selectedItems.map((item: SelectedItem) => (InputItem ? (
                 <InputItem
                   label={item.label}
                   key={item.id}
@@ -178,8 +180,7 @@ class JuiDownshiftTextField extends React.PureComponent<
                   id={item.id}
                   onDelete={this.handleDelete(item)}
                 />
-              ) : null;
-            }),
+            ) : null)),
             inputRef: messageRef,
             onFocus: this.handleFocus,
             onBlur: this.handleBlur,

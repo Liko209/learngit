@@ -7,7 +7,7 @@
 import { IdModel, ModelIdType } from '../../framework/model';
 
 export type ExtendedBaseModel<IdType extends ModelIdType = number> = IdModel<
-  IdType
+IdType
 > & {
   created_at: number;
   modified_at: number;

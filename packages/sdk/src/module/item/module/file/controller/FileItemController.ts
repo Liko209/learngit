@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { buildPartialModifyController } from '../../../../../framework/controller';
-import { FileUploadController } from '../controller/FileUploadController';
+import { FileUploadController } from './FileUploadController';
 import { daoManager } from '../../../../../dao';
 import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { FileActionController } from './FileActionController';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
+
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
@@ -51,9 +52,7 @@ class FileItemController {
     const dao = daoManager.getDao(ItemDao) as ItemDao;
     const files = await dao.getExistGroupFilesByName(groupId, fileName, true);
     return files.length > 0
-      ? files.some((x: ItemFile) => {
-          return x.post_ids.length > 0;
-        })
+      ? files.some((x: ItemFile) => x.post_ids.length > 0)
       : false;
   }
 }

@@ -71,16 +71,12 @@ describe('TextMessageViewModel', () => {
     (utils.getEntity as jest.Mock).mockImplementation((name, id) => {
       return mockMap[name];
     });
-    jest.spyOn(TextMessageViewModel, 'getGroup');
-    jest.spyOn(TextMessageViewModel, 'getPerson');
   });
 
   beforeEach(() => {
     AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
       endpoint_id: 12345,
     });
-    TextMessageViewModel.getGroup.mockClear();
-    TextMessageViewModel.getPerson.mockClear();
   });
   describe('html', () => {
     beforeAll(() => {
@@ -157,8 +153,6 @@ describe('TextMessageViewModel', () => {
       expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: Person name`,
       );
-      expect(TextMessageViewModel.getGroup).toHaveBeenCalledTimes(0);
-      expect(TextMessageViewModel.getPerson).toHaveBeenCalledTimes(1);
     });
 
     it('should be get new person name link when person name be changed', () => {
@@ -183,8 +177,6 @@ describe('TextMessageViewModel', () => {
       expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: ${mockGroupData.displayName}`,
       );
-      expect(TextMessageViewModel.getGroup).toHaveBeenCalledTimes(1);
-      expect(TextMessageViewModel.getPerson).toHaveBeenCalledTimes(0);
     });
 
     it('should be get new team name link when team name be changed', () => {
@@ -210,9 +202,6 @@ describe('TextMessageViewModel', () => {
       expect(renderToStaticMarkup(vm.content as React.ReactElement)).toBe(
         `MockJuiAtMention: @${originalText}`,
       );
-
-      expect(TextMessageViewModel.getGroup).toHaveBeenCalledTimes(0);
-      expect(TextMessageViewModel.getPerson).toHaveBeenCalledTimes(0);
     });
   });
 });

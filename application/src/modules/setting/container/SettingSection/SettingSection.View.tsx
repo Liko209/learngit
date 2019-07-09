@@ -14,6 +14,12 @@ type Props = SettingSectionProps & SettingSectionViewProps & WithTranslation;
 
 @observer
 class SettingSectionComponent extends Component<Props> {
+  private _renderSettingItems() {
+    return this.props.itemIds.map(itemId => (
+      <SettingItemProxy key={itemId} itemId={itemId} />
+    ));
+  }
+
   render() {
     if (!this.props.section) return null;
 
@@ -28,12 +34,6 @@ class SettingSectionComponent extends Component<Props> {
         {this._renderSettingItems()}
       </JuiSettingSection>
     );
-  }
-
-  private _renderSettingItems() {
-    return this.props.itemIds.map(itemId => (
-      <SettingItemProxy key={itemId} itemId={itemId} />
-    ));
   }
 }
 

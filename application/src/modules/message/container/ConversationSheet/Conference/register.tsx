@@ -7,7 +7,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { TypeDictionary } from 'sdk/utils';
-import { Conference } from './';
+import { Conference } from '.';
 
 type Props = {
   ids: number[];

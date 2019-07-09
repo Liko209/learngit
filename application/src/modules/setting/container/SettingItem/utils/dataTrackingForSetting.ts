@@ -13,9 +13,9 @@ const dataTrackingForSetting = (config: DataTracking, value?: any) => {
   const option = optionTransform ? optionTransform(value) : value;
   const parameters = option
     ? {
-        option,
-        ...rest,
-      }
+      option,
+      ...rest,
+    }
     : rest;
   dataAnalysis.track(
     eventName || 'Jup_Web/DT_settings_updateSetting',
@@ -24,13 +24,10 @@ const dataTrackingForSetting = (config: DataTracking, value?: any) => {
 };
 
 const debounceTrackData = _.debounce(
-  (dataTracking: DataTracking, newValue?: any) =>
-    dataTrackingForSetting(dataTracking, newValue),
+  (dataTracking: DataTracking, newValue?: any) => dataTrackingForSetting(dataTracking, newValue),
   1000,
 );
 
-const booleanTransform = (value: boolean) => {
-  return value ? 'on' : 'off';
-};
+const booleanTransform = (value: boolean) => (value ? 'on' : 'off');
 
 export { dataTrackingForSetting, debounceTrackData, booleanTransform };

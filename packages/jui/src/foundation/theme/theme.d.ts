@@ -7,11 +7,6 @@ import { ThemeProps as StyledThemeProps } from 'styled-components';
 import {
   Theme as RcuiTheme,
   Palette as RcuiPalette,
-  Typography,
-  Opacity,
-  Radius,
-  Spacing,
-  ZIndex,
 } from 'rcui/foundation/styles/theme';
 
 export {

@@ -85,17 +85,13 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId);
   }
 
-  toggleFavorite = () => {
-    return ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    ).markGroupAsFavorite(this.groupId, !this.isFavorite);
-  }
+  toggleFavorite = () => ServiceLoader.getInstance<ProfileService>(
+    ServiceConfig.PROFILE_SERVICE,
+  ).markGroupAsFavorite(this.groupId, !this.isFavorite)
 
-  closeConversation = (shouldSkipNextTime: boolean) => {
-    return ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    ).hideConversation(this.groupId, true, shouldSkipNextTime);
-  }
+  closeConversation = (shouldSkipNextTime: boolean) => ServiceLoader.getInstance<ProfileService>(
+    ServiceConfig.PROFILE_SERVICE,
+  ).hideConversation(this.groupId, true, shouldSkipNextTime)
 
   toggleRead = async () => {
     const currentConversationId = getGlobalValue(

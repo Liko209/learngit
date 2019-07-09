@@ -154,7 +154,7 @@ class TotalUnreadController {
       });
     }
   }
-
+  /* eslint-disable */
   private async _updateTotalUnreadByGroupChanges(
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {

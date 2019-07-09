@@ -16,21 +16,21 @@ import { JuiIncomingCall, JuiDialer } from '..';
 
 const Ignore = () => (
   <JuiFabButton
-    color="common.white"
-    size="small"
-    iconName="close"
-    tooltipTitle="Close"
+    color='common.white'
+    size='small'
+    iconName='close'
+    tooltipTitle='Close'
   />
 );
 
 const VoiceMail = () => (
   <JuiFabButton
-    color="semantic.negative"
-    size="moreLarge"
+    color='semantic.negative'
+    size='moreLarge'
     showShadow={false}
-    tooltipPlacement="top"
-    iconName="hand_up"
-    tooltipTitle="End"
+    tooltipPlacement='top'
+    iconName='hand_up'
+    tooltipTitle='End'
   />
 );
 
@@ -38,12 +38,12 @@ VoiceMail.displayName = 'VoiceMail';
 
 const Answer = () => (
   <JuiFabButton
-    color="semantic.positive"
-    size="moreLarge"
+    color='semantic.positive'
+    size='moreLarge'
     showShadow={false}
-    tooltipPlacement="top"
-    iconName="phone"
-    tooltipTitle="Answer"
+    tooltipPlacement='top'
+    iconName='phone'
+    tooltipTitle='Answer'
   />
 );
 
@@ -51,12 +51,12 @@ Answer.displayName = 'Answer';
 
 const More = () => (
   <JuiFabButton
-    color="grey.200"
-    size="moreLarge"
+    color='grey.200'
+    size='moreLarge'
     showShadow={false}
-    tooltipPlacement="top"
-    iconName="call_more"
-    tooltipTitle="More"
+    tooltipPlacement='top'
+    iconName='call_more'
+    tooltipTitle='More'
   />
 );
 
@@ -72,9 +72,9 @@ const knobs = {
 const Avatar = () => (
   <JuiAvatar
     src={knobs.img() ? avatarImg : null}
-    cover={true}
+    cover
     imgProps={{ draggable: false }}
-    color="blueberry"
+    color='blueberry'
   >
     <span>JH</span>
   </JuiAvatar>
@@ -84,8 +84,8 @@ storiesOf('Pattern', module).add('Incoming Call', () => {
   return (
     <JuiDialer>
       <JuiIncomingCall
-        name="Terry Webster"
-        phone="(650) 555-1234"
+        name='Terry Webster'
+        phone='(650) 555-1234'
         Actions={Actions}
         Ignore={Ignore}
         Avatar={Avatar}

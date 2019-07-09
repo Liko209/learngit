@@ -15,10 +15,10 @@ storiesOf('Components/Forms', module).add('Textarea', () => {
   };
   return (
     <JuiTextarea
-      id="New Message"
-      label="New Message"
-      placeholder="placeholder"
-      fullWidth={true}
+      id='New Message'
+      label='New Message'
+      placeholder='placeholder'
+      fullWidth
       onChange={onChange}
     />
   );

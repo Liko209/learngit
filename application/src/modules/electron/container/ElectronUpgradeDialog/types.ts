@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { WithTranslation } from 'react-i18next';
+
 enum UpgradeType {
   FORCE = 'force',
   SOFT = 'soft',
@@ -14,7 +15,7 @@ type ElectronUpgradeDialogProps = {
 };
 
 type ElectronUpgradeDialogViewProps = WithTranslation &
-  ElectronUpgradeDialogProps;
+ElectronUpgradeDialogProps;
 
 type UpgradeUserAction = {
   skip?: boolean;

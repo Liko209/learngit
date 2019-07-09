@@ -5,5 +5,6 @@
  */
 
 import { AnalyticsCollector } from './AnalyticsCollector';
+
 const analyticsCollector: AnalyticsCollector = new AnalyticsCollector();
 export { analyticsCollector };

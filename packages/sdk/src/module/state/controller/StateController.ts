@@ -12,7 +12,7 @@ import { StateDataHandleController } from './implementation/StateDataHandleContr
 import { StateFetchDataController } from './implementation/StateFetchDataController';
 import { TotalUnreadController } from './implementation/TotalUnreadController';
 import { GroupState, State } from '../entity';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { IGroupService } from '../../group/service/IGroupService';
 
 class StateController {
   private _stateActionController: StateActionController;

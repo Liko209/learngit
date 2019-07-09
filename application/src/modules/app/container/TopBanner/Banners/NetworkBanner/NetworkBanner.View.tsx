@@ -13,16 +13,15 @@ import { NetworkBannerViewProps } from './types';
 @observer
 class NetworkBannerViewComponent extends React.Component<
   NetworkBannerViewProps
-> {
+  > {
   render() {
     const { t, isShow } = this.props;
-
     return isShow ? (
       <JuiSnackbarContent
         type={ToastType.ERROR}
         message={t('common.prompt.NoInternetConnection')}
         messageAlign="center"
-        fullWidth={true}
+        fullWidth
       />
     ) : null;
   }

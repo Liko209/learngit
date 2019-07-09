@@ -11,26 +11,26 @@ import { JuiPaper } from '../../../../components/Paper';
 
 storiesOf('Foundation/Layout', module).add('Grid', () => (
   <div>
-    <JuiGrid container={true} spacing={24}>
-      <JuiGrid item={true} xs={12}>
+    <JuiGrid container spacing={24}>
+      <JuiGrid item xs={12}>
         <JuiPaper>xs=12</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={6}>
+      <JuiGrid item xs={6}>
         <JuiPaper>xs=6</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={6}>
+      <JuiGrid item xs={6}>
         <JuiPaper>xs=6</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={3}>
+      <JuiGrid item xs={3}>
         <JuiPaper>xs=3</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={3}>
+      <JuiGrid item xs={3}>
         <JuiPaper>xs=3</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={3}>
+      <JuiGrid item xs={3}>
         <JuiPaper>xs=3</JuiPaper>
       </JuiGrid>
-      <JuiGrid item={true} xs={3}>
+      <JuiGrid item xs={3}>
         <JuiPaper>xs=3</JuiPaper>
       </JuiGrid>
     </JuiGrid>

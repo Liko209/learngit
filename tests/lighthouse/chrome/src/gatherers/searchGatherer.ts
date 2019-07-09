@@ -2,11 +2,14 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { SearchPage } from "../pages";
 import { Config } from "../config";
+import { PptrUtils } from "../utils";
+import { FileService } from "../services";
+import { globals } from '../globals';
 
-class SearchGatherer extends BaseGatherer {
+class SearchGatherer extends DebugGatherer {
   private keywords: Array<string>;
   private metricKeys: Array<string> = [
     'search_group',
@@ -38,8 +41,13 @@ class SearchGatherer extends BaseGatherer {
 
     this.beginGathererConsole();
 
+    let filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    globals.pushMemoryFilePath(filePath);
     // switch conversation
     await this.search(searchPage, Config.sceneRepeatCount);
+    
+    filePath = await FileService.saveHeapIntoDisk(await PptrUtils.trackingHeapObjects(passContext.driver));
+    globals.pushMemoryFilePath(filePath);
 
     this.endGathererConsole();
 

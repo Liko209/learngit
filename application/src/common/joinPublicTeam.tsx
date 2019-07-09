@@ -48,13 +48,12 @@ const joinPublicTeam = async (item: GroupModel) => {
     ),
     okText: await i18nT('people.team.joinTeamSubmit'),
     cancelText: await i18nT('common.dialog.cancel'),
-    onOK: () =>
-      goToConversationWithLoading({
-        id: item.id,
-        async beforeJump(conversationId: number) {
-          await joinHander(conversationId);
-        },
-      }),
+    onOK: () => goToConversationWithLoading({
+      id: item.id,
+      async beforeJump(conversationId: number) {
+        await joinHander(conversationId);
+      },
+    }),
   });
 };
 

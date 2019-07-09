@@ -3,9 +3,10 @@
  * @Date: 2019-01-17 09:44:03
  * Copyright © RingCentral. All rights reserved.
  */
-import { IDao } from '../../framework/dao';
+import { IDao } from '../dao';
 import { JSdkError } from '../../error/sdk/JSdkError';
 import { IdModel, ModelIdType } from '../model';
+
 class ControllerUtils {
   static getEntityNotificationKey<
     T extends IdModel<IdType>,

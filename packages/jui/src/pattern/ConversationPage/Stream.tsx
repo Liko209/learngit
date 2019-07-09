@@ -35,15 +35,13 @@ const StyledDiv = styled.div`
 `;
 
 const JuiStream = React.memo(
-  React.forwardRef((props: JuiStreamProps, forwardRef: RefType) => {
-    return (
+  React.forwardRef((props: JuiStreamProps, forwardRef: RefType) => (
       <StyledDiv
         ref={forwardRef}
         {...props}
         data-test-automation-id="jui-stream"
       />
-    );
-  }),
+  )),
 );
 
 export { JuiStream, JuiStreamProps };

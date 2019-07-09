@@ -4,6 +4,7 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 import { AbstractModule } from 'framework';
+
 class CommonModule extends AbstractModule {
   bootstrap() {}
 }

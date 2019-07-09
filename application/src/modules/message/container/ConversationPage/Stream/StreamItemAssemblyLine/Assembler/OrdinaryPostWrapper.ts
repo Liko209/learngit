@@ -11,7 +11,9 @@ import { AssemblerDelFunc, AssemblerAddFunc } from './types';
 import { ISortableModel } from '@/store/base';
 
 export class OrdinaryPostWrapper extends Assembler {
-  onAdd: AssemblerAddFunc = ({ added, postList, streamItemList, ...rest }) => {
+  onAdd: AssemblerAddFunc = ({
+    added, postList, streamItemList, ...rest
+  }) => {
     const convert2StreamItem: (i: ISortableModel) => StreamItem = i => ({
       id: i.sortValue,
       type: StreamItemType.POST,

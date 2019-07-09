@@ -16,13 +16,11 @@ function modal(
   props: Props,
 ) {
   const Component = component;
-  const Dialog = () => {
-    return (
+  const Dialog = () => (
       <JuiDialog {...props}>
         {Component instanceof Function ? <Component /> : Component}
       </JuiDialog>
-    );
-  };
+  );
 
   const { dismiss, show } = portalManager.wrapper(Dialog);
 

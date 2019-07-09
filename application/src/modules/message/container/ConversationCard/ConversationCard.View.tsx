@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -6,6 +7,13 @@ import {
   JuiConversationCardBody,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
+import { jumpToPost } from '@/common/jumpToPost';
+import { noop } from 'jui/foundation/utils';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 import { ConversationCardViewProps } from './types';
 import { ProgressActions } from './ProgressActions';
 import { Actions } from './Actions';
@@ -20,14 +28,6 @@ import {
   EditMessageInputViewComponent,
 } from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '../Profile';
-import { jumpToPost } from '@/common/jumpToPost';
-import { noop } from 'jui/foundation/utils';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-
 import { i18nP } from '@/utils/i18nT';
 import { Translation } from 'react-i18next';
 import {
@@ -46,20 +46,19 @@ export class ConversationCard extends React.Component<
   > = React.createRef();
   state = {
     isHover: false,
-    isFocusMoreAction: false,
   };
 
   handleMouseOver = () => {
     this.setState({
       isHover: true,
     });
-  }
+  };
 
   handleMouseLeave = () => {
     this.setState({
       isHover: false,
     });
-  }
+  };
 
   onClickAvatar = (event: React.MouseEvent) => {
     const { creator } = this.props;
@@ -67,34 +66,14 @@ export class ConversationCard extends React.Component<
     MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
       anchor: event.target as HTMLElement,
     });
-  }
+  };
 
   getToastMessage = () => {
     const message = this.props.isArchivedGroup
       ? 'people.prompt.conversationArchived'
       : '';
     return i18nP(message);
-  }
-
-  handleJumpToPost = async () => {
-    if (this.props.showToast) {
-      this.flashToast(this.getToastMessage());
-    } else {
-      const { id, groupId } = this.props;
-      jumpToPost({ id, groupId });
-    }
-  }
-
-  flashToast(message: string) {
-    Notification.flashToast({
-      message,
-      type: ToastType.ERROR,
-      messageAlign: ToastMessageAlign.LEFT,
-      fullWidth: false,
-      dismissible: false,
-    });
-  }
-
+  };
   get _navigationProps(): {
     mode?: string;
     navigate?: () => void;
@@ -115,6 +94,25 @@ export class ConversationCard extends React.Component<
     }
     return navigationProps;
   }
+  handleJumpToPost = async () => {
+    if (this.props.showToast) {
+      this.flashToast(this.getToastMessage());
+    } else {
+      const { id, groupId } = this.props;
+      jumpToPost({ id, groupId });
+    }
+  };
+
+  flashToast(message: string) {
+    Notification.flashToast({
+      message,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
   render() {
     const {
       id,
@@ -143,15 +141,15 @@ export class ConversationCard extends React.Component<
       <Avatar
         icon={post.icon}
         uid={creator.id}
-        size="medium"
-        data-name="avatar"
+        size='medium'
+        data-name='avatar'
         onClick={post.icon ? noop : this.onClickAvatar}
       />
     );
     const activity = <Activity id={id} />;
     return (
       <JuiConversationCard
-        data-name="conversation-card"
+        data-name='conversation-card'
         data-id={id}
         Avatar={avatar}
         onMouseOver={this.handleMouseOver}
@@ -162,7 +160,7 @@ export class ConversationCard extends React.Component<
         {...restNavigationProps}
       >
         <JuiConversationCardHeader
-          data-name="header"
+          data-name='header'
           name={name}
           time={showProgressActions ? '' : createTime}
           status={customStatus}
@@ -174,7 +172,7 @@ export class ConversationCard extends React.Component<
             <Actions postId={id} groupId={post.groupId} />
           )}
         </JuiConversationCardHeader>
-        <JuiConversationCardBody data-name="body">
+        <JuiConversationCardBody data-name='body'>
           {!hideText && !isEditMode && (
             <TextMessage id={id} keyword={this.context.keyword} />
           )}

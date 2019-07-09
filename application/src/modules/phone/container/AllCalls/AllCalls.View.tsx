@@ -3,6 +3,9 @@
  * @Date: 2019-06-03 13:42:21
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -18,7 +21,6 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { HoverControllerBaseProps } from '../HoverController';
-
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
@@ -46,13 +48,13 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private get _noRowsRenderer() {
-    const { t, filterValue } = this.props;
+    const { t, filterFOCKey } = this.props;
 
-    const message = filterValue
+    const message = filterFOCKey
       ? t('phone.noMatchesFound')
       : t('phone.noCallLogAvailable');
 
-    const image = filterValue ? noResultImage : noCallLogImage;
+    const image = filterFOCKey ? noResultImage : noCallLogImage;
 
     return (
       <JuiEmptyPage
@@ -66,8 +68,9 @@ class AllCallsViewComponent extends Component<Props> {
 
   private _renderItems() {
     const { listHandler, resetSelectIndex, width, isHover } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: string, cellIndex: number) => {
-      return (
+
+    return listHandler.sortableListStore.getIds.map(
+      (itemId: string, cellIndex: number) => (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
@@ -77,8 +80,8 @@ class AllCallsViewComponent extends Component<Props> {
           onMouseOver={this.props.selectIndexChange(cellIndex)}
           width={width}
         />
-      );
-    });
+      ),
+    );
   }
 
   private _didOpenMiniProfile = () => {
@@ -87,7 +90,7 @@ class AllCallsViewComponent extends Component<Props> {
         ? CallLogSourceType.All
         : CallLogSourceType.Missed;
     analyticsCollector.openMiniProfile(source);
-  }
+  };
 
   componentDidMount() {
     if (this.props.type === CallLogType.All) {
@@ -105,18 +108,18 @@ class AllCallsViewComponent extends Component<Props> {
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (
-            <DataList
-              initialDataCount={INITIAL_COUNT}
-              listHandler={listHandler}
-              reverse={true}
-              InfiniteListProps={Object.assign(this._infiniteListProps, {
-                height: this._height,
-                noRowsRenderer: this._noRowsRenderer,
-              })}
-            >
-              {this._renderItems()}
-            </DataList>
-          )}
+          <DataList
+            initialDataCount={INITIAL_COUNT}
+            listHandler={listHandler}
+            reverse={true}
+            InfiniteListProps={Object.assign(this._infiniteListProps, {
+              height: this._height,
+              noRowsRenderer: this._noRowsRenderer,
+            })}
+          >
+            {this._renderItems()}
+          </DataList>
+        )}
       </PhoneWrapper>
     );
   }

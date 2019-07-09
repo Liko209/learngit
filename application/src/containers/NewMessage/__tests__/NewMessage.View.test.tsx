@@ -7,6 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { NewMessageView } from '../NewMessage.View';
 import { Notification } from '@/containers/Notification';
+
 jest.mock('@/containers/Notification');
 
 describe('NewMessageView', () => {

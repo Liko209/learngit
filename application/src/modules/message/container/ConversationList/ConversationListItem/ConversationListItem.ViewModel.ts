@@ -19,7 +19,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
-  ConversationListItemViewProps
+ConversationListItemViewProps
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;

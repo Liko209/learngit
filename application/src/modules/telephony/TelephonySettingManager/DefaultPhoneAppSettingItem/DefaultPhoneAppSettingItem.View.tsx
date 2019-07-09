@@ -18,8 +18,6 @@ const options = {
 
 const DefaultPhoneAppSelectItem = ({
   value,
-}: DefaultPhoneAppSelectItemProps) => {
-  return i18nP(options[value]);
-};
+}: DefaultPhoneAppSelectItemProps) => i18nP(options[value]);
 
 export { DefaultPhoneAppSelectItem, DefaultPhoneAppSelectItemProps };

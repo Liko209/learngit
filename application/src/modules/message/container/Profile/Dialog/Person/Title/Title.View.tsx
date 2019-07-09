@@ -19,7 +19,7 @@ import portalManager from '@/common/PortalManager';
 @observer
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithTranslation & ProfileDialogPersonTitleViewProps
-> {
+  > {
   onClick = () => portalManager.dismissLast();
   render() {
     const { id, t } = this.props;

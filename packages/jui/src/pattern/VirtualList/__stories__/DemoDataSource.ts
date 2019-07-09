@@ -42,7 +42,7 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
   }
 
   isLoadingMore(direction: 'up' | 'down') {
-    if ('down' === direction) {
+    if (direction === 'down') {
       return this._loadingMoreDown;
     }
     return false;

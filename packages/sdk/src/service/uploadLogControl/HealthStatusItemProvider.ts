@@ -13,20 +13,18 @@ export class HealthStatusItemProvider implements IZipItemProvider {
   getZipItems = async () => {
     const modules = HealthModuleManager.getInstance().getAll();
     const results = await Promise.all(
-      modules.flatMap(_module => {
-        return [
-          `=========== ${_module.name} ==========\n`,
-          ..._module.getAll().map(item => {
-            const result = item.getStatus();
-            if (_.isObject(result) && result['then']) {
-              return result.then(
-                (status: any) => `[ ${item.name} ]\n\n${toText(status)}\n`,
-              );
-            }
-            return `[ ${item.name} ]\n\n${toText(result)}\n`;
-          }),
-        ];
-      }),
+      modules.flatMap(_module => [
+        `=========== ${_module.name} ==========\n`,
+        ..._module.getAll().map(item => {
+          const result = item.getStatus();
+          if (_.isObject(result) && result['then']) {
+            return result.then(
+              (status: any) => `[ ${item.name} ]\n\n${toText(status)}\n`,
+            );
+          }
+          return `[ ${item.name} ]\n\n${toText(result)}\n`;
+        }),
+      ]),
     );
     return [
       {
@@ -35,5 +33,5 @@ export class HealthStatusItemProvider implements IZipItemProvider {
         content: results.join('\n'),
       } as ZipItem,
     ];
-  }
+  };
 }

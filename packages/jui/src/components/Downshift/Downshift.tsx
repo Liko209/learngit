@@ -48,8 +48,8 @@ const StyledDownshiftMultipleWrapper = styled.div`
 `;
 
 class JuiDownshift extends React.PureComponent<
-  JuiDownshiftProps,
-  JuiDownshiftState
+JuiDownshiftProps,
+JuiDownshiftState
 > {
   state: JuiDownshiftState = {
     isComposition: false,
@@ -70,11 +70,11 @@ class JuiDownshift extends React.PureComponent<
       }
     }
     this.props.onSelectChange(selectedItems);
-  }
+  };
 
   handleComposition = (isComposition: boolean) => {
     this.setState({ isComposition });
-  }
+  };
 
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
 

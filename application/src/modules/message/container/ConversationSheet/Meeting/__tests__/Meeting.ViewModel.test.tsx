@@ -47,7 +47,7 @@ describe('MeetingViewModel', () => {
     const props = {
       meetingTitle: title,
       meetingItem: {
-        status: status,
+        status,
       } as MeetingItemModel,
       duration,
     };

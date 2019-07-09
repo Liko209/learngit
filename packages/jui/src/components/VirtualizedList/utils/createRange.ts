@@ -63,14 +63,12 @@ const createRangeFromAnchor = ({
   size,
   min = -Infinity,
   max = Infinity,
-}: CreateRangeFromAnchorParams) => {
-  return createRange({
-    size,
-    min,
-    max,
-    startIndex: anchor - Math.floor(size / 2),
-  });
-};
+}: CreateRangeFromAnchorParams) => createRange({
+  size,
+  min,
+  max,
+  startIndex: anchor - Math.floor(size / 2),
+});
 
 export {
   createRange,

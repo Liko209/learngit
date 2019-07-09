@@ -3,6 +3,9 @@
  * @Date: 2019-03-31 21:49:32
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import { observable, action, comparer } from 'mobx';
 import { container } from 'framework';
 import storeManager from '@/store/base/StoreManager';
@@ -85,12 +88,12 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   @action
   onClear = () => {
     this._globalSearchStore.clearSearchKey();
-  }
+  };
 
   @action
   onClose = () => {
     container.get(GlobalSearchService).closeGlobalSearch();
-  }
+  };
 
   calculateSectionCount(
     persons: SectionType<Person>,
@@ -99,7 +102,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   ) {
     return [persons, groups, teams].reduce((prev, current) => {
       return current && current.sortableModels.length > 0 ? prev + 1 : prev;
-    },                                     0);
+    }, 0);
   }
 
   getSectionItemSize(sectionCount: number) {
@@ -170,7 +173,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       groups: groupSection,
       teams: teamSection,
     };
-  }
+  };
 
   @action
   setSearchResult = async (value: string) => {
@@ -202,7 +205,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     this.searchResult = data;
     this.terms = terms;
     this.setSelectIndexToDefault();
-  }
+  };
 
   get contentSearchIds() {
     const { searchKey } = this._globalSearchStore;
@@ -221,29 +224,29 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       [SEARCH_SCOPE.CONVERSATION]: SEARCH_SCOPE.CONVERSATION,
     };
     return scope[index];
-  }
+  };
 
   @action
   resetData = () => {
     this.searchResult = [];
     this.terms = [];
     this.resetSelectIndex();
-  }
+  };
 
   @action
   resetSelectIndex = () => {
     this.selectIndex = InvalidIndexPath;
-  }
+  };
 
   @action
   setSelectIndexToDefault = () => {
     this.selectIndex = DefaultIndexPath;
-  }
+  };
 
   @action
   setSelectIndex = (section: number, cellIndex: number) => {
     this.selectIndex = [section, cellIndex];
-  }
+  };
 
   findNextValidSectionLength = (section: number, offset: number): number[] => {
     const data = this.searchResult;
@@ -254,7 +257,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       }
     }
     return InvalidIndexPath;
-  }
+  };
 
   get currentItemId() {
     const [section, cell] = this.selectIndex;
@@ -290,7 +293,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       value,
       scope === SEARCH_SCOPE.CONVERSATION ? { groupId: conversationId } : {},
     );
-  }
+  };
 
   @action
   onKeyUp = () => {
@@ -312,7 +315,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (nextSection !== -1) {
       this.setSelectIndex(nextSection, sectionLength - 1);
     }
-  }
+  };
 
   @action
   onKeyDown = () => {
@@ -339,7 +342,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (nextSection !== -1) {
       this.setSelectIndex(nextSection, 0);
     }
-  }
+  };
 
   @action
   onEnter = (e: KeyboardEvent) => {
@@ -378,7 +381,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
         break;
     }
     this.addRecentRecord(currentItemValue);
-  }
+  };
 
   // if search item removed need update selectIndex
   @action
@@ -401,7 +404,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (sectionIndex === section && cellIndex < cell) {
       this.setSelectIndex(section, cell - 1);
     }
-  }
+  };
 
   @action
   updateStore(
@@ -432,7 +435,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     };
     this._globalSearchStore.setCurrentTab(typeMap[type]);
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
-  }
+  };
 }
 
 export { InstantSearchViewModel };

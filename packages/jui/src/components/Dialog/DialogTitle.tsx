@@ -5,8 +5,6 @@ import React, { memo } from 'react';
 
 type JuiDialogTitleProps = MuiDialogTitleProps;
 
-const JuiDialogTitle = memo((props: JuiDialogTitleProps) => {
-  return <MuiDialogTitle {...props} classes={{ root: 'root' }} />;
-});
+const JuiDialogTitle = memo((props: JuiDialogTitleProps) => <MuiDialogTitle {...props} classes={{ root: 'root' }} />);
 
 export { JuiDialogTitle, JuiDialogTitleProps };

@@ -73,7 +73,7 @@ class Container {
     if (cache) return cache;
 
     const injections = this._getInjections(registration.injects);
-    const result = this._resolve<T>(registration, injections);
+    const result = this._resolve<T>(name, registration, injections);
     this._setCache(registration, result);
     return result;
   }
@@ -85,7 +85,7 @@ class Container {
     if (cache) return cache;
 
     const injections = await this._asyncGetInjections(registration.injects);
-    const result = await this._asyncResolve<T>(registration, injections);
+    const result = await this._asyncResolve<T>(name, registration, injections);
     this._setCache(registration, result);
 
     return result;
@@ -117,7 +117,7 @@ class Container {
     }
   }
 
-  private _resolve<T>(registration: IRegisterConfig, injections: Injectable[]): T {
+  private _resolve<T>(name: InjectableName<any>, registration: IRegisterConfig, injections: Injectable[]): T {
     let result: any = null;
 
     if (registration.type === RegisterType.ConstantValue) {
@@ -134,10 +134,10 @@ class Container {
   }
 
   private async _asyncResolve<T>(
+    name: InjectableName<any>,
     registration: IRegisterConfig,
     injections: Injectable[],
   ): Promise<T> {
-
     let result: any = null;
 
     if (registration.type === RegisterType.Instance &&
@@ -145,7 +145,7 @@ class Container {
       registration.asyncImplementationType) {
       result = this._asyncResolveInstance(name, registration.asyncImplementationType, injections);
     } else {
-      result = this._resolve<T>(registration, injections);
+      result = this._resolve<T>(name, registration, injections);
     }
 
     return result;

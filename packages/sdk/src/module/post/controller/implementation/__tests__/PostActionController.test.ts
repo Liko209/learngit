@@ -16,7 +16,7 @@ import { IPreInsertController } from '../../../../common/controller/interface/IP
 import _ from 'lodash';
 import { ExtendedBaseModel } from '../../../../models';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
-import { ItemService } from '../../../../../module/item/service';
+import { ItemService } from '../../../../item/service';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { PostDataController } from '../../PostDataController';
 
@@ -74,7 +74,7 @@ describe('PostController', () => {
   describe('likePost()', () => {
     it('should call partial modify controller', async () => {
       await postActionController.likePost(1, 100, true);
-      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
     });
   });
   describe('editPost', () => {
@@ -87,7 +87,7 @@ describe('PostController', () => {
         groupId: 3,
         text: '',
       });
-      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
     });
   });
   describe('deletePost', () => {
@@ -123,7 +123,7 @@ describe('PostController', () => {
 
     it('should call _deletePostFromRemote when id > 0', async () => {
       await postActionController.deletePost(1);
-      expect(testPartialModifyController.updatePartially).toBeCalled();
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
     });
   });
 
@@ -203,7 +203,7 @@ describe('PostController', () => {
       expect(postDataController.deletePreInsertPosts).toHaveBeenCalledWith([
         newInValidLocalPost,
       ]);
-      expect(itemService.deleteItem).toBeCalledWith(-1);
+      expect(itemService.deleteItem).toHaveBeenCalledWith(-1);
     });
 
     it('should send request to update post when post is a server post', async () => {
@@ -232,8 +232,8 @@ describe('PostController', () => {
         .mockResolvedValue(validLocalPost);
 
       await postActionController.removeItemFromPost(validLocalPost.id, 1);
-      expect(testRequestController.put).toBeCalled();
-      expect(itemService.deleteItem).toBeCalledWith(1);
+      expect(testRequestController.put).toHaveBeenCalled();
+      expect(itemService.deleteItem).toHaveBeenCalledWith(1);
     });
   });
 

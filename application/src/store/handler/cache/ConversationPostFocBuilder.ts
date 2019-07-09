@@ -50,8 +50,7 @@ class ConversationPostFocBuilder {
     jump2PostId?: number,
     fetchDataCallback?: (delta: TDelta) => Promise<void>,
   ) {
-    const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-      dataModel.group_id === Number(groupId) && !dataModel.deactivated;
+    const isMatchedFunc = (groupId: number) => (dataModel: Post) => dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
     const options = {
       transformFunc: (dataModel: Post) => ({

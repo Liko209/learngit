@@ -5,10 +5,10 @@
  */
 import { ILogEntityDecorator, LogEntity } from '../types';
 import { stringifyParams } from '../utils';
+
 export class StringifyDecorator implements ILogEntityDecorator {
   options: object;
-  constructor() {
-  }
+  constructor() {}
 
   decorate(data: LogEntity): LogEntity {
     data.params = stringifyParams(...data.params);

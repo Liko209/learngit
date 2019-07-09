@@ -12,7 +12,6 @@ type MediaDeviceSourceItemProps = {
 };
 type Props = MediaDeviceSourceItemProps;
 
-const MediaDeviceSourceItem = ({ value, source }: Props) =>
-  DeviceNameHelper.getDeviceName(value, source, i18nP);
+const MediaDeviceSourceItem = ({ value, source }: Props) => DeviceNameHelper.getDeviceName(value, source, i18nP);
 
 export { MediaDeviceSourceItem, MediaDeviceSourceItemProps };

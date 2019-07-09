@@ -6,6 +6,7 @@
 
 import { TransitionProps } from 'react-transition-group/Transition';
 import { Omit } from '../../foundation/utils/typeHelper';
+
 export type AnimationOptions = {
   duration: string;
   easing: string;

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
+import {
+  QuillOptionsStatic, RangeStatic, DeltaStatic, Sources,
+} from 'quill';
 import { Quill } from 'react-quill';
 import Keys from './keys';
 
@@ -105,7 +107,7 @@ class ColonEmoji {
         const colonIndex = beforeCursorPos.lastIndexOf(cur);
 
         return colonIndex > previousIndex ? colonIndex : previousIndex;
-      },                                        -1);
+      }, -1);
     if (colonCharIndex !== undefined && colonCharIndex > -1) {
       if (
         this._options.isolateCharacter &&

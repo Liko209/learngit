@@ -3,7 +3,7 @@
  * @Date: 2019-04-01 17:16:07
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -36,16 +36,16 @@ class RecentSearchViewComponent extends Component<Props> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
   hoverHighlight = (index: number) => {
     return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
-  }
+  };
 
   // if search item removed need update selectIndex
   selectIndexChange = (index: number) => {
     return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
-  }
+  };
 
   createSearchItem = (config: {
     value: number | string;
@@ -74,7 +74,7 @@ class RecentSearchViewComponent extends Component<Props> {
         params={queryParams}
       />
     );
-  }
+  };
 
   get searchRecordList() {
     const { recentRecord, clearRecent, t } = this.props;
@@ -120,7 +120,7 @@ class RecentSearchViewComponent extends Component<Props> {
           enter: onEnter,
         }}
       >
-        <JuiRecentSearch data-test-automation-id="search-records">
+        <JuiRecentSearch data-test-automation-id='search-records'>
           {this.searchRecordList}
         </JuiRecentSearch>
       </HotKeys>
