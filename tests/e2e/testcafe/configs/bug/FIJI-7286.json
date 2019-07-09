@@ -1,8 +1,6 @@
 {
   "on_merge": {
-    "includeTags":["P1"],
-    "browsers": [
-       "selenium:chrome"
-     ]
- }
+    "fixtures": ["./fixtures/Logout.ts"],
+    "browsers": ["selenium:chrome"]
+  }
 }
