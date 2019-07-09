@@ -16,6 +16,7 @@ import {
   CallLogFilterFunc,
   CallLogFilterOptions,
 } from './types';
+import { INITIAL_COUNT } from '../Voicemail/config';
 import { AllCallsListHandler } from './AllCallsListHandler';
 import { HoverControllerViewModel } from '../HoverController';
 
@@ -24,7 +25,13 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   isError = false;
 
   @observable
-  _filterFunc: CallLogFilterFunc = null;
+  filterFOCKey = '';
+
+  @observable
+  private _handler: AllCallsListHandler;
+
+  @observable
+  private _filterFunc: CallLogFilterFunc = null;
 
   private _service = ServiceLoader.getInstance<CallLogService>(
     ServiceConfig.CALL_LOG_SERVICE,
@@ -33,6 +40,8 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   constructor(props: AllCallsProps) {
     super(props);
 
+    this._setHandler(this.getHandler());
+
     this.reaction(
       () => this.props.filterValue,
       async (filterKey: string) => {
@@ -40,9 +49,38 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
           filterKey,
           callLogSource: this._source,
         });
+
+        const handler = this.getHandler();
+
+        await handler.fetchSortableDataListHandler.fetchData(
+          QUERY_DIRECTION.NEWER,
+          INITIAL_COUNT,
+        );
+
+        this._setFilterFOCKey(filterKey);
+
+        this._setHandler(handler);
       },
-      { fireImmediately: !this._isAllType },
+      { fireImmediately: !this._isAllType && Boolean(this.props.filterValue) },
     );
+  }
+
+  getHandler() {
+    return new AllCallsListHandler(
+      this.props.type,
+      this._fetchData,
+      this._filterFunc,
+    );
+  }
+
+  @action
+  private _setHandler(handler: AllCallsListHandler) {
+    this._handler = handler;
+  }
+
+  @action
+  private _setFilterFOCKey(key: string) {
+    this.filterFOCKey = key;
   }
 
   @computed
@@ -53,15 +91,6 @@ class AllCallsViewModel extends HoverControllerViewModel<AllCallsProps> {
   @computed
   private get _source() {
     return this._isAllType ? CALL_LOG_SOURCE.ALL : CALL_LOG_SOURCE.MISSED;
-  }
-
-  @computed
-  private get _handler() {
-    return new AllCallsListHandler(
-      this.props.type,
-      this._fetchData,
-      this._filterFunc,
-    );
   }
 
   @computed

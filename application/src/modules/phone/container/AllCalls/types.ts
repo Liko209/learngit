@@ -37,6 +37,7 @@ type AllCallsProps = {
 type AllCallsViewProps = {
   type: CallLogType;
   isError: boolean;
+  filterFOCKey: string;
   onErrorReload: () => void;
   listHandler: FetchSortableDataListHandler<CallLog, string>;
 } & AllCallsProps;

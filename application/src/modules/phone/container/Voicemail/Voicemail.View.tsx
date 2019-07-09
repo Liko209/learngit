@@ -55,13 +55,13 @@ class VoicemailWrapper extends Component<
   }
 
   private get _noRowsRenderer() {
-    const { t, filterValue } = this.props;
+    const { t, filterFOCKey } = this.props;
 
-    const message = filterValue
+    const message = filterFOCKey
       ? t('phone.noMatchesFound')
       : t('phone.noVoicemailAvailable');
 
-    const image = filterValue ? noResultImage : noVoicemailImage;
+    const image = filterFOCKey ? noResultImage : noVoicemailImage;
 
     return (
       <JuiEmptyPage
@@ -98,20 +98,18 @@ class VoicemailWrapper extends Component<
     } = this.props;
 
     return listHandler.sortableListStore.getIds.map(
-      (itemId: number, cellIndex: number) => {
-        return (
-          <VoicemailItem
-            id={itemId}
-            key={itemId}
-            width={width}
-            activeVoicemailId={activeVoicemailId}
-            onVoicemailPlay={onVoicemailPlay}
-            onMouseLeave={resetSelectIndex}
-            isHover={isHover(cellIndex)}
-            onMouseOver={this.props.selectIndexChange(cellIndex)}
-          />
-        );
-      },
+      (itemId: number, cellIndex: number) => (
+        <VoicemailItem
+          id={itemId}
+          key={itemId}
+          width={width}
+          activeVoicemailId={activeVoicemailId}
+          onVoicemailPlay={onVoicemailPlay}
+          onMouseLeave={resetSelectIndex}
+          isHover={isHover(cellIndex)}
+          onMouseOver={this.props.selectIndexChange(cellIndex)}
+        />
+      ),
     );
   }
 

@@ -259,8 +259,7 @@ test.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog('When the sender delete the new post', async () => {
-    await h(t).glip(otherUser).init();
-    await h(t).glip(otherUser).deletePost(bookmarksPostTeamId3, team.glipId);
+    await h(t).platform(otherUser).deletePost(bookmarksPostTeamId3, team.glipId);
   });
 
   await h(t).withLog('Then the last at bookmark post should not exist in bookmarks page', async () => {

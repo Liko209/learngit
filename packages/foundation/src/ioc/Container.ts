@@ -67,7 +67,9 @@ class Container {
   get<T>(name: InjectableName<T>): T {
     const registration = this.getRegistration(name);
 
-    if (registration.async) throw new Error(`${name} is async, use asyncGet() to get it.`);
+    if (registration.async) {
+      throw new Error(`${name} is async, use asyncGet() to get it.`);
+    }
 
     const cache = this._getCache(registration);
     if (cache) return cache;
@@ -102,7 +104,8 @@ class Container {
   }
 
   private _getCache(registration: IRegisterConfig) {
-    const isSingleton = this._containerConfig.singleton || registration.singleton;
+    const isSingleton =
+      this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton && registration.cache) {
       return registration.cache;
@@ -110,21 +113,35 @@ class Container {
   }
 
   private _setCache(registration: IRegisterConfig, result: any) {
-    const isSingleton = this._containerConfig.singleton || registration.singleton;
+    const isSingleton =
+      this._containerConfig.singleton || registration.singleton;
 
     if (isSingleton) {
       registration.cache = result;
     }
   }
 
-  private _resolve<T>(name: InjectableName<any>, registration: IRegisterConfig, injections: Injectable[]): T {
+  private _resolve<T>(
+    name: InjectableName<any>,
+    registration: IRegisterConfig,
+    injections: Injectable[],
+  ): T {
     let result: any = null;
 
     if (registration.type === RegisterType.ConstantValue) {
       result = registration.cache;
-    } else if (registration.type === RegisterType.Instance && registration.implementationType) {
-      result = this._resolveInstance<T>(registration.implementationType, injections);
-    } else if (registration.type === RegisterType.Provider && registration.provider) {
+    } else if (
+      registration.type === RegisterType.Instance &&
+      registration.implementationType
+    ) {
+      result = this._resolveInstance<T>(
+        registration.implementationType,
+        injections,
+      );
+    } else if (
+      registration.type === RegisterType.Provider &&
+      registration.provider
+    ) {
       result = registration.provider();
     } else {
       throw new Error(`Can not get ${name}`);
@@ -140,10 +157,16 @@ class Container {
   ): Promise<T> {
     let result: any = null;
 
-    if (registration.type === RegisterType.Instance &&
+    if (
+      registration.type === RegisterType.Instance &&
       registration.async &&
-      registration.asyncImplementationType) {
-      result = this._asyncResolveInstance(name, registration.asyncImplementationType, injections);
+      registration.asyncImplementationType
+    ) {
+      result = this._asyncResolveInstance(
+        name,
+        registration.asyncImplementationType,
+        injections,
+      );
     } else {
       result = this._resolve<T>(name, registration, injections);
     }
@@ -156,7 +179,9 @@ class Container {
     return names.map(name => this.get(name));
   }
 
-  private async _asyncGetInjections(names?: InjectableName<any>[]): Promise<any[]> {
+  private async _asyncGetInjections(
+    names?: InjectableName<any>[],
+  ): Promise<any[]> {
     if (!names) return [];
     return Promise.all(names.map(name => this.asyncGet(name)));
   }

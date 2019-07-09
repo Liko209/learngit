@@ -21,7 +21,6 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { HoverControllerBaseProps } from '../HoverController';
-
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
@@ -49,17 +48,17 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private get _noRowsRenderer() {
-    const { t, filterValue } = this.props;
+    const { t, filterFOCKey } = this.props;
 
-    const message = filterValue
+    const message = filterFOCKey
       ? t('phone.noMatchesFound')
       : t('phone.noCallLogAvailable');
 
-    const image = filterValue ? noResultImage : noCallLogImage;
+    const image = filterFOCKey ? noResultImage : noCallLogImage;
 
     return (
       <JuiEmptyPage
-        data-test-automation-id='callHistoryEmptyPage'
+        data-test-automation-id="callHistoryEmptyPage"
         image={image}
         message={message}
         height={this._height}
@@ -69,20 +68,19 @@ class AllCallsViewComponent extends Component<Props> {
 
   private _renderItems() {
     const { listHandler, resetSelectIndex, width, isHover } = this.props;
+
     return listHandler.sortableListStore.getIds.map(
-      (itemId: string, cellIndex: number) => {
-        return (
-          <CallLogItem
-            didOpenMiniProfile={this._didOpenMiniProfile}
-            id={itemId}
-            key={itemId}
-            onMouseLeave={resetSelectIndex}
-            isHover={isHover(cellIndex)}
-            onMouseOver={this.props.selectIndexChange(cellIndex)}
-            width={width}
-          />
-        );
-      },
+      (itemId: string, cellIndex: number) => (
+        <CallLogItem
+          didOpenMiniProfile={this._didOpenMiniProfile}
+          id={itemId}
+          key={itemId}
+          onMouseLeave={resetSelectIndex}
+          isHover={isHover(cellIndex)}
+          onMouseOver={this.props.selectIndexChange(cellIndex)}
+          width={width}
+        />
+      ),
     );
   }
 

@@ -121,6 +121,7 @@ describe('TelephonyService', () => {
         parsed: toNumber,
       })),
       getLocalCanonical: jest.fn().mockImplementation(i => i),
+      isShortNumber: jest.fn().mockResolvedValue(true),
     };
     mockedSettingService = {
       getById: jest.fn().mockResolvedValue({ value: CALLING_OPTIONS.GLIP }),
@@ -198,6 +199,7 @@ describe('TelephonyService', () => {
       forward: jest.fn(),
       flip: jest.fn(),
       userConfig: { getLastCalledNumber: jest.fn() },
+      isShortNumber: jest.fn().mockReturnValue(true),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(conf => {
