@@ -238,7 +238,7 @@ export default class MultiEntityMapStore<
   }
 
   has(id: IdType): boolean {
-    return !!this._data.get(id);
+    return this._data.has(id);
   }
 
   hasValid(id: IdType): boolean {
