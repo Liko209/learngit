@@ -106,6 +106,9 @@ class TelephonyStore {
   dialerInputFocused: boolean = false;
 
   @observable
+  hasManualSelected: boolean = false;
+
+  @observable
   chosenCallerPhoneNumber: string;
 
   @observable
@@ -297,11 +300,6 @@ class TelephonyStore {
   };
 
   @action
-  updateDefaultChosenNumber = (defaultCallerPhoneNumber: string) => {
-    this.defaultCallerPhoneNumber = defaultCallerPhoneNumber;
-  };
-
-  @action
   openKeypad = () => {
     this.keypadEntered = true;
   };
@@ -373,6 +371,7 @@ class TelephonyStore {
     this.callerName = undefined;
     this.phoneNumber = undefined;
     this.isContactMatched = false;
+    this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
   };
 

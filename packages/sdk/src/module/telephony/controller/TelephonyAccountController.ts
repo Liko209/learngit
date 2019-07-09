@@ -138,7 +138,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._callControllerList.delete(callId);
   }
 
-  async makeCall(toNumber: string, fromNum: string) {
+  async makeCall(toNumber: string, fromNum?: string) {
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );

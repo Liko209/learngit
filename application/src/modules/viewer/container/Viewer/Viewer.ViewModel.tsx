@@ -300,7 +300,9 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
           mainLogger
             .tags('ImageViewer')
             .info(
-              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${info.index}/${info.totalCount}`,
+              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${
+                info.index
+              }/${info.totalCount}`,
             );
 
           const nextToDisplay = getNextItemToDisplay(

@@ -294,7 +294,7 @@ class TelephonyService {
           return;
         }
         if (defaultPhoneNumber) {
-          this._telephonyStore.updateDefaultChosenNumber(defaultPhoneNumber);
+          this._telephonyStore.defaultCallerPhoneNumber = defaultPhoneNumber;
         }
       },
       { fireImmediately: true },
@@ -311,18 +311,11 @@ class TelephonyService {
       },
       { fireImmediately: true },
     );
-
     this._defaultCallerPhoneNumberDisposer = reaction(
       () => this._telephonyStore.defaultCallerPhoneNumber,
-      async (value, reaction) => {
-        const result = await this._rcInfoService.hasSetCallerId();
-        if (
-          result &&
-          this._telephonyStore.defaultCallerPhoneNumber &&
-          !this._telephonyStore.chosenCallerPhoneNumber
-        ) {
+      async () => {
+        if (!this._telephonyStore.hasManualSelected) {
           this._telephonyStore.chosenCallerPhoneNumber = this._telephonyStore.defaultCallerPhoneNumber;
-          reaction.dispose();
         }
       },
     );
@@ -383,21 +376,16 @@ class TelephonyService {
     }
     callback && callback();
 
+    let fromNumber;
     if (idx === -1 || typeof idx !== 'number') {
-      return mainLogger.error(
-        `${TelephonyService.TAG} can't Make call with: ${
-          this._telephonyStore.chosenCallerPhoneNumber
-        }, because can't find corresponding phone number from ${this
-          ._telephonyStore.callerPhoneNumberList &&
-          this._telephonyStore.callerPhoneNumberList.join(',')}`,
-      );
+      fromNumber = undefined;
+    } else {
+      const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
+      fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
     }
-    const fromEl = this._telephonyStore.callerPhoneNumberList[idx];
-    const fromNumber = fromEl.id ? fromEl.phoneNumber : ANONYMOUS;
+
     mainLogger.info(
-      `${
-        TelephonyService.TAG
-      }Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
+      `${TelephonyService.TAG}Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
       parsed as string,
@@ -577,9 +565,7 @@ class TelephonyService {
   holdOrUnhold = async () => {
     if (this._telephonyStore.holdDisabled || !this._callId) {
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
-          this._telephonyStore.holdDisabled
-        }`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
       );
       return;
     }
@@ -672,11 +658,9 @@ class TelephonyService {
     } else if (typeof phoneNumber === 'string' && phoneNumber.length) {
       this._telephonyStore.chosenCallerPhoneNumber = phoneNumber;
     }
-
+    this._telephonyStore.hasManualSelected = true;
     mainLogger.info(
-      `${TelephonyService.TAG} set caller phone number: ${
-        this._telephonyStore.chosenCallerPhoneNumber
-      }`,
+      `${TelephonyService.TAG} set caller phone number: ${this._telephonyStore.chosenCallerPhoneNumber}`,
     );
   };
 
@@ -739,7 +723,7 @@ class TelephonyService {
       this._defaultCallerPhoneNumberDisposer();
 
     this._pauseRingtone();
-
+    this._telephonyStore.hasManualSelected = false;
     delete this._telephonyStore;
     delete this._serverTelephonyService;
     delete this._callId;

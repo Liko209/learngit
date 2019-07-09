@@ -136,7 +136,9 @@ abstract class RCItemFetchController<
     mainLogger
       .tags(this.syncName)
       .info(
-        `fetchVoicemails success, dataSize:${results.length}, hasMore:${hasMore}`,
+        `fetchVoicemails success, dataSize:${
+          results.length
+        }, hasMore:${hasMore}`,
       );
     this.onFetchFinished(serverResults, performanceTracer);
     return {

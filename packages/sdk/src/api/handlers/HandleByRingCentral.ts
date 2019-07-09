@@ -12,7 +12,7 @@ import {
 } from 'foundation';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 /* eslint-disable */
-const HandleByRingCentral = new (class extends AbstractHandleType {
+const HandleByRingCentral = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.RINGCENTRAL;
   defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
@@ -81,6 +81,6 @@ const HandleByRingCentral = new (class extends AbstractHandleType {
     }
     this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
   };
-})();
+}();
 
 export default HandleByRingCentral;

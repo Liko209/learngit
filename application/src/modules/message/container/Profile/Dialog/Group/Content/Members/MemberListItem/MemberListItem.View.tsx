@@ -56,9 +56,9 @@ class MemberListItem extends React.Component<
     const { pid } = this.props;
     event.stopPropagation();
     const anchor = event.currentTarget as HTMLElement;
-    const { ProfileMiniCard } = await import(
-      '@/modules/message/container/MiniCard/Profile'
-    );
+    const {
+      ProfileMiniCard,
+    } = await import('@/modules/message/container/MiniCard/Profile');
 
     const profileMiniCard = new ProfileMiniCard();
 
