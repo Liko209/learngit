@@ -50,6 +50,9 @@ class ParseContent {
         ? element.forEach(pushChild)
         : pushChild(element)));
 
+    if (children.length === 1 && typeof children[0] === 'string') {
+      return children[0];
+    }
     return children;
   }
 

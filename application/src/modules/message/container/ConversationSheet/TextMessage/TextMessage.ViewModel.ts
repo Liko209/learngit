@@ -22,17 +22,33 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @observable.shallow
   content: ChildrenType = [];
 
+  @observable
+  text: string;
+
+  private _textType: boolean;
+
   constructor(props: TextMessageProps) {
     super(props);
     this.reaction(() => ({
       text: this._post.text,
       keyword: props.keyword,
     }), ({ text, keyword }) => {
-      this.content = this._getContent(text, keyword);
+      const res = this._getContent(text, keyword);
+      this._textType = typeof res === 'string';
+      if (this._textType) {
+        this.text = res as string;
+      } else {
+        this.content = res;
+      }
     }, {
       fireImmediately: true,
       equals: comparer.structural
     });
+  }
+
+  @computed
+  get renderText() {
+    return this._textType ? this.text : this.content;
   }
 
   @computed
