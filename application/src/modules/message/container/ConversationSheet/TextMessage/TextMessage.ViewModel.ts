@@ -20,10 +20,10 @@ import { buildAtMentionMap } from '@/common/buildAtMentionMap';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @observable.shallow
-  content: ChildrenType = [];
+  private _content: ChildrenType = [];
 
   @observable
-  text: string;
+  private _text: string;
 
   private _textType: boolean;
 
@@ -35,10 +35,11 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     }), ({ text, keyword }) => {
       const res = this._getContent(text, keyword);
       this._textType = typeof res === 'string';
+      console.log(this._textType, res);
       if (this._textType) {
-        this.text = res as string;
+        this._text = res as string;
       } else {
-        this.content = res;
+        this._content = res;
       }
     }, {
       fireImmediately: true,
@@ -48,7 +49,7 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
 
   @computed
   get renderText() {
-    return this._textType ? this.text : this.content;
+    return this._textType ? this._text : this._content;
   }
 
   @computed
