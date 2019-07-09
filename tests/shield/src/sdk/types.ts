@@ -5,20 +5,11 @@
  */
 
 import {
-  IRequest as IJRequest,
-  IResponse as IJResponse,
-  IBaseRequest,
-  IBaseResponse,
-  INetworkRequestExecutorListener,
+  IRequest as IJRequest, IResponse as IJResponse, IBaseRequest, IBaseResponse, INetworkRequestExecutorListener
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
 
-interface IApiContract<T extends IApi> {
-  api: T;
-  desc: IRoute<T>;
-}
-
-interface IApi<Req = any, Res = any> {
+interface IApiContract<Req = any, Res = any> {
   host: string;
   path: string;
   method: string;
@@ -27,22 +18,17 @@ interface IApi<Req = any, Res = any> {
   response: Pick<IBaseResponse<Res>, 'data'>;
 }
 
-type QueryParser<T> = {
-  [key in keyof T]: (v: string) => T[key];
-};
+type QueryParser<T> = { [key in keyof T]: (v: string) => T[key] };
 
 type HttpVerb = 'get' | 'post' | 'put' | 'delete';
-type Handler = (
-  request: IJRequest,
-  queryObject?: object,
-) => Promise<IJResponse> | IJResponse;
+type Handler = (request: IJRequest, queryObject?: object) => Promise<IJResponse> | IJResponse;
 
 type VerbHandler = { [key in HttpVerb]: Handler };
 interface IApiMap {
   [key: string]: Partial<VerbHandler>;
 }
 
-type IRoute<T extends IApi> = {
+type IRoute<T extends IApiContract> = {
   path: string;
   method?: string;
   query?: QueryParser<T['query']>;
@@ -52,11 +38,7 @@ interface IResponseAdapter {
   adapt: (handler: Handler) => RouterHandler;
 }
 
-type RouterHandler = (
-  request: IJRequest,
-  cb: INetworkRequestExecutorListener,
-) => // routeParams: object,
-void | Promise<void>;
+type RouterHandler = (request: IJRequest, cb: INetworkRequestExecutorListener) => void | Promise<void>;
 interface IRouter {
   use(method: string, path: string, handler: Handler): this;
   match(option: { method: string; path: string }): Nullable<Handler>;
@@ -70,16 +52,13 @@ interface IMockServer {
 export {
   IJRequest,
   IJResponse,
-  // IRequest,
-  // IResponse,
   IBaseRequest,
   IBaseResponse,
   INetworkRequestExecutorListener,
   IRoute,
-  IApi,
+  IApiContract,
   IApiMap,
   VerbHandler,
-  IApiContract,
   Handler,
   IMockServer,
   RouterHandler,

@@ -15,15 +15,15 @@ import { parseState } from './mocks/server/glip/utils';
 import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
-import { IBaseResponse, IApi } from './types';
+import { IBaseResponse, IApiContract } from './types';
 import { createResponse } from './mocks/server/utils';
 
 blockExternalRequest();
 
 function readJson<
-  A extends IApi<any, any> = IApi<any, any>,
-  ReqData = A extends IApi<infer B, any> ? B : any,
-  ResData = A extends IApi<any, infer B> ? B : any
+  A extends IApiContract<any, any> = IApiContract<any, any>,
+  ReqData = A extends IApiContract<infer B, any> ? B : any,
+  ResData = A extends IApiContract<any, infer B> ? B : any
 >(json: IRequestResponse<ReqData, ResData>) {
   ['path', 'method', 'request', 'response'].forEach(k =>
     assert(json[k], `json lack of property[${k}]`),
@@ -31,7 +31,7 @@ function readJson<
   return json;
 }
 
-function createSuccessResponse<T extends IApi>(
+function createSuccessResponse<T extends IApiContract>(
   options: {
     host: T['host'];
     method: T['method'];
@@ -55,7 +55,7 @@ function createSuccessResponse<T extends IApi>(
   } as IRequestResponse<T['request'], T['response']>;
 }
 
-function createErrorResponse<T extends IApi>(
+function createErrorResponse<T extends IApiContract>(
   options: {
     host: T['host'];
     method: T['method'];
@@ -80,11 +80,11 @@ function createErrorResponse<T extends IApi>(
 }
 
 type MockResponse = <
-  A extends IApi<any, any> = IApi<any, any>,
-  ReqData = A extends IApi<infer B, any> ? B : any,
-  ResData = A extends IApi<any, infer B> ? B : any,
-  T extends (api: IApi<ReqData, ResData>) => any = (
-    api: IApi<ReqData, ResData>,
+  A extends IApiContract<any, any> = IApiContract<any, any>,
+  ReqData = A extends IApiContract<infer B, any> ? B : any,
+  ResData = A extends IApiContract<any, infer B> ? B : any,
+  T extends (api: IApiContract<ReqData, ResData>) => any = (
+    api: IApiContract<ReqData, ResData>,
   ) => any
 >(
   requestResponse: IRequestResponse<ReqData, ResData>,

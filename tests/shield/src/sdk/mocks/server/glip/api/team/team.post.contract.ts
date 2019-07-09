@@ -1,6 +1,6 @@
-import { IApi } from '../../../../../types';
+import { IApiContract } from '../../../../../types';
 
-export interface ITeamPost extends IApi {
+export interface ITeamPost extends IApiContract {
   path: '/api/team/:id';
   method: 'post';
   query: {

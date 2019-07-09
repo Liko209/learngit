@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Post } from 'sdk/module/post/entity/Post';
 
 import { Router } from '../Router';
-import { IJRequest, IRoute, IApi } from '../../../types';
+import { IJRequest, IRoute, IApiContract } from '../../../types';
 import { createResponse, String2Number } from '../utils';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
@@ -61,7 +61,7 @@ export class MockGlipServer {
     this.socketServer = new MockSocketServer('https://glip.socket.com');
     this._router = new Router();
     // todo apply Route from sub Controller
-    const routeMetas = getMeta<IRoute<IApi>>(
+    const routeMetas = getMeta<IRoute<IApiContract>>(
       MockGlipServer.prototype,
       META_ROUTE,
     );

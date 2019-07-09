@@ -3,9 +3,9 @@
  * @Date: 2019-07-05 10:57:02
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApi, IBaseRequest } from '../../../../types';
+import { IApiContract, IBaseRequest } from '../../../../types';
 
-abstract class GlipTeamPost implements IApi {
+abstract class GlipTeamPost implements IApiContract {
   host: 'glip';
   path: '/api/team/:id';
   method: 'post';
@@ -67,7 +67,7 @@ abstract class GlipTeamPost implements IApi {
   };
 }
 
-const A: IApi = {};
+const A: IApiContract = {};
 
 interface IGlipApi {
   team: {
@@ -79,16 +79,16 @@ interface IGlipApi {
 //   path: T['path'],
 // }
 
-type RequestBody<T extends IApi> = T['request']['data'];
-type RequestQuery<T extends IApi> = T['query'];
-type RequestParams<T extends IApi> = {
+type RequestBody<T extends IApiContract> = T['request']['data'];
+type RequestQuery<T extends IApiContract> = T['query'];
+type RequestParams<T extends IApiContract> = {
   path: T['path'];
   method: T['method'];
 };
 
 function IGlipApi(params: RequestParams<IGlipTeamPost>) {}
-function doRequest<T extends IApi>(body: Partial<RequestBody<T>>) {}
-function createApi<T extends IApi>(params: RequestParams<T>): MethodDecorator {
+function doRequest<T extends IApiContract>(body: Partial<RequestBody<T>>) {}
+function createApi<T extends IApiContract>(params: RequestParams<T>): MethodDecorator {
   // api.method
   return (target, propertyKey, descriptor) => {
     // return function (body: Partial<RequestBody<T>>, query: RequestQuery<T>) {
@@ -110,7 +110,7 @@ class Team {
   createTeam() {}
 }
 
-export interface IGlipTeamPost extends IApi {
+export interface IGlipTeamPost extends IApiContract {
   path: '/api/team/:id';
   method: 'post';
   query: {
