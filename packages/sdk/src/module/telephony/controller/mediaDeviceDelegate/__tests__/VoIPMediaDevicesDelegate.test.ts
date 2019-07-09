@@ -49,13 +49,14 @@ describe('VoIPMediaDevicesDelegate', () => {
 
   function createDevicesChangeInfo(
     devices: string[],
-    delta: { added?: string[]; deleted?: string[] },
+    delta: { added?: string[]; deleted?: string[], hashChanged?: boolean },
   ) {
     const idsToMockDevices = (ids: string[]): MediaDeviceInfo[] =>
       ids.map(deviceId => ({ deviceId } as MediaDeviceInfo));
     return {
       devices: idsToMockDevices(devices),
       delta: {
+        hashChanged: !!delta.hashChanged,
         added: idsToMockDevices(delta.added || []),
         deleted: idsToMockDevices(delta.deleted || []),
       },
@@ -170,6 +171,21 @@ describe('VoIPMediaDevicesDelegate', () => {
       deviceDelegate.onMediaDevicesChanged(
         createDevicesChangeInfo(deviceIds, { deleted: ['d'] }),
         createDevicesChangeInfo(deviceIds, { deleted: ['e'] }),
+      );
+      expect(deviceDelegate['_speakerSyncManager'].ensureDevice).toBeCalled();
+      expect(
+        deviceDelegate['_microphoneSyncManager'].ensureDevice,
+      ).toBeCalled();
+      expect(deviceDelegate['_ringerSyncManager'].ensureDevice).toBeCalled();
+    });
+    it('The default audio source setting should sync when I change the setting from the system [JPT-2497]', () => {
+      const deviceIds = ['a', 'b', 'c'];
+      jest.spyOn(deviceDelegate['_speakerSyncManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_microphoneSyncManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_ringerSyncManager'], 'ensureDevice');
+      deviceDelegate.onMediaDevicesChanged(
+        createDevicesChangeInfo(deviceIds, { hashChanged: true }),
+        createDevicesChangeInfo(deviceIds, { hashChanged: true }),
       );
       expect(deviceDelegate['_speakerSyncManager'].ensureDevice).toBeCalled();
       expect(

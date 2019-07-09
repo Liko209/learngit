@@ -135,11 +135,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     manager: DeviceSyncManger,
     devices: MediaDeviceInfo[],
     delta: {
+      hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
     },
   ) {
-    if (delta.deleted.length) {
+    if (delta.deleted.length || delta.hashChanged) {
       manager.ensureDevice();
     }
     if (delta.added.length) {
@@ -158,17 +159,17 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   onMediaDevicesChanged(
     audioOutputs: {
       devices: MediaDeviceInfo[];
-      delta: { added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
+      delta: { hashChanged: boolean, added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
     },
     audioInputs: {
       devices: MediaDeviceInfo[];
-      delta: { added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
+      delta: { hashChanged: boolean; added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
     },
   ): void {
     telephonyLogger
       .tags(LOG_TAG)
       .info('device change', audioInputs.delta, audioOutputs.delta);
-    if (audioInputs.delta.added.length || audioInputs.delta.deleted.length) {
+    if (audioInputs.delta.added.length || audioInputs.delta.deleted.length || audioInputs.delta.hashChanged) {
       this._handlerDeviceChange(
         this._microphoneSyncManager,
         audioInputs.devices,
@@ -179,7 +180,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         audioInputs.devices,
       );
     }
-    if (audioOutputs.delta.added.length || audioOutputs.delta.deleted.length) {
+    if (audioOutputs.delta.added.length || audioOutputs.delta.deleted.length || audioOutputs.delta.hashChanged) {
       this._handlerDeviceChange(
         this._speakerSyncManager,
         audioOutputs.devices,
@@ -201,6 +202,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     manager: DeviceSyncManger,
     devices: MediaDeviceInfo[],
     delta: {
+      hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
     },
