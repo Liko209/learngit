@@ -8,24 +8,14 @@ import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
-const momentLocaleFile = [
-  'en-us',
-  'de',
-  'en-au',
-  'en-gb',
-  'es-do',
-  'es',
-  'fr-ca',
-  'fr',
-  'it-ch',
-  'ja',
-  'pt-br',
-  'zh-cn',
-  'zh-hk',
-  'zh-tw',
-];
+/**
+ * momentWhitelist: white list for moment
+ * momentWhitelist must synchronize with i18nWhitelist
+ */
+const i18nWhitelist = ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'];
+const momentWhitelist = ['en-us', 'de', 'en-au', 'en-gb', 'es-do', 'es', 'fr-ca', 'fr', 'it-ch', 'ja', 'pt-br', 'zh-cn', 'zh-hk', 'zh-tw'];
 
-momentLocaleFile.map(name => {
+momentWhitelist.map(name => {
   import(`moment/locale/${name}.js`);
 });
 
@@ -68,7 +58,7 @@ const config: i18next.InitOptions = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'],
+  whitelist: i18nWhitelist,
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',
