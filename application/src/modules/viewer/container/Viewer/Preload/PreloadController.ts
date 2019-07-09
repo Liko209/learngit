@@ -14,15 +14,8 @@ import {
   SequenceProcessorHandler,
   SingletonSequenceProcessor,
 } from 'sdk/framework/processor';
-import {
-  getMaxThumbnailURLInfo,
-  getThumbnailURL,
-} from '@/common/getThumbnailURL';
-import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { getLargeRawImageURL } from '@/common/getThumbnailURL';
 import { mainLogger, ILogger } from 'sdk';
-import { ItemService } from 'sdk/module/item/service';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { LARGE_IMAGE_SIZE } from '../Content/Image/constants';
 import { action } from 'mobx';
 
 class PreloadController implements IImageDownloadedListener {
@@ -119,46 +112,24 @@ class PreloadController implements IImageDownloadedListener {
   }
 
   @action
-  private _tryPreloadWithItemId(itemId: number) {
+  private async _tryPreloadWithItemId(itemId: number) {
     const item: FileItemModel = getEntity(ENTITY_NAME.ITEM, itemId);
     if (!item || item.id <= 0) {
+      this._logger.info(
+        `Not start to preload ${itemId} due to no existing item: ${!!item}`,
+      );
       return false;
     }
 
     this._logger.info(`Will process itemId: ${item.id}, ${item.name}`);
-    if (FileItemUtils.isSupportShowRawImage(item)) {
-      const url = getThumbnailURL(item, {
-        width: LARGE_IMAGE_SIZE,
-        height: LARGE_IMAGE_SIZE,
-      });
-      if (url) {
-        this._addToQueue(item.id, url);
-        return true;
-      }
+    const url = await getLargeRawImageURL(item);
+    if (!url) {
+      this._logger.info(`Not start to preload ${itemId} due to invalid url`);
+      return false;
     }
 
-    if (FileItemUtils.isSupportPreview(item)) {
-      if (item.thumbs) {
-        const imageUrl = getMaxThumbnailURLInfo(item).url;
-        this._addToQueue(item.id, imageUrl);
-        return true;
-      }
-
-      const itemService = ServiceLoader.getInstance<ItemService>(
-        ServiceConfig.ITEM_SERVICE,
-      );
-      itemService
-        .getThumbsUrlWithSize(item.id, item.origWidth, item.origHeight)
-        .then((url: string) => {
-          this._addToQueue(item.id, url);
-        })
-        .catch(() => {
-          this._doNextPreload();
-        });
-      return true;
-    }
-
-    return false;
+    this._addToQueue(item.id, url);
+    return true;
   }
 
   private _addToQueue(itemId: number, url: string) {
@@ -185,9 +156,11 @@ class PreloadController implements IImageDownloadedListener {
     }
     this._inProgressId = this._pendingIds.shift()!;
 
-    if (!this._tryPreloadWithItemId(this._inProgressId)) {
-      this._doNextPreload();
-    }
+    this._tryPreloadWithItemId(this._inProgressId).then((started: boolean) => {
+      if (!started) {
+        this._doNextPreload();
+      }
+    });
   }
 
   private _doNextPreload() {
