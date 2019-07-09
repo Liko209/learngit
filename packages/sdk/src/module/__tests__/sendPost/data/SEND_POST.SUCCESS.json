@@ -1,12 +1,12 @@
 {
-  "host": "https://glpdevxmn.asialab.glip.net",
+  "host": "glip",
   "path": "/api/post",
   "method": "post",
   "type": "request-response",
   "via": "socket",
   "hostAlias": "glip",
   "request": {
-    "host": "https://glpdevxmn.asialab.glip.net",
+    "host": "glip",
     "path": "/api/post",
     "method": "post",
     "headers": {

@@ -19,15 +19,14 @@ const debug = createDebug('ProxyServer', false);
 export class ProxyServer implements IMockServer {
   private _findResponseInRequestResponsePool(request: {
     host: string;
-    hostAlias?: string;
     method: string;
     path: string;
   }) {
-    const { host, hostAlias, method, path } = request;
+    const { host, method, path } = request;
     const pool = this.getRequestResponsePool();
     return pool.find(item => {
       return (
-        (item.host === host || (hostAlias && item.hostAlias === hostAlias)) &&
+        item.host === host &&
         item.path === path &&
         item.request.method === method
       );
@@ -46,14 +45,14 @@ export class ProxyServer implements IMockServer {
     const transRequestInfo = {
       host: request.host,
       path: request.path,
-      hostAlias: '',
       method: request.method,
     };
     const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
       request.host.startsWith(key),
     );
     if (match) {
-      transRequestInfo.hostAlias = match[1];
+      transRequestInfo.host = match[1];
+      request.host = match[1];
     }
     debug('handle request: ', transRequestInfo);
     const matchReqRes = this._findResponseInRequestResponsePool(

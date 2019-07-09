@@ -83,7 +83,6 @@ type RetryStrategy = (doRetry: () => void, retryCounter: number) => void;
 
 interface IBaseRequest<T = any> {
   host: string;
-  hostAlias?: string;
   path: string;
   method: string;
   headers: object;

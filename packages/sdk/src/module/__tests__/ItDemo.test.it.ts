@@ -85,14 +85,6 @@ itForSdk(
         expect(result.posts[0].text).toEqual('xx');
       });
       it('[getPosts]should mock response work', async () => {
-        // should mock api work
-        // jest
-        //   .spyOn(server.glip.api['/api/posts'], 'get')
-        //   .mockImplementationOnce((request: any) => {
-        //     return createResponse({
-        //       data: { posts: MOCK_POSTS, items: [] },
-        //     });
-        //   });
         mockResponse(
           createRequestResponse(
             {

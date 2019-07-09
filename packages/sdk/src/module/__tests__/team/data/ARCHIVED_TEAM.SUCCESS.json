@@ -1,12 +1,11 @@
 {
-  "host": "https://glpdevxmn.asialab.glip.net",
+  "host": "glip",
   "path": "/api/team/44425222",
   "method": "put",
   "type": "request-response",
   "via": "socket",
-  "hostAlias": "glip",
   "request": {
-    "host": "https://glpdevxmn.asialab.glip.net",
+    "host": "glip",
     "path": "/api/team/44425222",
     "method": "put",
     "headers": {

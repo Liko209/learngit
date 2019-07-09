@@ -54,7 +54,7 @@ interface INetworkInfo {
   // url: string;
   host: string;
   path: string;
-  hostAlias?: string;
+  // hostAlias?: string;
 }
 
 export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo {
@@ -230,23 +230,18 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
               host,
               path,
               method,
-              // url: openUrl,
               type: 'request-response',
               via: 'xhr',
               request: {
                 host,
                 path,
                 method,
-                // url: openUrl,
-                // ...Utils.parseHostPatch(openUrl),
-                // withCredentials: request.withCredentials,
                 data: request[INJECT_DATA],
                 headers: request[INJECT_HEADER],
               },
               response: {
                 status: request.status,
                 statusText: request.statusText,
-                // responseType: request.responseType,
                 data: ['', 'text'].includes(request.responseType)
                   ? Utils.toJson(request.responseText)
                   : request.responseType,
@@ -317,17 +312,17 @@ class NetworkDataTool {
     const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
       host.startsWith(key),
     );
-    return match ? match[1] : undefined;
+    return match ? match[1] : host;
   }
 
   startWatch() {
     subscribeXHR(xhrInfo => {
-      xhrInfo.hostAlias = this._aliasHost(xhrInfo.host);
+      xhrInfo.host = this._aliasHost(xhrInfo.host);
       this._infoPool.push(xhrInfo);
     });
     subscribeSocket(socketInfo => {
       const parseResult = Utils.parseGlip(socketInfo);
-      socketInfo.hostAlias = this._aliasHost(socketInfo.host);
+      socketInfo.host = this._aliasHost(socketInfo.host);
       this._infoPool.push(parseResult);
       switch (socketInfo.chanel) {
         case 'response':
@@ -353,7 +348,7 @@ class NetworkDataTool {
               type: 'request-response',
               via: 'socket',
               // url: rawRequest.url,
-              hostAlias: this._aliasHost(rawRequest.host),
+              // hostAlias: this._aliasHost(rawRequest.host),
               request: rawRequest,
               response: Utils.fromSocketResponse(socketResponse.data),
             });
@@ -381,7 +376,7 @@ class NetworkDataTool {
       'network_all.json',
       new Blob([
         JSON.stringify(
-          this._infoPool.filter(item => !!item.hostAlias),
+          this._infoPool,
           null,
           2,
         ),
@@ -395,7 +390,7 @@ class NetworkDataTool {
       new Blob([
         JSON.stringify(
           this._infoPool.filter(
-            item => item.hostAlias && item.type === 'socket-message',
+            item => item.type === 'socket-message',
           ),
           null,
           2,
@@ -410,7 +405,7 @@ class NetworkDataTool {
       new Blob([
         JSON.stringify(
           this._infoPool.filter(
-            item => item.hostAlias && item.type === 'request-response',
+            item => item.type === 'request-response',
           ),
           null,
           2,

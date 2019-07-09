@@ -18,7 +18,6 @@ itForSdk(
       .helper()
       .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
     glipData.teams.push(team1);
-    // data.apply();
     beforeAll(async () => {
       await sdk.setup();
       groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);

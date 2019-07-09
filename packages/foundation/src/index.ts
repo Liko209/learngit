@@ -11,7 +11,6 @@ export * from './telephony';
 export * from './error';
 export * from './analysis';
 export * from './utils';
-export * from './networkCollector';
 export * from './performance';
 export * from './firebase';
 

@@ -43,7 +43,7 @@ function createRequestResponse<T>(
     request: {
       method: options.method,
     },
-    hostAlias: options.host,
+    host: options.host,
     method: options.method,
     path: options.path,
   } as IRequestResponse<any, T>;

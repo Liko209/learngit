@@ -35,6 +35,5 @@ export {
   logManager,
   SessionManager,
   DateFormatter,
-  networkCollector,
   PerformanceTracer,
 } from 'foundation';

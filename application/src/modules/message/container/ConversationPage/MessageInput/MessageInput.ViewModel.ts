@@ -22,7 +22,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
-import { mainLogger, networkCollector } from 'sdk';
+import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
@@ -53,27 +53,6 @@ const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
 };
 
 const DEBUG_COMMAND_MAP = {
-  '/network': async () => {
-    const items = networkCollector.getAll();
-    const zip = new JSZip();
-    items.forEach(item => {
-      const { hostname } = URL(item.request.host);
-      const fo = zip
-        .folder(item.request.via === NETWORK_VIA.SOCKET ? 'socket' : 'http')
-        .folder(`${hostname}${item.request.path}`);
-      // fo = zip.folder(item.request.path);
-      // fo = fo.folder(item.request.path);
-      fo.file(`${item.response.status}.json`, JSON.stringify(item, null, 2));
-    });
-    const result = await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: {
-        level: 9,
-      },
-    });
-    saveBlob('NETWORK', result);
-  },
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {

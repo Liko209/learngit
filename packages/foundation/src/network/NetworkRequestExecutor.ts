@@ -26,7 +26,6 @@ import {
 import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 import { networkLogger } from '../log';
-import { networkCollector } from '../networkCollector';
 
 const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
   doRetry: () => void,
@@ -75,7 +74,6 @@ export class NetworkRequestExecutor
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._callXApiResponseCallback(response);
     doResponseLog(response);
-    networkCollector.add(this.request, response);
   }
 
   onFailure(response: IResponse): void {
@@ -94,7 +92,6 @@ export class NetworkRequestExecutor
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this._callXApiResponseCallback(response);
       doResponseLog(response);
-      networkCollector.add(this.request, response);
     }
   }
 
