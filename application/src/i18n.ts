@@ -8,7 +8,7 @@ import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
-const momentLocaleFileName = [
+const momentLocaleFile = [
   'en-u',
   'de',
   'en-au',
@@ -25,7 +25,7 @@ const momentLocaleFileName = [
   'zh-tw',
 ];
 
-momentLocaleFileName.map(name => {
+momentLocaleFile.map(name => {
   import(`moment/locale/${name}.js`);
 });
 
