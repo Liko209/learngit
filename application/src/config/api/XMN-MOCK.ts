@@ -1,4 +1,5 @@
 import { ApiConfig, DeepPartial } from 'sdk/types';
+
 const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/rc',

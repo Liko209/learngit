@@ -29,7 +29,7 @@ class ViewerService implements IViewerService {
         onClose: () => dismiss(),
       },
     );
-  }
+  };
 }
 
 export { ViewerService };

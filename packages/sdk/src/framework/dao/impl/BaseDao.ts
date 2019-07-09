@@ -19,7 +19,7 @@ import { IDao } from '../interface/IDao';
 import { IdModel, ModelIdType } from '../../model';
 
 class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
-  implements IDao<T, IdType> {
+implements IDao<T, IdType> {
   static COLLECTION_NAME: string = '';
   private collection: IDatabaseCollection<T, IdType>;
   private db: IDatabase;
@@ -61,9 +61,7 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
 
   async bulkPut(array: T[]): Promise<void> {
     try {
-      const validArray = array.filter((item: T) => {
-        return this._isValidateItem(item, true);
-      });
+      const validArray = array.filter((item: T) => this._isValidateItem(item, true));
       await this.doInTransaction(async () => {
         this.collection.bulkPut(validArray);
       });
@@ -200,9 +198,7 @@ class BaseDao<T extends IdModel<IdType>, IdType extends ModelIdType = number>
       await this.db.ensureDBOpened();
       const primaryKeyName = this.collection.primaryKeyName();
       if (shouldDoPut) {
-        const ids = array.map((iter: Partial<T>) => {
-          return iter[primaryKeyName];
-        });
+        const ids = array.map((iter: Partial<T>) => iter[primaryKeyName]);
         await this.doInTransaction(async () => {
           const exists = await this.primaryKeys(ids);
           if (!exists || exists.length === 0) {

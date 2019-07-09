@@ -5,6 +5,7 @@
  */
 import BaseNotificationSubscribable from './BaseNotificationSubscribable';
 import { ENTITY_NAME } from '../constants';
+
 export default class BaseStore extends BaseNotificationSubscribable {
   name: ENTITY_NAME;
   constructor(name: ENTITY_NAME) {

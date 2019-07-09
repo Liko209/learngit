@@ -12,7 +12,7 @@ import { AbstractViewModel } from '@/base/AbstractViewModel';
 import { LoginVersionStatusProps } from './types';
 
 class LoginVersionStatusViewModel extends AbstractViewModel<
-  LoginVersionStatusProps
+LoginVersionStatusProps
 > {
   private _globalStore = storeManager.getGlobalStore();
 

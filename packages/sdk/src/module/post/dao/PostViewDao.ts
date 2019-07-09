@@ -10,7 +10,7 @@ import { Post, PostView, UnreadPostQuery } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import { ArrayUtils } from '../../../utils/ArrayUtils';
-
+/* eslint-disable */
 class PostViewDao extends BaseDao<PostView> {
   static COLLECTION_NAME = 'postView';
   // TODO, use IDatabase after import foundation module in

@@ -15,7 +15,7 @@ import { ModelIdType } from 'sdk/framework/model';
 import { UndefinedAble } from 'sdk/types';
 
 export abstract class AbstractSettingEntityHandler<T>
-  implements IUserSettingHandler<T> {
+implements IUserSettingHandler<T> {
   id: number;
   userSettingEntityCache: UndefinedAble<UserSettingEntity<T>>;
   _subscriptions: {
@@ -94,8 +94,7 @@ export abstract class AbstractSettingEntityHandler<T>
         this.on<NotificationEntityUpdatePayload<E, IdType>>(
           eventName,
           listener,
-          payload =>
-            payload.type === EVENT_TYPES.UPDATE && (!filter || filter(payload)),
+          payload => payload.type === EVENT_TYPES.UPDATE && (!filter || filter(payload)),
         );
       },
       onDelete: <IdType extends ModelIdType = number>(
@@ -108,8 +107,7 @@ export abstract class AbstractSettingEntityHandler<T>
         this.on<NotificationEntityDeletePayload<IdType>>(
           eventName,
           listener,
-          payload =>
-            payload.type === EVENT_TYPES.DELETE && (!filter || filter(payload)),
+          payload => payload.type === EVENT_TYPES.DELETE && (!filter || filter(payload)),
         );
       },
     };

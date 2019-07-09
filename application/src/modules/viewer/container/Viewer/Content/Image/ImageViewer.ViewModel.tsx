@@ -5,7 +5,6 @@
  */
 import { AbstractViewModel } from '@/base';
 import { ImageViewerProps } from './types';
-import _ from 'lodash';
 import { computed, observable } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
@@ -154,9 +153,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     this._buildThumbnailStatus = 'idle';
   }
 
-  private _getCurrentItemId = () => {
-    return this.props.getCurrentItemId();
-  }
+  private _getCurrentItemId = () => this.props.getCurrentItemId()
 }
 
 export { ImageViewerViewModel };

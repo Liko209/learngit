@@ -31,7 +31,9 @@ import {
   useIsFirstRenderRef,
   ScrollPosition,
 } from './hooks';
-import { createKeyMapper, createRange, getChildren, isRangeIn } from './utils';
+import {
+  createKeyMapper, createRange, getChildren, isRangeIn,
+} from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
 import { WRAPPER_IDENTIFIER } from './ItemWrapper';
@@ -49,8 +51,8 @@ type JuiVirtualizedListHandles = {
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
-  JuiVirtualizedListHandles,
-  JuiVirtualizedListProps
+JuiVirtualizedListHandles,
+JuiVirtualizedListProps
 > = (
   {
     height,
@@ -74,6 +76,8 @@ const JuiVirtualizedList: RefForwardingComponent<
 ) => {
   const shouldUseNativeImplementation = true;
   // TODO use useCallback to optimize performance
+  // need andy to fix
+  /* eslint-disable no-use-before-define */
   const computeVisibleRange = () => {
     let result: IndexRange;
     if (ref.current) {
@@ -200,9 +204,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
-  const shouldUpdateRange = () => {
-    return !isRangeIn(renderedRange, computeVisibleRange());
-  };
+  const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
 
   const updateRange = () => {
     if (ref.current) {
@@ -241,9 +243,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       scrollToBottom,
       scrollToPosition: jumpToPosition,
       getScrollPosition: () => scrollPosition,
-      isAtBottom: () => {
-        return prevAtBottomRef.current;
-      },
+      isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
         jumpToPosition({ index, options });
       },
@@ -310,7 +310,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       rowManager.flushCache();
       scrollEffectTriggerRef.current++;
       forceUpdate();
-    },       300),
+    }, 300),
     [],
   );
   //
@@ -319,7 +319,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     const height = beforeRef.current ? beforeRef.current.offsetHeight : 0;
     rowManager.setBeforeHeight(height);
-  },              [!!before]);
+  }, [!!before]);
 
   //
   // Update height cache and observe dynamic rows
@@ -388,7 +388,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       });
       observers = undefined;
     };
-  },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
+  }, [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
   //
   // Scroll to last remembered position,
@@ -397,12 +397,10 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     if (shouldScrollToBottom()) {
       scrollToBottom();
-    } else {
-      if (stickToLastPosition) {
-        scrollToPosition(scrollPosition);
-      }
+    } else if (stickToLastPosition) {
+      scrollToPosition(scrollPosition);
     }
-  },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
+  }, [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // TEMP SOLUTION
@@ -417,9 +415,9 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (ref.current) {
         ref.current.style.pointerEvents = 'auto';
       }
-    },                         10);
+    }, 10);
     return () => clearTimeout(timeout);
-  },              [scrollEffectTriggerRef.current, height, childrenCount]);
+  }, [scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // Emit visible range change
@@ -435,7 +433,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     } else {
       onVisibleRangeChange(visibleRange);
     }
-  },              [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
+  }, [keyMapper(visibleRange.startIndex), keyMapper(visibleRange.stopIndex)]);
 
   //
   // Emit rendered range change
@@ -448,17 +446,17 @@ const JuiVirtualizedList: RefForwardingComponent<
     } else {
       onRenderedRangeChange(renderedRange);
     }
-  },              [keyMapper(renderedRange.startIndex), keyMapper(renderedRange.stopIndex)]);
+  }, [keyMapper(renderedRange.startIndex), keyMapper(renderedRange.stopIndex)]);
 
   //
   // Update prevAtBottom
   //
   useEffect(() => {
     const original = prevAtBottomRef.current;
-    const current = (prevAtBottomRef.current = computeAtBottom());
+    prevAtBottomRef.current = computeAtBottom();
+    const current = prevAtBottomRef.current;
     if (original !== current) onBottomStatusChange(current);
   });
-
   //
   // Ensure no blank area
   //
@@ -554,9 +552,9 @@ const JuiVirtualizedList: RefForwardingComponent<
 const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
-  >
+React.ForwardRefExoticComponent<
+JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
+>
 >;
 
 export {

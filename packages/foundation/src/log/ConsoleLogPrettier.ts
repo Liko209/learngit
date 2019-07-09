@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity, IConsoleLogPrettier } from './types';
+
 const COLORS = ['#ff8800', '#516bf0', '#008b8b'];
 export class ConsoleLogPrettier implements IConsoleLogPrettier {
   prettier(logEntity: LogEntity): any[] {
@@ -17,9 +18,7 @@ export class ConsoleLogPrettier implements IConsoleLogPrettier {
 
   addColor(tags: string[]): string[] {
     const tagString = `%c${tags.join('%c ')}`;
-    const colors = tags.map((tag, index) => {
-      return `color: ${COLORS[index % COLORS.length]}`;
-    });
+    const colors = tags.map((tag, index) => `color: ${COLORS[index % COLORS.length]}`);
     return [tagString, ...colors];
   }
 }

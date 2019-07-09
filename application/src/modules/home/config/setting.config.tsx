@@ -12,9 +12,9 @@ const config: SubModuleConfig = {
   route: {
     path: '/settings',
     component: lazyComponent({
-      loader: () =>
-        import(/*
-        webpackChunkName: "c.setting" */ './lazy/Setting'),
+      loader: () => import(/*
+        webpackChunkName: "c.setting" */ './lazy/Setting'
+      ),
     }),
   },
   nav: async () => ({

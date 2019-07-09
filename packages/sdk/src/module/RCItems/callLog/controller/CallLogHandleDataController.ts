@@ -80,7 +80,7 @@ class CallLogHandleDataController {
 
     // save data and notify
     this._saveDataAndNotify(pseudos, [callLog]);
-  }
+  };
 
   handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
     if (!this._userConfig.getSyncToken()) {
@@ -119,7 +119,7 @@ class CallLogHandleDataController {
     if (callLogs.length) {
       this._saveDataAndNotify(pseudos, callLogs);
     }
-  }
+  };
 
   private async _saveDataAndNotify(
     pseudos: PseudoCallLogInfo,

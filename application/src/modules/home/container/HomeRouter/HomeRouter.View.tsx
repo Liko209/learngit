@@ -3,6 +3,7 @@
  * @Date: 2019-01-09 12:28:19
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React from 'react';
 import {
   Redirect,
@@ -24,7 +25,7 @@ const HomeRouterViewComponent = observer(
   }: HomeRouterViewProps & RouteComponentProps) => (
     <Switch>
       {defaultRouterPath && (
-        <Redirect exact={true} from="/" to={defaultRouterPath} />
+        <Redirect exact={true} from='/' to={defaultRouterPath} />
       )}
       {routes.map((route: RouteProps, i: number) => (
         <Route key={`HOME_ROUTE_${i}`} {...route} />

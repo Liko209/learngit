@@ -35,7 +35,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.LOGIN]: this.requestRCInfo,
+        [SERVICE.RC_LOGIN]: this.requestRCInfo,
       }),
     );
   }
@@ -93,7 +93,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     this.getRCInfoController()
       .getRCInfoFetchController()
       .requestRCInfo();
-  }
+  };
 
   async requestRCAccountRelativeInfo() {
     await this.getRCInfoController()

@@ -28,6 +28,7 @@ type Props = WithTranslation & CallCtrlPanelViewProps;
 
 @observer
 class CallCtrlViewComponent extends React.Component<Props> {
+  /* eslint-disable */
   private _Avatar = () => {
     const { uid } = this.props;
     return (
@@ -35,10 +36,10 @@ class CallCtrlViewComponent extends React.Component<Props> {
         uid={uid}
         showDefaultAvatar={!uid}
         imgProps={{ draggable: false }}
-        size="large"
+        size='large'
       />
     );
-  }
+  };
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 

@@ -3,8 +3,6 @@
  * @Date: 2019-01-02 09:28:33
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-
 import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';

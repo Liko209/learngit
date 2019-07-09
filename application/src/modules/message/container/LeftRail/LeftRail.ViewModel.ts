@@ -20,6 +20,7 @@ import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { getGlobalValue } from '@/store/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
   private _accountService = ServiceLoader.getInstance<AccountService>(
@@ -75,7 +76,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   toggleUnread = (evt: any, checked: boolean) => {
     this._globalStore.set(GLOBAL_KEYS.UNREAD_TOGGLE_ON, checked);
     this._accountService.setUnreadToggleSetting(checked);
-  }
+  };
 
   sections: SECTION_TYPE[] = [
     SECTION_TYPE.FAVORITE,

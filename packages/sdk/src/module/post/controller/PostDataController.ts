@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { mainLogger, PerformanceTracer } from 'foundation';
-import _ from 'lodash';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
@@ -25,7 +24,7 @@ import { IGroupService } from '../../group/service/IGroupService';
 import { SortUtils } from '../../../framework/utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from '../../sync/types';
-import GroupService from '../../group';
+import { GroupService } from '../../group';
 import { AccountService } from 'sdk/module/account';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { IGroupConfigService } from 'sdk/module/groupConfig';
@@ -133,9 +132,7 @@ class PostDataController {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
       const currentUserId = userConfig.getGlipUserId() as number;
-      const myPosts = posts.filter((post: Post, index: number) => {
-        return post.creator_id === currentUserId;
-      });
+      const myPosts = posts.filter((post: Post) => post.creator_id === currentUserId);
       groupPosts = this._getGroupedPosts(myPosts);
     }
     return groupPosts;
@@ -313,16 +310,15 @@ class PostDataController {
 
   protected async handleSexioModifiedPosts(posts: Post[]) {
     return posts.filter(
-      (post: Post) =>
-        post.created_at === post.modified_at ||
+      (post: Post) => post.created_at === post.modified_at ||
         this.entitySourceController.getEntityLocally(post.id),
     );
   }
 
   filterFunc = (data: Post[]): { eventKey: string; entities: Post[] }[] => {
     const postGroupMap: Map<
-      number,
-      { eventKey: string; entities: Post[] }
+    number,
+    { eventKey: string; entities: Post[] }
     > = new Map();
     data.forEach((post: Post) => {
       if (post) {
@@ -339,7 +335,7 @@ class PostDataController {
     });
 
     return Array.from(postGroupMap.values());
-  }
+  };
 
   async filterAndSavePosts(
     posts: Post[],
@@ -368,9 +364,7 @@ class PostDataController {
     return normalPosts;
   }
 
-  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
-    return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
-  }
+  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
 
   /**
    * 1, Check whether the group has discontinues post,

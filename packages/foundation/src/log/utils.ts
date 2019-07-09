@@ -28,24 +28,12 @@ const PARSER_MAP: { [key in TYPES]: (item: any) => string } = {
       return '[object Object]';
     }
   },
-  '[object String]': (item: string) => {
-    return item;
-  },
-  '[object Function]': (item: Function) => {
-    return '[object Function]';
-  },
-  '[object Undefined]': (item: undefined) => {
-    return 'undefined';
-  },
-  '[object Null]': (item: null) => {
-    return 'null';
-  },
-  '[object Boolean]': (item: boolean) => {
-    return String(item);
-  },
-  '[object Number]': (item: number) => {
-    return String(item);
-  },
+  '[object String]': (item: string) => item,
+  '[object Function]': () => '[object Function]',
+  '[object Undefined]': () => 'undefined',
+  '[object Null]': () => 'null',
+  '[object Boolean]': (item: boolean) => String(item),
+  '[object Number]': (item: number) => String(item),
 };
 
 function stringifyParams(...params: any): string[] {

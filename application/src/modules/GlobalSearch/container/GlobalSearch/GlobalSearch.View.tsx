@@ -37,7 +37,9 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
   }
 
   render() {
-    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
+    const {
+      open, onClose, searchKey, onClear, showClear, t,
+    } = this.props;
     const CurrentView = this.currentView;
 
     return (

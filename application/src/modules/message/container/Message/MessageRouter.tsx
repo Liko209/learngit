@@ -80,9 +80,9 @@ class MessageRouterComponent extends Component<Props, State> {
     const targetConversationId = this.props.match.params.subPath;
     targetConversationId
       ? MessageRouterChangeHelper.goToConversation(
-          targetConversationId,
-          'REPLACE',
-        )
+        targetConversationId,
+        'REPLACE',
+      )
       : MessageRouterChangeHelper.goToLastOpenedGroup();
   }
 

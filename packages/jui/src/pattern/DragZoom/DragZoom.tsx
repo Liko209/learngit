@@ -72,9 +72,9 @@ function ensureOptions(
 ): JuiDragZoomOptions {
   return options
     ? {
-        ...DEFAULT_DRAG_ZOOM_OPTIONS,
-        ...options,
-      }
+      ...DEFAULT_DRAG_ZOOM_OPTIONS,
+      ...options,
+    }
     : DEFAULT_DRAG_ZOOM_OPTIONS;
 }
 
@@ -118,23 +118,19 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     return this.props.contentRef || this._contentRef;
   }
 
-  canZoomIn = () => {
-    return this.state.canZoomIn;
-  }
+  canZoomIn = () => this.state.canZoomIn;
 
-  canZoomOut = () => {
-    return this.state.canZoomOut;
-  }
+  canZoomOut = () => this.state.canZoomOut;
 
   reset = () => {
     this.getZoomRef().current!.reset();
-  }
+  };
 
   updateContentSize = (contentWidth: number, contentHeight: number) => {
     this._contentWidth = contentWidth;
     this._contentHeight = contentHeight;
     this.updateRect();
-  }
+  };
 
   updateRect = () => {
     if (
@@ -159,8 +155,8 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         this._onAutoFitContentRectChange(fitWidth, fitHeight);
       }
     }
-  }
-
+  };
+  /* eslint-disable react/no-access-state-in-setstate */
   applyNewTransform = (newTransform: Transform) => {
     let transform = newTransform;
     let canDrag = this.state.canDrag;
@@ -197,13 +193,13 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         transform,
         canDrag,
       });
-  }
+  };
 
   onTransformChange = (info: { transform: Transform; canDrag: boolean }) => {
     this.setState({
       transform: info.transform,
     });
-  }
+  };
 
   private _onAutoFitContentRectChange = (
     fitWidth: number,
@@ -215,7 +211,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     this._fitHeight = fitHeight;
     this.props.onAutoFitContentRectChange &&
       this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
-  }
+  };
 
   private _updateScale(
     contentWidth: number,
@@ -247,7 +243,9 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       children,
     } = this.props;
     const { transform, canDrag } = this.state;
-    const { minPixel, maxPixel, step, ...zoomOptions } = ensureOptions(options);
+    const {
+      minPixel, maxPixel, step, ...zoomOptions
+    } = ensureOptions(options);
 
     const {
       minScale = zoomOptions.minScale,
@@ -285,20 +283,20 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
                 this.setState({ isDragging: false });
               }}
             >
-              {({ isDragging }) =>
-                React.cloneElement(
-                  children({
-                    canDrag,
-                    isDragging,
-                    transform,
-                    fitWidth: this._fitWidth,
-                    fitHeight: this._fitHeight,
-                    notifyContentSizeChange: this.updateContentSize,
-                  }),
-                  {
-                    ref: this._contentRef,
-                  },
-                )}
+              {({ isDragging }) => React.cloneElement(
+                children({
+                  canDrag,
+                  isDragging,
+                  transform,
+                  fitWidth: this._fitWidth,
+                  fitHeight: this._fitHeight,
+                  notifyContentSizeChange: this.updateContentSize,
+                }),
+                {
+                  ref: this._contentRef,
+                },
+              )
+              }
             </DragArea>
           )}
         </JuiZoomComponent>

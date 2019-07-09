@@ -5,7 +5,6 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { EVENT_TYPES } from './constants';
-import _ from 'lodash';
 import { IdModel, Raw, ModelIdType } from '../framework/model';
 
 export type NotificationEntityIds<IdType extends ModelIdType = number> = {
@@ -13,7 +12,7 @@ export type NotificationEntityIds<IdType extends ModelIdType = number> = {
 };
 
 export type NotificationEntityBody<T, IdType extends ModelIdType = number> = NotificationEntityIds<
-  IdType
+IdType
 > & {
   entities: Map<IdType, T>;
 };
@@ -85,7 +84,18 @@ const transformPartial2Map = <T extends IdModel<IdType>, IdType extends ModelIdT
 ): Map<IdType, Partial<Raw<T>>> => {
   const map = new Map<IdType, Partial<Raw<T>>>();
   entities.forEach((item: Partial<Raw<T>>) => {
-    map.set(item.id ? item.id : item._id ? item._id : 0, item);
+    let itemId;
+    if (item.id) {
+      itemId = item.id;
+    } else {
+      itemId = item._id;
+    }
+    if (item._id) {
+      itemId = item._id;
+    } else {
+      itemId = 0;
+    }
+    map.set(itemId, item);
   });
   return map;
 };
@@ -134,7 +144,7 @@ class NotificationCenter extends EventEmitter2 {
     const notificationBody: NotificationEntityReplaceBody<T, IdType> = {
       ids: idsArr,
       entities: payload,
-      isReplaceAll: isReplaceAll ? isReplaceAll : false,
+      isReplaceAll: !!isReplaceAll,
     };
 
     const notification: NotificationEntityReplacePayload<T, IdType> = {
@@ -194,7 +204,7 @@ class NotificationCenter extends EventEmitter2 {
       ids,
     };
     const notification: NotificationEntityReloadPayload<IdType> = {
-      isReloadAll: isReloadAll ? isReloadAll : false,
+      isReloadAll: !!isReloadAll,
       body: notificationBody,
       type: EVENT_TYPES.RELOAD,
     };

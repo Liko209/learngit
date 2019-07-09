@@ -16,7 +16,7 @@ import { PhoneUMI } from '../PhoneUMI';
 @observer
 class LeftRailViewComponent extends Component<
   WithTranslation & LeftRailViewProps
-> {
+  > {
   private _handleClick = (path: string) => {
     history.push(path);
     this.props.updateCurrentTab(path);
@@ -25,7 +25,9 @@ class LeftRailViewComponent extends Component<
     const { t } = this.props;
     return (
       <JuiLeftRail data-test-automation-id="telephony-tab">
-        {TelephonyTabs.map(({ title, path, automationID, UMIType }, index) => {
+        {TelephonyTabs.map(({
+          title, path, automationID, UMIType,
+        }, index) => {
           const key = `telephony-tab-${title}-${index}`;
           const selected = path === this.props.currentTab;
           return (

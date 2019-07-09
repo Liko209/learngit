@@ -6,7 +6,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
-import { JuiPreviewImage, JuiDelayPlaceholder } from '../';
+import { JuiPreviewImage, JuiDelayPlaceholder } from '..';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import download from '../../../../assets/jupiter-icon/icon-download.svg';
 import image from './contemplative-reptile.jpg';
@@ -15,9 +15,9 @@ storiesOf('Pattern/ConversationCard', module).add('JuiPreviewImage', () => {
   const fileName = text('fileName', '123.jpg');
   const actions = [
     <JuiIconButton
-      key="download"
-      variant="plain"
-      tooltipTitle="download"
+      key='download'
+      variant='plain'
+      tooltipTitle='download'
       symbol={download}
     />,
   ];

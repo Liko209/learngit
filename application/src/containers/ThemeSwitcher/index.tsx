@@ -29,9 +29,7 @@ class ThemeSwitcher extends React.PureComponent<IProps, IState> {
   }
 
   applyTheme(theme: string) {
-    return () => {
-      return themeHandler.applyTheme(theme);
-    };
+    return () => themeHandler.applyTheme(theme);
   }
 
   render() {
@@ -40,7 +38,7 @@ class ThemeSwitcher extends React.PureComponent<IProps, IState> {
       return null;
     }
     return themes.map(theme => (
-      <button id={theme} onClick={this.applyTheme(theme)}>
+      <button id={theme} onClick={this.applyTheme(theme)} type="button">
         {theme}
       </button>
     ));

@@ -61,19 +61,15 @@ export class GroupActionController {
   async joinTeam(userId: number, teamId: number): Promise<Group | null> {
     return await this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          members: originalEntity.members.concat([userId]),
-        };
-      },
-      async (newEntity: Group) => {
-        return await this._requestUpdateTeamMembers(
-          teamId,
-          [userId],
-          '/add_team_members',
-        );
-      },
+      (partialEntity, originalEntity) => ({
+        ...partialEntity,
+        members: originalEntity.members.concat([userId]),
+      }),
+      async () => await this._requestUpdateTeamMembers(
+        teamId,
+        [userId],
+        '/add_team_members',
+      ),
     );
   }
 
@@ -89,13 +85,11 @@ export class GroupActionController {
           members,
         };
       },
-      async (updatedEntity: Group) => {
-        return await this._requestUpdateTeamMembers(
-          teamId,
-          [userId],
-          '/remove_team_members',
-        );
-      },
+      async () => await this._requestUpdateTeamMembers(
+        teamId,
+        [userId],
+        '/remove_team_members',
+      ),
     );
   }
 
@@ -112,93 +106,71 @@ export class GroupActionController {
           members: Array.from(memberSet),
         };
       },
-      async (updateEntity: Group) => {
-        return await this._requestUpdateTeamMembers(
-          teamId,
-          members,
-          '/remove_team_members',
-        );
-      },
+      async () => await this._requestUpdateTeamMembers(
+        teamId,
+        members,
+        '/remove_team_members',
+      ),
     );
   }
 
   async addTeamMembers(members: number[], teamId: number) {
     return await this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          members: originalEntity.members.concat(members),
-        };
-      },
-      async (updateEntity: Group) => {
-        return await this._requestUpdateTeamMembers(
-          teamId,
-          members,
-          '/add_team_members',
-        );
-      },
+      (partialEntity, originalEntity) => ({
+        ...partialEntity,
+        members: originalEntity.members.concat(members),
+      }),
+      async () => await this._requestUpdateTeamMembers(
+        teamId,
+        members,
+        '/add_team_members',
+      ),
     );
   }
 
   async updateTeamSetting(teamId: number, teamSetting: TeamSetting) {
     await this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, originalEntity) => {
-        return this._teamSetting2partialTeam(
-          teamSetting,
-          originalEntity,
-          partialEntity,
-        );
-      },
-      async (updateEntity: Group) => {
-        return await this._getTeamRequestController().put(updateEntity);
-      },
+      (partialEntity, originalEntity) => this._teamSetting2partialTeam(
+        teamSetting,
+        originalEntity,
+        partialEntity,
+      ),
+      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
     );
   }
 
   async archiveTeam(teamId: number) {
     await this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          is_archived: true,
-        };
-      },
-      async (updateEntity: Group) => {
-        return await this._getTeamRequestController().put(updateEntity);
-      },
+      partialEntity => ({
+        ...partialEntity,
+        is_archived: true,
+      }),
+      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
     );
   }
 
   async deleteTeam(teamId: number): Promise<void> {
     await this.partialModifyController.updatePartially(
       teamId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          deactivated: true,
-        };
-      },
-      async (updateEntity: Group) => {
-        return await this._getTeamRequestController().put(updateEntity);
-      },
+      partialEntity => ({
+        ...partialEntity,
+        deactivated: true,
+      }),
+      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
     );
   }
 
   async deleteGroup(groupId: number): Promise<void> {
     await this.partialModifyController.updatePartially(
       groupId,
-      (partialEntity, originalEntity) => {
-        return {
-          ...partialEntity,
-          deactivated: true,
-        };
-      },
-      async (updateEntity: Group) => {
-        return await this._getGroupRequestController().put(updateEntity);
-      },
+      partialEntity => ({
+        ...partialEntity,
+        deactivated: true,
+      }),
+      async (updateEntity: Group) => await this._getGroupRequestController().put(updateEntity),
     );
   }
 
@@ -215,21 +187,17 @@ export class GroupActionController {
           } else {
             permissions.admin = { uids: [member] };
           }
-        } else {
-          if (permissions.admin) {
-            permissions.admin.uids = _.difference(permissions.admin.uids, [
-              member,
-            ]);
-          }
+        } else if (permissions.admin) {
+          permissions.admin.uids = _.difference(permissions.admin.uids, [
+            member,
+          ]);
         }
         return {
           ...partialEntity,
           permissions,
         };
       },
-      async (updateEntity: Group) => {
-        return await this._getTeamRequestController().put(updateEntity);
-      },
+      async (updateEntity: Group) => await this._getTeamRequestController().put(updateEntity),
     );
   }
 
@@ -317,15 +285,11 @@ export class GroupActionController {
     try {
       await this.partialModifyController.updatePartially(
         params.id || 0,
-        (partialEntity, originEntity) => {
-          return {
-            ...partialEntity,
-            ...params,
-          };
-        },
-        async (updatedModel: Group) => {
-          return updatedModel;
-        },
+        partialEntity => ({
+          ...partialEntity,
+          ...params,
+        }),
+        async (updatedModel: Group) => updatedModel,
       );
       return true;
     } catch (error) {
@@ -339,11 +303,8 @@ export class GroupActionController {
   }): Promise<void> {
     await this.partialModifyController.updatePartially(
       params.id,
-      (partialEntity: Partial<Group>, originEntity: Group) => {
-        return { ...partialEntity, privacy: params.privacy };
-      },
-      async (updateEntity: Group) =>
-        await this._getGroupRequestController().put(updateEntity),
+      (partialEntity: Partial<Group>) => ({ ...partialEntity, privacy: params.privacy }),
+      async (updateEntity: Group) => await this._getGroupRequestController().put(updateEntity),
     );
   }
 
@@ -385,12 +346,10 @@ export class GroupActionController {
       false,
     );
     const privateGroupIds = groups
-      .filter((group: Group) => {
-        return group.privacy === 'private';
-      })
+      .filter((group: Group) => group.privacy === 'private')
       .map((group: Group) => group.id);
     await this.removeTeamsByIds(privateGroupIds, true);
-  }
+  };
 
   async setAsTrue4HasMoreConfigByDirection(
     ids: number[],
@@ -544,8 +503,7 @@ export class GroupActionController {
     const transformMap: { [key in keyof TeamSetting]: Function } = {
       name: (value: string) => (partialEntity.set_abbreviation = value),
       description: (value: string) => (partialEntity.description = value),
-      isPublic: (value: boolean) =>
-        (partialEntity.privacy = value ? 'protected' : 'private'),
+      isPublic: (value: boolean) => (partialEntity.privacy = value ? 'protected' : 'private'),
       permissionFlags: (permissionFlags: PermissionFlags) => {
         const permissions = originalEntity.permissions || { user: {} };
         const level = this.teamPermissionController.getTeamUserLevel(

@@ -24,8 +24,8 @@ type FileActionMenuProps = {
   groupId?: number;
   asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
-  FileNameEditActionProps &
-  WithTranslation;
+FileNameEditActionProps &
+WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
 class InnerComponent extends Component<FileActionMenuProps, State> {
@@ -54,7 +54,7 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
         more_vert
       </JuiIconButton>
     );
-  }
+  };
 
   openPopper = (evt: React.MouseEvent) => {
     const { currentTarget } = evt;
@@ -62,13 +62,13 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
       anchorEl: currentTarget,
       open: !state.open,
     }));
-  }
+  };
 
   closePopper = () => {
     this.setState({
       open: false,
     });
-  }
+  };
   render() {
     const {
       showViewInPostAction,

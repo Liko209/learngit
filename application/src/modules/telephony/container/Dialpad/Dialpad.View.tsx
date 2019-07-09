@@ -3,7 +3,6 @@
  * @Date: 2019-04-22 13:36:24
  * Copyright © RingCentral. All rights reserved.
  */
-
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
@@ -16,6 +15,7 @@ type DialpadProps = ViewProps & WithTranslation;
 
 const Actions = [() => <Mute type="fab" />, () => <End size="medium" />];
 
+/* eslint-disable */
 class DialpadViewComponent extends React.Component<DialpadProps> {
   render() {
     const {
@@ -38,7 +38,7 @@ class DialpadViewComponent extends React.Component<DialpadProps> {
         Actions={Actions}
         name={getDisplayName(t, name)}
         label={typeof timing === 'string' ? timing : t(timing.key)}
-        data-test-automation-id="telephony-minimized-view"
+        data-test-automation-id='telephony-minimized-view'
       />
     ) : (
       <JuiDialpadBtn

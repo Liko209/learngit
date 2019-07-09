@@ -10,10 +10,11 @@ import { UserContextInfo } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { UAParser } from 'ua-parser-js';
+
 const uaParser = new UAParser(navigator.userAgent);
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
-  const config = require('@/config').default;
+  const config = await import('@/config');
   const accountService = ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
   );
@@ -35,9 +36,9 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
       username: display_name,
       id: currentUserId,
       companyId: currentCompanyId,
-      env: config.getEnv(),
+      env: config.default.getEnv(),
       version: deployedVersion || pkg.version,
-      url: location.href,
+      url: window.location.href,
       platform: window.jupiterElectron ? 'Desktop' : 'Web',
       browser: `${browserName} - ${browserVersion}`,
       os: `${osName} - ${osVersion}`,

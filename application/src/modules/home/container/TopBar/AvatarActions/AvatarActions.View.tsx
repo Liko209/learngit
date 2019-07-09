@@ -3,6 +3,8 @@
  * @Date: 2018-12-05 18:30:30
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -30,7 +32,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   private get _presence() {
     const { currentUserId } = this.props;
 
-    return <Presence uid={currentUserId} size="large" borderSize="large" />;
+    return <Presence uid={currentUserId} size='large' borderSize='large' />;
   }
 
   private _Anchor() {
@@ -39,8 +41,8 @@ class AvatarActionsComponent extends React.Component<Props> {
       <Avatar
         uid={currentUserId}
         presence={this._presence}
-        size="large"
-        automationId="topBarAvatar"
+        size='large'
+        automationId='topBarAvatar'
       />
     );
   }
@@ -64,11 +66,11 @@ class AvatarActionsComponent extends React.Component<Props> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList data-test-automation-id="avatarMenu">
+        <JuiMenuList data-test-automation-id='avatarMenu'>
           <OpenProfileDialog id={currentUserId}>
             <JuiMenuItem
               aria-label={t('home.viewYourProfile')}
-              data-test-automation-id="viewYourProfile"
+              data-test-automation-id='viewYourProfile'
             >
               {t('people.team.profile')}
             </JuiMenuItem>
@@ -76,21 +78,21 @@ class AvatarActionsComponent extends React.Component<Props> {
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}
-            data-test-automation-id="aboutPage"
+            data-test-automation-id='aboutPage'
           >
             {t('home.aboutRingCentral')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={this.handleSendFeedback}
             aria-label={t('home.sendFeedback')}
-            data-test-automation-id="sendFeedback"
+            data-test-automation-id='sendFeedback'
           >
             {t('home.sendFeedback')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={handleSignOut}
             aria-label={t('auth.signOut')}
-            data-test-automation-id="signOut"
+            data-test-automation-id='signOut'
           >
             {t('auth.signOut')}
           </JuiMenuItem>

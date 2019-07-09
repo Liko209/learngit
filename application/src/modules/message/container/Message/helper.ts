@@ -25,7 +25,7 @@ import { getErrorType } from '@/common/catchError';
 import _ from 'lodash';
 
 const logger = mainLogger.tags('messageRouter Helper');
-
+/* eslint-disable */
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();

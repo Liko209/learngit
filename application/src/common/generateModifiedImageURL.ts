@@ -92,4 +92,6 @@ const generateModifiedImageURL = async ({
   return result;
 };
 
-export { generateModifiedImageURL, getModifiedImageSize, RULE, Result };
+export {
+  generateModifiedImageURL, getModifiedImageSize, RULE, Result,
+};

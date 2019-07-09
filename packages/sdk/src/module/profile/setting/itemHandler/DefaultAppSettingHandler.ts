@@ -3,7 +3,6 @@
  * @Date: 2019-05-24 13:33:49
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   ESettingValueType,
   UserSettingEntity,
@@ -21,7 +20,7 @@ import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 
 export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
-  CALLING_OPTIONS
+CALLING_OPTIONS
 > {
   id = SettingEntityIds.Phone_DefaultApp;
 
@@ -35,9 +34,7 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
     this.on(SERVICE.TELEPHONY_SERVICE.VOIP_CALLING, async () => {
       await this.getUserSettingEntity();
     });
@@ -82,9 +79,13 @@ export class DefaultAppSettingHandler extends AbstractSettingEntityHandler<
   }
   private async _getCallOption() {
     const profile = await this._profileService.getProfile();
-    let callOption = profile[SETTING_KEYS.CALL_OPTION];
-    if (callOption === undefined || (callOption as string) === '') {
-      callOption = CALLING_OPTIONS.GLIP;
+    let callOption = CALLING_OPTIONS.GLIP;
+    if (
+      profile &&
+      profile.calling_option !== undefined &&
+      (profile.calling_option as string) !== ''
+    ) {
+      callOption = profile.calling_option;
     }
     return callOption;
   }

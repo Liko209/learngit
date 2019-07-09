@@ -39,9 +39,7 @@ abstract class RCItemFetchController<
   ): Promise<(data: T) => boolean> {
     const { filterKey } = option;
     if (!filterKey) {
-      return () => {
-        return true;
-      };
+      return () => true;
     }
     const phoneContacts = await ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
@@ -138,9 +136,7 @@ abstract class RCItemFetchController<
     mainLogger
       .tags(this.syncName)
       .info(
-        `fetchVoicemails success, dataSize:${
-          results.length
-        }, hasMore:${hasMore}`,
+        `fetchVoicemails success, dataSize:${results.length}, hasMore:${hasMore}`,
       );
     this.onFetchFinished(serverResults, performanceTracer);
     return {

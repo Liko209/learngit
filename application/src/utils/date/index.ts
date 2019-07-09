@@ -50,9 +50,7 @@ const WEEKDAY = [
 type Moment = moment.Moment;
 
 const dateFormatter = {
-  localTime: (m: Moment): string => {
-    return m.format('LT');
-  },
+  localTime: (m: Moment): string => m.format('LT'),
   today: (): string => {
     const text: string = i18nP('common.time.today');
     return text;
@@ -77,36 +75,18 @@ const dateFormatter = {
     const weekday: string = dateFormatter.weekday(m);
     return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(m)}`;
   },
-  dateAndTime: (m: Moment): string => {
-    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
-  },
-  date: (timestamp: number): string => {
-    return moment(timestamp).format('l');
-  },
-  dateAndTimeWithoutWeekday: (m: Moment): string => {
-    return `${m.format('l')} ${dateFormatter.localTime(m)}`;
-  },
+  dateAndTime: (m: Moment): string => `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`,
+  date: (timestamp: number): string => moment(timestamp).format('l'),
+  dateAndTimeWithoutWeekday: (m: Moment): string => `${m.format('l')} ${dateFormatter.localTime(m)}`,
 };
 
 const condition = {
-  isZero: (diff: number) => {
-    return diff === 0;
-  },
-  isOne: (diff: number) => {
-    return diff === 1;
-  },
-  fromTwoToSix: (diff: number) => {
-    return _.inRange(diff, 2, 7);
-  },
-  fromOneToSix: (diff: number) => {
-    return _.inRange(diff, 1, 7);
-  },
-  overSevenOrLessZero: (diff: number) => {
-    return 0 > diff || diff >= 7;
-  },
-  overOne: (diff: number) => {
-    return !_.inRange(diff, 0, 1);
-  },
+  isZero: (diff: number) => diff === 0,
+  isOne: (diff: number) => diff === 1,
+  fromTwoToSix: (diff: number) => _.inRange(diff, 2, 7),
+  fromOneToSix: (diff: number) => _.inRange(diff, 1, 7),
+  overSevenOrLessZero: (diff: number) => diff < 0 || diff >= 7,
+  overOne: (diff: number) => !_.inRange(diff, 0, 1),
 };
 
 function buildFormatter(
@@ -126,7 +106,7 @@ function buildFormatter(
       .millisecond(0);
     const diff = now.diff(m, 'days', true);
     let formatDate = '';
-    buildCondition.some((v, i) => {
+    buildCondition.some(v => {
       if (v.condition(diff)) {
         formatDate = v.formatter(mInit);
         return true;

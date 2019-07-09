@@ -25,26 +25,26 @@ import {
   JuiCustomReply,
 } from '..';
 
-const Avatar = () => <JuiAvatar size="large" src={avatarImg} />;
+const Avatar = () => <JuiAvatar size='large' src={avatarImg} />;
 
 const MinimizeAction = () => (
   <JuiIconButton
-    key="minimize"
-    size="small"
-    tooltipTitle="Minimize"
-    variant="plain"
-    color="common.white"
+    key='minimize'
+    size='small'
+    tooltipTitle='Minimize'
+    variant='plain'
+    color='common.white'
     symbol={minimize}
   />
 );
 
 const DetachOrAttachAction = () => (
   <JuiIconButton
-    key="detach12"
-    size="small"
-    tooltipTitle="Detach"
-    variant="plain"
-    color="common.white"
+    key='detach12'
+    size='small'
+    tooltipTitle='Detach'
+    variant='plain'
+    color='common.white'
     symbol={tearOff}
   />
 );
@@ -53,11 +53,11 @@ const Actions = [DetachOrAttachAction, MinimizeAction];
 
 const Back = () => (
   <JuiIconButton
-    key="back"
-    size="large"
-    tooltipTitle="Back"
-    variant="plain"
-    color="common.white"
+    key='back'
+    size='large'
+    tooltipTitle='Back'
+    variant='plain'
+    color='common.white'
     symbol={previous}
   />
 );
@@ -65,20 +65,20 @@ const Back = () => (
 const handleClick = () => {};
 
 const InMeeting = () => (
-  <JuiPreDefineMessage text="In a Meeting" handleClick={handleClick} />
+  <JuiPreDefineMessage text='In a Meeting' handleClick={handleClick} />
 );
 const OnMyWay = () => (
-  <JuiPreDefineMessage text="On my way" handleClick={handleClick} />
+  <JuiPreDefineMessage text='On my way' handleClick={handleClick} />
 );
 
 const CallBack = () => (
   <JuiPreDefineMessage
-    key="callback"
-    text="Call me back in..."
-    automationId="reply-with-will-call-back"
+    key='callback'
+    text='Call me back in...'
+    automationId='reply-with-will-call-back'
   >
     {[{ label: '5 min' }].map(({ label }) => (
-      <JuiPreDefineMenuItem key={label} automationId="reply-with-0-type-time">
+      <JuiPreDefineMenuItem key={label} automationId='reply-with-0-type-time'>
         {label}
       </JuiPreDefineMenuItem>
     ))}
@@ -86,7 +86,7 @@ const CallBack = () => (
 );
 
 const WillCallBack = () => (
-  <JuiPreDefineMessage text="Will call you back in....">
+  <JuiPreDefineMessage text='Will call you back in....'>
     {[{ label: '5 min' }].map(({ label }) => (
       <JuiPreDefineMenuItem key={label}>{label}</JuiPreDefineMenuItem>
     ))}
@@ -128,17 +128,17 @@ const handleMouseDown = (e: React.MouseEvent) => {
 const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
   if (event.clipboardData) {
     let msg = event.clipboardData.getData('text/plain');
-    msg = msg.replace(/[\~\@\#\$\%\^\&\*\(\)\_\+\{\}\[\]\|\<\>\/]*/g, '');
+    msg = msg.replace(/[~@#$%^&*()_+{}[\]|<>/]*/g, '');
     event.clipboardData.setData('text/plain', msg);
   }
 };
 
 const CustomReplyTextarea = () => (
   <JuiCustomReply
-    id="incoming-call-custom-reply-id"
-    fullWidth={true}
-    placeholder="Type a custom message"
-    label="Custom message"
+    id='incoming-call-custom-reply-id'
+    fullWidth
+    placeholder='Type a custom message'
+    label='Custom message'
     inputProps={{
       maxLength: 100,
     }}
@@ -160,14 +160,14 @@ storiesOf('Pattern', module).add('Reply Call', () => {
         <JuiTitleBar Actions={Actions} />
         <JuiHeader
           Avatar={Avatar}
-          name="Terry Webster"
-          phone="(650) 555-12345"
+          name='Terry Webster'
+          phone='(650) 555-12345'
           Back={Back}
         />
       </JuiHeaderContainer>
       <JuiReply
         count={{ time: 55, unit: 's' }}
-        countText="Reply in "
+        countText='Reply in '
         PreDefines={PreDefines}
         CustomReply={CustomReplyTextarea}
       />

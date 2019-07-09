@@ -16,8 +16,10 @@ import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { Nullable } from 'sdk/types';
+
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
@@ -46,8 +48,12 @@ class ProfileDataController {
     return userConfig.getCurrentUserProfileId();
   }
 
-  async getProfile(): Promise<Profile> {
+  async getProfile(): Promise<Nullable<Profile>> {
     const profileId = this.getCurrentProfileId();
+    if (!profileId) {
+      return null;
+    }
+
     const profile = await this.entitySourceController.get(profileId);
     if (!profile) {
       // Current user profile not found is a unexpected error,
@@ -72,7 +78,7 @@ class ProfileDataController {
 
   async getFavoriteGroupIds() {
     const profile = await this.getProfile();
-    return profile.favorite_group_ids || [];
+    return (profile && profile.favorite_group_ids) || [];
   }
 
   private async _handleProfile(

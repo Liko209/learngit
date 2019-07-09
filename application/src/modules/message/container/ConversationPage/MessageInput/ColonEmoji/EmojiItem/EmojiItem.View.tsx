@@ -14,7 +14,9 @@ import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/Men
 @observer
 class EmojiItemView extends Component<EmojiItemViewProps> {
   render() {
-    const { currentIndex, selectHandler, index, id, displayId } = this.props;
+    const {
+      currentIndex, selectHandler, index, id, displayId,
+    } = this.props;
 
     return (
       <JuiMentionPanelSectionItem

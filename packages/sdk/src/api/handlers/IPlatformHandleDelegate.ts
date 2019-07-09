@@ -1,4 +1,5 @@
 import { IToken } from 'foundation';
+
 export interface IPlatformHandleDelegate {
   refreshRCToken: () => Promise<IToken | null>;
   checkServerStatus: (

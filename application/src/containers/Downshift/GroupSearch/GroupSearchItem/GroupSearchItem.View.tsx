@@ -14,7 +14,9 @@ import { observer } from 'mobx-react';
 @observer
 class GroupSearchItemView extends React.Component<ViewProps> {
   render() {
-    const { group, isHighlighted, itemId, ...rest } = this.props;
+    const {
+      group, isHighlighted, itemId, ...rest
+    } = this.props;
     return (
       <JuiMenuItem
         {...rest}

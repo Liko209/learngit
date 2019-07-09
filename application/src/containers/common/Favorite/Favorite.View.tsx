@@ -27,20 +27,18 @@ class FavoriteViewComponent extends Component<Props> {
     network: 'people.prompt.notAbleToUnFavoriteForNetworkIssue',
     server: 'people.prompt.notAbleToUnFavoriteForServerIssue',
   })
-  private _handleRemoveFavorite = () => {
-    return this._handleToggleFavorite();
-  }
+  private _handleRemoveFavorite = () => this._handleToggleFavorite()
 
   @catchError.flash({
     network: 'people.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
     server: 'people.prompt.notAbleToFavoriteThisMessageForServerIssue',
   })
-  private _handleFavorite = () => {
-    return this._handleToggleFavorite();
-  }
+  private _handleFavorite = () => this._handleToggleFavorite()
 
   render() {
-    const { conversationId, isMember, isFavorite, size, t } = this.props;
+    const {
+      conversationId, isMember, isFavorite, size, t,
+    } = this.props;
     if (!conversationId || !isMember) {
       // 1. not create a conversation
       // 2. not a member

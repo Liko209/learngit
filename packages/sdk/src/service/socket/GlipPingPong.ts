@@ -3,15 +3,14 @@
  * @Date: 2019-03-01 14:12:15
  * Copyright © RingCentral. All rights reserved.
  */
-
-const PING_TIMEOUT = 20000; // 20s
-const GLIP_PING = 'glip_ping';
-const GLIP_PONG = 'glip_pong';
-
 import { mainLogger } from 'foundation';
 import { getCurrentTime } from '../../utils/jsUtils';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
+
+const PING_TIMEOUT = 20000; // 20s
+const GLIP_PING = 'glip_ping';
+const GLIP_PONG = 'glip_pong';
 
 type GlipPingPongType = {
   socket: SocketIOClient.Socket;

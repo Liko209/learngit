@@ -50,7 +50,7 @@ class SleepModeDetector {
 
   private _wakeUpFromSleepMode(interval: number) {
     mainLogger.info(TAG, ' _wakeUpFromSleepMode:', interval);
-    this._callbacksMap.forEach((value, key, map) => {
+    this._callbacksMap.forEach(value => {
       value(interval);
     });
   }

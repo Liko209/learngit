@@ -17,8 +17,7 @@ const kHandlers = [
     info: callLogDefaultResponsiveInfo,
   },
   {
-    checker: (width: number) =>
-      width < BREAK_POINT_MAP.FULL && width >= BREAK_POINT_MAP.SMALL,
+    checker: (width: number) => width < BREAK_POINT_MAP.FULL && width >= BREAK_POINT_MAP.SMALL,
     info: {
       buttonToShow: 2,
       showCallInfo: true,
@@ -26,8 +25,7 @@ const kHandlers = [
     },
   },
   {
-    checker: (width: number) =>
-      width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.SMALL,
+    checker: (width: number) => width > BREAK_POINT_MAP.SHORT && width < BREAK_POINT_MAP.SMALL,
     info: {
       buttonToShow: 1,
       showCallInfo: true,

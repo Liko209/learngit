@@ -13,7 +13,7 @@ storiesOf('Components/Lists', module).add('JuiListItemSecondaryText', () => {
   const tLeft = text('leftText', 'Secondary text');
   const tRight = text('tRight', 'XX/XX/XXXX');
 
-  const LeftText = <JuiListItemSecondarySpan text={tLeft} isEllipsis={true} />;
+  const LeftText = <JuiListItemSecondarySpan text={tLeft} isEllipsis />;
   const RightText = <span>{tRight}</span>;
   return (
     <div style={{ maxWidth: '200px' }}>

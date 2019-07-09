@@ -61,18 +61,18 @@ storiesOf('Components/CheckboxButton', module)
     return (
       <Wrapper>
         <JuiCheckboxButton
-          className="checkboxButtonWrapper"
+          className='checkboxButtonWrapper'
           icon={starBorder}
           checkedIcon={star}
-          tooltipTitle="like"
-          checked={true}
+          tooltipTitle='like'
+          checked
           {...rest}
         />
         <JuiCheckboxButton
-          className="checkboxButtonWrapper"
+          className='checkboxButtonWrapper'
           icon={unlock}
           checkedIcon={lock}
-          tooltipTitle="lock"
+          tooltipTitle='lock'
           {...rest}
         />
       </Wrapper>

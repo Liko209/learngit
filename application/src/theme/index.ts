@@ -6,11 +6,11 @@
 import { detect } from 'jui/foundation/theme';
 
 let theme:
-  | {
-    default: string;
-    themes: string[];
-  }
-  | undefined;
+| {
+  default: string;
+  themes: string[];
+}
+| undefined;
 
 async function detectTheme() {
   if (theme) return theme;

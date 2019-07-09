@@ -34,7 +34,9 @@ class AnalyticsCollector {
     if (!user.email || !company.name) {
       return;
     }
-    const { email, companyId, inviterId, displayName } = user;
+    const {
+      email, companyId, inviterId, displayName,
+    } = user;
     const { name, rcAccountId } = company;
     const version = await fetchVersionInfo();
     const properties = {

@@ -85,8 +85,8 @@ class EmojiTransformer {
       mapValue instanceof Object
         ? mapValue.fname
         : shortName
-        ? mapEmojiOne[shortName].fname
-        : mapValue;
+          ? mapEmojiOne[shortName].fname
+          : mapValue;
     const code = this._convertFromCodePoint(unicode);
     const skinTone = this._hasSkinTone(unicode);
 
@@ -202,7 +202,7 @@ class EmojiTransformer {
     return company.customEmoji || {};
   }
 }
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 EmojiTransformer.replaceMatch = moize(EmojiTransformer.replaceMatch, {
   transformArgs: ([_match, pre, emoji, convertType, enlarge, options]) => [
     `${_match} ${convertType} ${enlarge} ${options.unicodeOnly}`,

@@ -16,9 +16,10 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-jest.mock('@/containers/Notification');
 import { Jupiter, container } from 'framework';
 import { config } from '../../../module.config';
+
+jest.mock('@/containers/Notification');
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
 
@@ -153,7 +154,7 @@ describe('NotificationBrowserSettingItemView', () => {
           .fn()
           .mockImplementation(() => Promise.resolve('granted'));
         await wrapper.instance().handleToggleChange(null, true);
-        expect(props.setToggleState).toBeCalled();
+        expect(props.setToggleState).toHaveBeenCalled();
         expect(wrapper.state('waitForPermission')).toBeFalsy();
       });
     });

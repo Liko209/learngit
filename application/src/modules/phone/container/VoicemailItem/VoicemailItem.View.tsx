@@ -3,6 +3,7 @@
  * @Date: 2019-06-01 14:56:34
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -18,14 +19,18 @@ import {
 import { JuiAudioPlayer } from 'jui/pattern/AudioPlayer';
 import { Actions } from '../Actions';
 import { ContactInfo } from '../ContactInfo';
-import { VoicemailViewProps, VoicemailProps, JuiAudioMode, ResponsiveObject } from './types';
+import {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioMode,
+  ResponsiveObject,
+} from './types';
 import { ENTITY_TYPE } from '../constants';
 import { getCreateTime } from '@/utils/date';
 
-type VoicemailItemProps = VoicemailViewProps
-  & VoicemailProps
-  & WithTranslation
-  & { id: number; voiceMailResponsiveMap: ResponsiveObject };
+type VoicemailItemProps = VoicemailViewProps &
+  VoicemailProps &
+  WithTranslation & { id: number; voiceMailResponsiveMap: ResponsiveObject };
 
 type State = {
   showCall: boolean;
@@ -120,7 +125,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class="voicemail-item"
+        data-test-automation-class='voicemail-item'
         expanded={false}
       >
         <VoicemailSummary
