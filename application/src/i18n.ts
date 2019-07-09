@@ -63,7 +63,9 @@ const config: i18next.InitOptions = {
 const ready = async () => {
   const language = i18next.language;
   const index = i18nWhitelist.indexOf(language);
-  await import(`moment/locale/${momentWhitelist[index]}.js`);
+  await import(/* webpackChunkName: "c.lang.moment" */
+    `moment/locale/${momentWhitelist[index]}.js`
+  );
   moment.locale(i18next.language);
 };
 
