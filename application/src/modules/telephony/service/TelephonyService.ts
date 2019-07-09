@@ -441,7 +441,8 @@ class TelephonyService {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
-      return Promise.resolve(false);
+      // when multiple call don't hangup
+      return Promise.resolve(true);
     }
     return this.makeCall(toNumber);
   };

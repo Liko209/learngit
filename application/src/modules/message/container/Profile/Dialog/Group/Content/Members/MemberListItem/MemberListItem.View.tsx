@@ -100,7 +100,7 @@ class MemberListItem extends React.Component<
         onMouseOver={this._handleMouseEnter}
         onMouseLeave={this._handleMouseLeave}
       >
-        <Avatar uid={pid} presence={presence} />
+        <Avatar uid={pid} presence={presence} onClick={this.onClickAvatar} />
         <ListItemName data-test-automation-id='profileDialogMemberListItemPersonName'>
           {person.userDisplayName}
         </ListItemName>
