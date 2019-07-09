@@ -23,7 +23,7 @@ export class CommonFileServer implements IMockServer {
           encoding: 'utf8',
         }),
       );
-      debug(`request: ${request.host}${request.path}\n match`);
+      // debug(`request: ${request.host}${request.path}\n match`);
       cb.onSuccess({ request, ...result.response });
     } else {
       debug(
