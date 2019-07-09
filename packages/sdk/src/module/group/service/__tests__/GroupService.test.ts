@@ -24,6 +24,11 @@ describe('GroupService', () => {
     canJoinTeam: jest.fn(),
     getTeamSetting: jest.fn(),
     updateTeamSetting: jest.fn(),
+    createTeam: jest.fn(),
+    convertToTeam: jest.fn(),
+    updateGroupPrivacy: jest.fn(),
+    isGroupCanBeShown: jest.fn(),
+    updateGroupLastAccessedTime: jest.fn(),
   };
   const mockTeamPermissionController = {
     getTeamUserPermissionFlags: jest.fn(),
@@ -39,6 +44,7 @@ describe('GroupService', () => {
     getLocalGroup: jest.fn(),
     getOrCreateGroupByMemberList: jest.fn(),
     isFavored: jest.fn(),
+    getGroupEmail: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -442,9 +448,13 @@ describe('GroupService', () => {
       await groupService.isFavored(1, 1);
       expect(mockGroupFetchDataController.isFavored).toBeCalledWith(1, 1);
     });
+    it('should call getGroupFetchDataController when call isFavored', async () => {
+      await groupService.getGroupEmail(1);
+      expect(mockGroupFetchDataController.getGroupEmail).toBeCalledWith(1);
+    });
   });
 
-  describe('handleGroupFetchedPosts', () => {
+  describe('GroupController', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -457,6 +467,7 @@ describe('GroupService', () => {
         [],
       );
     });
+
   });
 
   describe('getById', () => {
@@ -468,4 +479,37 @@ describe('GroupService', () => {
       }
     });
   });
+
+  describe('GroupActionController', () => {
+    it('should call with right parameters', async () => {
+      await groupService.createTeam(1, [1, 2], {});
+      expect(mockGroupActionController.createTeam).toBeCalledWith(
+        1, [1, 2], {}
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.convertToTeam(1, [1, 2], {});
+      expect(mockGroupActionController.convertToTeam).toBeCalledWith(
+        1, [1, 2], {}
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.updateGroupPrivacy({ id: 1, privacy: '1' });
+      expect(mockGroupActionController.updateGroupPrivacy).toBeCalledWith(
+        { id: 1, privacy: '1' }
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.isGroupCanBeShown(1);
+      expect(mockGroupActionController.isGroupCanBeShown).toBeCalledWith(
+        1
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.updateGroupLastAccessedTime({ id: 1, timestamp: 1 });
+      expect(mockGroupActionController.updateGroupLastAccessedTime).toBeCalledWith(
+        { id: 1, timestamp: 1 }
+      );
+    });
+  })
 });
