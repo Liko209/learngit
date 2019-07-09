@@ -71,7 +71,7 @@ export class GroupFetchDataController {
     public partialModifyController: IPartialModifyController<Group>,
     public entityCacheSearchController: IEntityCacheSearchController<Group>,
     public groupHandleDataController: GroupHandleDataController,
-  ) {}
+  ) { }
 
   async getGroupsByType(
     groupType = GROUP_QUERY_TYPE.ALL,
@@ -145,21 +145,27 @@ export class GroupFetchDataController {
     ids: (number | string)[],
   ): Promise<(number | string)[]> {
     if (ids.length) {
-      let personIds = ids.filter(
-        (id: string | number) =>
-          _.isString(id) ||
-          GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON),
+      const personIds = new Set<number | string>();
+      const groupIds: number[] = [];
+      ids.forEach(
+        (id: string | number) => {
+          if (_.isString(id) ||
+            GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON)) {
+            personIds.add(id)
+          } else {
+            groupIds.push(id)
+          }
+        }
       );
-      const groupIds = _.difference(ids, personIds) as number[];
       if (groupIds.length) {
         const groups = await this.getGroupsByIds(groupIds);
         groups.forEach(group => {
           if (group.members && group.members.length) {
-            personIds = [...personIds, ...group.members];
+            group.members.forEach(id => personIds.add(id))
           }
         });
       }
-      return Array.from(new Set(personIds));
+      return Array.from(personIds);
     }
     return [];
   }
@@ -335,10 +341,10 @@ export class GroupFetchDataController {
         );
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-              group.id,
-              groupConfigService,
-              recentSearchedGroups!,
-            )
+            group.id,
+            groupConfigService,
+            recentSearchedGroups!,
+          )
           : 0;
         return {
           id: group.id,
@@ -408,9 +414,9 @@ export class GroupFetchDataController {
 
     const recentSearchedGroups = recentFirst
       ? await this._getRecentSearchGroups([
-          RecentSearchTypes.GROUP,
-          RecentSearchTypes.TEAM,
-        ])
+        RecentSearchTypes.GROUP,
+        RecentSearchTypes.TEAM,
+      ])
       : undefined;
 
     let groupName: string = '';
@@ -427,7 +433,7 @@ export class GroupFetchDataController {
         const isValidGroup = myGroupsOnly
           ? group.members.includes(currentUserId)
           : !group.is_team ||
-            this._isPublicTeamOrIncludeUser(group, currentUserId);
+          this._isPublicTeamOrIncludeUser(group, currentUserId);
         if (!isValidGroup) {
           break;
         }
@@ -487,10 +493,10 @@ export class GroupFetchDataController {
       if (isMatched) {
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-              group.id,
-              groupConfigService,
-              recentSearchedGroups!,
-            )
+            group.id,
+            groupConfigService,
+            recentSearchedGroups!,
+          )
           : 0;
         return {
           lowerCaseName,
@@ -601,10 +607,10 @@ export class GroupFetchDataController {
         const isMeInTeam = teamIdsIncludeMe.has(team.id) ? kTeamIncludeMe : 0;
         const mostRecentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-              team.id,
-              groupConfigService,
-              recentSearchedTeams!,
-            )
+            team.id,
+            groupConfigService,
+            recentSearchedTeams!,
+          )
           : 0;
         return {
           id: team.id,
@@ -725,7 +731,7 @@ export class GroupFetchDataController {
         if (group.email_friendly_abbreviation) {
           email = `${
             group.email_friendly_abbreviation
-          }@${companyReplyDomain}.${envDomain}`;
+            }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

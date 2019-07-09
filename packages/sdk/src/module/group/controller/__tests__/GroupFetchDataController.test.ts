@@ -17,11 +17,11 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
-import { CompanyService } from '../../../../module/company';
-import { GROUP_QUERY_TYPE } from '../../../../service/constants';
+import { CompanyService } from 'sdk/module/company';
+import { GROUP_QUERY_TYPE } from 'sdk/service/constants';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
-import { TypeDictionary, GlipTypeUtil } from '../../../../utils';
+import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { PersonService } from '../../../person';
 import { Person } from '../../../person/entity';
 import { GroupDao } from '../../dao';
@@ -1010,7 +1010,7 @@ describe('GroupFetchDataController', () => {
       const res = await groupFetchDataController.getGroupEmail(group.id);
       expect(res).toBe(
         `${
-          group.email_friendly_abbreviation
+        group.email_friendly_abbreviation
         }@${companyReplyDomain}.${envDomain}`,
       );
     });
@@ -1295,7 +1295,7 @@ describe('GroupFetchDataController', () => {
       });
       groupFetchDataController.getGroupsByIds = jest
         .fn()
-        .mockReturnValue([{ members: [3] }, { members: [1, 2, 4] }]);
+        .mockReturnValue([{ members: [1, 2, 3] }, { members: [1, 2, 4] }]);
       const result = await groupFetchDataController.getPersonIdsBySelectedItem([
         ...personIds,
         3,
