@@ -15,10 +15,6 @@ import enLngJson from '../public/locales/en/translations.json';
 const i18nWhitelist = ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'];
 const momentWhitelist = ['en-us', 'de', 'en-au', 'en-gb', 'es-do', 'es', 'fr-ca', 'fr', 'it-ch', 'ja', 'pt-br', 'zh-cn', 'zh-hk', 'zh-tw'];
 
-momentWhitelist.map(async name => {
-  await import(`moment/locale/${name}.js`);
-});
-
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
@@ -64,7 +60,10 @@ const config: i18next.InitOptions = {
   load: 'currentOnly',
 };
 
-const ready = () => {
+const ready = async () => {
+  const language = i18next.language;
+  const index = i18nWhitelist.indexOf(language);
+  await import(`moment/locale/${momentWhitelist[index]}.js`);
   moment.locale(i18next.language);
 };
 
