@@ -25,11 +25,11 @@ type ExtendFileItem = {
 };
 
 export default class FileItemModel extends ItemModel {
-  @observable type: string | undefined;
-  @observable isDocument?: boolean | undefined;
-  @observable isNew: boolean | undefined;
-  @observable creatorId: number | undefined;
-  @observable deactivated: Item['deactivated'] | undefined;
+  @observable type: string;
+  @observable isDocument?: boolean;
+  @observable isNew: boolean;
+  @observable creatorId: number;
+  @observable deactivated: Item['deactivated'];
 
   constructor(data: Item) {
     super(data);

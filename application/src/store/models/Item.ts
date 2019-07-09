@@ -8,12 +8,12 @@ import { observable, computed } from 'mobx';
 import Base from './Base';
 
 export default class ItemModel extends Base<Item> {
-  @observable typeId: number | undefined;
-  @observable modifiedAt: number | undefined;
-  @observable creatorId: number | undefined;
-  @observable name: string | undefined;
+  @observable typeId: number;
+  @observable modifiedAt: number;
+  @observable creatorId: number;
+  @observable name: string;
   @observable versions: Item['versions'] | undefined;
-  @observable createdAt: number | undefined;
+  @observable createdAt: number;
   @observable atMentionPostIds: number[] | undefined;
 
   constructor(data: Item) {
