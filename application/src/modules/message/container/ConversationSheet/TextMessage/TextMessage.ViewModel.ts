@@ -20,7 +20,7 @@ import { buildAtMentionMap } from '@/common/buildAtMentionMap';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @observable.shallow
-  content: ChildrenType;
+  content: ChildrenType = [];
 
   constructor(props: TextMessageProps) {
     super(props);
