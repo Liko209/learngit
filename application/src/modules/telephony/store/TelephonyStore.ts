@@ -6,18 +6,14 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import {
-  observable, computed, action, reaction,
+  observable, computed, action, reaction
 } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import {
-  Person,
-  PHONE_NUMBER_TYPE,
-  PhoneNumberModel,
-} from 'sdk/module/person/entity';
+import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -41,8 +37,6 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
-const some = require('lodash/some');
-
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
@@ -64,7 +58,7 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string;
+  phoneNumber?: string; // original phone number without parsed
 
   @observable
   isContactMatched: boolean = false;
@@ -156,6 +150,9 @@ class TelephonyStore {
   @observable
   enteredDialer: boolean = false;
 
+  @observable
+  isExt: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -232,25 +229,12 @@ class TelephonyStore {
       : this.callerName;
   }
 
-  @computed
-  get isExt() {
-    if (this.person) {
-      return some(this.person.phoneNumbers, {
-        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
-        phoneNumber: this.phoneNumber,
-      });
-    }
-    return false;
-  }
-
   private _matchContactByPhoneNumber = async (phone: string) => {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
 
-    return await personService.matchContactByPhoneNumber(
-      phone,
-    );
+    return await personService.matchContactByPhoneNumber(phone);
   };
 
   private get _localCallWindowStatus() {

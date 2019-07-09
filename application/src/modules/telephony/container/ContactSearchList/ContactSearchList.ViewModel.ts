@@ -183,7 +183,7 @@ export class ContactSearchListViewModel
           ? [
             {
               id: CONTACT_SEARCH_PHONE_NUMBER_ID,
-              directDial: parsedPhone.parsed,
+              directDial: parsedPhone.toNumber,
             } as SearchItem,
           ]
           : [];
