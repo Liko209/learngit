@@ -175,11 +175,10 @@ export default class MultiEntityMapStore<
   }
 
   private _setOrUpdate(entity: T) {
-    const model = this._data.get(entity.id);
-    if (!model) {
-      this._set(entity);
-    } else {
+    if (this.has(entity.id)) {
       this._partialUpdate(entity, entity.id);
+    } else {
+      this._set(entity);
     }
   }
 
