@@ -10,23 +10,38 @@ import { Post } from 'sdk/module/post/entity';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageProps } from './types';
 import { moizePostParser, ChildrenType } from '@/common/postParser';
-import { action } from 'mobx';
+import {
+  action,
+  observable,
+  computed,
+  comparer
+} from 'mobx';
 import { buildAtMentionMap } from '@/common/buildAtMentionMap';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
+  @observable.shallow
   content: ChildrenType;
 
   constructor(props: TextMessageProps) {
     super(props);
-    this.content = this._getContent(props.keyword);
+    this.reaction(() => ({
+      text: this._post.text,
+      keyword: props.keyword,
+    }), ({ text, keyword }) => {
+      this.content = this._getContent(text, keyword);
+    }, {
+      fireImmediately: true,
+      equals: comparer.structural
+    });
   }
 
+  @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
   @action
-  private _getContent = (keyword?: string) => moizePostParser(this._post.text, {
+  private _getContent = (text: string, keyword?: string) => moizePostParser(text, {
     keyword,
     html: true,
     atMentions: {
