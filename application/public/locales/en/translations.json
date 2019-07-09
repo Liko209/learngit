@@ -782,7 +782,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": {
-      "title": "Notification and Sounds",
+      "title": "Notifications and sounds",
       "otherNotificationSettings": {
         "title": "Other notification settings",
         "newMessageBadgeCount": {
@@ -811,11 +811,11 @@
         },
         "incomingCalls": {
           "label": "Incoming calls",
-          "description": "Choose your preference for desktop notifications for incoming calls"
+          "description": "Receive notifications for incoming calls"
         },
         "callsAndVoicemails": {
           "label": "Missed calls and new voicemails",
-          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+          "description": "Receive notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
@@ -830,7 +830,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Choose your preferences for email notifications for team messages"
+          "description": "Receive email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily digest",
@@ -897,7 +897,7 @@
       },
       "volume": {
         "label": "Volume control",
-        "description": "Update the volume"
+        "description": "Update the app volume"
       }
     },
     "useDefault": "Use system default",
