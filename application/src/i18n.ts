@@ -9,7 +9,7 @@ import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
 
 const momentLocaleFile = [
-  'en-u',
+  'en-us',
   'de',
   'en-au',
   'en-gb',
