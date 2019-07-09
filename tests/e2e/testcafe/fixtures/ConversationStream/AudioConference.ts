@@ -49,7 +49,7 @@ test.meta(<ITestMeta>{
   });
 
 
-  await h(t).withLog(`Given I login Jupiter with host {number}#{extension}`, async (step) => {
+  await h(t).withLog(`And I login Jupiter with host {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: hostUser.company.number,
       extension: hostUser.extension,
