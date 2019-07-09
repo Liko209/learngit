@@ -43,9 +43,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       sanitizedItems = sanitizedItems.filter(filterFunc);
     }
 
-    const sortFunc = (lhs: T, rhs: T): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
-    };
+    const sortFunc = (lhs: T, rhs: T): number => SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
     const allItemIds = sanitizedItems.map((x: T) => x.id);
@@ -74,8 +72,8 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     return isIEOrEdge
       ? query.filter(item => item.group_ids.includes(groupId))
       : isFirefox
-      ? query.contain('group_ids', groupId)
-      : query.equal('group_ids', groupId);
+        ? query.contain('group_ids', groupId)
+        : query.equal('group_ids', groupId);
   }
 
   toSanitizedItem(item: Item) {

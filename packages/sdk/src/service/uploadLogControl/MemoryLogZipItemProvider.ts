@@ -13,9 +13,7 @@ export class MemoryLogZipItemProvider implements IZipItemProvider {
   getZipItems = async () => {
     const logs = this.memoryCollector.getAll();
     const logContent = logs
-      .map(log => {
-        return log.message;
-      })
+      .map(log => log.message)
       .join('\n');
     return [
       {

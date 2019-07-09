@@ -18,7 +18,7 @@ const beforeDefaultPhoneAppSettingSave = (value: any) => {
     value === CALLING_OPTIONS.RINGCENTRAL &&
     currentValue !== CALLING_OPTIONS.RINGCENTRAL
   ) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
       Dialog.confirm({
         modalProps: {
           'data-test-automation-id': 'defaultPhoneAppConfirmDialog',

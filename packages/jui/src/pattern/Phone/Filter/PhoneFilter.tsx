@@ -9,7 +9,9 @@ import {
   StyledIconRight,
   JuiOutlineTextField,
 } from '../../../components/Forms/OutlineTextField';
-import { spacing, grey, typography, width } from '../../../foundation/utils';
+import {
+  spacing, grey, typography, width,
+} from '../../../foundation/utils';
 import {
   IUseInput,
   IJuiPhoneFilter,
@@ -50,7 +52,7 @@ const useInput: IUseInput = (initValue, callback) => {
 
   return [value, setInputValue];
 };
-
+/* eslint-disable react/prop-types */
 const PhoneFilter: IJuiPhoneFilter = ({
   clearButtonLabel,
   placeholder,
@@ -70,13 +72,13 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   const iconState: FilterIconState = value
     ? {
-        iconName: ['filter', 'close'],
-        iconPosition: 'both',
-      }
+      iconName: ['filter', 'close'],
+      iconPosition: 'both',
+    }
     : {
-        iconName: 'filter',
-        iconPosition: 'left',
-      };
+      iconName: 'filter',
+      iconPosition: 'left',
+    };
 
   const iconRightProps = {
     tabIndex: 0,

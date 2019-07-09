@@ -21,28 +21,28 @@ class Test extends React.Component {
 
   toggleShow = () => {
     this.setState({ show: !this.state.show });
-  }
+  };
 
   open = () => {
     this.setState({
       open: true,
       show: true,
     });
-  }
+  };
 
   close = () => {
     this.setState({
       show: false,
     });
-  }
+  };
 
   hide = () => {
     this.setState({ open: false });
-  }
+  };
 
   update = () => {
     this.forceUpdate();
-  }
+  };
 
   componentDidMount() {
     this.setState({ mounted: true });
@@ -54,10 +54,10 @@ class Test extends React.Component {
         {this.state.open && (
           <JuiFade
             show={this.state.show}
-            duration="standard"
-            easing="sharp"
+            duration='standard'
+            easing='sharp'
             onExited={this.hide}
-            appear={true}
+            appear
           >
             <header> the is a header</header>
           </JuiFade>

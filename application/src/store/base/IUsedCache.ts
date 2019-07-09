@@ -5,7 +5,7 @@
  */
 
 import { ModelIdType } from 'sdk/framework/model';
-
+/* eslint-disable */
 export default interface IUsedCache<IdType extends ModelIdType = number> {
   getUsedIds(): IdType[];
 }

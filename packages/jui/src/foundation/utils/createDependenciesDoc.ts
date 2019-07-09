@@ -14,10 +14,14 @@ function createDependenciesDoc(dependencies: IDependency[]) {
   return `
     #### Dependencies
 
-    ${dependencies.map((dependency) => {
-      const { options, __docgenInfo, displayName } = dependency;
-      return `+ ${options ? options.name : __docgenInfo ? __docgenInfo.displayName : displayName} `; // tslint:disable-line
-    }).join('\n    ')}
+    ${dependencies.map(dependency => {
+    const { options, __docgenInfo, displayName } = dependency;
+    if (options) return `+ ${options.name}`;
+    if (__docgenInfo) {
+      `+ ${__docgenInfo.displayName}`;
+    }
+    return `+ ${displayName}`;
+  }).join('\n    ')}
   `;
 }
 

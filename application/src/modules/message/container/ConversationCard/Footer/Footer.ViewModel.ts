@@ -34,10 +34,9 @@ class FooterViewModel extends StoreViewModel<FooterViewModelProps> {
         : ` ${t('common.conj.and')}`;
 
     const usersName = this.props.likedUsers.reduce(
-      (acc, { id, userDisplayName }) =>
-        id === this._currentUserId
-          ? [t('common.You'), ...acc]
-          : [...acc, userDisplayName],
+      (acc, { id, userDisplayName }) => (id === this._currentUserId
+        ? [t('common.You'), ...acc]
+        : [...acc, userDisplayName]),
       [],
     );
 

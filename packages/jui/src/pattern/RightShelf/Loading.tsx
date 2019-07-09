@@ -70,13 +70,11 @@ type JuiRightRailContentLoadingProps = {
 };
 
 const JuiRightRailContentLoading = withDelay(
-  (props: JuiRightRailContentLoadingProps) => {
-    return (
+  (props: JuiRightRailContentLoadingProps) => (
       <LoadingWrapper>
         <Loading>{props.loading !== false && <Progress />}</Loading>
       </LoadingWrapper>
-    );
-  },
+  ),
 );
 
 const LoadingMoreWrapper = styled.div`

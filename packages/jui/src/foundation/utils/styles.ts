@@ -1,11 +1,21 @@
 import tinycolor from 'tinycolor2';
+import { keyframes } from 'styled-components';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
-import { keyframes } from 'styled-components';
 
-/********************************************
+/** ******************************************
  *               Dimensions                 *
- ********************************************/
+ *******************************************
+ */
+
+/**
+ * add px for values
+ * cssValue(1, 2, 3, 4); // returns: 1px 2px 3px 4px
+ * @param values
+ */
+function cssValue(...values: number[]): string {
+  return values.map(n => `${n}px`).join(' ');
+}
 
 /**
  * spacing
@@ -54,18 +64,9 @@ function height(...values: number[]) {
   };
 }
 
-/**
- * add px for values
- * cssValue(1, 2, 3, 4); // returns: 1px 2px 3px 4px
- * @param values
- */
-function cssValue(...values: number[]): string {
-  return values.map(n => `${n}px`).join(' ');
-}
-
-/********************************************
+/** ******************************************
  *                 Colors                   *
- ********************************************/
+ ******************************************* */
 
 function getPalette(name: keyof Palette, sub: string = 'main') {
   return ({ theme }: { theme: Theme }) => theme.palette[name][sub];
@@ -75,59 +76,56 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
  * Palette
  * @param name
  * @param sub
- * @param opacity
+ * @param opacities
  */
-function palette(name: keyof Palette, sub: string, opacity?: number) {
-  if (!opacity) return getPalette(name, sub);
+function palette(name: keyof Palette, sub: string, opacities?: number) {
+  if (!opacities) return getPalette(name, sub);
 
-  return ({ theme }: { theme: Theme }) =>
-    tinycolor(getPalette(name, sub)({ theme }))
-      .setAlpha(
-        String(opacity).indexOf('.') > -1
-          ? opacity
-          : theme.palette.action.hoverOpacity * opacity,
-      )
-      .toRgbString();
+  return ({ theme }: { theme: Theme }) => tinycolor(getPalette(name, sub)({ theme }))
+    .setAlpha(
+      String(opacities).indexOf('.') > -1
+        ? opacities
+        : theme.palette.action.hoverOpacity * opacities,
+    )
+    .toRgbString();
 }
 
 /**
  * primary color
  * @param sub
- * @param opacity
+ * @param opacities
  */
-function primary(sub: string = 'main', opacity?: number) {
-  return palette('primary', sub, opacity);
+function primary(sub: string = 'main', opacities?: number) {
+  return palette('primary', sub, opacities);
 }
 
 /**
  * secondary color
  * @param sub
- * @param opacity
+ * @param opacities
  */
-function secondary(sub: string = 'main', opacity?: number) {
-  return palette('secondary', sub, opacity);
+function secondary(sub: string = 'main', opacities?: number) {
+  return palette('secondary', sub, opacities);
 }
 
 /**
  * grey
  * @param sub
- * @param opacity
+ * @param opacities
  */
-function grey(sub: string, opacity?: number) {
-  return palette('grey', sub, opacity);
+function grey(sub: string, opacities?: number) {
+  return palette('grey', sub, opacities);
 }
 
 function activeOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) =>
-      1 - theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) => 1 - theme.palette.action.hoverOpacity * 2};
   `;
 }
 
 function disabledOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) =>
-      theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) => theme.palette.action.hoverOpacity * 2};
   `;
 }
 
@@ -138,9 +136,19 @@ function disabled() {
   `;
 }
 
-/********************************************
+/** ******************************************
  *              Typography                  *
- ********************************************/
+ ******************************************* */
+
+function typographyProp(name: keyof Theme['typography'], key: string) {
+  return ({ theme }: { theme: Theme }) => {
+    const themeOfTypography = theme.typography[name];
+    if (typeof themeOfTypography !== 'object') {
+      throw new Error(`Unexpected typography name: ${name}`);
+    }
+    return themeOfTypography[key];
+  };
+}
 
 /**
  * typography
@@ -154,16 +162,6 @@ function typography(name: keyof Theme['typography']) {
     line-height: ${typographyProp(name, 'lineHeight')};
     letter-spacing: ${typographyProp(name, 'letterSpacing')};
   `;
-}
-
-function typographyProp(name: keyof Theme['typography'], key: string) {
-  return ({ theme }: { theme: Theme }) => {
-    const typography = theme.typography[name];
-    if (typeof typography !== 'object') {
-      throw new Error(`Unexpected typography name: ${name}`);
-    }
-    return typography[key];
-  };
 }
 
 /**
@@ -202,15 +200,11 @@ const rippleEnter = (theme: Theme) => keyframes`
 `;
 
 function radius(type: keyof Theme['radius']) {
-  return ({ theme }: { theme: Theme }): string | number => {
-    return theme.radius[type];
-  };
+  return ({ theme }: { theme: Theme }): string | number => theme.radius[type];
 }
 
 function opacity(type: keyof Theme['opacity']) {
-  return ({ theme }: { theme: Theme }): number => {
-    return theme.opacity[type];
-  };
+  return ({ theme }: { theme: Theme }): number => theme.opacity[type];
 }
 
 export {

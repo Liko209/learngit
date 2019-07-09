@@ -26,19 +26,10 @@ const PADDING_FIX = 16 + 12;
 @observer
 class MemberHeader extends React.Component<
   WithTranslation & MemberHeaderViewProps & MemberHeaderProps
-> {
+  > {
   static contextType = ProfileContext;
   private _ref: RefObject<any> = createRef();
   private _observer?: RO;
-  private _handleResize = (entries: ResizeObserverEntry[]) => {
-    const entry = entries[0];
-    const { width, height } = entry.contentRect;
-    const { sizeManager } = this.context;
-    sizeManager.updateSize('profileDialogMemberHeader', {
-      width,
-      height: height + PADDING_FIX,
-    });
-  }
 
   componentDidMount() {
     const { current } = this._ref;
@@ -53,13 +44,22 @@ class MemberHeader extends React.Component<
       this._observer.disconnect();
     }
   }
+  private _handleResize = (entries: ResizeObserverEntry[]) => {
+    const entry = entries[0];
+    const { width, height } = entry.contentRect;
+    const { sizeManager } = this.context;
+    sizeManager.updateSize('profileDialogMemberHeader', {
+      width,
+      height: height + PADDING_FIX,
+    });
+  };
   addTeamMembers = () => {
     const { group } = this.props;
     portalManager.dismissLast();
     Dialog.simple(<AddMembers group={group} />, {
       size: 'medium',
     });
-  }
+  };
 
   render() {
     const {

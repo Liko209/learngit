@@ -2,7 +2,6 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import i18next from 'i18next';
 import { ThemeProvider } from 'styled-components';
-import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
@@ -14,6 +13,7 @@ import { StreamViewComponent as StreamView } from '../Stream.View';
 import { StreamItemType, StreamViewProps, STATUS } from '../types';
 
 import { PostService } from 'sdk/module/post';
+
 PostService.getInstance = jest.fn();
 
 jest.mock('jui/components/AutoSizer/AutoSizer');
@@ -39,9 +39,6 @@ const baseProps = {
   enableNewMessageSeparatorHandler: jest
     .fn()
     .mockName('enableNewMessageSeparatorHandler'),
-  plugins: {
-    loadingMorePlugin: new LoadingMorePlugin(),
-  },
   loadMore: jest.fn().mockName('loadMore'),
   notEmpty: true,
   historyGroupState: {} as GroupStateModel,

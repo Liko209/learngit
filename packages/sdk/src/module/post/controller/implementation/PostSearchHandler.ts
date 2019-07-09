@@ -3,7 +3,7 @@
  * @Date: 2019-06-14 17:18:57
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import _ from 'lodash';
 import { Raw } from 'sdk/framework/model';
 import { Item } from 'sdk/module/item/entity';
@@ -445,7 +445,7 @@ class PostSearchHandler {
     } else {
       this._handlePostsItemsComes(searchResult);
     }
-  }
+  };
 
   private _startListenSocketSearchChange() {
     this._subscribeController.subscribe();
@@ -540,7 +540,7 @@ class PostSearchHandler {
             'retrieve search result timeout ',
           ),
         );
-      },                     SEARCH_TIMEOUT);
+      }, SEARCH_TIMEOUT);
       mainLogger.tags(LOG_TAG).log('_setSearchTimeout', tId);
       this._searchResultWaiter = tId;
     });

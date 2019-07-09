@@ -37,11 +37,17 @@ describe('message', () => {
 
   @testable
   class JPT2459 {
-    @test('should the tooltip of the call icon to be "Call" when hover the button [JPT-2459]')
+    @test(
+      'should the tooltip of the call icon to be "Call" when hover the button [JPT-2459]',
+    )
     t1() {
       const person = { id: 1 } as any;
-      const wrapper = mountWithTheme(<Call id={123} person={person} type={BUTTON_TYPE.ICON} />);
-      expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe('common.call');
+      const wrapper = mountWithTheme(
+        <Call id={123} person={person} type={BUTTON_TYPE.ICON} />,
+      );
+      expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe(
+        'common.call',
+      );
     }
   }
 });

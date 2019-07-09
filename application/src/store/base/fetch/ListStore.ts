@@ -3,6 +3,7 @@
  * @Date: 2018-09-17 14:00:44
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { observable, action, IObservableArray } from 'mobx';
 import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';

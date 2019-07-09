@@ -11,11 +11,11 @@ type ViewModuleProps = {
 };
 
 type ViewProps = WithTranslation &
-  ViewModuleProps & {
-    disabledOkBtn: boolean;
-    members: number[];
-    addTeamMembers: () => void;
-    handleSearchContactChange: (items: any) => void;
-  };
+ViewModuleProps & {
+  disabledOkBtn: boolean;
+  members: number[];
+  addTeamMembers: () => void;
+  handleSearchContactChange: (items: any) => void;
+};
 
 export { ViewProps, ViewModuleProps };

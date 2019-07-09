@@ -17,7 +17,7 @@ function handleEnter(range: RangeStatic, context: any) {
       formats[format] = context.format[format];
     }
     return formats;
-  },                                                     {});
+  }, {});
   quill.insertText(range.index, '\n', lineFormats, 'user');
   // Earlier scroll.deleteAt might have messed up our selection,
   // so insertText's built in selection preservation is not reliable

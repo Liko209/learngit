@@ -5,6 +5,7 @@
  */
 
 import { ToastProps } from './Toast/types';
+
 type ToastWrapperProps = {};
 
 type ToastWrapperViewProps = {

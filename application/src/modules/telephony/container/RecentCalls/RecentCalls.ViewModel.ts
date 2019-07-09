@@ -34,20 +34,20 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
     const next = this.focusIndex + 1;
     const maxIndex = this.recentCallIds.length - 1;
     this.focusIndex = next >= maxIndex ? maxIndex : next;
-  }
+  };
 
   @action
   decreaseFocusIndex = () => {
     const next = this.focusIndex - 1;
     const minimumIndex = 0;
     this.focusIndex = next <= minimumIndex ? minimumIndex : next;
-  }
+  };
 
   @action
   setRangeIndex = (range: IndexRange) => {
     this.startIndex = range.startIndex;
     this.stopIndex = range.stopIndex;
-  }
+  };
 
   @computed
   get listHandler() {
@@ -64,11 +64,11 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   @action
   onErrorReload = () => {
     this.isError = false;
-  }
+  };
 
   dispose = () => {
     this._recentCallLogsHandler && this._recentCallLogsHandler.dispose();
-  }
+  };
 }
 
 export { RecentCallsViewModel };

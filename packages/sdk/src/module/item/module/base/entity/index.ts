@@ -5,6 +5,10 @@
  */
 
 import { SanitizedItem } from './SanitizedItem';
-import { Item, ItemVersions, ItemVersionPage, StoredFile } from './Item';
+import {
+  Item, ItemVersions, ItemVersionPage, StoredFile,
+} from './Item';
 
-export { SanitizedItem, Item, ItemVersions, ItemVersionPage, StoredFile };
+export {
+  SanitizedItem, Item, ItemVersions, ItemVersionPage, StoredFile,
+};

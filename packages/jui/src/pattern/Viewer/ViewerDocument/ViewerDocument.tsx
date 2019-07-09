@@ -20,7 +20,7 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PAGE_PADDING = 32;
 const PAGE_FIT = 'page-fit';
-
+/* eslint-disable */
 const ViewerDocumentWrap = styled('div')`
   && {
     background-color: ${palette('grey', '100')};
@@ -186,7 +186,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     ) {
       setTimeout(() => {
         this._setScale(scale);
-      },         0);
+      }, 0);
     }
   }
 
@@ -215,7 +215,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     if (pageDiv) {
       scrollIntoView(pageDiv);
     }
-  }
+  };
 
   private _setScale(toScale: ScaleType) {
     const scale = toScale;
@@ -295,7 +295,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     const { onScaleChange } = this.props;
     onScaleChange && onScaleChange(newScale);
-  }
+  };
 
   private _scrollPageIntoView = ({
     pageNumber,
@@ -347,7 +347,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         top,
       });
     }
-  }
+  };
 
   private _zoomOut = (ticks: number) => {
     let newScale = this.state.currentScale;
@@ -358,7 +358,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       newScale = Math.max(MIN_SCALE, newScale);
     } while (--_ticks > 0 && newScale > MIN_SCALE);
     this._setScale(newScale);
-  }
+  };
   private _zoomIn = (ticks: number) => {
     let newScale = this.state.currentScale;
     let _ticks = ticks;
@@ -368,7 +368,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       newScale = Math.min(MAX_SCALE, newScale);
     } while (--_ticks > 0 && newScale < MAX_SCALE);
     this._setScale(newScale);
-  }
+  };
 
   handleContainerWheel = (event: WheelEvent) => {
     if (event.ctrlKey || event.metaKey) {
@@ -398,7 +398,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         containerEl.scrollTop += dy * scaleCorrectionFactor;
       }
     }
-  }
+  };
 
   private _scrollUpdate = () => {
     if (this.state.numberPages === 0) {
@@ -407,7 +407,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
 
     this._updateCurrentPage();
     this._update();
-  }
+  };
 
   private _updateCurrentPage = () => {
     const visiblePages = this._getVisiblePages();
@@ -415,7 +415,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       this._updateCurrentPageIndex(visiblePages);
       this._emitCurrentPageIdxChanged(visiblePages);
     }
-  }
+  };
 
   private _updateCurrentPageIndex = (visiblePages: VisiblePagesType) => {
     const { first } = visiblePages;
@@ -427,7 +427,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     this.setState({
       currentPageIndex: firstPageIdx,
     });
-  }
+  };
 
   private _emitCurrentPageIdxChanged = (visiblePages: VisiblePagesType) => {
     const { first, last, views } = visiblePages;
@@ -466,7 +466,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
     this._jumpToViewParam.toIdx = emitIdx;
 
     onCurrentPageIdxChanged && onCurrentPageIdxChanged(emitIdx);
-  }
+  };
 
   private _getVisiblePages = (): VisiblePagesType | null => {
     if (this.container.current) {
@@ -481,7 +481,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       return getVisibleElements(this.container.current, pageContainers);
     }
     return null;
-  }
+  };
 
   private _update = () => {
     const visiblePages = this._getVisiblePages();
@@ -494,7 +494,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
       const { first } = visiblePages;
       first && this._updateLocation(first);
     }
-  }
+  };
 
   private _updateLocation = (firstPage: VisiblePageType) => {
     const pageNumber = firstPage.id;
@@ -516,7 +516,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
         left: intLeft,
       };
     }
-  }
+  };
 
   renderPages = () => {
     const { pages } = this.props;
@@ -542,15 +542,15 @@ class JuiViewerDocument extends React.Component<Props, States> {
       });
     }
     return null;
-  }
+  };
 
   render() {
     return (
       <ViewerDocumentWrap
-        className="ViewerDocument"
+        className='ViewerDocument'
         ref={this.container as any}
       >
-        <div className="ViewerDocumentContent">{this.renderPages()}</div>
+        <div className='ViewerDocumentContent'>{this.renderPages()}</div>
       </ViewerDocumentWrap>
     );
   }

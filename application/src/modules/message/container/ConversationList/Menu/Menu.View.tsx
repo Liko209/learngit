@@ -3,6 +3,7 @@
  * @Date: 2018-09-29 18:56:22
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
@@ -30,7 +31,7 @@ class MenuViewComponent extends Component<Props> {
     const { t, closable } = this.props;
     return (
       <JuiMenuItem
-        data-test-automation-id="closeConversation"
+        data-test-automation-id='closeConversation'
         onClick={this._handleCloseConversation}
         disabled={!closable}
       >
@@ -41,7 +42,7 @@ class MenuViewComponent extends Component<Props> {
 
   _handleResize = (event: UIEvent) => {
     this.props.onClose(event);
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('resize', this._handleResize);
@@ -54,20 +55,20 @@ class MenuViewComponent extends Component<Props> {
   private _getKeyReadOrUnread = () => {
     const { isUnread } = this.props;
     return isUnread ? 'markAsRead' : 'markAsUnread';
-  }
+  };
 
   private _renderReadOrUnreadMenuItem = () => {
     const { t, disabledReadOrUnread } = this.props;
     return (
       <JuiMenuItem
-        data-test-automation-id="readOrUnreadConversation"
+        data-test-automation-id='readOrUnreadConversation'
         onClick={this._handleReadOrUnreadConversation}
         disabled={disabledReadOrUnread}
       >
         {t(`people.team.${this._getKeyReadOrUnread()}`)}
       </JuiMenuItem>
     );
-  }
+  };
 
   private _handleReadOrUnreadConversation = async (
     event: MouseEvent<HTMLElement>,
@@ -87,7 +88,7 @@ class MenuViewComponent extends Component<Props> {
         dismissible: false,
       });
     }
-  }
+  };
 
   @catchError.flash({
     network: 'people.prompt.notAbleToUnFavoriteForNetworkIssue',
@@ -97,7 +98,7 @@ class MenuViewComponent extends Component<Props> {
     event.stopPropagation();
     this.props.onClose(event);
     return this.props.toggleFavorite();
-  }
+  };
 
   @catchError.flash({
     network: 'people.prompt.notAbleToFavoriteThisMessageForNetworkIssue',
@@ -105,14 +106,14 @@ class MenuViewComponent extends Component<Props> {
   })
   private _handleFavorite = (event: MouseEvent<HTMLElement>) => {
     return this.props.toggleFavorite();
-  }
+  };
 
   private _checkboxChange = (
     event: React.ChangeEvent<{}>,
     checked: boolean,
   ) => {
     this.checked = checked;
-  }
+  };
 
   private _handleCloseConversation = (event: MouseEvent<HTMLElement>) => {
     const { t } = this.props;
@@ -122,7 +123,9 @@ class MenuViewComponent extends Component<Props> {
       this._closeConversationWithoutConfirmDialog();
     } else {
       Dialog.alert({
-        modalProps: { 'data-test-automation-id': 'close-conversation-alert-dialog' },
+        modalProps: {
+          'data-test-automation-id': 'close-conversation-alert-dialog',
+        },
         title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
           <>
@@ -131,7 +134,7 @@ class MenuViewComponent extends Component<Props> {
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
-              automationId="close-conversation-alert-dont-ask-again"
+              automationId='close-conversation-alert-dont-ask-again'
               checked={this.checked}
               handleChange={this._checkboxChange}
             />
@@ -146,7 +149,7 @@ class MenuViewComponent extends Component<Props> {
         },
       });
     }
-  }
+  };
 
   private async _closeConversationWithConfirm() {
     this._closeConversation(this.checked);
@@ -172,17 +175,17 @@ class MenuViewComponent extends Component<Props> {
 
   private _onClose = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
-  }
+  };
 
   private _mouseEventHandler = (e: React.TouchEvent | MouseEvent) => {
     e.stopPropagation();
-  }
+  };
 
   render() {
     const { anchorEl, favoriteText, t, isFavorite } = this.props;
     return (
       <JuiMenuContain
-        id="render-props-menu"
+        id='render-props-menu'
         anchorEl={anchorEl}
         open={!!anchorEl}
         onClose={this._onClose}
@@ -192,7 +195,7 @@ class MenuViewComponent extends Component<Props> {
       >
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
-          data-test-automation-id="favToggler"
+          data-test-automation-id='favToggler'
           onClick={
             isFavorite ? this._handleRemoveFavorite : this._handleFavorite
           }

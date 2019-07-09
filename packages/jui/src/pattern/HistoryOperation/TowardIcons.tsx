@@ -15,8 +15,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 
 const StyledIconButton = styled(JuiIconButton)<JuiIconButtonProps>`
   &&&&& .icon[disabled] {
-    color: ${({ theme }) =>
-      fade(palette('common', 'white')({ theme }), theme.opacity['5'])};
+    color: ${({ theme }) => fade(palette('common', 'white')({ theme }), theme.opacity['5'])};
   }
 `;
 
@@ -38,7 +37,7 @@ class TowardIcons extends PureComponent<IconsProps> {
       this._isLongPress = true;
       onLongPress(target);
       this._isLongPress = false;
-    },                            300);
+    }, 300);
   }
 
   handleRelease() {

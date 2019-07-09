@@ -22,9 +22,7 @@ const setRCToken = async (token: ITokenModel) => {
   return true;
 };
 
-const setRCAccountType = async () => {
-  return await setAccountType(ACCOUNT_TYPE_ENUM.RC);
-};
+const setRCAccountType = async () => await setAccountType(ACCOUNT_TYPE_ENUM.RC);
 
 const setGlipToken = async (token: string) => {
   const authConfig = ServiceLoader.getInstance<AccountService>(
@@ -34,8 +32,8 @@ const setGlipToken = async (token: string) => {
   return true;
 };
 
-const setGlipAccountType = async () => {
-  return await setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
-};
+const setGlipAccountType = async () => await setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
 
-export { setRCToken, setRCAccountType, setGlipToken, setGlipAccountType };
+export {
+  setRCToken, setRCAccountType, setGlipToken, setGlipAccountType,
+};

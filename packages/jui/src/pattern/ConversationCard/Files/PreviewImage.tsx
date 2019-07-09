@@ -56,7 +56,7 @@ const Icon = withDelay(() => (
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
-  <Jui.ImageCard transparent={true} {...props}>
+  <Jui.ImageCard transparent {...props}>
     <Wrapper>
       <Icon delay={20} />
     </Wrapper>
@@ -104,7 +104,9 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
   ) {
     const newURL = nextProps.url;
     if (newURL !== prevState.originURL) {
-      return { url: newURL, originURL: newURL, loaded: false, retryCount: 0 };
+      return {
+        url: newURL, originURL: newURL, loaded: false, retryCount: 0,
+      };
     }
     return null;
   }
@@ -125,7 +127,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     if (this._mounted) {
       this.setState({ loaded: true });
     }
-  }
+  };
 
   private _tryToReloadImage = () => {
     const { loaded, originURL, retryCount } = this.state;
@@ -134,7 +136,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       const newURL = `${originURL}&timestamp=${Date.now()}`;
       this.setState({ url: newURL });
     }
-  }
+  };
 
   private _handleImageLoadError = () => {
     const { retryCount } = this.state;
@@ -142,7 +144,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
       { loaded: false, retryCount: retryCount + 1 },
       this._tryToReloadImage,
     );
-  }
+  };
 
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
     if (!this.state.loaded) return { display: 'none' };
@@ -153,12 +155,12 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     const styleHeight = justifyHeight ? { height: squareHeight } : {};
 
     return { ...styleWidth, ...styleHeight, display: 'block' };
-  }
+  };
 
   private _handleImageClick = (ev: React.MouseEvent) => {
     this.props.handleImageClick &&
       this.props.handleImageClick(ev, this.state.loaded);
-  }
+  };
 
   private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
     event.stopPropagation();
@@ -171,7 +173,9 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, placeholder } = this.props;
+    const {
+      Actions, fileName, forceSize, placeholder,
+    } = this.props;
     const { loaded, url } = this.state;
     const { width, height } =
       loaded && !forceSize ? this._imageInfo : this.props;

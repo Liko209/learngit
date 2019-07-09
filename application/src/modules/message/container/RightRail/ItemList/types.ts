@@ -33,4 +33,6 @@ type ViewProps = {
   listHandler: IGroupItemListHandler;
 };
 
-export { Props, ViewProps, LoadStatus, InitLoadStatus, IGroupItemListHandler };
+export {
+  Props, ViewProps, LoadStatus, InitLoadStatus, IGroupItemListHandler,
+};

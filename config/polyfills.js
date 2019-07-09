@@ -4,6 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 'use strict';
+import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
+// polyfill require.context
+registerRequireContextHook();
 if (process.env.NODE_ENV === 'test') {
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
   // We don't polyfill it in the browser--this is user's responsibility.

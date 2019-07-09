@@ -6,7 +6,7 @@
 
 import { mainLogger } from 'foundation';
 import { IdModel, ModelIdType } from '../../model';
-import { IDao } from '../../../framework/dao';
+import { IDao } from '../../dao';
 import _ from 'lodash';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
@@ -103,9 +103,7 @@ class EntitySourceController<
   }
 
   private _getIds(entities: T[]): IdType[] {
-    return entities.map((entity: T) => {
-      return entity.id;
-    });
+    return entities.map((entity: T) => entity.id);
   }
 
   private _orderAsIds(ids: IdType[], entities: T[]) {

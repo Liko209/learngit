@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -24,7 +24,9 @@ class ProgressActionsViewComponent extends Component<Props> {
     Dialog.confirm({
       modalProps: { 'data-test-automation-id': 'progressActionsConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'progressActionsOkButton' },
-      cancelBtnProps: { 'data-test-automation-id': 'progressActionsCancelButton' },
+      cancelBtnProps: {
+        'data-test-automation-id': 'progressActionsCancelButton',
+      },
       title: t('message.prompt.deletePostTitle'),
       content: t('message.prompt.deletePostContent'),
       okText: t('common.dialog.delete'),
@@ -38,13 +40,13 @@ class ProgressActionsViewComponent extends Component<Props> {
         }
       },
     });
-  }
+  };
 
   private _resendPost = async () => {
     try {
       await this.props.resend();
     } catch (e) {}
-  }
+  };
 
   private _renderLoading = () => {
     const { postStatus } = this.props;
@@ -52,42 +54,42 @@ class ProgressActionsViewComponent extends Component<Props> {
       return <RuiCircularProgress size={12} />;
     }
     return null;
-  }
+  };
 
   private _renderResend = () => {
     const { postStatus, t } = this.props;
     if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
-          variant="plain"
+          variant='plain'
           tooltipTitle={t('message.action.resendPost')}
           onClick={this._resendPost}
-          size="small"
-          color="semantic.negative"
+          size='small'
+          color='semantic.negative'
         >
           refresh
         </JuiIconButton>
       );
     }
     return null;
-  }
+  };
 
   private _renderDelete = () => {
     const { postStatus, t } = this.props;
     if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
-          variant="plain"
+          variant='plain'
           tooltipTitle={t('message.action.deletePost')}
           onClick={this._deletePost}
-          size="small"
+          size='small'
         >
           delete
         </JuiIconButton>
       );
     }
     return null;
-  }
+  };
 
   render() {
     return (

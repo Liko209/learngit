@@ -222,9 +222,7 @@ class IdListPagingDataProvider<
   }
 
   private _toIdModels(ids: IdType[]) {
-    return ids.map((id: IdType) => {
-      return { id } as T;
-    });
+    return ids.map((id: IdType) => ({ id } as T));
   }
 
   private _getIdsByPage(
@@ -279,9 +277,7 @@ class IdListPagingDataProvider<
   }
 
   private async _fetchAndSaveModels(ids: IdType[]) {
-    const needFetchIds: IdType[] = ids.filter((id: IdType) => {
-      return !hasValidEntity(this._options.entityName, id);
-    });
+    const needFetchIds: IdType[] = ids.filter((id: IdType) => !hasValidEntity(this._options.entityName, id));
 
     needFetchIds.length > 0 && (await this._fetchFromService(needFetchIds));
   }

@@ -36,11 +36,11 @@ import {
   MIN_ORIGINAL_ATMENTION_PATTERN_LENGTH,
 } from './utils';
 import { URLParser } from './parsers/URLParser';
-import _ from 'lodash';
 import moize from 'moize';
 import { mainLogger } from 'sdk';
 import { AtMentionTransformer } from './parsers/AtMentionTransformer';
 
+/* eslint-disable */
 // Do not change the order of the array unless you know what you're doing.
 const parsersConfig = [
   {

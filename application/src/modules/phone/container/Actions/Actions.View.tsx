@@ -12,6 +12,7 @@ import { ENTITY_TYPE, BUTTON_BUFFER_COUNT } from '../constants';
 import { Message } from './Message';
 import { Call } from './Call';
 
+/* eslint-disable */
 class ActionsView extends Component<ActionsViewProps & ActionsProps> {
   get tabName() {
     const { entity } = this.props;
@@ -54,7 +55,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
         />
       );
     });
-  }
+  };
 
   getButtonsConfig = () => {
     const { maxButtonCount } = this.props;
@@ -75,7 +76,7 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
       buttons: this.getButtons(this._actions, BUTTON_TYPE.ICON),
       dropdownItems: null,
     };
-  }
+  };
 
   renderButtons = () => {
     const { buttons, dropdownItems } = this.getButtonsConfig();
@@ -83,13 +84,13 @@ class ActionsView extends Component<ActionsViewProps & ActionsProps> {
 
     if (dropdownItems) {
       buttons.push(
-        <More key="more" automationId={`${entity}-more-button`}>
+        <More key='more' automationId={`${entity}-more-button`}>
           {dropdownItems}
         </More>,
       );
     }
     return buttons;
-  }
+  };
 
   render() {
     return <JuiButtonBar overlapSize={0}>{this.renderButtons()}</JuiButtonBar>;

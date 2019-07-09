@@ -3,7 +3,9 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action, transaction } from 'mobx';
+import {
+  computed, observable, action, transaction,
+} from 'mobx';
 import { PreloadController } from '@/modules/viewer/container/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ItemNotification } from 'sdk/module/item';
@@ -64,14 +66,16 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   constructor(props: ViewerViewProps) {
     super(props);
-    const { groupId, type, itemId, postId, isNavigation } = props;
+    const {
+      groupId, type, itemId, postId, isNavigation,
+    } = props;
     this.currentItemId = itemId;
     this._itemListDataSource = isNavigation
       ? new ItemListDataSourceByPost({ groupId, type, postId })
       : new ItemListDataSource({
-          groupId,
-          type,
-        });
+        groupId,
+        type,
+      });
     this._preloadController = new PreloadController();
 
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
@@ -88,19 +92,17 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     );
 
     this.reaction(
-      () =>
-        getSingleEntity<Profile, ProfileModel>(
-          ENTITY_NAME.PROFILE,
-          'hiddenGroupIds',
-        ),
+      () => getSingleEntity<Profile, ProfileModel>(
+        ENTITY_NAME.PROFILE,
+        'hiddenGroupIds',
+      ),
       (hiddenGroupIds: number[]) => {
         if (hiddenGroupIds.includes(groupId)) {
           this._onExceptions('viewer.ConversationClosed');
         }
       },
       {
-        equals: (a: number[], b: number[]) =>
-          a.sort().toString() === b.sort().toString(),
+        equals: (a: number[], b: number[]) => a.sort().toString() === b.sort().toString(),
       },
     );
     this.reaction(
@@ -140,32 +142,32 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     const { itemId } = this.props;
     this._itemListDataSource.loadInitialData(itemId, PAGE_SIZE);
     this._updateIndexInfo();
-  }
+  };
 
   doPreload = () => {
     if (this.ids) {
       this._preloadController.setIsAllowed(false);
       this._preloadController.replacePreload(this.ids, this._getItemIndex());
     }
-  }
+  };
 
   stopPreload = () => {
     this._preloadController.stop();
-  }
+  };
 
   onContentLoad = () => {
     this.enablePreload();
-  }
+  };
 
   onContentError = () => {
     this.enablePreload();
-  }
+  };
 
   enablePreload = () => {
     setTimeout(() => {
       this._preloadController.setIsAllowed(true);
     });
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -188,23 +190,19 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       this.currentIndex = index;
       this.currentItemId = itemId;
     });
-  }
+  };
 
-  getCurrentItemId = () => {
-    return this.currentItemId;
-  }
+  getCurrentItemId = () => this.currentItemId;
 
-  getCurrentIndex = () => {
-    return this.currentIndex;
-  }
+  getCurrentIndex = () => this.currentIndex;
 
   setOnCurrentItemDeletedCb = (callback: () => void) => {
     this._onCurrentItemDeletedCb = callback;
-  }
+  };
 
   setOnItemSwitchCb = (callback: (itemId: number) => void) => {
     this._onItemSwitchCb = callback;
-  }
+  };
 
   @computed
   get hasPrevious() {
@@ -238,7 +236,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this._onItemSwitchCb &&
         this._onItemSwitchCb(itemId, index, 'previous');
     }
-  }
+  };
 
   @action
   switchToNext = () => {
@@ -265,7 +263,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this._onItemSwitchCb &&
         this._onItemSwitchCb(itemId, index, 'next');
     }
-  }
+  };
 
   loadMore = async (direction: QUERY_DIRECTION): Promise<FileItem[] | null> => {
     if (this.isLoadingMore) {
@@ -278,11 +276,9 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     );
     this.isLoadingMore = false;
     return result;
-  }
+  };
 
-  private _getItemIndex = (): number => {
-    return this.ids.findIndex((_id: number) => _id === this.currentItemId);
-  }
+  private _getItemIndex = (): number => this.ids.findIndex((_id: number) => _id === this.currentItemId);
 
   private _updateIndexInfo = async () => {
     const itemId = this.currentItemId;
@@ -298,9 +294,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
           mainLogger
             .tags('ImageViewer')
             .info(
-              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${
-                info.index
-              }/${info.totalCount}`,
+              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${info.index}/${info.totalCount}`,
             );
 
           const nextToDisplay = getNextItemToDisplay(
@@ -322,7 +316,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
         this.historyIds = this.ids;
       }
     });
-  }
+  };
 
   private _onExceptions(toastMessage: string) {
     portalManager.dismissAll();
@@ -354,7 +348,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
     if (type === EVENT_TYPES.UPDATE) {
       const detailPayload = payload as NotificationEntityUpdatePayload<
-        FileItem
+      FileItem
       >;
       detailPayload.body.entities.forEach(entity => {
         if (
@@ -372,7 +366,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     if (needRefreshIndex) {
       this._updateIndexInfo();
     }
-  }
+  };
 }
 
 export { ViewerViewModel };

@@ -65,7 +65,7 @@ class ItemListDataSourceByPost {
   }
 
   @action
-  async loadInitialData(itemId: number, pageSize: number) {
+  async loadInitialData() {
     const result = await this.fetchData();
     return await result.data;
   }

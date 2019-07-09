@@ -16,7 +16,7 @@ import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { ITokenModel, RCAuthCodeInfo } from './types';
 import { ApiConfiguration } from '../config';
-
+/* eslint-disable */
 class RCAuthApi extends Api {
   static oauthTokenViaAuthCode(params: object, headers?: object) {
     const model = {

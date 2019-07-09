@@ -305,7 +305,7 @@ describe('messageNotificationManager', () => {
 
     it(`should unescape for text lik "you'll get it"`, () => {
       expect(
-        notificationManager.handlePostContent({ text: "you'll get it" }),
+        notificationManager.handlePostContent({ text: `you'll get it` }),
       ).toEqual(`you'll get it`);
     });
   });

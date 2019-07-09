@@ -47,8 +47,8 @@ type JuiModalProps = {
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
-  JuiDialogProps,
-  'open'
+JuiDialogProps,
+'open'
 >;
 
 class JuiModal extends PureComponent<JuiModalProps, {}> {
@@ -99,13 +99,11 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
   renderContent() {
     const { children, content } = this.props;
 
-    const renderString = (type: string | React.ReactNode) => {
-      return typeof type === 'string' ? (
+    const renderString = (type: string | React.ReactNode) => (typeof type === 'string' ? (
         <JuiDialogContentText>{type}</JuiDialogContentText>
-      ) : (
-        type
-      );
-    };
+    ) : (
+      type
+    ));
 
     return content ? renderString(content) : renderString(children);
   }

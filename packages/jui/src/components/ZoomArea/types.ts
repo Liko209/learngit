@@ -26,4 +26,6 @@ type Transform = {
   translateY: number;
 };
 
-export { ElementRect, Position, ZoomRatio, Transform };
+export {
+  ElementRect, Position, ZoomRatio, Transform,
+};

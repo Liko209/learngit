@@ -3,7 +3,7 @@
  * @Date: 2018-10-02 15:46:28
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
@@ -28,17 +28,17 @@ class LeftRailViewComponent extends Component<
 > {
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
-  }
+  };
 
   render() {
     const { filters, entries, sections, currentPostListType, t } = this.props;
     return (
-      <JuiLeftRail data-test-automation-id="leftRail">
+      <JuiLeftRail data-test-automation-id='leftRail'>
         <JuiLeftRailStickyTop>
           {filters.map((filter, index) => [
             index ? <JuiDivider key={`divider${index}`} /> : null,
             <JuiConversationListFilter
-              data-test-automation-id="unreadOnlyToggler"
+              data-test-automation-id='unreadOnlyToggler'
               checked={filter.value}
               key={filter.label}
               label={toTitleCase(t(filter.label))}
@@ -46,7 +46,7 @@ class LeftRailViewComponent extends Component<
             />,
           ])}
         </JuiLeftRailStickyTop>
-        <JuiDivider key="divider-filters" />
+        <JuiDivider key='divider-filters' />
         <JuiLeftRailMainSection>
           {entries.map((entry, index) => (
             <JuiConversationListSectionHeader
@@ -61,7 +61,7 @@ class LeftRailViewComponent extends Component<
               }}
             />
           ))}
-          <JuiDivider key="divider-entries" />
+          <JuiDivider key='divider-entries' />
           {sections.map((type, index, array) => [
             index ? <JuiDivider key={`divider${index}`} /> : null,
             <Section

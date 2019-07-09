@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-06-24 16:18:57
  * Copyright © RingCentral. All rights reserved
-*/
+ */
 
 import { IAuthenticator, AbstractAccount } from '../..';
 import { IAuthResponse, IAuthParams } from '../../account';
@@ -23,6 +23,23 @@ class TestLogin implements ITestLoginInfo {
 
 const validUser = new TestLogin();
 
+class TestAccount extends AbstractAccount {
+  updateSupportedServices(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  constructor() {
+    super();
+  }
+
+  getAccountType(): string {
+    return 'TEST';
+  }
+
+  protected getSupportedServicesByIndexData(): string[] {
+    return ['TestService'];
+  }
+}
 class TestAuthenticator implements IAuthenticator {
   async authenticate(loginInfo: ITestLoginInfo): Promise<IAuthResponse> {
     const isProvisioned = validUser.isMatched(loginInfo);
@@ -42,24 +59,6 @@ class TestAuthenticator implements IAuthenticator {
       success: false,
       error: new Error('invalid user!'),
     };
-  }
-}
-
-class TestAccount extends AbstractAccount {
-  updateSupportedServices(data: any): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  constructor() {
-    super();
-  }
-
-  getAccountType(): string {
-    return 'TEST';
-  }
-
-  protected getSupportedServicesByIndexData(indexData: any): string[] {
-    return ['TestService'];
   }
 }
 

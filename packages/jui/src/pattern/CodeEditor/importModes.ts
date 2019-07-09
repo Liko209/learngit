@@ -1,5 +1,5 @@
 import 'codemirror/mode/apl/apl';
-import 'codemirror/mode/clike/clike.js';
+import 'codemirror/mode/clike/clike';
 import 'codemirror/mode/clojure/clojure';
 import 'codemirror/mode/coffeescript/coffeescript';
 import 'codemirror/mode/css/css';

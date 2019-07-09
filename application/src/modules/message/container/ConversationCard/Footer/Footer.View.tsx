@@ -22,11 +22,7 @@ class FooterView extends Component<FooterViewProps> {
     } = this.props;
 
     return (
-      <JuiCollapse
-        mountOnEnter={true}
-        unmountOnExit={true}
-        in={Boolean(likedUsersCount)}
-      >
+      <JuiCollapse mountOnEnter unmountOnExit in={Boolean(likedUsersCount)}>
         <JuiConversationCardFooter>
           <JuiConversationPostLike
             title={likedUsersNameMessage}

@@ -8,6 +8,7 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
 } from './types';
+
 interface IRTCCallDelegate {
   onCallStateChange(state: RTC_CALL_STATE): void;
   onCallActionSuccess(

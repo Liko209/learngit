@@ -58,11 +58,9 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 
     &:active {
       background-color: ${palette('primary', 'main')};
-      color: ${({ theme }) =>
-        theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+      color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       ${StyledMuiListItemIcon} {
-        color: ${({ theme }) =>
-          theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+        color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       }
     }
   }

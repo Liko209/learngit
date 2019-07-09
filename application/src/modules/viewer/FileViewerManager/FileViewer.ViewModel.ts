@@ -5,7 +5,9 @@
  */
 
 import React from 'react';
-import { computed, action, observable, Reaction } from 'mobx';
+import {
+  computed, action, observable, Reaction,
+} from 'mobx';
 
 import { Person } from 'sdk/module/person/entity';
 import { AbstractViewModel } from '@/base';
@@ -26,7 +28,6 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
-import _ from 'lodash';
 
 class FileViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
@@ -85,7 +86,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     this._sender = null;
     this._createdAt = null;
     return;
-  }
+  };
 
   @computed
   private get _item() {
@@ -101,15 +102,13 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     const { origHeight, origWidth } = this._item;
     const { pages } = this._currentVersion;
     return pages
-      ? pages.map(({ url }: ItemVersionPage) => {
-          return {
-            url,
-            viewport: {
-              origHeight,
-              origWidth,
-            },
-          };
-        })
+      ? pages.map(({ url }: ItemVersionPage) => ({
+        url,
+        viewport: {
+          origHeight,
+          origWidth,
+        },
+      }))
       : undefined;
   }
 
@@ -117,12 +116,13 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { pages = [] } = this._currentVersion;
     let value = parseInt(e.target.value, 10);
+    /*eslint-disable */
     if (isNaN(value)) return;
     value = value > pages.length ? pages.length : value;
     value = value < 1 ? 1 : value;
     this._textFieldValue = value;
     this._currentPageIdx = value - 1;
-  }
+  };
 
   @computed
   get title() {
@@ -174,7 +174,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     if (pageIdx !== undefined && pageIdx !== this._currentPageIdx) {
       this._currentPageIdx = pageIdx;
     }
-  }
+  };
 
   private _onExceptions(toastMessage: string) {
     portalManager.dismissAll();

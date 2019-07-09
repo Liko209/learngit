@@ -107,4 +107,4 @@ const excludeDomSnapshot = {
   },
 };
 
-export { excludeDomSnapshot, excludeImageSnapshot, fullScreenStory };
+export { excludeDomSnapshot };

@@ -7,13 +7,12 @@ import { MeetingItemController } from '../controller/MeetingItemController';
 import { MeetingItem } from '../entity';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 import { EntityBaseService } from '../../../../../framework/service';
+
 class MeetingItemService extends EntityBaseService<MeetingItem> {
   private _meetingItemController: MeetingItemController;
   constructor() {
     super({ isSupportedCache: false });
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_MEETING);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_MEETING));
   }
 
   protected get meetingItemController() {

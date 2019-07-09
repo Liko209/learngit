@@ -27,13 +27,12 @@ import {
 @observer
 class TaskUpdate extends React.Component<
   TaskUpdateViewProps & WithTranslation
-> {
+  > {
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
-  private _getTaskAvatarNames = (assignedIds: number[]) =>
-    assignedIds.map((assignedId: number) => (
+  private _getTaskAvatarNames = (assignedIds: number[]) => assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
-    ))
+  ))
 
   private _getTitleText(text: string) {
     const { activityData, effectiveIds } = this.props;
@@ -51,7 +50,9 @@ class TaskUpdate extends React.Component<
   }
 
   render() {
-    const { task, activityData, color, t } = this.props;
+    const {
+      task, activityData, color, t,
+    } = this.props;
     const { text, complete } = task;
     const { value, key, old_value } = activityData;
 

@@ -5,4 +5,5 @@
  */
 
 import { EventItemDao } from './EventItemDao';
+
 export { EventItemDao };

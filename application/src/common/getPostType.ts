@@ -8,8 +8,6 @@ const ActivityDataKeyMappingPostType = {
   members: POST_TYPE.NOTIFICATION,
 };
 
-const getPostType = (key: string) => {
-  return ActivityDataKeyMappingPostType[key] || POST_TYPE.POST;
-};
+const getPostType = (key: string) => ActivityDataKeyMappingPostType[key] || POST_TYPE.POST;
 
 export { POST_TYPE, getPostType, ActivityDataKeyMappingPostType };

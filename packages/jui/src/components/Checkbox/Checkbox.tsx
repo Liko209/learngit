@@ -9,9 +9,7 @@ import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
 
 // const StyledCheckbox = styled(Checkbox)``;
 
-const JuiCheckbox = memo((props: CheckboxProps) => {
-  return <Checkbox {...props} />;
-});
+const JuiCheckbox = memo((props: CheckboxProps) => <Checkbox {...props} />);
 
 JuiCheckbox.displayName = 'JuiCheckbox';
 

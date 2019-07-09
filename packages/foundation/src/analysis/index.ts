@@ -4,5 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DataAnalysis } from './DataAnalysis';
+
 const dataAnalysis = new DataAnalysis();
 export { dataAnalysis, DataAnalysis };

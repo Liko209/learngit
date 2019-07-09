@@ -3,6 +3,7 @@
  * @Date: 2018-12-05 18:29:47
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -12,10 +13,12 @@ import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
+import { withRCMode } from '@/containers/withRCMode';
 
 type NewActionsProps = WithTranslation & ViewProps;
 
 @observer
+@withRCMode()
 class NewActions extends React.Component<NewActionsProps> {
   constructor(props: NewActionsProps) {
     super(props);
@@ -25,14 +28,14 @@ class NewActions extends React.Component<NewActionsProps> {
     const { t } = this.props;
     return (
       <JuiFabButton
-        size="medium"
+        size='medium'
         tooltipTitle={t('home.newActions')}
-        data-test-automation-id="addMenuBtn"
-        iconName="new_actions"
-        disableRipple={true}
+        data-test-automation-id='addMenuBtn'
+        iconName='new_actions'
+        disableRipple
       />
     );
-  }
+  };
 
   handleCreateTeam = () => CreateTeam.show();
 
@@ -52,7 +55,7 @@ class NewActions extends React.Component<NewActionsProps> {
     return canSendNewMessage ? (
       <JuiMenuItem
         onClick={this.handleNewMessage}
-        data-test-automation-id="sendNewMessage"
+        data-test-automation-id='sendNewMessage'
       >
         {t('message.action.sendNewMessage')}
       </JuiMenuItem>

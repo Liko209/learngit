@@ -9,9 +9,9 @@ import { createKeyMapper } from '../createKeyMapper';
 describe('createKeyMapper()', () => {
   it('should return key of the element', () => {
     const keyMapper = createKeyMapper([
-      <div key="KEY_A" />,
-      <div key="KEY_B" />,
-      <div key="KEY_C" />,
+      <div key='KEY_A' />,
+      <div key='KEY_B' />,
+      <div key='KEY_C' />,
     ]);
     expect(keyMapper(0)).toBe('KEY_A');
     expect(keyMapper(1)).toBe('KEY_B');
@@ -20,9 +20,9 @@ describe('createKeyMapper()', () => {
 
   it("should return '' when not found", () => {
     const keyMapper = createKeyMapper([
-      <div key="KEY_A" />,
-      <div key="KEY_B" />,
-      <div key="KEY_C" />,
+      <div key='KEY_A' />,
+      <div key='KEY_B' />,
+      <div key='KEY_C' />,
     ]);
     expect(keyMapper(3)).toBe('');
   });

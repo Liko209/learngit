@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISubItemService } from '../../base/service/ISubItemService';
+import { ISubItemService } from './ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { Item, SanitizedItem } from '../entity';

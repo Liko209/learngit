@@ -12,7 +12,9 @@ export class MessageDecorator implements ILogEntityDecorator {
   options: object;
 
   decorate(data: LogEntity): LogEntity {
-    const { tags, message, level, timestamp, sessionIndex } = data;
+    const {
+      tags, message, level, timestamp, sessionIndex,
+    } = data;
     if (!_.isEmpty(message)) return data;
     data.params = data.params.map((item: any) => {
       const type = Object.prototype.toString.call(item);

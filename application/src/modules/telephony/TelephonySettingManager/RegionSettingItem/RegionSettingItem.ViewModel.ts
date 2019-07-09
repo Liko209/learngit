@@ -3,6 +3,7 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import _ from 'lodash';
 import { computed, observable, action } from 'mobx';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -71,7 +72,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
 
   private _getCountryFlag: (
     isoCode: DialingCountryInfo['isoCode'],
-  ) => JuiIconographyProps['symbol'] = isoCode => undefined
+  ) => JuiIconographyProps['symbol'] = isoCode => undefined;
 
   private _currentCountryAreaCode: string = '';
 
@@ -79,7 +80,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     const res = await import(/*
       webpackChunkName: "m.country-flag" */ './countryFlagLoader');
     return res.getCountryFlag;
-  }
+  };
 
   @action
   loadRegionSetting = async () => {
@@ -100,7 +101,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
       this.renderAreaCode = true;
     }
     this.disabledOkBtn = true;
-  }
+  };
 
   @computed
   get currentCountryAreaCode() {
@@ -121,14 +122,14 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
   getCurrentCountry = async () => {
     this._currentCountryInfo = await this.rcInfoService.getCurrentCountry();
     return this._currentCountryInfo;
-  }
+  };
 
   @action
   getCountriesList = async () => {
     const countiesList = await this.rcInfoService.getCountryList();
     this._countriesList = this._transformCountriesList(countiesList);
     return this._countriesList;
-  }
+  };
 
   private _transformCountriesList = (countryList: DialingCountryInfo[]) => {
     return countryList.map(country => {
@@ -141,8 +142,8 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
         regionIcon: this._getCountryFlag(isoCode),
       };
     });
-  }
-
+  };
+  /* eslint-disable */
   private _getCallingCodeByDialPlanISOCode(
     isoCode: DialingCountryInfo['isoCode'],
   ): DialingCountryInfo['callingCode'] {
@@ -173,7 +174,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     const callingCode = this._getCallingCodeByDialPlanISOCode(dialPlanISOCode);
     this.renderAreaCode = !!this.rcInfoService.hasAreaCode(callingCode);
     this._updateAreaCode(dialPlanISOCode);
-  }
+  };
 
   @action
   handleAreaCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +197,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     ) {
       this._handleAreaCodeError();
     }
-  }
+  };
 
   @catchError.flash({
     network: 'message.prompt.updateRegionalSettingsNetworkError',
@@ -239,7 +240,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     } catch {
       return false;
     }
-  }
+  };
 
   private _handleAreaCodeError = async () => {
     this.areaCodeError = true;
@@ -247,7 +248,7 @@ class RegionSettingItemViewModel extends StoreViewModel<RegionSettingItemProps>
     this.errorMsg = await i18nT(
       'setting.phone.general.regionSetting.areaCodeErrorText',
     );
-  }
+  };
 }
 
 export { RegionSettingItemViewModel };

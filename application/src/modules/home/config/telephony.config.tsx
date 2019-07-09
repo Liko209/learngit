@@ -15,9 +15,9 @@ const config: SubModuleConfig = {
   route: {
     path: '/phone',
     component: lazyComponent({
-      loader: () =>
-        import(/*
-        webpackChunkName: "c.telephony" */ './lazy/Telephony'),
+      loader: () => import(/*
+        webpackChunkName: "c.telephony" */ './lazy/Telephony'
+      ),
     }),
   },
   nav: async () => ({
@@ -34,9 +34,9 @@ const config: SubModuleConfig = {
     placement: 'top',
     disable: !(await container.get(FeaturesFlagsService).canUseTelephony()),
   }),
-  moduleConfigLoader: () =>
-    import(/*
-    webpackChunkName: "m.telephony" */ '@/modules/telephony'),
+  moduleConfigLoader: () => import(/*
+    webpackChunkName: "m.telephony" */ '@/modules/telephony'
+  ),
 };
 
 export { config };

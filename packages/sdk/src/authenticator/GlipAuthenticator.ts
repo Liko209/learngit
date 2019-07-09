@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IAuthenticator, IAuthResponse, IAuthParams } from '../framework';
+import { IAuthenticator, IAuthResponse } from '../framework';
 import { loginGlip, ITokenModel } from '../api';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../module/account/service';
@@ -13,8 +13,10 @@ import notificationCenter from '../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 
-class ReLoginAuthenticator implements IAuthenticator {
-  async authenticate(params: IAuthParams): Promise<IAuthResponse> {
+const LOG_TAG = 'GlipAuthenticator';
+
+class GlipAuthenticator implements IAuthenticator {
+  async authenticate(): Promise<IAuthResponse> {
     // login glip
     try {
       const authConfig = ServiceLoader.getInstance<AccountService>(
@@ -36,7 +38,7 @@ class ReLoginAuthenticator implements IAuthenticator {
       });
       return {
         success: true,
-        isFirstLogin: false,
+        isFirstLogin: true,
         accountInfos: [
           {
             type: GlipAccount.name,
@@ -45,10 +47,10 @@ class ReLoginAuthenticator implements IAuthenticator {
         ],
       };
     } catch (err) {
-      mainLogger.tags('UnifiedLogin').error(`login glip failed, ${err}`);
+      mainLogger.tags(LOG_TAG).error(`login glip failed, ${err}`);
       return { success: false };
     }
   }
 }
 
-export { ReLoginAuthenticator };
+export { GlipAuthenticator };

@@ -77,7 +77,6 @@ class PostItemController implements IPostItemController {
   private _addProcessorStrategy = (
     totalProcessors: IProcessor[],
     newProcessor: IProcessor,
-    existed: boolean,
   ) => {
     if (totalProcessors.length) {
       totalProcessors.forEach((processor: IProcessor) => {
@@ -134,15 +133,11 @@ class PostItemController implements IPostItemController {
       const needCheckItemFiles = _.intersectionWith(
         uploadFiles,
         itemIds,
-        (itemFile: ItemFile, id: number) => {
-          return id === itemFile.id;
-        },
+        (itemFile: ItemFile, id: number) => id === itemFile.id,
       );
       if (needCheckItemFiles.length > 0) {
         const itemData: PostItemData = { version_map: {} };
-        const promises = needCheckItemFiles.map(itemFile =>
-          itemService.getItemVersion(itemFile),
-        );
+        const promises = needCheckItemFiles.map(itemFile => itemService.getItemVersion(itemFile));
         const versions = await Promise.all(promises);
         for (let i = 0; i < needCheckItemFiles.length; i++) {
           if (versions[i]) {
@@ -240,9 +235,7 @@ class PostItemController implements IPostItemController {
     const { status, preInsertId, updatedId } = params;
     mainLogger.tags(LOG_TAG).log('updatePreInsertItemVersion', params);
     if (status === PROGRESS_STATUS.CANCELED) {
-      _.remove(post.item_ids, (id: number) => {
-        return id === preInsertId;
-      });
+      _.remove(post.item_ids, (id: number) => id === preInsertId);
     } else if (status === PROGRESS_STATUS.SUCCESS) {
       if (updatedId !== preInsertId) {
         const hasPreInsert = post.item_ids.includes(preInsertId);

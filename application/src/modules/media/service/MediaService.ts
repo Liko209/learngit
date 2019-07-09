@@ -74,8 +74,7 @@ class MediaService implements IMediaService {
     if (Array.isArray(devices) && devices.length !== 0) {
       deviceIds = devices
         .filter(
-          device =>
-            !this._isDefaultDevice(device) && !this._isVirtualDevice(device),
+          device => !this._isDefaultDevice(device) && !this._isVirtualDevice(device),
         )
         .map(device => device.deviceId);
     }
