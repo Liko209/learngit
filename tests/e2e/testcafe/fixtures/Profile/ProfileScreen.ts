@@ -9,7 +9,7 @@ import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { ITestMeta } from '../../v2/models';
+import { ITestMeta, IGroup } from '../../v2/models';
 import { v4 as uuid } from 'uuid';
 import { SITE_URL, BrandTire } from '../../config';
 
@@ -33,22 +33,22 @@ test.meta(<ITestMeta>{
   const otherUsers = rest.map(({ rcId: id }) => ({ id }));
   const app = new AppRoot(t);
 
-  let teamT1Id;
-  let title;
   let listClientHeight;
   let listScrollHeight;
 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  title = 'Given team T1 initial member only login user.';
-  await h(t).withLog(title, async () => {
-    teamT1Id = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+  };
+
+  await h(t).withLog('Given team named: "name" initial member only login user.', async (step) => {
+    step.setMetadata('name', team.name);
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   const messageTab = app.homePage.messageTab;
@@ -56,38 +56,36 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
 
   const openTeamT1Profile = async () => {
-    await messageTab.teamsSection.conversationEntryById(teamT1Id).enter();
+    await messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
     await conversationPage.headerMoreMenu.openProfile();
     await profileDialog.ensureLoaded();
   }
 
-  title = `Given I login with ${loginUser.company.number}#${loginUser.extension}`;
-  await h(t).withLog(title, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  title = 'When I open team T1 profile.';
-  await h(t).withLog(title, openTeamT1Profile);
+  await h(t).withLog('When I open this team profile.', openTeamT1Profile);
 
-  title = 'Then should no scroll bar in the member list.';
-  await h(t).withLog(title, async () => {
-    listClientHeight = await profileDialog.visualList.clientHeight;
-    listScrollHeight = await profileDialog.visualList.scrollHeight;
-
-    const hasNoScrollBar = listScrollHeight - listClientHeight === 0;
-
-    await t.expect(hasNoScrollBar).ok();
+  await h(t).withLog('Then should no scroll bar in the member list.', async () => {
+    await H.retryUntilPass(async () => {
+      listClientHeight = await profileDialog.visualList.clientHeight;
+      listScrollHeight = await profileDialog.visualList.scrollHeight;
+      assert.ok(listScrollHeight - listClientHeight === 0, "error: have scroll");
+    });
   });
 
-  title = 'When I add one member.';
-  await h(t).withLog(title, async () => {
-    await h(t).platform(loginUser).addTeamMember(otherUsers.slice(0, 1), teamT1Id);
+  await h(t).withLog('When I add one member.', async () => {
+    await h(t).platform(loginUser).addTeamMember(otherUsers.slice(0, 1), team.glipId);
   });
 
-  title = 'Then dialog height increase';
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('Then dialog height increase', async () => {
     const lastListClientHeight = listClientHeight;
 
     await H.retryUntilPass(async () => {
@@ -99,23 +97,19 @@ test.meta(<ITestMeta>{
     });
   });
 
-  title = 'And no dialog scroll bar';
-  await h(t).withLog(title, async () => {
-    listScrollHeight = await profileDialog.visualList.scrollHeight;
-
-    const hasNoScrollBar = listScrollHeight - listClientHeight === 0;
-
-    await t.expect(hasNoScrollBar).ok();
+  await h(t).withLog('And no dialog scroll bar', async () => {
+    await H.retryUntilPass(async () => {
+      listScrollHeight = await profileDialog.visualList.scrollHeight;
+      assert.ok(listScrollHeight - listClientHeight === 0, "error: have scroll");
+    });
   });
 
-  title = 'When I add members until members count equal six.';
-  await h(t).withLog(title, async () => {
-    await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(1, 5), teamT1Id);
+  await h(t).withLog('When I add members until members count equal six.', async () => {
+    await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(1, 5), team.glipId);
   });
 
-  title = 'Then the member list just display 5.5 members and has scroll bar';
   let itemHeight = await profileDialog.visualList.find('[data-id]').nth(0).clientHeight;
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('Then the member list just display 5.5 members and has scroll bar', async () => {
     await H.retryUntilPass(async () => {
       listClientHeight = await profileDialog.visualList.clientHeight;
       listScrollHeight = await profileDialog.visualList.scrollHeight;
@@ -129,68 +123,57 @@ test.meta(<ITestMeta>{
     });
   });
 
-  title = 'When I zoom out web page width less 640px';
-  await h(t).withLog(title, async () => {
-    const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
 
+  await h(t).withLog('When I zoom out web page width less 640px', async () => {
+    const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
     await t.resizeWindow(639, windowHeight - 1);
   });
 
-  title = 'Then the team profile will in full page and display more member list';
-  await h(t).withLog(title, async () => {
-    const lastListClientHeight = listClientHeight;
-    const profileClientHeight = await profileDialog.self.clientHeight;
-    const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
+  await h(t).withLog('Then the team profile will in full page and display more member list', async () => {
+    await H.retryUntilPass(async () => {
+      const lastListClientHeight = listClientHeight;
+      const profileClientHeight = await profileDialog.self.clientHeight;
+      const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
+      listClientHeight = await profileDialog.visualList.clientHeight;
+      const isProfileFullPage = profileClientHeight - windowHeight === 0;
+      const isDisplayMoreMembers = listClientHeight - lastListClientHeight > 0;
 
-    listClientHeight = await profileDialog.visualList.clientHeight;
-
-    const isProfileFullPage = profileClientHeight - windowHeight === 0;
-    const isDisplayMoreMembers = listClientHeight - lastListClientHeight > 0;
-
-    await t.expect(isProfileFullPage).ok();
-    await t.expect(isDisplayMoreMembers).ok();
+      assert.ok(isProfileFullPage, "Error: it is not full page");
+      assert.ok(isDisplayMoreMembers, "Error: it is not display more members");
+    });
   });
 
-  title = 'When I add member until members count equal 11';
-  await h(t).withLog(title, async () => {
-    await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(5, 10), teamT1Id);
+  await h(t).withLog('When I add member until members count equal 11', async () => {
+    await await h(t).platform(loginUser).addTeamMember(otherUsers.slice(5, 10), team.glipId);
   });
 
-  title = 'Then member search box should be displayed';
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('Then member search box should be displayed', async () => {
     await H.retryUntilPass(async () => {
       assert.ok(profileDialog.memberSearch, "Member search box haven't been displayed");
     });
   });
 
-  title = 'When I close T1 team profile and restore full screen';
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('When I close T1 team profile and restore full screen', async () => {
     await profileDialog.clickCloseButton();
     const windowHeight = await ClientFunction(() => window.innerHeight || document.body.clientHeight)();
     const screenWidth = await ClientFunction(() => window.screen.availWidth)();
-
     await t.resizeWindow(screenWidth, windowHeight);
   });
 
-  title = 'And I reopen team T1 profile';
-  await h(t).withLog(title, openTeamT1Profile);
+  await h(t).withLog('And I reopen team T1 profile', openTeamT1Profile);
 
-  title = 'And I search one member';
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('And I search one member', async () => {
     const vInput = profileDialog.memberSearch.find('input');
     const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUsers[0].id);
 
-    await t.typeText(vInput, userName, { replace: true, paste:true });
+    await t.typeText(vInput, userName, { replace: true, paste: true });
   });
 
-  title = 'Then the profile height is adaptive and display one members';
-  await h(t).withLog(title, async () => {
+  await h(t).withLog('Then the profile height is adaptive and display one members', async () => {
     await H.retryUntilPass(async () => {
       listClientHeight = await profileDialog.visualList.clientHeight;
       listScrollHeight = await profileDialog.visualList.scrollHeight;
-
       const hasNoScrollBar = listScrollHeight - listClientHeight === 0;
-
       assert.ok(hasNoScrollBar, "The profile height isn't adaptive.");
     });
 

@@ -145,7 +145,7 @@ test.meta(<ITestMeta>{
 });
 
 // bug id https://jira.ringcentral.com/browse/FIJI-7075
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-420'],
   keywords: ['Send Messages'],
