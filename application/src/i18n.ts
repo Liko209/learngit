@@ -15,8 +15,8 @@ import enLngJson from '../public/locales/en/translations.json';
 const i18nWhitelist = ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'];
 const momentWhitelist = ['en-us', 'de', 'en-au', 'en-gb', 'es-do', 'es', 'fr-ca', 'fr', 'it-ch', 'ja', 'pt-br', 'zh-cn', 'zh-hk', 'zh-tw'];
 
-momentWhitelist.map(name => {
-  import(`moment/locale/${name}.js`);
+momentWhitelist.map(async name => {
+  await import(`moment/locale/${name}.js`);
 });
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
