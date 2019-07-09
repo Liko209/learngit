@@ -22,7 +22,8 @@ export default class MultiEntityMapStore<
   IdType extends ModelIdType = number
 > extends BaseStore {
   @observable.shallow
-  private _data: Map<IdType, K> = new Map();
+  private _data: { [id: string]: K } = {};
+  private _dataIds: Set<IdType> = new Set(); // for faster query
   private _usedIds: Set<IdType> = new Set();
 
   private _getService: Function | [Function, string];
@@ -53,7 +54,9 @@ export default class MultiEntityMapStore<
   }
 
   private _getDataKeys(): IdType[] {
-    return Array.from(this._data.keys());
+    return Object.values(this._data).map((value: K) => {
+      return value.id;
+    });
   }
 
   handleIncomingData(payload: NotificationEntityPayload<T, IdType>) {
@@ -116,7 +119,7 @@ export default class MultiEntityMapStore<
   }
 
   private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: IdType) {
-    const model = this._data.get(id);
+    const model = this._getById(id);
     if (model) {
       Object.keys(partialEntity).forEach((key: string) => {
         const camelCaseKey = _.camelCase(key);
@@ -152,8 +155,7 @@ export default class MultiEntityMapStore<
     }
 
     const { id } = model;
-
-    this._data.set(id, model);
+    this._addData(model);
     this._registerHook(id);
 
     if (refreshCache) {
@@ -169,23 +171,24 @@ export default class MultiEntityMapStore<
   }
 
   private _replace(oldId: IdType, entity: T) {
-    if (entity && this._data.has(oldId)) {
+    if (entity && this.has(oldId)) {
       this._setOrUpdate(entity);
     }
   }
 
   private _setOrUpdate(entity: T) {
-    if (this.has(entity.id)) {
-      this._partialUpdate(entity, entity.id);
-    } else {
+    const model = this._getById(entity.id);
+    if (!model) {
       this._set(entity);
+    } else {
+      this._partialUpdate(entity, entity.id);
     }
   }
 
   @action
   remove(id: IdType) {
     setTimeout(() => {
-      this._data.delete(id);
+      this._deleteData(id);
     }, 0);
   }
 
@@ -193,25 +196,25 @@ export default class MultiEntityMapStore<
   batchRemove(ids: IdType[]) {
     setTimeout(() => {
       ids.forEach((id: IdType) => {
-        this._data.delete(id);
+        this._deleteData(id);
       });
     }, 0);
   }
 
   @action
   clearAll() {
-    this._data.clear();
+    this._clearAllData();
   }
 
   get(id: IdType) {
-    let model = this._data.get(id);
+    let model = this._getById(id);
     if (!model) {
       this.set({ id, isMocked: true } as T);
-      model = this._data.get(id) as K;
+      model = this._data[id] as K;
       const found = this.getByServiceSynchronously(id);
       if (found) {
         this.partialUpdate(found, id);
-        model = this._data.get(id) as K;
+        model = this._data[id] as K;
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
@@ -227,7 +230,7 @@ export default class MultiEntityMapStore<
         } else {
           if (res) {
             this.partialUpdate(res as T, id);
-            model = this._data.get(id) as K;
+            model = this._data[id] as K;
           }
         }
       }
@@ -237,11 +240,11 @@ export default class MultiEntityMapStore<
   }
 
   has(id: IdType): boolean {
-    return this._data.has(id);
+    return this._dataIds.has(id);
   }
 
   hasValid(id: IdType): boolean {
-    const model = this._data.get(id);
+    const model = this._getById(id);
     return !!(model && !model.isMocked);
   }
 
@@ -293,7 +296,7 @@ export default class MultiEntityMapStore<
   @action
   reset() {
     this._usedIds.forEach((id: IdType) => {
-      const singleData = this._data.get(id);
+      const singleData = this._getById(id);
       if (singleData && singleData.reset) {
         singleData.reset();
       }
@@ -334,8 +337,8 @@ export default class MultiEntityMapStore<
   }
 
   private _registerHook(id: IdType) {
-    onBecomeObserved(this._data, id, this._addUsedIds(id));
-    onBecomeUnobserved(this._data, id, this._delUsedIds(id));
+    onBecomeObserved(this._data, `${id}`, this._addUsedIds(id));
+    onBecomeUnobserved(this._data, `${id}`, this._delUsedIds(id));
   }
 
   private _addUsedIds(id: IdType) {
@@ -363,7 +366,7 @@ export default class MultiEntityMapStore<
       });
       const diffKeys = _.difference(existKeys, allUsedIds);
       diffKeys.forEach((id: IdType) => {
-        this._data.delete(id);
+        this._deleteData(id);
       });
     }, 100);
   }
@@ -373,4 +376,25 @@ export default class MultiEntityMapStore<
       document['hidden'] || document['msHidden'] || document['webkitHidden']
     );
   }
+
+  private _addData(data: K){
+    const { id } = data;
+    this._data[id] = data;
+    this._dataIds.add(id);
+  }
+
+  private _deleteData(id: IdType){
+    delete this._data[id];
+    this._dataIds.add(id);
+  }
+
+  private _clearAllData(){
+    this._data = {};
+    this._dataIds.clear();
+  }
+
+  private _getById(id: IdType){
+    return this.has(id) ? this._data[id] : undefined;
+  }
+
 }
