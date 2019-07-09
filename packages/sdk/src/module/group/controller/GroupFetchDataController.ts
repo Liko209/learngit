@@ -144,6 +144,11 @@ export class GroupFetchDataController {
   async getPersonIdsBySelectedItem(
     ids: (number | string)[],
   ): Promise<(number | string)[]> {
+    const permissionService = ServiceLoader.getInstance<PermissionService>(ServiceConfig.PERMISSION_SERVICE);
+    const canMentionTeam = permissionService.hasPermission(UserPermissionType.CAN_MENTION_TEAM);
+    if (!canMentionTeam) {
+      return ids;
+    }
     if (ids.length) {
       const personIds = new Set<number | string>();
       const groupIds: number[] = [];

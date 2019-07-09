@@ -244,6 +244,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
           />
 
           {
+            // temporary: ContactAndGroupSearch contain group and person
             canMentionTeam ? <ContactAndGroupSearch
               onSelectChange={handleSearchContactChange}
               label={t('people.team.Members')}

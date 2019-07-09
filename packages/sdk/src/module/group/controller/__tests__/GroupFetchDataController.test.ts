@@ -1326,6 +1326,13 @@ describe('GroupFetchDataController', () => {
       expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
       expect(result).toEqual(personIds);
     });
+    it('should return empty array when has permission', async () => {
+      permissionService.hasPermission = jest.fn().mockReturnValue(false)
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        [1, 2],
+      );
+      expect(result).toEqual([1, 2]);
+    });
     it('should return empty array when ids.length is 0', async () => {
       const result = await groupFetchDataController.getPersonIdsBySelectedItem(
         [],

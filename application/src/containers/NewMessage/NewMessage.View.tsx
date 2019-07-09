@@ -133,6 +133,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         cancelText={t('common.dialog.cancel')}
       >
         {
+          // temporary: ContactAndGroupSearch contain group and person
           canMentionTeam ? <ContactAndGroupSearch
             onSelectChange={handleSearchContactChange}
             label={t('people.team.Members')}
