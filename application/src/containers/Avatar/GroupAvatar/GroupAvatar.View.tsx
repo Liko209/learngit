@@ -13,7 +13,9 @@ import { accelerateURL } from '@/common/accelerateURL';
 @observer
 class GroupAvatarView extends Component<GroupAvatarViewProps> {
   render() {
-    const { src, size, onClick, ...rest } = this.props;
+    const {
+      src, size, onClick, ...rest
+    } = this.props;
     return (
       <JuiAvatar
         onClick={onClick}

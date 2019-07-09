@@ -18,13 +18,13 @@ import { JuiText } from 'jui/components/Text';
 
 type SourceItemType =
   | {
-      id: number | string;
-    }
+    id: number | string;
+  }
   | string
   | number;
 type Props<T> = SelectSettingItemViewProps<T> &
-  SelectSettingItemProps &
-  WithTranslation;
+SelectSettingItemProps &
+WithTranslation;
 
 @observer
 class SelectSettingItemViewComponent<
@@ -72,7 +72,7 @@ class SelectSettingItemViewComponent<
         automationId={`settingItemSelectBox-${settingItem.automationId}`}
         data-test-automation-value={value}
         isFullWidth
-        name='settings'
+        name="settings"
         renderValue={this._renderValue}
       >
         {this._renderSource()}
@@ -111,7 +111,9 @@ class SelectSettingItemViewComponent<
     );
   }
   render() {
-    const { t, id, disabled, settingItem } = this.props;
+    const {
+      t, id, disabled, settingItem,
+    } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}

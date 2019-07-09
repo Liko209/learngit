@@ -57,4 +57,6 @@ interface IEntityCacheSearchController<
   isInitialized(): boolean;
 }
 
-export { IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms };
+export {
+  IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms,
+};

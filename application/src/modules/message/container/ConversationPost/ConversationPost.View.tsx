@@ -51,7 +51,9 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   render() {
-    const { type, id, cardRef, mode } = this.props;
+    const {
+      type, id, cardRef, mode,
+    } = this.props;
     const Component = PostTypeMappingComponent[type];
     return (
       <Component

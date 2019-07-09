@@ -28,4 +28,6 @@ enum MEETING_TITLE {
   START_VIDEO_CALL = 'item.meeting.startVideoCall',
   VIDEO_CALL_CANCELLED = 'item.meeting.videoCallCancelled',
 }
-export { Props, ViewProps, MEETING_STATUS, MEETING_TITLE };
+export {
+  Props, ViewProps, MEETING_STATUS, MEETING_TITLE,
+};

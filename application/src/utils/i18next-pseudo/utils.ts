@@ -56,5 +56,5 @@ export const uglifiedAlphabet = {
 export const increasePercent = 0.3;
 
 export const extraPseudoWords =
-  // tslint:disable-next-line:max-line-length
+  /* eslint-disable max-len */
   'ḽṓṛḛṃ ḭṗṡṵṃ ḍṓḽṓṛ ṡḭţ αṃḛţ, ͼṓṇṡḛͼţḛţṵṛ αḍḭṗḭṡͼḭṇḡ ḛḽḭţ. Ṅṵṇͼ ḛḡḛţ ṵṛṇα ḽαṓṛḛḛţ, αͼͼṵṃṡαṇ ϝḛḽḭṡ αţ, ḍαṗḭḅṵṡ ḛḽḭţ. Ḭṇ ṵţ ţḛṃṗṵṡ ṃαṵṛḭṡ. Ṣḛḍ ḛḡḛţ ṡαḡḭţţḭṡ αṛͼṵ, ḭṇ ͼṓṇḍḭṃḛṇţṵṃ ṗṵṛṵṡ. Ḉṵṛαḅḭţṵṛ ṽḭţαḛ ͼṓṇḡṵḛ ḛḽḭţ.';

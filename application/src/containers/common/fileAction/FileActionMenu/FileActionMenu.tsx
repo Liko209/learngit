@@ -24,8 +24,8 @@ type FileActionMenuProps = {
   groupId?: number;
   asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
-  FileNameEditActionProps &
-  WithTranslation;
+FileNameEditActionProps &
+WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
 class InnerComponent extends Component<FileActionMenuProps, State> {
@@ -43,10 +43,10 @@ class InnerComponent extends Component<FileActionMenuProps, State> {
     const { t, variant } = this.props;
     return (
       <JuiIconButton
-        size='medium'
+        size="medium"
         ariaLabel={t('common.more')}
         variant={variant}
-        data-test-automation-id='fileActionMore'
+        data-test-automation-id="fileActionMore"
         tooltipTitle={t('common.more')}
         onClick={this.openPopper}
         tooltipForceHide={tooltipForceHide}

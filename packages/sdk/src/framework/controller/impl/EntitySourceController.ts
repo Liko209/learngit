@@ -103,9 +103,7 @@ class EntitySourceController<
   }
 
   private _getIds(entities: T[]): IdType[] {
-    return entities.map((entity: T) => {
-      return entity.id;
-    });
+    return entities.map((entity: T) => entity.id);
   }
 
   private _orderAsIds(ids: IdType[], entities: T[]) {

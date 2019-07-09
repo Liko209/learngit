@@ -46,15 +46,17 @@ const JuiFlexWrapper = styled.div`
 `;
 
 const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
-  const { image, text, content, actions } = props;
+  const {
+    image, text, content, actions,
+  } = props;
   /* eslint-disable react/no-array-index-key */
   return (
     <Wrapper>
       <Pic src={image} />
-      <Text data-test-automation-id='right-shelf-empty-screen-text'>
+      <Text data-test-automation-id="right-shelf-empty-screen-text">
         {text}
       </Text>
-      <Content data-test-automation-id='right-shelf-empty-screen-content'>
+      <Content data-test-automation-id="right-shelf-empty-screen-content">
         {content}
       </Content>
       <EmptyScreen.Actions>
@@ -63,7 +65,7 @@ const JuiRightShelfEmptyScreen = React.memo((props: JuiEmptyScreenProps) => {
               <EmptyScreen.ActionWrapper key={inx}>
                 {action}
               </EmptyScreen.ActionWrapper>
-            ))
+          ))
           : actions}
       </EmptyScreen.Actions>
     </Wrapper>

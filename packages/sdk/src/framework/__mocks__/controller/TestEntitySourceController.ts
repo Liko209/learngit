@@ -1,33 +1,23 @@
 import { Factory } from 'factory.ts';
-import _ from 'lodash';
-
 import { IEntitySourceController } from '../../controller/interface/IEntitySourceController';
 import { EntityCacheController } from '../../controller/impl/EntityCacheController';
 import { IdModel } from '../../model';
 
 export class TestEntitySourceController<T extends IdModel = IdModel>
-  implements IEntitySourceController<T> {
+implements IEntitySourceController<T> {
   entityCache: EntityCacheController<T>;
 
   constructor(public factory: Factory<T>) {
     this.entityCache = new EntityCacheController();
   }
 
-  get = jest.fn().mockImplementation(async (id: number) => {
-    return await this.entityCache.get(id);
-  });
+  get = jest.fn().mockImplementation(async (id: number) => await this.entityCache.get(id));
 
-  getEntityLocally = jest.fn().mockImplementation(async (id: number) => {
-    return await this.entityCache.get(id);
-  });
+  getEntityLocally = jest.fn().mockImplementation(async (id: number) => await this.entityCache.get(id));
 
   getEntitiesLocally = jest
     .fn()
-    .mockImplementation(async (ids: number[], includeDeactivated: boolean) => {
-      return await this.entityCache.getEntities((entity: T) =>
-        ids.includes(entity.id),
-      );
-    });
+    .mockImplementation(async (ids: number[]) => await this.entityCache.getEntities((entity: T) => ids.includes(entity.id)));
 
   getEntityNotificationKey = jest
     .fn()
@@ -36,9 +26,7 @@ export class TestEntitySourceController<T extends IdModel = IdModel>
   getEntities = jest
     .fn()
     .mockImplementation(
-      async (filterFunc?: ((entity: T) => boolean) | undefined) => {
-        return await this.entityCache.getEntities(filterFunc);
-      },
+      async (filterFunc?: ((entity: T) => boolean) | undefined) => await this.entityCache.getEntities(filterFunc),
     );
 
   getAll = jest
@@ -88,9 +76,7 @@ export class TestEntitySourceController<T extends IdModel = IdModel>
 
   batchGet = jest
     .fn()
-    .mockImplementation(async (ids: number[], order?: boolean) => {
-      return await this.entityCache.batchGet(ids, order);
-    });
+    .mockImplementation(async (ids: number[], order?: boolean) => await this.entityCache.batchGet(ids, order));
   // get = jest.fn().mockImplementation((id: number) => {
   //   return this.getEntityLocally(id);
   // });

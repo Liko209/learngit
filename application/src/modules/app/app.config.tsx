@@ -7,17 +7,18 @@ import { lazyComponent } from '@/modules/common/util/lazyComponent';
 
 const Home = lazyComponent({
   loader: () => import(/*
-    webpackChunkName: "c.home" */ './lazy/Home'),
+    webpackChunkName: "c.home" */ './lazy/Home'
+  ),
 });
 const UnifiedLogin = lazyComponent({
-  loader: () =>
-    import(/*
-    webpackChunkName: "c.unified-login" */ './lazy/UnifiedLogin'),
+  loader: () => import(/*
+    webpackChunkName: "c.unified-login" */ './lazy/UnifiedLogin'
+  ),
 });
 const VersionInfo = lazyComponent({
-  loader: () =>
-    import(/*
-    webpackChunkName: "c.version-info" */ './lazy/VersionInfo'),
+  loader: () => import(/*
+    webpackChunkName: "c.version-info" */ './lazy/VersionInfo'
+  ),
 });
 
 const config = {

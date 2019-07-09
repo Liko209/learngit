@@ -9,12 +9,12 @@ import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 export default function ({ ids }: { ids: number[] }) {
   return ids.length === 1
     ? buildVerbArticleNounText({
-        verb: 'shared',
-        noun: 'link',
-      })
+      verb: 'shared',
+      noun: 'link',
+    })
     : buildVerbNumeralsNounText({
-        verb: 'shared',
-        numerals: ids.length,
-        noun: 'link',
-      });
+      verb: 'shared',
+      numerals: ids.length,
+      noun: 'link',
+    });
 }

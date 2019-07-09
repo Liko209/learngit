@@ -42,12 +42,10 @@ class StateService extends EntityBaseService<GroupState>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return (
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
+    this.setCheckTypeFunc((id: number) => (
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
-      );
-    });
+    ));
   }
 
   onGlipLogin(success: boolean) {

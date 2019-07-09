@@ -7,8 +7,8 @@ import { ChangeEvent, ReactElement } from 'react';
 import { JuiOutlineTextFieldProps } from '../../../components/Forms/OutlineTextField';
 
 type FilterIconState = Pick<
-  JuiOutlineTextFieldProps,
-  'iconName' | 'iconPosition'
+JuiOutlineTextFieldProps,
+'iconName' | 'iconPosition'
 >;
 
 interface IUseInput {

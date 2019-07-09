@@ -43,15 +43,13 @@ type Props = {
   text: string;
 };
 
-const JuiTimeNodeDivider = memo(({ text }: Props) => {
-  return (
+const JuiTimeNodeDivider = memo(({ text }: Props) => (
     <StyledBox>
       <StyledDivider />
       <StyledText>
         <span>{text}</span>
       </StyledText>
     </StyledBox>
-  );
-});
+));
 
 export { JuiTimeNodeDivider };

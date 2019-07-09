@@ -25,9 +25,7 @@ class StateFetchDataController {
     ids: number[],
   ): Promise<GroupState[]> {
     const groupStates = await this.getAllGroupStatesFromLocal(ids);
-    return groupStates.filter((groupState: GroupState) => {
-      return groupState.unread_count || groupState.unread_mentions_count;
-    });
+    return groupStates.filter((groupState: GroupState) => groupState.unread_count || groupState.unread_mentions_count);
   }
 
   async getMyState(): Promise<MyState | null> {

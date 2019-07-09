@@ -21,7 +21,7 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler<
-  MediaDeviceInfo
+MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_MicrophoneSource;
 
@@ -80,7 +80,7 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
     }
   };
 
-  private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
+  private _onDevicesChange = async () => {
     await this.getUserSettingEntity();
   };
 
@@ -105,8 +105,7 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       id: SettingEntityIds.Phone_MicrophoneSource,
       source: devices,
       value: devices.find(
-        device =>
-          device.deviceId === TelephonyGlobalConfig.getCurrentMicrophone(),
+        device => device.deviceId === TelephonyGlobalConfig.getCurrentMicrophone(),
       ),
       state: await this._getEntityState(devices),
       valueSetter: value => this.updateValue(value),

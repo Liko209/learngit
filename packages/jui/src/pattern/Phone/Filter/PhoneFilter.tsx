@@ -9,7 +9,9 @@ import {
   StyledIconRight,
   JuiOutlineTextField,
 } from '../../../components/Forms/OutlineTextField';
-import { spacing, grey, typography, width } from '../../../foundation/utils';
+import {
+  spacing, grey, typography, width,
+} from '../../../foundation/utils';
 import {
   IUseInput,
   IJuiPhoneFilter,
@@ -70,13 +72,13 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   const iconState: FilterIconState = value
     ? {
-        iconName: ['filter', 'close'],
-        iconPosition: 'both',
-      }
+      iconName: ['filter', 'close'],
+      iconPosition: 'both',
+    }
     : {
-        iconName: 'filter',
-        iconPosition: 'left',
-      };
+      iconName: 'filter',
+      iconPosition: 'left',
+    };
 
   const iconRightProps = {
     tabIndex: 0,
@@ -93,15 +95,15 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   return (
     <StyledPhoneFilter
-      size='small'
-      radiusType='rounded'
+      size="small"
+      radiusType="rounded"
       ref={ref}
       value={value}
       InputProps={inputProps}
       IconRightProps={iconRightProps}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
-      data-test-automation-id='phoneFilter'
+      data-test-automation-id="phoneFilter"
       {...iconState}
     />
   );

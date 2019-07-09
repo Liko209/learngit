@@ -80,9 +80,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       : this.existMembers;
 
     const filterMembers = result.sortableModels.filter(
-      (member: SortableModel<Person>) => {
-        return !existMembers.find(existMember => existMember === member.id);
-      },
+      (member: SortableModel<Person>) => !existMembers.find(existMember => existMember === member.id),
     );
     return filterMembers;
   };

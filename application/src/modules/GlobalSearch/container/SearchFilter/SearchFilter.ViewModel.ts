@@ -79,14 +79,12 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @computed
   get typeFilter() {
     const contentTypeItems: SearchContentTypeItem[] = TYPE_MAP.map(
-      ({ id, value, name }) => {
-        return {
-          id,
-          value,
-          name,
-          count: this.getContentsCount(id),
-        };
-      },
+      ({ id, value, name }) => ({
+        id,
+        value,
+        name,
+        count: this.getContentsCount(id),
+      }),
     );
 
     return contentTypeItems;

@@ -14,9 +14,7 @@ import {
 import { ENTITY_NAME } from '@/store/constants';
 import { FetchVoicemailData, VoicemailFilterFunc } from './types';
 
-const defaultMatchFunc = (model: Voicemail) => {
-  return !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
-};
+const defaultMatchFunc = (model: Voicemail) => !!(model && model.availability === MESSAGE_AVAILABILITY.ALIVE);
 
 class VoicemailListHandler {
   fetchSortableDataListHandler: FetchSortableDataListHandler<Voicemail>;
@@ -26,20 +24,16 @@ class VoicemailListHandler {
 
     const transformFunc = (
       model: Voicemail,
-    ): ISortableModelWithData<string> => {
-      return {
-        id: model.id,
-        sortValue: model.id,
-        data: model.creationTime,
-      };
-    };
+    ): ISortableModelWithData<string> => ({
+      id: model.id,
+      sortValue: model.id,
+      data: model.creationTime,
+    });
 
     const sortFunc = (
       lhs: ISortableModelWithData<string>,
       rhs: ISortableModelWithData<string>,
-    ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, ['data'], true);
-    };
+    ): number => SortUtils.sortModelByKey(lhs, rhs, ['data'], true);
 
     this.fetchSortableDataListHandler = new FetchSortableDataListHandler(
       { fetchData },

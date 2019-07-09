@@ -10,7 +10,7 @@ import { ProfileMiniCardGroupFooterViewModel } from './Footer.ViewModel';
 import { ProfileMiniCardGroupFooterProps } from './types';
 
 const ProfileMiniCardGroupFooter = buildContainer<
-  ProfileMiniCardGroupFooterProps
+ProfileMiniCardGroupFooterProps
 >({
   View: ProfileMiniCardGroupFooterView,
   ViewModel: ProfileMiniCardGroupFooterViewModel,

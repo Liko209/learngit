@@ -11,8 +11,7 @@ const items = [
   { title: 'back and forwards', pathname: '' },
   { title: '12345', pathname: '' },
 ];
-storiesOf('Pattern', module).add('BackNForward', () => {
-  return (
+storiesOf('Pattern', module).add('BackNForward', () => (
     <div style={{ display: 'flex' }}>
       <JuiHistoryOperation
         tooltipTitle="Back"
@@ -31,5 +30,4 @@ storiesOf('Pattern', module).add('BackNForward', () => {
         onClickMenu={() => {}}
       />
     </div>
-  );
-});
+));

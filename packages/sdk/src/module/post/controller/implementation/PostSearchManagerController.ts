@@ -25,9 +25,7 @@ class PostSearchManagerController {
     if (this._postSearchHandlers.size >= MAX_SEARCH_CACHE) {
       const caches = Array.from(this._postSearchHandlers.values());
       const orderedCache = caches.sort(
-        (a: PostSearchCache, b: PostSearchCache) => {
-          return a.creationTime - b.creationTime;
-        },
+        (a: PostSearchCache, b: PostSearchCache) => a.creationTime - b.creationTime,
       );
 
       const toDeleteKey = orderedCache[0].key;

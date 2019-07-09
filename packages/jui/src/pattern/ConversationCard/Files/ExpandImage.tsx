@@ -52,10 +52,10 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
         ImageActions,
         <JuiIconButton
           onClick={this.switchExpand}
-          variant='plain'
+          variant="plain"
           tooltipTitle={tooltip}
-          data-test-automation-id='collapse-button'
-          key='unfoldAction'
+          data-test-automation-id="collapse-button"
+          key="unfoldAction"
         >
           unfold_less
         </JuiIconButton>,
@@ -64,10 +64,10 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
     return [
       <JuiIconButton
         onClick={this.switchExpand}
-        variant='plain'
+        variant="plain"
         tooltipTitle={tooltip}
-        data-test-automation-id='collapse-button'
-        key='unfoldAction'
+        data-test-automation-id="collapse-button"
+        key="unfoldAction"
       >
         unfold_less
       </JuiIconButton>,
@@ -96,9 +96,9 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
             {Actions}
             <JuiIconButton
               onClick={this.switchExpand}
-              variant='plain'
+              variant="plain"
               tooltipTitle={i18UnfoldMore}
-              data-test-automation-id='expand-button'
+              data-test-automation-id="expand-button"
             >
               unfold_more
             </JuiIconButton>

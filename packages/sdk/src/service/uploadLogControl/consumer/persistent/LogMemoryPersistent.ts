@@ -77,14 +77,10 @@ export class LogMemoryPersistent implements ILogPersistent {
     _.forEach(items, (it: PersistentLogEntity) => this._logMap.set(it.id, it));
   };
 
-  get = async (key: number) => {
-    return this._logMap.get(key) || null;
-  };
+  get = async (key: number) => this._logMap.get(key) || null;
 
   getAll = async (limit?: number) => {
-    const result = Array.from(this._logMap.values()).sort((left, right) => {
-      return left.startTime - right.startTime;
-    });
+    const result = Array.from(this._logMap.values()).sort((left, right) => left.startTime - right.startTime);
     return limit === undefined ? result : result.slice(0, limit);
   };
 
@@ -98,7 +94,5 @@ export class LogMemoryPersistent implements ILogPersistent {
     _.forEach(items, (it: PersistentLogEntity) => this._logMap.delete(it.id));
   };
 
-  count = async () => {
-    return this._logMap.size;
-  };
+  count = async () => this._logMap.size;
 }

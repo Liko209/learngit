@@ -41,7 +41,7 @@ class RecentCallItemView extends React.Component<ViewProps> {
           />
         </StyledContactWrapper>
         <StyledCallLogStatusWrapper>
-          <JuiIconography iconSize='medium' iconColor={color}>
+          <JuiIconography iconSize="medium" iconColor={color}>
             {icon}
           </JuiIconography>
         </StyledCallLogStatusWrapper>

@@ -17,9 +17,7 @@ import { ContactAndGroupSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { FuzzySearchPersonOptions } from 'sdk/module/search/entity';
 
-class ContactAndGroupSearchViewModel extends StoreViewModel<
-  ContactAndGroupSearchProps
-> {
+class ContactAndGroupSearchViewModel extends StoreViewModel<ContactAndGroupSearchProps> {
   @observable existMembers: number[] = [];
   @observable suggestions: SelectedMember[] = [];
   @observable groupMembers: number[] = [];

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { useEffect, useRef, SFC, memo } from 'react';
+import React, {
+  useEffect, useRef, SFC, memo,
+} from 'react';
 import portalManager from '@/common/PortalManager';
 import { Profile, PROFILE_TYPE } from '../Profile';
 

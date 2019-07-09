@@ -18,19 +18,17 @@ import { GroupSearchItem } from '../GroupSearch/GroupSearchItem';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 @observer
-class ContactAndGroupSearchItem extends React.Component<
-  ContactAndGroupSearchItemViewProps
-> {
+class ContactAndGroupSearchItem extends React.Component<ContactAndGroupSearchItemViewProps> {
   render() {
     const { itemId } = this.props;
     return GlipTypeUtil.isExpectedType(
       itemId,
       TypeDictionary.TYPE_ID_PERSON,
     ) ? (
-      <ContactSearchItem uid={itemId} {...this.props} />
-    ) : (
-      <GroupSearchItem {...this.props} />
-    );
+        <ContactSearchItem uid={itemId} {...this.props} />
+      ) : (
+        <GroupSearchItem {...this.props} />
+      );
   }
 }
 
@@ -76,7 +74,7 @@ class ContactAndGroupSearchView extends React.Component<ViewProps> {
         nameError={error}
         emailError={errorEmail}
         helperText={helperText}
-        automationId='contactSearchSuggestionsList'
+        automationId={'contactSearchSuggestionsList'}
         messageRef={this.inputRef}
         minRowHeight={44}
         multiple={multiple}

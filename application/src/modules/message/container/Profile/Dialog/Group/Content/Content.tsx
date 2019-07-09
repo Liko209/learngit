@@ -10,7 +10,7 @@ import { ProfileDialogGroupContentViewModel } from './Content.ViewModel';
 import { ProfileDialogGroupContentProps } from './types';
 
 const ProfileDialogGroupContent = buildContainer<
-  ProfileDialogGroupContentProps
+ProfileDialogGroupContentProps
 >({
   View: ProfileDialogGroupContentView,
   ViewModel: ProfileDialogGroupContentViewModel,

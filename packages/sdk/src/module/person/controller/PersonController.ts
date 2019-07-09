@@ -19,7 +19,6 @@ import { AccountService } from 'sdk/module/account/service';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from 'sdk/framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
-import { ContactType } from '../types';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
 import { SYNC_SOURCE, ChangeModel } from 'sdk/module/sync/types';
@@ -269,14 +268,12 @@ class PersonController {
     );
   }
 
-  isCacheValid = (person: Person) => {
-    return (
-      !this._isUnregistered(person) &&
+  isCacheValid = (person: Person) => (
+    !this._isUnregistered(person) &&
       this._isServicePerson(person) &&
       !person.is_pseudo_user &&
       !this._hasBogusEmail(person)
-    );
-  };
+  );
 
   isVisible(person: Person): boolean {
     return (
@@ -319,7 +316,6 @@ class PersonController {
 
   async matchContactByPhoneNumber(
     phoneNumber: string,
-    contactType: ContactType,
   ): Promise<Person | null> {
     if (!phoneNumber) {
       return null;

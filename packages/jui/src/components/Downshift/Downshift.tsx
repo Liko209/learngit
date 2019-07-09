@@ -48,8 +48,8 @@ const StyledDownshiftMultipleWrapper = styled.div`
 `;
 
 class JuiDownshift extends React.PureComponent<
-  JuiDownshiftProps,
-  JuiDownshiftState
+JuiDownshiftProps,
+JuiDownshiftState
 > {
   state: JuiDownshiftState = {
     isComposition: false,
@@ -99,7 +99,7 @@ class JuiDownshift extends React.PureComponent<
         selectedItem={selectedItems}
         defaultHighlightedIndex={0}
         itemToString={this.handleItemToString}
-        id='downshift-multiple'
+        id="downshift-multiple"
       >
         {({
           isOpen,

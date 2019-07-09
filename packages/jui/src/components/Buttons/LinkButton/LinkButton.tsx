@@ -16,14 +16,12 @@ type JuiLinkButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const StyledLinkButton = styled.button`
   ${typography('button')};
-  color: ${({ color = 'primary' }) =>
-    palette(ColorMap[color][0], ColorMap[color][1])};
+  color: ${({ color = 'primary' }) => palette(ColorMap[color][0], ColorMap[color][1])};
   min-width: ${width(16)};
   border: none;
-  background-color: ${({ theme, color = 'primary' }) =>
-    theme.palette.getContrastText(
-      palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
-    )};
+  background-color: ${({ theme, color = 'primary' }) => theme.palette.getContrastText(
+    palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
+  )};
   outline: none;
 
   &:hover {
@@ -37,13 +35,11 @@ const StyledLinkButton = styled.button`
 
 const JuiLinkButtonComponent: React.StatelessComponent<JuiLinkButtonProps> = (
   props: JuiLinkButtonProps,
-) => {
-  return (
+) => (
     <StyledLinkButton className={props.disabled ? 'disabled' : ''} {...props}>
       <span>{props.children}</span>
     </StyledLinkButton>
-  );
-};
+);
 
 JuiLinkButtonComponent.defaultProps = {
   color: 'primary',

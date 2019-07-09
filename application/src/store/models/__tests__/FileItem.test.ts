@@ -252,9 +252,6 @@ describe('FileItemModel', () => {
       const result = await fileItemModel.getDirectRelatedPostInGroup(1);
       expect(result).toBe(123);
       expect(postService.getLatestPostIdByItem).toBeCalledTimes(1);
-      fileItemModel.modifiedAt = 2;
-      await fileItemModel.getDirectRelatedPostInGroup(1);
-      expect(postService.getLatestPostIdByItem).toBeCalledTimes(2);
       done();
     }
   }

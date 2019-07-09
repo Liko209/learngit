@@ -22,13 +22,11 @@ const TobBarSearch = styled(JuiOutlineTextField)`
   width: 100%;
   margin-right: ${spacing(3)};
   max-width: ${width(67)};
-  background-color: ${({ theme }: { theme: Theme }) =>
-    fade(palette('common', 'white')({ theme }), opacity('2')({ theme }))};
+  background-color: ${({ theme }: { theme: Theme }) => fade(palette('common', 'white')({ theme }), opacity('2')({ theme }))};
   border: 0;
   cursor: pointer;
   &:hover {
-    background-color: ${({ theme }: { theme: Theme }) =>
-      fade(palette('common', 'white')({ theme }), opacity('3')({ theme }))};
+    background-color: ${({ theme }: { theme: Theme }) => fade(palette('common', 'white')({ theme }), opacity('3')({ theme }))};
   }
   .topBar-input-root {
     pointer-events: none;
@@ -53,14 +51,16 @@ type StyledJuiSearchBarProps = {
 };
 
 const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
-  const { onClick, value, onClear, placeholder } = props;
+  const {
+    onClick, value, onClear, placeholder,
+  } = props;
   const position = value === '' ? 'left' : 'both';
   const iconName = value === '' ? 'search' : ['search', 'close'];
 
   return (
     <TobBarSearch
       iconName={iconName}
-      radiusType='circle'
+      radiusType="circle"
       iconPosition={position}
       disabled
       onClick={onClick}
@@ -76,8 +76,8 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
           'data-test-automation-id': 'topBar-search-input',
         },
       }}
-      data-test-automation-id='topBar-search-bar'
-      className='topBar-search-bar'
+      data-test-automation-id="topBar-search-bar"
+      className="topBar-search-bar"
     />
   );
 });

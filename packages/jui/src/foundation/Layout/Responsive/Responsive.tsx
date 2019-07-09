@@ -52,8 +52,7 @@ const StyledResizable = styled<ResizableProps & any>(Resizable)`
   bottom: 0;
   left: ${({ styled: { position } }) => (position === 'left' ? 0 : 'auto')};
   right: ${({ styled: { position } }) => (position === 'right' ? 0 : 'auto')};
-  z-index: ${({ styled: { absolute }, theme }) =>
-    absolute ? theme.zIndex.appBar + 1 : 'auto'};
+  z-index: ${({ styled: { absolute }, theme }) => (absolute ? theme.zIndex.appBar + 1 : 'auto')};
   display: ${({ styled: { show } }) => (show ? 'flex' : 'none')};
   flex: ${({ styled: { priority } }) => `0 ${priority} auto`};
 `;
@@ -208,7 +207,9 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
 
   renderMode = () => {
     const { isShow, width } = this.state;
-    const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
+    const {
+      enable = {}, minWidth, maxWidth, visual, priority,
+    } = this.props;
     return (
       <>
         {(this.isManualMode || !visual) && this.renderButton()}
@@ -268,22 +269,23 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
 const withResponsive = (
   WrappedComponent: ComponentType<any>,
   props: Partial<ResponsiveProps>,
-) =>
-  class ResponsiveHOC extends PureComponent<any> {
-    static tag = `responsive(${WrappedComponent.displayName ||
+) => class ResponsiveHOC extends PureComponent<any> {
+  static tag = `responsive(${WrappedComponent.displayName ||
       WrappedComponent.name ||
       props.tag})`;
-    render() {
-      return (
+  render() {
+    return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
           {(width: number, height: number) => (
             <WrappedComponent {...this.props} width={width} height={height} />
           )}
         </Responsive>
-      );
-    }
-  };
+    );
+  }
+};
 
 export default Responsive;
 
-export { withResponsive, VISUAL_MODE, ResponsiveProps, ResponsiveInfo };
+export {
+  withResponsive, VISUAL_MODE, ResponsiveProps, ResponsiveInfo,
+};

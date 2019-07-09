@@ -10,7 +10,6 @@ import { JError } from '../JError';
 import { IErrorParser } from '../IErrorParser';
 
 export class RuntimeErrorParser implements IErrorParser {
-
   getName() {
     return 'RuntimeErrorParser';
   }

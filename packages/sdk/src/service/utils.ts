@@ -9,16 +9,14 @@ import { mainLogger } from 'foundation';
 import { IdModel } from '../framework/model';
 import { shouldEmitNotification } from '../utils/notificationUtils';
 
-const isObject = (value: any) =>
-  Object.prototype.toString.call(value) === '[object Object]';
+const isObject = (value: any) => Object.prototype.toString.call(value) === '[object Object]';
 // const isArray = value => Object.prototype.toString.call(value) === '[object Array]';
 // const isBoolean = value => Object.prototype.toString.call(value) === '[object Boolean]';
 // const isNumber = value => Object.prototype.toString.call(value) === '[object Number]';
 // const isString = value => Object.prototype.toString.call(value) === '[object String]';
 // const isNull = value => Object.prototype.toString.call(value) === '[object Null]';
 // const isUndefined = value => Object.prototype.toString.call(value) === '[object Undefined]';
-const isFunction = (value: any) =>
-  Object.prototype.toString.call(value) === '[object Function]';
+const isFunction = (value: any) => Object.prototype.toString.call(value) === '[object Function]';
 // const isRegExp = value => Object.prototype.toString.call(value) === '[object RegExp]';
 const isIEOrEdge =
   typeof navigator !== 'undefined' &&
@@ -47,7 +45,9 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source, changeMap }: any,
+  {
+    data, dao, eventKey, noSavingToDB, source, changeMap,
+  }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **

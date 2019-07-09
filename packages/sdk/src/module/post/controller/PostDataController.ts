@@ -132,9 +132,7 @@ class PostDataController {
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig;
       const currentUserId = userConfig.getGlipUserId() as number;
-      const myPosts = posts.filter((post: Post, index: number) => {
-        return post.creator_id === currentUserId;
-      });
+      const myPosts = posts.filter((post: Post) => post.creator_id === currentUserId);
       groupPosts = this._getGroupedPosts(myPosts);
     }
     return groupPosts;
@@ -312,16 +310,15 @@ class PostDataController {
 
   protected async handleSexioModifiedPosts(posts: Post[]) {
     return posts.filter(
-      (post: Post) =>
-        post.created_at === post.modified_at ||
+      (post: Post) => post.created_at === post.modified_at ||
         this.entitySourceController.getEntityLocally(post.id),
     );
   }
 
   filterFunc = (data: Post[]): { eventKey: string; entities: Post[] }[] => {
     const postGroupMap: Map<
-      number,
-      { eventKey: string; entities: Post[] }
+    number,
+    { eventKey: string; entities: Post[] }
     > = new Map();
     data.forEach((post: Post) => {
       if (post) {
@@ -367,9 +364,7 @@ class PostDataController {
     return normalPosts;
   }
 
-  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
-    return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
-  };
+  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
 
   /**
    * 1, Check whether the group has discontinues post,

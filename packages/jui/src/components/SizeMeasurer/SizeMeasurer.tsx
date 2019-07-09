@@ -44,7 +44,7 @@ const JuiSizeMeasurer = ({ children }: JuiSizeMeasurerProps) => {
     return () => {
       observer.disconnect();
     };
-  },              []);
+  }, []);
 
   return children({ ref, width, height });
 };

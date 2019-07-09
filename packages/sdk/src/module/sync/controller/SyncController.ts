@@ -266,9 +266,7 @@ class SyncController {
       requestConfig?: object,
       headers?: object,
     ) => Promise<IndexDataModel>,
-  ) => async (params: object) => {
-    return await getDataFunction(params);
-  };
+  ) => async (params: object) => await getDataFunction(params);
 
   async fetchInitialData(currentTime: number) {
     return this._fetchData(initialData)({ _: currentTime });
@@ -339,9 +337,7 @@ class SyncController {
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
-      .then(() =>
-        this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
-      )
+      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap))
       .then(() => {
         mainLogger.debug(
           LOG_INDEX_DATA,

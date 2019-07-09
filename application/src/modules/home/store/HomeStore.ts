@@ -39,17 +39,13 @@ class HomeStore {
   @computed
   get defaultRouterPath() {
     let path = '';
-    this._defaultRouterPaths.some((value: string) => {
-      return this.subModuleConfigs.some((subModule: SubModuleConfig) => {
-        return !!(
-          subModule.route &&
+    this._defaultRouterPaths.some((value: string) => (this.subModuleConfigs.some((subModule: SubModuleConfig) => !!(
+      subModule.route &&
           subModule.route.path &&
           subModule.route.path === value
-        );
-      })
-        ? ((path = value), true)
-        : false;
-    });
+    ))
+      ? ((path = value), true)
+      : false));
 
     return path;
   }

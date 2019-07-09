@@ -25,4 +25,6 @@ type EnvConfig<T> = {
 
 type DirectoryConfig = { [key in Directories]: EnvConfig<ConfigMap[key]> };
 
-export { ConfigMap, Directories, EnvConfig, DirectoryConfig };
+export {
+  ConfigMap, Directories, EnvConfig, DirectoryConfig,
+};

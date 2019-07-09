@@ -6,7 +6,9 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiDivider } from '../../components/Divider';
-import { spacing, typography, grey, width } from '../../foundation/utils';
+import {
+  spacing, typography, grey, width,
+} from '../../foundation/utils';
 
 type JuiConversationInitialPostHeaderProps = {
   children?: JSX.Element | (JSX.Element | null)[];

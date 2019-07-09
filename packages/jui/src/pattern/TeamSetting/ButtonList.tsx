@@ -5,7 +5,9 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, typography, height, palette } from '../../foundation/utils';
+import {
+  spacing, typography, height, palette,
+} from '../../foundation/utils';
 import MuiList, { ListProps } from '@material-ui/core/List';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText, {
@@ -50,12 +52,12 @@ const JuiTeamSettingButtonListItemText = styled(
       ${typography('body1')};
       line-height: ${height(10)};
       color: ${({ color }) => {
-        if (!color) {
-          return '';
-        }
-        const [colorScope, colorName] = color.split('.');
-        return palette(colorScope as any, colorName);
-      }};
+    if (!color) {
+      return '';
+    }
+    const [colorScope, colorName] = color.split('.');
+    return palette(colorScope as any, colorName);
+  }};
     }
   }
 `;

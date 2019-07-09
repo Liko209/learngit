@@ -11,10 +11,10 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import { action } from 'mobx';
 
 class ViewInPostActionViewComponent extends Component<
-  ViewInPostActionViewProps
+ViewInPostActionViewProps
 > {
   _Icon = (
-    <JuiIconography iconColor={['grey', '500']} iconSize='small'>
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
       chat_bubble
     </JuiIconography>
   );

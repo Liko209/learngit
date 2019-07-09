@@ -88,9 +88,7 @@ class NewMessageViewModel extends StoreViewModel {
       const conversationIds = (await Promise.all(personPromises)) as number[];
       ids = [...conversationIds, ...groupIds];
 
-      const promise = ids.map((id: number) => {
-        return postService.sendPost({ groupId: id, text: message });
-      });
+      const promise = ids.map((id: number) => postService.sendPost({ groupId: id, text: message }));
       await Promise.all(promise);
       groupIds[0] && goToConversation({ conversationId: groupIds[0] });
     } else {

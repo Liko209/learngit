@@ -8,11 +8,9 @@ import { IndexRange } from '../types';
 /**
  * Check if range2 in range1
  */
-const isRangeIn = (range1: IndexRange, range2: IndexRange) => {
-  return (
-    range1.startIndex <= range2.startIndex &&
+const isRangeIn = (range1: IndexRange, range2: IndexRange) => (
+  range1.startIndex <= range2.startIndex &&
     range1.stopIndex >= range2.stopIndex
-  );
-};
+);
 
 export { isRangeIn };

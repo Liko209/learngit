@@ -10,8 +10,8 @@ import { debounceTrackData } from '../utils/dataTrackingForSetting';
 import { SliderSettingItemProps } from './types';
 
 class SliderSettingItemViewModel extends BaseSettingItemViewModel<
-  SliderSettingItemProps,
-  SliderSettingItem
+SliderSettingItemProps,
+SliderSettingItem
 > {
   @action
   saveSetting = async (newValue: number) => {

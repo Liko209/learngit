@@ -10,18 +10,16 @@ import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 import { EntityBaseService } from '../../../../../framework/service';
 
 class InteractiveMessageItemService extends EntityBaseService<
-  InteractiveMessageItem
+InteractiveMessageItem
 > {
   private _interactiveMessageItemController: InteractiveMessageItemController;
 
   constructor() {
     super({ isSupportedCache: false });
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(
-        id,
-        TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM,
-      );
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(
+      id,
+      TypeDictionary.TYPE_ID_INTERACTIVE_MESSAGE_ITEM,
+    ));
   }
 
   protected get integrationItemController() {

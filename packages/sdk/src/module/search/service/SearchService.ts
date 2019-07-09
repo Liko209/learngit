@@ -92,18 +92,18 @@ class SearchService extends AbstractService
   async doFuzzySearchPersons(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Person>[];
+    }> {
     return await this.searchPersonController.doFuzzySearchPersons(options);
   }
 
   async doFuzzySearchPersonsAndGroups(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<IdModel>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<IdModel>[];
+    }> {
     return await this.searchPersonController.doFuzzySearchPersonsAndGroups(
       options,
     );
@@ -112,9 +112,9 @@ class SearchService extends AbstractService
   async doFuzzySearchPhoneContacts(
     options: FuzzySearchPersonOptions,
   ): Promise<{
-    terms: string[];
-    phoneContacts: PhoneContactEntity[];
-  }> {
+      terms: string[];
+      phoneContacts: PhoneContactEntity[];
+    }> {
     return await this.searchPersonController.doFuzzySearchPhoneContacts(
       options,
     );

@@ -71,9 +71,7 @@ class PhoneNumberService extends EntityBaseService<PhoneNumber, string> {
 
   private _handlePersonPayload = (
     payload: NotificationEntityPayload<Person>,
-  ) => {
-    return this.getPhoneNumberController().handlePersonPayload(payload);
-  };
+  ) => this.getPhoneNumberController().handlePersonPayload(payload);
 }
 
 export { PhoneNumberService };

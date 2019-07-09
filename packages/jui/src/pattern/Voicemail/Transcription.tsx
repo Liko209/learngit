@@ -58,7 +58,7 @@ const JuiTranslationSummaryContent = styled.div`
 `;
 
 const JuiTranscriptionIcon = () => (
-  <JuiIconography iconColor={['grey', '500']} iconSize='medium'>
+  <JuiIconography iconColor={['grey', '500']} iconSize="medium">
     transcription
   </JuiIconography>
 );
@@ -81,18 +81,18 @@ const TranscriptionLoading = (props: ThemeProps) => {
       height={8 * height}
     >
       <rect
-        x='0'
+        x="0"
         y={width}
-        rx='2'
-        ry='2'
+        rx="2"
+        ry="2"
         width={`${44 * width}`}
         height={`${2 * height}`}
       />
       <rect
-        x='0'
+        x="0"
         y={`${5 * width}`}
-        rx='2'
-        ry='2'
+        rx="2"
+        ry="2"
         width={`${29 * width}`}
         height={`${2 * height}`}
       />
@@ -103,7 +103,7 @@ const TranscriptionLoading = (props: ThemeProps) => {
 const JuiTranscriptionLoading = withTheme(TranscriptionLoading);
 
 class JuiTranscriptionPreview extends PureComponent<
-  JuiTranscriptionPreviewProps
+JuiTranscriptionPreviewProps
 > {
   render() {
     const { showPreivew, transcription, isLoading } = this.props;
@@ -121,7 +121,7 @@ class JuiTranscriptionPreview extends PureComponent<
 }
 
 class JuiTranscriptionDetails extends PureComponent<
-  JuiTranscriptionDetailsProps
+JuiTranscriptionDetailsProps
 > {
   render() {
     const { transcription } = this.props;

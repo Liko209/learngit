@@ -11,7 +11,9 @@ type JuiSnackbarActionProps = MuiButtonBaseProps & {
 };
 
 const JuiSnackbarAction = styled(
-  memo(({ children, variant, icon, ...rest }: JuiSnackbarActionProps) => {
+  memo(({
+    children, variant, icon, ...rest
+  }: JuiSnackbarActionProps) => {
     if (variant === 'icon') {
       return (
         <StyledIconButton {...rest}>

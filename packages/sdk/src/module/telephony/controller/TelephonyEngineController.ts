@@ -25,7 +25,6 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { AccountService } from 'sdk/module/account';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call } from '../entity';
-import _ from 'lodash';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {

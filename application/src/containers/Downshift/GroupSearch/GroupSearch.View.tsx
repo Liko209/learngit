@@ -55,7 +55,7 @@ class GroupSearchView extends React.Component<ViewProps> {
         inputPlaceholder={placeholder}
         InputItem={Chip}
         MenuItem={GroupSearchItem}
-        automationId='GroupSearchGroupSuggestionsList'
+        automationId="GroupSearchGroupSuggestionsList"
         messageRef={this.inputRef}
         minRowHeight={40}
         multiple={multiple}

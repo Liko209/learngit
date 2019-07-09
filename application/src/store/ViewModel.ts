@@ -37,9 +37,9 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
     return this._props;
   }
 
-  private _getAttributes = (props?: Partial<P>) => props && this._BLACKLISTED_PROPS
-      ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
-      : props;
+  private _getAttributes = (props?: Partial<P>) => (props && this._BLACKLISTED_PROPS
+    ? _.omit<{}>(props, this._BLACKLISTED_PROPS)
+    : props);
 
   constructor(props?: P, BLACKLISTED_PROPS?: string[]) {
     super();
@@ -53,7 +53,7 @@ abstract class StoreViewModel<P = {}> extends BaseNotificationSubscribable
   @action
   getDerivedProps(props: Partial<P>) {
     const attributes = this._getAttributes(props) || [];
-    Object.keys(attributes).forEach((key) => {
+    Object.keys(attributes).forEach(key => {
       if (this._props[key] === undefined && props[key] !== undefined) {
         set(this._props, { [key]: props[key] });
       } else if (typeof props[key] !== 'object') {

@@ -42,9 +42,7 @@ class PostService extends EntityBaseService<Post> {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST));
   }
 
   protected canSaveRemoteEntity(): boolean {
@@ -107,7 +105,9 @@ class PostService extends EntityBaseService<Post> {
   }: IPostQuery): Promise<IPostResult> {
     return this.getPostController()
       .getPostFetchController()
-      .getPostsByGroupId({ groupId, postId, limit, direction });
+      .getPostsByGroupId({
+        groupId, postId, limit, direction,
+      });
   }
 
   async getPostsByIds(

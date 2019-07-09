@@ -88,11 +88,9 @@ class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
     return false;
   }
 
-  handlerFavorite = () => {
-    return ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    ).markGroupAsFavorite(this.conversationId, !this.isFavorite);
-  }
+  handlerFavorite = () => ServiceLoader.getInstance<ProfileService>(
+    ServiceConfig.PROFILE_SERVICE,
+  ).markGroupAsFavorite(this.conversationId, !this.isFavorite)
 }
 
 export { FavoriteViewModel };

@@ -51,21 +51,19 @@ class StreamViewComponent extends Component<Props> {
     { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
   private _jumpToPostRef: React.RefObject<
-    JuiConversationCard
+  JuiConversationCard
   > = React.createRef();
   private _contentStyleGen = _.memoize(
-    (height?: number) =>
-      ({
-        minHeight: height,
-        display: 'flex',
-        flexDirection: 'column',
-      } as React.CSSProperties),
+    (height?: number) => ({
+      minHeight: height,
+      display: 'flex',
+      flexDirection: 'column',
+    } as React.CSSProperties),
   );
   private _wrapperStyleGen = _.memoize(
-    (height?: number) =>
-      ({
-        height,
-      } as React.CSSProperties),
+    (height?: number) => ({
+      height,
+    } as React.CSSProperties),
   );
   private _hasMore = (direction: string) => {
     if (direction === 'up') {
@@ -98,12 +96,12 @@ class StreamViewComponent extends Component<Props> {
     );
   });
 
-  private _getErrorPage = moize(height => {
-    return <ErrorPage onReload={this.props.tryAgain} height={height} />;
-  });
+  private _getErrorPage = moize(height => <ErrorPage onReload={this.props.tryAgain} height={height} />);
 
   render() {
-    const { ids, isShow = true, shouldShowErrorPage, type } = this.props;
+    const {
+      ids, isShow = true, shouldShowErrorPage, type,
+    } = this.props;
     // if conversation post include video and play video
     // when switch tab in global search will cache tabs
     // so we need to unmount conversation post
@@ -133,7 +131,7 @@ class StreamViewComponent extends Component<Props> {
                 id={id}
                 key={id}
                 cardRef={this._jumpToPostRef}
-                mode='navigation'
+                mode="navigation"
               />
             ))}
           </JuiInfiniteList>

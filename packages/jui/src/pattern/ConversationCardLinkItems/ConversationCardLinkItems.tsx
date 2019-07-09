@@ -19,8 +19,7 @@ import defaultLinkImage from './link_img@2x.png';
 
 const LinkItemsWrapper = styled(JuiCard)`
   margin-top: ${spacing(3)};
-  background-color: ${({ theme }: { theme: Theme }) =>
-    theme.palette.common.white};
+  background-color: ${({ theme }: { theme: Theme }) => theme.palette.common.white};
   width: 100%;
   border-radius: ${({ theme }) => theme.shape.borderRadius}px;
   overflow: hidden;
@@ -89,8 +88,7 @@ const LinkSummary = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   margin-top: ${spacing(-1)};
-  max-height: ${({ theme }) =>
-    getMaxHeight(theme.typography.body1.lineHeight, 2)}; /* firefox */
+  max-height: ${({ theme }) => getMaxHeight(theme.typography.body1.lineHeight, 2)}; /* firefox */
 `;
 
 const FaviconWrapper = styled.div`
@@ -130,7 +128,9 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   };
   render() {
-    const { title, summary, thumbnail, url, favicon, faviconName } = this.props;
+    const {
+      title, summary, thumbnail, url, favicon, faviconName,
+    } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
@@ -138,7 +138,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
           <TitleWithSummary>
             <TitleNSummaryWrapper>
               <LinkTitle>
-                <a href={url} target='_blank' rel='noopener noreferrer'>
+                <a href={url} target="_blank" rel="noopener noreferrer">
                   {title}
                 </a>
               </LinkTitle>
@@ -151,7 +151,7 @@ class JuiConversationCardLinkItems extends PureComponent<Props> {
           </TitleWithSummary>
           <JuiIconButton
             disableToolTip
-            variant='plain'
+            variant="plain"
             onClick={this.onLinkItemClose}
           >
             close

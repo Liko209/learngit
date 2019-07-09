@@ -14,7 +14,7 @@ import { dateFormatter } from '@/utils/date';
 import moment from 'moment';
 
 class ConversationInitialPostViewModel extends StoreViewModel<
-  ConversationInitialPostViewProps
+ConversationInitialPostViewProps
 > {
   @observable
   creatorGroupId: number;

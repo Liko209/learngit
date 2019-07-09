@@ -25,9 +25,7 @@ export const showImageViewer = (
       type={VIEWER_ITEM_TYPE.IMAGE_FILES}
       isNavigation={mode === 'navigation'}
       postId={postId}
-      contentLeftRender={(props: ViewerViewProps) => {
-        return <ImageViewer {...props} initialOptions={initialOptions} />;
-      }}
+      contentLeftRender={(props: ViewerViewProps) => <ImageViewer {...props} initialOptions={initialOptions} />}
       viewerDestroyer={() => dismiss()}
     />,
     {

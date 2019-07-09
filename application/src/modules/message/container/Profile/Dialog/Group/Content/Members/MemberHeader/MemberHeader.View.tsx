@@ -26,7 +26,7 @@ const PADDING_FIX = 16 + 12;
 @observer
 class MemberHeader extends React.Component<
   WithTranslation & MemberHeaderViewProps & MemberHeaderProps
-> {
+  > {
   static contextType = ProfileContext;
   private _ref: RefObject<any> = createRef();
   private _observer?: RO;
@@ -75,20 +75,20 @@ class MemberHeader extends React.Component<
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
-        data-test-automation-id='profileDialogMemberHeader'
+        data-test-automation-id="profileDialogMemberHeader"
         ref={this._ref}
       >
         <JuiProfileDialogContentMemberHeaderTitle>
           {`${t(key)} (${members.length})`}
           {isTeam && isCurrentUserHasPermissionAddMember && (
             <ButtonInRight onClick={this.addTeamMembers}>
-              <JuiIconography iconSize='medium'>add_team</JuiIconography>
+              <JuiIconography iconSize="medium">add_team</JuiIconography>
               {t('people.team.AddTeamMembers')}
             </ButtonInRight>
           )}
         </JuiProfileDialogContentMemberHeaderTitle>
         {hasSearch && (
-          <JuiProfileDialogContentMemberHeaderSearch data-test-automation-id='profileDialogMemberSearch'>
+          <JuiProfileDialogContentMemberHeaderSearch data-test-automation-id="profileDialogMemberSearch">
             <JuiOutlineTextField
               InputProps={{
                 placeholder: t('people.team.searchMembers'),
@@ -97,9 +97,9 @@ class MemberHeader extends React.Component<
                 },
               }}
               onChange={onSearch}
-              iconName='search'
-              iconPosition='left'
-              data-test-automation-id='profileDialogMemberSearch'
+              iconName="search"
+              iconPosition="left"
+              data-test-automation-id="profileDialogMemberSearch"
             />
           </JuiProfileDialogContentMemberHeaderSearch>
         )}

@@ -72,7 +72,9 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
   }
 
   render() {
-    const { items, onChange, listProps, listItemProps, ...rest } = this.props;
+    const {
+      items, onChange, listProps, listItemProps, ...rest
+    } = this.props;
     /* eslint-disable react/jsx-no-bind */
     return (
       <List dense {...listProps} {...rest}>

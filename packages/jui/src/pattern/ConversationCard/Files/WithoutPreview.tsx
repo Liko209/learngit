@@ -15,18 +15,18 @@ type JuiFileWithoutPreviewProps = {
   iconType: string;
 };
 
-const FileSecondary = (secondary: string) => {
-  return (
+const FileSecondary = (secondary: string) => (
     <>
-      <span data-test-automation-id='file-no-preview-size'>{secondary}</span>
+      <span data-test-automation-id="file-no-preview-size">{secondary}</span>
     </>
-  );
-};
+);
 
 const JuiFileWithoutPreview: React.SFC<JuiFileWithoutPreviewProps> = (
   props: JuiFileWithoutPreviewProps,
 ) => {
-  const { size, fileName, Actions, iconType } = props;
+  const {
+    size, fileName, Actions, iconType,
+  } = props;
 
   return (
     <Jui.FileItem disableGutters>

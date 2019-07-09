@@ -15,9 +15,7 @@ import IntegrationItemModel from '@/store/models/IntegrationItem';
 class IntegrationItemViewModel extends StoreViewModel<IntegrationItemProps> {
   @computed
   get items() {
-    return this.props.ids.map((id: number) =>
-      getEntity<IntegrationItem, IntegrationItemModel>(ENTITY_NAME.ITEM, id),
-    );
+    return this.props.ids.map((id: number) => getEntity<IntegrationItem, IntegrationItemModel>(ENTITY_NAME.ITEM, id));
   }
 }
 

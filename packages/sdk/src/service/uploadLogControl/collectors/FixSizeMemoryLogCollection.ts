@@ -5,7 +5,6 @@
  */
 import { LogEntity, mainLogger } from 'foundation';
 import { ILogCollection } from './types';
-import _ from 'lodash';
 
 function countSize(array: LogEntity[], size: number) {
   let counter = 0;

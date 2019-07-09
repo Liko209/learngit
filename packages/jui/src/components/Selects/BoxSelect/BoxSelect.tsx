@@ -33,8 +33,8 @@ const StyledSelectBoxHeader = styled.div`
 `;
 
 class JuiBoxSelect extends PureComponent<
-  JuiBoxSelectProps,
-  { value: string | null }
+JuiBoxSelectProps,
+{ value: string | null }
 > {
   private _renderInput = () => {
     const { heightSize = 'default' } = this.props;
