@@ -85,7 +85,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     }
     const { postModel, groupModel } = result;
     this.enqueueVM(postModel, groupModel);
-  }
+  };
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
     const ids = this._vmQueue.map(i => i.id);
@@ -172,7 +172,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
       logger.info(
-        `notification for ${post.id} is not permitted because post type is not message`,
+        `notification for ${
+          post.id
+        } is not permitted because post type is not message`,
       );
       return false;
     }
@@ -183,7 +185,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     if (!group) {
       logger.info(
-        `notification for ${post.id} is not permitted because group of the post does not exist`,
+        `notification for ${
+          post.id
+        } is not permitted because group of the post does not exist`,
       );
       return false;
     }
@@ -197,7 +201,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
         if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
           logger.info(
-            `notification for ${post.id} is not permitted because in team conversation, only post mentioning current user will show notification`,
+            `notification for ${
+              post.id
+            } is not permitted because in team conversation, only post mentioning current user will show notification`,
           );
           return false;
         }
