@@ -12,8 +12,23 @@ import enLngJson from '../public/locales/en/translations.json';
  * momentWhitelist: white list for moment
  * momentWhitelist must synchronize with i18nWhitelist
  */
-const i18nWhitelist = ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'];
-const momentWhitelist = ['en-us', 'de', 'en-au', 'en-gb', 'es-do', 'es', 'fr-ca', 'fr', 'it-ch', 'ja', 'pt-br', 'zh-cn', 'zh-hk', 'zh-tw'];
+
+const whitelist = {
+  en: 'en-us',
+  'de-DE': 'de',
+  'en-AU': 'en-au',
+  'en-GB': 'en-gb',
+  'es-419': 'es-do',
+  'es-ES': 'es',
+  'fr-CA': 'fr-ca',
+  'fr-FR': 'fr',
+  'it-IT': 'it',
+  'ja-JP': 'ja',
+  'pt-BR': 'pt-br',
+  'zh-CN': 'zh-cn',
+  'zh-HK': 'zh-hk',
+  'zh-TW': 'zh-tw',
+};
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
@@ -54,7 +69,7 @@ const config: i18next.InitOptions = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: i18nWhitelist,
+  whitelist: Object.keys(whitelist),
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',
@@ -62,9 +77,8 @@ const config: i18next.InitOptions = {
 
 const ready = async () => {
   const language = i18next.language;
-  const index = i18nWhitelist.indexOf(language);
   await import(/* webpackChunkName: "c.lang.moment" */
-    `moment/locale/${momentWhitelist[index]}.js`
+    `moment/locale/${whitelist[language]}.js`
   );
   moment.locale(i18next.language);
 };
