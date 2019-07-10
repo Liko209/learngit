@@ -11,8 +11,8 @@ import { debugLog } from 'sdk/module/debug/log';
 import { UploadRecentLogs } from './container/UploadRecentLogs';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import { FeedbackService } from './service/FeedbackService';
-import { ServiceLoader, ServiceConfig } from 'sdk/src/module/serviceLoader';
-import { AccountService } from 'sdk/src/module/account';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const LOG_TAG = '[Feedback]';
 

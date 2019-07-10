@@ -49,6 +49,7 @@ jest.mock('jszip', () => {
 describe('FeedbackService', () => {
   beforeAll(() => {
     const mockAccountService = ({
+      isAccountReady: jest.fn().mockReturnValue(true),
       userConfig: {
         getGlipUserId: jest.fn().mockReturnValue(1),
       },
