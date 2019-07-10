@@ -28,10 +28,10 @@ test.meta(<ITestMeta>{
   let newMessageItems = ['All new messages', 'Direct messages and mentions', 'Off'];
 
   const incomingCallsLabel = 'Incoming calls';
-  const incomingCallDescription = 'Choose your preference for desktop notifications for incoming calls';
+  const incomingCallDescription = 'Receive notifications for incoming calls';
 
   const missedCallAndNewVoicemailsLabel = 'Missed calls and new voicemails';
-  const missedCallsAndNewVoicemailsDescription = 'Choose your preference for desktop notifications for missed calls and new voicemails';
+  const missedCallsAndNewVoicemailsDescription = 'Receive notifications for missed calls and new voicemails';
 
   await h(t).withLog(`Given I set glip profile want_desktop_notifications: true`, async () => {
     await h(t).glip(loginUser).init();

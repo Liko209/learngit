@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiListItem, {
-  ListItemProps as MuiListItemProps,
-} from '@material-ui/core/ListItem';
+import MuiListItem, { ListItemProps as MuiListItemProps } from '@material-ui/core/ListItem';
 import styled from '../../foundation/styled-components';
 import { spacing, width } from '../../foundation/utils';
 
@@ -17,13 +15,9 @@ type JuiListItemProps = MuiListItemProps & {
   disableButton?: boolean;
 };
 
-const WrappedListItem = React.memo(
-  ({
-    width, isInline, singleLine, disableButton, ...rests
-  }: JuiListItemProps) => (
-    <MuiListItem {...rests} />
-  ),
-);
+const WrappedListItem = React.memo(({
+  width, isInline, singleLine, disableButton, ...rests
+}: JuiListItemProps) => <MuiListItem {...rests} />);
 
 const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   && {
@@ -35,9 +29,9 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
 `;
 
 const JuiListItemComponent = (props: JuiListItemProps) => (
-    <StyledListItem button={!props.disableButton && true} {...props}>
-      {props.children}
-    </StyledListItem>
+  <StyledListItem button={!props.disableButton && true} {...props}>
+    {props.children}
+  </StyledListItem>
 );
 
 JuiListItemComponent.defaultProps = {

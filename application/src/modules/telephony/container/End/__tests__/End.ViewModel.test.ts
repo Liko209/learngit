@@ -22,7 +22,7 @@ let endViewModel: EndViewModel;
 describe('EndViewModel', () => {
   it('should not call hangUp function', () => {
     (getEntity as jest.Mock).mockReturnValue({
-      connectTime: Date.now(),
+      connectingTime: Date.now(),
     });
     endViewModel = new EndViewModel({});
     endViewModel.end();
@@ -33,15 +33,11 @@ describe('EndViewModel', () => {
   });
 
   it('should call hangUp function', async () => {
-    (getEntity as jest.Mock).mockReturnValue({
-      startTime: Date.now(),
-    });
-    endViewModel = new EndViewModel({});
+    (getEntity as jest.Mock).mockReturnValue({ connectingTime: Date.now() });
 
     await new Promise(resolve => {
       setTimeout(resolve, 1000);
     });
-
     endViewModel.end();
     const _telephonyService: TelephonyService = container.get(
       TELEPHONY_SERVICE,
