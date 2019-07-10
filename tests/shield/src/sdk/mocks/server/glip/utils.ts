@@ -6,7 +6,9 @@
 import { TYPE_ID_MASK, TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 
 import { STATE_KEYS } from './constants';
-import { GlipState } from './types';
+import { GlipState, GlipModel } from './types';
+import { GlipBaseDao } from './GlipBaseDao';
+import _ from 'lodash';
 
 const FACTOR = (TYPE_ID_MASK << 1) & ~TYPE_ID_MASK;
 const typeIdPool = new Map<string, number>();
@@ -47,6 +49,22 @@ export function parseState(state: GlipState) {
     }
   });
   return Array.from(groupIds).map(id => groupStates[id]);
+}
+
+
+export function doPartialUpdate<T extends GlipModel>(
+  dao: GlipBaseDao<T>,
+  model: T,
+  cb?: (result: T) => void,
+) {
+  const id = Number(model['_id'] || model['id']);
+  const updateTarget = dao.getById(id);
+  if (updateTarget) {
+    const result = dao.put(_.merge({}, updateTarget, model, { _id: id }));
+    cb && cb(result);
+    return result;
+  }
+  throw 'do partial update fail';
 }
 
 export {

@@ -33,3 +33,18 @@ export const getMeta = <META>(
     })
     .filter(result => !!result.meta);
 };
+
+export const getParamsMeta = <META>(
+  prototype: any,
+  metaKey: string,
+  functionKeys?: string[],
+): ({ key: string; meta: META })[] => {
+  return (functionKeys || getPrototypeDefineFunctions(prototype))
+    .map(key => {
+      return {
+        key,
+        meta: Reflect.getMetadata(metaKey, prototype, key),
+      };
+    })
+    .filter(result => !!result.meta);
+};
