@@ -35,8 +35,7 @@ test(formalName('Notes display on the right rail', ['P2', 'Messages', 'RightRail
   await h(t).withLog('When I open the created team conversation and open "Notes" tab on right rail', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.conversationEntryById(team.glipId).enter();
-    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
-    await rightRail.openMore();
+    await rightRail.clickMoreButton();
     await rightRail.notesEntry.enter();
   });
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_RightRail_NotesEmpty' });
