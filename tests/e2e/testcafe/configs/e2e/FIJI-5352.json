@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Setting/Phone/DefaultPhoneApp.ts"
+    ],
+    "include_tags": [
+      "JPT-2053"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
