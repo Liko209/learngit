@@ -5,4 +5,5 @@
  */
 
 import { Route as AuthRoute } from 'react-router-dom';
+
 export { AuthRoute };

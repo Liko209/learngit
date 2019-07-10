@@ -1,3 +1,4 @@
+/* eslint-disable prefer-rest-params */
 const INJECT_FLAG = '__jupiter__';
 const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';
@@ -73,10 +74,7 @@ function collectXHR(callback: (request: IXhrInfo) => void) {
     const originSend = XMLHttpRequest.prototype.send;
     const originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype[INJECT_FLAG] = true;
-    XMLHttpRequest.prototype.setRequestHeader = function (
-      name: string,
-      value: string,
-    ) {
+    XMLHttpRequest.prototype.setRequestHeader = function (name: string, value: string) {
       // tslint:disable-next-line:no-this-assignment
       const request = this;
       request[INJECT_HEADER] = request[INJECT_HEADER] || {};
@@ -84,8 +82,9 @@ function collectXHR(callback: (request: IXhrInfo) => void) {
       originSetRequestHeader.apply(this, arguments);
     };
     XMLHttpRequest.prototype.open = function () {
-      const method = arguments[0];
-      const url = arguments[1];
+      // const method = arguments[0];
+      // const url = arguments[1];
+      const [method, url] = arguments;
       // if (/sdk\.split\.io/.test(url)) return;
       // tslint:disable-next-line:no-this-assignment
       const request = this;
@@ -93,12 +92,8 @@ function collectXHR(callback: (request: IXhrInfo) => void) {
       const readyStateChangeListener = () => {
         request[INJECT_FLAG] = false;
         if (request.readyState === 4) {
-          request.removeEventListener(
-            'readystatechange',
-            readyStateChangeListener,
-          );
-          const responseHeader =
-            request.getAllResponseHeaders && request.getAllResponseHeaders();
+          request.removeEventListener('readystatechange', readyStateChangeListener);
+          const responseHeader = request.getAllResponseHeaders && request.getAllResponseHeaders();
           onRequestCollected &&
             onRequestCollected({
               request: {
@@ -167,7 +162,7 @@ function collectSocket(cb: (info: ISocketInfo) => void) {
   };
 }
 
-const GLIP_SOCKET_CHANEL_PATTERN = /^42\[\"([^"]*)\",(\{.*\})\]$/;
+const GLIP_SOCKET_CHANEL_PATTERN = /^42\["([^"]*)",(\{.*\})\]$/;
 
 function parseGlip(info: ISocketInfo) {
   if (GLIP_SOCKET_CHANEL_PATTERN.test(info.content)) {
