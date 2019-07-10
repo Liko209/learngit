@@ -1,6 +1,10 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
-  extends: ['plugin:jest/recommended', 'airbnb-typescript'],
+  extends: [
+    'plugin:jest/recommended',
+    'airbnb-typescript',
+    'prettier/@typescript-eslint',
+  ],
   plugins: ['react-hooks'],
   parserOptions: {
     ecmaVersion: 2018,
@@ -64,7 +68,8 @@ module.exports = {
     'operator-assignment': 'off',
     'operator-linebreak': 'off',
     'comma-dangle': 'off',
-    'max-len': ['error', { code: 200 }],
+    'no-unexpected-multiline': 'off',
+    'max-len': ['off', { code: 80 }],
   },
   settings: {
     react: {
