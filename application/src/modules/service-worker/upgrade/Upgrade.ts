@@ -41,7 +41,7 @@ class Upgrade {
       }
     });
 
-    // In case suspend or lock screen for a long time, it's unexpected to reload after unlock screen.
+    // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
     powerMonitor.onUnlock(() => {
       this._lastRouterChangeTime = new Date();
     })

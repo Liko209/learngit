@@ -6,7 +6,12 @@
 import { SocketFSM, StateHandlerType } from './SocketFSM';
 import notificationCenter from '../notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../eventKey';
-import { mainLogger, HealthModuleManager, BaseHealthModule, powerMonitor } from 'foundation';
+import {
+  mainLogger,
+  HealthModuleManager,
+  BaseHealthModule,
+  powerMonitor,
+} from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
