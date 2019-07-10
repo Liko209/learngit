@@ -1,12 +1,13 @@
+/* eslint-disable no-restricted-globals */
 module.exports = [
   {
     // Match any request ends with .png, .jpg, .jpeg or .svg.
     urlPattern: ({ url }) => {
-      const isLocalhost = () => window.location.hostname === 'localhost' ||
+      const isLocalhost = () => self.location.hostname === 'localhost' ||
         // [::1] is the IPv6 localhost address.
-        window.location.hostname === '[::1]' ||
+        self.location.hostname === '[::1]' ||
         // 127.0.0.1/8 is considered localhost for IPv4.
-        window.location.hostname.match(
+        self.location.hostname.match(
           /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
         );
 
