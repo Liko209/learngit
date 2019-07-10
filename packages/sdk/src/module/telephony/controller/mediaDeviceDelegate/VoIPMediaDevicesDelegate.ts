@@ -21,6 +21,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneSyncManager: DeviceSyncManger;
   private _speakerSyncManager: DeviceSyncManger;
   private _ringerSyncManager: DeviceSyncManger;
+  private _currentRingerId: string;
   constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
     this._microphoneSyncManager = new DeviceSyncManger(
       this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE),
@@ -62,8 +63,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       )),
       {
         getDevices: (): MediaDeviceInfo[] => this.getRingerDevicesList(),
-        setDeviceId: (id: string): void => this._rtcEngine.setCurrentAudioOutput(id),
-        getDeviceId: (): string => this._rtcEngine.getCurrentAudioOutput(),
+        setDeviceId: (id: string): void => { this._currentRingerId = id; },
+        getDeviceId: (): string => this._currentRingerId,
         getDefaultDeviceId: (devices: MediaDeviceInfo[]): string => this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
