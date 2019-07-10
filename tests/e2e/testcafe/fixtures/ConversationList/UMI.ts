@@ -702,7 +702,12 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['p1'],
+  caseIds: ['JPT-743'],
+  keywords: ['ConversationList', 'umi'],
+  maintainers: ['Mia.Cai']
+})('Should be unread when closed conversation received new unread', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -721,8 +726,11 @@ test(formalName('Should be unread when closed conversation received new unread',
   });
 
   const app = new AppRoot(t);
-  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -735,12 +743,13 @@ test(formalName('Should be unread when closed conversation received new unread',
     await t.expect(h(t).href).notContains(chat.glipId);
   });
 
+  const conversation = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
   await h(t).withLog('And the conversation should show in the conversation list', async () => {
-    await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).ok();
+    await conversation.ensureLoaded();
   });
 
   await h(t).withLog('And the conversation should be unread', async () => {
-    await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
+    await conversation.umi.shouldBeNumber(1);
   });
 });
 
