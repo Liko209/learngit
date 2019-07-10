@@ -93,6 +93,7 @@ const SnackbarContent = styled<SnackbarContentProps>(WrapperContent)`
 
   .action {
     margin-right: 0;
+    pointer-events: auto;
   }
 
   ${JuiSnackbarAction} + ${StyledTextButton} {

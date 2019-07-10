@@ -595,7 +595,9 @@ class FileUploadController {
         mainLogger
           .tags(LOG_TAG)
           .log(
-            `_sendItemFileInQueue, done for ${preInsertItem.id}_${preInsertItem.name}`,
+            `_sendItemFileInQueue, done for ${preInsertItem.id}_${
+              preInsertItem.name
+            }`,
           );
       },
     );

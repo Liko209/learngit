@@ -26,7 +26,7 @@ class EndViewModel extends StoreViewModel<EndProps> implements EndViewProps {
 
   end = () => {
     if (
-      Date.now() - this._telephonyStore.activeCallTime <
+      Date.now() - this._telephonyStore.callConnectingTime <
       ACTIVATION_CALL_TIME
     ) {
       return;

@@ -21,6 +21,7 @@ export type Call = IdModel & {
   record_state: RECORD_STATE;
   session_id: string;
   startTime: number;
+  connectingTime: number;
   connectTime: number;
   disconnectTime: number;
   direction: CALL_DIRECTION;

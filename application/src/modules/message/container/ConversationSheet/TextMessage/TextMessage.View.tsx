@@ -12,11 +12,7 @@ import { TextMessageViewProps } from './types';
 @observer
 class TextMessageView extends React.Component<TextMessageViewProps> {
   render() {
-    return (
-      <JuiConversationPostText data-name='text'>
-        {this.props.content}
-      </JuiConversationPostText>
-    );
+    return <JuiConversationPostText data-name='text'>{this.props.renderText}</JuiConversationPostText>;
   }
 }
 

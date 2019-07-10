@@ -16,7 +16,6 @@ class RCAccount extends AbstractAccount {
       ServiceConfig.GLOBAL_CONFIG_SERVICE,
       ServiceConfig.PERMISSION_SERVICE,
       ServiceConfig.PHONE_NUMBER_SERVICE,
-      ServiceConfig.PROFILE_SERVICE,
       ServiceConfig.RC_EVENT_SUBSCRIPTION_SERVICE,
       ServiceConfig.RC_INFO_SERVICE,
       ServiceConfig.SETTING_SERVICE,

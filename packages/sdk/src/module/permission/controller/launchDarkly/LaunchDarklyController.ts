@@ -12,7 +12,8 @@ import UserPermissionType from '../../types';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';
-import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { EnvConfig } from 'sdk/module/env/config';
 
 class LaunchDarklyController {
   private isClientReady = false;
@@ -98,8 +99,11 @@ class LaunchDarklyController {
         mainLogger.log('incoming event launchDarklyUpdateCallback');
       },
     };
-
-    this.launchDarklyClient = new LaunchDarklyClient(params);
+    const { clientId } = Api.httpConfig.launchdarkly;
+    const disableLD = EnvConfig.getDisableLD();
+    if (clientId && !disableLD) {
+      this.launchDarklyClient = new LaunchDarklyClient(params);
+    }
   }
 }
 

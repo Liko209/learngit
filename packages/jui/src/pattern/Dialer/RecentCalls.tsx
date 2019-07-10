@@ -26,16 +26,14 @@ const RecentCallContainer = styled.div<{}>`
     height: 100%;
     flex: 1;
     min-height: 0;
-    & > div:nth-child(2) {
-      margin-top: ${spacing(11)};
-      height: calc(100% - ${spacing(11)});
-      overflow: hidden;
-    }
   }
 `;
 
 const StyledRecentCalls = styled.div`
   && {
+    margin-top: ${spacing(11)};
+    height: calc(100% - ${spacing(11)});
+    overflow: hidden;
   }
 `;
 
@@ -48,6 +46,7 @@ const JuiRecentCallItem = styled(JuiListItem)`
 `;
 
 const StyledContactWrapper = styled.div`
+  min-width: 0;
   max-width: ${width(37)};
   flex: 1;
 `;

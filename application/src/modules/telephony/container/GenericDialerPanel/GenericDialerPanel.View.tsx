@@ -163,15 +163,11 @@ class GenericDialerPanelViewComponent extends React.Component<
     );
   };
 
-  private _renderRecentCalls = () => {
-    const { displayCallerIdSelector } = this.props;
-    return (
-      <RecentCallContainer>
-        {displayCallerIdSelector && this._renderCallerIdSelector()}
-        <RecentCalls />
-      </RecentCallContainer>
-    );
-  };
+  private _renderRecentCalls = () => (
+    <RecentCallContainer>
+      <RecentCalls />
+    </RecentCallContainer>
+  )
 
   private _renderKeypadActions = () => {
     const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;

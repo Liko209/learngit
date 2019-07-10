@@ -144,7 +144,7 @@ test.meta(<ITestMeta>{
 
 });
 
-// bug id https://jira.ringcentral.com/browse/FIJI-7075
+// bug id https://jira.ringcentral.com/browse/FIJI-7081
 test.skip.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-420'],

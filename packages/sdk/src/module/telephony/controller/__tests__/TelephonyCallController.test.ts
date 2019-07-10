@@ -339,6 +339,7 @@ describe('TelephonyCallController', () => {
   describe('answer', () => {
     it('should call rtc answer when controller answer is called', () => {
       jest.spyOn(rtcCall, 'answer');
+      callController._getCallEntity = jest.fn().mockReturnValue({});
       callController.answer();
       expect(rtcCall.answer).toBeCalled();
     });

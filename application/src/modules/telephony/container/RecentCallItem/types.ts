@@ -9,6 +9,7 @@ import { RCMessage } from 'sdk/module/RCItems';
 type Props = {
   id: string;
   selected: boolean;
+  handleClick: (focusIndex?: number) => void;
 };
 
 type ViewProps = {
@@ -17,8 +18,8 @@ type ViewProps = {
   startTime: string;
   isMissedCall: boolean;
   direction: RCMessage['direction'];
-  handleClick: (event: React.MouseEvent) => void;
   selected?: boolean;
+  makeCall: (event: React.MouseEvent) => void;
 };
 
 export { Props, ViewProps };
