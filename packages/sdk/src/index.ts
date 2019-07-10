@@ -13,9 +13,7 @@ import { container } from './container';
 import { registerConfigs } from './registerConfigs';
 
 export * from './framework';
-export {
-  default as GlipTypeDictionary,
-} from './utils/glip-type-dictionary/types';
+export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
 export { LogControlManager } from './service/uploadLogControl';
 
 registerConfigs.classes.forEach(config => container.registerClass(config));
@@ -23,16 +21,11 @@ registerConfigs.classes.forEach(config => container.registerClass(config));
 registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
 const sdk: Sdk = container.get(Sdk.name);
-export { sdk as Sdk };
+
 export {
-  sdk, service, utils, dao, api, error,
+  sdk, service, utils, dao, api, error
 };
+
 export {
-  mainLogger,
-  ILogger,
-  dataAnalysis,
-  logManager,
-  SessionManager,
-  DateFormatter,
-  PerformanceTracer,
+  mainLogger, ILogger, dataAnalysis, logManager, SessionManager, DateFormatter, PerformanceTracer
 } from 'foundation';
