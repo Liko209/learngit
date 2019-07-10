@@ -15,7 +15,7 @@ type TitleType = {
   name: string;
   downloadUrl: any;
   createdAt: string;
-  textFieldValue: number;
+  textFieldValue?: number;
   currentPageIdx: number;
   pageTotal: number;
   fileId: number;

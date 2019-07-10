@@ -5,3 +5,5 @@
  */
 
 export * from './ImageViewer.ViewModel';
+export * from './type';
+export * from './constants';

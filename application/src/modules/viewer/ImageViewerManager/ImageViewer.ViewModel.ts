@@ -29,7 +29,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
 
-class FileViewerViewModel extends AbstractViewModel<IViewerView>
+class ImageViewerViewModel extends AbstractViewModel<IViewerView>
   implements IViewerView {
   private _itemId: number;
   private _groupId: number;
@@ -188,4 +188,4 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   }
 }
 
-export { FileViewerViewModel };
+export { ImageViewerViewModel };

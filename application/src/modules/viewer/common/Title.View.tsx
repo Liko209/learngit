@@ -76,17 +76,20 @@ class ViewerTitleViewComponent extends Component<Type> {
             {name}
           </JuiDialogHeaderTitleMainTitle>
           <JuiDialogHeaderSubtitle data-test-automation-id={'viewerPageCount'}>
-            <JuiViewerTitleWrap>
-              <JuiTextField
-                id="outlined-number"
-                type="number"
-                value={textFieldValue}
-                onChange={handleTextFieldChange}
-                inputProps={{
-                  'aria-label': 'numberInput',
-                }}
-              />
-            </JuiViewerTitleWrap>
+            {
+              textFieldValue &&
+              <JuiViewerTitleWrap>
+                <JuiTextField
+                  id="outlined-number"
+                  type="number"
+                  value={textFieldValue}
+                  onChange={handleTextFieldChange}
+                  inputProps={{
+                    'aria-label': 'numberInput',
+                  }}
+                />
+              </JuiViewerTitleWrap>
+            }
             {`(${currentPageIdx}/${pageTotal})`}
           </JuiDialogHeaderSubtitle>
         </JuiDialogHeaderTitle>
