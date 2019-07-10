@@ -14,7 +14,7 @@ interface IApiContract<Req = any, Res = any> {
   path: string;
   method: string;
   query?: object;
-  request: Pick<IBaseRequest<Req>, 'data'>;
+  request: Partial<Pick<IBaseRequest<Req>, 'data'>>;
   response: Pick<IBaseResponse<Res>, 'data'>;
 }
 

@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+
 console.log('read json from:', process.argv[2]);
 const dataArray = JSON.parse(
   fs.readFileSync(process.argv[2], {
@@ -20,14 +21,9 @@ function makeDirs(pathStr) {
 dataArray.forEach(data => {
   const { method, host } = data;
   const _path = data.path.replace(/\~/g, '-');
-  const _finalDir = path.join(
-    __dirname,
-    '../tests/shield/testingData',
-    host,
-    _path,
-  );
+  const _finalDir = path.join(__dirname, '../tests/shield/testingData', host, _path);
   makeDirs(_finalDir);
-  const jsonName = path.resolve(_finalDir, `${method}.template.json`);
+  const jsonName = path.resolve(_finalDir, `${method.toUpperCase()}.template.json`);
   console.log('writing json: ', jsonName);
   fs.writeFileSync(jsonName, JSON.stringify(data, null, 2));
 });

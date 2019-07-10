@@ -16,14 +16,18 @@ export const SERVER_ALIAS_MAP = {
   // GLP-DEV-XMN
   'https://api-glpdevxmn.lab.nordigy.ru': 'rc',
   'https://glpdevxmn.asialab.glip.net': 'glip',
+  'wss://glpdevxmn.asialab.glip.net': 'glip',
   // xmnup
   'https://api-xmnup.lab.nordigy.ru': 'rc',
   'https://xmnup.asialab.glip.net': 'glip',
+  'wss://xmnup.asialab.glip.net': 'glip',
   // chris sandbox
   'https://aws13-g04-uds02.asialab.glip.net': 'glip',
+  'wss://aws13-g04-uds02.asialab.glip.net': 'glip',
   // production
   'https://platform.ringcentral.com': 'rc',
   'https://app.glip.com': 'glip',
+  'wss://app.glip.com': 'glip',
 };
 
 interface ISocketRequest<T = object> {
@@ -340,6 +344,7 @@ class NetworkDataTool {
           ) as ISocketInfo;
           if (sourceRequest) {
             const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
+            rawRequest.host = this._aliasHost(rawRequest.host);
             // const { host, path } = Utils.parseHostPath(rawRequest.url);
             this._infoPool.push({
               host: rawRequest.host,

@@ -2,7 +2,7 @@ import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
-import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';
+import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
 import { IApiContract } from 'shield/sdk/types';
 // xx.request.data.description
 itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {

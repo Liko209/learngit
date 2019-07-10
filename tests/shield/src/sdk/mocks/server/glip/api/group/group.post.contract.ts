@@ -1,8 +1,8 @@
 import { IApiContract } from '../../../../../types';
 import { GlipGroup } from '../../types';
 
-export interface IGlipTeamPost extends IApiContract {
-  path: '/api/team';
+export interface IGlipGroupPost extends IApiContract {
+  path: '/api/group';
   method: 'post';
   query: {
     id: number;
