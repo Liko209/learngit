@@ -31,8 +31,9 @@ const whitelist = {
 };
 
 Object.keys(whitelist).map(v => {
-  if (v.length) return;
-  module.require(`moment/locale/${whitelist[v]}.js`);
+  const name = whitelist[v];
+  if (!name) return;
+  module.require(`moment/locale/${name}.js`);
 });
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
