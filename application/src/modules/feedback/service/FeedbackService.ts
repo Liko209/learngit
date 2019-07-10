@@ -43,16 +43,12 @@ class FeedbackService {
       return;
     }
     saveBlob(zipResult.zipName, zipResult.zipBlob);
-  }
+  };
 
-  zipRecentLogs = async (
-    level?: ZipItemLevel,
-  ): Promise<{ zipName: string; zipBlob: Blob }> => {
+  zipRecentLogs = async (level?: ZipItemLevel): Promise<{ zipName: string; zipBlob: Blob }> => {
     const zipBlob = await LogControlManager.instance().getZipLog(level);
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
-    const uid = accountService.userConfig.getGlipUserId();
+    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
+    const uid = accountService.isAccountReady() ? accountService.userConfig.getGlipUserId() : undefined;
     const sessionId = SessionManager.getInstance().getSession();
     return {
       zipBlob,
@@ -60,14 +56,8 @@ class FeedbackService {
     };
   };
 
-  uploadRecentLogs = async (
-    option?: Partial<UploadOption>,
-  ): Promise<UploadResult | null> => {
-    const {
-      retry = DEFAULT_OPTION.retry,
-      timeout = DEFAULT_OPTION.timeout,
-      level,
-    } = { ...DEFAULT_OPTION, ...option };
+  uploadRecentLogs = async (option?: Partial<UploadOption>): Promise<UploadResult | null> => {
+    const { retry = DEFAULT_OPTION.retry, timeout = DEFAULT_OPTION.timeout, level } = { ...DEFAULT_OPTION, ...option };
     const zipResult = await this.zipRecentLogs(level);
     if (!zipResult) {
       logger.debug('Zip log file fail.');

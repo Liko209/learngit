@@ -6,19 +6,45 @@
 
 import { AbstractModule, container } from 'framework';
 import { ContextInfoZipItemProvider } from './ContextInfoZipItemProvider';
-import { LogControlManager } from 'sdk';
+import { LogControlManager, mainLogger } from 'sdk';
 import { debugLog } from 'sdk/module/debug/log';
 import { UploadRecentLogs } from './container/UploadRecentLogs';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import { FeedbackService } from './service/FeedbackService';
+import { ServiceLoader, ServiceConfig } from 'sdk/src/module/serviceLoader';
+import { AccountService } from 'sdk/src/module/account';
+
+const LOG_TAG = '[Feedback]';
 
 class FeedbackModule extends AbstractModule {
   async bootstrap() {
     LogControlManager.instance().registerZipProvider(new ContextInfoZipItemProvider());
-    debugLog.inject('debug', () => UploadRecentLogs.show());
-    debugLog.inject('debugAll', () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }));
-    debugLog.inject('save', () => container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL));
-    debugLog.inject('saveAll', () => container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL));
+    debugLog.inject('debug', () => {
+      mainLogger.tags(LOG_TAG).info('execute command: debug');
+      if (ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).isAccountReady()) {
+        UploadRecentLogs.show();
+      } else {
+        mainLogger.tags(LOG_TAG).info('user not login, execute save instead');
+        container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
+      }
+    });
+    debugLog.inject('debugAll', () => {
+      mainLogger.tags(LOG_TAG).info('execute command: debugAll');
+      if (ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).isAccountReady()) {
+        UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL });
+      } else {
+        mainLogger.tags(LOG_TAG).info('user not login, execute saveAll instead');
+        container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
+      }
+    });
+    debugLog.inject('save', () => {
+      mainLogger.tags(LOG_TAG).info('execute command: save');
+      container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
+    });
+    debugLog.inject('saveAll', () => {
+      mainLogger.tags(LOG_TAG).info('execute command: saveAll');
+      container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL);
+    });
   }
 }
 
