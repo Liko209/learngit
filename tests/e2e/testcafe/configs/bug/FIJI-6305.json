@@ -5,6 +5,9 @@
           "./fixtures/MessageInput/*.ts",
           "./fixtures/SendNewMessage/*.ts"
       ],
+      "exclude_tags": [
+          "JPT-221"
+      ],
       "browsers": [
           "selenium:chrome"
       ]
