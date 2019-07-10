@@ -30,6 +30,10 @@ const whitelist = {
   'zh-TW': 'zh-tw',
 };
 
+Object.keys(whitelist).map(v => {
+  module.require(`moment/locale/${whitelist[v]}.js`);
+});
+
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
@@ -75,11 +79,7 @@ const config: i18next.InitOptions = {
   load: 'currentOnly',
 };
 
-const ready = async () => {
-  const language = i18next.language;
-  await import(/* webpackChunkName: "c.lang.moment" */
-    `moment/locale/${whitelist[language]}.js`
-  );
+const ready = () => {
   moment.locale(i18next.language);
 };
 
