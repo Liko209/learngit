@@ -1,7 +1,7 @@
 module.exports = [
   {
     // Match any request ends with .png, .jpg, .jpeg or .svg.
-    urlPattern: /[\s\S]*\.(?:png|jpg|jpeg|gif|svg)\b/i,
+    urlPattern: /[\s\S]*(?:s3\.amazonaws\.com|cache\.glip\.com)[\s\S]*\.(?:png|jpg|jpeg|gif|svg)\b/i,
     // Apply a cache-first strategy.
     handler: 'CacheFirst',
     options: {
@@ -19,6 +19,7 @@ module.exports = [
       },
       fetchOptions: {
         mode: 'cors',
+        credentials: 'omit',
       },
     },
   },
