@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
-import MuiDialog, { DialogProps as MuiDialogProps } from '@material-ui/core/Dialog';
+import MuiDialog, {
+  DialogProps as MuiDialogProps,
+} from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
-import { spacing } from 'jui/foundation/utils';
 import styled from 'styled-components';
+import { spacing } from '../../foundation/utils';
 import { HotKeys } from '../../hoc/HotKeys';
 
 type StyledDialogProps = MuiDialogProps & {
@@ -55,7 +57,10 @@ const StyledDialog = styled(
 
 const WrapDialog = (props: JuiDialogProps) => {
   const {
-    enableEscapeClose = false, disableEscapeKeyDown, onClose, ...rest
+    enableEscapeClose = false,
+    disableEscapeKeyDown,
+    onClose,
+    ...rest
   } = props;
   const enableEscapeCloseHotKey = enableEscapeClose && !disableEscapeKeyDown;
   return enableEscapeCloseHotKey ? (
@@ -71,5 +76,7 @@ const WrapDialog = (props: JuiDialogProps) => {
   );
 };
 
-const JuiDialog = withMobileDialog<JuiDialogProps>({ breakpoint: 'xs' })(WrapDialog);
+const JuiDialog = withMobileDialog<JuiDialogProps>({ breakpoint: 'xs' })(
+  WrapDialog,
+);
 export { JuiDialog, JuiDialogProps };
