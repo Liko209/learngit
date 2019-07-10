@@ -14,7 +14,7 @@ import enLngJson from '../public/locales/en/translations.json';
  */
 
 const whitelist = {
-  en: 'en-us',
+  en: '',
   'de-DE': 'de',
   'en-AU': 'en-au',
   'en-GB': 'en-gb',
@@ -31,6 +31,7 @@ const whitelist = {
 };
 
 Object.keys(whitelist).map(v => {
+  if (v.length) return;
   module.require(`moment/locale/${whitelist[v]}.js`);
 });
 
