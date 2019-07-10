@@ -250,7 +250,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostContent(post: PostModel) {
-    const _text = Remove_Markdown(post.text, { dont_escape: true });
+    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(/(^|\n)> ([^\n]*)/g, (full_match, start, text) => {
+      return `${start} ${text}`;
+    });
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,
