@@ -7,6 +7,7 @@
     "rootDir": "src",
     "paths": {
       "sdk/*": ["src/*"],
+      "voip/*": ["../voip/src/*"],
       "foundation/*": ["../foundation/src/*"],
       "shield/*": ["../../tests/shield/src/*"]
     }

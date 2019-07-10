@@ -4,7 +4,7 @@
  */
 
 import { IFilter } from 'foundation';
-import { IdModel, ModelIdType } from '../../model';
+import { ModelIdType } from '../../model';
 
 interface IQueryOpt<T, IdType extends ModelIdType = number> {
   reset(): IQueryOpt<T, IdType>;
@@ -19,13 +19,7 @@ interface IQueryOpt<T, IdType extends ModelIdType = number> {
 
   notEqual(key: string, value: any): IQueryOpt<T, IdType>;
 
-  between(
-    key: string,
-    lowerBound: any,
-    upperBound: any,
-    includeLower: any,
-    includeUpper: any,
-  ): IQueryOpt<T, IdType>;
+  between(key: string, lowerBound: any, upperBound: any, includeLower: any, includeUpper: any): IQueryOpt<T, IdType>;
 
   greaterThan(key: string, value: any): IQueryOpt<T, IdType>;
 
@@ -37,11 +31,7 @@ interface IQueryOpt<T, IdType extends ModelIdType = number> {
 
   anyOf(key: string, array: any[], ignoreCase: boolean): IQueryOpt<T, IdType>;
 
-  startsWith(
-    key: string,
-    value: string,
-    ignoreCase: boolean,
-  ): IQueryOpt<T, IdType>;
+  startsWith(key: string, value: string, ignoreCase: boolean): IQueryOpt<T, IdType>;
 
   contain(key: string, value: any): IQueryOpt<T, IdType>;
 

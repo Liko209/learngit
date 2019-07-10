@@ -1,9 +1,11 @@
+/* eslint-disable global-require */
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2018-08-30 08:42:56
  * Copyright © RingCentral. All rights reserved.
  */
-'use strict';
+
+// polyfill require.context
 import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
 // polyfill require.context
 registerRequireContextHook();
@@ -79,7 +81,4 @@ if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
   // // Avoid memory leak by adding too many listeners
   // process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
 }
-
-// polyfill require.context
-import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
 registerRequireContextHook();
