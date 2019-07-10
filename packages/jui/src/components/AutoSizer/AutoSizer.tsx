@@ -55,6 +55,7 @@ const JuiAutoSizer = ({
     if (ref.current.parentElement) {
       ref.current.parentElement.style.display = 'flex';
       ref.current.parentElement.style.flexDirection = 'column';
+      ref.current.parentElement.style.minHeight = '0';
     }
 
     updateSize();
