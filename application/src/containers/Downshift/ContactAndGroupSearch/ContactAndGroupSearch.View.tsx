@@ -20,14 +20,14 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 @observer
 class ContactAndGroupSearchItem extends React.Component<ContactAndGroupSearchItemViewProps> {
   render() {
-    const { uid } = this.props;
+    const { itemId } = this.props;
     return GlipTypeUtil.isExpectedType(
-      uid,
+      itemId,
       TypeDictionary.TYPE_ID_PERSON,
     ) ? (
         <ContactSearchItem {...this.props} />
       ) : (
-        <GroupSearchItem itemId={uid} {...this.props} />
+        <GroupSearchItem {...this.props} />
       );
   }
 }

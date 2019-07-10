@@ -40,7 +40,7 @@ type ViewProps = ContactAndGroupSearchProps & {
 };
 
 type ContactAndGroupSearchItemViewProps = {
-  uid: number;
+  itemId: number;
   person: PersonModel;
   isHighlighted: boolean;
 };
