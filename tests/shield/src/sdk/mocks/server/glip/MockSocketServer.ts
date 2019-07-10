@@ -1,5 +1,11 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:22
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { Server } from 'mock-socket';
 import { createDebug } from 'sdk/__tests__/utils';
+
 const debug = createDebug('MockSocketServer', true);
 
 export class MockSocketServer {

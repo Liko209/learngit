@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:04
+ * Copyright © RingCentral. All rights reserved.
+ */
 import {
   IMockServer,
   INetworkRequestExecutorListener,

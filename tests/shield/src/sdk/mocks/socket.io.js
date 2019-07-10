@@ -1,7 +1,12 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:21:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { SocketIO } from 'mock-socket';
 function create(url, protocol) {
   // url = url.replace()
-  console.warn('-- create socket.io instance: ', url);
+  console.warn('create socket.io instance: ', url);
   const socket = SocketIO(url, protocol);
   socket.__mock__ = true;
   socket.connect = () => {

@@ -1,10 +1,14 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:17:43
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { Sdk } from 'sdk/index';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { notificationCenter } from 'sdk/service';
 import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { InstanceManager } from './mocks/server/InstanceManager';
-// import { CommonFileServer } from './mocks/server/CommonFileServer';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
 import { InitialData, GlipData } from './mocks/server/glip/types';
 import { createDebug } from 'sdk/__tests__/utils';
@@ -15,8 +19,9 @@ import { parseState } from './mocks/server/glip/utils';
 import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import { IRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
-import { IBaseResponse, IApiContract } from './types';
+import { IApiContract } from './types';
 import { createResponse } from './mocks/server/utils';
+import { wait } from 'shield/utils';
 
 blockExternalRequest();
 
@@ -167,7 +172,7 @@ async function setup() {
   await initSdk();
   login();
   await initEnd();
-  await new Promise(resolve => setTimeout(resolve, 1));
+  await wait(1);
   debug('setup sdk cost end.');
 }
 

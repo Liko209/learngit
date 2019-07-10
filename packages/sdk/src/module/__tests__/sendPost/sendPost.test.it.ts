@@ -1,8 +1,12 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:25:48
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { PostService } from 'sdk/module/post';
-import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';

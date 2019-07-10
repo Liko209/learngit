@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:17
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as Factory from 'factory.ts';
 import { Company } from 'sdk/module/company/entity';
 import { Group } from 'sdk/module/group/entity';
@@ -94,15 +99,7 @@ export type GlipClientConfig = GlipBase & {
   Force_Logout_Percentage: string;
 };
 
-export type GlipModel =
-  | GlipState
-  | GlipGroup
-  | GlipProfile
-  | GlipCompany
-  | GlipPost
-  | GlipItem
-  | GlipGroupState
-  | GlipClientConfig;
+export type GlipModel = GlipState | GlipGroup | GlipProfile | GlipCompany | GlipPost | GlipItem | GlipGroupState | GlipClientConfig;
 
 export type InitialData = {
   user_id: number;

@@ -1,6 +1,13 @@
-import { TypeDictionary, TYPE_ID_MASK } from 'sdk/utils/glip-type-dictionary';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:12
+ * Copyright © RingCentral. All rights reserved.
+ */
+import { TYPE_ID_MASK, TypeDictionary } from 'sdk/utils/glip-type-dictionary';
+
 import { STATE_KEYS } from './constants';
 import { GlipState } from './types';
+
 const FACTOR = (TYPE_ID_MASK << 1) & ~TYPE_ID_MASK;
 const typeIdPool = new Map<string, number>();
 const getTableCursor = (table: string) => {
@@ -8,9 +15,7 @@ const getTableCursor = (table: string) => {
   typeIdPool.set(table, cursor + 1);
   return cursor;
 };
-const genId = (table: string, typeId: number) => {
-  return (getTableCursor(table) * FACTOR) | typeId;
-};
+const genId = (table: string, typeId: number) => (getTableCursor(table) * FACTOR) | typeId;
 
 const genGroupId = () => genId('group', TypeDictionary.TYPE_ID_GROUP);
 const genTeamId = () => genId('team', TypeDictionary.TYPE_ID_TEAM);
@@ -45,12 +50,5 @@ export function parseState(state: GlipState) {
 }
 
 export {
-  genId,
-  genCompanyId,
-  genGroupId,
-  genTeamId,
-  genPersonId,
-  genPostId,
-  genStateId,
-  genProfileId,
+  genId, genCompanyId, genGroupId, genTeamId, genPersonId, genPostId, genStateId, genProfileId
 };

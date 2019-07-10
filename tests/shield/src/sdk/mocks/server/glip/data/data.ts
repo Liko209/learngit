@@ -1,28 +1,13 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:20:02
+ * Copyright © RingCentral. All rights reserved.
+ */
 import {
-  GlipProfile,
-  GlipCompany,
-  GlipItem,
-  GlipState,
-  GlipPerson,
-  GlipGroup,
-  GlipPost,
-  GlipClientConfig,
-  InitialData,
-  GlipGroupState,
-  GlipData,
-  IFactory,
+  GlipGroup, GlipGroupState, GlipPerson, GlipPost, IFactory
 } from '../types';
 import {
-  companyFactory,
-  userFactory,
-  personFactory,
-  groupFactory,
-  teamFactory,
-  postFactory,
-  clientConfigFactory,
-  stateFactory,
-  groupStateFactory,
-  profileFactory,
+  groupFactory, groupStateFactory, personFactory, postFactory, profileFactory, stateFactory, teamFactory, userFactory
 } from './factories';
 
 class AccountDataFactory {
@@ -38,50 +23,40 @@ class AccountDataFactory {
   // user() {}
 
   people() {
-    return this._get<IFactory<GlipPerson>>('person', () =>
-      personFactory.extend({
-        company_id: this.companyId,
-      }),
-    );
+    return this._get<IFactory<GlipPerson>>('person', () => personFactory.extend({
+      company_id: this.companyId,
+    }),);
   }
 
   group(): IFactory<GlipGroup> {
-    return this._get<IFactory<GlipGroup>>('group', () =>
-      groupFactory.extend({
-        company_id: this.companyId,
-        creator_id: this.userId,
-        members: [this.userId],
-      }),
-    );
+    return this._get<IFactory<GlipGroup>>('group', () => groupFactory.extend({
+      company_id: this.companyId,
+      creator_id: this.userId,
+      members: [this.userId],
+    }),);
   }
 
   team(): IFactory<GlipGroup> {
-    return this._get<IFactory<GlipGroup>>('team', () =>
-      teamFactory.extend({
-        is_team: true,
-        company_id: this.companyId,
-        creator_id: this.userId,
-        members: [this.userId],
-        permissions: { admin: { uids: [this.userId] } },
-      }),
-    );
+    return this._get<IFactory<GlipGroup>>('team', () => teamFactory.extend({
+      is_team: true,
+      company_id: this.companyId,
+      creator_id: this.userId,
+      members: [this.userId],
+      permissions: { admin: { uids: [this.userId] } },
+    }),);
   }
 
   post(): IFactory<GlipPost> {
-    return this._get<IFactory<GlipPost>>('post', () =>
-      postFactory.extend({
-        company_id: this.companyId,
-        creator_id: this.userId,
-      }),
-    );
+    return this._get<IFactory<GlipPost>>('post', () => postFactory.extend({
+      company_id: this.companyId,
+      creator_id: this.userId,
+    }),);
   }
 
   groupState(): IFactory<GlipGroupState> {
-    return this._get<IFactory<GlipGroupState>>('GlipGroupState', () =>
-      groupStateFactory.extend({
-        creator_id: this.userId,
-      }),
-    );
+    return this._get<IFactory<GlipGroupState>>('GlipGroupState', () => groupStateFactory.extend({
+      creator_id: this.userId,
+    }),);
   }
 }
 
@@ -95,10 +70,7 @@ class GroupScenarioDataHelper implements IScenarioDataHelper<GlipGroup> {
   createGroup(targetUid: number, partial?: Partial<GlipGroup>) {
     return this.factory
       .withDerivation('members', data => [data.creator_id, targetUid])
-      .withDerivation(
-        'set_abbreviation',
-        data => `Group: ${data.creator_id} + ${targetUid}`,
-      )
+      .withDerivation('set_abbreviation', data => `Group: ${data.creator_id} + ${targetUid}`)
       .build(partial);
   }
 }
@@ -106,11 +78,7 @@ class GroupScenarioDataHelper implements IScenarioDataHelper<GlipGroup> {
 class TeamScenarioDataHelper implements IScenarioDataHelper<GlipGroup> {
   constructor(public factory: IFactory<GlipGroup>) {}
 
-  createTeam(
-    teamName: string,
-    targetUids: number[],
-    partial?: Partial<GlipGroup>,
-  ) {
+  createTeam(teamName: string, targetUids: number[], partial?: Partial<GlipGroup>) {
     return this.factory
       .withDerivation('members', data => [data.creator_id, ...targetUids])
       .withDerivation('permissions', data => ({
@@ -136,8 +104,7 @@ class PostScenarioDataHelper implements IScenarioDataHelper<GlipPost> {
   }
 }
 
-class GroupStateScenarioDataHelper
-  implements IScenarioDataHelper<GlipGroupState> {
+class GroupStateScenarioDataHelper implements IScenarioDataHelper<GlipGroupState> {
   constructor(public factory: IFactory<GlipGroupState>) {}
 
   createGroupState(groupId: number, partial?: Partial<GlipGroupState>) {
@@ -161,8 +128,6 @@ export class GlipDataHelper {
     this.team = new TeamScenarioDataHelper(glipFactory.team());
     this.person = glipFactory.people();
     this.post = new PostScenarioDataHelper(glipFactory.post());
-    this.groupState = new GroupStateScenarioDataHelper(
-      glipFactory.groupState(),
-    );
+    this.groupState = new GroupStateScenarioDataHelper(glipFactory.groupState());
   }
 }

@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ISchema } from 'foundation/db';
 
 const gen = (unique: string = '_id', indices: string[] = []) => ({

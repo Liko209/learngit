@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:18:42
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IRouter, IJRequest, IJResponse, Handler } from '../../types';
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';

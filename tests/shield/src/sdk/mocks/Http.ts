@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:18:21
+ * Copyright © RingCentral. All rights reserved.
+ */
 import {
   IRequest,
   INetworkRequestExecutorListener,

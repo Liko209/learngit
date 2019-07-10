@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:18:06
+ * Copyright © RingCentral. All rights reserved.
+ */
 import https from 'https';
 import http, { RequestOptions, IncomingMessage } from 'http';
 import { EventEmitter } from 'events';

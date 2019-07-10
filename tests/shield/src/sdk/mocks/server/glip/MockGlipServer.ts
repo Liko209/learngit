@@ -1,11 +1,21 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:30
+ * Copyright © RingCentral. All rights reserved.
+ */
 import assert from 'assert';
 import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
+import { createDebug } from 'sdk/__tests__/utils';
 import { Post } from 'sdk/module/post/entity/Post';
 
+import { META_ROUTE } from '../../../decorators/constants';
+import { getMeta } from '../../../decorators/metaUtil';
+import { Route } from '../../../decorators/Route.decorator';
+import { IApiContract, IJRequest, IRoute } from '../../../types';
 import { Router } from '../Router';
-import { IJRequest, IRoute, IApiContract } from '../../../types';
 import { createResponse, String2Number } from '../utils';
+import { STATE_KEYS } from './constants';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';
 import { GlipGroupDao } from './dao/group';
@@ -15,30 +25,15 @@ import { GlipPersonDao } from './dao/person';
 import { GlipPostDao } from './dao/post';
 import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
+import { GlipDataHelper } from './data/data';
+import { GlipBaseDao } from './GlipBaseDao';
 import { schema } from './glipSchema';
 import { MockSocketServer } from './MockSocketServer';
 import {
-  GlipData,
-  InitialData,
-  GlipPost,
-  GlipGroupState,
-  GlipState,
-  GlipGroup,
-  GlipProfile,
-  GlipModel,
+    GlipData, GlipGroup, GlipModel, GlipPost, GlipProfile, GlipState, InitialData
 } from './types';
 import { genPostId, parseState } from './utils';
-import { GlipDataHelper } from './data/data';
-import { STATE_KEYS } from './constants';
-import { createDebug } from 'sdk/__tests__/utils';
-import { GlipBaseDao } from './GlipBaseDao';
-// import { GlipController } from './api/glip';
-import {
-  getMeta,
-  // getPrototypeDefineFunctions,
-} from '../../../decorators/metaUtil';
-import { META_ROUTE } from '../../../decorators/constants';
-import { Route } from '../../../decorators/Route.decorator';
+
 const debug = createDebug('MockGlipServer');
 
 

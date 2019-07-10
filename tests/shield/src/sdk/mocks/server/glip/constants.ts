@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:55
+ * Copyright © RingCentral. All rights reserved.
+ */
 export const STATE_KEYS = [
   'deactivated_post_cursor',
   'group_missed_calls_count',

@@ -1,5 +1,9 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:18:36
+ * Copyright © RingCentral. All rights reserved.
+ */
 export interface IStore<T extends object, Id extends number | string = number> {
-  // items: T[];
   create(item: Partial<T>): T | undefined;
   delete(id: Id): void;
   update(item: Partial<T>): void;

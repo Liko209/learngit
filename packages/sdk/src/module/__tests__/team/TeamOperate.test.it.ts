@@ -1,10 +1,14 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:26:24
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
 import { IApiContract } from 'shield/sdk/types';
-// xx.request.data.description
 itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {
   let groupService: GroupService;
 

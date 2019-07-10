@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:25:53
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
@@ -6,7 +11,6 @@ import { PersonService } from 'sdk/module/person';
 import { PostService } from 'sdk/module/post';
 import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { debug } from 'sdk/__tests__/utils';
-import { GroupConfigService } from 'sdk/module/groupConfig';
 import { StateService } from '../state';
 jest.setTimeout(30000);
 

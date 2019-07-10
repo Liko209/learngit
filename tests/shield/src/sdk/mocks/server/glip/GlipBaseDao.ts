@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:19:50
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IDatabase, IDatabaseCollection, LokiCollection } from 'foundation/db';
 import Query from 'sdk/framework/dao/impl/Query';
 import { GlipModel } from './types';

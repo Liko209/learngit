@@ -1,29 +1,21 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:20:33
+ * Copyright © RingCentral. All rights reserved.
+ */
 import * as Factory from 'factory.ts';
 import faker from 'faker';
-import { TypeDictionary, TYPE_ID_MASK } from 'sdk/utils/glip-type-dictionary';
+import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 
-import {
-  GlipProfile,
-  GlipCompany,
-  GlipItem,
-  GlipState,
-  GlipPerson,
-  GlipGroup,
-  GlipPost,
-  GlipClientConfig,
-  // InitialData,
-  GlipGroupState,
-  // GlipData,
-} from '../types';
+import { GlipClientConfig, GlipCompany, GlipGroup, GlipGroupState, GlipPerson, GlipPost, GlipProfile, GlipState } from '../types';
 import { genId } from '../utils';
+
 const each = <T>(f: (seqNum: number) => T) => Factory.each(f);
 
-const idGenerator = (table: string, typeId: number) =>
-  each(() => genId(table, typeId));
+const idGenerator = (table: string, typeId: number) => each(() => genId(table, typeId));
 
 const uniqueNumber = () => each(i => faker.random.number(Date.now() + i));
-const uniqueStringNumber = () =>
-  each(i => String(faker.random.number(Date.now() + i)));
+const uniqueStringNumber = () => each(i => String(faker.random.number(Date.now() + i)));
 const startTime = 1560016277707;
 const fakeTimestamp = each(i => startTime + i * 1234);
 const fakeEmail = each(() => faker.internet.email());
@@ -109,9 +101,7 @@ const groupFactory = Factory.Sync.makeFactory<GlipGroup>({
 
 const teamFactory = groupFactory.extend({
   _id: idGenerator('group', TypeDictionary.TYPE_ID_TEAM),
-  privacy: each(() =>
-    faker.random.arrayElement(['private', 'protected', 'public']),
-  ),
+  privacy: each(() => faker.random.arrayElement(['private', 'protected', 'public'])),
   // set_abbreviation: `Team ${faker.name.firstName()}-${faker.name.lastName()}`,
   set_abbreviation: each(i => `Team ${i} + ${faker.commerce.productName()}`),
   is_team: true,
@@ -147,8 +137,7 @@ const clientConfigFactory = Factory.Sync.makeFactory<GlipClientConfig>({
   presence_beta: 'true',
   presence_webdesktop_all: 'true',
   enable_email_monitor: 'true',
-  search_facade_base_paths:
-    '{"v1": "http://gdx02-t01-gsf01.asialab.glip.net:8080"}',
+  search_facade_base_paths: '{"v1": "http://gdx02-t01-gsf01.asialab.glip.net:8080"}',
   search_facade_indexing_global_path: 'v1',
   search_facade_searching_global_path: 'v1',
   code_snippets_beta_all: 'true',
@@ -222,15 +211,4 @@ const profileFactory = Factory.Sync.makeFactory<GlipProfile>({
   // has_new_notification_defaults: true,
 });
 
-export {
-  companyFactory,
-  userFactory,
-  personFactory,
-  groupFactory,
-  teamFactory,
-  postFactory,
-  clientConfigFactory,
-  stateFactory,
-  groupStateFactory,
-  profileFactory,
-};
+export { companyFactory, userFactory, personFactory, groupFactory, teamFactory, postFactory, clientConfigFactory, stateFactory, groupStateFactory, profileFactory };

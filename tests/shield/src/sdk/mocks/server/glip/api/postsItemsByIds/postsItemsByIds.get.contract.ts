@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:21:15
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { IApiContract } from '../../../../../types';
 import { GlipPost, GlipItem } from '../../types';
 
