@@ -53,7 +53,7 @@ const StyledDialog = styled(
   & .paper.overflow-y {
     overflow-y: visible;
   }
-`;
+` as React.ComponentType<StyledDialogProps>;
 
 const WrapDialog = (props: JuiDialogProps) => {
   const {
