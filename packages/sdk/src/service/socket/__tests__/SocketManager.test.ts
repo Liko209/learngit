@@ -9,7 +9,7 @@ import { SocketFSM } from '../SocketFSM';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
-import { SocketClient } from 'foundation';
+import { SocketClient, powerMonitor } from 'foundation';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
@@ -489,12 +489,9 @@ describe('Socket Manager', () => {
         state: 'online',
       });
 
-      expect(socketManager.isScreenLocked()).toBeFalsy();
-      socketManager.onPowerMonitorEvent('lock-screen');
-      expect(socketManager.isScreenLocked()).toBeTruthy();
+      powerMonitor.onPowerMonitorEvent('lock-screen');
       expect(socketManager.hasActiveFSM()).toBeFalsy();
-      socketManager.onPowerMonitorEvent('unlock-screen');
-      expect(socketManager.isScreenLocked()).toBeFalsy();
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.hasActiveFSM()).toBeFalsy();
     });
 
@@ -507,8 +504,7 @@ describe('Socket Manager', () => {
 
     //   // Pre-condition: screen is locked
     //   expect(socketManager.isScreenLocked()).toBeFalsy();
-    //   socketManager.onPowerMonitorEvent('lock-screen');
-    //   expect(socketManager.isScreenLocked()).toBeTruthy();
+    //   powerMonitor.onPowerMonitorEvent('lock-screen');
 
     //   // Login will not create FSM if screen is locked.
     //   notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
@@ -520,8 +516,7 @@ describe('Socket Manager', () => {
     //   mockedSetReconnection.mockRestore();
 
     //   // Will re-create FSM if socket is not connect when unlock screen
-    //   socketManager.onPowerMonitorEvent('unlock-screen');
-    //   expect(socketManager.isScreenLocked()).toBeFalsy();
+    //   powerMonitor.onPowerMonitorEvent('unlock-screen');
     //   const fsmName2 = socketManager.activeFSM.name;
     //   expect(fsmName2).not.toEqual(fsmName1);
     //   expect(socketManager.activeFSM.setReconnection).not.toHaveBeenCalled();
@@ -532,8 +527,7 @@ describe('Socket Manager', () => {
     //   mockedSetReconnection.mockRestore();
 
     //   // Call setReconnection when lock screen
-    //   socketManager.onPowerMonitorEvent('lock-screen');
-    //   expect(socketManager.isScreenLocked()).toBeTruthy();
+    //   powerMonitor.onPowerMonitorEvent('lock-screen');
     //   const fsmName3 = socketManager.activeFSM.name;
     //   expect(fsmName3).toEqual(fsmName2);
     //   expect(socketManager.activeFSM.setReconnection).not.toHaveBeenCalled();
@@ -543,8 +537,7 @@ describe('Socket Manager', () => {
     //   // In case socket is connected:
     //   // only call setReconnection when unlock screen,
     //   // not create new FSM
-    //   socketManager.onPowerMonitorEvent('unlock-screen');
-    //   expect(socketManager.isScreenLocked()).toBeFalsy();
+    //   powerMonitor.onPowerMonitorEvent('unlock-screen');
     //   const fsmName4 = socketManager.activeFSM.name;
     //   expect(fsmName4).toEqual(fsmName3);
     //   expect(socketManager.activeFSM.setReconnection).not.toHaveBeenCalled();
@@ -557,19 +550,17 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // 2. the screen is locked
-      socketManager.onPowerMonitorEvent('lock-screen');
+      powerMonitor.onPowerMonitorEvent('lock-screen');
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
-      expect(socketManager.isScreenLocked()).toBeTruthy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // 3. user is not log in and online
-      socketManager.onPowerMonitorEvent('unlock-screen');
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'online',
       });
-      expect(socketManager.isScreenLocked()).toBeFalsy();
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       // 4. login user
@@ -577,8 +568,7 @@ describe('Socket Manager', () => {
       expect(socketManager.hasActiveFSM).toBeTruthy();
 
       // 4. now lock the screen
-      socketManager.onPowerMonitorEvent('lock-screen');
-      expect(socketManager.isScreenLocked()).toBeTruthy();
+      powerMonitor.onPowerMonitorEvent('lock-screen');
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName1 = socketManager.activeFSM.name;
 
@@ -586,7 +576,7 @@ describe('Socket Manager', () => {
       expect(socketManager.isConnected()).toBeTruthy();
 
       // 5. unlock screen should not create new FSM
-      socketManager.onPowerMonitorEvent('unlock-screen');
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName2 = socketManager.activeFSM.name;
       expect(fsmName1).toEqual(fsmName2);
@@ -594,7 +584,7 @@ describe('Socket Manager', () => {
       // 6. unlock screen should create new FSM
       socketManager.activeFSM.fireDisconnect();
       expect(socketManager.isConnected()).toBeFalsy();
-      socketManager.onPowerMonitorEvent('unlock-screen');
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       const fsmName3 = socketManager.activeFSM.name;
       expect(fsmName3).not.toEqual(fsmName2);
@@ -609,8 +599,7 @@ describe('Socket Manager', () => {
       mockedSetReconnection.mockRestore();
 
       // Pre-condition: offline, screen is locked
-      socketManager.onPowerMonitorEvent('lock-screen');
-      expect(socketManager.isScreenLocked()).toBeTruthy();
+      powerMonitor.onPowerMonitorEvent('lock-screen');
 
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
@@ -621,8 +610,7 @@ describe('Socket Manager', () => {
       mockedSetReconnection.mockRestore();
 
       // In case offline, unlock-screen will not create new FSM
-      socketManager.onPowerMonitorEvent('unlock-screen');
-      expect(socketManager.isScreenLocked()).toBeFalsy();
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.hasActiveFSM()).toBeFalsy();
     });
 
@@ -641,8 +629,7 @@ describe('Socket Manager', () => {
       mockedSetReconnection.mockRestore();
 
       // Pre-condition: screen is locked
-      socketManager.onPowerMonitorEvent('lock-screen');
-      expect(socketManager.isScreenLocked()).toBeTruthy();
+      powerMonitor.onPowerMonitorEvent('lock-screen');
 
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
         state: 'offline',
@@ -660,8 +647,7 @@ describe('Socket Manager', () => {
       });
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-      socketManager.onPowerMonitorEvent('unlock-screen');
-      expect(socketManager.isScreenLocked()).toBeFalsy();
+      powerMonitor.onPowerMonitorEvent('unlock-screen');
       expect(socketManager.hasActiveFSM()).toBeFalsy();
 
       socketManager['_reconnectRetryCount'] = 10;
