@@ -6,7 +6,12 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import {
-  palette, spacing, typography, grey, width, height
+  palette,
+  spacing,
+  typography,
+  grey,
+  width,
+  height,
 } from '../../foundation/utils';
 import { JuiTypography } from '../../foundation/Typography';
 import { RuiCircularProgress } from 'rcui/components/Progress';
@@ -55,7 +60,10 @@ type State = {
   showLink: boolean;
 };
 
-class JuiStreamLoading extends React.PureComponent<JuiConversationLoadingProps, State> {
+class JuiStreamLoading extends React.PureComponent<
+  JuiConversationLoadingProps,
+  State
+> {
   timer: NodeJS.Timeout;
   showLinkTimer: NodeJS.Timeout;
 
@@ -112,7 +120,9 @@ class JuiStreamLoading extends React.PureComponent<JuiConversationLoadingProps, 
         {showTip && (
           <Tip>
             {tip}
-            {showLink && <TipLink handleOnClick={this.onClick}>{linkText}</TipLink>}
+            {showLink && (
+              <TipLink handleOnClick={this.onClick}>{linkText}</TipLink>
+            )}
           </Tip>
         )}
       </Loading>
@@ -121,5 +131,5 @@ class JuiStreamLoading extends React.PureComponent<JuiConversationLoadingProps, 
 }
 
 export {
-  Loading, Progress, Tip, TipLink, JuiStreamLoading
+ Loading, Progress, Tip, TipLink, JuiStreamLoading
 };

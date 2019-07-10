@@ -48,6 +48,7 @@
     "make-pseudo": "node ./scripts/make-pseudo.js"
   },
   "devDependencies": {
+    "eslint-config-prettier": "6.0.0",
     "@jest-runner/electron": "2.0.1",
     "@types/enzyme": "3.9.0",
     "@types/glob": "7.1.1",

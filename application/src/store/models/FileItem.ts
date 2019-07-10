@@ -34,7 +34,15 @@ export default class FileItemModel extends ItemModel {
   constructor(data: Item) {
     super(data);
     const {
-      type, name, versions, is_document, is_new, deactivated, creator_id, created_at, modified_at
+      type,
+      name,
+      versions,
+      is_document,
+      is_new,
+      deactivated,
+      creator_id,
+      created_at,
+      modified_at,
     } = data;
     this.type = type;
     this.name = name;
@@ -108,7 +116,9 @@ export default class FileItemModel extends ItemModel {
   }
 
   private _getDirectRelatedPostInGroup = moize.promise((groupId: number) => {
-    const postService = ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE);
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     return postService.getLatestPostIdByItem(groupId, this.id);
   });
 
