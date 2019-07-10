@@ -6,7 +6,6 @@
 import { FetchSortableDataListHandler } from '@/store/base/fetch';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 import { ScrollPosition } from 'jui/components/VirtualizedList/hooks';
-import { IndexRange } from 'jui/components/VirtualizedList';
 
 type Props = {};
 
@@ -19,9 +18,8 @@ type ViewProps = {
   increaseFocusIndex: () => void;
   decreaseFocusIndex: () => void;
   focusIndex: number;
-  setRangeIndex: (range: IndexRange) => void;
-  startIndex: number;
-  stopIndex: number;
+  makeCall: (focusIndex?: number) => void;
+  dialerFocused: boolean;
 } & Props;
 
 export { Props, ViewProps };

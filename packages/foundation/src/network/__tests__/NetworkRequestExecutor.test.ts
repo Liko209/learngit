@@ -316,9 +316,7 @@ describe('NetworkRequestExecutor', () => {
         status: RESPONSE_STATUS_CODE.UNAUTHORIZED,
       } as any;
       networkExecutor['_callXApiResponseCallback'](mockResponse);
-      expect(
-        networkExecutor['_handle401XApiCompletionCallback'],
-      ).toBeCalled();
+      expect(networkExecutor['_handle401XApiCompletionCallback']).toBeCalled();
     });
 
     it('should call _handle502XApiCompletionCallback when status is BAD_GATEWAY', () => {
@@ -329,9 +327,7 @@ describe('NetworkRequestExecutor', () => {
         status: RESPONSE_STATUS_CODE.BAD_GATEWAY,
       } as any;
       networkExecutor['_callXApiResponseCallback'](mockResponse);
-      expect(
-        networkExecutor['_handle502XApiCompletionCallback'],
-      ).toBeCalled();
+      expect(networkExecutor['_handle502XApiCompletionCallback']).toBeCalled();
       expect(networkExecutor['_callXApiCompletionCallback']).toBeCalledWith(
         mockResponse,
       );

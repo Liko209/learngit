@@ -35,7 +35,7 @@ class ColonEmoji {
   private _options: Options = {
     onColon: () => {},
     colonDenotationChars: [':'],
-    allowedChars: /./,
+    allowedChars: /^[\s\S]*$/,
     minChars: 2,
     maxChars: 31,
     isolateCharacter: true,

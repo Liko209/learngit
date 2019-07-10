@@ -164,7 +164,9 @@ class JuiZoomComponent extends React.Component<JuiZoomProps> {
     };
     const zoomTransformStyle: React.CSSProperties = {};
     if (applyTransform) {
-      zoomTransformStyle.transform = `scale(${transform.scale}) translate(${transform.translateX}px, ${transform.translateY}px)`;
+      zoomTransformStyle.transform = `scale(${transform.scale}) translate(${
+        transform.translateX
+      }px, ${transform.translateY}px)`;
     }
     return (
       <Container ref={this.getViewRef()} className={className}>

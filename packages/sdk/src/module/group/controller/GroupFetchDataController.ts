@@ -700,7 +700,9 @@ export class GroupFetchDataController {
       if (companyReplyDomain) {
         const envDomain = this._getENVDomain();
         if (group.email_friendly_abbreviation) {
-          email = `${group.email_friendly_abbreviation}@${companyReplyDomain}.${envDomain}`;
+          email = `${
+            group.email_friendly_abbreviation
+          }@${companyReplyDomain}.${envDomain}`;
         }
 
         if (!isValidEmailAddress(email)) {

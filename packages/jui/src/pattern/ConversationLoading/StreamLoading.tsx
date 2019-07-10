@@ -6,13 +6,21 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import {
-  palette, spacing, typography, grey
+  palette, spacing, typography, grey, width, height
 } from '../../foundation/utils';
 import { JuiTypography } from '../../foundation/Typography';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiLink } from '../../components/Link';
 
 const Progress = styled(RuiCircularProgress)`
+  && {
+    width: ${width(9)} !important;
+    height: ${height(9)} !important;
+    svg {
+      width: ${width(9)};
+      height: ${height(9)};
+    }
+  }
   margin: ${spacing(4)};
 `;
 
@@ -100,7 +108,7 @@ class JuiStreamLoading extends React.PureComponent<JuiConversationLoadingProps, 
 
     return (
       <Loading>
-        <Progress size={24} />
+        <Progress />
         {showTip && (
           <Tip>
             {tip}

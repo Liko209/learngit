@@ -359,6 +359,7 @@ describe('SectionGroupHandler', () => {
           is_team: true,
           created_at: 0,
           is_archived: true,
+          members: [],
         },
       ];
       groupService.getGroupsByType = jest
@@ -682,7 +683,12 @@ describe('SectionGroupHandler', () => {
         },
       ]);
       isDelete = true;
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, [1]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [
+        {
+          id: 1,
+          members: [],
+        },
+      ] as any);
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -823,6 +829,7 @@ describe('SectionGroupHandler', () => {
           set_abbreviation: '',
           email_friendly_abbreviation: '',
           most_recent_content_modified_at: 1,
+          members: [],
         },
       ]);
       setTimeout(() => {

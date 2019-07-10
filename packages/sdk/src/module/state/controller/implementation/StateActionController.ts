@@ -126,8 +126,12 @@ class StateActionController {
     return {
       ['id']: myStateId,
       [`unread_count:${groupState.id}`]: groupState.unread_count,
-      [`unread_mentions_count:${groupState.id}`]: groupState.unread_mentions_count,
-      [`unread_deactivated_count:${groupState.id}`]: groupState.unread_deactivated_count,
+      [`unread_mentions_count:${
+        groupState.id
+      }`]: groupState.unread_mentions_count,
+      [`unread_deactivated_count:${
+        groupState.id
+      }`]: groupState.unread_deactivated_count,
       [`read_through:${groupState.id}`]: groupState.read_through,
       [`marked_as_unread:${groupState.id}`]: groupState.marked_as_unread,
     };

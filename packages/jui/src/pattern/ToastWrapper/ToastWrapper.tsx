@@ -27,6 +27,7 @@ const JuiToastWrapper = styled<JuiToastWrapperProps, 'div'>('div')`
   ${JuiSnackbar} + ${JuiSnackbar} {
      margin-top: ${spacing(3)};
    }
+   pointer-events: none;
 `;
 
 export { JuiToastWrapper, JuiToastWrapperProps };
