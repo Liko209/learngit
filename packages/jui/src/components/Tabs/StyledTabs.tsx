@@ -47,7 +47,9 @@ const StyledMuiTabs = styled<StyledTabsProps>(FilterMuiTabs)`
 
 const StyledTabs = React.forwardRef(
   (
-    { children, position, forceFlex, ...rest }: StyledTabsProps,
+    {
+      children, position, forceFlex, ...rest
+    }: StyledTabsProps,
     ref: React.RefObject<any>,
   ) => {
     const Tabs = (

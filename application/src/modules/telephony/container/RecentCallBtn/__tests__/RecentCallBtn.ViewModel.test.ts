@@ -21,10 +21,10 @@ describe('ForwardBtnViewModel', () => {
   it('Should switch between [Back to dialer] button and [Recent calls] button. [JPT-2312]', () => {
     vm.jumpToRecentCall();
     const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-    expect(_telephonyStore.shouldDisplayRecentCalls).toBeTruthy();
+    expect(_telephonyStore.isRecentCalls).toBeTruthy();
 
     vm.backToDialer();
-    expect(_telephonyStore.shouldDisplayRecentCalls).toBeFalsy();
+    expect(_telephonyStore.isRecentCalls).toBeFalsy();
   });
 
   it('Display [Recent calls] button when dialer opened and input field is empty. [JPT-2295]', () => {

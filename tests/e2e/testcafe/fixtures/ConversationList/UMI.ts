@@ -777,7 +777,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then I can find 1 UMI in the left navigation panel Messages Entry', async () => {
-    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 1, 'umi number error');
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
@@ -785,7 +785,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then I can find 2 UMI in the left navigation panel Messages Entry', async () => {
-    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(2);
   });
 
   await h(t).withLog('When I receive a new message in a directMessage conversation', async () => {
@@ -794,7 +794,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then I can find keep 2 UMI in the left navigation panel Messages Entry', async () => {
-    assert.ok(await app.homePage.leftPanel.messagesEntry.getUmi() == 2, 'umi number error');
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(2);
   });
 });
 
@@ -953,7 +953,7 @@ test.meta(<ITestMeta>{
   );
 
   await h(t).withLog('Then check UMI in Messages UMI=2+3+4=9 ', async () => {
-    await t.expect(await app.homePage.leftPanel.messagesEntry.getUmi()).eql(9);
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(9)
   });
 });
 

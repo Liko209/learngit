@@ -1,7 +1,8 @@
 import { parseSocketData } from '../../utils';
 import { EventEmitter2 } from 'eventemitter2';
-import { SOCKET } from '../../service';
+import { SOCKET } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
+
 type Handler = (data: any) => any;
 
 class DataDispatcher extends EventEmitter2 {
@@ -20,12 +21,10 @@ class DataDispatcher extends EventEmitter2 {
     }
 
     return Promise.all(
-      Object.keys(entries).map((key: string) =>
-        this.emitAsync(
-          this._getEmitEvent('SOCKET', key, partial),
-          entries[key],
-        ),
-      ),
+      Object.keys(entries).map((key: string) => this.emitAsync(
+        this._getEmitEvent('SOCKET', key, partial),
+        entries[key],
+      )),
     );
   }
 

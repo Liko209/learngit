@@ -25,8 +25,9 @@ import { SettingService } from 'sdk/module/setting';
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
+jest.mock('sdk/module/telephony/config/TelephonyGlobalConfig');
 jest.mock('../../../config');
-ServiceLoader.getInstance = jest.fn();
+jest.mock('../../config/TelephonyUserConfig');
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
@@ -58,7 +59,7 @@ describe('TelephonyService', () => {
   }
 
   function setup() {
-    const raw = (key: string) => ServiceLoader.getInstance(key);
+    const raw = ServiceLoader.getInstance;
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
       if (key === ServiceConfig.SETTING_SERVICE) {
         return mockSettingService;
@@ -245,6 +246,14 @@ describe('TelephonyService', () => {
         time,
         timeUnit,
       );
+    });
+  });
+
+  describe('getVoipState', () => {
+    it('should call account controller to get voip state', () => {
+      const spy = jest.spyOn(accountController, 'getVoipState');
+      telephonyService.getVoipState();
+      expect(spy).toBeCalled();
     });
   });
 

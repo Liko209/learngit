@@ -15,8 +15,8 @@ import { errorHandler } from '../errors/handler';
 import { IQueryOpt } from '../interface/IQueryOpt';
 import { ModelIdType } from '../../model';
 
-class Query<T, IdType extends ModelIdType = number>
-  implements IQueryOpt<T, IdType> {
+class Query<T extends IdModel<IdType>, IdType extends ModelIdType = number>
+implements IQueryOpt<T, IdType> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 

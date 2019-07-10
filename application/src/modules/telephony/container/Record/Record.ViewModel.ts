@@ -9,7 +9,6 @@ import { RecordProps, RecordViewProps } from './types';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { computed } from 'mobx';
-import { RECORD_STATE } from 'sdk/module/telephony/entity';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 
 class RecordViewModel extends StoreViewModel<RecordProps>
@@ -26,7 +25,7 @@ class RecordViewModel extends StoreViewModel<RecordProps>
 
   @computed
   get recording() {
-    return this._telephonyStore.recordState === RECORD_STATE.RECORDING;
+    return this._telephonyStore.isRecording;
   }
 
   get isOnline() {
@@ -38,7 +37,7 @@ class RecordViewModel extends StoreViewModel<RecordProps>
       return;
     }
     this._telephonyService.startOrStopRecording();
-  }
+  };
 }
 
 export { RecordViewModel };

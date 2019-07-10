@@ -3,7 +3,6 @@
  * @Date: 2019-05-24 13:33:49
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
@@ -18,7 +17,7 @@ import { IRCInfoService } from '../service/IRCInfoService';
 import { RegionSettingInfo } from './types';
 
 export class RegionSettingHandler extends AbstractSettingEntityHandler<
-  RegionSettingInfo
+RegionSettingInfo
 > {
   id = SettingEntityIds.Phone_Region;
 
@@ -33,14 +32,14 @@ export class RegionSettingHandler extends AbstractSettingEntityHandler<
     });
   }
 
-  async updateValue(value: RegionSettingInfo) {}
+  async updateValue() {}
 
   async fetchUserSettingEntity() {
     return await this._getRegionSetting();
   }
 
   private async _getRegionSetting(): Promise<
-    UserSettingEntity<RegionSettingInfo>
+  UserSettingEntity<RegionSettingInfo>
   > {
     const countryInfo = await this._rcInfoService.getCurrentCountry();
     const areaCode = await this._rcInfoService.getAreaCode();

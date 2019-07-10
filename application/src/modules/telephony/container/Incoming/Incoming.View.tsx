@@ -20,7 +20,7 @@ import { INCOMING_STATE } from '../../store';
 import { getDisplayName } from '../../helpers';
 
 const More = (props: CallActionsProps) => (
-  <CallActions showLabel={false} {...props} shouldPersistBg={true} />
+  <CallActions showLabel={false} {...props} shouldPersistBg />
 );
 
 More.displayName = 'more';
@@ -37,14 +37,16 @@ class IncomingViewComponent extends Component<Props> {
       <Avatar
         uid={uid}
         showDefaultAvatar={!uid}
-        cover={true}
+        cover
         imgProps={{ draggable: false }}
       />
     );
-  }
+  };
 
   render() {
-    const { name, phone, t, isExt, incomingState } = this.props;
+    const {
+      name, phone, t, isExt, incomingState,
+    } = this.props;
 
     switch (incomingState) {
       case INCOMING_STATE.REPLY:

@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 09:44:13
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { observable, computed } from 'mobx';
 import {
   AttachmentsProps,
@@ -87,7 +87,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         }
       });
     }
-  }
+  };
 
   @computed
   get canPost() {
@@ -133,7 +133,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         } as AttachmentItem);
       });
     }
-  }
+  };
 
   autoUploadFiles = async (
     files: File[],
@@ -175,7 +175,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         this._didUploadFileCallback = callback;
       }
     }
-  }
+  };
 
   canUploadFiles = async (files: File[]) => {
     const itemService = ServiceLoader.getInstance<ItemService>(
@@ -185,11 +185,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       return true;
     }
     return itemService.canUploadFiles(this.props.id, files, true); // TODO: The third parameter should be false for drag and drop files.
-  }
+  };
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
     return Promise.all(files.map(file => this.uploadFile(file, isUpdate)));
-  }
+  };
 
   uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
@@ -227,14 +227,14 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     } catch (e) {
       return null;
     }
-  }
+  };
 
   isFileExists = async (file: File) => {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
     );
     return await itemService.isFileExists(this.props.id, file.name);
-  }
+  };
 
   cancelUploadFile = async (info: ItemInfo) => {
     const { id } = info;
@@ -247,15 +247,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       this.items.delete(id);
       this.forceSaveDraftItems();
     }
-  }
+  };
 
   private _clearUpSelectedFiles = () => {
     this.selectedFiles = [];
-  }
+  };
 
   cancelDuplicateFiles = () => {
     this._clearUpSelectedFiles();
-  }
+  };
 
   // as new files
   uploadDuplicateFiles = async () => {
@@ -265,7 +265,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       await this._didUploadFileCallback();
     }
     this._didUploadFileCallback = undefined;
-  }
+  };
 
   updateDuplicateFiles = async () => {
     await this._uploadFiles(this.selectedFiles, true);
@@ -274,11 +274,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       await this._didUploadFileCallback();
     }
     this._didUploadFileCallback = undefined;
-  }
+  };
 
   cleanFiles = () => {
     this.items.clear();
-  }
+  };
 
   sendFilesOnlyPost = async () => {
     const postService = ServiceLoader.getInstance<PostService>(
@@ -297,7 +297,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       this.items.clear();
       this._trackSendPost();
     } catch (e) {}
-  }
+  };
 
   private _trackSendPost() {
     const group = getEntity<Group, GroupModel>(
@@ -323,14 +323,14 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       attachment_item_ids: draftItemsIds,
       id: this.props.id,
     });
-  }
+  };
 
   dispose = () => {
     notificationCenter.off(
       ItemNotification.getItemNotificationKey(),
       this._handleItemChanged,
     );
-  }
+  };
 }
 
 export { AttachmentsViewModel };

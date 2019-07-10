@@ -14,7 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import { getPostType, POST_TYPE } from '@/common/getPostType';
 
 class ConversationPostViewModel extends AbstractViewModel<
-  ConversationPostProps
+ConversationPostProps
 > {
   @computed
   get id() {

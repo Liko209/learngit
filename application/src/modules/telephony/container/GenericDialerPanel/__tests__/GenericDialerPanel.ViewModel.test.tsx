@@ -127,7 +127,7 @@ describe('GenericDialerPanelViewModel', () => {
     describe('Given initialized with `inputString`', () => {
       describe('canClickToInput', () => {
         it('should return false when has more than 30 words', () => {
-          var str = Array(30)
+          const str = Array(30)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.inputString = str;
@@ -136,7 +136,7 @@ describe('GenericDialerPanelViewModel', () => {
         });
 
         it('should return true when has less than 30 words', () => {
-          var str = Array(29)
+          const str = Array(29)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.inputString = str;
@@ -147,7 +147,7 @@ describe('GenericDialerPanelViewModel', () => {
 
       describe('trimmedInputString', () => {
         it('should return trim the `inputString`', () => {
-          var str = Array(29)
+          const str = Array(29)
             .fill(' ')
             .join('');
           genericDialerPanelViewModel._telephonyStore.inputString = str;
@@ -161,12 +161,12 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel.clickToInput(val);
           expect(
             genericDialerPanelViewModel._telephonyService.playBeep,
-          ).toBeCalledWith(val);
+          ).toHaveBeenCalledWith(val);
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual(val);
         });
 
         it('should not call the `playBeep` on TelephonyService given `canClickToInput` to be `false`', () => {
-          var str = Array(30)
+          const str = Array(30)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.inputString = str;
@@ -175,7 +175,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel.clickToInput(val);
           expect(
             genericDialerPanelViewModel._telephonyService.playBeep,
-          ).not.toBeCalledWith(val);
+          ).not.toHaveBeenCalledWith(val);
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual(str);
         });
 
@@ -209,7 +209,7 @@ describe('GenericDialerPanelViewModel', () => {
               value,
             },
           });
-          genericDialerPanelViewModel.deleteInputString();
+          genericDialerPanelViewModel.deleteAllInputString();
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual('');
         });
       });
@@ -221,7 +221,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
 
         it('should call `onInputEnterKeyDown` on props when hit the enter with first letter input through keypad', () => {
@@ -232,7 +232,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).toBeCalled();
+          ).toHaveBeenCalled();
         });
 
         it('should not call `onInputEnterKeyDown` on props when hit the space with first letter input through keypad', () => {
@@ -243,7 +243,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
 
         it('should not call `onInputEnterKeyDown` on props when entered contact searh page', () => {
@@ -258,7 +258,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
       });
     });
@@ -275,7 +275,7 @@ describe('GenericDialerPanelViewModel', () => {
             onAfterMount: jest.fn(),
           });
 
-          var str = Array(30)
+          const str = Array(30)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.forwardString = str;
@@ -293,7 +293,7 @@ describe('GenericDialerPanelViewModel', () => {
             onAfterMount: jest.fn(),
           });
 
-          var str = Array(29)
+          const str = Array(29)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.forwardString = str;
@@ -330,7 +330,7 @@ describe('GenericDialerPanelViewModel', () => {
             onAfterMount: jest.fn(),
           });
 
-          var str = Array(29)
+          const str = Array(29)
             .fill(' ')
             .join('');
           genericDialerPanelViewModel._telephonyStore.forwardString = str;
@@ -353,7 +353,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel.clickToInput(val);
           expect(
             genericDialerPanelViewModel._telephonyService.playBeep,
-          ).toBeCalledWith(val);
+          ).toHaveBeenCalledWith(val);
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual(val);
         });
 
@@ -367,7 +367,7 @@ describe('GenericDialerPanelViewModel', () => {
             onAfterMount: jest.fn(),
           });
 
-          var str = Array(30)
+          const str = Array(30)
             .fill(1)
             .join('');
           genericDialerPanelViewModel._telephonyStore.forwardString = str;
@@ -376,7 +376,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel.clickToInput(val);
           expect(
             genericDialerPanelViewModel._telephonyService.playBeep,
-          ).not.toBeCalledWith(val);
+          ).not.toHaveBeenCalledWith(val);
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual(str);
         });
       });
@@ -420,7 +420,7 @@ describe('GenericDialerPanelViewModel', () => {
               value,
             },
           });
-          genericDialerPanelViewModel.deleteInputString();
+          genericDialerPanelViewModel.deleteAllInputString();
           expect(genericDialerPanelViewModel.trimmedInputString).toEqual('');
         });
       });
@@ -441,7 +441,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
 
         it('should call `onInputEnterKeyDown` on props when hit the enter with first letter input through keypad', () => {
@@ -461,7 +461,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).toBeCalled();
+          ).toHaveBeenCalled();
         });
 
         it('should not call `onInputEnterKeyDown` on props when hit the space with first letter input through keypad', () => {
@@ -481,7 +481,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
 
         it('should not call `onInputEnterKeyDown` on props when entered contact searh page', () => {
@@ -505,7 +505,7 @@ describe('GenericDialerPanelViewModel', () => {
           });
           expect(
             genericDialerPanelViewModel.props.onInputEnterKeyDown,
-          ).not.toBeCalled();
+          ).not.toHaveBeenCalled();
         });
       });
     });
@@ -532,7 +532,7 @@ describe('GenericDialerPanelViewModel', () => {
   describe('onAfterDialerOpen', () => {
     it('should call `onAfterMount` on props', () => {
       genericDialerPanelViewModel.onAfterDialerOpen();
-      expect(genericDialerPanelViewModel.props.onAfterMount).toBeCalled();
+      expect(genericDialerPanelViewModel.props.onAfterMount).toHaveBeenCalled();
     });
   });
 
@@ -542,7 +542,7 @@ describe('GenericDialerPanelViewModel', () => {
       genericDialerPanelViewModel.setCallerPhoneNumber(val);
       expect(
         genericDialerPanelViewModel._telephonyService.setCallerPhoneNumber,
-      ).toBeCalledWith(val);
+      ).toHaveBeenCalledWith(val);
     });
   });
 

@@ -6,7 +6,7 @@
 
 import { init } from 'filestack-js';
 import { logger } from '../utils';
-import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
+import { LogControlManager } from 'sdk/service/uploadLogControl/LogControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
@@ -48,7 +48,7 @@ class FeedbackService {
       zipBlob,
       zipName: `RC_LOG_${uid}_${sessionId}_${DateFormatter.formatDate()}.zip`,
     };
-  }
+  };
 
   uploadRecentLogs = async (
     option?: Partial<UploadOption>,
@@ -69,15 +69,16 @@ class FeedbackService {
       {
         timeout,
         retry,
-        onProgress: (evt: { totalPercent: number; totalBytes: number }) => {},
+        onProgress: () => {},
       },
       {
         filename: zipName,
       },
     );
-  }
+  };
 
   sendFeedback = async (message: string, comments: string): Promise<void> => {
+    /* eslint-disable  no-throw-literal */
     if (!Sentry.getCurrentHub().getClient()) {
       throw 'Sentry is not init.';
     }
@@ -89,7 +90,7 @@ class FeedbackService {
       email: appContextInfo.email,
       name: appContextInfo.username,
     });
-  }
+  };
 }
 
 export { FeedbackService };

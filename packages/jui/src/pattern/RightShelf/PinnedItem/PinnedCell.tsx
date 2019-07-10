@@ -94,7 +94,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
 
     return (
       <CellWrapper
-        button={true}
+        button
         data-postid={postId}
         data-test-automation-id="pinned-section"
         onClick={onClick}

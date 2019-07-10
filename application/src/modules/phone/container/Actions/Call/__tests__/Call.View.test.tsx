@@ -8,7 +8,7 @@ import { test, testable } from 'shield';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { mountWithTheme } from 'shield/utils';
 import { container } from 'framework';
-
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { Call } from '../Call';
 
 const telephonyService = {
@@ -27,10 +27,27 @@ describe('message', () => {
           caller={{
             phoneNumber: '123',
           }}
+          type={BUTTON_TYPE.ICON}
         />,
       );
       wrapper.find(JuiIconButton).simulate('click');
       expect(telephonyService.makeCall).toHaveBeenCalledWith('123');
+    }
+  }
+
+  @testable
+  class JPT2459 {
+    @test(
+      'should the tooltip of the call icon to be "Call" when hover the button [JPT-2459]',
+    )
+    t1() {
+      const person = { id: 1 } as any;
+      const wrapper = mountWithTheme(
+        <Call id={123} person={person} type={BUTTON_TYPE.ICON} />,
+      );
+      expect(wrapper.find(JuiIconButton).props().tooltipTitle).toBe(
+        'common.call',
+      );
     }
   }
 });

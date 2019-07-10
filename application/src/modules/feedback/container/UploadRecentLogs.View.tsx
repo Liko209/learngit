@@ -21,21 +21,13 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
+import { Loading } from 'jui/hoc/withLoading';
 
 type State = {};
 
 type Props = UploadRecentLogsViewProps &
-  UploadRecentLogsViewModelProps &
-  WithTranslation;
+UploadRecentLogsViewModelProps &
+WithTranslation;
 
 @observer
 class UploadRecentLogsComponent extends React.Component<Props, State> {
@@ -64,7 +56,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
 
   private _flashToast(props: NotificationProps) {
     this._dismiss && this._dismiss();
@@ -80,7 +72,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       if (node) {
         node.focus();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -100,15 +92,17 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
       dismissible: false,
     });
     this.onClose();
-  }
+  };
 
   onClose = () => this.context();
 
   render() {
-    const { handleTitleChange, handleDescChange, isLoading, t } = this.props;
+    const {
+      handleTitleChange, handleDescChange, isLoading, t,
+    } = this.props;
     return (
       <JuiModal
-        open={true}
+        open
         size={'medium'}
         title={t('feedback.uploadRecentLogsDialogHeader')}
         onCancel={this.onClose}
@@ -117,11 +111,11 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
         cancelText={t('common.dialog.cancel')}
         loading={isLoading}
       >
-        <Loading loading={isLoading} alwaysComponentShow={true} delay={0}>
+        <Loading loading={isLoading} alwaysComponentShow delay={0}>
           <JuiTextField
             id={t('feedback.issueTitle')}
             label={t('feedback.issueTitle')}
-            fullWidth={true}
+            fullWidth
             inputProps={{
               maxLength: 200,
             }}
@@ -134,7 +128,7 @@ class UploadRecentLogsComponent extends React.Component<Props, State> {
             inputProps={{
               maxLength: 1000,
             }}
-            fullWidth={true}
+            fullWidth
             onChange={handleDescChange}
           />
         </Loading>

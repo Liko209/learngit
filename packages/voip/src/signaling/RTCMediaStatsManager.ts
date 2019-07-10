@@ -11,9 +11,6 @@ import { MediaReport } from '../report/Media';
 const LOG_TAG = 'RTCMediaStatsManager';
 class RTCMediaStatsManager {
   private _mediaStatsReport: MediaStatsReport = {};
-
-  constructor() {}
-
   setMediaStatsReport(mediaStatsReport: any): void {
     this._formatMediaStatsReport(mediaStatsReport);
     MediaReport.instance().startAnalysis(this._mediaStatsReport);
@@ -24,17 +21,17 @@ class RTCMediaStatsManager {
   }
 
   private _formatMediaStatsReport(mediaStatsReport: any) {
-    if ('undefined' !== typeof mediaStatsReport.inboundRtpReport) {
+    if (typeof mediaStatsReport.inboundRtpReport !== 'undefined') {
       this._mediaStatsReport.inboundRtpReport =
         mediaStatsReport.inboundRtpReport;
     }
 
-    if ('undefined' !== typeof mediaStatsReport.outboundRtpReport) {
+    if (typeof mediaStatsReport.outboundRtpReport !== 'undefined') {
       this._mediaStatsReport.outboundRtpReport =
         mediaStatsReport.outboundRtpReport;
     }
 
-    if ('undefined' !== typeof mediaStatsReport.rttMS) {
+    if (typeof mediaStatsReport.rttMS !== 'undefined') {
       this._mediaStatsReport.rttMS = mediaStatsReport.rttMS;
     }
   }

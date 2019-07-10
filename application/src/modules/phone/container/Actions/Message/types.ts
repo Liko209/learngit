@@ -4,18 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '@/store/models/Person';
-
+import { PHONE_TAB } from '@/AnalyticsCollector/constants';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
 import { ENTITY_TYPE } from '../../constants';
 
 type MessageProps = {
   id: number;
   person: PersonModel | null;
   entity: ENTITY_TYPE;
+  tabName: PHONE_TAB;
 };
 
 type MessageViewProps = {
+  type: BUTTON_TYPE;
   entity: ENTITY_TYPE;
-  hookAfterClick?: () => void;
   goToConversation: () => void;
 };
 

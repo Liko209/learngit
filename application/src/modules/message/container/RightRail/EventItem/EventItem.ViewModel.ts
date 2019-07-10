@@ -13,6 +13,7 @@ import { dateFormatter } from '@/utils/date';
 import moment from 'moment';
 import { Props, ViewProps } from './types';
 import { accentColor } from '@/common/AccentColor';
+
 class EventItemViewModel extends AbstractViewModel<Props> implements ViewProps {
   @computed
   get _id() {

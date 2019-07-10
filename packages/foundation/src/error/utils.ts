@@ -3,21 +3,17 @@
  * @Date: 2019-01-08 14:45:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { JError } from './JError';
-import { ErrorCondition } from './types';
-export function errorConditionSelector(
-  error: JError,
-  conditions: ErrorCondition | ErrorCondition[],
-) {
-  if (Array.isArray(conditions)) {
-    return conditions.some(condition =>
-      isErrorMatchCondition(error, condition),
-    );
+import { ErrorCondition, TError } from './types';
+
+export function stringMatch(src: string, target: string): boolean {
+  // consider use regexp to match string
+  if (src === '*') {
+    return true;
   }
-  return isErrorMatchCondition(error, conditions);
+  return src === target;
 }
 
-function isErrorMatchCondition(error: JError, condition: ErrorCondition) {
+function isErrorMatchCondition(error: TError, condition: ErrorCondition) {
   const excludes = condition.excludeCodes || [];
   return (
     stringMatch(condition.type, error.type) &&
@@ -26,10 +22,12 @@ function isErrorMatchCondition(error: JError, condition: ErrorCondition) {
   );
 }
 
-export function stringMatch(src: string, target: string): boolean {
-  // consider use regexp to match string
-  if (src === '*') {
-    return true;
+export function errorConditionSelector(
+  error: TError,
+  conditions: ErrorCondition | ErrorCondition[],
+) {
+  if (Array.isArray(conditions)) {
+    return conditions.some(condition => isErrorMatchCondition(error, condition));
   }
-  return src === target;
+  return isErrorMatchCondition(error, conditions);
 }

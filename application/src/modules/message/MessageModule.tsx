@@ -27,9 +27,7 @@ class MessageModule extends AbstractModule {
   private _messageNotificationManager: MessageNotificationManager;
   @IMessageSettingManager
   private _messageSettingManager: IMessageSettingManager;
-  handleLeave = () => {
-    return itemService.hasUploadingFiles();
-  }
+  handleLeave = () => itemService.hasUploadingFiles()
 
   async bootstrap() {
     this._messageNotificationManager.init();

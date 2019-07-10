@@ -56,6 +56,8 @@ const name2icon = {
   email: 'email',
   chat_bubble: 'chat_bubble',
   download: 'download',
+  'download-call': 'download-call',
+  'delete-call': 'delete-call',
   unfold_more: 'unfold_more',
   unfold_less: 'unfold_less',
   mention: 'mention',

@@ -2,7 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { ConversationPage } from "../pages";
 import { FileService } from "../services";
 import { PptrUtils } from "../utils";
@@ -10,7 +10,7 @@ import { Config } from "../config";
 import { globals } from "../globals";
 import * as bluebird from 'bluebird';
 
-class SwitchConversationGatherer extends BaseGatherer {
+class SwitchConversationGatherer extends DebugGatherer {
   private conversationIds: Array<string>;
   private metricKeys: Array<string> = [
     'goto_conversation_fetch_posts',

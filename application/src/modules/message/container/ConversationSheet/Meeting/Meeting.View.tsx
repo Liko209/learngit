@@ -22,6 +22,7 @@ import {
   HighlightContextInfo,
   SearchHighlightContext,
 } from '@/common/postParser';
+
 type meetingProps = WithTranslation & ViewProps;
 
 @observer
@@ -62,7 +63,7 @@ class Meeting extends React.Component<meetingProps> {
         </JuiItemContent>
       </>
     );
-  }
+  };
   private _renderContent() {
     return null;
   }
@@ -79,7 +80,9 @@ class Meeting extends React.Component<meetingProps> {
     }
   }
   render() {
-    const { t, meetingTitle, meetingItem, duration } = this.props;
+    const {
+      t, meetingTitle, meetingItem, duration,
+    } = this.props;
     const { status } = meetingItem;
     const isEnded = status === MEETING_STATUS.ENDED;
     return (

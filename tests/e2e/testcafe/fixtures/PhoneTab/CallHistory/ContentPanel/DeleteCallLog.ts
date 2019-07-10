@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-06-06 09:53:59
- * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2019-06-26 09:12:52
+ * @Last Modified by: joy.zhang (joy.zhang@ringcentral.com)
+ * @Last Modified time: 2019-07-05 16:03:24
  */
 
 import { BrandTire, SITE_URL } from '../../../../config';
@@ -56,9 +56,12 @@ test.meta(<ITestMeta>{
 
   const callHistoryItem = callHistoryPage.callHistoryItemByNth(0);
   const callHistoryId = await callHistoryItem.id;
-  await h(t).withLog('When I open call history {id} More menu and click Delete button', async (step) => {
+  await h(t).withLog('When I hover call history {id} and click "Delete" button', async (step) => {
     step.setMetadata('id', callHistoryId)
-    await callHistoryItem.openMoreMenu();
+    await callHistoryItem.hoverSelf();
+    if (!await callHistoryItem.deleteButton.exists) {
+      await callHistoryItem.openMoreMenu();
+    }
     await callHistoryItem.clickDeleteButton();
   });
 
@@ -75,9 +78,12 @@ test.meta(<ITestMeta>{
     await deleteCallHistoryDialog.ensureDismiss();
   });
 
-  await h(t).withLog('When I open call history {id} More menu and click Delete button', async (step) => {
+  await h(t).withLog('When I hover call history {id} and click "Delete" button', async (step) => {
     step.setMetadata('id', callHistoryId)
-    await callHistoryItem.openMoreMenu();
+    await callHistoryItem.hoverSelf();
+    if (!await callHistoryItem.deleteButton.exists) {
+      await callHistoryItem.openMoreMenu();
+    }
     await callHistoryItem.clickDeleteButton();
   });
 

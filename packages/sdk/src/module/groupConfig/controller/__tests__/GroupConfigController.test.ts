@@ -78,7 +78,7 @@ describe('GroupConfigService', () => {
       );
 
       await groupConfigController.updateGroupConfigPartialData(mock2);
-      expect(entitySourceController.bulkUpdate).toBeCalledWith([mock2]);
+      expect(entitySourceController.update).toBeCalledWith(mock2);
     });
   });
   describe('updateDraft', () => {

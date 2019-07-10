@@ -31,7 +31,7 @@ test.meta(<ITestMeta>{
   const callee = users[4];
   const caller = users[5];
 
-  const title = "Delete Voicemail"
+  const title = "Delete voicemail"
   const text = "Are you sure you want to delete the voicemail?"
   const cancelButtonText = "Cancel"
   const deleteButtonText = "Delete"

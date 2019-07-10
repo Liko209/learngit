@@ -16,7 +16,9 @@ export class ErrorParser implements IErrorParser {
 
   register(parser: IErrorParser) {
     if (this._errorParser.some(item => item.getName() === parser.getName())) {
-      this._errorParser = this._errorParser.filter(item => item.getName() !== parser.getName());
+      this._errorParser = this._errorParser.filter(
+        item => item.getName() !== parser.getName(),
+      );
     }
     this._errorParser.push(parser);
   }
@@ -30,5 +32,4 @@ export class ErrorParser implements IErrorParser {
     }
     return new JError(ERROR_TYPES.UNDEFINED, '', error.message);
   }
-
 }

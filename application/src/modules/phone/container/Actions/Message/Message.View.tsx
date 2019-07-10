@@ -6,10 +6,9 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { MessageViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { JuiActionIconWrapper } from 'jui/pattern/Phone/VoicemailItem';
 
 type Props = MessageViewProps & WithTranslation;
 
@@ -26,23 +25,17 @@ class MessageViewComponent extends Component<Props> {
   }
 
   render() {
-    const { goToConversation, entity } = this.props;
+    const { goToConversation, entity, type } = this.props;
     return (
-      <JuiActionIconWrapper>
-        <JuiIconButton
-          color="common.white"
-          variant="round"
-          autoFocus={false}
-          size="small"
-          key="message-button"
-          onClick={goToConversation}
-          data-test-automation-id={`${entity}-message-button`}
-          tooltipTitle={this.title}
-          ariaLabel={this.screenreaderText}
-        >
-          chat_bubble
-        </JuiIconButton>
-      </JuiActionIconWrapper>
+      <ActionButton
+        key="message-button"
+        icon="chat_bubble"
+        type={type}
+        tooltip={this.title}
+        onClick={goToConversation}
+        screenReader={this.screenreaderText}
+        automationId={`${entity}-message-button`}
+      />
     );
   }
 }

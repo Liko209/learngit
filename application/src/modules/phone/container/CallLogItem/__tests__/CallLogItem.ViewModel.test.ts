@@ -7,10 +7,11 @@ import { test, testable } from 'shield';
 import { mockEntity, mockSingleEntity } from 'shield/application';
 import { CALL_DIRECTION } from 'sdk/module/RCItems';
 import { CALL_RESULT } from 'sdk/module/RCItems/callLog/constants';
-import { getHourMinuteSeconds, postTimestamp } from '@/utils/date';
+import { getHourMinuteSeconds } from '@/utils/date';
 import { CallLogItemViewModel } from '../CallLogItem.ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { mockService } from 'shield/sdk';
+import { DATE_FORMAT } from '@/utils/date';
 
 jest.mock('@/utils/date');
 jest.mock('i18next', () => ({
@@ -236,16 +237,44 @@ describe('CallLogItemViewModel', () => {
   }
 
   @testable
-  class startTime {
-    @test('should be call postTimestamp if get startTime [JPT-2144]')
+  class callLogResponsiveMap {
+    @test(
+      'should call _getResponsiveMap if window is in different width [JPT-2400]',
+    )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      startTime: 'startTime',
-    })
     t1() {
       const vm = new CallLogItemViewModel({ id: 'id' });
-      vm.startTime;
-      expect(postTimestamp).toHaveBeenCalledWith('startTime');
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 3,
+        showCallInfo: true,
+        dateFormat: DATE_FORMAT.full,
+      });
+    }
+
+    t2() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 750 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 2,
+        showCallInfo: true,
+        dateFormat: DATE_FORMAT.full,
+      });
+    }
+
+    t3() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 450 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: true,
+        dateFormat: DATE_FORMAT.full,
+      });
+    }
+    t4() {
+      const vm = new CallLogItemViewModel({ id: 'id', width: 400 });
+      expect(vm.callLogResponsiveMap).toEqual({
+        buttonToShow: 1,
+        showCallInfo: false,
+        dateFormat: DATE_FORMAT.short,
+      });
     }
   }
 

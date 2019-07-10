@@ -20,12 +20,11 @@ import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
-import { postTimestamp } from '@/utils/date';
 
 import { VoicemailItemViewModel } from '../VoicemailItem.ViewModel';
 import { config } from '../../../module.config';
 import { PhoneStore } from '../../../store';
-import { JuiAudioStatus } from '../types';
+import { JuiAudioStatus, JuiAudioMode } from '../types';
 
 jest.mock('@/utils/date');
 jest.mock('@/containers/Notification');
@@ -74,6 +73,52 @@ describe('VoicemailItemViewModel', () => {
     }
   }
 
+  @testable
+  class voiceMailResponsiveMap {
+    @test(
+      'should call return correct responsive obj if window is in different width [JPT-2393]',
+    )
+    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
+    @mockEntity({})
+    t1() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 1000 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 3,
+        showTranscriptionText: true,
+        dateFormat: 'full',
+      });
+    }
+
+    t2() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 750 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.FULL,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+
+    t3() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 450 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.MINI,
+        buttonToShow: 2,
+        showTranscriptionText: false,
+        dateFormat: 'full',
+      });
+    }
+    t4() {
+      const vm = new VoicemailItemViewModel({ id: 1, width: 400 });
+      expect(vm.voiceMailResponsiveMap).toEqual({
+        audioMode: JuiAudioMode.TINY,
+        buttonToShow: 1,
+        showTranscriptionText: false,
+        dateFormat: 'short',
+      });
+    }
+  }
   @testable
   class attachment {
     @test('should be undefined if not attachment')
@@ -147,21 +192,17 @@ describe('VoicemailItemViewModel', () => {
     })
     beforeEach() {}
 
-    @test('should be true if phone store voicemailId equal vm id')
+    @test('should be true if active voicemail id equal vm id')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(1);
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
       expect(vm.selected).toBeTruthy();
     }
 
-    @test('should be false if phone store voicemailId not equal vm id')
+    @test('should be false if active voicemail id not equal vm id')
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(2);
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 2 });
       expect(vm.selected).toBeFalsy();
     }
   }
@@ -190,9 +231,8 @@ describe('VoicemailItemViewModel', () => {
       ],
     })
     t2() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const vm = new VoicemailItemViewModel({ id: 1, activeVoicemailId: 1 });
       const phoneStore = container.get(PhoneStore);
-      phoneStore.setVoicemailId(1);
       phoneStore.updateAudio(1, {
         startTime: 1,
       });
@@ -281,7 +321,11 @@ describe('VoicemailItemViewModel', () => {
     )
     @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
     async t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const props = {
+        id: 1,
+        onVoicemailPlay: () => {},
+      };
+      const vm = new VoicemailItemViewModel(props);
       await vm.onBeforeAction(JuiAudioStatus.PLAY);
       when(
         () => !!vm.audio,
@@ -312,10 +356,14 @@ describe('VoicemailItemViewModel', () => {
     })
     @mockService(voicemailService, 'updateReadStatus')
     t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
+      const props = {
+        id: 1,
+        onVoicemailPlay: jest.fn(),
+      };
+      const vm = new VoicemailItemViewModel(props);
       const phoneStore = container.get(PhoneStore);
       vm.onBeforePlay();
-      expect(phoneStore.voicemailId).toBe(1);
+      expect(props.onVoicemailPlay).toBeCalledWith(1);
       expect(voicemailService.updateReadStatus).toHaveBeenCalled();
     }
   }
@@ -384,20 +432,6 @@ describe('VoicemailItemViewModel', () => {
           expect(vm.shouldPause).toBeTruthy();
         },
       );
-    }
-  }
-
-  @testable
-  class createTime {
-    @test('should be call postTimestamp if get createTime [JPT-2144]')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      creationTime: 'creationTime',
-    })
-    t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      vm.createTime;
-      expect(postTimestamp).toHaveBeenCalledWith('creationTime');
     }
   }
 

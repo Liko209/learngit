@@ -16,7 +16,7 @@ import { ChangeEvent, KeyboardEvent } from 'react';
 import { toFirstLetterUpperCase } from '../../helpers';
 
 class GenericDialerPanelViewModel extends StoreViewModel<
-  GenericDialerPanelProps
+GenericDialerPanelProps
 > {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
   private _telephonyService: TelephonyService = container.get(
@@ -24,7 +24,11 @@ class GenericDialerPanelViewModel extends StoreViewModel<
   );
   private _concatInputString: (str: string) => void;
   private _updateInputString: (str: string) => void;
-  private _deleteInputString: (clearAll?: boolean) => void;
+  private _deleteInputString: (
+    clearAll: boolean,
+    start?: number,
+    end?: number,
+  ) => void;
 
   constructor(props: GenericDialerPanelProps) {
     super(props);
@@ -103,7 +107,10 @@ class GenericDialerPanelViewModel extends StoreViewModel<
 
   @computed
   get shouldDisplayRecentCalls() {
-    return this._telephonyStore.shouldDisplayRecentCalls;
+    return (
+      this._telephonyStore.isRecentCalls &&
+      this._telephonyStore.shouldDisplayRecentCalls
+    );
   }
 
   @computed
@@ -116,7 +123,7 @@ class GenericDialerPanelViewModel extends StoreViewModel<
       return;
     }
     this._telephonyService.playBeep(digit);
-  }
+  };
 
   // input using dialer's keypad instead of keyboard
   clickToInput = (str: string) => {
@@ -132,32 +139,31 @@ class GenericDialerPanelViewModel extends StoreViewModel<
     }
     this.playAudio(str);
     this._concatInputString(str);
-  }
+  };
 
-  setCallerPhoneNumber = (str: string) =>
-    this._telephonyService.setCallerPhoneNumber(str)
+  setCallerPhoneNumber = (str: string) => this._telephonyService.setCallerPhoneNumber(str);
 
-  onAfterDialerOpen = () => this.props.onAfterMount();
+  onAfterDialerOpen = () => this.props.onAfterMount && this.props.onAfterMount();
 
-  deleteLastInputString = () => {
-    this._deleteInputString();
-  }
+  deleteInputString = (startPos: number, endPos: number) => {
+    this._deleteInputString(false, startPos, endPos);
+  };
 
-  deleteInputString = () => {
+  deleteAllInputString = () => {
     this._deleteInputString(true);
-  }
+  };
 
   onFocus = () => {
     this._telephonyStore.onDialerInputFocus();
-  }
+  };
 
   onBlur = () => {
     this._telephonyStore.onDialerInputBlur();
-  }
+  };
 
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     this._updateInputString(e.target.value);
-  }
+  };
 
   onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // let <ContactSearchList/> handle its own `Enter` key event
@@ -168,7 +174,7 @@ class GenericDialerPanelViewModel extends StoreViewModel<
     ) {
       this.props.onInputEnterKeyDown(this.inputString);
     }
-  }
+  };
 }
 
 export { GenericDialerPanelViewModel };

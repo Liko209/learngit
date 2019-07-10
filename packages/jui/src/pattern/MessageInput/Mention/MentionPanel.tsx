@@ -8,9 +8,10 @@ import {
   palette,
 } from '../../../foundation/utils/styles';
 
-const Wrapper = styled.div<{
+type WrapperProps = {
   isEditMode?: boolean;
-}>`
+}
+const Wrapper = styled.div<WrapperProps>`
   position: absolute;
   left: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};
   right: ${({ isEditMode }) => (isEditMode ? 0 : spacing(4.5))};

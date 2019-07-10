@@ -19,7 +19,7 @@ class MuteViewComponent extends Component<Props> {
     event.stopPropagation();
     const { muteOrUnmute } = this.props;
     muteOrUnmute();
-  }
+  };
 
   render() {
     const { t, isMute, type } = this.props;
@@ -46,7 +46,7 @@ class MuteViewComponent extends Component<Props> {
       <JuiKeypadAction>
         <JuiIconButton
           color={isMute ? 'primary.600' : 'grey.900'}
-          disableToolTip={true}
+          disableToolTip
           onClick={this._handleMute}
           size="xxlarge"
           aria-label={

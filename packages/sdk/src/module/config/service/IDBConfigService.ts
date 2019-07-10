@@ -5,7 +5,7 @@
  */
 
 import { IConfigService } from './IConfigService';
-import { DBKVDao } from '../../../dao';
+import { DBKVDao } from '../../../framework/dao';
 
 interface IDBConfigService extends IConfigService {
   setConfigDao(dao: DBKVDao): void;

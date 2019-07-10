@@ -12,6 +12,8 @@ import {
   IQuery,
   IQueryOption,
 } from '../../db';
+
+/* eslint-disable */
 class DexieCollection<T, Key extends DatabaseKeyType>
   implements IDatabaseCollection<T, Key> {
   private collection: Dexie.Collection<T, Key>;

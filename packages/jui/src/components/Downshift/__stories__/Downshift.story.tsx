@@ -46,11 +46,11 @@ const getItemById = (suggestions: Item[], id: number) =>
   suggestions.find((suggestion: Item) => suggestion.id === id);
 
 const SearchItem = (props: any) => {
-  const { itemId, ...rest } = props;
+  const { itemId, isHighlighted, ...rest } = props;
   const item = getItemById(suggestions, itemId);
 
   return item ? (
-    <JuiSearchItem selected={props.isHighlighted} {...rest}>
+    <JuiSearchItem selected={isHighlighted} {...rest}>
       {item.label}
     </JuiSearchItem>
   ) : null;
@@ -91,6 +91,7 @@ const MultipleDownshift = () => {
   };
   const handleSelectChange = (selectedItems: Item[]) => {
     setSelectedItems(selectedItems);
+    setInputValue('');
   };
   return (
     <JuiDownshift
@@ -98,8 +99,8 @@ const MultipleDownshift = () => {
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
-      inputLabel="Downshift"
-      inputPlaceholder="placeholder"
+      inputLabel='Downshift'
+      inputPlaceholder='placeholder'
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}

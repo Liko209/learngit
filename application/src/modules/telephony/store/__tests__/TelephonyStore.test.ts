@@ -130,9 +130,9 @@ describe('Telephony store', () => {
   it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
     const store = createStore();
     store.directCall();
-    call.holdState = HOLD_STATE.DISABLE;
+    call.holdState = HOLD_STATE.DISABLED;
 
-    expect(store.holdState).toBe(HOLD_STATE.DISABLE);
+    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
   });
 
   it('holdState should change to HOLD_STATE.IDLE when connected', () => {
@@ -145,7 +145,7 @@ describe('Telephony store', () => {
   it('recordDisabled should to be RECORD_DISABLED_STATE.DISABLED when instantiated TelephonyStore', () => {
     const store = createStore();
     store.directCall();
-    call.recordState = RECORD_STATE.DISABLE;
+    call.recordState = RECORD_STATE.DISABLED;
     expect(store.recordDisabled).toBe(true);
   });
 
@@ -285,12 +285,12 @@ describe('Telephony store', () => {
   it('jumpToRecentCall()', () => {
     const store = createStore();
     store.jumpToRecentCall();
-    expect(store.shouldDisplayRecentCalls).toBeTruthy();
+    expect(store.isRecentCalls).toBeTruthy();
   });
 
   it('backToDialer()', () => {
     const store = createStore();
     store.backToDialer();
-    expect(store.shouldDisplayRecentCalls).toBeFalsy();
+    expect(store.isRecentCalls).toBeFalsy();
   });
 });

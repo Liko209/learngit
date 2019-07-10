@@ -8,8 +8,9 @@ import { AbstractService } from './AbstractService';
 import { IdModel, ModelIdType } from '../model';
 import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
+import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../../framework/dao';
+import { BaseDao } from '../dao';
 import NetworkClient from '../../api/NetworkClient';
 import {
   buildRequestController,
@@ -40,7 +41,7 @@ class EntityBaseService<
   private _entityCacheController: IEntityCacheController<T, IdType>;
   private _checkTypeFunc: (id: IdType) => boolean;
   private _entityNotificationController: IEntityNotificationController<T>;
-
+  private _healthModuleController: IHealthModuleController;
   constructor(
     public entityOptions: {
       isSupportedCache: boolean;
@@ -97,26 +98,31 @@ class EntityBaseService<
   }
 
   protected onStarted() {
-    notificationCenter.on(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.on(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.on(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.on(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.subscribe();
     }
+    this._healthModuleController && this._healthModuleController.init();
   }
   protected onStopped() {
-    notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.off(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.off(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.off(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
-
+    this._healthModuleController && this._healthModuleController.dispose();
     delete this._subscribeController;
     delete this._entitySourceController;
     delete this._entityCacheController;
     delete this._entityNotificationController;
   }
 
-  protected onLogin() {}
+  protected onRCLogin() {}
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  protected onGlipLogin(success: boolean) {}
 
   protected onLogout() {}
 
@@ -140,7 +146,7 @@ class EntityBaseService<
   }
 
   isCacheEnable(): boolean {
-    return this._entityCacheController ? true : false;
+    return !!this._entityCacheController;
   }
 
   protected buildEntityCacheController() {
@@ -155,9 +161,7 @@ class EntityBaseService<
     return true;
   }
 
-  private _canRequest = () => {
-    return this.canRequest();
-  }
+  private _canRequest = () => this.canRequest();
 
   private _initControllers() {
     if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
@@ -172,12 +176,12 @@ class EntityBaseService<
         ),
         this.networkConfig
           ? {
-              requestController: buildRequestController<T, IdType>(
-                this.networkConfig,
-              ),
-              canSaveRemoteData: this.canSaveRemoteEntity(),
-              canRequest: this._canRequest,
-            }
+            requestController: buildRequestController<T, IdType>(
+              this.networkConfig,
+            ),
+            canSaveRemoteData: this.canSaveRemoteEntity(),
+            canRequest: this._canRequest,
+          }
           : undefined,
       );
     }
@@ -215,14 +219,16 @@ class EntityBaseService<
     return this._entityNotificationController;
   }
 
-  async getSettingsByParentId(settingId: number): Promise<BaseSettingEntity[]> {
+  async getSettingsByParentId(): Promise<BaseSettingEntity[]> {
     return [];
   }
 
-  async getSettingItemById(
-    settingId: number,
-  ): Promise<BaseSettingEntity | undefined> {
+  async getSettingItemById(): Promise<BaseSettingEntity | undefined> {
     return undefined;
+  }
+
+  setHealthModuleController(controller: IHealthModuleController) {
+    this._healthModuleController = controller;
   }
 }
 

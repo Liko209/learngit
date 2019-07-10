@@ -26,14 +26,10 @@ test.meta(<ITestMeta>{
 })('Block the number (voicemail)', async (t) => {
   const callee = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.guestCompany.users[0];
-
-
   const title = 'Block this number';
   const text = 'This number will not be able to reach you if blocked. Do you want to block it?';
   const cancelButtonText = 'Cancel';
   const blockButtonText = 'Block';
-  const blocknumber = 'Block number';
-  const unblocknumber = 'Unblock number';
   const alertText1 = 'The number has been blocked';
   const alertText2 = 'The number has been unblocked';
 
@@ -44,7 +40,7 @@ test.meta(<ITestMeta>{
     });
     await h(t).glip(callee).init();
     await h(t).glip(callee).setDefaultPhoneApp('glip');
-    await h(t).platform(callee).resetBlockPhoneNumber();
+    await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
   });
 
   const app = new AppRoot(t);
@@ -52,8 +48,8 @@ test.meta(<ITestMeta>{
     step.initMetadata({
       number: callee.company.number,
       extension: callee.extension,
-    }),
-      await h(t).directLoginWithUser(SITE_URL, callee);
+    });
+    await h(t).directLoginWithUser(SITE_URL, callee);
     await app.homePage.ensureLoaded();
   });
 
@@ -76,9 +72,13 @@ test.meta(<ITestMeta>{
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
   const voicemailId = await voicemailItem.id;
+
   await h(t).withLog('When I open voicemail {id} Menu and click "Block number" button', async (step) => {
     step.setMetadata('id', voicemailId);
-    await voicemailItem.openMoreMenu();
+    await voicemailItem.hoverSelf();
+    if (!await voicemailItem.blockToggle.exists) {
+      await voicemailItem.openMoreMenu();
+    }
     await voicemailItem.clickBlockButton();
   });
 
@@ -104,7 +104,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And cancel button: {delete}, color: {red}', async (step) => {
     step.initMetadata({ block: blockButtonText, red: 'red' }),
-      await t.expect(BlockNumberDialog.blockButton.textContent).eql(blockButtonText);
+    await t.expect(BlockNumberDialog.blockButton.textContent).eql(blockButtonText);
     const style = await BlockNumberDialog.blockButton.style;
     assert.ok(style['background-color'] == 'rgb(244, 67, 54)', 'block button background not eql specify: rgb(244, 67, 54)');
   });
@@ -119,7 +119,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I open voicemail {id} Menu and click "Block number" button', async (step) => {
     step.setMetadata('id', voicemailId);
-    await voicemailItem.openMoreMenu();
+    await voicemailItem.hoverSelf();
+    if (!await voicemailItem.blockToggle.exists) {
+      await voicemailItem.openMoreMenu();
+    }
     await voicemailItem.clickBlockButton();
   });
 
@@ -141,14 +144,20 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Block button changed to Unblock button', async (step) => {
     step.setMetadata('id', voicemailId);
-    await voicemailItem.openMoreMenu();
-    await t.expect(voicemailItem.unblockButton.textContent).eql(unblocknumber);
-    await voicemailItem.openMoreMenu();
+    await voicemailItem.hoverSelf();
+    if (!await voicemailItem.blockToggle.exists) {
+      await voicemailItem.openMoreMenu();
+    }
+    await t.expect(voicemailItem.unblockButton.exists).ok();
   });
+
 
   await h(t).withLog('When I open voicemail {id} Menu and click "Unblock number" button', async (step) => {
     step.setMetadata('id', voicemailId);
-    await voicemailItem.openMoreMenu();
+    await voicemailItem.hoverSelf();
+    if (!await voicemailItem.blockToggle.exists) {
+      await voicemailItem.openMoreMenu();
+    }
     await voicemailItem.clickUnblockButton();
   });
 
@@ -158,7 +167,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Block button changed to Unblock button', async (step) => {
     step.setMetadata('id', voicemailId);
-    await voicemailItem.openMoreMenu();
-    await t.expect(voicemailItem.blockButton.textContent).eql(blocknumber);
+    await voicemailItem.hoverSelf();
+    if (!await voicemailItem.blockToggle.exists) {
+      await voicemailItem.openMoreMenu();
+    }
+    await t.expect(voicemailItem.blockButton.exists).ok();
   });
 });

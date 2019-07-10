@@ -1,5 +1,5 @@
 import { Container } from 'foundation';
-import { AccountManager } from '../AccountManager';
+import { AccountManager, GLIP_LOGIN_STATUS } from '../AccountManager';
 import {
   IAuthenticator,
   ISyncAuthenticator,
@@ -82,14 +82,15 @@ async function setupLoginSuccess() {
 describe('AccountManager', () => {
   let accountManager: AccountManager;
 
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
+
+    ({ accountManager } = setup());
   });
 
   describe('syncLogin()', () => {
     describe('when success', () => {
       beforeEach(() => {
-        ({ accountManager } = setup());
         mockSyncAuthenticate.mockReturnValue({
           success: true,
           accountInfos: [{ type: MyAccount.name, data: 'token' }],
@@ -112,7 +113,6 @@ describe('AccountManager', () => {
 
     describe('when failed', () => {
       beforeEach(() => {
-        ({ accountManager } = setup());
         mockSyncAuthenticate.mockReturnValue({ success: false });
       });
 
@@ -130,6 +130,35 @@ describe('AccountManager', () => {
         accountInfos: [{ type: MyAccount.name, data: 'token' }],
       });
       await accountManager.login(MyAuthenticator.name);
+    });
+  });
+
+  describe('login()', () => {
+    it('should work', async () => {
+      mockAuthenticate.mockReturnValue({
+        success: true,
+        accountInfos: [{ type: MyAccount.name, data: 'token' }],
+      });
+      accountManager.makeSureUserInWhitelist = jest.fn();
+      accountManager['_handleAuthResponse'] = jest.fn();
+      await accountManager.login(MyAuthenticator.name);
+
+      expect(accountManager.makeSureUserInWhitelist).toBeCalled();
+      expect(accountManager['_handleAuthResponse']).toBeCalled();
+    });
+
+    it('should throw error when failed', async () => {
+      mockAuthenticate.mockReturnValue({
+        success: false,
+      });
+      accountManager.makeSureUserInWhitelist = jest.fn();
+      accountManager['_handleAuthResponse'] = jest.fn();
+      await accountManager.login(MyAuthenticator.name).catch(error => {
+        expect(error).toEqual(Error('Auth fail'));
+      });
+
+      expect(accountManager.makeSureUserInWhitelist).not.toBeCalled();
+      expect(accountManager['_handleAuthResponse']).not.toBeCalled();
     });
   });
 
@@ -192,6 +221,37 @@ describe('AccountManager', () => {
       const { accountManager } = await setupLoginSuccess();
 
       expect(accountManager.isLoggedIn()).toBeTruthy();
+    });
+  });
+
+  describe('isRCOnlyMode()', () => {
+    it('should return true when enter RCOnlyMode', async () => {
+      const { accountManager } = await setupLoginSuccess();
+      accountManager['_isRCOnlyMode'] = true;
+
+      expect(accountManager.isRCOnlyMode()).toBeTruthy();
+    });
+  });
+
+  describe('setGlipLoginStatus()', () => {
+    it('should return true when enter RCOnlyMode', async () => {
+      const { accountManager } = await setupLoginSuccess();
+      accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.SUCCESS);
+
+      expect(accountManager['_glipLoginStatus']).toEqual(
+        GLIP_LOGIN_STATUS.SUCCESS,
+      );
+    });
+  });
+
+  describe('getGlipLoginStatus()', () => {
+    it('should return true when enter RCOnlyMode', async () => {
+      const { accountManager } = await setupLoginSuccess();
+      accountManager['_glipLoginStatus'] = GLIP_LOGIN_STATUS.SUCCESS;
+
+      expect(accountManager.getGlipLoginStatus()).toEqual(
+        GLIP_LOGIN_STATUS.SUCCESS,
+      );
     });
   });
 

@@ -15,6 +15,7 @@ import { GlobalSearchService } from '@/modules/GlobalSearch/service';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+
 const globalStore = storeManager.getGlobalStore();
 
 class TopBarViewModel extends AbstractViewModel {
@@ -31,7 +32,7 @@ class TopBarViewModel extends AbstractViewModel {
   updateLeftNavState = () => {
     const isLeftNavOpen = !globalStore.get(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLeftNavOpen);
-  }
+  };
 
   @computed
   get currentUserId() {
@@ -45,12 +46,12 @@ class TopBarViewModel extends AbstractViewModel {
     );
     accountService.logout();
     window.location.href = '/';
-  }
+  };
 
   @action
   openGlobalSearch = () => {
     this._globalSearchService.openGlobalSearch();
-  }
+  };
 
   @computed
   get searchKey() {
@@ -60,7 +61,7 @@ class TopBarViewModel extends AbstractViewModel {
   @action
   onClear = () => {
     this._globalSearchStore.clearSearchKey();
-  }
+  };
 }
 
 export { TopBarViewModel };

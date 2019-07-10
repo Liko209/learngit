@@ -42,13 +42,15 @@ const HiddenImage = styled.img`
 const DelayLoadingPage = withDelay(StyledLoadingPage);
 
 type JuiImageProps = React.DetailedHTMLProps<
-  React.ImgHTMLAttributes<HTMLImageElement>,
-  HTMLImageElement
+React.ImgHTMLAttributes<HTMLImageElement>,
+HTMLImageElement
 > & {
   imageRef?: RefObject<HTMLImageElement>;
   loadingPlaceHolder?: ComponentType<any>;
   thumbnailSrc?: string;
   onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
+  onLoad?: () => void;
+  onError?: () => void;
 };
 
 type JuiImageState = {
@@ -69,13 +71,6 @@ function isThumbnailMode(props: JuiImageProps) {
   return props.thumbnailSrc && props.thumbnailSrc !== props.src;
 }
 
-function getInitState(props: JuiImageProps): JuiImageState {
-  if (isThumbnailMode(props)) {
-    return _.cloneDeep(JuiImageView.initThumbnailModeState);
-  }
-  return _.cloneDeep(JuiImageView.initState);
-}
-
 class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   static initState: JuiImageState = {
     loadings: {
@@ -86,7 +81,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     },
     currentShow: 'raw',
   };
-
   static initThumbnailModeState: JuiImageState = {
     loadings: {
       raw: true,
@@ -103,14 +97,17 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
 
   constructor(props: JuiImageProps) {
     super(props);
-    this.state = getInitState(props);
+    this.state = this.getInitState(props);
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
-
-  getImageRef = (): RefObject<HTMLImageElement> => {
-    return this.props.imageRef || this._imageRef;
+  getInitState(props: JuiImageProps): JuiImageState {
+    if (isThumbnailMode(props)) {
+      return _.cloneDeep(JuiImageView.initThumbnailModeState);
+    }
+    return _.cloneDeep(JuiImageView.initState);
   }
+  getImageRef = (): RefObject<HTMLImageElement> => this.props.imageRef || this._imageRef;
 
   private _loadingView() {
     return (
@@ -134,6 +131,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     const { loadings, errors, currentShow } = this.state;
     const {
       onSizeLoad,
+      onLoad,
+      onError,
       loadingPlaceHolder,
       imageRef: viewRef,
       thumbnailSrc,
@@ -154,6 +153,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
             if (currentShow === 'raw') {
               const { naturalWidth, naturalHeight } = event.currentTarget;
               onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
+              onLoad && onLoad();
             }
             this.setState({
               loadings: {
@@ -163,6 +163,9 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
             });
           }}
           onError={() => {
+            if (currentShow === 'raw') {
+              onError && onError();
+            }
             this.setState({
               loadings: {
                 ...loadings,
@@ -173,6 +176,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
                 [currentShow]: true,
               },
             });
+            onError && onError();
           }}
           {...rest}
         />
@@ -212,5 +216,4 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     );
   }
 }
-
 export { JuiImageView };

@@ -22,7 +22,7 @@ describe('FirebasePerformanceController', () => {
       spy.mockReturnValue();
       const firebase = new FirebasePerformanceController();
       firebase.initialize();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should not initialize firebase performance for non-production account', () => {
@@ -32,7 +32,7 @@ describe('FirebasePerformanceController', () => {
       spy.mockReturnValue();
       const firebase = new FirebasePerformanceController();
       firebase.initialize();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 });

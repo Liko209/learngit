@@ -46,8 +46,8 @@ export class FetchDataListHandler<
   protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
   protected _dataChangeCallBacks: DeltaDataHandler<
-    IdType,
-    SortableModel
+  IdType,
+  SortableModel
   >[] = [];
   protected _defaultHasMoreDown: boolean;
   protected _defaultHasMoreUp: boolean;

@@ -754,7 +754,7 @@ exports[`Storyshots Pattern Reply Call: Pattern Reply Call 1`] = `
       className="MuiListItem-root MuiListItem-default MuiListItem-gutters c14 c15"
       disabled={false}
     >
-      Reply in 
+      Reply in
       <span>
         55
       </span>

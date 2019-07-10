@@ -27,4 +27,6 @@ class SortingOrder {
   public static EmailMatching: number = 0;
 }
 
-export { CALL_ID_USAGE_TYPE, PHONE_NUMBER_TYPE, PhoneNumberInfo, SortingOrder };
+export {
+  CALL_ID_USAGE_TYPE, PHONE_NUMBER_TYPE, PhoneNumberInfo, SortingOrder,
+};

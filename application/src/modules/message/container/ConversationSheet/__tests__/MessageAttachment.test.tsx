@@ -18,6 +18,7 @@ import {
   ThumbImageView,
   Footer,
 } from 'jui/pattern/ConversationItemCard/MessageAttachment';
+
 jest.mock('@/store/utils');
 
 describe('MessageAttachmentViewModel', () => {

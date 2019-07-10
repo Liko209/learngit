@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
 import { alignCenterDecorator } from '../../../foundation/utils/decorators';
-import { JuiLink, JuiLinkProps } from '../';
+import { JuiLink, JuiLinkProps } from '..';
 
 function getKnobs() {
   const content = text('content', 'button');

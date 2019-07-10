@@ -8,19 +8,17 @@ import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { LinkSettingItemProps } from './types';
 
 class LinkSettingItemViewModel extends BaseSettingItemViewModel<
-  LinkSettingItemProps
+LinkSettingItemProps
 > {
   @observable loading = false;
   private _valueCache = '';
 
   @action
-  getUrl = () => {
-    return (
-      this._getUrlFromCache() ||
+  getUrl = () => (
+    this._getUrlFromCache() ||
       this._getUrlFromValue() ||
       this._getUrlFromValueGetter()
-    );
-  }
+  )
 
   @action
   private _getUrlFromCache() {

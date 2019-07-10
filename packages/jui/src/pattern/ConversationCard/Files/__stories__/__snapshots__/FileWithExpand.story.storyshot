@@ -6,7 +6,6 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c10 {
@@ -406,6 +405,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <img
             className="c11"
             onClick={[Function]}
+            onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
             style={
@@ -514,6 +514,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <img
             className="c11"
             onClick={[Function]}
+            onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
             style={
@@ -622,6 +623,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <img
             className="c11"
             onClick={[Function]}
+            onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
             style={
@@ -730,6 +732,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <img
             className="c11"
             onClick={[Function]}
+            onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
             style={
@@ -838,6 +841,7 @@ exports[`Storyshots Pattern/ConversationCard JuiFileWithExpand: Pattern/Conversa
           <img
             className="c11"
             onClick={[Function]}
+            onError={[Function]}
             onLoad={[Function]}
             src="test-file-stub"
             style={

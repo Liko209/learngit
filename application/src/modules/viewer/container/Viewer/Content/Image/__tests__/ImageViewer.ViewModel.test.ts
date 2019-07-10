@@ -42,6 +42,7 @@ jest.mock('@/common/getThumbnailURL', () => {
   return {
     getMaxThumbnailURLInfo: jest.fn(),
     getThumbnailURL: jest.fn(),
+    getLargeRawImageURL: jest.fn(),
   };
 });
 describe('ImageViewer.ViewModel', () => {
@@ -96,72 +97,11 @@ describe('ImageViewer.ViewModel', () => {
       const imageInfo = vm.imageInfo;
       FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
       FileItemUtils.isSupportPreview.mockReturnValue(false);
-      expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
       expect(FileItemUtils.isSupportPreview).toBeCalled();
       expect(imageInfo).toEqual({
         url: undefined,
         width: 0,
         height: 0,
-      });
-    });
-    it('should return raw image info when support', () => {
-      const item = {
-        versionUrl: '',
-        origWidth: 1,
-        origHeight: 2,
-        id: 11,
-      } as FileItemModel;
-      getEntity.mockReturnValue(item);
-      FileItemUtils.isSupportShowRawImage.mockReturnValue(true);
-      const vm = new ImageViewerViewModel(props);
-      // @ts-ignore
-      vm._largeRawImageURL = item.versionUrl;
-      const imageInfo = vm.imageInfo;
-      expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
-      expect(FileItemUtils.isSupportPreview).not.toBeCalled();
-      expect(imageInfo).toEqual({
-        url: item.versionUrl,
-        width: item.origWidth,
-        height: item.origHeight,
-      });
-    });
-    it('should return thumbnail image when support', () => {
-      const item = {
-        downloadUrl: '',
-        origWidth: 1,
-        origHeight: 2,
-        thumbs: {},
-      } as FileItemModel;
-      getEntity.mockReturnValue(item);
-      const vm = new ImageViewerViewModel(props);
-      FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
-      FileItemUtils.isSupportPreview.mockReturnValue(true);
-      getMaxThumbnailURLInfo.mockReturnValue({});
-      const imageInfo = vm.imageInfo;
-      expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
-      expect(FileItemUtils.isSupportPreview).toBeCalled();
-      expect(getMaxThumbnailURLInfo).toBeCalled();
-      expect(imageInfo).toEqual({});
-    });
-    it('should try to generate thumbnail when not exist', (done: jest.DoneCallback) => {
-      const item = {
-        downloadUrl: '',
-        origWidth: 1,
-        origHeight: 2,
-      };
-      getEntity.mockReturnValue(item);
-      const vm = new ImageViewerViewModel(props);
-      const spy = jest.spyOn(itemService, 'getThumbsUrlWithSize');
-      FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
-      FileItemUtils.isSupportPreview.mockReturnValue(true);
-      // getMaxThumbnailURLInfo.mockReturnValue({});
-      const imageInfo = vm.imageInfo;
-      expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
-      expect(FileItemUtils.isSupportPreview).toBeCalled();
-      expect(getMaxThumbnailURLInfo).not.toBeCalled();
-      setTimeout(() => {
-        expect(spy).toBeCalled();
-        done();
       });
     });
   });

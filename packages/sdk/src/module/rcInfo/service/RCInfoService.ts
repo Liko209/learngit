@@ -35,7 +35,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     super({ isSupportedCache: false });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.LOGIN]: this.requestRCInfo,
+        [SERVICE.RC_LOGIN]: this.requestRCInfo,
       }),
     );
   }
@@ -93,7 +93,7 @@ class RCInfoService extends EntityBaseService<IdModel>
     this.getRCInfoController()
       .getRCInfoFetchController()
       .requestRCInfo();
-  }
+  };
 
   async requestRCAccountRelativeInfo() {
     await this.getRCInfoController()
@@ -192,6 +192,24 @@ class RCInfoService extends EntityBaseService<IdModel>
     return await this.getRCInfoController()
       .getRCCallerIdController()
       .getCallerIdList();
+  }
+
+  async setDefaultCallerId(callerId: number) {
+    await this.getRCInfoController()
+      .getRCCallerIdController()
+      .setDefaultCallerId(callerId);
+  }
+
+  async getDefaultCallerId() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .getDefaultCallerId();
+  }
+
+  async hasSetCallerId() {
+    return await this.getRCInfoController()
+      .getRCCallerIdController()
+      .hasSetCallerId();
   }
 
   async generateWebSettingUri(type: ERCWebUris) {

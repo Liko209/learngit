@@ -72,7 +72,7 @@ export default class PostModel extends Base<Post> {
     this.creatorId = creator_id;
     this.activityData = activity_data;
     this.activity = activity;
-    this.text = text;
+    this.text = text || '';
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
     this.itemIds = item_ids || [];
@@ -105,12 +105,8 @@ export default class PostModel extends Base<Post> {
             };
         }
       })
-      .filter((item: any) => {
-        return !item.deactivated;
-      })
-      .map((item: any) => {
-        return item.id;
-      });
+      .filter((item: any) => !item.deactivated)
+      .map((item: any) => item.id);
   }
 
   @computed

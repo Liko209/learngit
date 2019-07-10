@@ -28,11 +28,9 @@ const {
   lazyMultiInject,
 } = getDecorators(container, false);
 
-const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) => {
-  return fluentProvide(identifier)
-    .inSingletonScope()
-    .done();
-};
+const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) => fluentProvide(identifier)
+  .inSingletonScope()
+  .done();
 
 function createDecorator(serviceId: string): { (...args: any[]): void } {
   const id: any = inject(serviceId);

@@ -5,7 +5,9 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, grey, typography, width } from '../../foundation/utils';
+import {
+  spacing, grey, typography, width,
+} from '../../foundation/utils';
 
 type JuiSearchFilterProps = {
   title: string;

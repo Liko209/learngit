@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const mailRegex = /[A-Za-z0-9\.!#$%&'*+/=?^_`{|}~-]+@([A-Za-z0-9-]+\.)+[A-Za-z0-9-]{2,}/;
+const mailRegex = /[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@([A-Za-z0-9-]+\.)+[A-Za-z0-9-]{2,}/;
 
 export function isValidEmailAddress(email: string) {
   return mailRegex.test(email);

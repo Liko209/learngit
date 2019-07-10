@@ -50,8 +50,7 @@ const execQuery = <T extends {}>(
     }
   }
 
-  const where = (key: string) =>
-    coll ? collectionWhere(coll, key) : table.where(key);
+  const where = (key: string) => (coll ? collectionWhere(coll, key) : table.where(key));
 
   anyOfs.forEach(({ key, array, ignoreCase }: IAnyOf) => {
     coll = ignoreCase
@@ -72,7 +71,9 @@ const execQuery = <T extends {}>(
   });
 
   ranges.forEach(
-    ({ key, upper, lower, includeLower, includeUpper }: IRange) => {
+    ({
+      key, upper, lower, includeLower, includeUpper,
+    }: IRange) => {
       coll = where(key).between(lower, upper, includeLower, includeUpper);
     },
   );
@@ -93,7 +94,7 @@ const execQuery = <T extends {}>(
       .distinct();
   });
 
-  filters.forEach((func: IFilter<T>, i) => {
+  filters.forEach((func: IFilter<T>) => {
     if (coll) {
       coll = coll.filter(func);
     } else {

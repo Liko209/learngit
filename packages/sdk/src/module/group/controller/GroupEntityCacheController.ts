@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { Group } from '../entity';
 import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { IGroupService } from '../service/IGroupService';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
+
 const soundex = require('soundex-code');
+
 class GroupEntityCacheController extends EntityCacheController<Group> {
   private _individualGroups: Map<number, Group> = new Map();
   private _soundexValue: Map<number, string[]> = new Map();

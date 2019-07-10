@@ -12,12 +12,8 @@ function getEnvArray() {
   const configMap = parseDirectoryConfig();
   return Object.keys(configMap)
     .map(key => configMap[key])
-    .map((envConfig: EnvConfig<any>) =>
-      Object.keys(envConfig).filter(env => env !== 'default'),
-    )
-    .reduce((pre, envArray) => {
-      return _.union(pre, envArray);
-    },      []);
+    .map((envConfig: EnvConfig<any>) => Object.keys(envConfig).filter(env => env !== 'default'))
+    .reduce((pre, envArray) => _.union(pre, envArray), []);
 }
 
 function loadFileConfigs(env: string) {
@@ -25,11 +21,9 @@ function loadFileConfigs(env: string) {
   return Object.keys(configMap)
     .map(key => ({
       key,
-      config: _.merge(configMap[key]['default'], configMap[key][env] || {}),
+      config: _.merge(configMap[key].default, configMap[key][env] || {}),
     }))
-    .reduce((preValue, { key, config }) => {
-      return { ...preValue, ...{ [key]: config } };
-    },      {});
+    .reduce((preValue, { key, config }) => ({ ...preValue, ...{ [key]: config } }), {});
 }
 
 function get(object: object, property: string | string[]): any {
@@ -60,4 +54,6 @@ function set(object: object, property: string | string[], value: any) {
   set(obj, elems.slice(1), value);
 }
 
-export { parseDirectoryConfig, loadFileConfigs, getEnvArray, get, set };
+export {
+  parseDirectoryConfig, loadFileConfigs, getEnvArray, get, set
+};

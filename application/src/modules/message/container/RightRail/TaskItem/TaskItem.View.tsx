@@ -3,6 +3,7 @@
  * @Date: 2019-01-15 16:03:41
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React from 'react';
 import {
   JuiListItemText,
@@ -26,7 +27,7 @@ class TaskItemView extends React.Component<TaskItemProps, {}> {
     const { complete, text } = task;
 
     return (
-      <JuiListItem data-test-automation-id="rightRail-task-item">
+      <JuiListItem data-test-automation-id='rightRail-task-item'>
         <JuiListItemIcon>
           <JuiTaskIcon iconColor={color} complete={complete} />
         </JuiListItemIcon>

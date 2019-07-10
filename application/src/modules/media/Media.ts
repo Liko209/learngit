@@ -110,12 +110,10 @@ class Media implements IMedia {
         this._useTrack.setOutputDevices(allOutputDevicesId);
         this._outputDevices = allOutputDevicesId;
       }
-    } else {
-      if (Array.isArray(devices)) {
-        this._outputDevices = devices;
-      } else if (devices === 'all') {
-        this._outputDevices = trackManager.getAllOutputDevicesId();
-      }
+    } else if (Array.isArray(devices)) {
+      this._outputDevices = devices;
+    } else if (devices === 'all') {
+      this._outputDevices = trackManager.getAllOutputDevicesId();
     }
     return this;
   }

@@ -22,10 +22,9 @@ type JuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const Arrow = styled<{ direction: Direction }, 'span'>('span')`
   border: ${width(1)} solid transparent;
-  ${({ direction }) =>
-    direction === 'down'
-      ? 'border-top-color: white; top: 2px;'
-      : 'border-bottom-color: white; top: -2px;'};
+  ${({ direction }) => (direction === 'down'
+    ? 'border-top-color: white; top: 2px;'
+    : 'border-bottom-color: white; top: -2px;')};
   position: relative;
   margin: ${spacing(1, 1, 1, 2)};
   display: inline-block;

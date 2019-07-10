@@ -28,6 +28,8 @@ import {
   IPhoneNumberRequest,
   IExtensionPhoneNumberList,
   IForwardingNumberRequest,
+  IExtensionCallerId,
+  IExtensionCallerIdRequest,
   GetBlockNumberListParams,
   BlockNumberListResponse,
   BlockNumberItem,
@@ -90,6 +92,7 @@ class RCInfoApi extends Api {
 
   static getPhoneParserData(localDataVersion: string) {
     const extraHeaders = {};
+    /* eslint-disable */
     const localDataVersionWithQuote = `\"${localDataVersion}\"`;
     extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
     extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
@@ -114,6 +117,20 @@ class RCInfoApi extends Api {
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<IExtensionPhoneNumberList>(query);
+  }
+  static getExtensionCallerId() {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
+    });
+    return RCInfoApi.rcNetworkClient.http<IExtensionCallerId>(query);
+  }
+  static setExtensionCallerId(request: IExtensionCallerIdRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_EXTENSION_CALLER_ID,
+      method: NETWORK_METHOD.PUT,
+      data: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<IExtensionCallerId>(query);
   }
 
   static getAccountServiceInfo() {

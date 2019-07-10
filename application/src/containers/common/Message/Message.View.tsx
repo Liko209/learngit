@@ -23,8 +23,8 @@ class MessageView extends Component<Props> {
     if (result) {
       afterClick && afterClick();
     }
-  }
-
+  };
+  /* eslint-disable */
   render() {
     const { render } = this.props;
     return <span onClick={this.onClickMessage}>{render()}</span>;

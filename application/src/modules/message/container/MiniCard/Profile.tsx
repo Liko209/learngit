@@ -3,13 +3,12 @@
  * @Date: 2018-11-21 19:10:14
  * Copyright © RingCentral. All rights reserved.
  */
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ThemeProvider from '@/containers/ThemeProvider';
-// import { ProfileMiniCard } from '@/containers/ProfileMiniCard';
-import { Profile, PROFILE_TYPE } from '../Profile';
 import { MiniCardShowProfileParams } from './types';
+import portalManager from '@/common/PortalManager';
+import { ProfileWrapper } from './ProfileWrapper';
 
 class ProfileMiniCard {
   static instance: ProfileMiniCard;
@@ -17,6 +16,7 @@ class ProfileMiniCard {
   anchor: HTMLElement | null;
 
   constructor() {
+    this.dismiss = this.dismiss.bind(this);
     if (ProfileMiniCard.instance instanceof ProfileMiniCard) {
       return ProfileMiniCard.instance;
     }
@@ -25,17 +25,17 @@ class ProfileMiniCard {
   }
 
   show({ anchor, id }: MiniCardShowProfileParams) {
-    // if (this.anchor === anchor) {
-    //   return;
-    // }
     this.dismiss();
     this.anchor = anchor;
     this.div = document.createElement('div');
     this._setPosition();
     document.body.appendChild(this.div);
+
+    portalManager.addShowStatus();
+
     ReactDOM.render(
       <ThemeProvider>
-        <Profile id={id} type={PROFILE_TYPE.MINI_CARD} />
+        <ProfileWrapper dismiss={this.dismiss} id={id} />
       </ThemeProvider>,
       this.div,
     );
@@ -72,7 +72,7 @@ class ProfileMiniCard {
 
     this.div.setAttribute(
       'style',
-      `position: absolute; ${x}; ${y}; z-index: 1500;`,
+      `position: absolute; ${x}; ${y}; z-index: 1300;`,
     );
   }
 
@@ -90,6 +90,7 @@ class ProfileMiniCard {
     }
     this.div = null;
     this.anchor = null;
+    portalManager.clear();
   }
 }
 

@@ -3,6 +3,7 @@
  * @Date: 2018-11-22 21:43:58
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import buildVerbNounText from './text/buildVerbNounText';
 import buildVerbNounUserText from './text/buildVerbNounUserText';
 import buildVerbNounAdjectivesText from './text/buildVerbNounAdjectivesText';
@@ -19,7 +20,7 @@ import buildVerbNumeralsPrepositionsNounText from './text/buildVerbNumeralsPrepo
 //   return text;
 // }
 
-export default function ({
+export default function({
   activity,
   activityData,
 }: {

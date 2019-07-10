@@ -32,9 +32,6 @@ import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
-import JSZip from 'jszip';
-import { NETWORK_VIA } from '../../../../../../../packages/foundation';
-const URL = require('url-parse');
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
@@ -178,9 +175,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return newString;
   }
 
-  private _doUnderscoreTransfer = (colons: string) => {
-    return colons.split('-').join('_');
-  }
+  private _doUnderscoreTransfer = (colons: string) => colons.split('-').join('_')
 
   @action
   insertEmoji = (emoji: any, cb: Function) => {
@@ -201,7 +196,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     setTimeout(() => {
       quill.focus();
       quill.setSelection(index + colons.length, 0);
-    },         0);
+    }, 0);
     cb && cb();
   }
 
@@ -364,4 +359,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 }
 
-export { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH };
+export {
+  MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH,
+};

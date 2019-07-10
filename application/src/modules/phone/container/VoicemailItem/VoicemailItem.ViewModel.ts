@@ -3,6 +3,8 @@
  * @Date: 2019-06-01 14:39:02
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { container } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -11,7 +13,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
-import { postTimestamp } from '@/utils/date';
 import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -23,7 +24,16 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { VoicemailViewProps, VoicemailProps, JuiAudioStatus } from './types';
+import {
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioStatus,
+  Handler,
+} from './types';
+import {
+  voiceMailDefaultResponsiveInfo,
+  responsiveByBreakPoint,
+} from './config';
 import { PhoneStore } from '../../store';
 import { Audio } from '../../types';
 import { ANALYTICS_KEY } from '../constants';
@@ -57,8 +67,8 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       () => this.attachment,
       async (audio?: Audio) => {
         const phoneStore = this._phoneStore;
-        if (audio && !phoneStore.audioCache.get(this._id)) {
-          phoneStore.addAudio(this._id, {
+        if (audio && !phoneStore.audioCache.get(this.props.id)) {
+          phoneStore.addAudio(this.props.id, {
             ...audio,
             downloadUrl: '',
             startTime: 0,
@@ -71,9 +81,20 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     );
   }
 
+  private _getResponsiveMap(handler: Handler[]) {
+    const windowWidth = this.props.width;
+    for (let i = 0; i < handler.length; i++) {
+      const { checker, info } = handler[i];
+      if (checker(windowWidth)) {
+        return info;
+      }
+    }
+    return voiceMailDefaultResponsiveInfo;
+  }
+
   @computed
-  get _id() {
-    return this.props.id;
+  get voiceMailResponsiveMap() {
+    return this._getResponsiveMap(responsiveByBreakPoint);
   }
 
   get voicemailService() {
@@ -86,7 +107,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
   get voicemail() {
     return getEntity<Voicemail, VoicemailModel>(
       ENTITY_NAME.VOICE_MAIL,
-      this._id,
+      this.props.id,
     );
   }
 
@@ -132,7 +153,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @computed
   get selected() {
-    return this._phoneStore.selectedVoicemailId === this._id;
+    return this.props.activeVoicemailId === this.props.id;
   }
 
   @computed
@@ -142,18 +163,18 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @action
   onChange = (event: React.ChangeEvent, newExpanded: boolean) => {
-    this._phoneStore.setVoicemailId(newExpanded ? this._id : null);
-  }
+    this._phoneStore.setVoicemailId(newExpanded ? this.props.id : null);
+  };
 
   @action
   onBeforePlay = async () => {
     this.shouldPause = false;
 
     if (!this.selected) {
-      this._phoneStore.setVoicemailId(this._id);
+      this.props.onVoicemailPlay(this.props.id);
     }
-    this.voicemailService.updateReadStatus(this._id, READ_STATUS.READ);
-  }
+    this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
+  };
 
   @action
   onBeforeAction = async (status: JuiAudioStatus) => {
@@ -161,6 +182,9 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       analyticsCollector.playPauseVoicemail(
         ANALYTICS_KEY.VOICEMAIL_ACTION_PAUSE,
       );
+
+      this.props.onVoicemailPlay(null);
+
       return;
     }
     if (status === JuiAudioStatus.PLAY) {
@@ -171,13 +195,13 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
         const ret = await this.voicemailService.buildDownloadUrl(
           this.audio.uri,
         );
-        this._phoneStore.updateAudio(this._id, {
+        this._phoneStore.updateAudio(this.props.id, {
           downloadUrl: ret,
         });
       }
       return;
     }
-  }
+  };
 
   @action
   onError = () => {
@@ -189,19 +213,18 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
       dismissible: false,
       messageAlign: ToastMessageAlign.LEFT,
     });
-  }
+  };
 
   @action
   updateStartTime = (timestamp: number) => {
-    this._phoneStore.updateAudio(this._id, {
+    this._phoneStore.updateAudio(this.props.id, {
       startTime: timestamp,
     });
-  }
+  };
 
   @computed
   get createTime() {
-    const { creationTime } = this.voicemail;
-    return postTimestamp(creationTime);
+    return this.voicemail.creationTime;
   }
 
   private async _fetchBlockPermission() {
@@ -212,7 +235,7 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   shouldShowCall = async () => {
     return this._rcInfoService.isVoipCallingAvailable();
-  }
+  };
 }
 
 export { VoicemailItemViewModel };

@@ -31,7 +31,7 @@ class ImageDownloader implements IImageDownloader {
 
   public download(
     itemInfo: DownloadItemInfo,
-    downloadListener: IImageDownloadedListener,
+    downloadListener?: IImageDownloadedListener,
   ) {
     if (!itemInfo.url) {
       this._logger.info('ignore download due to empty url');
@@ -106,7 +106,7 @@ class ImageDownloader implements IImageDownloader {
     const itemInfo = this._itemInfo;
     this._resetImage();
     listener && listener.onSuccess(itemInfo, width, height);
-  }
+  };
 
   private _onErrorHandler = (ev: ErrorEvent) => {
     if (!this._itemInfo) {
@@ -129,7 +129,7 @@ class ImageDownloader implements IImageDownloader {
     const itemInfo = this._itemInfo;
     this._resetImage();
     listener && listener.onFailure(itemInfo, 0);
-  }
+  };
 
   private _resetImage() {
     this._itemInfo = undefined;

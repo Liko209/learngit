@@ -3,6 +3,7 @@
  * @Date: 2019-05-27 10:14:04
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
@@ -34,12 +35,12 @@ class SettingPageViewComponent extends Component<Props> {
     if (size.width !== this._size.width || size.height !== this._size.height) {
       this._size = size;
     }
-  }
+  };
 
   @action
   private _updateSource = (el: any) => {
     this._sources = [el];
-  }
+  };
 
   render() {
     const { t, id, page } = this.props;

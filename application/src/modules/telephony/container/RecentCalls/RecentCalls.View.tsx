@@ -20,7 +20,6 @@ import { JuiVirtualizedListHandles } from 'jui/components/VirtualizedList';
 type Props = ViewProps & WithTranslation;
 type State = {
   height: number;
-  initialScrollToIndex: number;
 };
 const MAX_COUNT = 7;
 @observer
@@ -34,13 +33,22 @@ class RecentCallsComponent extends React.Component<Props, State> {
     loadingMoreRenderer: () => <div />, // TODO add loading more
     stickToLastPosition: false,
   };
+  private _handleClickMap = {};
+
+  private _handleClick = (index: number) => {
+    const { makeCall } = this.props;
+    if (this._handleClickMap[index]) {
+      return this._handleClickMap[index];
+    }
+    return (this._handleClickMap[index] = () => makeCall(index));
+  }
 
   state = {
     height: 0,
-    initialScrollToIndex: 0,
   };
 
   componentDidMount() {
+    /* eslint-disable  react/no-find-dom-node */
     const container = ReactDOM.findDOMNode(this._containerRef.current);
     if (container) {
       this.setState({
@@ -48,7 +56,17 @@ class RecentCallsComponent extends React.Component<Props, State> {
       });
     }
   }
+  private get _noRowsRenderer() {
+    const { t } = this.props;
 
+    return (
+      <JuiEmptyPage
+        data-test-automation-id="recentCallsEmptyPage"
+        image={noCallLogImage}
+        message={t('telephony.noCallLogAvailable')}
+      />
+    );
+  }
   // componentDidUpdate() {
   //   const { recentCallsScrollPosition } = this.props;
 
@@ -71,73 +89,60 @@ class RecentCallsComponent extends React.Component<Props, State> {
   //   }
   // }
 
-  scrollToView = () => {
-    const { focusIndex, startIndex, stopIndex, setRangeIndex } = this.props;
+  private _scrollToView = (fn: () => void) => {
+    const { dialerFocused } = this.props;
+    if (!dialerFocused) {
+      return;
+    }
+    fn();
+    const { focusIndex } = this.props;
+
+    const { startIndex, stopIndex } = this._listRef.current!.getVisibleRange();
 
     if (focusIndex >= stopIndex) {
       this._dataList.current &&
         this._dataList.current.loadMore('down', MAX_COUNT);
     }
 
-    if (
-      (focusIndex < startIndex || focusIndex >= stopIndex) &&
-      this._listRef.current
-    ) {
-      this._listRef.current.scrollToIndex(focusIndex);
-
-      setRangeIndex({
-        startIndex: focusIndex,
-        stopIndex: focusIndex + MAX_COUNT,
-      });
+    if (this._listRef.current) {
+      if (focusIndex <= startIndex) {
+        this._listRef.current.scrollToIndex(focusIndex);
+      } else if (focusIndex >= stopIndex) {
+        this._listRef.current.scrollToIndex(focusIndex);
+      }
     }
-  }
+  };
 
   onKeyDown = () => {
     const { increaseFocusIndex } = this.props;
-    increaseFocusIndex();
-    this.scrollToView();
-  }
+    this._scrollToView(increaseFocusIndex);
+  };
 
   onKeyUp = () => {
     const { decreaseFocusIndex } = this.props;
-    decreaseFocusIndex();
-    this.scrollToView();
-  }
+    this._scrollToView(decreaseFocusIndex);
+  };
 
-  // onEnter = (evt: KeyboardEvent) => {
-  //   const { onEnter } = this.props;
-  //   onEnter(evt);
-  //   this.scrollToView();
-  // }
-
-  private get _noRowsRenderer() {
-    const { t } = this.props;
-
-    return (
-      <JuiEmptyPage
-        data-test-automation-id="recentCallsEmptyPage"
-        image={noCallLogImage}
-        message={t('telephony.noCallLogAvailable')}
-      />
-    );
+  onEnter = () => {
+    const { makeCall } = this.props;
+    makeCall();
   }
 
   private _renderItems() {
     const { listHandler, focusIndex } = this.props;
     return listHandler
-      ? listHandler.sortableListStore.getIds.map((itemId: string, index) => {
-          return (
+      ? listHandler.sortableListStore.getIds.map((itemId: string, index) => (
             <RecentCallItem
               id={itemId}
               key={itemId}
               selected={focusIndex === index}
+              handleClick={this._handleClick(index)}
             />
-          );
-        })
+      ))
       : [];
   }
   render() {
-    const { listHandler, isError, onErrorReload, setRangeIndex } = this.props;
+    const { listHandler, isError, onErrorReload } = this.props;
     const { height } = this.state;
 
     return (
@@ -145,7 +150,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
         keyMap={{
           up: this.onKeyUp,
           down: this.onKeyDown,
-          // enter: this.onEnter,
+          enter: this.onEnter,
         }}
       >
         <JuiRecentCalls ref={this._containerRef}>
@@ -156,12 +161,11 @@ class RecentCallsComponent extends React.Component<Props, State> {
               <DataList
                 initialDataCount={INITIAL_COUNT}
                 listHandler={listHandler}
-                reverse={true}
+                reverse
                 InfiniteListProps={Object.assign(this._infiniteListProps, {
                   height,
                   ref: this._listRef,
                   noRowsRenderer: this._noRowsRenderer,
-                  onVisibleRangeChange: setRangeIndex,
                 })}
               >
                 {this._renderItems()}

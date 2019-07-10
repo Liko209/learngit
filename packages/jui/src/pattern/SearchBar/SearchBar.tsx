@@ -34,7 +34,9 @@ type Props = {
 
 class JuiSearchBar extends React.PureComponent<Props, {}> {
   render() {
-    const { children, focus, onClose, ...rest } = this.props;
+    const {
+      children, focus, onClose, ...rest
+    } = this.props;
     return (
       <JuiSearchBarWrapper className="search-bar" {...rest}>
         {focus && <StyledBackdrop onClick={onClose} open={focus} />}

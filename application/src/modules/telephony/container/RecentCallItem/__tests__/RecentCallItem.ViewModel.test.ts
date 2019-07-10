@@ -31,41 +31,6 @@ describe('RecentCallItemViewModel', () => {
     jest.resetAllMocks();
   });
 
-  it('handleClick', async () => {
-    const phoneNumber = '123456';
-    (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
-      if (name === ENTITY_NAME.CALL_LOG) {
-        return {
-          direction: CALL_DIRECTION.INBOUND,
-          id: 'IVqQFVti-n8bzUA',
-          from: {
-            extensionNumber: '231',
-            name: 'Lula Hauck',
-          },
-          to: {
-            extensionNumber: '268',
-            name: 'Jenny Cai',
-          },
-          startTime: '2019-06-28T02:09:28.595Z',
-        };
-      }
-      if (name === ENTITY_NAME.PHONE_NUMBER) {
-        return {
-          formattedPhoneNumber: phoneNumber,
-        };
-      }
-      return {};
-    });
-    vm = new RecentCallItemViewModel();
-    expect(vm.icon).toBe('incall');
-    expect(vm.isBlock).toBeFalsy();
-
-    const telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
-
-    await vm.handleClick();
-    expect(telephonyService.makeCall).toHaveBeenCalledWith(phoneNumber);
-  });
-
   it('The display rules for date and time in call history list. [JPT-2329]', async () => {
     (getEntity as jest.Mock).mockImplementation((name: string, id: number) => {
       if (name === ENTITY_NAME.CALL_LOG) {
@@ -86,6 +51,6 @@ describe('RecentCallItemViewModel', () => {
       return {};
     });
     vm = new RecentCallItemViewModel();
-    expect(vm.startTime).toEqual('Wed');
+    expect(vm.startTime).toEqual('6/28/2019');
   });
 });

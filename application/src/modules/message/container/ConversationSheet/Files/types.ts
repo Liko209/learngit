@@ -32,4 +32,6 @@ type FilesViewProps = {
   isRecentlyUploaded: (id: number) => boolean;
 };
 
-export { FilesProps, FilesViewProps, FileType, ExtendFileItem };
+export {
+  FilesProps, FilesViewProps, FileType, ExtendFileItem,
+};

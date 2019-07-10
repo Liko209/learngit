@@ -3,6 +3,7 @@
  * @Date: 2019-04-24 15:33:10
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils';

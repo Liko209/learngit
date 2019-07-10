@@ -12,7 +12,21 @@ import { JuiVirtualizedList } from '../VirtualizedList';
 type TestItemModel = { id: number };
 
 const attachTo = document.createElement('div');
+attachTo.className = 'attachTo';
 document.body.appendChild(attachTo);
+const style = document.createElement('style');
+style.innerHTML = `
+  html, body {
+    position: relative;
+    height: 1000px;
+  }
+
+  .attachTo {
+    height: 100%;
+  }
+`;
+document.body.appendChild(style);
+const bodyHeight = document.body.offsetHeight;
 
 const ListWrapper = styled.div`
   height: 100px;
@@ -157,24 +171,24 @@ describe('JuiVirtualizedList', () => {
       expectItemsToBeRendered(0, 5);
       expectRangeChangeEventCalledWith(0, 5);
 
-      // // Item 0 has 1px visible
+      // Item 0 has 1px visible
       scrollTo(19);
       expectItemsToBeRendered(0, 5);
       expectRangeChangeEventNotToBeCalled();
 
-      // // Item 0 invisible
-      // // Item 6 invisible
+      // Item 0 invisible
+      // Item 6 invisible
       scrollTo(20);
       expectItemsToBeRendered(1, 5);
       expectRangeChangeEventCalledWith(1, 5);
 
-      // // Item 0 invisible
-      // // Item 6 has 1px visible
+      // Item 0 invisible
+      // Item 6 has 1px visible
       scrollTo(21);
       expectItemsToBeRendered(1, 6);
       expectRangeChangeEventCalledWith(1, 6);
 
-      // // Scroll to bottom
+      // Scroll to bottom
       scrollTo(99999);
       expectItemsToBeRendered(5, 9);
       expectRangeChangeEventCalledWith(5, 9);
@@ -383,6 +397,52 @@ describe('JuiVirtualizedList', () => {
           { attachTo },
         );
 
+        expect(
+          getComputedStyle(wrapper.find(JuiVirtualizedList).getDOMNode())
+            .height,
+        ).toBe(`${expectedHeight}px`);
+        expect(getRenderedItemIds(wrapper)).toEqual(renderedItems);
+        wrapper.unmount();
+      },
+    );
+
+    it.each`
+      parentMaxHeight | itemCount | renderedItems                     | expectedHeight
+      ${'50%'}        | ${0}      | ${[]}                             | ${0}
+      ${'50%'}        | ${1}      | ${[0]}                            | ${20}
+      ${'50%'}        | ${2}      | ${[0, 1]}                         | ${40}
+      ${'50%'}        | ${3}      | ${[0, 1, 2]}                      | ${60}
+      ${'50%'}        | ${10}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${200}
+      ${'50%'}        | ${24}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${480}
+      ${'50%'}        | ${25}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+      ${'50%'}        | ${26}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+      ${'50%'}        | ${99}     | ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${bodyHeight / 2}
+    `(
+      'should work when parent has percentage maxHeight. itemCount: $itemCount',
+      ({ parentMaxHeight, itemCount, expectedHeight, renderedItems }) => {
+        const wrapper = mount(
+          <div
+            style={{
+              maxHeight: parentMaxHeight,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <JuiAutoSizer>
+              {({ height }: Size) => (
+                <JuiVirtualizedList
+                  height={height}
+                  minRowHeight={20}
+                  initialScrollToIndex={0}
+                  overscan={0}
+                >
+                  {renderItems(buildItems(0, itemCount - 1))}
+                </JuiVirtualizedList>
+              )}
+            </JuiAutoSizer>
+          </div>,
+          { attachTo },
+        );
         expect(
           getComputedStyle(wrapper.find(JuiVirtualizedList).getDOMNode())
             .height,

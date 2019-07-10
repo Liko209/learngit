@@ -5,6 +5,7 @@
  */
 
 import { QUERY_DIRECTION } from '../../dao/constants';
+
 type ItemFilterFunction = (value: any, index?: number) => boolean;
 
 type ItemQueryOptions = {

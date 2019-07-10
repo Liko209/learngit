@@ -15,21 +15,25 @@ import { ATTACHMENT_TYPE } from 'sdk/module/RCItems/constants';
 import { Download } from '../Download';
 
 const mockEntityData = {
-  attachments: [{
-    uri: 'uri',
-    type: ATTACHMENT_TYPE.AUDIO_RECORDING
-  }],
-}
+  attachments: [
+    {
+      uri: 'uri',
+      type: ATTACHMENT_TYPE.AUDIO_RECORDING,
+    },
+  ],
+};
 
 describe('Download', () => {
   @testable
   class init {
-    @test('should render correct when button is icon type')
+    @test('should render correct when button is icon type [JPT-2468]')
     @mockEntity(mockEntityData)
     t1() {
-      const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.ICON} />);
+      const wrapper = mountWithTheme(
+        <Download id={1234} type={BUTTON_TYPE.ICON} />,
+      );
       const buttonProps = wrapper.find(JuiIconButton).props();
-      expect(buttonProps.children).toBe('download');
+      expect(buttonProps.children).toBe('download-call');
       expect(buttonProps.tooltipTitle).toBe('common.download');
       expect(buttonProps.ariaLabel).toBe('voicemail.downloadVoicemail');
     }
@@ -37,12 +41,14 @@ describe('Download', () => {
     @test('should render correct when button is menu item type')
     @mockEntity(mockEntityData)
     t2() {
-      const wrapper = mountWithTheme(<Download id={1234} type={BUTTON_TYPE.MENU_ITEM} />);
+      const wrapper = mountWithTheme(
+        <Download id={1234} type={BUTTON_TYPE.MENU_ITEM} />,
+      );
       const button = wrapper.find(JuiMenuItem);
       const buttonProps = button.props();
-      expect(button.text()).toBe('voicemail.downloadVoicemail');
-      expect(buttonProps.icon).toBe('download');
+      expect(buttonProps.icon).toBe('download-call');
+      expect(button.text()).toBe('common.download');
       expect(buttonProps['aria-label']).toBe('voicemail.downloadVoicemail');
     }
   }
-})
+});

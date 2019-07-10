@@ -3,6 +3,7 @@
  * @Date: 2019-05-29 09:31:47
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -22,15 +23,15 @@ class FlipViewComponent extends React.Component<Props> {
       return this._handleFlip[flipNumber];
     }
     return (this._handleFlip[flipNumber] = () => flip(flipNumber));
-  }
+  };
 
   render() {
     const { t, flipNumbers, canUseFlip } = this.props;
     if (!canUseFlip) {
       return (
         <JuiMenuItem
-          disabled={true}
-          data-test-automation-id="telephony-flip-menu-item"
+          disabled
+          data-test-automation-id='telephony-flip-menu-item'
         >
           {t('telephony.action.flip')}
         </JuiMenuItem>
@@ -39,7 +40,7 @@ class FlipViewComponent extends React.Component<Props> {
 
     return (
       <JuiSubMenu
-        data-test-automation-id="telephony-flip-menu-item"
+        data-test-automation-id='telephony-flip-menu-item'
         title={t('telephony.action.flip')}
       >
         {flipNumbers.map(({ flipNumber, label, phoneNumber }) => {

@@ -26,10 +26,10 @@ storiesOf('Pattern/DragZoom', module).add('DragZoom', () => (
     }}
   >
     <JuiDragZoom
-      applyTransform={true}
-      zoomInText="scale up"
-      zoomOutText="scale down"
-      zoomResetText="scale reset"
+      applyTransform
+      zoomInText='scale up'
+      zoomOutText='scale down'
+      zoomResetText='scale reset'
     >
       {(props: JuiWithDragZoomProps) => {
         const { fitWidth, fitHeight, notifyContentSizeChange } = props;

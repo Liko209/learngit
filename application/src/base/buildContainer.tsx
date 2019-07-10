@@ -44,43 +44,6 @@ function buildContainer<P = {}, S = {}, SS = any>({
     componentWillUnmount() {
       this.vm.dispose && this.vm.dispose();
     }
-
-    @action
-    componentWillReact() {
-      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props || {});
-      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props || {});
-    }
-
-    render() {
-      const View = this.View;
-      return <View {...this._viewProps} />;
-    }
-
-    private _createPlugins() {
-      return plugins ? plugins() : {};
-    }
-
-    private _createView(OriginalView: ComponentType<any>) {
-      let View = OriginalView;
-      _(this.plugins).forEach((plugin: IPlugin) => {
-        View = plugin.wrapView(View);
-      });
-      return View;
-    }
-
-    private _createViewModel(props: any = {}) {
-      const vm = new ViewModel(props);
-
-      _(this.plugins).forEach((plugin: IPlugin) => {
-        plugin.install(vm);
-      });
-
-      vm.getDerivedProps && vm.getDerivedProps(props);
-      vm.onReceiveProps && vm.onReceiveProps(props);
-
-      return vm;
-    }
-
     @computed
     private get _viewProps() {
       const descriptors = Object.getOwnPropertyDescriptors(this.vm);
@@ -114,6 +77,35 @@ function buildContainer<P = {}, S = {}, SS = any>({
         });
       return props;
     }
+    @action
+    componentWillReact() {
+      this.vm.getDerivedProps && this.vm.getDerivedProps(this.props || {});
+      this.vm.onReceiveProps && this.vm.onReceiveProps(this.props || {});
+    }
+    private _createPlugins() {
+      return plugins ? plugins() : {};
+    }
+
+    private _createView(OriginalView: ComponentType<any>) {
+      let View = OriginalView;
+      _(this.plugins).forEach((plugin: IPlugin) => {
+        View = plugin.wrapView(View);
+      });
+      return View;
+    }
+
+    private _createViewModel(props: any = {}) {
+      const vm = new ViewModel(props);
+
+      _(this.plugins).forEach((plugin: IPlugin) => {
+        plugin.install(vm);
+      });
+
+      vm.getDerivedProps && vm.getDerivedProps(props);
+      vm.onReceiveProps && vm.onReceiveProps(props);
+
+      return vm;
+    }
 
     private _isViewProp(key: string) {
       // - Props start with _ or $ are private
@@ -123,6 +115,10 @@ function buildContainer<P = {}, S = {}, SS = any>({
       return (
         !/^\$|_/.test(key) && key !== 'verboseMemoryLeak' && key !== 'props'
       );
+    }
+    render() {
+      const ContainerView = this.View;
+      return <ContainerView {...this._viewProps} />;
     }
   }
 

@@ -5,9 +5,9 @@
  */
 import * as React from 'react';
 import { name2icon } from './name2icon';
-import styled, { css } from '../../foundation/styled-components';
+import styled, { css } from '../styled-components';
 import { Palette } from '../theme/theme';
-import { palette, width } from '../../foundation/utils/styles';
+import { palette, width } from '../utils/styles';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 
 export type IconColor = [keyof Palette, string];
@@ -49,7 +49,6 @@ type SvgSymbol = {
 
 const StyledSpan = styled('span')<React.HTMLAttributes<HTMLElement>>`
   display: inline-flex;
-  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
 const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
@@ -60,8 +59,7 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: ${({ size = 'large' }) =>
-    size !== 'inherit' ? width(sizes[size]) : 'inherit'};
+  font-size: ${({ size = 'large' }) => (size !== 'inherit' ? width(sizes[size]) : 'inherit')};
   ${({ theme, iconColor }) => {
     if (!iconColor) {
       return;

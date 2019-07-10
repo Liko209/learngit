@@ -7,6 +7,7 @@ import 'jest-styled-components';
 import moment from 'moment';
 import themeHandler from 'rcui/foundation/styles/ThemeHandler';
 import light from './light.json';
+
 jest
   .spyOn(themeHandler, 'loadUrl')
   .mockImplementation(() => Promise.resolve(light));

@@ -6,15 +6,13 @@ import MuiDialogActions, {
 import { spacing } from '../../foundation/utils/styles';
 
 const JuiDialogActions = styled(
-  memo(({ ...props }: DialogActionsProps) => {
-    return (
+  memo(({ ...props }: DialogActionsProps) => (
       <MuiDialogActions
         {...props}
         classes={{ root: 'root' }}
-        disableActionSpacing={true}
+        disableActionSpacing
       />
-    );
-  }),
+  )),
 )`
   &.root {
     padding: ${spacing(2, 6, 6)};

@@ -3,6 +3,7 @@
  * @Date: 2018-05-21 15:35:28
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable spaced-comment */
 /// <reference path="./types.d.ts" />
 import { Foundation, NetworkManager, mainLogger } from 'foundation';
 import Sdk from '../Sdk';
@@ -17,12 +18,10 @@ import { AuthUserConfig } from '../module/account/config/AuthUserConfig';
 import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
 import { ServiceLoader } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
-
-// Using manual mock to improve mock priority.
-jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
 jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');
@@ -37,7 +36,7 @@ describe('Sdk', () => {
   let networkManager: NetworkManager;
   let syncService: SyncService;
   const mockAccountService = {
-    scheduleReLoginGlipJob: jest.fn(),
+    startLoginGlip: jest.fn(),
     userConfig: AccountUserConfig.prototype,
     authUserConfig: AuthUserConfig.prototype,
   };
@@ -51,6 +50,7 @@ describe('Sdk', () => {
     accountManager = new AccountManager(null);
     serviceManager = new ServiceManager(null);
     networkManager = new NetworkManager();
+    jest.spyOn(networkManager, 'clearToken');
     syncService = new SyncService();
     sdk = new Sdk(
       daoManager,
@@ -79,6 +79,7 @@ describe('Sdk', () => {
   describe('onStartLogin()', () => {
     it('should init all module', async () => {
       sdk['_sdkConfig'] = { api: {}, db: {} };
+      jest.spyOn(Foundation, 'init');
       await sdk.onStartLogin();
       expect(Foundation.init).toBeCalled();
       expect(Api.init).toBeCalled();
@@ -119,12 +120,9 @@ describe('Sdk', () => {
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(PhoneParserUtility.loadModule).toBeCalled();
       expect(syncService.syncData).not.toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
-        SERVICE.LOGIN,
-        true,
-      );
+      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
     });
-    it('should notify login when timestamp is valid and isFirstLogin is false', async () => {
+    it('should notify glip login when timestamp is valid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});
       syncService.getIndexTimestamp.mockReturnValue(123);
       await sdk.onAuthSuccess({
@@ -135,7 +133,25 @@ describe('Sdk', () => {
       expect(accountManager.updateSupportedServices).toBeCalled();
       expect(PhoneParserUtility.loadModule).toBeCalled();
       expect(syncService.syncData).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
+      expect(notificationCenter.emitKVChange).toBeCalledWith(
+        SERVICE.GLIP_LOGIN,
+        true,
+      );
+    });
+    it('should notify rc login when account type is rc and isFirstLogin is false', async () => {
+      syncService.syncData.mockImplementation(() => {});
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
+      await sdk.onAuthSuccess({
+        isRCOnlyMode: false,
+        isFirstLogin: false,
+      } as any);
+      expect(sdk.updateNetworkToken).toBeCalled();
+      expect(accountManager.updateSupportedServices).toBeCalled();
+      expect(PhoneParserUtility.loadModule).toBeCalled();
+      expect(syncService.syncData).toBeCalled();
+      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
     });
     it('should notify start loading when timestamp is inValid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});

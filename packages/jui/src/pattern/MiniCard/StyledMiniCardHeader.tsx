@@ -14,13 +14,11 @@ type StyledMiniCardHeaderProps = {
 
 const StyledMiniCardHeader = styled<StyledMiniCardHeaderProps, 'div'>('div')`
   padding: ${spacing(4, 4, 4, 5)};
-  ${({ emphasize }: StyledMiniCardHeaderProps) =>
-    emphasize &&
+  ${({ emphasize }: StyledMiniCardHeaderProps) => emphasize &&
     css`
-      background-color: ${({ theme }) =>
-        tinycolor(primary('700')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity / 1.5)
-          .toRgbString()};
+      background-color: ${({ theme }) => tinycolor(primary('700')({ theme }))
+    .setAlpha(theme.palette.action.hoverOpacity / 1.5)
+    .toRgbString()};
     `}
 `;
 

@@ -9,7 +9,7 @@ describe('getChildren()', () => {
   // will remove until upgrade material ui
   beforeAll(() => {
     // mock console for jest
-    (global as any)['console'] = {
+    (global as any).console = {
       error: jest.fn(),
     };
   });

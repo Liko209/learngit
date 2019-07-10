@@ -21,9 +21,13 @@ describe('CallHistoryView', () => {
   class JPT2143 {
     @test('should show all when open call history')
     t1() {
+      const props = {
+        clearUMI: jest.fn(),
+      };
       const wrapper = shallow(
-        <CallHistoryWrapper height={1000} {...mockI18N} />,
+        <CallHistoryWrapper height={1000} {...props} {...mockI18N} />,
       );
+      expect(props.clearUMI).not.toHaveBeenCalled();
       expect(wrapper.find(JuiTabs).props().defaultActiveIndex).toBe(
         CallHistoryTypes.All,
       );
@@ -45,7 +49,7 @@ describe('CallHistoryView', () => {
 
   @testable
   class JPT2148 {
-    @test('should be clear umi if switch tab')
+    @test('should be clear umi if switch page')
     t1() {
       const props = {
         clearUMI: jest.fn(),

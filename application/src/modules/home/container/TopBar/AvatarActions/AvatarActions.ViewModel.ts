@@ -3,7 +3,7 @@
  * @Date: 2018-12-05 18:30:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -79,7 +79,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   @action
   handleSignOut = async () => {
     !!(await this.canSignOut()) && this._doLogout();
-  }
+  };
 
   private _doLogout = async () => {
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -87,7 +87,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     );
     await accountService.logout();
     window.location.href = '/';
-  }
+  };
 
   @action
   toggleAboutPage = (electronAppVersion?: string, electronVersion?: string) => {
@@ -96,11 +96,11 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     electronVersion &&
       globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
-  }
+  };
 
   handleSendFeedback = () => {
     UploadRecentLogs.show();
-  }
+  };
 }
 
 export { AvatarActionsViewModel };

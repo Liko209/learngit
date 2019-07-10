@@ -57,6 +57,12 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
   }
 
   @computed
+  get deleted() {
+    const item = this.item as { deactivated: boolean };
+    return item.deactivated;
+  }
+
+  @computed
   get text() {
     type ProcessFunc = (item: ITEM_MODEL_TYPES) => string;
     const textMapper = ITEM_TEXT_MAP[this.itemType];

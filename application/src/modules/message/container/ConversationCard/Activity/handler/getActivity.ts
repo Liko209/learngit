@@ -1,6 +1,7 @@
 import PostModel from '@/store/models/Post';
 import config from '../config';
 
+/* eslint-disable */
 export const getActivityData = (post: PostModel) => {
   const activity = {};
   const { itemTypeIds } = post;

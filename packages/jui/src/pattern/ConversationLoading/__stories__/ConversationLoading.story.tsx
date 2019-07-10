@@ -10,7 +10,7 @@
  */
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiConversationLoading } from '../';
+import { JuiConversationLoading } from '..';
 import { text, boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/ConversationLoading', module).add(

@@ -3,12 +3,13 @@
  * @Date: 2018-06-22 15:18:29
  * Copyright © RingCentral. All rights reserved.
  */
-import notificationCenter from '../../service/notificationCenter';
-import { SOCKET } from '../../service/eventKey';
+import notificationCenter from '../notificationCenter';
+import { SOCKET } from '../eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
 import { GlipPingPong } from './GlipPingPong';
+
 const SOCKET_LOGGER = 'SOCKET';
 
 type StateHandlerType = {

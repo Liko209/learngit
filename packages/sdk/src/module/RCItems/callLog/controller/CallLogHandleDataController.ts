@@ -80,7 +80,7 @@ class CallLogHandleDataController {
 
     // save data and notify
     this._saveDataAndNotify(pseudos, [callLog]);
-  }
+  };
 
   handleRCPresenceEvent = async (payload: RCPresenceEventPayload) => {
     if (!this._userConfig.getSyncToken()) {
@@ -91,25 +91,26 @@ class CallLogHandleDataController {
     // parse data
     const pseudos = (await this._userConfig.getPseudoCallLogInfo()) || {};
     const callLogs: CallLog[] = [];
-    await Promise.all(
-      payload.activeCalls.map(async (call: ActiveCall) => {
-        if (
-          this._hasValidDataInActiveCall(call) &&
-          this._isAnEndCall(call) &&
-          !pseudos[call.sessionId] &&
-          !(await this._isSelfCall(call)) &&
-          !(await this._getCallLogBySessionId(call.sessionId))
-        ) {
-          const pseudoId = call.sessionId + call.direction;
-          const callLog = this._getCallLogFromActiveCall(call, pseudoId);
-          pseudos[callLog.sessionId] = {
-            id: pseudoId,
-            result: CALL_RESULT.UNKNOWN,
-          };
-          callLogs.push(callLog);
-        }
-      }),
-    );
+    payload.activeCalls &&
+      (await Promise.all(
+        payload.activeCalls.map(async (call: ActiveCall) => {
+          if (
+            this._hasValidDataInActiveCall(call) &&
+            this._isAnEndCall(call) &&
+            !pseudos[call.sessionId] &&
+            !(await this._isSelfCall(call)) &&
+            !(await this._getCallLogBySessionId(call.sessionId))
+          ) {
+            const pseudoId = call.sessionId + call.direction;
+            const callLog = this._getCallLogFromActiveCall(call, pseudoId);
+            pseudos[callLog.sessionId] = {
+              id: pseudoId,
+              result: CALL_RESULT.UNKNOWN,
+            };
+            callLogs.push(callLog);
+          }
+        }),
+      ));
     mainLogger
       .tags(LOG_TAG)
       .info('create pseudo calls from presence, ', callLogs);
@@ -118,7 +119,7 @@ class CallLogHandleDataController {
     if (callLogs.length) {
       this._saveDataAndNotify(pseudos, callLogs);
     }
-  }
+  };
 
   private async _saveDataAndNotify(
     pseudos: PseudoCallLogInfo,

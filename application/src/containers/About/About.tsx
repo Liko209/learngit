@@ -3,6 +3,8 @@
  * @Date: 2018-10-31 14:29:02
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
@@ -33,12 +35,6 @@ const Param = styled.p`
 class About extends Component<Props> {
   private _globalStore = storeManager.getGlobalStore();
 
-  private _handleAboutPage = () => {
-    const globalStore = storeManager.getGlobalStore();
-    const isSHowDialog = getGlobalValue(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
-    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isSHowDialog);
-  }
-
   @observable versionInfo: versionInfoType = {
     deployedTime: '',
     deployedCommit: '',
@@ -67,7 +63,11 @@ class About extends Component<Props> {
       electronVersion,
     };
   }
-
+  private _handleAboutPage = () => {
+    const globalStore = storeManager.getGlobalStore();
+    const isSHowDialog = getGlobalValue(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG);
+    globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isSHowDialog);
+  };
   @action
   async fetchVersionInfo() {
     this.versionInfo = await fetchVersionInfo();

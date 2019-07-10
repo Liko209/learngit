@@ -3,7 +3,7 @@
  * @Date: 2019-01-10 15:48:20
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiRightShelfEmptyScreen,
@@ -14,10 +14,10 @@ import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { TAB_CONFIG, TabConfig } from './config';
 
 type Props = {
-  type: RIGHT_RAIL_ITEM_TYPE,
+  type: RIGHT_RAIL_ITEM_TYPE;
 } & WithTranslation;
 
-class EmptyViewComponent extends Component<Props> {
+class EmptyViewComponent extends PureComponent<Props> {
   render() {
     const { type, t } = this.props;
     const config = TAB_CONFIG.find((looper: TabConfig) => looper.type === type);

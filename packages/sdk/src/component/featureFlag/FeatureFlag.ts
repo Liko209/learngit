@@ -22,9 +22,7 @@ class FeatureFlag {
   ) {
     this._notifier = _notifier;
     this._calculator = _calculator;
-    dataDispatcher.register(SOCKET.CLIENT_CONFIG, data =>
-      this.handleData(data),
-    );
+    dataDispatcher.register(SOCKET.CLIENT_CONFIG, data => this.handleData(data));
     this._flags = this._dumpFlags();
   }
 

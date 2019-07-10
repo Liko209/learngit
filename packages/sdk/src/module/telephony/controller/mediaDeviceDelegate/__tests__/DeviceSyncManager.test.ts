@@ -225,7 +225,7 @@ describe('DeviceSyncManger', () => {
         deviceId: '',
       });
     });
-    it('should use storage when storage device available(exist && in devices) [JPT-2113]', () => {
+    it('should use storage when storage device available(exist && in devices) [JPT-2113] [JPT-2481]', () => {
       mockDeviceManager.getDevices.mockReturnValue([
         {
           deviceId: 'AAA',

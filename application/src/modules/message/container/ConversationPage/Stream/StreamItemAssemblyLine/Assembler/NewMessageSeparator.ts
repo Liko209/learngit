@@ -3,6 +3,7 @@
  * @Date: 2018-10-23 18:21:59
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
 import { ISortableModel } from '@/store/base';
@@ -48,7 +49,7 @@ class NewMessageSeparatorHandler extends Assembler {
     const { postList, hasMore, streamItemList, readThrough } = args;
     this.updateReadThrough(readThrough);
     args.readThrough = this._readThrough;
-    if (this._disabled) return args;
+    if (this._disabled || this._isSeparatorInserted()) return args;
     this._oldestPost = _.first(postList);
     /*
      * (1)
@@ -102,7 +103,7 @@ class NewMessageSeparatorHandler extends Assembler {
       return { ...args, streamItemList: items };
     }
     return args;
-  }
+  };
 
   onDelete: AssemblerDelFunc = (args: AssemblerDelFuncArgs) => {
     if (!this.separatorId) {
@@ -118,7 +119,7 @@ class NewMessageSeparatorHandler extends Assembler {
       );
     }
     return { ...args, streamItemList: filteredStreamItemList };
-  }
+  };
 
   updateReadThrough(readThrough: number) {
     if (this._hasNewMessagesSeparator) return;
@@ -130,6 +131,7 @@ class NewMessageSeparatorHandler extends Assembler {
    * bottom of stream, we should not add `New messages` separator.
    */
   disable() {
+    if (this._hasNewMessagesSeparator) return;
     this._disabled = true;
   }
 
@@ -164,6 +166,9 @@ class NewMessageSeparatorHandler extends Assembler {
   private _setSeparator(postId: number, separatorId: number) {
     this.firstUnreadPostId = postId;
     this.separatorId = separatorId;
+  }
+  private _isSeparatorInserted() {
+    return !!this.separatorId;
   }
 }
 

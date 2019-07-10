@@ -78,15 +78,13 @@ const ViewerThumbnailWrap = styled.div`
 
     &&:hover {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) =>
-          fade(palette('primary', '600')({ theme }), theme.opacity['1'])};
+        background-color: ${({ theme }) => fade(palette('primary', '600')({ theme }), theme.opacity['1'])};
       }
     }
 
     &&:active {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) =>
-          fade(palette('primary', '600')({ theme }), theme.opacity['2'])};
+        background-color: ${({ theme }) => fade(palette('primary', '600')({ theme }), theme.opacity['2'])};
       }
     }
 

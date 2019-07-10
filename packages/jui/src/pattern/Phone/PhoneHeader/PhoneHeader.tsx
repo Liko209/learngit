@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { spacing } from '../../../foundation/utils';
-import { JuiConversationPageHeader } from '../../../pattern/ConversationPageHeader';
+import { JuiConversationPageHeader } from '../../ConversationPageHeader';
 import styled from '../../../foundation/styled-components';
 
 const PhoneHeader = styled(JuiConversationPageHeader)`

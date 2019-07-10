@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
