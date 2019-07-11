@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import { action, runInAction, observable, computed } from 'mobx';
 import {
   MessageInputProps,
   MessageInputViewProps,
@@ -262,7 +262,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   getDraftFromLocal = async () => {
-    this.draft = await this._groupConfigService.getDraft(this.props.id);
+    const draft = await this._groupConfigService.getDraft(this.props.id);
+    runInAction(() => {
+      this.draft = draft;
+    });
   }
 
   set draft(draft: string) {
