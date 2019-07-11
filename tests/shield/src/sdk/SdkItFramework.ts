@@ -17,11 +17,12 @@ import _ from 'lodash';
 import assert = require('assert');
 import { parseState } from './mocks/server/glip/utils';
 import { blockExternalRequest } from './utils/network/blockExternalRequest';
-import { IRequestResponse } from './utils/network/networkDataTool';
+import { IRequestResponse, IRegexpRequestResponse } from './utils/network/networkDataTool';
 import { ProxyServer } from './mocks/server/ProxyServer';
 import { IApiContract } from './types';
 import { createResponse } from './mocks/server/utils';
-import { wait } from 'shield/utils';
+import pathToRegexp from 'path-to-regexp';
+import { wait } from '../utils';
 
 blockExternalRequest();
 
@@ -218,7 +219,7 @@ export function itForSdk(
 
   const mockResponse: MockResponse = (requestResponse, extractor) => {
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
-      const requestResponsePool: IRequestResponse[] = [];
+      const requestResponsePool: IRegexpRequestResponse[] = [];
       jest
         .spyOn(proxyServer, 'getRequestResponsePool')
         .mockImplementation(() => requestResponsePool);
@@ -227,7 +228,8 @@ export function itForSdk(
       ? extractor(requestResponse)
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
-    pool.push(requestResponse);
+    console.warn(111, pathToRegexp(requestResponse.path))
+    pool.push({...requestResponse, pathRegexp: pathToRegexp(requestResponse.path)});
     return extractResult;
   };
 

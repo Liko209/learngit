@@ -70,6 +70,10 @@ export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo {
   response: IBaseResponse<Res>;
 }
 
+export interface IRegexpRequestResponse<Req = any, Res = any> extends IRequestResponse {
+  pathRegexp: RegExp;
+}
+
 export interface ISocketInfo<T = any> extends INetworkInfo {
   type: 'socket-message';
   // url: string;

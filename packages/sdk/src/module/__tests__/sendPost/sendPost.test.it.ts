@@ -9,7 +9,7 @@ import { itForSdk } from 'shield/sdk/SdkItFramework';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
-import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team.contract';
+import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
 jest.setTimeout(30 * 1000);
 itForSdk(
   'Send post test',
@@ -57,11 +57,11 @@ itForSdk(
       let sendFailedPost: Post;
       it('send post 2: failed', async () => {
         mockResponse(
-          createErrorResponse<IGlipTeamPost>(
+          createErrorResponse<IGlipPostPost>(
             {
               host: 'glip',
               method: 'post',
-              path: '/api/team/:id',
+              path: '/api/post',
             },
             { status: 500 },
           ),

@@ -4,50 +4,33 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import assert from 'assert';
-import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
-import { Post } from 'sdk/module/post/entity/Post';
 
-import { META_ROUTE } from '../../../decorators/constants';
-import { getMeta } from '../../../decorators/metaUtil';
 import { Route } from '../../../decorators/Route.decorator';
-import { IApiContract, IJRequest, IRoute } from '../../../types';
-import { Router } from '../Router';
+import { IJRequest } from '../../../types';
 import { createResponse, String2Number } from '../utils';
-import { STATE_KEYS } from './constants';
-import { GlipClientConfigDao } from './dao/clientConfig';
-import { GlipCompanyDao } from './dao/company';
-import { GlipGroupDao } from './dao/group';
-import { GlipGroupStateDao } from './dao/groupState';
-import { GlipItemDao } from './dao/item';
-import { GlipPersonDao } from './dao/person';
-import { GlipPostDao } from './dao/post';
-import { GlipProfileDao } from './dao/profile';
-import { GlipStateDao } from './dao/state';
-import { GlipDataHelper } from './data/data';
-import { GlipBaseDao } from './GlipBaseDao';
-import { schema } from './glipSchema';
-import { MockSocketServer } from './MockSocketServer';
 import {
-    GlipData, GlipGroup, GlipModel, GlipPost, GlipProfile, GlipState, InitialData
+     GlipGroup,  GlipPost, GlipProfile, GlipState
 } from './types';
 import { genPostId, parseState, doPartialUpdate } from './utils';
+import { PRequest, PContext, PQuery } from '../../../decorators/Parameter.decorator';
+import { IGlipServerContext } from './IGlipServerContext';
 
 const debug = createDebug('GlipController');
 
-class GlipController {
+export class GlipController {
 
   @Route({
     path: '/api/posts',
   })
-  async getPosts(request: IJRequest) {
+  async getPosts(@PRequest request: IJRequest, @PContext context: IGlipServerContext) {
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
       request,
       data: {
-        posts: await this.postDao.getPostsByGroupId(group_id),
-        items: await this.itemDao.getItemsByGroupId(group_id),
+        posts: await context.postDao.getPostsByGroupId(group_id),
+        items: await context.itemDao.getItemsByGroupId(group_id),
       },
     });
   }
@@ -55,7 +38,7 @@ class GlipController {
   @Route({
     path: '/api/posts_items_by_ids',
   })
-  async getPostsItemsByIds(request: IJRequest) {
+  async getPostsItemsByIds(@PRequest request: IJRequest, @PContext context: IGlipServerContext) {
     const post_ids = request.params['post_ids']
       .split(',')
       .map((it: string) => Number(it));
@@ -64,8 +47,8 @@ class GlipController {
     return createResponse({
       request,
       data: {
-        posts: await this.postDao.getPostsByPostIds(post_ids),
-        items: await this.itemDao.getItemsByGroupId(group_id),
+        posts: await context.postDao.getPostsByPostIds(post_ids),
+        items: await context.itemDao.getItemsByGroupId(group_id),
       },
     });
   }
@@ -74,32 +57,32 @@ class GlipController {
     path: '/api/post',
     method: 'post',
   })
-  async createPost(request: IJRequest<Post>) {
+  async createPost(@PRequest request: IJRequest<GlipPost>, @PContext context: IGlipServerContext) {
     const serverPost: GlipPost = { _id: genPostId(), ...request.data };
     const groupId = serverPost.group_id;
-    const updateResult = this.postDao.put(serverPost);
-    const serverGroup = this.groupDao.getById(groupId)!;
+    const updateResult = context.postDao.put(serverPost);
+    const serverGroup = context.groupDao.getById(groupId)!;
     serverGroup.most_recent_post_id = serverPost._id;
     serverGroup.most_recent_post_created_at = serverPost.created_at;
     serverGroup.most_recent_content_modified_at = serverPost.modified_at;
     serverGroup.post_cursor += 1;
     serverGroup.last_author_id = serverPost.creator_id;
-    this.groupDao.put(serverGroup);
+    context.groupDao.put(serverGroup);
     const groupState =
-      this.groupStateDao.getById(groupId) ||
-      this.dataHelper.groupState.createGroupState(groupId);
+      context.groupStateDao.getById(groupId) ||
+      context.dataHelper.groupState.createGroupState(groupId);
     groupState.post_cursor += 1;
     groupState.read_through = serverPost._id;
-    this.groupStateDao.put(groupState);
-    this.socketServer.emitEntityCreate(serverPost);
-    this.socketServer.emitPartial(serverGroup, {
+    context.groupStateDao.put(groupState);
+    context.socketServer.emitEntityCreate(serverPost);
+    context.socketServer.emitPartial(serverGroup, {
       hint: {
         post_creator_ids: {
           [String(serverGroup._id)]: serverPost.creator_id,
         },
       },
     });
-    this.socketServer.emitPartial(groupState, {
+    context.socketServer.emitPartial(groupState, {
       hint: {
         post_creator_ids: {
           [String(serverGroup._id)]: serverPost.creator_id,
@@ -120,7 +103,7 @@ class GlipController {
       id: String2Number,
     },
   })
-  saveStatePartial(request: IJRequest<GlipState>, query: { id: number }) {
+  saveStatePartial(@PRequest request: IJRequest<GlipState>, @PContext context: IGlipServerContext, @PQuery query: { id: number }) {
     debug('handle saveStatePartial -> request', query);
     const groupStates = parseState(request.data);
     if (groupStates && groupStates[0]) {
@@ -128,9 +111,9 @@ class GlipController {
       return createResponse({
         request,
         data: doPartialUpdate(
-          this.groupStateDao,
+          context.groupStateDao,
           groupStates[0],
-          result => this.socketServer.emitPartial(result),
+          result => context.socketServer.emitPartial(result),
         ),
       });
     }
@@ -144,10 +127,10 @@ class GlipController {
     path: '/api/group',
     method: 'post',
   })
-  createGroup(request: IJRequest<GlipGroup>) {
-    const serverGroup = this.dataHelper.group.factory.build(request.data);
-    this.groupDao.put(serverGroup);
-    this.socketServer.emitEntityCreate(serverGroup);
+  createGroup(@PRequest request: IJRequest<GlipGroup>, @PContext context: IGlipServerContext) {
+    const serverGroup = context.dataHelper.group.factory.build(request.data);
+    context.groupDao.put(serverGroup);
+    context.socketServer.emitEntityCreate(serverGroup);
     return createResponse({
       request,
       data: serverGroup,
@@ -161,14 +144,14 @@ class GlipController {
       id: String2Number,
     },
   })
-  updateGroup(request: IJRequest<GlipGroup>, routeParams: object) {
+  updateGroup(@PRequest request: IJRequest<GlipGroup>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
     assert(routeParams['id'], 'update group lack ok id');
     return createResponse({
       request,
       data: doPartialUpdate(
-        this.groupDao,
+        context.groupDao,
         { ...request.data, _id: routeParams['id'] },
-        result => this.socketServer.emitPartial(result),
+        result => context.socketServer.emitPartial(result),
       ),
     });
   }
@@ -177,10 +160,10 @@ class GlipController {
     path: '/api/team',
     method: 'post',
   })
-  createTeam(request: IJRequest<GlipGroup>) {
-    const serverTeam = this.dataHelper.team.factory.build(request.data);
-    this.groupDao.put(serverTeam);
-    this.socketServer.emitEntityCreate(serverTeam);
+  createTeam(@PRequest request: IJRequest<GlipGroup>, @PContext context: IGlipServerContext) {
+    const serverTeam = context.dataHelper.team.factory.build(request.data);
+    context.groupDao.put(serverTeam);
+    context.socketServer.emitEntityCreate(serverTeam);
     return createResponse({
       request,
       data: serverTeam,
@@ -194,14 +177,14 @@ class GlipController {
       id: String2Number,
     },
   })
-  updateTeam(request: IJRequest<GlipGroup>, routeParams: object) {
+  updateTeam(@PRequest request: IJRequest<GlipGroup>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
     assert(routeParams['id'], 'update team lack ok id');
     return createResponse({
       request,
       data: doPartialUpdate(
-        this.groupDao,
+        context.groupDao,
         { ...request.data, _id: routeParams['id'] },
-        result => this.socketServer.emitPartial(result),
+        result => context.socketServer.emitPartial(result),
       ),
     });
   }
@@ -213,11 +196,11 @@ class GlipController {
       id: String2Number,
     },
   })
-  getProfile(request: IJRequest<GlipProfile>, routeParams: object) {
+  getProfile(@PRequest request: IJRequest<GlipProfile>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
     assert(routeParams['id'], 'get profile lack ok id');
     return createResponse({
       request,
-      data: this.profileDao.getById(Number(routeParams['id'])),
+      data: context.profileDao.getById(Number(routeParams['id'])),
     });
   }
 
@@ -228,14 +211,14 @@ class GlipController {
       id: String2Number,
     },
   })
-  updateProfile(request: IJRequest<GlipProfile>, routeParams: object) {
+  updateProfile(@PRequest request: IJRequest<GlipProfile>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
     assert(routeParams['id'], 'update profile lack ok id');
     return createResponse({
       request,
       data: doPartialUpdate(
-        this.profileDao,
+        context.profileDao,
         { ...request.data, _id: routeParams['id'] },
-        result => this.socketServer.emitMessage(result),
+        result => context.socketServer.emitMessage(result),
       ),
     });
   }

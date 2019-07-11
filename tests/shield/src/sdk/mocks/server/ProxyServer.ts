@@ -9,24 +9,24 @@ import { INetworkRequestExecutorListener, NETWORK_HANDLE_TYPE } from 'foundation
 import { CommonFileServer } from './CommonFileServer';
 import { MockGlipServer } from './glip/MockGlipServer';
 import { InstanceManager } from './InstanceManager';
-import { IRequestResponse, SERVER_ALIAS_MAP } from '../../utils/network/networkDataTool';
+import { IRequestResponse, SERVER_ALIAS_MAP, IRegexpRequestResponse } from '../../utils/network/networkDataTool';
 import _ from 'lodash';
 import { createResponse } from './utils';
-import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 
-const debug = createDebug('ProxyServer', false);
+const debug = createDebug('ProxyServer', true);
 
 export class ProxyServer implements IMockServer {
   private _findResponseInRequestResponsePool(request: { host: string; method: string; path: string }) {
     const { host, method, path } = request;
-    const pathRegexp = pathToRegexp(path);
+    // const pathRegexp = pathToRegexp(path);
+    // console.warn('TCL: ProxyServer -> _findResponseInRequestResponsePool -> pathRegexp', pathRegexp);
     const pool = this.getRequestResponsePool();
-    return pool.find(item => item.host === host && item.request.method === method && (item.path === path || pathRegexp.test(item.path)));
+    return pool.find(item => item.host === host && item.request.method === method && (item.path === path || item.pathRegexp.test(path)));
   }
   adapter: IResponseAdapter = new ResponseAdapter();
 
-  getRequestResponsePool(): IRequestResponse[] {
+  getRequestResponsePool(): IRegexpRequestResponse[] {
     return [];
   }
 
