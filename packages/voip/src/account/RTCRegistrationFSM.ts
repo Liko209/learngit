@@ -142,7 +142,9 @@ class RTCRegistrationFSM extends StateMachine {
         onTransition(lifecycle) {
           rtcLogger.debug(
             'RTC_ACCOUNT_FSM',
-            `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${lifecycle.to}`,
+            `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
+              lifecycle.to
+            }`,
           );
           return true;
         },

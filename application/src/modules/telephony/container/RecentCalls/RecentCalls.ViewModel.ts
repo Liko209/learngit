@@ -8,9 +8,22 @@ import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Props } from './types';
 import { RecentCallLogsHandler } from './RecentCallLogsHandler';
-import { IndexRange } from 'jui/components/VirtualizedList';
+import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { CallLog } from 'sdk/module/RCItems/callLog/entity';
+import CallLogModel from '@/store/models/CallLog';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
+import PhoneNumberModel from '@/store/models/PhoneNumber';
+import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
+import { container } from 'framework';
+import { TelephonyStore } from '../../store';
+import { TelephonyService } from '../../service';
+import { TELEPHONY_SERVICE } from '../../interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
-const InitIndex = -1;
+const ANALYTICS_SOURCE = 'dialer_callHistory';
+
+const InitIndex = 0;
 
 class RecentCallsViewModel extends StoreViewModel<Props> {
   @observable focusIndex: number = InitIndex;
@@ -18,8 +31,10 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   isError = false;
   @observable
   private _recentCallLogsHandler: RecentCallLogsHandler | undefined;
-  @observable startIndex: number = 0;
-  @observable stopIndex: number = 0;
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 
   constructor() {
     super();
@@ -44,10 +59,85 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   };
 
   @action
-  setRangeIndex = (range: IndexRange) => {
-    this.startIndex = range.startIndex;
-    this.stopIndex = range.stopIndex;
+  makeCall = async (focusIndex?: number) => {
+    if (!this.dialerFocused) {
+      return;
+    }
+    if (typeof focusIndex === 'number') {
+      this.focusIndex = focusIndex;
+    }
+    if (!this.phoneNumber) {
+      return;
+    }
+    analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
+    return this._telephonyService.makeCall(this.phoneNumber);
   };
+
+  @computed
+  private get _callLogId() {
+    return (
+      this.listHandler &&
+      this.listHandler.sortableListStore.getIds[this.focusIndex]
+    );
+  }
+
+  @computed
+  get data() {
+    if (this._callLogId) {
+      return getEntity<CallLog, CallLogModel, string>(
+        ENTITY_NAME.CALL_LOG,
+        this._callLogId,
+      ) as CallLogModel;
+    }
+    return null;
+  }
+
+  @computed
+  get caller() {
+    if (this.data) {
+      const { direction } = this.data;
+      return direction === CALL_DIRECTION.INBOUND
+        ? this.data.from
+        : this.data.to;
+    }
+    return null;
+  }
+
+  @computed
+  get isBlock() {
+    const caller = this.caller;
+    if (!caller) {
+      return true;
+    }
+
+    const { phoneNumber, extensionNumber } = caller;
+    return !phoneNumber && !extensionNumber;
+  }
+
+  @computed
+  get _phoneNumberModel() {
+    const caller = this.caller;
+    if (!caller || this.isBlock) {
+      return;
+    }
+
+    const matchNumber = caller.extensionNumber || caller.phoneNumber;
+    if (!matchNumber) {
+      return;
+    }
+
+    return getEntity<PhoneNumber, PhoneNumberModel, string>(
+      ENTITY_NAME.PHONE_NUMBER,
+      matchNumber,
+    );
+  }
+
+  @computed
+  get phoneNumber() {
+    return this._phoneNumberModel
+      ? this._phoneNumberModel.formattedPhoneNumber
+      : null;
+  }
 
   @computed
   get listHandler() {
@@ -59,6 +149,11 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
     return this._recentCallLogsHandler
       ? this._recentCallLogsHandler.recentCallIds
       : [];
+  }
+
+  @computed
+  get dialerFocused() {
+    return this._telephonyStore.dialerFocused;
   }
 
   @action

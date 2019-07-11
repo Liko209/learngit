@@ -12,6 +12,8 @@ import notificationCenter, {
 } from '../../../service/notificationCenter';
 import { EVENT_TYPES } from '../../../service/constants';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
+import _ from 'lodash';
+
 /* eslint-disable */
 class EntityPersistentController<
   T extends IdModel<IdType>,
@@ -106,14 +108,15 @@ class EntityPersistentController<
     return item;
   }
 
-  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
+  async batchGet(ids: IdType[]): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
-      items = await this.entityCacheController.batchGet(ids, order);
+      items = await this.entityCacheController.batchGet(ids);
     }
 
     if (items.length !== ids.length && this.dao) {
-      items = await this.dao.batchGet(ids, order);
+      const diffIds = _.difference(ids, items.map(x => x.id));
+      items = items.concat(await this.dao.batchGet(diffIds));
       if (items && items.length && this.entityCacheController) {
         await this.entityCacheController.bulkPut(items);
       }

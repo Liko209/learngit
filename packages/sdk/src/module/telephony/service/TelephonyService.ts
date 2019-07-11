@@ -100,7 +100,7 @@ class TelephonyService extends EntityBaseService<Call>
     return accountController ? accountController.getCallCount() : 0;
   };
 
-  makeCall = async (toNumber: string, fromNumber: string) => {
+  makeCall = async (toNumber: string, fromNumber?: string) => {
     const accountController = this.telephonyController.getAccountController();
     if (accountController) {
       return this.telephonyController

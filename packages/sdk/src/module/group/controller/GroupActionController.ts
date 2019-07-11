@@ -22,7 +22,6 @@ import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { PostService } from '../../post';
 import { transform } from '../../../service/utils';
-import { GroupDao } from '../dao';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import {
@@ -321,35 +320,48 @@ export class GroupActionController {
     return result;
   }
 
-  async removeTeamsByIds(ids: number[], shouldNotify: boolean) {
-    if (_.isEmpty(ids)) {
-      return;
-    }
-    const dao = daoManager.getDao(GroupDao);
-    await dao.bulkDelete(ids);
-    if (shouldNotify) {
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, ids);
-    }
-  }
-
-  deleteAllTeamInformation = async (ids: number[]) => {
+  async handleRemovedFromTeam(ids: number[]) {
     if (!ids || !ids.length) {
       return;
     }
-    const postService = ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    );
-    await postService.deletePostsByGroupIds(ids, true);
-    await this.groupService.deleteGroupsConfig(ids);
+
+    await this.deleteAllRelatedInfosOfTeam(ids);
     const groups = await this.entitySourceController.getEntitiesLocally(
       ids,
       false,
     );
-    const privateGroupIds = groups
-      .filter((group: Group) => group.privacy === 'private')
-      .map((group: Group) => group.id);
-    await this.removeTeamsByIds(privateGroupIds, true);
-  };
+    const currentUserId = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig.getGlipUserId();
+    const privateIds: number[] = [];
+    const updatedPrivateGroups: Group[] = [];
+    groups.forEach((group: Group) => {
+      if (group.privacy === 'private') {
+        privateIds.push(group.id);
+        group.members = group.members.filter(
+          member => member !== currentUserId,
+        );
+        updatedPrivateGroups.push(group);
+      }
+    });
+
+    if (privateIds.length) {
+      mainLogger
+        .tags('GroupActionController')
+        .info(`delete private groups ${privateIds}`);
+      await this.entitySourceController.bulkDelete(privateIds);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, updatedPrivateGroups);
+    }
+  }
+
+  async deleteAllRelatedInfosOfTeam(ids: number[]) {
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
+    await postService.deletePostsByGroupIds(ids, true);
+
+    await this.groupService.deleteGroupsConfig(ids);
+  }
 
   async setAsTrue4HasMoreConfigByDirection(
     ids: number[],

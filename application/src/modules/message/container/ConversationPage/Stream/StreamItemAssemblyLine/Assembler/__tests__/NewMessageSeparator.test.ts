@@ -415,4 +415,56 @@ describe('NewMessageSeparator', () => {
       expect(separator.streamItemList.value()).toEqual([existSeparator]);
     });
   });
+
+  describe('disable()', () => {
+    function setUp(args: AssemblerAddFuncArgs) {
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValueOnce('0');
+      const separator = new NewMessageSeparatorHandler();
+      separator.onAdd(args);
+      return separator;
+    }
+    beforeEach(() => {});
+    it('should not disable the sep when there is stream separator FIJI-7020', () => {
+      const firstUnreadPost = {
+        id: 620257284,
+        sortValue: 1540461970776,
+        data: { created_at: 1540461970776 },
+      };
+      const separator = setUp({
+        streamItemList: _([]),
+        added: [],
+        hasMore: true,
+        readThrough: 620249092,
+        postList: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          firstUnreadPost,
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
+        ],
+      });
+      separator.disable();
+      expect(separator._disabled).toBeUndefined();
+    });
+    it('should disable the sep when there is not any stream separator', () => {
+      const separator = setUp({
+        streamItemList: _([]),
+        added: [],
+        hasMore: true,
+        readThrough: 620232707,
+        postList: [
+          { id: 620232708, sortValue: 1540461821422 },
+          { id: 620240900, sortValue: 1540461830617 },
+          { id: 620249092, sortValue: 1540461830964 }, // readThrough is here
+          { id: 620265476, sortValue: 1540461970958 },
+          { id: 620273668, sortValue: 1540461971175 },
+          { id: 620281860, sortValue: 1540461972285 },
+        ],
+      });
+      separator.disable();
+      expect(separator._disabled).toBeFalsy();
+    });
+  });
 });
