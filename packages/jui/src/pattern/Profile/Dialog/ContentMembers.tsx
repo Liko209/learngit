@@ -7,7 +7,13 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import {
-  spacing, grey, typography, height, width, palette, ellipsis
+  spacing,
+  grey,
+  typography,
+  height,
+  width,
+  palette,
+  ellipsis,
 } from '../../../foundation/utils/styles'; // use external instead of injected due to incompatible with SortableElement
 import { JuiListItem, JuiListItemProps } from '../../../components/Lists';
 
@@ -19,6 +25,7 @@ const JuiProfileDialogContentMembers = styled('div')<{ height?: number }>`
   flex: 1;
   height: ${props => (props.height ? height(props.height / 4) : '100%')};
   min-height: ${props => (props.height ? height(props.height / 4) : '100%')};
+  max-height: ${height(66)};
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
@@ -71,7 +78,9 @@ const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
 type MemberListItemProps = {
   isHover: boolean;
 } & JuiListItemProps;
-const MemberListItem = ({ isHover, ...rest }: MemberListItemProps) => <JuiListItem {...rest} />;
+const MemberListItem = ({ isHover, ...rest }: MemberListItemProps) => (
+  <JuiListItem {...rest} />
+);
 
 const JuiProfileDialogContentMemberListItem = styled(MemberListItem)`
   && {
@@ -80,7 +89,8 @@ const JuiProfileDialogContentMemberListItem = styled(MemberListItem)`
     align-items: center;
     padding: ${spacing(0, 4, 0, 8)};
     cursor: pointer;
-    background-color: ${({ isHover }) => (isHover ? grey('100') : palette('common', 'white'))};
+    background-color: ${({ isHover }) =>
+      (isHover ? grey('100') : palette('common', 'white'))};
     /* &:nth-last-child(1) {
       margin-bottom: ${spacing(10)};
     } */
@@ -102,7 +112,9 @@ const JuiProfileDialogContentMemberListItemAdmin = styled.span`
   margin-left: ${spacing(3)};
 `;
 
-const JuiProfileDialogContentMemberListItemGuest = styled(JuiProfileDialogContentMemberListItemAdmin)`
+const JuiProfileDialogContentMemberListItemGuest = styled(
+  JuiProfileDialogContentMemberListItemAdmin,
+)`
   background-color: ${grey('400')};
 `;
 
