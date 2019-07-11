@@ -75,6 +75,12 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
   }
 
   componentWillUnmount() {
+    const { selected, onVoicemailPlay } = this.props;
+
+    if (!selected) return;
+
+    onVoicemailPlay(null);
+
     if (this._AudioPlayer.current) {
       this._AudioPlayer.current.pause();
     }
