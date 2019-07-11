@@ -349,6 +349,7 @@ class TelephonyStore {
     }
 
     this.resetReply();
+    this.backIncoming();
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
