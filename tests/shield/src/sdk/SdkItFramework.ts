@@ -3,107 +3,32 @@
  * @Date: 2019-07-10 16:17:43
  * Copyright © RingCentral. All rights reserved.
  */
-import { Sdk } from 'sdk/index';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountService } from 'sdk/module/account';
-import { notificationCenter } from 'sdk/service';
-import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
-import { InstanceManager } from './mocks/server/InstanceManager';
-import { GlipDataHelper } from './mocks/server/glip/data/data';
-import { InitialData, GlipData } from './mocks/server/glip/types';
-import { createDebug } from 'sdk/__tests__/utils';
-const debug = createDebug('SdkItFramework');
 import _ from 'lodash';
-import assert = require('assert');
-import { parseState } from './mocks/server/glip/utils';
-import { blockExternalRequest } from './utils/network/blockExternalRequest';
-import { IRequestResponse, IRegexpRequestResponse } from './utils/network/networkDataTool';
-import { ProxyServer } from './mocks/server/ProxyServer';
-import { IApiContract } from './types';
-import { createResponse } from './mocks/server/utils';
 import pathToRegexp from 'path-to-regexp';
+import { createDebug } from 'sdk/__tests__/utils';
+import { AccountService } from 'sdk/module/account';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { notificationCenter } from 'sdk/service';
+
 import { wait } from '../utils';
+import { GlipDataHelper } from './mocks/server/glip/data/data';
+import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
+import { GlipData, InitialData } from './mocks/server/glip/types';
+import { parseInitialData } from './mocks/server/glip/utils';
+import { InstanceManager } from './mocks/server/InstanceManager';
+import { ProxyServer } from './mocks/server/ProxyServer';
+import { blockExternalRequest } from './utils/network/blockExternalRequest';
+import assert = require('assert');
+import { MockResponse, IRegexpRequestResponse } from './types';
+import { sdk } from 'sdk/index';
 
+const debug = createDebug('SdkItFramework');
 blockExternalRequest();
-
-function readJson<
-  A extends IApiContract<any, any> = IApiContract<any, any>,
-  ReqData = A extends IApiContract<infer B, any> ? B : any,
-  ResData = A extends IApiContract<any, infer B> ? B : any
->(json: IRequestResponse<ReqData, ResData>) {
-  ['path', 'method', 'request', 'response'].forEach(k =>
-    assert(json[k], `json lack of property[${k}]`),
-  );
-  return json;
-}
-
-function createSuccessResponse<T extends IApiContract>(
-  options: {
-    host: T['host'];
-    method: T['method'];
-    path: T['path'];
-  },
-  data: T['response'],
-) {
-  return {
-    type: 'request-response',
-    via: 'mock',
-    response: createResponse({
-      data: data
-    }),
-    request: {
-      method: options.method,
-      path: options.path,
-    } as any,
-    host: options.host,
-    method: options.method,
-    path: options.path,
-  } as IRequestResponse<T['request'], T['response']>;
-}
-
-function createErrorResponse<T extends IApiContract>(
-  options: {
-    host: T['host'];
-    method: T['method'];
-    path: T['path'];
-  },
-  response: {
-    status: number,
-    statusText?: string,
-  },
-) {
-  return {
-    type: 'request-response',
-    via: 'mock',
-    response: createResponse(response),
-    request: {
-      method: options.method,
-    } as any,
-    host: options.host,
-    method: options.method,
-    path: options.path,
-  } as IRequestResponse<any, any>;
-}
-
-type MockResponse = <
-  A extends IApiContract<any, any> = IApiContract<any, any>,
-  ReqData = A extends IApiContract<infer B, any> ? B : any,
-  ResData = A extends IApiContract<any, infer B> ? B : any,
-  T extends (api: A) => any = (
-    api: IApiContract<ReqData, ResData>,
-  ) => any
->(
-  requestResponse: IRequestResponse<ReqData, ResData>,
-  extractor?: T,
-) => ReturnType<T>;
 
 type ItContext = {
   currentUserId: () => number;
   currentCompanyId: () => number;
   mockResponse: MockResponse;
-  readJson: typeof readJson;
-  createSuccessResponse: typeof createSuccessResponse;
-  createErrorResponse: typeof createErrorResponse;
   data: {
     template: {
       BASIC: InitialData;
@@ -117,35 +42,6 @@ type ItContext = {
     cleanUp: () => Promise<void>;
   };
 };
-
-function parseInitialData(initialData: InitialData): GlipData {
-  const company = _.find(
-    initialData.companies,
-    item => item._id === initialData.company_id,
-  )!;
-  const user = _.find(
-    initialData.people,
-    item => item._id === initialData.user_id,
-  )!;
-  assert(company, 'Data invalid. company_id not found in companies');
-  assert(user, 'Data invalid. user_id not found in people');
-  // initialData.profile.
-  const userGroupStates = parseState(initialData.state);
-  const result: GlipData = {
-    company,
-    user,
-    people: initialData.people,
-    groups: initialData.groups,
-    teams: initialData.teams,
-    clientConfig: initialData.client_config,
-    state: initialData.state,
-    posts: initialData.posts || [],
-    groupState: userGroupStates,
-    profile: initialData.profile,
-  };
-  return result;
-}
-
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetModules();
@@ -153,7 +49,7 @@ function clearMocks() {
 }
 
 async function initSdk() {
-  await Sdk.init({});
+  await sdk.init({});
 }
 
 async function login() {
@@ -228,17 +124,16 @@ export function itForSdk(
       ? extractor(requestResponse as any)
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
-    console.warn(111, pathToRegexp(requestResponse.path))
-    pool.push({...requestResponse, pathRegexp: pathToRegexp(requestResponse.path)});
+    pool.push({
+      ...requestResponse,
+      pathRegexp: pathToRegexp(requestResponse.path),
+    });
     return extractResult;
   };
 
   // provide for it case to mock data.
   const itCtx: ItContext = {
     mockResponse,
-    createSuccessResponse,
-    createErrorResponse,
-    readJson,
     currentUserId: () => userId,
     currentCompanyId: () => companyId,
     data: {

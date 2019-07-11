@@ -6,9 +6,10 @@
 import { TYPE_ID_MASK, TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 
 import { STATE_KEYS } from './constants';
-import { GlipState, GlipModel } from './types';
+import { GlipState, GlipModel, InitialData, GlipData } from './types';
 import { GlipBaseDao } from './GlipBaseDao';
 import _ from 'lodash';
+import assert = require('assert');
 
 const FACTOR = (TYPE_ID_MASK << 1) & ~TYPE_ID_MASK;
 const typeIdPool = new Map<string, number>();
@@ -51,6 +52,34 @@ export function parseState(state: GlipState) {
   return Array.from(groupIds).map(id => groupStates[id]);
 }
 
+
+export function parseInitialData(initialData: InitialData): GlipData {
+  const company = _.find(
+    initialData.companies,
+    item => item._id === initialData.company_id,
+  )!;
+  const user = _.find(
+    initialData.people,
+    item => item._id === initialData.user_id,
+  )!;
+  assert(company, 'Data invalid. company_id not found in companies');
+  assert(user, 'Data invalid. user_id not found in people');
+  // initialData.profile.
+  const userGroupStates = parseState(initialData.state);
+  const result: GlipData = {
+    company,
+    user,
+    people: initialData.people,
+    groups: initialData.groups,
+    teams: initialData.teams,
+    clientConfig: initialData.client_config,
+    state: initialData.state,
+    posts: initialData.posts || [],
+    groupState: userGroupStates,
+    profile: initialData.profile,
+  };
+  return result;
+  }
 
 export function doPartialUpdate<T extends GlipModel>(
   dao: GlipBaseDao<T>,

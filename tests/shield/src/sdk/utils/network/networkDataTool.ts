@@ -5,7 +5,16 @@
  * @Date: 2019-06-30 18:23:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { IBaseRequest, IBaseResponse, IApiContract } from '../../types';
+import {
+  IBaseRequest,
+  IBaseResponse,
+  ISocketRequest,
+  ISocketResponse,
+  ISocketInfo,
+  IRequestResponse,
+  ISocketResponseInfo,
+  ISocketRequestInfo,
+} from '../../types';
 const INJECT_FLAG = '__jupiter__';
 const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';
@@ -29,70 +38,6 @@ export const SERVER_ALIAS_MAP = {
   'https://app.glip.com': 'glip',
   'wss://app.glip.com': 'glip',
 };
-
-interface ISocketRequest<T = object> {
-  id: string;
-  path: string;
-  method: string;
-  headers: object;
-  host: string;
-  timeout: number;
-  authFree: boolean;
-  parameters: T;
-  uri: string;
-}
-
-interface ISocketResponse<T = any> {
-  request: {
-    status_code: number;
-    status_text: string;
-    parameters: {
-      request_id: string;
-    };
-  };
-  body: T;
-}
-
-interface INetworkInfo {
-  type: 'request-response' | 'socket-message';
-  // url: string;
-  host: string;
-  path: string;
-  // hostAlias?: string;
-}
-
-export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo, IApiContract<Req, Res> {
-  type: 'request-response';
-  via: string;
-  // url: string;
-  method: string;
-  request: IBaseRequest<Req>;
-  response: IBaseResponse<Res>;
-}
-
-export interface IRegexpRequestResponse<Req = any, Res = any> extends IRequestResponse {
-  pathRegexp: RegExp;
-}
-
-export interface ISocketInfo<T = any> extends INetworkInfo {
-  type: 'socket-message';
-  // url: string;
-  protocol: string;
-  direction: 'send' | 'receive';
-  rawData: string;
-  chanel?: string;
-  data?: T;
-}
-
-interface ISocketRequestInfo<T = any> extends ISocketInfo {
-  chanel: 'request';
-  data: ISocketRequest<T>;
-}
-
-interface ISocketResponseInfo<T = any> extends ISocketInfo {
-  chanel: 'response';
-  data: ISocketResponse<T>;
-}
 
 class Utils {
   static parseHostPath(url: string) {
@@ -207,7 +152,7 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
     const originSend = XMLHttpRequest.prototype.send;
     const originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype[INJECT_FLAG] = true;
-    XMLHttpRequest.prototype.setRequestHeader = function (
+    XMLHttpRequest.prototype.setRequestHeader = function(
       name: string,
       value: string,
     ) {
@@ -217,7 +162,7 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
       request[INJECT_HEADER][name] = value;
       originSetRequestHeader.apply(this, arguments);
     };
-    XMLHttpRequest.prototype.open = function () {
+    XMLHttpRequest.prototype.open = function() {
       const method = arguments[0];
       const openUrl = arguments[1];
       // tslint:disable-next-line:no-this-assignment
@@ -261,7 +206,7 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
       this.addEventListener('readystatechange', readyStateChangeListener);
       return originOpen.apply(this, arguments);
     };
-    XMLHttpRequest.prototype.send = function (data) {
+    XMLHttpRequest.prototype.send = function(data) {
       // tslint:disable-next-line:no-this-assignment
       const request = this;
       if (request[INJECT_FLAG]) {
@@ -275,7 +220,7 @@ function subscribeXHR(callback: (info: IRequestResponse) => void) {
 function subscribeSocket(callback: (info: ISocketInfo) => void) {
   onSocketInfoComing = callback;
   const originSocketSend = WebSocket.prototype.send;
-  WebSocket.prototype.send = function () {
+  WebSocket.prototype.send = function() {
     // tslint:disable-next-line:no-this-assignment
     const socket = this;
     onSocketInfoComing &&
@@ -289,7 +234,7 @@ function subscribeSocket(callback: (info: ISocketInfo) => void) {
       });
     if (!socket[INJECT_FLAG]) {
       socket[INJECT_FLAG] = true;
-      const messageListener = function (event: MessageEvent) {
+      const messageListener = function(event: MessageEvent) {
         onSocketInfoComing &&
           onSocketInfoComing({
             type: 'socket-message',
@@ -383,13 +328,7 @@ class NetworkDataTool {
   save() {
     Utils.saveBlob(
       'network_all.json',
-      new Blob([
-        JSON.stringify(
-          this._infoPool,
-          null,
-          2,
-        ),
-      ]),
+      new Blob([JSON.stringify(this._infoPool, null, 2)]),
     );
   }
 
@@ -398,9 +337,7 @@ class NetworkDataTool {
       'network_socket_only.json',
       new Blob([
         JSON.stringify(
-          this._infoPool.filter(
-            item => item.type === 'socket-message',
-          ),
+          this._infoPool.filter(item => item.type === 'socket-message'),
           null,
           2,
         ),
@@ -413,9 +350,7 @@ class NetworkDataTool {
       'network_request_response_only.json',
       new Blob([
         JSON.stringify(
-          this._infoPool.filter(
-            item => item.type === 'request-response',
-          ),
+          this._infoPool.filter(item => item.type === 'request-response'),
           null,
           2,
         ),
