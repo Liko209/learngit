@@ -53,9 +53,14 @@ const JuiAutoSizer = ({
     if (!ref.current) return;
 
     if (ref.current.parentElement) {
-      ref.current.parentElement.style.display = 'flex';
-      ref.current.parentElement.style.flexDirection = 'column';
-      ref.current.parentElement.style.minHeight = '0';
+      const parentStyle = ref.current.parentElement.style;
+      if (parentStyle.display === '') {
+        parentStyle.display = 'flex';
+        parentStyle.flexDirection = 'column';
+      }
+      if (parentStyle.display === 'flex' && parentStyle.minHeight === '') {
+        parentStyle.minHeight = '0';
+      }
     }
 
     updateSize();
