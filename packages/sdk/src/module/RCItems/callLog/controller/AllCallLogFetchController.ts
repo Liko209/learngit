@@ -82,7 +82,7 @@ class AllCallLogFetchController extends AbstractFetchController {
     deleteResult.length &&
       (await this.sourceController.bulkDelete(deleteResult));
     updateResult.length &&
-      (await this.sourceController.bulkUpdate(updateResult));
+      (await this.sourceController.bulkPut(updateResult));
     await this._userConfig.setPseudoCallLogInfo(pseudos);
     replaceResult.size &&
       notificationCenter.emitEntityReplace(
