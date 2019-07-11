@@ -1,7 +1,5 @@
 div[role="presentation"]>.caller_id-list-container {
   max-height: 416px;
-  min-width: 112px;
-  max-width: 320px;
   overflow: hidden;
   display: flex;
   padding: 8px 0;
@@ -14,4 +12,5 @@ div[role="presentation"]>.caller_id-list-container>ul {
 
 div[role="presentation"]>.caller_id-list-container>ul>div {
   outline: none;
+  overflow-x: hidden !important;
 }
