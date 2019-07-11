@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import {
+  action,
+  runInAction,
+  observable,
+  computed,
+} from 'mobx';
 import {
   MessageInputProps,
   MessageInputViewProps,
@@ -108,6 +113,9 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     },
   };
 
+  @observable
+  hasFocused = false;
+
   constructor(props: MessageInputProps) {
     super(props);
     this._postService = ServiceLoader.getInstance<PostService>(
@@ -124,20 +132,25 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-    this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(
       () => this.props.id,
       (id: number) => {
         this._oldId = id;
+        this.hasFocused = false;
         this.error = '';
         this.forceSaveDraft();
       },
     );
+    this.reaction(() => ({
+      hasDraft: this._memoryDraftMap.has(this.props.id),
+    }), ({ hasDraft }) => {
+      setTimeout(() => this.hasFocused = hasDraft, 0);
+    });
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
     window.addEventListener(
       'beforeunload',
-      this._handleBeforeUnload.bind(this),
+      this._handleBeforeUnload,
     );
   }
 
@@ -145,7 +158,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
     window.removeEventListener(
       'beforeunload',
-      this._handleBeforeUnload.bind(this),
+      this._handleBeforeUnload,
     );
   }
 
@@ -202,11 +215,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   contentChange = (draft: string) => {
-    if ((!isEmpty(draft) || !isEmpty(this.draft)) && draft !== this.draft) {
-      this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    if ((isEmpty(draft) && isEmpty(this.draft)) || draft === this.draft) {
+      return;
     }
     this.error = '';
     this.draft = draft;
+    this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
   }
 
   @action
@@ -247,13 +261,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     if (this._memoryDraftMap.has(this.props.id)) {
       return this._memoryDraftMap.get(this.props.id) || '';
     }
+
     this.getDraftFromLocal();
     return '';
   }
 
-  async getDraftFromLocal() {
+  getDraftFromLocal = async () => {
     const draft = await this._groupConfigService.getDraft(this.props.id);
-    this._memoryDraftMap.set(this.props.id, draft);
+    runInAction(() => {
+      this.draft = draft;
+    });
   }
 
   set draft(draft: string) {
@@ -307,7 +324,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     };
   }
 
-  private async _sendPost(content: string, ids: number[]) {
+  private _sendPost = async (content: string, ids: number[]) => {
     if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
       DEBUG_COMMAND_MAP[content.trim()]();
       this.contentChange('');
@@ -354,7 +371,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     );
   }
 
-  private _handleBeforeUnload() {
+  private _handleBeforeUnload = () => {
     this.forceSaveDraft();
   }
 }
