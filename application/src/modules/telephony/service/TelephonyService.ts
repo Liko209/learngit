@@ -26,7 +26,7 @@ import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
 import {
-  reaction, IReactionDisposer, runInAction, action
+ reaction, IReactionDisposer, runInAction, action
 } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -49,9 +49,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
-import {
-  CALL_STATE,
-} from 'sdk/module/telephony/entity';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -472,7 +470,9 @@ class TelephonyService {
 
   hangUp = () => {
     if (this._callEntityId) {
-      mainLogger.info(`${TelephonyService.TAG}Hang up call id=${this._callEntityId}`);
+      mainLogger.info(
+        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+      );
       this._serverTelephonyService.hangUp(this._callEntityId);
       this._resetCallState();
     }
@@ -480,7 +480,9 @@ class TelephonyService {
 
   answer = () => {
     if (this._callEntityId) {
-      mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callEntityId}`);
+      mainLogger.info(
+        `${TelephonyService.TAG}answer call id=${this._callEntityId}`,
+      );
       this._serverTelephonyService.answer(this._callEntityId);
     }
   };
@@ -488,7 +490,9 @@ class TelephonyService {
   sendToVoiceMail = () => {
     if (this._callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}send to voicemail call id=${this._callEntityId}`,
+        `${TelephonyService.TAG}send to voicemail call id=${
+          this._callEntityId
+        }`,
       );
       this._serverTelephonyService.sendToVoiceMail(this._callEntityId);
     }
@@ -496,7 +500,9 @@ class TelephonyService {
 
   ignore = () => {
     if (this._callEntityId) {
-      mainLogger.info(`${TelephonyService.TAG}ignore call id=${this._callEntityId}`);
+      mainLogger.info(
+        `${TelephonyService.TAG}ignore call id=${this._callEntityId}`,
+      );
       this._serverTelephonyService.ignore(this._callEntityId);
     }
   };
@@ -587,7 +593,9 @@ class TelephonyService {
   holdOrUnhold = async () => {
     if (this._telephonyStore.holdDisabled || !this._callEntityId) {
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
+          this._telephonyStore.holdDisabled
+        }`,
       );
       return;
     }
@@ -596,10 +604,14 @@ class TelephonyService {
     let isHeld: boolean = this._telephonyStore.held;
 
     if (isHeld) {
-      mainLogger.info(`${TelephonyService.TAG}unhold call entity id=${this._callEntityId}`);
+      mainLogger.info(
+        `${TelephonyService.TAG}unhold call entity id=${this._callEntityId}`,
+      );
       $fetch = this._serverTelephonyService.unhold(this._callEntityId);
     } else {
-      mainLogger.info(`${TelephonyService.TAG}hold call entity id=${this._callEntityId}`);
+      mainLogger.info(
+        `${TelephonyService.TAG}hold call entity id=${this._callEntityId}`,
+      );
       $fetch = this._serverTelephonyService.hold(this._callEntityId);
     }
 
@@ -682,7 +694,9 @@ class TelephonyService {
     }
     this._telephonyStore.hasManualSelected = true;
     mainLogger.info(
-      `${TelephonyService.TAG} set caller phone number: ${this._telephonyStore.chosenCallerPhoneNumber}`,
+      `${TelephonyService.TAG} set caller phone number: ${
+        this._telephonyStore.chosenCallerPhoneNumber
+      }`,
     );
   };
 
@@ -812,7 +826,10 @@ class TelephonyService {
     if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.replyWithMessage(this._callEntityId, message);
+    return this._serverTelephonyService.replyWithMessage(
+      this._callEntityId,
+      message,
+    );
   };
 
   replyWithPattern = (
@@ -898,7 +915,10 @@ class TelephonyService {
     if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.forward(this._callEntityId, phoneNumber);
+    return this._serverTelephonyService.forward(
+      this._callEntityId,
+      phoneNumber,
+    );
   };
 
   flip = (flipNumber: number) => {
