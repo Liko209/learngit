@@ -57,13 +57,6 @@ describe('ForwardBtnViewModel', () => {
     expect(_telephonyStore.backIncoming).toHaveBeenCalled();
   });
 
-  it('should call clearEnteredKeys function', () => {
-    vm.dispose();
-    const _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-
-    expect(_telephonyStore.backIncoming).toHaveBeenCalled();
-  });
-
   it('should call forward function', async () => {
     vm._telephonyStore.forwardString = '123';
     await vm.forward();

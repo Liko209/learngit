@@ -593,6 +593,10 @@ export class GlipSdk {
     await this.updateProfile(data, rcId);
   }
 
+  async setNewMessageBadges(value: 'groups_and_mentions' | 'all', rcId?) {
+    await this.updateProfile({ new_message_badges: value }, rcId);
+  }
+
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
     const meChatId = await this.getMeChatId();
     await this.favoriteGroups([+meChatId], rcId);
