@@ -7,7 +7,10 @@
 import { mainLogger } from '../../log';
 import _ from 'lodash';
 
-type PowerMonitorEventHandler = (isLocked: boolean, isSuspended: boolean) => void;
+type PowerMonitorEventHandler = (
+  isLocked: boolean,
+  isSuspended: boolean,
+) => void;
 
 const logTag = '[PowerMonitor]';
 class PowerMonitor {
@@ -69,7 +72,11 @@ class PowerMonitor {
   }
 
   public onPowerMonitorEvent(actionName: string) {
-    mainLogger.info(`${logTag}Locked[${this._isScreenLocked}], Suspended[${this._isSuspended}] ==> ${actionName}`);
+    mainLogger.info(
+      `${logTag}Locked[${this._isScreenLocked}], Suspended[${
+        this._isSuspended
+      }] ==> ${actionName}`,
+    );
 
     if (!this._isScreenLocked && actionName === 'lock-screen') {
       this._isScreenLocked = true;

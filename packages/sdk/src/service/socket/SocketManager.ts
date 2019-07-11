@@ -294,7 +294,7 @@ export class SocketManager {
     if (!this.activeFSM) {
       this.info('No activeFSM when lock screen.');
     }
-  }
+  };
 
   private _onUnlockScreen = () => {
     if (this.isConnected()) {
@@ -309,7 +309,7 @@ export class SocketManager {
       this.info('Will renew socketFSM due to unlocking screen.');
       this._restartFSM();
     }
-  }
+  };
 
   private _onReconnect(data: any) {
     // socket emit reconnect

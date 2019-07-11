@@ -3,7 +3,7 @@
  * @Date: 2018-06-22 17:00:02
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../__tests__/types.d.ts" />
+// / <reference path="../../../__tests__/types.d.ts" />
 import { SocketManager } from '../SocketManager';
 import { SocketFSM } from '../SocketFSM';
 import notificationCenter from '../../../service/notificationCenter';
@@ -37,9 +37,7 @@ jest.mock('../../../module/sync/config/SyncUserConfig', () => {
     setLastCanReconnectTime: jest.fn(),
   };
   return {
-    SyncUserConfig: () => {
-      return config;
-    },
+    SyncUserConfig: () => config,
   };
 });
 

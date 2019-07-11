@@ -6,7 +6,9 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { sdk, LogControlManager, service, powerMonitor } from 'sdk';
+import {
+ sdk, LogControlManager, service, powerMonitor
+} from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -90,11 +92,8 @@ class AppModule extends AbstractModule {
     } as IApplicationInfo);
 
     const {
-      notificationCenter,
-      SOCKET,
-      SERVICE,
-      CONFIG,
-    } = service;
+ notificationCenter, SOCKET, SERVICE, CONFIG
+} = service;
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {

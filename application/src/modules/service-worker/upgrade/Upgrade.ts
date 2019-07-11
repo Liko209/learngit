@@ -44,7 +44,7 @@ class Upgrade {
     // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
     powerMonitor.onUnlock(() => {
       this._lastRouterChangeTime = new Date();
-    })
+    });
   }
 
   public logInfo(text: string) {
@@ -84,9 +84,7 @@ class Upgrade {
     this._hasNewVersion = true;
 
     if (this._isInPowerSavingMode()) {
-      mainLogger.info(
-        `${logTag} Postpone upgrade due to power saving mode`,
-      );
+      mainLogger.info(`${logTag} Postpone upgrade due to power saving mode`);
       return;
     }
 

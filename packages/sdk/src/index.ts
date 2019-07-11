@@ -14,14 +14,14 @@ import { registerConfigs } from './registerConfigs';
 
 export * from './framework';
 export {
-  default as GlipTypeDictionary
+  default as GlipTypeDictionary,
 } from './utils/glip-type-dictionary/types';
 export { LogControlManager } from './service/uploadLogControl';
 
 registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
 registerConfigs.constants.forEach(config =>
-  container.registerConstantValue(config));
+  container.registerConstantValue(config),);
 
 const sdk: Sdk = container.get(Sdk.name);
 
@@ -38,5 +38,5 @@ export {
   DateFormatter,
   PerformanceTracer,
   powerMonitor,
-  PowerMonitor
+  PowerMonitor,
 } from 'foundation';
