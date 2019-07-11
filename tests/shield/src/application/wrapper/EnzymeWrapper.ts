@@ -7,8 +7,8 @@ import { ReactElement, ComponentType } from 'react';
 import { mount, EnzymePropSelector, ReactWrapper } from 'enzyme';
 import { IWrapper } from './interface';
 import ReactQuill, { Quill } from 'react-quill';
-import { decorate } from './utils';
-import { waitDone } from '../../utils';
+import { needWait } from './utils';
+
 
 class EnzymeWrapper implements IWrapper<ReactWrapper> {
   protected wrapper: ReactWrapper;
@@ -44,11 +44,12 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
     return [new EnzymeWrapper(result)];
   }
 
+  @needWait
   click() {
     this.wrapper.simulate('click');
   }
 
-  @decorate(waitDone)
+  @needWait
   enter() {
     const quill = this.wrapper.find(ReactQuill);
     if (quill) {
@@ -76,6 +77,7 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
     }
   }
 
+  @needWait
   input(text: string) {
     const quill = this.wrapper.find(ReactQuill);
     if (quill) {

@@ -3,15 +3,15 @@
  * @Date: 2019-07-08 08:48:57
  * Copyright © RingCentral. All rights reserved.
  */
+import { waitDone } from '../../utils';
+
 type ContextFunction = (callback?: Function) => any;
 
 function wrap(oridinalMethod: Function, ctxFunction: ContextFunction) {
   return function (this: Function, ...args: any[]) {
     if (ctxFunction) {
       let result;
-      const value = ctxFunction(
-        () => (result = oridinalMethod.apply(this, args)),
-      );
+      const value = ctxFunction(() => (result = oridinalMethod.apply(this, args)));
       if (value && value.then) {
         // Promise like
         return value;
@@ -72,4 +72,6 @@ function decorate(ctxFunction: ContextFunction): any {
   };
 }
 
-export { decorate };
+const needWait = decorate(waitDone);
+
+export { decorate, needWait };

@@ -32,7 +32,6 @@ itForSdk('Service Integration test', ({ data, sdk }) => {
       await bootstrap({ url });
 
       const app = await h(<MockApp inited={true} />);
-      // this is needed for UI & SDK to init.
 
       await t(app, async () => {
         app.messageInput.input('hello');

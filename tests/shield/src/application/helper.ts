@@ -13,6 +13,7 @@ import { wait } from '../utils';
 
 type TestCallback = (() => void) | (() => Promise<void>);
 
+// will use official act when it supports `async-callback`.
 function act(callback: TestCallback): Promise<void> {
   if (!callback) {
     return Promise.resolve();
