@@ -11,7 +11,7 @@ import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 import { createResponse } from './utils';
 
-const debug = createDebug('Router', false);
+const debug = createDebug('Router');
 const error = createDebug('Router', true);
 
 export class Router implements IRouter {

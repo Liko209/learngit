@@ -8,7 +8,12 @@ import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
 
-import { META_ROUTE, META_PARAM_QUERY, META_PARAM_CONTEXT, META_PARAM_REQUEST } from '../../../decorators/constants';
+import {
+  META_ROUTE,
+  META_PARAM_QUERY,
+  META_PARAM_CONTEXT,
+  META_PARAM_REQUEST,
+} from '../../../decorators/constants';
 import { getMeta, getParamMeta } from '../../../decorators/metaUtil';
 import { Route } from '../../../decorators/Route.decorator';
 import { IApiContract, IRoute } from '../../../types';
@@ -26,15 +31,15 @@ import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
 import { GlipDataHelper } from './data/data';
 import { schema } from './glipSchema';
-import { MockSocketServer } from './MockSocketServer';
-import {
-    GlipData, InitialData
-} from './types';
+import { MockSocketServer } from '../MockSocketServer';
+import { SocketServerManager } from '../SocketServerManager';
+import { GlipData, InitialData } from './types';
 import { GlipController } from './GlipController';
 import { IGlipServerContext } from './IGlipServerContext';
+import { globalConfig } from '../../../globalConfig';
 
 const debug = createDebug('MockGlipServer');
-const GLIP_SOCKET_HOST = 'glip.socket.com';
+const GLIP_SOCKET_HOST = 'glip';
 
 export class MockGlipServer implements IGlipServerContext {
   private _router: Router;
@@ -52,7 +57,7 @@ export class MockGlipServer implements IGlipServerContext {
   dataHelper: GlipDataHelper;
 
   constructor() {
-    this.socketServer = new MockSocketServer(`https://${GLIP_SOCKET_HOST}`);
+    this.socketServer = SocketServerManager.get(GLIP_SOCKET_HOST); // new MockSocketServer(`https://${GLIP_SOCKET_HOST}`);
     this._router = new Router();
     this.applyRoute(MockGlipServer, this);
     this.applyRoute(GlipController, new GlipController());
@@ -60,7 +65,7 @@ export class MockGlipServer implements IGlipServerContext {
     this.init();
   }
 
-  applyRoute(cls: {new(...params: any): object}, instance: any) {
+  applyRoute(cls: { new (...params: any): object }, instance: any) {
     const routeMetaArray = getMeta<IRoute<IApiContract>>(
       cls.prototype,
       META_ROUTE,
@@ -123,16 +128,22 @@ export class MockGlipServer implements IGlipServerContext {
     const companyId = glipData.company['_id'];
     const userId = glipData.profile.person_id!;
     this.dataHelper = new GlipDataHelper(companyId, userId);
-  }
+  };
 
   @Route({
     path: '/api/login',
     method: 'put',
   })
   login() {
+    if (globalConfig.get('mode') === 'glip') {
+      return createResponse({
+        status: 200,
+        statusText: '[mock] glip login success',
+      });
+    }
     return createResponse({
-      status: 200,
-      statusText: '[mock] login success',
+      status: 500,
+      statusText: 'rc only mode, login failed.',
     });
   }
 
@@ -143,7 +154,7 @@ export class MockGlipServer implements IGlipServerContext {
     return createResponse({
       data: {},
       status: 200,
-      statusText: '[mock] login success',
+      statusText: '[mock] success',
     });
   }
 
@@ -154,7 +165,7 @@ export class MockGlipServer implements IGlipServerContext {
     return createResponse({
       data: {},
       status: 200,
-      statusText: '[mock] login success',
+      statusText: '[mock] success',
     });
   }
 

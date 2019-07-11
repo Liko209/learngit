@@ -5,3 +5,4 @@
  */
 export * from './mockService';
 export * from './SdkItFramework';
+export * from './globalConfig';

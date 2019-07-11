@@ -62,7 +62,7 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
             method: 'post',
             path: '/api/post',
           },
-          { status: 500 },
+          { status: 401 },
         ),
       );
       await expect(

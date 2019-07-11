@@ -190,7 +190,6 @@ class Sdk {
         notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
       }
     }
-    notificationCenter.emitKVChange('TotallyInit');
     mainLogger.tags(LOG_TAG).info('end onAuthSuccess');
   }
 

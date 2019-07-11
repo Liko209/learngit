@@ -16,7 +16,7 @@ import { GlipCompanyDao } from './dao/company';
 
 import { GlipGroupStateDao } from './dao/groupState';
 
-import { MockSocketServer } from './MockSocketServer';
+import { MockSocketServer } from '../MockSocketServer';
 
 import { GlipDataHelper } from './data/data';
 

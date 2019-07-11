@@ -9,6 +9,13 @@ import './jest/setup/mobx';
 import './jest/setup/styledTheme';
 import './jest/setup/media';
 import './jest/setup/selection';
+// use for debug
+// import { proxyPromise } from './proxyPromise';
+
+// window.Promise = proxyPromise(reason => {
+//   console.warn('on reject: ', reason);
+//   console.trace();
+// });
 
 jest.mock('@/modules/common/util/lazyComponent');
 jest.mock('@/containers/ThemeProvider');

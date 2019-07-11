@@ -3,18 +3,18 @@
  * @Date: 2019-07-10 16:18:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { IMockServer, IResponseAdapter, IJRequest } from '../../types';
+import { IMockServer, IResponseAdapter, IJRequest, IRegexpRequestResponse } from '../../types';
 import { ResponseAdapter } from './ResponseAdapter';
 import { INetworkRequestExecutorListener, NETWORK_HANDLE_TYPE } from 'foundation/network/network';
 import { CommonFileServer } from './CommonFileServer';
 import { MockGlipServer } from './glip/MockGlipServer';
 import { InstanceManager } from './InstanceManager';
-import { SERVER_ALIAS_MAP, IRegexpRequestResponse } from '../../utils/network/networkDataTool';
+import { SERVER_ALIAS_MAP } from '../../utils/network/networkDataTool';
 import _ from 'lodash';
 import { createResponse } from './utils';
 import { createDebug } from 'sdk/__tests__/utils';
 
-const debug = createDebug('ProxyServer', false);
+const debug = createDebug('ProxyServer');
 
 export class ProxyServer implements IMockServer {
   private _findResponseInRequestResponsePool(request: { host: string; method: string; path: string }) {

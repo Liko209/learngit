@@ -8,7 +8,7 @@ import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 import { AccountService } from 'sdk/module/account';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { notificationCenter } from 'sdk/service';
+import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { wait } from '../utils';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
@@ -21,6 +21,7 @@ import { blockExternalRequest } from './utils/network/blockExternalRequest';
 import assert = require('assert');
 import { MockResponse, IRegexpRequestResponse } from './types';
 import { sdk } from 'sdk/index';
+import { globalConfig } from './globalConfig';
 
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
@@ -58,18 +59,19 @@ async function login() {
   ).unifiedLogin({ code: 'mockCode', token: 'mockToken' });
 }
 
-async function initEnd() {
+async function onLogin(mode: 'glip' | 'rc' = 'glip') {
   return new Promise(resolve => {
-    notificationCenter.once('TotallyInit', () => resolve());
+    notificationCenter.once(mode === 'glip' ? SERVICE.GLIP_LOGIN : SERVICE.RC_LOGIN, () => resolve());
   });
 }
 
-async function setup() {
+async function setup(mode: 'glip' | 'rc' = 'glip') {
   debug('setup sdk');
+  globalConfig.set('mode', mode);
   await initSdk();
   login();
-  await initEnd();
-  await wait(1);
+  await onLogin(mode);
+  await wait();
   debug('setup sdk cost end.');
 }
 

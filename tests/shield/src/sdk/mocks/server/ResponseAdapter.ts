@@ -11,7 +11,7 @@ import {
 } from '../../types';
 import { createResponse, isPromise } from './utils';
 
-const debug = createDebug('ResponseAdapter', true);
+const error = createDebug('ResponseAdapter', true);
 
 export class ResponseAdapter implements IResponseAdapter {
   adapt = (handler: Handler) => (request: IJRequest, cb: INetworkRequestExecutorListener) => {
@@ -19,7 +19,7 @@ export class ResponseAdapter implements IResponseAdapter {
     try {
       handlerResp = handler(request);
     } catch (error) {
-      debug('handle error: ', error);
+      error('handle error: ', error);
       cb.onFailure(
         createResponse({
           request,
@@ -37,7 +37,7 @@ export class ResponseAdapter implements IResponseAdapter {
           cb.onSuccess(response);
         })
         .catch(error => {
-          debug('handle error: ', error);
+          error('handle error: ', error);
           cb.onFailure(
             createResponse({
               request,

@@ -13,7 +13,8 @@ import url from 'url';
 import path from 'path';
 import fs from 'fs';
 import { createDebug } from 'sdk/__tests__/utils';
-const debug = createDebug('FileServer', true);
+const debug = createDebug('FileServer');
+const error = createDebug('FileServer', true);
 
 export class CommonFileServer implements IMockServer {
   handle = (request: IJRequest, cb: INetworkRequestExecutorListener) => {
@@ -28,10 +29,10 @@ export class CommonFileServer implements IMockServer {
           encoding: 'utf8',
         }),
       );
-      // debug(`request: ${request.host}${request.path}\n match`);
+      debug(`request: ${request.host}${request.path}\n match`);
       cb.onSuccess({ request, ...result.response });
     } else {
-      debug(
+      error(
         `request: ${request.host}${request.path}\n not file match, ${mockJsonPath} not exist.`,
       );
       cb.onFailure({
