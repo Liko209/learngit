@@ -274,7 +274,7 @@ describe('VoIPMediaDevicesDelegate', () => {
       deviceDelegate['_ringerSyncManager'].setDevice({
         deviceId: 'a',
       } as any);
-      expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
+      expect(deviceDelegate['_currentRingerId']).toEqual('a');
       expect(TelephonyGlobalConfig.put).toBeCalledWith(
         TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
         'a',
