@@ -25,9 +25,9 @@ const hasMediaOpts = {
 
 describe('MediaTrack', () => {
   beforeEach(() => {
-    window.HTMLMediaElement.prototype.load = jest.fn();
-
-    window.HTMLMediaElement.prototype.play = jest.fn();
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
   afterEach(() => {
     jest.restoreAllMocks();
