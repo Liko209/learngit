@@ -21,6 +21,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   private _microphoneSyncManager: DeviceSyncManger;
   private _speakerSyncManager: DeviceSyncManger;
   private _ringerSyncManager: DeviceSyncManger;
+  private _currentRingerId: string;
   constructor(private _rtcEngine: RTCEngine = RTCEngine.getInstance()) {
     this._microphoneSyncManager = new DeviceSyncManger(
       this._buildDeviceStorage(TELEPHONY_GLOBAL_KEYS.CURRENT_MICROPHONE),
@@ -62,8 +63,8 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
       )),
       {
         getDevices: (): MediaDeviceInfo[] => this.getRingerDevicesList(),
-        setDeviceId: (id: string): void => this._rtcEngine.setCurrentAudioOutput(id),
-        getDeviceId: (): string => this._rtcEngine.getCurrentAudioOutput(),
+        setDeviceId: (id: string): void => { this._currentRingerId = id; },
+        getDeviceId: (): string => this._currentRingerId,
         getDefaultDeviceId: (devices: MediaDeviceInfo[]): string => this._rtcEngine.getDefaultDeviceId(devices),
       },
       this._buildLastUsedDeviceManager(
@@ -135,11 +136,12 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     manager: DeviceSyncManger,
     devices: MediaDeviceInfo[],
     delta: {
+      hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
     },
   ) {
-    if (delta.deleted.length) {
+    if (delta.deleted.length || delta.hashChanged) {
       manager.ensureDevice();
     }
     if (delta.added.length) {
@@ -158,17 +160,17 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
   onMediaDevicesChanged(
     audioOutputs: {
       devices: MediaDeviceInfo[];
-      delta: { added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
+      delta: { hashChanged: boolean, added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
     },
     audioInputs: {
       devices: MediaDeviceInfo[];
-      delta: { added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
+      delta: { hashChanged: boolean; added: MediaDeviceInfo[]; deleted: MediaDeviceInfo[] };
     },
   ): void {
     telephonyLogger
       .tags(LOG_TAG)
       .info('device change', audioInputs.delta, audioOutputs.delta);
-    if (audioInputs.delta.added.length || audioInputs.delta.deleted.length) {
+    if (audioInputs.delta.added.length || audioInputs.delta.deleted.length || audioInputs.delta.hashChanged) {
       this._handlerDeviceChange(
         this._microphoneSyncManager,
         audioInputs.devices,
@@ -179,7 +181,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
         audioInputs.devices,
       );
     }
-    if (audioOutputs.delta.added.length || audioOutputs.delta.deleted.length) {
+    if (audioOutputs.delta.added.length || audioOutputs.delta.deleted.length || audioOutputs.delta.hashChanged) {
       this._handlerDeviceChange(
         this._speakerSyncManager,
         audioOutputs.devices,
@@ -201,6 +203,7 @@ export class VoIPMediaDevicesDelegate implements IRTCMediaDeviceDelegate {
     manager: DeviceSyncManger,
     devices: MediaDeviceInfo[],
     delta: {
+      hashChanged: boolean;
       added: MediaDeviceInfo[];
       deleted: MediaDeviceInfo[];
     },
