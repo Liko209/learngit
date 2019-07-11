@@ -430,7 +430,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then there are 3 items on the recently searched list', async () => {
     await t.expect(searchDialog.recentPage.conversationItems.count).eql(3);
-    await searchBar.clickCloseIcon();
+    await searchDialog.clickCloseButton();
   });
 
   await h(t).withLog('When I sign out the app', async () => {

@@ -18,9 +18,13 @@ describe('VoicemailItem.View', () => {
   @testable
   class componentWillUnmount {
     // switch tab should be pause
-    @test('should be pause if unmount component [JPT-2219]')
+    @test('should be paused before unmount if selected [JPT-2219]')
     t1() {
-      const props = { voiceMailResponsiveMap: { dateFormat: 'full' } };
+      const props = {
+        selected: true,
+        onVoicemailPlay: () => {},
+        voiceMailResponsiveMap: { dateFormat: 'full' },
+      };
       const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
@@ -28,6 +32,22 @@ describe('VoicemailItem.View', () => {
       inst._AudioPlayer = audioPlayer;
       wrapper.unmount();
       expect(audioPlayer.current.pause).toHaveBeenCalled();
+    }
+
+    @test(
+      'should clear play record before unmount if selected [JPT-2503] [JPT-2502]',
+    )
+    t2() {
+      const props = {
+        selected: true,
+        onVoicemailPlay: jest.fn(),
+        voiceMailResponsiveMap: { dateFormat: 'full' },
+      };
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
+        disableLifecycleMethods: true,
+      });
+      wrapper.unmount();
+      expect(props.onVoicemailPlay).toHaveBeenCalledWith(null);
     }
   }
 

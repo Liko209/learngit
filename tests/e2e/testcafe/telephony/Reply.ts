@@ -146,7 +146,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickReplyInMeetingButton();
   });
 
-  const alertText = 'Your voice message was sent successfully.'
+  const alertText = 'Voice message sent.'
   await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });

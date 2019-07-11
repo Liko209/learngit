@@ -30,6 +30,7 @@ describe('CreateTeamViewModel', () => {
   const groupService = {
     name: ServiceConfig.GROUP_SERVICE,
     createTeam() {},
+    getPersonIdsBySelectedItem() {},
   };
   const accountService = {
     name: ServiceConfig.ACCOUNT_SERVICE,
@@ -64,7 +65,9 @@ describe('CreateTeamViewModel', () => {
           TEAM_POST: true,
         },
       };
-
+      groupService.getPersonIdsBySelectedItem = jest
+        .fn()
+        .mockReturnValue(memberIds);
       await createTeamVM.create(memberIds, options);
       expect(groupService.createTeam).toHaveBeenCalledWith(
         creatorId,

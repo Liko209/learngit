@@ -58,7 +58,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
           onClick={this._handleClick}
           loading={this._loading}
         >
-          {t('setting.update')}
+          {t('setting.edit')}
         </JuiButton>
       </JuiSettingSectionItem>
     );
