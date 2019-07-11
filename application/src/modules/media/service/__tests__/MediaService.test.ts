@@ -10,13 +10,9 @@ import { Media } from '../../Media';
 
 describe('MediaService', () => {
   beforeEach(() => {
-    window.HTMLMediaElement.prototype.load = jest.fn();
-
-    window.HTMLMediaElement.prototype.play = jest.fn();
-
-    window.HTMLMediaElement.prototype.canPlayType = jest
-      .fn()
-      .mockReturnValue('');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
   afterAll(() => {
     jest.clearAllMocks();
@@ -32,8 +28,11 @@ describe('MediaService', () => {
   });
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
+      const canPlayType = jest
+        .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'canPlayType')
+        .mockReturnValue('maybe');
       mediaManager.canPlayType('audio/mp3');
-      expect(window.HTMLMediaElement.prototype.canPlayType).toBeCalled();
+      expect(canPlayType).toHaveBeenCalled();
     });
   });
   describe('globalVolume', () => {

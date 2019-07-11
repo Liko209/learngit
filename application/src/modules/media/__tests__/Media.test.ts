@@ -31,9 +31,9 @@ const noUseTrackOpts = {
 
 describe('Media', () => {
   beforeEach(() => {
-    window.HTMLMediaElement.prototype.load = jest.fn();
-
-    window.HTMLMediaElement.prototype.play = jest.fn();
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
 
     jest
       .spyOn(trackManager, 'getTrack')
