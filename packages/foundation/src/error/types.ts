@@ -19,7 +19,7 @@ type TError = {
   type: string;
   code: string;
   message: string;
-  payload?: { [key: string]: string }
+  payload?: { [key: string]: string };
 };
 
 export { ERROR_TYPES, ErrorCondition, TError };

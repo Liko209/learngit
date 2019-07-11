@@ -70,7 +70,7 @@ const withLoading = <
         <>
           {loading ? <LoadingWithDelay delay={delay} /> : null}
           <Component
-            {...(props as P)}
+            {...props as P}
             loading={loading}
             style={{ display: displayStyle }}
           />

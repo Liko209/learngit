@@ -13,7 +13,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -22,7 +22,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-
+import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 type State = {
   message: string;
 };
@@ -108,6 +108,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       errorUnknown,
+      canMentionTeam,
     } = this.props;
     if (errorUnknown) {
       this.renderFailError();
@@ -131,17 +132,30 @@ class NewMessageComponent extends React.Component<Props, State> {
         }
         cancelText={t('common.dialog.cancel')}
       >
-        <ContactSearch
-          onSelectChange={handleSearchContactChange}
-          label={t('people.team.Members')}
-          placeholder={t('people.team.SearchContactPlaceholder')}
-          error={emailError}
-          helperText={emailError ? t(emailErrorMsg) : ''}
-          errorEmail={errorEmail}
-          messageRef={this.messageRef}
-          multiple={true}
-          autoSwitchEmail={true}
-        />
+        {
+          // temporary: ContactAndGroupSearch contain group and person
+          canMentionTeam ? <ContactAndGroupSearch
+            onSelectChange={handleSearchContactChange}
+            label={t('people.team.Members')}
+            placeholder={t('people.team.SearchContactPlaceholder')}
+            error={emailError}
+            helperText={emailError ? t(emailErrorMsg) : ''}
+            errorEmail={errorEmail}
+            messageRef={this.messageRef}
+            multiple={true}
+            autoSwitchEmail={true}
+          /> : <ContactSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              messageRef={this.messageRef}
+              multiple={true}
+              autoSwitchEmail={true}
+            />
+        }
         <JuiTextarea
           id={t('message.action.typeNewMessage')}
           label={t('message.action.typeNewMessage')}
@@ -152,6 +166,13 @@ class NewMessageComponent extends React.Component<Props, State> {
           onChange={this.handleMessageChange}
           data-test-automation-id='newMessageTextarea'
         />
+        {canMentionTeam && (
+          <JuiCheckboxLabel
+            checked={this.props.isDirectMessage}
+            label={t('message.prompt.newMessageDirectlyTip')}
+            handleChange={this.props.handleCheckboxChange}
+          />
+        )}
         <StyledTextWithLink>
           <JuiTextWithLink
             text={t('message.prompt.newMessageTip')}

@@ -18,10 +18,11 @@ import { ItemService } from '../../../item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { DEFAULT_RETRY_COUNT } from 'foundation/src';
+import { DEFAULT_RETRY_COUNT, mainLogger } from 'foundation';
 import { PostDataController } from '../PostDataController';
 
 class PostActionController implements IPostActionController {
+  private TAG = 'PostActionController';
   constructor(
     public postDataController: PostDataController,
     public partialModifyController: IPartialModifyController<Post>,
@@ -156,6 +157,7 @@ class PostActionController implements IPostActionController {
     const postsMap = await Promise.all(promises);
     const posts = _.union(...postsMap);
     const ids = posts.map(post => post.id);
+    mainLogger.tags(this.TAG).info(`deletePostsByGroupIds:${ids}`);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);

@@ -85,6 +85,13 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
 
     this.reaction(
+      () => this.currentItemId,
+      async () => {
+        this._preloadController.setIsAllowed(false);
+      },
+    );
+
+    this.reaction(
       () => ({ itemId: this.currentItemId, ids: this.ids }),
       async () => {
         this.doPreload();
@@ -146,7 +153,6 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   doPreload = () => {
     if (this.ids) {
-      this._preloadController.setIsAllowed(false);
       this._preloadController.replacePreload(this.ids, this._getItemIndex());
     }
   };
@@ -294,7 +300,9 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
           mainLogger
             .tags('ImageViewer')
             .info(
-              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${info.index}/${info.totalCount}`,
+              `Item no exist. itemId: ${itemId}, itemType: ${itemType}, groupId: ${groupId}, info: ${
+                info.index
+              }/${info.totalCount}`,
             );
 
           const nextToDisplay = getNextItemToDisplay(

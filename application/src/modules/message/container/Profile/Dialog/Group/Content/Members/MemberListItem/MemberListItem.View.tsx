@@ -56,9 +56,9 @@ class MemberListItem extends React.Component<
     const { pid } = this.props;
     event.stopPropagation();
     const anchor = event.currentTarget as HTMLElement;
-    const { ProfileMiniCard } = await import(
-      '@/modules/message/container/MiniCard/Profile'
-    );
+    const {
+      ProfileMiniCard,
+    } = await import('@/modules/message/container/MiniCard/Profile');
 
     const profileMiniCard = new ProfileMiniCard();
 
@@ -100,7 +100,7 @@ class MemberListItem extends React.Component<
         onMouseOver={this._handleMouseEnter}
         onMouseLeave={this._handleMouseLeave}
       >
-        <Avatar uid={pid} presence={presence} />
+        <Avatar uid={pid} presence={presence} onClick={this.onClickAvatar} />
         <ListItemName data-test-automation-id='profileDialogMemberListItemPersonName'>
           {person.userDisplayName}
         </ListItemName>

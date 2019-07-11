@@ -17,18 +17,18 @@ type NotificationProps = Omit<JuiSnackbarContentProps, 'id'> & {
 
 const MAX_SHOW_COUNT = 3;
 
+const notificationData = observable<ToastProps>([]);
+
 class Notification extends AbstractViewModel {
-  @observable
-  static data: ToastProps[] = [];
   static _buffer: NotificationProps[] = [];
 
   @action
   private static _showNotification(props: NotificationProps) {
-    if (Notification.data.length === MAX_SHOW_COUNT) {
+    if (notificationData.length === MAX_SHOW_COUNT) {
       Notification._buffer.push(props);
       return {};
     }
-    const duplicateIndex = Notification.data.findIndex(
+    const duplicateIndex = notificationData.findIndex(
       ({ message }) => message === props.message,
     );
     const id = Date.now();
@@ -41,9 +41,9 @@ class Notification extends AbstractViewModel {
       ...props,
     };
     if (duplicateIndex >= 0) {
-      Notification.data.splice(duplicateIndex, 1, toast);
+      notificationData.splice(duplicateIndex, 1, toast);
     } else {
-      Notification.data.unshift(toast);
+      notificationData.unshift(toast);
     }
     return {
       dismiss,
@@ -52,7 +52,13 @@ class Notification extends AbstractViewModel {
 
   @action
   private static _removeNotification(id: number) {
-    _.remove(Notification.data, item => item.id === id);
+    console.group(
+      '%cNotification',
+      'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
+    );
+    console.log(notificationData.map(item => item.id));
+    console.groupEnd();
+    _.remove(notificationData, item => item.id === id);
   }
 
   static flashToast(props: NotificationProps) {
@@ -76,8 +82,8 @@ class Notification extends AbstractViewModel {
 
   static checkBufferAvailability() {
     if (
-      Notification.data &&
-      Notification.data.length === MAX_SHOW_COUNT - 1 &&
+      notificationData &&
+      notificationData.length === MAX_SHOW_COUNT - 1 &&
       Notification._buffer.length > 0
     ) {
       const buffered = Notification._buffer.pop();
@@ -91,6 +97,7 @@ class Notification extends AbstractViewModel {
 autorun(Notification.checkBufferAvailability);
 
 export {
+  notificationData,
   Notification,
   NotificationProps,
   NotificationProps as ShowNotificationOptions,

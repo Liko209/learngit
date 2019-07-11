@@ -6,22 +6,13 @@
 import _ from 'lodash';
 import { LOG_LEVEL } from './constants';
 import {
-  ILogger,
-  LogEntity,
-  ILoggerCore,
-  ILogEntityProcessor,
-  ILogCollector,
-  IConsoleLogPrettier,
+  ILogger, LogEntity, ILoggerCore, ILogEntityProcessor, ILogCollector, IConsoleLogPrettier
 } from './types';
 import { configManager } from './config';
 import { LogEntityProcessor } from './LogEntityProcessor';
 import { ConsoleLogPrettier } from './ConsoleLogPrettier';
 
-const buildLogEntity = (
-  level: LOG_LEVEL,
-  tags: string[],
-  params: any[],
-): LogEntity => {
+const buildLogEntity = (level: LOG_LEVEL, tags: string[], params: any[]): LogEntity => {
   const logEntity = new LogEntity();
   logEntity.level = level;
   logEntity.tags = tags;
@@ -36,10 +27,7 @@ class ConsoleLogCore implements ILoggerCore {
       return;
     }
 
-    this._browserLog(
-      logEntity.level,
-      this._consoleLogPrettier.prettier(logEntity),
-    );
+    this._browserLog(logEntity.level, this._consoleLogPrettier.prettier(logEntity));
   }
 
   private _browserLog(level: LOG_LEVEL, params: any[]) {
@@ -72,45 +60,31 @@ class LoggerTagDecorator implements ILogger {
   constructor(private _loggerCore: ILoggerCore, private _tags: string[]) {}
 
   log(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.LOG, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.LOG, this._tags, params));
   }
 
   trace(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.TRACE, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.TRACE, this._tags, params));
   }
 
   debug(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.DEBUG, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.DEBUG, this._tags, params));
   }
 
   info(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.INFO, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.INFO, this._tags, params));
   }
 
   warn(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.WARN, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.WARN, this._tags, params));
   }
 
   error(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.ERROR, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.ERROR, this._tags, params));
   }
 
   fatal(...params: any) {
-    return this._loggerCore.doLog(
-      buildLogEntity(LOG_LEVEL.FATAL, this._tags, params),
-    );
+    return this._loggerCore.doLog(buildLogEntity(LOG_LEVEL.FATAL, this._tags, params));
   }
 
   tags(...tags: string[]): ILogger {
@@ -126,10 +100,7 @@ export class Logger implements ILogger, ILoggerCore {
   constructor() {
     this._logEntityProcessor = new LogEntityProcessor();
     this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
-    this._memoizeTags = _.memoize(
-      (_tags: string[]): ILogger => new LoggerTagDecorator(this, _tags),
-      (_tags: string[]) => _tags.join(','),
-    );
+    this._memoizeTags = _.memoize((_tags: string[]): ILogger => new LoggerTagDecorator(this, _tags), (_tags: string[]) => _tags.join(','));
   }
 
   addCollector(collector: ILogCollector) {
@@ -168,12 +139,11 @@ export class Logger implements ILogger, ILoggerCore {
     return this.doLog(buildLogEntity(LOG_LEVEL.FATAL, [], params));
   }
 
-  tags = (...tags: string[]): ILogger => this._memoizeTags(tags)
+  tags = (...tags: string[]): ILogger => this._memoizeTags(tags);
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;
-    this._isBrowserEnabled(logEntity) &&
-      this._consoleLoggerCore.doLog(logEntity);
+    this._isBrowserEnabled(logEntity) && this._consoleLoggerCore.doLog(logEntity);
     if (this._isCollectorEnabled()) {
       const log = this._logEntityProcessor.process(logEntity);
       this._logCollectors.forEach((logCollector: ILogCollector) => {

@@ -61,17 +61,19 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _adminIds: Set<number>;
   @observable
   private _sortedGroupMemberIds: number[];
+  private _isFetchBegin = false;
 
   constructor(private _groupId: number) {
     super();
   }
 
   async fetchGroupMembersByPage(pageSize: number) {
-    if (!this._isInitialized()) {
+    if (!this._isFetchBegin) {
+      this._isFetchBegin = true;
       await this._initGroupData();
       await this._buildFoc();
     }
-    return this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
+    return this._foc && this._foc.fetchData(QUERY_DIRECTION.NEWER, pageSize);
   }
 
   @computed
@@ -97,7 +99,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     const lName = personService.getFullName(lPerson).toLowerCase();
     const rName = personService.getFullName(rPerson).toLowerCase();
     return lName < rName ? -1 : lName > rName ? 1 : 0;
-  }
+  };
 
   private async _sortGroupMembers() {
     let sortedIds: number[] = [];
@@ -183,12 +185,8 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
     );
   }
 
-  private _isInitialized() {
-    return this._foc!!;
-  }
-
   private async _handleGroupUpdate(newGroup: Group) {
-    if (!this._isInitialized()) {
+    if (!this._foc) {
       return;
     }
 
@@ -241,6 +239,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   dispose() {
+    this._isFetchBegin = false;
     this._foc && this._foc.dispose();
     super.dispose();
   }

@@ -740,7 +740,9 @@ class RTCCall {
     );
     rtcLogger.info(
       LOG_TAG,
-      `Got party id=${this._callInfo.partyId} session id=${this._callInfo.sessionId}`,
+      `Got party id=${this._callInfo.partyId} session id=${
+        this._callInfo.sessionId
+      }`,
     );
   }
 }

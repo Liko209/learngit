@@ -6,8 +6,8 @@
 
 import { ProfileSetting } from '../ProfileSetting';
 import { SettingEntityIds } from 'sdk/module/setting';
-import { CallerIdSettingHandler } from '../itemHandler/CallerIdSettingHandler';
-jest.mock('../itemHandler/CallerIdSettingHandler');
+import { DefaultAppSettingHandler } from '../itemHandler/DefaultAppSettingHandler';
+jest.mock('../itemHandler/DefaultAppSettingHandler');
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -31,8 +31,8 @@ describe('ProfileSetting ', () => {
     it('should return handlerMap correctly', async () => {
       const profileSetting = new ProfileSetting({} as any);
       const handlerMap = profileSetting.getHandlerMap();
-      expect(handlerMap[SettingEntityIds.Phone_CallerId]).toBeInstanceOf(
-        CallerIdSettingHandler,
+      expect(handlerMap[SettingEntityIds.Phone_DefaultApp]).toBeInstanceOf(
+        DefaultAppSettingHandler,
       );
     });
   });

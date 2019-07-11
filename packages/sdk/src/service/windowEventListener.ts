@@ -6,21 +6,15 @@
 import { SOCKET, DOCUMENT, WINDOW } from './eventKey';
 import notificationCenter from './notificationCenter';
 
-window.addEventListener(
-  'online',
-  () => {
-    notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
-    notificationCenter.emit(WINDOW.ONLINE, { onLine: true });
-  },
-);
+window.addEventListener('online', () => {
+  notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'online' });
+  notificationCenter.emit(WINDOW.ONLINE, { onLine: true });
+});
 
-window.addEventListener(
-  'offline',
-  () => {
-    notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
-    notificationCenter.emit(WINDOW.ONLINE, { onLine: false });
-  },
-);
+window.addEventListener('offline', () => {
+  notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'offline' });
+  notificationCenter.emit(WINDOW.ONLINE, { onLine: false });
+});
 
 window.addEventListener('load', () => {
   if (!navigator.onLine) {

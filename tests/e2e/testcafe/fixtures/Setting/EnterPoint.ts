@@ -43,7 +43,7 @@ test.skip.meta(<ITestMeta>{
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
+    'General', 'Notifications and sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [
@@ -170,7 +170,7 @@ test.skip.meta(<ITestMeta>{
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
+    'General', 'Notifications and sounds', 'Messages', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [

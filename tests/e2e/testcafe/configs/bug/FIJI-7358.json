@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/CreateTeam/*.ts",
+      "./fixtures/Search/*.ts",
+      "./fixtures/SendNewMessage/*.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
