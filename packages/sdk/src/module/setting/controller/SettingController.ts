@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import { UserSettingEntity } from '../entity';
 import { IModuleSetting } from '../moduleSetting/types';
+import { Nullable } from 'sdk/types';
 
 type SettingItemRequest<T> = {
   id: number;
@@ -37,7 +38,7 @@ class SettingController {
     moduleSetting.dispose();
   }
 
-  async getById(id: number) {
+  async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
     const moduleSetting = _.find(this._moduleSettings, it => it.has(id));
     if (moduleSetting) {
       return await moduleSetting.getById(id);
