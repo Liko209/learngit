@@ -14,13 +14,10 @@ import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
-import { computed } from 'mobx';
-import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
-import { ENTITY_NAME } from '@/store/constants';
-import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 
 const logger = mainLogger.tags('AbstractNotificationManager');
 
@@ -37,19 +34,12 @@ class NotificationService implements INotificationService {
     this._notificationDistributors.set('desktop', new DeskTopNotification());
   }
 
-  @computed
-  get browserSettingItem() {
-    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
-      ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__NOTIFICATION_BROWSER,
-    );
-  }
-
-  get shouldShowNotification() {
+  async shouldShowNotification() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DNSM>(SETTING_ITEM__NOTIFICATION_BROWSER);
     return (
-      isElectron ||
-      (this.browserSettingItem.value &&
-        this.browserSettingItem.value.wantNotifications)
+      isElectron || (entity && entity.value && entity.value.wantNotifications)
     );
   }
 
@@ -68,10 +58,8 @@ class NotificationService implements INotificationService {
   }
 
   async show(title: string, opts: NotificationOpts, force?: boolean) {
-    if (
-      (!this.shouldShowNotification && !force) ||
-      !this._permission.isGranted
-    ) {
+    const shouldShowNotification = await this.shouldShowNotification();
+    if ((!shouldShowNotification && !force) || !this._permission.isGranted) {
       return;
     }
     const { id, scope } = opts.data;
