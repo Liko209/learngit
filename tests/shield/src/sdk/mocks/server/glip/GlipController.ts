@@ -222,4 +222,29 @@ export class GlipController {
       ),
     });
   }
+
+  @Route({
+    path: '/api',
+    method: 'get',
+  })
+  handleTyping(@PRequest request: IJRequest) {
+    return createResponse({
+      request,
+      status: 200,
+    })
+  }
+
+  @Route({
+    path: '/glip-presence/v1/person/:ids/presence',
+    method: 'get',
+    query: {
+      ids: (raw: string) => raw.split(',')
+    }
+  })
+  presence(@PRequest request: IJRequest, @PQuery query: {ids: number[]}) {
+    return createResponse({
+      request,
+      data: query.ids.map(id => ({personId: id, calculatedStatus: 'Available'}))
+    })
+  }
 }

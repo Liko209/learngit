@@ -4,15 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ToastWrapperViewModel } from '../ToastWrapper.ViewModel';
-import { Notification } from '../../Notification';
+import { Notification, notificationData } from '../../Notification';
 import { ToastProps } from '../Toast';
 describe('ToastWrapper.ViewModel', () => {
   describe('constructor', () => {
     it('should get toast data from Notification', () => {
       const mockData: ToastProps[] = [{ id: 1 }, { id: 2 }] as ToastProps[];
-      Notification.data = mockData;
+      notificationData.push({ id: 1 }, { id: 2 });
       const vm = new ToastWrapperViewModel();
       expect(vm.toasts).toEqual(mockData);
+      notificationData.push({ id: 3 });
+      expect(vm.toasts).toEqual(mockData.concat({ id: 3 }));
     });
   });
 });

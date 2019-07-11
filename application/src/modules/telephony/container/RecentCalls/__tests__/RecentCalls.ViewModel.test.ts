@@ -72,6 +72,9 @@ describe('RecentCallsViewModel', () => {
     vm = new RecentCallsViewModel();
     vm.focusIndex = 0;
     const telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
+    const telephonyStore: TelephonyStore = container.get(TelephonyStore);
+    telephonyStore.onDialerFocus();
+
     setTimeout(async () => {
       expect(vm.isBlock).toBeFalsy();
       await vm.makeCall();

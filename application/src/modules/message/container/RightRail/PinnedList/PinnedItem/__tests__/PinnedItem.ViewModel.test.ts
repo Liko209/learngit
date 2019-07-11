@@ -60,6 +60,14 @@ describe('PinnedItemViewModel', () => {
       expect(pinnedItemViewModel.item).toBe('');
       expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
+    it('Should be return code item', () => {
+      jest
+        .spyOn(GlipTypeUtil, 'extractTypeId')
+        .mockReturnValue(TypeDictionary.TYPE_ID_CODE);
+      (getEntity as jest.Mock).mockImplementation(() => '');
+      expect(pinnedItemViewModel.item).toBe('');
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
+    });
   });
 
   describe('get text', () => {
@@ -99,6 +107,14 @@ describe('PinnedItemViewModel', () => {
       expect(pinnedItemViewModel.text).toBe('title');
       (getEntity as jest.Mock).mockReturnValue({ url: 'url' });
       expect(pinnedItemViewModel.text).toBe('url');
+    });
+
+    it('If item type is code item should be return title', () => {
+      jest
+        .spyOn(GlipTypeUtil, 'extractTypeId')
+        .mockReturnValue(TypeDictionary.TYPE_ID_CODE);
+      (getEntity as jest.Mock).mockReturnValue({ title: 'title' });
+      expect(pinnedItemViewModel.text).toBe('title');
     });
   });
 
@@ -144,6 +160,14 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_LINK);
       (getEntity as jest.Mock).mockReturnValue({});
       expect(pinnedItemViewModel.icon).toBe('link');
+    });
+
+    it('If item is link item should be return code icon', () => {
+      jest
+        .spyOn(GlipTypeUtil, 'extractTypeId')
+        .mockReturnValue(TypeDictionary.TYPE_ID_CODE);
+      (getEntity as jest.Mock).mockReturnValue({});
+      expect(pinnedItemViewModel.icon).toBe('code');
     });
   });
 

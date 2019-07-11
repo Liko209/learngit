@@ -131,7 +131,6 @@
     "ThisWeek": "This week",
     "ThisMonth": "This month",
     "ThisYear": "This year",
-
     "prompt": {
       "contentSearchNetworkError": "We aren't able to complete this search. Check your network connection, then try again.",
       "contentSearchServiceError": "Sorry, something went wrong on our end and we aren't able to complete this search. Try again later."
@@ -273,6 +272,7 @@
       "NewMessage": "New Message",
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
+      "newMessageDirectlyTip": "Send the message to the selected contacts individually.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
       "changeDefaultPhoneAppTitle": "Change default phone app",
