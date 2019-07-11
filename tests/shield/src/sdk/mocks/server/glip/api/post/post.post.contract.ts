@@ -11,7 +11,7 @@ export interface IGlipPostPost extends IApiContract {
   path: '/api/post';
   method: 'post';
   request: {
-    data: GlipPost;
+    data: Partial<GlipPost>;
   };
   response: {
     data: GlipPost;

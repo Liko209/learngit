@@ -5,7 +5,7 @@
  * @Date: 2019-06-30 18:23:33
  * Copyright © RingCentral. All rights reserved.
  */
-import { IBaseRequest, IBaseResponse } from '../../types';
+import { IBaseRequest, IBaseResponse, IApiContract } from '../../types';
 const INJECT_FLAG = '__jupiter__';
 const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';
@@ -61,7 +61,7 @@ interface INetworkInfo {
   // hostAlias?: string;
 }
 
-export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo {
+export interface IRequestResponse<Req = any, Res = any> extends INetworkInfo, IApiContract<Req, Res> {
   type: 'request-response';
   via: string;
   // url: string;

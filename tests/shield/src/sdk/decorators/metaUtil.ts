@@ -28,17 +28,6 @@ export const getMeta = <META>(prototype: any, metaKey: string, functionKeys?: st
     .filter(result => !!result.meta);
 };
 
-// export const getParamsMeta = <META>(prototype: any, metaKey: string | Symbol, functionKeys?: string[]): ({ key: string; meta: META })[] => {
-//   return (functionKeys || getPrototypeDefineFunctions(prototype))
-//     .map(key => {
-//       return {
-//         key,
-//         meta: Reflect.getMetadata(metaKey, prototype, key),
-//       };
-//     })
-//     .filter(result => !!result.meta);
-// };
-
 export const createParameterDecorator = (metaKey: string, ...params: any): ParameterDecorator => {
   return (target, propertyKey, index) => {
     Reflect.defineMetadata(

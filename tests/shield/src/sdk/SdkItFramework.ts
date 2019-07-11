@@ -89,7 +89,7 @@ type MockResponse = <
   A extends IApiContract<any, any> = IApiContract<any, any>,
   ReqData = A extends IApiContract<infer B, any> ? B : any,
   ResData = A extends IApiContract<any, infer B> ? B : any,
-  T extends (api: IApiContract<ReqData, ResData>) => any = (
+  T extends (api: A) => any = (
     api: IApiContract<ReqData, ResData>,
   ) => any
 >(
@@ -225,7 +225,7 @@ export function itForSdk(
         .mockImplementation(() => requestResponsePool);
     }
     const extractResult = extractor
-      ? extractor(requestResponse)
+      ? extractor(requestResponse as any)
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
     console.warn(111, pathToRegexp(requestResponse.path))

@@ -11,7 +11,7 @@ import { createDebug } from 'sdk/__tests__/utils';
 import { META_ROUTE, META_PARAM_QUERY, META_PARAM_CONTEXT, META_PARAM_REQUEST } from '../../../decorators/constants';
 import { getMeta, getParamMeta } from '../../../decorators/metaUtil';
 import { Route } from '../../../decorators/Route.decorator';
-import { IApiContract, IJRequest, IRoute } from '../../../types';
+import { IApiContract, IRoute } from '../../../types';
 import { Router } from '../Router';
 import { createResponse } from '../utils';
 import { STATE_KEYS } from './constants';
@@ -61,12 +61,12 @@ export class MockGlipServer implements IGlipServerContext {
   }
 
   applyRoute(cls: {new(...params: any): object}, instance: any) {
-    const routeMetas = getMeta<IRoute<IApiContract>>(
+    const routeMetaArray = getMeta<IRoute<IApiContract>>(
       cls.prototype,
       META_ROUTE,
     );
 
-    routeMetas.map(({ key, meta }) => {
+    routeMetaArray.map(({ key, meta }) => {
       const { method = 'get', path, query = {} } = meta;
       const contextParam = getParamMeta(cls.prototype, META_PARAM_CONTEXT, key);
       const queryParam = getParamMeta(cls.prototype, META_PARAM_QUERY, key);
@@ -129,7 +129,7 @@ export class MockGlipServer implements IGlipServerContext {
     path: '/api/login',
     method: 'put',
   })
-  login(request: IJRequest) {
+  login() {
     return createResponse({
       status: 200,
       statusText: '[mock] login success',
@@ -139,7 +139,7 @@ export class MockGlipServer implements IGlipServerContext {
   @Route({
     path: '/api/index',
   })
-  index(request: IJRequest) {
+  index() {
     return createResponse({
       data: {},
       status: 200,
@@ -150,7 +150,7 @@ export class MockGlipServer implements IGlipServerContext {
   @Route({
     path: '/v1.0/desktop/remaining',
   })
-  remaining(request: IJRequest) {
+  remaining() {
     return createResponse({
       data: {},
       status: 200,
@@ -161,7 +161,7 @@ export class MockGlipServer implements IGlipServerContext {
   @Route({
     path: '/v1.0/desktop/initial',
   })
-  async getInitialData(request: IJRequest<any>) {
+  async getInitialData() {
     const user = this.personDao.findOne();
     const company = this.companyDao.findOne();
     assert(company, 'company not found.');

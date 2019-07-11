@@ -9,18 +9,16 @@ import { INetworkRequestExecutorListener, NETWORK_HANDLE_TYPE } from 'foundation
 import { CommonFileServer } from './CommonFileServer';
 import { MockGlipServer } from './glip/MockGlipServer';
 import { InstanceManager } from './InstanceManager';
-import { IRequestResponse, SERVER_ALIAS_MAP, IRegexpRequestResponse } from '../../utils/network/networkDataTool';
+import { SERVER_ALIAS_MAP, IRegexpRequestResponse } from '../../utils/network/networkDataTool';
 import _ from 'lodash';
 import { createResponse } from './utils';
 import { createDebug } from 'sdk/__tests__/utils';
 
-const debug = createDebug('ProxyServer', true);
+const debug = createDebug('ProxyServer', false);
 
 export class ProxyServer implements IMockServer {
   private _findResponseInRequestResponsePool(request: { host: string; method: string; path: string }) {
     const { host, method, path } = request;
-    // const pathRegexp = pathToRegexp(path);
-    // console.warn('TCL: ProxyServer -> _findResponseInRequestResponsePool -> pathRegexp', pathRegexp);
     const pool = this.getRequestResponsePool();
     return pool.find(item => item.host === host && item.request.method === method && (item.path === path || item.pathRegexp.test(path)));
   }
