@@ -60,14 +60,6 @@ decorate(injectable(), ClientService);
 
 jest.mock('../ToastCallError');
 jest.mock('@/containers/Notification');
-// mock media element methods
-window.HTMLMediaElement.prototype.load = jest.fn();
-window.HTMLMediaElement.prototype.play = jest.fn();
-window.HTMLMediaElement.prototype.pause = jest.fn();
-window.HTMLMediaElement.prototype.addTextTrack = jest.fn();
-window.HTMLMediaElement.prototype.canPlayType = jest
-  .fn()
-  .mockResolvedValue(true);
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {
@@ -91,6 +83,19 @@ function initializeCallerId() {
 let defaultPhoneApp = CALLING_OPTIONS.GLIP;
 describe('TelephonyService', () => {
   beforeEach(() => {
+    // mock media element methods
+    jest
+      .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest
+      .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest
+      .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
+    jest
+      .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'addTextTrack');
+    jest
+      .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'canPlayType')
+      .mockReturnValue('maybe');
+
     jest.spyOn(utils, 'getSingleEntity').mockImplementation();
     let cachedOnMadeOutgoingCall: any;
 
@@ -917,14 +922,14 @@ describe('TelephonyService', () => {
       for (let i of keys) {
         await telephonyService.playBeep(i);
         await sleep(16);
-        expect(window.HTMLMediaElement.prototype.play).toBeCalled();
+        expect(HTMLMediaElement.prototype.play).toBeCalled();
       }
     });
     it('should not cann `HTMLMediaElement.prototype.play` when receive index not within the audio list', async () => {
       for (let i = 58; i < 123; i++) {
         await telephonyService.playBeep(String.fromCharCode(i));
         await sleep(16);
-        expect(window.HTMLMediaElement.prototype.play).not.toBeCalled();
+        expect(HTMLMediaElement.prototype.play).not.toBeCalled();
       }
     });
   });

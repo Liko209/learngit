@@ -209,8 +209,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
   //contact search
 
-  get contactSearchAvatar()
-  {
+  get contactSearchAvatar() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-avatar');
   }
 
@@ -411,7 +410,6 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickReplyWithWillCallBackEntryButton() {
-    await this.t.hover(this.replyWithWillCallBackEntry);
     await this.t.click(this.replyWithWillCallBackEntry);
   }
 
@@ -518,9 +516,9 @@ export class ContactSearchList extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-contact-search-list');
   }
 
-    /* scroll */
+  /* scroll */
   get scrollDiv() {
-      return this.getSelectorByAutomationId('virtualized-list', this.self);
+    return this.getSelectorByAutomationId('virtualized-list', this.self);
   }
 
   async scrollToY(y: number) {
@@ -532,10 +530,10 @@ export class ContactSearchList extends BaseWebComponent {
   }
 
   async scrollToMiddle() {
-      const scrollHeight = await this.scrollDiv.scrollHeight;
-      const clientHeight = await this.scrollDiv.clientHeight;
-      const middleHeight = (scrollHeight - clientHeight) / 2;
-      await this.scrollToY(middleHeight);
+    const scrollHeight = await this.scrollDiv.scrollHeight;
+    const clientHeight = await this.scrollDiv.clientHeight;
+    const middleHeight = (scrollHeight - clientHeight) / 2;
+    await this.scrollToY(middleHeight);
   }
 
   async expectStreamScrollToY(y: number) {
@@ -550,11 +548,11 @@ export class ContactSearchList extends BaseWebComponent {
     await this.t.click(this.searchResults.nth(n));
   }
 
-  get directDialIcon(){
+  get directDialIcon() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0));
   }
 
-  get hasDirectDialIcon(){
+  get hasDirectDialIcon() {
     return this.getSelectorByAutomationId('telephony-contact-search-list_item-dial_button', this.searchResults.nth(0)).exists;
   }
 
