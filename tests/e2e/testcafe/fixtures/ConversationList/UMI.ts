@@ -243,80 +243,98 @@ test.meta(<ITestMeta>{
   maintainers: ['potar.he'],
   keywords: ['ConversationList', 'UMI']
 })('Should not display UMI when section is expended & Should display UMI when section is collapsed', async (t: TestController) => {
-  const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[4];
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
-  const otherUser = users[5];
-  await h(t).platform(otherUser).init();
+  const loginUser = users[6];
+  const otherUser = users[4];
 
-  const teamsSection = app.homePage.messageTab.teamsSection;
-  const favoritesSection = app.homePage.messageTab.favoritesSection;
-  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const favChat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-  let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
-  await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
-    favPrivateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    favTeamId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `My Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    groupId2 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[1].rcId],
-    });
-    groupId3 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[2].rcId],
-    });
-    teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `My Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
-    teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `My Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
-  });
+  const favTeam = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
 
-  await h(t).withLog('Clear all UMIs before login', async () => {
+  const group1 = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [otherUser, otherUser, users[0]]
+  }
+
+  const group2 = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [otherUser, otherUser, users[1]]
+  }
+
+  const team1 = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
+  const team2 = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
+
+  const conversations = [favChat, favTeam, group1, group2, team1, team2]
+  // let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
+  let meChatId;
+  await h(t).withLog('Given I have an extension and reset its profile and state', async () => {
+    await h(t).platform(loginUser).init();
+    await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfileAndState();
+    await h(t).platform(otherUser).init();
+    meChatId = await h(t).glip(loginUser).getMeChatId();
   });
 
-  await h(t).withLog('And favorite 2 conversation before login', async () => {
-    await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
+  await h(t).withLog('And this extension with some conversations', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(conversations);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog('and set NewMessageBadges "groups_and_mentions"', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
+  await h(t).withLog('And favorite 2 conversations and mechat before login', async () => {
+    await h(t).glip(loginUser).favoriteGroups([favChat.glipId, favTeam.glipId, meChatId]);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog('And I click meChat to make sure other conversations are not selected', async () => {
+    await favoritesSection.conversationEntryById(meChatId).enter();
+  });
 
-  await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected', async () => {
-    await directMessagesSection.conversationEntryById(groupId3).enter();
+  await h(t).withLog('When I expand Favorite/Team/DirectMessage section', async () => {
+    await favoritesSection.expand();
+    await directMessagesSection.expand();
+    await teamsSection.expand();
   });
 
 
   await h(t).withLog('When other user send normal posts to all other conversations', async () => {
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', favPrivateChatId);
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', favTeamId);
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', groupId1);
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', groupId2);
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', teamId1);
-    await h(t).platform(otherUser).sendTextPost('TestGroupUMI', teamId2);
-    await t.wait(3e3);
+    for (let conversation of conversations) {
+      await h(t).scenarioHelper.sendTextPost(uuid(), conversation, otherUser);
+    }
   });
 
   await h(t).withLog('Then there should not be any umi in header of favorite sections', async () => {
@@ -350,10 +368,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, favPrivateChatId);
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, groupId1);
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, teamId1);
-    await t.wait(3e3);
+    for (let conversation of [favChat, group1, team1]) {
+      await h(t).scenarioHelper.sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, conversation, otherUser);
+    }
   });
 
   await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
@@ -370,11 +387,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When other user send normal posts to specified conversations', async () => {
-    await h(t).platform(otherUser).sendTextPost('test', favPrivateChatId);
-    await h(t).platform(otherUser).sendTextPost('test', favTeamId);
-    await h(t).platform(otherUser).sendTextPost('test', groupId1);
-    await h(t).platform(otherUser).sendTextPost('test', teamId1);
-    await t.wait(3e3);
+    for (let conversation of [favChat, favTeam, group1, team1]) {
+      await h(t).scenarioHelper.sendTextPost(uuid(), conversation, otherUser);
+    }
   });
 
   await h(t).withLog('Then there should be 3 umi in header of favorite sections', async () => {
