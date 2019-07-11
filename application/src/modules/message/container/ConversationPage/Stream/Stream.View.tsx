@@ -362,7 +362,7 @@ class StreamViewComponent extends Component<Props> {
   };
 
   private _defaultLoading() {
-    return <DefaultLoadingWithDelay delay={100} />;
+    return <DefaultLoadingWithDelay size={36} delay={100} />;
   }
 
   private _defaultLoadingMore() {
