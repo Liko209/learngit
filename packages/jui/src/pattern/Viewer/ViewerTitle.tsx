@@ -18,7 +18,7 @@ const JuiViewerTitleWrap = styled.span`
     input {
       text-align: center;
       ${typography('body1')};
-      padding: ${spacing(1)} 0;
+      padding: ${spacing(1, 0)};
     }
   }
 `;
