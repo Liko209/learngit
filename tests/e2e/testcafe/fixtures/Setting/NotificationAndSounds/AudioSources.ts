@@ -406,7 +406,7 @@ test.meta(<ITestMeta>{
 
   const deviceInfos: deviceInfo[] = await getDeviceInfos();
   const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
-  const itemsLabel = [ 'all', 'off', 'Use system default']
+  const itemsLabel = [ 'All audio sources', 'Off', 'Use system default']
 
 
   for (let i = 0; i < itemsLabel.length; i++) {
