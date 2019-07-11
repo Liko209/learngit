@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, runInAction, observable, computed } from 'mobx';
+import {
+  action,
+  runInAction,
+  observable,
+  computed,
+} from 'mobx';
 import {
   MessageInputProps,
   MessageInputViewProps,
