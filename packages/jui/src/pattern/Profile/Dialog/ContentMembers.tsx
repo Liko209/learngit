@@ -7,13 +7,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import {
-  spacing,
-  grey,
-  typography,
-  height,
-  width,
-  palette,
-  ellipsis,
+  spacing, grey, typography, height, width, palette, ellipsis
 } from '../../../foundation/utils/styles'; // use external instead of injected due to incompatible with SortableElement
 import { JuiListItem, JuiListItemProps } from '../../../components/Lists';
 
@@ -108,9 +102,7 @@ const JuiProfileDialogContentMemberListItemAdmin = styled.span`
   margin-left: ${spacing(3)};
 `;
 
-const JuiProfileDialogContentMemberListItemGuest = styled(
-  JuiProfileDialogContentMemberListItemAdmin,
-)`
+const JuiProfileDialogContentMemberListItemGuest = styled(JuiProfileDialogContentMemberListItemAdmin)`
   background-color: ${grey('400')};
 `;
 

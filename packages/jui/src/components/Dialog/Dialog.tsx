@@ -4,6 +4,7 @@ import MuiDialog, {
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled from 'styled-components';
+import { spacing } from '../../foundation/utils';
 import { HotKeys } from '../../hoc/HotKeys';
 
 type StyledDialogProps = MuiDialogProps & {
@@ -47,11 +48,12 @@ const StyledDialog = styled(
 )`
   & .paper {
     width: 100%;
+    max-height: calc(100% - ${spacing(24)});
   }
   & .paper.overflow-y {
     overflow-y: visible;
   }
-`;
+` as React.ComponentType<StyledDialogProps>;
 
 const WrapDialog = (props: JuiDialogProps) => {
   const {
