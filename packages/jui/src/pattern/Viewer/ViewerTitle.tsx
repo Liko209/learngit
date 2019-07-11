@@ -5,7 +5,7 @@
  */
 
 import styled from '../../foundation/styled-components';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing, typography } from '../../foundation/utils/styles';
 
 const JuiViewerTitleWrap = styled.span`
   && {
@@ -16,8 +16,9 @@ const JuiViewerTitleWrap = styled.span`
       width: ${spacing(12)};
     }
     input {
-      height: ${spacing(3)};
       text-align: center;
+      ${typography('body1')};
+      padding: ${spacing(1, 0)};
     }
   }
 `;
