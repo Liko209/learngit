@@ -52,12 +52,6 @@ class Notification extends AbstractViewModel {
 
   @action
   private static _removeNotification(id: number) {
-    console.group(
-      '%cNotification',
-      'background: #20232a; color: #43daf9; padding: 2px 4px; border-radius: 5px;',
-    );
-    console.log(notificationData.map(item => item.id));
-    console.groupEnd();
     _.remove(notificationData, item => item.id === id);
   }
 
