@@ -11,14 +11,12 @@ import { daoManager } from '../../../../../dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 
 class EventItemService extends BaseSubItemService<
-  EventItem,
-  SanitizedEventItem
+EventItem,
+SanitizedEventItem
 > {
   constructor() {
     super(daoManager.getDao<EventItemDao>(EventItemDao));
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_EVENT);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_EVENT));
   }
 }
 

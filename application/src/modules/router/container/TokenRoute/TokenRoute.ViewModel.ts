@@ -25,9 +25,12 @@ class TokenRouteViewModel extends StoreViewModel {
   constructor() {
     super();
     this.subscribeNotification(
-      SERVICE.LOGIN,
+      SERVICE.RC_LOGIN,
       this.handleHasLoggedIn.bind(this),
     );
+    this.subscribeNotification(SERVICE.GLIP_LOGIN, async (success: boolean) => {
+      success && (await this.handleHasLoggedIn());
+    });
   }
 
   @action
@@ -41,10 +44,11 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   @action.bound
-  async handleHasLoggedIn(isRCOnlyMode: boolean) {
+  async handleHasLoggedIn() {
     if (this._LoggedInHandled) {
       return;
     }
+    this._LoggedInHandled = true;
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
@@ -52,12 +56,12 @@ class TokenRouteViewModel extends StoreViewModel {
     const { state = '/' } = this._getUrlParams(location);
 
     await profileService.markMeConversationAsFav().catch((error: Error) => {
+      this._LoggedInHandled = false;
       mainLogger
         .tags('TokenRoute.ViewModel')
         .info('markMeConversationAsFav fail:', error);
     });
     this._redirect(state);
-    this._LoggedInHandled = true;
   }
 
   unifiedLogin = async () => {
@@ -74,7 +78,7 @@ class TokenRouteViewModel extends StoreViewModel {
     } catch (e) {
       this._setIsError(true);
     }
-  }
+  };
 
   redirectToIndex = async () => {
     const accountService = ServiceLoader.getInstance<AccountService>(
@@ -84,7 +88,7 @@ class TokenRouteViewModel extends StoreViewModel {
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
     this._redirect(state);
-  }
+  };
 
   private _getUrlParams(location: H.Location) {
     return parse(location.search, { ignoreQueryPrefix: true });

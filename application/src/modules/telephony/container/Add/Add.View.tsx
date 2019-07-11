@@ -18,7 +18,7 @@ class AddViewComponent extends Component<Props> {
   private _handleAdd = async () => {
     const { add } = this.props;
     add();
-  }
+  };
 
   render() {
     const { t } = this.props;
@@ -26,10 +26,10 @@ class AddViewComponent extends Component<Props> {
       <JuiKeypadAction>
         <JuiIconButton
           color="grey.900"
-          disableToolTip={true}
+          disableToolTip
           onClick={this._handleAdd}
           size="xxlarge"
-          disabled={true}
+          disabled
           data-test-automation-id="telephony-add-btn"
         >
           call_add

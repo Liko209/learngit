@@ -68,7 +68,6 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c3 {
@@ -530,7 +529,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c10 {
@@ -777,7 +775,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c27.c27 .c9,
 .c27.c27 .c9 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c27.c27:hover .c9 {
@@ -789,23 +787,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 }
 
 .c27.c27.c27.c27.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c28.c28 .c9,
-.c28.c28 .c9 svg {
-  font-size: 20px;
-}
-
-.c28.c28:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c28.c28:active .c9 {
-  color: #fff;
-}
-
-.c28.c28.c28.c28.disabled .c9 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -834,14 +815,14 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   pointer-events: none;
 }
 
-.c17.lozengeButtonLoading .c29 {
+.c17.lozengeButtonLoading .c28 {
   margin-left: 4px;
 }
 
-.c17.lozengeButtonLoading .c30,
-.c17.lozengeButtonWithArrow .c30,
 .c17.lozengeButtonLoading .c29,
 .c17.lozengeButtonWithArrow .c29,
+.c17.lozengeButtonLoading .c28,
+.c17.lozengeButtonWithArrow .c28,
 .c17.lozengeButtonLoading span,
 .c17.lozengeButtonWithArrow span {
   vertical-align: middle;
@@ -1107,7 +1088,6 @@ exports[`Storyshots Pattern/ConversationItemCard eventItemCard: Pattern/Conversa
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c3 {
@@ -1264,7 +1244,7 @@ exports[`Storyshots Pattern/ConversationItemCard eventItemCard: Pattern/Conversa
         <div
           className="c8"
         >
-          2018-10-10
+          10/10/2018
         </div>
       </div>
       <div
@@ -1297,7 +1277,6 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c22 {
@@ -1518,7 +1497,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c32.c32 .c21,
 .c32.c32 .c21 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c32.c32:hover .c21 {
@@ -1530,23 +1509,6 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 }
 
 .c32.c32.c32.c32.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c33.c33 .c21,
-.c33.c33 .c21 svg {
-  font-size: 20px;
-}
-
-.c33.c33:hover .c21 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c33.c33:active .c21 {
-  color: #fff;
-}
-
-.c33.c33.c33.c33.disabled .c21 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -1809,7 +1771,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
         <div
           className="c7"
         >
-          2019-6-26 
+          6/26/2019 
         </div>
       </div>
       <div
@@ -1903,6 +1865,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                 <div
                   className="c19"
                 >
+                  <div />
                   <button
                     aria-describedby={null}
                     className="MuiButtonBase-root MuiIconButton-root c20"

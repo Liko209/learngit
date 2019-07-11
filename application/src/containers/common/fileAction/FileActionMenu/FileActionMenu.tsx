@@ -10,23 +10,28 @@ import {
   FileNameEditAction,
   FileNameEditActionProps,
 } from '../FileNameEditAction';
+import { ViewInPostAction } from '../ViewInPostAction';
 import { JuiMenuList } from 'jui/components/Menus';
 import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { WithTranslation, withTranslation } from 'react-i18next';
 
-type Props = {
+type FileActionMenuProps = {
   fileId: number;
   postId?: number;
   disablePortal?: boolean;
   variant?: IconButtonVariant;
+  showViewInPostAction?: boolean;
+  groupId?: number;
+  asyncOperationDecorator?: FunctionDecorator;
 } & FileDeleteActionProps &
-  FileNameEditActionProps &
-  WithTranslation;
+FileNameEditActionProps &
+WithTranslation;
 
 type State = { open: boolean; anchorEl: EventTarget | null };
-class InnerComponent extends Component<Props, State> {
-  static defaultProps: Partial<Props> = {
+class InnerComponent extends Component<FileActionMenuProps, State> {
+  static defaultProps: Partial<FileActionMenuProps> = {
     variant: 'plain',
+    showViewInPostAction: false,
   };
 
   state = {
@@ -49,7 +54,7 @@ class InnerComponent extends Component<Props, State> {
         more_vert
       </JuiIconButton>
     );
-  }
+  };
 
   openPopper = (evt: React.MouseEvent) => {
     const { currentTarget } = evt;
@@ -57,15 +62,23 @@ class InnerComponent extends Component<Props, State> {
       anchorEl: currentTarget,
       open: !state.open,
     }));
-  }
+  };
 
   closePopper = () => {
     this.setState({
       open: false,
     });
-  }
+  };
   render() {
-    const { fileId, postId, disablePortal, ...rest } = this.props;
+    const {
+      showViewInPostAction,
+      fileId,
+      postId,
+      groupId,
+      disablePortal,
+      asyncOperationDecorator,
+      ...rest
+    } = this.props;
     return (
       <JuiPopperMenu
         Anchor={this._Anchor}
@@ -77,6 +90,13 @@ class InnerComponent extends Component<Props, State> {
       >
         <JuiMenuList data-test-automation-id={'fileActionMenuList'}>
           <FileNameEditAction fileId={fileId} postId={postId} {...rest} />
+          {showViewInPostAction && groupId && (
+            <ViewInPostAction
+              asyncOperationDecorator={asyncOperationDecorator}
+              fileId={fileId}
+              groupId={groupId}
+            />
+          )}
           <FileDeleteAction fileId={fileId} postId={postId} {...rest} />
         </JuiMenuList>
       </JuiPopperMenu>
@@ -86,4 +106,4 @@ class InnerComponent extends Component<Props, State> {
 
 const FileActionMenu = withTranslation('translations')(InnerComponent);
 
-export { FileActionMenu, Props };
+export { FileActionMenu, FileActionMenuProps };

@@ -1,14 +1,17 @@
 {
   "fileheader.tpl": "/*\r\n * @Author: {author}\r\n * @Date: {createTime}\r\n * Copyright © RingCentral. All rights reserved.\r\n */\r\n",
-  "prettier.tslintIntegration": true,
-  "editor.formatOnSave": true,
+  "prettier.tslintIntegration": false,
+  "prettier.eslintIntegration": true,
   "typescript.surveys.enabled": false,
   "typescript.tsdk": "node_modules/typescript/lib",
-  "tslint.exclude": "**/testcafe/**/*.ts",
+  "editor.formatOnSave": true,
   "[handlebars]": {
     "editor.formatOnSave": false
   },
-  "prettier.jsxSingleQuote": true,
-  "prettier.singleQuote": true,
-  "prettier.trailingComma": "all"
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
 }

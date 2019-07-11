@@ -6,7 +6,7 @@
 import { testable, test } from 'shield';
 import { mockService } from 'shield/sdk';
 import React from 'react';
-import { PhoneLink } from '../';
+import { PhoneLink } from '..';
 import * as helper from '../helper';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 import { registerModule } from 'shield/utils';
@@ -86,11 +86,11 @@ describe('PhoneLinkView', () => {
     @mockService(PermissionService, 'hasPermission', true)
     @mockService(PermissionService, 'hasPermission', true)
     async t1() {
-      let wrapper = mountWithTheme(
+      const wrapper = mountWithTheme(
         <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
       );
       // needed to defer wrapper.update() till after the promise resolves
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise(resolve => setTimeout(resolve, 0));
       wrapper.update();
       const link = wrapper.find('a[href="javascript:;"]');
       expect(link.exists()).toBe(true);

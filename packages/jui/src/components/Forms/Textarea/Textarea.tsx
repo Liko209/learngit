@@ -58,7 +58,7 @@ const Textarea = styled<JuiTextFieldProps>(WrappedMuiTextField)`
 class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.props.onChange && this.props.onChange(e);
-  }
+  };
 
   handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { onKeyDown } = this.props;
@@ -66,15 +66,15 @@ class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
       e.preventDefault();
     }
     onKeyDown && onKeyDown(e);
-  }
+  };
 
   InputProps = isOutlinedTextFieldProps(this.props)
     ? {
-        classes: { root: 'input-root' },
-      }
+      classes: { root: 'input-root' },
+    }
     : {
-        classes: { root: 'input-root', underline: 'input-underline' },
-      };
+      classes: { root: 'input-root', underline: 'input-underline' },
+    };
 
   render() {
     const { ...juiTextareaRest } = this.props;
@@ -83,7 +83,7 @@ class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
     return (
       <Textarea
         {...rest}
-        multiline={true}
+        multiline
         onKeyDown={this.handleKeyDown}
         InputProps={this.InputProps}
         InputLabelProps={{

@@ -7,6 +7,7 @@ type DocumentTitleProps = {
 /**
  * Update document.title
  */
+/* eslint-disable */
 class DocumentTitle extends Component<DocumentTitleProps> {
   render() {
     document.title = this.props.children;

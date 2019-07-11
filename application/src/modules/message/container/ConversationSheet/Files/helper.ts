@@ -23,7 +23,7 @@ function getFileSize(bytes: number) {
 }
 
 function fileItemAvailable(item: FileItemModel, post: PostModel) {
-  if (item.isMocked || item.deactivated) return false;
+  if (item.isMocked || item.deactivated || !item.versions) return false;
 
   const fileItemVersion = post.fileItemVersion(item);
   const versionIndex = item.versions.length - fileItemVersion;

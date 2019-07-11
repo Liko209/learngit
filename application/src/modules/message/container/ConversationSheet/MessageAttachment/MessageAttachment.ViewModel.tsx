@@ -12,16 +12,14 @@ import { InteractiveMessageItem } from 'sdk/module/item/entity';
 import InteractiveMessageItemModel from '@/store/models/InteractiveMessageItem';
 
 class MessageAttachmentViewModel extends StoreViewModel<
-  MessageAttachmentProps
+MessageAttachmentProps
 > {
   @computed
   get items() {
-    return this.props.ids.map((id: number) =>
-      getEntity<InteractiveMessageItem, InteractiveMessageItemModel>(
-        ENTITY_NAME.ITEM,
-        id,
-      ),
-    );
+    return this.props.ids.map((id: number) => getEntity<InteractiveMessageItem, InteractiveMessageItemModel>(
+      ENTITY_NAME.ITEM,
+      id,
+    ));
   }
 }
 

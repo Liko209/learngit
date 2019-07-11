@@ -19,12 +19,10 @@ const StyledRepeatIcon = styled(JuiIconography)`
   }
 `;
 
-const JuiEventRepeatIcon = memo(() => {
-  return (
+const JuiEventRepeatIcon = memo(() => (
     <StyledRepeatIcon iconSize="extraSmall">
       {REPEAT_ICON_TYPE.repeat}
     </StyledRepeatIcon>
-  );
-});
+));
 
 export { JuiEventRepeatIcon };

@@ -30,13 +30,11 @@ const JuiProfileDialogContentSummary = styled<PropsSummary, 'div'>('div')`
   padding: ${spacing(5, 6)};
   flex-direction: row;
   flex-shrink: 0;
-  ${({ emphasize }: PropsSummary) =>
-    emphasize &&
+  ${({ emphasize }: PropsSummary) => emphasize &&
     css`
-      background-color: ${({ theme }) =>
-        tinycolor(primary('700')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity / 1.5)
-          .toRgbString()};
+      background-color: ${({ theme }) => tinycolor(primary('700')({ theme }))
+    .setAlpha(theme.palette.action.hoverOpacity / 1.5)
+    .toRgbString()};
     `}
 `;
 
@@ -55,8 +53,7 @@ const JuiProfileDialogContentSummaryName = styled<PropsName, 'div'>('div')`
 ${typography('subheading2')}
 color: ${grey('900')};
 word-break: break-word;
-${({ needEllipsis }: PropsName) =>
-  needEllipsis &&
+${({ needEllipsis }: PropsName) => needEllipsis &&
   css`
     ${lineClamp(3, 18)};
   `}

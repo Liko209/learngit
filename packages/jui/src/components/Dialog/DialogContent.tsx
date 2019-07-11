@@ -24,9 +24,7 @@ const fullWidthStyle = (theme: Theme, fullWidth?: boolean) => {
 };
 
 const JuiDialogContent = memo(styled(
-  ({ fullWidth, fill, ...props }: JuiDialogContentProps) => {
-    return <MuiDialogContent {...props} classes={{ root: 'root' }} />;
-  },
+  ({ fullWidth, fill, ...props }: JuiDialogContentProps) => <MuiDialogContent {...props} classes={{ root: 'root' }} />,
 )`
   &.root {
     overflow-y: visible;

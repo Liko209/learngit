@@ -10,15 +10,15 @@ import { IndexDataModel } from '../../../api/glip/user';
 import { ErrorParserHolder } from '../../../error/ErrorParserHolder';
 import { ERROR_TYPES } from '../../../error/types';
 import { Raw } from '../../../framework/model';
-import { AccountService } from '../../../module/account';
-import { AccountGlobalConfig } from '../../../module/account/config';
-import { accountHandleData } from '../../../module/account/service';
-import { Company } from '../../../module/company/entity';
-import { Item } from '../../../module/item/entity';
-import { Person } from '../../../module/person/entity';
-import { Post } from '../../../module/post/entity';
-import { RawPresence } from '../../../module/presence/entity';
-import { ServiceConfig, ServiceLoader } from '../../../module/serviceLoader';
+import { AccountService } from '../../account';
+import { AccountGlobalConfig } from '../../account/config';
+import { accountHandleData } from '../../account/service';
+import { Company } from '../../company/entity';
+import { Item } from '../../item/entity';
+import { Person } from '../../person/entity';
+import { Post } from '../../post/entity';
+import { RawPresence } from '../../presence/entity';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { CONFIG, SERVICE } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { progressManager } from '../../../utils/progress';
@@ -40,6 +40,7 @@ import { DaoGlobalConfig } from 'sdk/dao/config';
 import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
+import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -121,10 +122,17 @@ class SyncController {
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
-      notificationCenter.emitKVChange(SERVICE.LOGIN);
+      notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
     } catch (e) {
-      mainLogger.error(LOG_TAG, 'fetch initial data error, force logout');
-      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      mainLogger.error(LOG_TAG, 'fetch initial data error');
+      const accountType = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig.getAccountType();
+      if (accountType === ACCOUNT_TYPE_ENUM.RC) {
+        notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, false);
+      } else {
+        notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      }
     }
     this._checkFetchedRemaining(currentTime);
     performanceTracer.end({ key: SYNC_PERFORMANCE_KEYS.FIRST_LOGIN });
@@ -258,9 +266,7 @@ class SyncController {
       requestConfig?: object,
       headers?: object,
     ) => Promise<IndexDataModel>,
-  ) => async (params: object) => {
-    return await getDataFunction(params);
-  }
+  ) => async (params: object) => await getDataFunction(params);
 
   async fetchInitialData(currentTime: number) {
     return this._fetchData(initialData)({ _: currentTime });
@@ -331,9 +337,7 @@ class SyncController {
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
-      .then(() =>
-        this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
-      )
+      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap))
       .then(() => {
         mainLogger.debug(
           LOG_INDEX_DATA,
@@ -571,6 +575,11 @@ class SyncController {
 
       case SYNC_SOURCE.REMAINING:
         return `${SYNC_PERFORMANCE_KEYS.HANDLE_REMAINING_INCOMING}${type}`;
+
+      case SYNC_SOURCE.SOCKET:
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_SOCKET_INCOMING}${type}`;
+      default:
+        return `${SYNC_PERFORMANCE_KEYS.HANDLE_INDEX_INCOMING}${type}`;
     }
   }
 

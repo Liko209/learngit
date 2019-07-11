@@ -5,117 +5,69 @@
  */
 import { StoreViewModel } from '@/store/ViewModel';
 import PostModel from '@/store/models/Post';
-import GroupModel from '@/store/models/Group';
-import CompanyModel from '@/store/models/Company';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import { Post } from 'sdk/module/post/entity';
-import { Person } from 'sdk/module/person/entity';
-import { Group } from 'sdk/module/group/entity';
-import { Company } from 'sdk/module/company/entity';
 import { ENTITY_NAME } from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
-import PersonModel from '@/store/models/Person';
 import { TextMessageProps } from './types';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { moizePostParser, ChildrenType } from '@/common/postParser';
 import {
-  moizePostParser,
-  AtMentionsMapType,
-  ChildrenType,
-} from '@/common/postParser';
-import { i18nP } from '@/utils/i18nT';
-import { action } from 'mobx';
+  action,
+  observable,
+  computed,
+  comparer
+} from 'mobx';
+import { buildAtMentionMap } from '@/common/buildAtMentionMap';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
-  static customEmojiMap() {
-    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-    if (currentCompanyId <= 0) {
-      return {};
-    }
-    const company =
-      getEntity<Company, CompanyModel>(ENTITY_NAME.COMPANY, currentCompanyId) ||
-      {};
-    return company.customEmoji || {};
-  }
+  @observable.shallow
+  private _content: ChildrenType = [];
 
-  static staticHttpServer() {
-    return getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
-  }
+  @observable
+  private _text: string;
 
-  static get currentUserId() {
-    return getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  }
-
-  static getGroup(id: number) {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
-  }
-
-  static getPerson(id: number) {
-    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
-  }
-
-  static getDisplayName(id: number) {
-    const type = GlipTypeUtil.extractTypeId(id);
-
-    switch (type) {
-      case TypeDictionary.TYPE_ID_TEAM:
-        return TextMessageViewModel.getGroup(id).displayName;
-
-      case TypeDictionary.TYPE_ID_PERSON:
-        return TextMessageViewModel.getPerson(id).userDisplayName;
-
-      default:
-        return undefined;
-    }
-  }
-
-  content: ChildrenType;
+  private _textType: boolean;
 
   constructor(props: TextMessageProps) {
     super(props);
-    this.content = this._getContent(props.keyword);
+    this.reaction(() => ({
+      text: this._post.text,
+      keyword: props.keyword,
+    }), ({ text, keyword }) => {
+      const res = this._getContent(text, keyword);
+      this._textType = typeof res === 'string';
+      if (this._textType) {
+        this._text = res as string;
+      } else {
+        this._content = res;
+      }
+    }, {
+      fireImmediately: true,
+      equals: comparer.structural
+    });
   }
 
+  @computed
+  get renderText() {
+    return this._textType ? this._text : this._content;
+  }
+
+  @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
-  private get _atMentions() {
-    const post = this._post;
-    const atMentionNonItemIds = (post && post.atMentionNonItemIds) || [];
-    const kv: AtMentionsMapType = {};
-    atMentionNonItemIds.forEach((id: number) => {
-      kv[id] = {
-        name: TextMessageViewModel.getDisplayName(id),
-        isCurrent: id === TextMessageViewModel.currentUserId,
-      };
-    });
-    kv['-1'] = {
-      name: post.isAdminMention
-        ? i18nP('message.atMentionAllAdmin')
-        : i18nP('message.atMentionAllTeam'),
-      isCurrent:
-        post.isTeamMention ||
-        (post.isAdminMention &&
-          TextMessageViewModel.getGroup(post.groupId).isAdmin),
-    };
-    return kv;
-  }
-
   @action
-  private _getContent = (keyword?: string) => {
-    return moizePostParser(this._post.text, {
-      keyword,
-      html: true,
-      atMentions: {
-        map: this._atMentions,
-      },
-      emoji: {
-        hostName: TextMessageViewModel.staticHttpServer(),
-        customEmojiMap: TextMessageViewModel.customEmojiMap(),
-      },
-      phoneNumber: true,
-    });
-  }
+  private _getContent = (text: string, keyword?: string) => moizePostParser(text, {
+    keyword,
+    html: true,
+    atMentions: {
+      map: buildAtMentionMap(this._post),
+    },
+    emoji: {
+      unicodeOnly: false,
+    },
+    phoneNumber: true,
+  })
 }
 
 export { TextMessageViewModel };

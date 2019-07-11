@@ -12,7 +12,9 @@ import {
   ETransportType,
   RcSubscriptionParams,
 } from 'sdk/api/ringcentral/types';
-import { notificationCenter, SERVICE, WINDOW, SUBSCRIPTION } from 'sdk/service';
+import {
+  notificationCenter, SERVICE, WINDOW, SUBSCRIPTION,
+} from 'sdk/service';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { mainLogger } from 'foundation';
@@ -81,9 +83,9 @@ class RCSubscriptionController {
     );
 
     if (!this._sequenceSubscriptionHandler) {
-      this._sequenceSubscriptionHandler = new SequenceProcessorHandler(
-        CLASS_NAME,
-      );
+      this._sequenceSubscriptionHandler = new SequenceProcessorHandler({
+        name: CLASS_NAME,
+      });
     }
     this._sequenceSubscriptionHandler.addProcessor(processor);
   }
@@ -288,9 +290,7 @@ class RCSubscriptionController {
   private _getSubscribedEvents() {
     const events =
       (this._lastSubscription && this._lastSubscription.eventFilters) || [];
-    return events.map((event: string) => {
-      return this._getRawEvent(event);
-    });
+    return events.map((event: string) => this._getRawEvent(event));
   }
 
   private async _shouldUpdateSubscription() {
@@ -458,9 +458,7 @@ class RCSubscriptionController {
   }
 
   private _fullFillEvents(rawEvents: string[]) {
-    return rawEvents.map((raw: string) => {
-      return `${EVENT_PREFIX}${raw}`;
-    });
+    return rawEvents.map((raw: string) => `${EVENT_PREFIX}${raw}`);
   }
 
   private async _getNeedSubscriptionEvents(): Promise<string[]> {

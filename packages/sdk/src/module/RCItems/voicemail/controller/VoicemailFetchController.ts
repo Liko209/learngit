@@ -17,6 +17,9 @@ import { Caller, FilterOptions, FetchDataOptions } from '../../types';
 import { daoManager } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
 import { VoicemailBadgeController } from './VoicemailBadgeController';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { RCInfoService } from 'sdk/module/rcInfo';
+import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { VOICEMAIL_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { RCItemFetchController } from '../../common/controller/RCItemFetchController';
 
@@ -39,12 +42,10 @@ class VoicemailFetchController extends RCItemFetchController<Voicemail> {
     option: FilterOptions<Voicemail>,
   ): Promise<(voicemail: Voicemail) => boolean> {
     const filterFunc = await super.buildFilterFunc(option);
-    return (voicemail: Voicemail): boolean => {
-      return (
-        voicemail.availability === MESSAGE_AVAILABILITY.ALIVE &&
+    return (voicemail: Voicemail): boolean => (
+      voicemail.availability === MESSAGE_AVAILABILITY.ALIVE &&
         filterFunc(voicemail)
-      );
-    };
+    );
   }
 
   protected isTokenInvalidError(reason: JError): boolean {
@@ -99,6 +100,16 @@ class VoicemailFetchController extends RCItemFetchController<Voicemail> {
         (await this._entitySourceController.bulkDelete(deactivatedVmIds));
     }
     return data.records;
+  }
+
+  protected async hasPermission(): Promise<boolean> {
+    if (!(await super.hasPermission())) {
+      return false;
+    }
+
+    return ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    ).isRCFeaturePermissionEnabled(ERCServiceFeaturePermission.READ_MESSAGES);
   }
 
   protected async sendSyncRequest(

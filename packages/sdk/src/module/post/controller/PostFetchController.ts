@@ -5,17 +5,19 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
+import {
+  Post, IPostQuery, IPostResult, IRawPostResult,
+} from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
-import { PostDao } from '../../../module/post/dao';
+import { PostDao } from '../dao';
 import { mainLogger, PerformanceTracer } from 'foundation';
 import { ItemService } from '../../item';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { IGroupService } from '../../group/service/IGroupService';
 import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
@@ -69,6 +71,10 @@ class PostFetchController {
         direction,
         limit,
       });
+      mainLogger.info(
+        LOG_FETCH_POST,
+        `groupId: ${groupId} localSize:${result.posts.length}`,
+      );
     }
 
     if (result.posts.length < limit) {
@@ -267,12 +273,10 @@ class PostFetchController {
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex((localPost: Post) => {
-            return (
-              localPost.unique_id !== undefined &&
+          const index = localPosts.findIndex((localPost: Post) => (
+            localPost.unique_id !== undefined &&
               localPost.unique_id === remotePost.unique_id
-            );
-          });
+          ));
           if (index !== -1) {
             localPosts.splice(index, 1);
           }

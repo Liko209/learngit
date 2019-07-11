@@ -25,7 +25,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { DesktopNotificationsSettingModel as DNSM } from './NotificationsSettingHandler';
 
 class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
-  NOTIFICATION_OPTIONS
+NOTIFICATION_OPTIONS
 > {
   id = SettingEntityIds.Notification_MissCallAndNewVoiceMails;
   constructor(
@@ -38,12 +38,8 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
-      this.onSettingEntityUpdate(payload),
-    );
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
   }
 
   async updateValue(value: NOTIFICATION_OPTIONS) {
@@ -62,7 +58,10 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
     if (!desktopNotifications && !PlatformUtils.isElectron()) {
       state = ESettingItemState.DISABLE;
     }
-    if (profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL) {
+    if (
+      profile &&
+      profile[SETTING_KEYS.CALL_OPTION] === CALLING_OPTIONS.RINGCENTRAL
+    ) {
       state = ESettingItemState.INVISIBLE;
     }
     return state;
@@ -109,9 +108,9 @@ class NewVoicemailsSettingHandler extends AbstractSettingEntityHandler<
   }
   private async _getVoiceMail() {
     const profile = await this._profileService.getProfile();
-    let voiceMail = profile[SETTING_KEYS.DESKTOP_VOICEMAIL];
-    if (voiceMail === undefined) {
-      voiceMail = NOTIFICATION_OPTIONS.ON;
+    let voiceMail = NOTIFICATION_OPTIONS.ON;
+    if (profile && profile.desktop_notifications_new_voicemails !== undefined) {
+      voiceMail = profile.desktop_notifications_new_voicemails;
     }
     return voiceMail;
   }

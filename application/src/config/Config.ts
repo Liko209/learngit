@@ -5,10 +5,11 @@
  */
 
 // Replace ${deployHost} with real deployHost
-import _ from 'lodash';
 import { AppEnvSetting } from 'sdk/module/env';
 import { ConfigMap } from './types';
-import { loadFileConfigs, getEnvArray, get, set } from './utils';
+import {
+  loadFileConfigs, getEnvArray, get, set,
+} from './utils';
 
 const { protocol, hostname, port } = window.location;
 const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
@@ -61,9 +62,7 @@ class Config {
   }
 
   getAllEnv() {
-    return getEnvArray().filter((env: string) => {
-      return this.isProductionBuild() || env !== 'production';
-    });
+    return getEnvArray().filter((env: string) => this.isProductionBuild() || env !== 'production');
   }
 
   get<T1 extends ConfigMap, K1 extends keyof T1>(k1: K1): T1[K1];

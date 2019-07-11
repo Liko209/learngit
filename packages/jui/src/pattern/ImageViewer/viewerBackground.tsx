@@ -25,14 +25,13 @@ const StyledViewerBackground = styled.div<{ show: boolean }>`
   height: inherit;
   background: transparent;
   ${transition};
-  ${({ show }) =>
-    show
-      ? css`
+  ${({ show }) => (show
+    ? css`
           background: ${grey('100')};
         `
-      : css`
+    : css`
           background: transparent;
-        `}
+        `)}
 `;
 
 const JuiViewerBackground = ({
@@ -43,7 +42,7 @@ const JuiViewerBackground = ({
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
-  },        [show]);
+  }, [show]);
   return (
     <StyledViewerBackground {...rest} show={show && mounted}>
       {children}

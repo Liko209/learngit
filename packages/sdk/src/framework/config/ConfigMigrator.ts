@@ -17,7 +17,7 @@ import { daoManager } from 'sdk/dao';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 // TODO FIJI-4002 should remove this after migration completed
-
+/* eslint-disable */
 class ConfigMigrator implements IDBObserver {
   private _dbConfigReady: boolean = false;
   private _userConfigReady: boolean = false;
@@ -54,7 +54,7 @@ class ConfigMigrator implements IDBObserver {
     userConfig.setUserId(userDictionary);
     this._userConfigReady = true;
     this.init();
-  }
+  };
 
   async init() {
     if (!this._dbConfigReady || !this._userConfigReady) {

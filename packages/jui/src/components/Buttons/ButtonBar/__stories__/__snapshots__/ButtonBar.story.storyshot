@@ -6,7 +6,6 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c5 {
@@ -330,7 +329,6 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {
@@ -598,7 +596,6 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {

@@ -128,6 +128,9 @@ describe('TelephonyCallController', () => {
       expect.assertions(4);
       callController._updateCallHoldState = jest.fn();
       callController._updateCallRecordState = jest.fn();
+      rtcCall.getRecordState = jest
+        .fn()
+        .mockReturnValue(RTC_RECORD_STATE.RECORDING);
       holdToggle.onSuccess = jest.fn();
       callController.hold().then(result => {
         expect(result).toEqual(options);
@@ -138,7 +141,7 @@ describe('TelephonyCallController', () => {
         HOLD_STATE.HELD,
       );
       expect(callController._updateCallRecordState).toBeCalledWith(
-        RECORD_STATE.DISABLE,
+        RECORD_STATE.RECORDING_DISABLED,
       );
       expect(holdToggle.onSuccess).toBeCalled();
     });
@@ -212,7 +215,7 @@ describe('TelephonyCallController', () => {
         HOLD_STATE.HELD,
       );
       expect(callController._updateCallRecordState).toBeCalledWith(
-        RECORD_STATE.DISABLE,
+        RECORD_STATE.DISABLED,
       );
       expect(holdToggle.onFailure).toBeCalled();
     });
@@ -336,6 +339,7 @@ describe('TelephonyCallController', () => {
   describe('answer', () => {
     it('should call rtc answer when controller answer is called', () => {
       jest.spyOn(rtcCall, 'answer');
+      callController._getCallEntity = jest.fn().mockReturnValue({});
       callController.answer();
       expect(rtcCall.answer).toBeCalled();
     });
@@ -406,10 +410,10 @@ describe('TelephonyCallController', () => {
       };
       callController._getCallEntity = jest.fn().mockReturnValue(call);
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._updateCallHoldState(HOLD_STATE.DISABLE);
+      callController._updateCallHoldState(HOLD_STATE.DISABLED);
       expect(spy).toBeCalledWith(ENTITY.CALL, [
         {
-          hold_state: HOLD_STATE.DISABLE,
+          hold_state: HOLD_STATE.DISABLED,
         },
       ]);
     });
@@ -418,7 +422,7 @@ describe('TelephonyCallController', () => {
       clearMocks();
       callController._getCallEntity = jest.fn().mockReturnValue(null);
       const spy = jest.spyOn(notificationCenter, 'emitEntityUpdate');
-      callController._updateCallHoldState(HOLD_STATE.DISABLE);
+      callController._updateCallHoldState(HOLD_STATE.DISABLED);
       expect(spy).not.toBeCalled();
     });
   });

@@ -30,6 +30,7 @@ test.meta(<ITestMeta>{
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[0];
   const caller = users[1];
+  await h(t).scenarioHelper.resetProfile(loginUser);
 
   const app = new AppRoot(t);
 
@@ -233,6 +234,7 @@ test.meta(<ITestMeta>{
 })(`The Microphone/Speaker source should be from the selected settings`, async (t) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[0];
+  await h(t).scenarioHelper.resetProfile(loginUser);
 
   const app = new AppRoot(t);
 
@@ -481,6 +483,7 @@ test.meta(<ITestMeta>{
 & The Microphone/Speaker/Ringer source should be from the last selected settings when the currently used device is removed`, async (t) => {
     const users = h(t).rcData.mainCompany.users
     const loginUser = users[0];
+    await h(t).scenarioHelper.resetProfile(loginUser);
 
     const app = new AppRoot(t);
 

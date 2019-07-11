@@ -5,6 +5,7 @@
  */
 
 import { IdModel, ModelIdType } from '../../model/Model';
+
 interface IEntityChangeObserver<T extends IdModel<ModelIdType> = IdModel> {
   onEntitiesChanged(entities: T[]): void;
 }

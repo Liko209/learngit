@@ -12,6 +12,7 @@ import PostModel from '../../../store/models/Post';
 import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import * as i18n from '@/utils/i18nT';
 import { CONVERSATION_TYPES } from '@/constants';
+import { ENTITY_NAME } from '@/store';
 
 jest.mock('sdk/module/config');
 jest.mock('sdk/module/account/config/AccountUserConfig');
@@ -178,8 +179,11 @@ describe('messageNotificationManager', () => {
   describe('enqueueVm()', () => {
     let manager;
     const crushVmIntoManager = (times: number) => {
-      [...Array(times)].forEach(() => {
-        notificationManager.enqueueVM({} as PostModel, {} as GroupModel);
+      [...Array(times)].forEach((_, index) => {
+        notificationManager.enqueueVM(
+          { id: index } as PostModel,
+          {} as GroupModel,
+        );
       });
     };
 
@@ -200,6 +204,11 @@ describe('messageNotificationManager', () => {
       crushVmIntoManager(1);
       expect(notificationManager._vmQueue.length).toEqual(1);
     });
+    it('should not enqueue the vm into the vmQueue when called with the existed id', () => {
+      crushVmIntoManager(20);
+      crushVmIntoManager(20);
+      expect(notificationManager._vmQueue.length).toEqual(20);
+    });
     it('should cut off vmQueue when exceeds', () => {
       crushVmIntoManager(51);
       expect(notificationManager._vmQueue.length).toEqual(50);
@@ -213,36 +222,91 @@ describe('messageNotificationManager', () => {
   });
 
   describe('handlePostContent', () => {
+    const mockPostData = {
+      text: 'Post text',
+      atMentionNonItemIds: [11370502],
+    };
+    const mockPersonData = {
+      userDisplayName: 'Person name',
+    };
+
+    const atMentionNonItemIds = [2514947];
+    const text =
+      "<a class='at_mention_compose' rel='{\"id\":2514947}'>@Thomas Yang</a>";
+
+    const mockMap = {
+      [ENTITY_NAME.POST]: mockPostData,
+      [ENTITY_NAME.PERSON]: mockPersonData,
+    };
+    beforeAll(() => {
+      jest.resetAllMocks();
+      jest.spyOn(i18n, 'default').mockImplementation((str: string) => str);
+      jest.spyOn(i18n, 'i18nP').mockImplementation((str: string) => str);
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValue(false);
+      jest.spyOn(utils, 'getEntity').mockImplementation((name, id) => {
+        return mockMap[name];
+      });
+    });
+
     it('should return only user name for at mention', () => {
       expect(
-        notificationManager.handlePostContent(
-          `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
-        ),
+        notificationManager.handlePostContent({
+          text: `<a class='at_mention_compose' rel='{"id":12332}'>@Helena</a>`,
+        } as PostModel),
       ).toEqual('@Helena');
       expect(
-        notificationManager.handlePostContent(
-          `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
-        ),
+        notificationManager.handlePostContent({
+          text: `<a class='at_mention_compose' rel='{"id":12333}'>@Jack Sparrow</a>`,
+        } as PostModel),
       ).toEqual('@Jack Sparrow');
     });
 
     it('should remove markdown', () => {
       expect(
-        notificationManager.handlePostContent(
-          `**string words** [code]hello world[/code]`,
-        ),
+        notificationManager.handlePostContent({
+          text: `**string words** [code]hello world[/code]`,
+        } as PostModel),
       ).toEqual('string words hello world');
       expect(
-        notificationManager.handlePostContent(
-          `www.google.com https://www.yahoo.com chris@ring.com`,
-        ),
+        notificationManager.handlePostContent({
+          text: `www.google.com https://www.yahoo.com chris@ring.com`,
+        } as PostModel),
       ).toEqual('www.google.com https://www.yahoo.com chris@ring.com');
     });
 
     it('should return unicode emoji', () => {
-      expect(notificationManager.handlePostContent(`:) <3 :D :joy:`)).toEqual(
-        '🙂 ❤ 😃 😂',
-      );
+      expect(
+        notificationManager.handlePostContent({
+          text: `:) <3 :D :joy:`,
+        } as PostModel),
+      ).toEqual('🙂 ❤ 😃 😂');
+    });
+
+    it('should be get person name when at mention a person', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+
+      expect(
+        notificationManager.handlePostContent(mockPostData as PostModel),
+      ).toBe(`Person name`);
+    });
+
+    it('should be get new person name when person name be changed', () => {
+      mockPostData.text = text;
+      mockPostData.atMentionNonItemIds = atMentionNonItemIds;
+      mockPersonData.userDisplayName = 'New person name';
+      jest.spyOn(utils, 'getEntity').mockImplementation((name, id) => {
+        return mockMap[name];
+      });
+      expect(
+        notificationManager.handlePostContent(mockPostData as PostModel),
+      ).toBe(`New person name`);
+    });
+
+    it(`should unescape for text lik "you'll get it"`, () => {
+      expect(
+        notificationManager.handlePostContent({ text: `you'll get it` }),
+      ).toEqual(`you'll get it`);
     });
   });
   describe('buildNotificationBodyAndTitle', () => {

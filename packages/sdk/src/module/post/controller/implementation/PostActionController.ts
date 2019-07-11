@@ -13,20 +13,20 @@ import { PostDao } from '../../dao';
 import { EditPostType } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ENTITY } from '../../../../service/eventKey';
-import { GroupConfigService } from '../../../groupConfig';
 import { IPostActionController } from '../interface/IPostActionController';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
-import { ItemService } from '../../../../module/item/service';
+import { ItemService } from '../../../item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
-import { DEFAULT_RETRY_COUNT } from 'foundation/src';
+import { DEFAULT_RETRY_COUNT, mainLogger } from 'foundation';
+import { PostDataController } from '../PostDataController';
 
 class PostActionController implements IPostActionController {
+  private TAG = 'PostActionController';
   constructor(
+    public postDataController: PostDataController,
     public partialModifyController: IPartialModifyController<Post>,
     public requestController: IRequestController<Post>,
-    public preInsertController: IPreInsertController<Post>,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
 
@@ -45,10 +45,8 @@ class PostActionController implements IPostActionController {
         if (index === -1) {
           likes.push(personId);
         }
-      } else {
-        if (index > -1) {
-          likes.splice(index, 1);
-        }
+      } else if (index > -1) {
+        likes.splice(index, 1);
       }
       return {
         ...partialPost,
@@ -58,9 +56,7 @@ class PostActionController implements IPostActionController {
     return this.partialModifyController.updatePartially(
       postId,
       preHandlePartial,
-      async (newPost: Post) => {
-        return this.requestController.put(newPost);
-      },
+      async (newPost: Post) => this.requestController.put(newPost),
       this._doPartialNotify.bind(this),
     );
   }
@@ -84,23 +80,18 @@ class PostActionController implements IPostActionController {
   async editPost(params: EditPostType) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
-      originalPost: Post,
-    ): Partial<Raw<Post>> => {
-      return {
-        text: params.text,
-        at_mention_non_item_ids: params.mentionNonItemIds || [],
-        ...partialPost,
-      };
-    };
+    ): Partial<Raw<Post>> => ({
+      text: params.text,
+      at_mention_non_item_ids: params.mentionNonItemIds || [],
+      ...partialPost,
+    });
 
     return this.partialModifyController.updatePartially(
       params.postId,
       preHandlePartial,
-      async (newPost: Post) => {
-        return this.requestController.put(newPost, {
-          retryCount: DEFAULT_RETRY_COUNT,
-        });
-      },
+      async (newPost: Post) => this.requestController.put(newPost, {
+        retryCount: DEFAULT_RETRY_COUNT,
+      }),
       this._doPartialNotify.bind(this),
     );
   }
@@ -110,22 +101,9 @@ class PostActionController implements IPostActionController {
    */
 
   private async _deletePreInsertedPost(id: number): Promise<boolean> {
-    /**
-     * 1. delete from progress
-     * 2. delete indexDB
-     * 3. delete from pre inserted config
-     * 4. delete from failure config
-     */
     const postDao = daoManager.getDao(PostDao);
     const post = (await postDao.get(id)) as Post;
-
-    this.preInsertController.delete(post);
-
-    // 4
-    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
-      ServiceConfig.GROUP_CONFIG_SERVICE,
-    );
-    groupConfigService.deletePostId(post.group_id, id); // does not need to wait
+    this.postDataController.deletePreInsertPosts([post]);
     return true;
   }
 
@@ -139,21 +117,16 @@ class PostActionController implements IPostActionController {
   async removeItemFromPost(postId: number, itemId: number) {
     const post = await this.entitySourceController.getEntityLocally(postId);
     if (post) {
-      const itemIds = post.item_ids.filter((value: number) => {
-        return value !== itemId;
-      });
+      const itemIds = post.item_ids.filter((value: number) => value !== itemId);
       post.item_ids = itemIds;
       const isValid = PostControllerUtils.isValidPost(post);
       const preHandlePartial = (
         partialPost: Partial<Raw<Post>>,
-        originalPost: Post,
-      ): Partial<Raw<Post>> => {
-        return {
-          item_ids: itemIds,
-          deactivated: !isValid,
-          ...partialPost,
-        };
-      };
+      ): Partial<Raw<Post>> => ({
+        item_ids: itemIds,
+        deactivated: !isValid,
+        ...partialPost,
+      });
       await this.partialModifyController.updatePartially(
         postId,
         preHandlePartial,
@@ -184,6 +157,7 @@ class PostActionController implements IPostActionController {
     const postsMap = await Promise.all(promises);
     const posts = _.union(...postsMap);
     const ids = posts.map(post => post.id);
+    mainLogger.tags(this.TAG).info(`deletePostsByGroupIds:${ids}`);
     await dao.bulkDelete(ids);
     if (shouldNotify) {
       notificationCenter.emitEntityDelete(ENTITY.POST, ids);
@@ -193,20 +167,15 @@ class PostActionController implements IPostActionController {
   private async _deletePostFromRemote(id: number) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
-      originalPost: Post,
-    ): Partial<Raw<Post>> => {
-      return {
-        deactivated: true,
-        ...partialPost,
-      };
-    };
+    ): Partial<Raw<Post>> => ({
+      deactivated: true,
+      ...partialPost,
+    });
 
     return this.partialModifyController.updatePartially(
       id,
       preHandlePartial,
-      async (newPost: Post) => {
-        return this.requestController.put(newPost);
-      },
+      async (newPost: Post) => this.requestController.put(newPost),
       this._doPartialNotify.bind(this),
     );
   }

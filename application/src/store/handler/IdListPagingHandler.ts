@@ -12,31 +12,40 @@ import {
   ISortableModel,
 } from '../base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { IMatchFunc, ISortFunc, ITransformFunc } from '../base/fetch/types';
 import { Entity } from '../store';
 import { ENTITY_NAME } from '../constants';
 
-type IdListPaginationOptions<T, K> = {
+type IdListPaginationOptions<T, K, IdType extends ModelIdType = number> = {
   eventName: string;
   entityName: ENTITY_NAME;
-  entityDataProvider: IEntityDataProvider<T>;
+  entityDataProvider: IEntityDataProvider<T, IdType>;
   filterFunc: IMatchFunc<K>;
-  transformFunc?: ITransformFunc<T>;
+  transformFunc?: ITransformFunc<T, IdType>;
   isMatchFunc?: IMatchFunc<T>;
-  sortFunc?: ISortFunc;
+  sortFunc?: ISortFunc<IdType>;
+  defaultHasMoreUp?: boolean;
+  defaultHasMoreDown?: boolean;
 };
 
-class IdListPaginationHandler<T extends IdModel, K extends Entity> {
-  protected _sourceIds: number[];
-  private _idsDataProvider: IdListPagingDataProvider<T, K>;
-  private _foc: FetchSortableDataListHandler<T>;
-  constructor(sourceIds: number[], options: IdListPaginationOptions<T, K>) {
+class IdListPaginationHandler<
+  T extends IdModel<IdType>,
+  K extends Entity<IdType>,
+  IdType extends ModelIdType = number
+> {
+  protected _sourceIds: IdType[];
+  private _idsDataProvider: IdListPagingDataProvider<T, K, IdType>;
+  private _foc: FetchSortableDataListHandler<T, IdType>;
+  constructor(
+    sourceIds: IdType[],
+    options: IdListPaginationOptions<T, K, IdType>,
+  ) {
     this._sourceIds = sourceIds;
     this._foc = this.buildFoc(options);
   }
 
-  onSourceIdsChanged(newIds: number[]) {
+  onSourceIdsChanged(newIds: IdType[]) {
     this._sourceIds = newIds;
     if (this._sourceIds.length < newIds.length) {
       this._foc.setHasMore(true, QUERY_DIRECTION.NEWER);
@@ -45,7 +54,7 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
   }
 
   @computed
-  get ids(): number[] {
+  get ids(): IdType[] {
     return this._foc ? this._foc.sortableListStore.getIds : [];
   }
 
@@ -53,8 +62,8 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
     return this._foc.fetchData(direction, pageSize);
   }
 
-  protected buildFoc(options: IdListPaginationOptions<T, K>) {
-    this._idsDataProvider = new IdListPagingDataProvider<T, K>(
+  protected buildFoc(options: IdListPaginationOptions<T, K, IdType>) {
+    this._idsDataProvider = new IdListPagingDataProvider<T, K, IdType>(
       this._sourceIds,
       {
         filterFunc: options.filterFunc,
@@ -64,12 +73,14 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
       },
     );
 
-    return new FetchSortableDataListHandler(this._idsDataProvider, {
+    return new FetchSortableDataListHandler<T, IdType>(this._idsDataProvider, {
       isMatchFunc: options.isMatchFunc || this.defaultIsMatchFunc,
       sortFunc: options.sortFunc || this.defaultSortFunc,
       transformFunc: options.transformFunc || this.defaultTransformFunc,
       entityName: options.entityName,
       eventName: options.eventName,
+      hasMoreDown: options.defaultHasMoreDown,
+      hasMoreUp: options.defaultHasMoreUp,
     });
   }
 
@@ -77,13 +88,11 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
     return this._foc;
   }
 
-  protected defaultIsMatchFunc = (model: T) => {
-    return this._sourceIds.includes(model.id);
-  }
+  protected defaultIsMatchFunc = (model: T) => this._sourceIds.includes(model.id);
 
   protected defaultSortFunc = (
-    lhs: ISortableModel,
-    rhs: ISortableModel,
+    lhs: ISortableModel<IdType>,
+    rhs: ISortableModel<IdType>,
   ): number => {
     let lhsPos = -1;
     let rhsPos = -1;
@@ -97,12 +106,12 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
       }
     }
     return rhsPos - lhsPos;
-  }
+  };
 
   protected defaultTransformFunc = (model: T) => ({
     id: model.id,
     sortValue: this._sourceIds.indexOf(model.id),
-  })
+  });
 
   dispose() {
     this._foc && this._foc.dispose();

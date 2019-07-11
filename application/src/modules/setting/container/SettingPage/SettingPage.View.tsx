@@ -3,6 +3,7 @@
  * @Date: 2019-05-27 10:14:04
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
@@ -13,8 +14,9 @@ import { ScrollMemory } from '@/modules/common/container/ScrollMemory';
 import { JuiSettingSectionContainer } from 'jui/pattern/SettingSection';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { SettingSection } from '../SettingSection';
+import { SETTING_PERFORMANCE_KEYS } from '../../performanceKeys';
 import { SettingPageViewProps, SettingPageProps } from './types';
-import { mainLogger } from 'sdk';
+import { mainLogger, PerformanceTracer } from 'sdk';
 
 // TODO move to jui
 const StyledSettingPage = styled.div`
@@ -26,6 +28,7 @@ type Props = SettingPageProps & SettingPageViewProps & WithTranslation;
 
 @observer
 class SettingPageViewComponent extends Component<Props> {
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
   @observable private _size: Size = { width: 0, height: 0 };
   @observable private _sources: HTMLElement[] = [];
 
@@ -34,11 +37,17 @@ class SettingPageViewComponent extends Component<Props> {
     if (size.width !== this._size.width || size.height !== this._size.height) {
       this._size = size;
     }
-  }
+  };
 
   @action
   private _updateSource = (el: any) => {
     this._sources = [el];
+  };
+
+  componentDidUpdate() {
+    this._performanceTracer.end({
+      key: SETTING_PERFORMANCE_KEYS.UI_SETTING_PAGE_RENDER,
+    });
   }
 
   render() {

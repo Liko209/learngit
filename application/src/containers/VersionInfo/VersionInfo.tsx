@@ -51,13 +51,14 @@ class VersionInfo extends Component {
       }
     }
     const buildTime = `Build Time: ${formatDate(process.env.BUILD_TIME || '')}`;
+    /* eslint-disable react/no-danger */
     return (
       <Wrapper>
         <div dangerouslySetInnerHTML={{ __html: result }} />{' '}
         <h3>{versionInfo}</h3>
         <h3>{buildTime}</h3>
       </Wrapper>
-    ); // eslint-disable-line react/no-danger
+    );
   }
 }
 

@@ -56,11 +56,11 @@ class AttachmentView extends Component<Props> {
   private _handleClickEvent = (evt: MouseEvent) => {
     evt.stopPropagation();
     this.setState({ anchorEl: evt.currentTarget });
-  }
+  };
 
   private _hideMenu = () => {
     this.setState({ anchorEl: null });
-  }
+  };
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
@@ -70,11 +70,13 @@ class AttachmentView extends Component<Props> {
       if (ref) {
         ref.showFileDialog();
       }
-    },         0);
-  }
-
+    }, 0);
+  };
+  /* eslint-disable react/no-array-index-key */
   render() {
-    const { onFileChanged, tooltip, menus, fileMenu, title } = this.props;
+    const {
+      onFileChanged, tooltip, menus, fileMenu, title,
+    } = this.props;
     const { anchorEl } = this.state;
     const open = !!anchorEl;
 
@@ -108,12 +110,12 @@ class AttachmentView extends Component<Props> {
             }}
             open={open}
           >
-            <JuiMenuItem disabled={true} divider={true}>
+            <JuiMenuItem disabled divider>
               {title}
             </JuiMenuItem>
             <MenuList>
               {menus.map(({ icon, label }, idx) => (
-                <JuiMenuItem disabled={true} icon={icon} key={idx}>
+                <JuiMenuItem disabled icon={icon} key={idx}>
                   {label}
                 </JuiMenuItem>
               ))}
@@ -122,7 +124,7 @@ class AttachmentView extends Component<Props> {
             <JuiMenuList>
               <ClickAwayListener onClickAway={this._hideMenu}>
                 <JuiMenuItem
-                  disableGutters={true}
+                  disableGutters
                   icon={fileMenu.icon}
                   data-test-automation-id="chatbar-attchment-selectfile"
                   onClick={this._hideMenuAndShowDialog}

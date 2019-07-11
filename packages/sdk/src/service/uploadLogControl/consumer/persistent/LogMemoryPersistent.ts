@@ -5,6 +5,7 @@
  */
 import { ILogPersistent, PersistentLogEntity } from './types';
 import _ from 'lodash';
+
 type Size = {
   size: number;
 };
@@ -64,40 +65,34 @@ export class LogMemoryPersistent implements ILogPersistent {
       this._totalSize -= deleteSize;
     }
     this._totalSize += changeSize;
-  }
+  };
 
   put = async (item: PersistentLogEntity) => {
     await this._fixSize('add', item);
     this._logMap.set(item.id, item);
-  }
+  };
 
   bulkPut = async (items: PersistentLogEntity[]) => {
     await this._fixSize('add', ...items);
     _.forEach(items, (it: PersistentLogEntity) => this._logMap.set(it.id, it));
-  }
+  };
 
-  get = async (key: number) => {
-    return this._logMap.get(key) || null;
-  }
+  get = async (key: number) => this._logMap.get(key) || null;
 
   getAll = async (limit?: number) => {
-    const result = Array.from(this._logMap.values()).sort((left, right) => {
-      return left.startTime - right.startTime;
-    });
+    const result = Array.from(this._logMap.values()).sort((left, right) => left.startTime - right.startTime);
     return limit === undefined ? result : result.slice(0, limit);
-  }
+  };
 
   delete = async (item: PersistentLogEntity) => {
     await this._fixSize('delete', item);
     this._logMap.delete(item.id);
-  }
+  };
 
   bulkDelete = async (items: PersistentLogEntity[]) => {
     await this._fixSize('delete', ...items);
     _.forEach(items, (it: PersistentLogEntity) => this._logMap.delete(it.id));
-  }
+  };
 
-  count = async () => {
-    return this._logMap.size;
-  }
+  count = async () => this._logMap.size;
 }

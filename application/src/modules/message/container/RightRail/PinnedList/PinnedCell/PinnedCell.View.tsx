@@ -13,17 +13,21 @@ import {
 import { PinnedCellViewProps, PinnedCellProps } from './types';
 import { PinnedItem } from '../PinnedItem';
 import { jumpToPost } from '@/common/jumpToPost';
+
 const MAX_ITEM_LENGTH = 3;
 
 type Props = PinnedCellViewProps & PinnedCellProps & WithTranslation;
 
 @observer
 class PinnedCellComponent extends Component<Props> {
-  jumpToPost = () =>
-    jumpToPost({
-      ...this.props.post,
+  jumpToPost = () => {
+    const { id, groupId } = this.props.post;
+    return jumpToPost({
+      id,
+      groupId,
       replaceHistory: true,
-    })
+    });
+  };
 
   render() {
     const {

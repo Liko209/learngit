@@ -96,6 +96,23 @@ class ToastCallError {
     );
   }
 
+  static toastPermissionError(): void {
+    ToastCallError.toast('telephony.prompt.NoCallPermission', 3000);
+    mainLogger.info(
+      'Call error: You no longer have the permission to make the call.',
+    );
+  }
+
+  static toastCountryBlockError(): void {
+    ToastCallError.toast('telephony.prompt.CountryBlock', 3000);
+    mainLogger.info('Call error: VoIP is not available in your country.');
+  }
+
+  static toastVoipUnavailableError(): void {
+    ToastCallError.toast('telephony.prompt.VoipUnavailable', 3000);
+    mainLogger.info('Call error: VoIP is currently not available.');
+  }
+
   static toastOnDemandRecording() {
     ToastCallError.toast('telephony.prompt.OnDemandRecording', 3000);
     mainLogger.info(

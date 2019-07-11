@@ -24,17 +24,13 @@ class LikeViewComponent extends Component<Props> {
     network: 'message.prompt.notAbleToUnlikeForNetworkIssue',
     server: 'message.prompt.notAbleToUnlikeForServerIssue',
   })
-  private _handleUnlike = () => {
-    return this._handleToggle();
-  }
+  private _handleUnlike = () => this._handleToggle()
 
   @catchError.flash({
     network: 'message.prompt.notAbleToLikeThisMessageForNetworkIssue',
     server: 'message.prompt.notAbleToLikeThisMessageForServerIssue',
   })
-  private _handleLike = () => {
-    return this._handleToggle();
-  }
+  private _handleLike = () => this._handleToggle()
 
   render() {
     const { isLike, t } = this.props;

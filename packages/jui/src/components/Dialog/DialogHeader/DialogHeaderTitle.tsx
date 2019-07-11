@@ -13,16 +13,18 @@ import {
   typography,
   ellipsis,
   palette,
+  spacing,
 } from '../../../foundation/utils/styles';
 import ReactResizeDetector from 'react-resize-detector';
+import { JuiText } from '../../Text';
 
 type JuiDialogHeaderTitleProps = MuiDialogTitleProps & {
   variant?: 'regular' | 'responsive';
 };
 
 class WrappedDialogTitle extends React.PureComponent<
-  JuiDialogHeaderTitleProps,
-  { overflow: boolean }
+JuiDialogHeaderTitleProps,
+{ overflow: boolean }
 > {
   state = {
     overflow: false,
@@ -77,10 +79,12 @@ class WrappedDialogTitle extends React.PureComponent<
   onContainerResize = (width: number) => {
     this.containerWidth = width;
     this.checkWidth();
-  }
+  };
 
   render() {
-    const { variant, className, children, ...rest } = this.props;
+    const {
+      variant, className, children, ...rest
+    } = this.props;
     const classNames = this.state.overflow
       ? `${className} vertical`
       : className;
@@ -88,10 +92,7 @@ class WrappedDialogTitle extends React.PureComponent<
       <RootRef rootRef={this.rootRef}>
         <MuiDialogTitle {...rest} className={classNames}>
           {children}
-          <ReactResizeDetector
-            handleWidth={true}
-            onResize={this.onContainerResize}
-          />
+          <ReactResizeDetector handleWidth onResize={this.onContainerResize} />
         </MuiDialogTitle>
       </RootRef>
     );
@@ -106,22 +107,34 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
     min-width: 0;
     h2 {
       color: ${palette('grey', '900')};
-      text-align: ${({ variant }) =>
-        variant === 'responsive' ? 'center' : 'left'};
+      text-align: ${({ variant }) => (variant === 'responsive' ? 'center' : 'left')};
       ${ellipsis()}
-      ${({ variant }) =>
-        variant === 'responsive'
-          ? typography('subheading1')
-          : typography('title2')};
+      ${({ variant }) => (variant === 'responsive'
+    ? typography('subheading1')
+    : typography('title2'))};
     }
 
     &.vertical h2 {
       display: flex;
       flex-direction: column;
       align-items: center;
-      * {
-        ${ellipsis()}
-      }
+      max-width: ${spacing(140)};
+      margin: 0 auto;
+    }
+  }
+`;
+
+const JuiDialogHeaderTitleMainTitle = styled(props => (
+  <JuiText component="span" {...props} />
+))`
+  && {
+    ${typography('subheading1')}
+    display: inline;
+    &::before {
+      content: none;
+    }
+    &::after {
+      content: none;
     }
   }
 `;
@@ -135,4 +148,5 @@ export {
   JuiDialogHeaderTitle,
   JuiDialogHeaderTitleProps,
   JuiDialogHeaderSubtitle,
+  JuiDialogHeaderTitleMainTitle,
 };

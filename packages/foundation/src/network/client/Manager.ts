@@ -7,6 +7,7 @@
 import { Http } from './http';
 import { Socket } from './socket';
 import { NETWORK_VIA } from '../network';
+
 class Manager {
   httpClient: Http;
   socketClient: Socket;

@@ -8,6 +8,7 @@ import {
   FetchSortableDataListHandler,
 } from '@/store/base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { FetchDataOptions } from 'sdk/module/RCItems/types';
 import { CallLog } from 'sdk/module/RCItems/callLog/entity/CallLog';
 
 const CallLogSourceType = {
@@ -29,15 +30,25 @@ type FetchAllCallsData = (
 type AllCallsProps = {
   type: CallLogType;
   height: number;
+  filterValue: string;
+  width: number;
 };
 
 type AllCallsViewProps = {
+  type: CallLogType;
   isError: boolean;
+  filterFOCKey: string;
   onErrorReload: () => void;
   listHandler: FetchSortableDataListHandler<CallLog, string>;
 } & AllCallsProps;
 
+type CallLogFilterFunc = null | ((data: CallLog) => boolean);
+
+type CallLogFilterOptions = FetchDataOptions<CallLog, string>;
+
 export {
+  CallLogFilterFunc,
+  CallLogFilterOptions,
   FetchAllCallsData,
   AllCallsProps,
   AllCallsViewProps,

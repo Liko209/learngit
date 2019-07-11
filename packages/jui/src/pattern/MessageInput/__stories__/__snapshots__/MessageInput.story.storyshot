@@ -6,7 +6,6 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c4 {
@@ -216,7 +215,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c15.c15 .c2,
 .c15.c15 .c2 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c15.c15:hover .c2 {
@@ -228,23 +227,6 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 }
 
 .c15.c15.c15.c15.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c16.c16 .c2,
-.c16.c16 .c2 svg {
-  font-size: 20px;
-}
-
-.c16.c16:hover .c2 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c16.c16:active .c2 {
-  color: #fff;
-}
-
-.c16.c16.c16.c16.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -338,7 +320,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  cursor: default;
 }
 
 .c13 {
@@ -559,7 +540,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c27.c27 .c12,
 .c27.c27 .c12 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c27.c27:hover .c12 {
@@ -574,33 +555,16 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   color: rgba(0,0,0,0.12);
 }
 
-.c28.c28 .c12,
-.c28.c28 .c12 svg {
-  font-size: 20px;
-}
-
-.c28.c28:hover .c12 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c28.c28:active .c12 {
-  color: #fff;
-}
-
-.c28.c28.c28.c28.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c29.lozengeButtonLoading .c17 {
+.c28.lozengeButtonLoading .c17 {
   margin-left: 4px;
 }
 
-.c29.lozengeButtonLoading .c30,
-.c29.lozengeButtonWithArrow .c30,
-.c29.lozengeButtonLoading .c17,
-.c29.lozengeButtonWithArrow .c17,
-.c29.lozengeButtonLoading span,
-.c29.lozengeButtonWithArrow span {
+.c28.lozengeButtonLoading .c29,
+.c28.lozengeButtonWithArrow .c29,
+.c28.lozengeButtonLoading .c17,
+.c28.lozengeButtonWithArrow .c17,
+.c28.lozengeButtonLoading span,
+.c28.lozengeButtonWithArrow span {
   vertical-align: middle;
 }
 

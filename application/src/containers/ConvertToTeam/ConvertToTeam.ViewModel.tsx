@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, action, Reaction } from 'mobx';
+import {
+  computed, observable, action, Reaction,
+} from 'mobx';
 import i18nT from '@/utils/i18nT';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';

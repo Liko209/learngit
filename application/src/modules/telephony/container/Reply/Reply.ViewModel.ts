@@ -39,7 +39,7 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
 
   @observable
   shiftKeyStatus = false;
@@ -62,27 +62,27 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
     ) {
       this._onActionSuccess('telephony.prompt.ReplyMessageSuccess');
     }
-  }
+  };
 
   replyWithMessage = () => {
     this._telephonyService.replyWithMessage(this.customReplyMessage);
-  }
+  };
 
   startReply = () => {
     this._telephonyService.startReply();
-  }
+  };
 
   quitReply = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 
   storeCustomMessage = (message: string) => {
     this._telephonyStore.inputCustomReplyMessage(message);
-  }
+  };
 
   setShiftKeyDown = (down: boolean) => {
     this.shiftKeyStatus = down;
-  }
+  };
 
   @computed
   get customReplyMessage() {
@@ -96,8 +96,7 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
 
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
-    this.quitReply();
-  }
+  };
 
   @computed
   get isExt() {
@@ -116,6 +115,10 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get uid() {
     return this._telephonyStore.uid;
+  }
+  @computed
+  get name() {
+    return this._telephonyStore.displayName;
   }
 }
 

@@ -8,32 +8,24 @@ import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
 import * as error from './error';
-
-export * from './framework';
-export {
-  default as GlipTypeDictionary,
-} from './utils/glip-type-dictionary/types';
-export { LogControlManager } from './service/uploadLogControl';
-
 import Sdk from './Sdk';
 import { container } from './container';
 import { registerConfigs } from './registerConfigs';
 
+export * from './framework';
+export { default as GlipTypeDictionary } from './utils/glip-type-dictionary/types';
+export { LogControlManager } from './service/uploadLogControl';
+
 registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
-registerConfigs.constants.forEach(config =>
-  container.registerConstantValue(config),
-);
+registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
 const sdk: Sdk = container.get(Sdk.name);
-export { sdk as Sdk };
-export { sdk, service, utils, dao, api, error };
+
 export {
-  mainLogger,
-  ILogger,
-  dataAnalysis,
-  logManager,
-  SessionManager,
-  DateFormatter,
-  PerformanceTracer,
+  sdk, service, utils, dao, api, error
+};
+
+export {
+  mainLogger, ILogger, dataAnalysis, logManager, SessionManager, DateFormatter, PerformanceTracer
 } from 'foundation';

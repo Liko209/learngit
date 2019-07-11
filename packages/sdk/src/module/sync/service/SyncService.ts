@@ -6,11 +6,13 @@
 
 import { EntityBaseService } from '../../../framework/service';
 import { SubscribeController } from '../../base/controller/SubscribeController';
+import { HealthModuleController } from '../../../framework/controller/impl/HealthModuleController';
 import { SERVICE, SOCKET, WINDOW } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 import { IdModel } from '../../../framework/model';
 import { SyncUserConfig } from '../config/SyncUserConfig';
+import { MODULE_IDENTIFY, MODULE_NAME } from '../constant';
 import { UndefinedAble } from 'sdk/types';
 import { UserConfig } from 'sdk/module/config';
 
@@ -29,6 +31,16 @@ class SyncService extends EntityBaseService<IdModel> {
         [SERVICE.STOPPING_SOCKET]: this._handleStoppingSocketEvent.bind(this),
         [SERVICE.WAKE_UP_FROM_SLEEP]: this._handleWakeUpFromSleep.bind(this),
         [WINDOW.FOCUS]: this._handleWindowFocused.bind(this),
+      }),
+    );
+    this.setHealthModuleController(
+      new HealthModuleController(MODULE_IDENTIFY, MODULE_NAME, {
+        SyncStatus: () => ({
+          lastIndexStatus: this._userConfig.getIndexSucceed()
+            ? 'success'
+            : 'failed',
+          lastIndexTimestamp: this.getSyncController().getIndexTimestamp(),
+        }),
       }),
     );
   }

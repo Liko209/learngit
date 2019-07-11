@@ -49,20 +49,20 @@ const CONTAINER_IDS = {
 };
 
 class TriggerButtonComponent extends React.Component<
-  TriggerButtonProps,
-  TriggerButtonState
+TriggerButtonProps,
+TriggerButtonState
 > {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
     return isOpen
       ? 'message.conversationDetailsHide'
       : 'message.conversationDetailsShow';
-  }
+  };
 
   private _getIconKey = () => {
     const { isOpen } = this.props;
     return isOpen ? 'double_chevron_right' : 'double_chevron_left';
-  }
+  };
 
   private _timerId: NodeJS.Timeout;
 
@@ -76,7 +76,7 @@ class TriggerButtonComponent extends React.Component<
       this.setState({
         show: true,
       });
-    },                         0);
+    }, 0);
   }
 
   componentWillUnmount() {
@@ -124,11 +124,11 @@ class RightRailComponent extends React.Component<Props> {
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
-  }
+  };
 
   private _handleTabChanged = (index: number) => {
     this.setState({ tabIndex: index });
-  }
+  };
 
   private _renderListView = (
     type: RIGHT_RAIL_ITEM_TYPE,
@@ -149,13 +149,13 @@ class RightRailComponent extends React.Component<Props> {
         height={height}
       />
     );
-  }
-
+  };
+  /* eslint-disable react/no-array-index-key */
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+      <ReactResizeDetector handleWidth handleHeight>
         {({ width: w, height: h }: { width: number; height: number }) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
@@ -198,7 +198,7 @@ class RightRailComponent extends React.Component<Props> {
         }}
       </ReactResizeDetector>
     );
-  }
+  };
 
   render() {
     const { id } = this.props;

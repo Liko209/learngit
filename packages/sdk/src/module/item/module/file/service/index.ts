@@ -5,4 +5,5 @@
  */
 
 import { FileItemService } from './FileItemService';
+
 export { FileItemService };

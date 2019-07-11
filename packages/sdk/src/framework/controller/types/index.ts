@@ -5,4 +5,5 @@
  */
 
 import { IEntityChangeObserver } from './IEntityChangeObserver';
+
 export { IEntityChangeObserver };

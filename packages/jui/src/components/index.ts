@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './Avatar';
-export * from './Badges';
 export * from './Dialog';
 export * from './Divider';
 export * from './Forms';

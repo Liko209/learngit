@@ -288,11 +288,11 @@ test.meta(<ITestMeta>{
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
   const app = new AppRoot(t);
 
-  let webphoneSession: WebphoneSession;
-  await h(t).withLog(`Given webphone seesion login with ${callee.company.number}#${callee.extension}`, async () => {
-    webphoneSession = await h(t).webphoneHelper.newWebphoneSession(callee);
-  });
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -307,7 +307,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`When I type a character in the input field`, async () => {
+  await h(t).withLog(`When I type a character "{phoneNumber}" in the input field`, async (step) => {
+    step.setMetadata('phoneNumber', calleeDirectNumbers[0])
     await telephonyDialog.typeTextInDialer(calleeDirectNumbers[0]);
   });
 
@@ -315,10 +316,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.hitEnterToMakeCall();
   });
 
-  let phoneFormatNumber: string = ''
   await h(t).withLog('Then a call should be initiated', async () => {
     await t.expect(telephonyDialog.hangupButton.exists).ok();
-    phoneFormatNumber = await telephonyDialog.extension.textContent;
   });
 
   await h(t).withLog('When I end the call and back to Dialpad', async () => {
@@ -331,8 +330,9 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickDialButton();
   });
 
-  await h(t).withLog('Then the Dialpad should populated last phone number', async () => {
-    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(phoneFormatNumber);
+  await h(t).withLog('Then the Dialpad should populated last phone number {phoneNumber}', async (step) => {
+    step.setMetadata('phoneNumber', calleeDirectNumbers[0])
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql(calleeDirectNumbers[0]);
   });
 });
 
@@ -446,12 +446,12 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.typeTextInDialer('1');
   });
 
-  await h(t).withLog('And I click the [caller id] from dialer page', async ()=>{
+  await h(t).withLog('And I click the [caller id] from dialer page', async () => {
     await telephonyDialog.clickCallerIdSelector();
     await telephonyDialog.callerIdList.selectBlocked();
   });
 
-  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
+  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).ok();
   });
 
@@ -459,31 +459,31 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.clickDeleteButton();
   });
 
-  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
+  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).ok();
   });
 
-  await h(t).withLog('Given I focus on the conversation input', async ()=>{
+  await h(t).withLog('Given I focus on the conversation input', async () => {
     await t.click(conversationPage.messageInputArea);
   });
 
-  await h(t).withLog('Then should blur on the dialer page', async ()=>{
+  await h(t).withLog('Then should blur on the dialer page', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).notOk();
   });
 
-  await h(t).withLog('When I type the keypad from dialer page', async ()=>{
+  await h(t).withLog('When I type the keypad from dialer page', async () => {
     await telephonyDialog.tapKeypad(['1']);
   });
 
-  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
+  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).ok();
   });
 
-  await h(t).withLog('And I focus on the conversation input', async ()=>{
+  await h(t).withLog('And I focus on the conversation input', async () => {
     await t.click(conversationPage.messageInputArea);
   });
 
-  await h(t).withLog('Then should blur on the dialer page', async ()=>{
+  await h(t).withLog('Then should blur on the dialer page', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).notOk();
   });
 
@@ -491,11 +491,11 @@ test.meta(<ITestMeta>{
     await app.homePage.telephonyDialog.clickDeleteButton();
   });
 
-  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
+  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).ok();
   });
 
-  await h(t).withLog('Given I focus on the conversation input', async ()=>{
+  await h(t).withLog('Given I focus on the conversation input', async () => {
     await t.click(conversationPage.messageInputArea);
   });
 
@@ -504,7 +504,65 @@ test.meta(<ITestMeta>{
     await telephonyDialog.callerIdList.selectBlocked();
   });
 
-  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async ()=>{
+  await h(t).withLog('Then should focus on the dialer page, show the cursor in the input field', async () => {
     await t.expect(telephonyDialog.dialerInput.focused).ok();
+  });
+});
+
+test.meta(<ITestMeta>{
+  caseIds: ['JPT-2487'],
+  priority: ['P2'],
+  maintainers: ['Naya.Fang'],
+  keywords: ['Dialer']
+})('Can enter the search contact mode after edited the content of the custom forward ', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const phoneTab = settingTab.phoneSettingPage;
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+  await h(t).withLog('When I receive an inbound call', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+  const telephonyDialog = app.homePage.telephonyDialog;
+  await h(t).withLog('Then telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  await h(t).withLog('And I click the call actions button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+  await h(t).withLog('And I hover forward options', async () => {
+    await telephonyDialog.hoverForwardButton();
+  });
+  await h(t).withLog('And I click custom forward button', async () => {
+    await telephonyDialog.clickCustomForwardButton();
+  });
+  await h(t).withLog('And I click "11" on the keypad', async () => {
+    await telephonyDialog.tapKeypad('11');
+  });
+  await h(t).withLog('And callerUser hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+  await t.wait(2000)
+  await h(t).withLog('And I click the Dialpad button', async () => {
+    await app.homePage.openDialer();
+  });
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+  const { extension } = caller;
+  const searchStr = extension.replace('+', '');
+  await h(t).withLog(`When I enter "${searchStr}" into input field via keyboard`, async () => {
+    await app.homePage.telephonyDialog.typeTextInDialer(searchStr);
+  });
+  await t.wait(2000)
+  await h(t).withLog(`Then should display the search results`, async () => {
+    await t.expect(app.homePage.telephonyDialog.contactSearchList.exists).ok();
   });
 });

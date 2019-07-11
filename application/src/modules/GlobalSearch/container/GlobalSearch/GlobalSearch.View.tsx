@@ -4,27 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, ChangeEvent } from 'react';
+import React, { Component, ChangeEvent, RefObject } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import {
-  JuiGlobalSearch,
-  JuiGlobalSearchInput,
-} from 'jui/pattern/GlobalSearch';
+import { JuiGlobalSearch, JuiGlobalSearchInput, JuiOutlineTextFieldRef } from 'jui/pattern/GlobalSearch';
 
 import { GlobalSearchViewProps, SEARCH_VIEW } from './types';
 import { FullSearch } from '../FullSearch';
 import { InstantSearch } from '../InstantSearch';
 import { RecentSearch } from '../RecentSearch';
+import { InputContext } from '../context';
 
 type GlobalSearchProps = GlobalSearchViewProps & WithTranslation;
 
+type State = {
+  ref: RefObject<JuiOutlineTextFieldRef>;
+};
+
 @observer
-class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
+class GlobalSearchViewComponent extends Component<GlobalSearchProps, State> {
+  constructor(props: GlobalSearchProps) {
+    super(props);
+    this.state = {
+      ref: React.createRef(),
+    };
+  }
+
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { onChange } = this.props;
     onChange(e.target.value);
-  }
+  };
 
   get currentView() {
     const { currentView } = this.props;
@@ -37,12 +46,17 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
   }
 
   render() {
-    const { open, onClose, searchKey, onClear, showClear, t } = this.props;
+    const { ref } = this.state;
+    const {
+      open, onClose, searchKey, onClear, showClear, t
+    } = this.props;
+
     const CurrentView = this.currentView;
 
     return (
       <JuiGlobalSearch open={open} onClose={onClose}>
         <JuiGlobalSearchInput
+          ref={ref}
           value={searchKey}
           showClear={showClear}
           onClear={onClear}
@@ -59,14 +73,14 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
           }}
           clearText={t('globalSearch.clear')}
         />
-        <CurrentView />
+        <InputContext.Provider value={ref}>
+          <CurrentView />
+        </InputContext.Provider>
       </JuiGlobalSearch>
     );
   }
 }
 
-const GlobalSearchView = withTranslation('translations')(
-  GlobalSearchViewComponent,
-);
+const GlobalSearchView = withTranslation('translations')(GlobalSearchViewComponent);
 
 export { GlobalSearchView };

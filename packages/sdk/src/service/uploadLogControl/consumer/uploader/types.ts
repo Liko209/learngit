@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity } from 'foundation/src/log/types';
+
 interface ILogUploader {
   upload(logs: LogEntity[]): Promise<void>;
 

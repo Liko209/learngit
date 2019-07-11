@@ -21,7 +21,9 @@ class FromViewComponent extends Component<Props> {
     history.push(`/messages/${this.props.id}`);
   }
   render() {
-    const { displayName, isTeam, disabled, t, ...rest } = this.props;
+    const {
+      displayName, isTeam, disabled, t, ...rest
+    } = this.props;
     const prefix = isTeam ? (
       <JuiIconography iconSize="small">team</JuiIconography>
     ) : (

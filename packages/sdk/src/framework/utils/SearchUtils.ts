@@ -7,7 +7,7 @@ import UserPermissionType from '../../module/permission/types';
 import { IPermissionService } from '../../module/permission/service/IPermissionService';
 import { container } from '../../container';
 import _ from 'lodash';
-
+/* eslint-disable */
 const SplitTermsSymbols = new RegExp(/[\s,._-]+/);
 
 class SearchUtils {

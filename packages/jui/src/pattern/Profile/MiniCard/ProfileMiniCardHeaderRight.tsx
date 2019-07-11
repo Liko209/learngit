@@ -21,14 +21,10 @@ const Wrapper = styled('div')`
   }
 `;
 
-const JuiProfileMiniCardHeaderRight = ({ children }: Props) => {
-  return (
+const JuiProfileMiniCardHeaderRight = ({ children }: Props) => (
     <Wrapper>
-      {React.Children.map(children, (child: ReactChild) => {
-        return child;
-      })}
+      {React.Children.map(children, (child: ReactChild) => child)}
     </Wrapper>
-  );
-};
+);
 
 export { JuiProfileMiniCardHeaderRight };

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { PHONE_TAB } from '@/AnalyticsCollector/constants';
+import { ENTITY_TYPE } from '../../constants';
 
 type ReadProps = {
   id: number;
@@ -12,10 +14,11 @@ type ReadProps = {
 };
 
 type ReadViewProps = {
+  type: BUTTON_TYPE;
   isRead: boolean;
   read: () => void;
-  type: BUTTON_TYPE;
-  hookAfterClick: () => void;
+  tabName: PHONE_TAB;
+  entity: ENTITY_TYPE;
 };
 
-export { BUTTON_TYPE, ReadProps, ReadViewProps };
+export { ReadProps, ReadViewProps };

@@ -3,7 +3,6 @@
  * @Date: 2018-09-17 14:01:49
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { FetchSortableDataListHandler } from './fetch/FetchSortableDataListHandler';
 import { ListStore } from './fetch/ListStore';
 import { ISortableModel, TDelta } from './fetch/types';
@@ -18,9 +17,7 @@ abstract class TransformHandler<T, K extends IdModel> {
     public listStore = new ListStore<T>(),
   ) {
     this._orderListHandler.addDataChangeCallback(this._modificationHandler);
-    this.fetchData = async (...args) => {
-      return this._orderListHandler.fetchData(...args);
-    };
+    this.fetchData = async (...args) => this._orderListHandler.fetchData(...args);
   }
 
   hasMore(direction: QUERY_DIRECTION) {

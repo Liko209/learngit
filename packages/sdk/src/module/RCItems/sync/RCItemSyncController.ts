@@ -21,7 +21,7 @@ abstract class RCItemSyncController<
 > extends AbstractSyncController<T, IdType> {
   private _lastRequestSyncTime = 0;
   private _triggerSilentFetchKeys = [
-    SERVICE.LOGIN,
+    SERVICE.RC_LOGIN,
     WINDOW.FOCUS,
     WINDOW.ONLINE,
   ];
@@ -49,8 +49,8 @@ abstract class RCItemSyncController<
 
   handleNotification = async () => {
     await this.doSync(true, SYNC_DIRECTION.NEWER);
-  }
-
+  };
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected canUpdateSyncToken(syncInfo: RCItemSyncInfo): boolean {
     return true;
   }

@@ -14,14 +14,9 @@ type versionInfoType = {
   deployedCommit: string;
   deployedVersion: string;
 };
-
-async function fetchVersionInfo() {
-  const versionInfo = (await import(/*
-    webpackChunkName: "versionInfo" */ './versionInfo.json'))
-    .data;
-  return formatVersionInfo(versionInfo);
+function formatDate(date: string | number) {
+  return moment(date).format('YYYY-MM-DD HH:mm:ss');
 }
-
 function formatVersionInfo(versionInfo: versionInfoType) {
   let {
     buildTime,
@@ -82,8 +77,13 @@ function formatVersionInfo(versionInfo: versionInfoType) {
   };
 }
 
-function formatDate(date: string | number) {
-  return moment(date).format('YYYY-MM-DD HH:mm:ss');
+async function fetchVersionInfo() {
+  const versionInfo = (await import(/*
+    webpackChunkName: "versionInfo" */ './versionInfo.json'
+  ))
+    .data;
+  return formatVersionInfo(versionInfo);
 }
-
-export { versionInfoType, formatDate, fetchVersionInfo, formatVersionInfo };
+export {
+  versionInfoType, formatDate, fetchVersionInfo, formatVersionInfo,
+};

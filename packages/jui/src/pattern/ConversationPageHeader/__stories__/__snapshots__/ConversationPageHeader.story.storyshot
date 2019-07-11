@@ -271,10 +271,6 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   font-size: 0;
 }
 
-.c14.c14 {
-  background-color: #e0e0e0;
-}
-
 .c3.c3 {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -288,6 +284,10 @@ exports[`Storyshots Pattern ConversationPageHeader: Pattern ConversationPageHead
   display: block;
   width: 0;
   height: 0;
+}
+
+.c14.c14 {
+  background-color: #e0e0e0;
 }
 
 .c2.c2 {

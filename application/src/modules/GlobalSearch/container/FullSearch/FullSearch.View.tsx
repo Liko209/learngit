@@ -13,12 +13,14 @@ import { JuiFullSearch } from 'jui/pattern/GlobalSearch';
 import { TAB_CONFIG, TabConfig } from './config';
 import history from '@/history';
 import { UnregisterCallback } from 'history';
+import { InputContext } from '../context';
 
 type Props = FullSearchViewProps & WithTranslation;
 
 @observer
 class FullSearchViewComponent extends Component<Props> {
   private _unlisten: UnregisterCallback;
+  static contextType = InputContext;
 
   componentDidMount() {
     this._unlisten = history.listen(location => {
@@ -26,6 +28,8 @@ class FullSearchViewComponent extends Component<Props> {
         this.props.jumpToConversationCallback();
       }
     });
+
+    this.context.current && this.context.current.focus();
   }
 
   componentWillUnmount() {
@@ -37,27 +41,21 @@ class FullSearchViewComponent extends Component<Props> {
   onChangeTab = (tab: TAB_TYPE) => {
     const { setCurrentTab } = this.props;
     setCurrentTab(tab);
-  }
-
+  };
+  /* eslint-disable react/no-array-index-key */
   render() {
     const { t, currentTab } = this.props;
     return (
       <JuiFullSearch>
         <JuiTabs defaultActiveIndex={currentTab} onChangeTab={this.onChangeTab}>
-          {TAB_CONFIG.map(
-            ({ title, container, automationID }: TabConfig, index: number) => {
-              const Component = container;
-              return (
-                <JuiTab
-                  key={index}
-                  title={t(title)}
-                  automationId={automationID}
-                >
-                  <Component isShow={index === currentTab} />
-                </JuiTab>
-              );
-            },
-          )}
+          {TAB_CONFIG.map(({ title, container, automationID }: TabConfig, index: number) => {
+            const Component = container;
+            return (
+              <JuiTab key={index} title={t(title)} automationId={automationID}>
+                <Component isShow={index === currentTab} />
+              </JuiTab>
+            );
+          })}
         </JuiTabs>
       </JuiFullSearch>
     );

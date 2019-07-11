@@ -14,13 +14,11 @@ const Wrapper = styled.div`
   padding: ${spacing(0, 5)};
   display: flex;
   align-items: center;
-  transition: background-color 0.2s ease-in;
   cursor: pointer;
   color: ${grey('900')};
   &&.selected {
     background-color: ${palette('primary', '700')};
-    color: ${({ theme }) =>
-      theme.palette.getContrastText(palette('primary', '700')({ theme }))};
+    color: ${({ theme }) => theme.palette.getContrastText(palette('primary', '700')({ theme }))};
   }
   &:hover {
     background-color: ${palette('grey', '50')};
@@ -42,7 +40,9 @@ type Props = {
 
 class JuiMentionPanelSectionItem extends PureComponent<Props> {
   render() {
-    const { Avatar, displayName, selected, selectHandler } = this.props;
+    const {
+      Avatar, displayName, selected, selectHandler,
+    } = this.props;
     return (
       <Wrapper
         data-test-automation-class="match-item"

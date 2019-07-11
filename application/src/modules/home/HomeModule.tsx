@@ -4,20 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { HomeService } from './service';
+import { IHomeService } from './interface/IHomeService';
 import { config } from './home.config';
-
 import { service } from 'sdk';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountService } from 'sdk/module/account';
-
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
-
 import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeModule extends AbstractModule {
-  @inject(HomeService) private _homeService: HomeService;
+  @IHomeService private _homeService: IHomeService;
   @inject(FeaturesFlagsService)
   private _featuresFlagsService: FeaturesFlagsService;
   @inject(Jupiter) private _jupiter: Jupiter;
@@ -26,22 +21,20 @@ class HomeModule extends AbstractModule {
   async bootstrap() {
     // load subModule
     const { notificationCenter, SERVICE } = service;
-    notificationCenter.on(SERVICE.LOGIN, async () => {
+    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
       await this._initialSubModules();
-      notificationCenter.on(
-        SERVICE.FETCH_INDEX_DATA_DONE,
-        this._initialSubModules,
-      );
+    });
+    notificationCenter.on(SERVICE.GLIP_LOGIN, async (success: boolean) => {
+      success && (await this._initialSubModules());
     });
   }
 
   private _initialSubModules = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
+    if (!this._subModuleRegistered) {
+      // Avoid duplicate register
+      this._subModuleRegistered = true;
 
-    if (accountService.isAccountReady()) {
-      if (!this._subModuleRegistered) {
+      try {
         const moduleNames = await this._featuresFlagsService.getSupportFeatureModules();
 
         await this._homeService.registerSubModules(moduleNames);
@@ -49,12 +42,12 @@ class HomeModule extends AbstractModule {
         this._homeService.setDefaultRouterPaths(config.defaultRouterPaths);
 
         this.addAsyncModuleOnInitializedListener();
-
-        // Avoid duplicate register
-        this._subModuleRegistered = true;
+      } catch (err) {
+        this._subModuleRegistered = false;
+        throw err;
       }
     }
-  }
+  };
 
   addAsyncModuleOnInitializedListener() {
     if (this._homeService.hasModules(['message', 'telephony'])) {

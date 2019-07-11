@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GlobalConfig } from '../../config';
-import { ACCOUNT_KEYS } from '../config/configKeys';
+import { GlobalConfig } from '../../config/GlobalConfig';
+import { ACCOUNT_KEYS } from './configKeys';
 import { Listener } from 'eventemitter2';
 
 class AccountGlobalConfig extends GlobalConfig {

@@ -7,6 +7,7 @@
 import { telephonyLogger } from 'foundation';
 import _ from 'lodash';
 import { ILastUsedDeviceManager, IStorage } from './types';
+
 const MAX_DEVICE_HISTORY_SIZE = 5;
 
 export class LastUsedDeviceManager implements ILastUsedDeviceManager {

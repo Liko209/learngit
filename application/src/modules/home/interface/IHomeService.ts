@@ -11,11 +11,13 @@ import { SubModuleConfig, NavConfig } from '../types';
 const IHomeService = createDecorator('IHomeService');
 interface IHomeService {
   registerSubModule(moduleName: string, config: SubModuleConfig): void;
+  registerSubModules(names: string[]): Promise<void[]>;
   unRegisterModule(moduleName: string): void;
-  hasModules(names: string[]): void;
   registerExtension(key: string, extension: ComponentType): void;
   registerNavItem(moduleName: string, navItemConfig: NavConfig): void;
   registerRoute(moduleName: string, route: RouteProps): void;
+  setDefaultRouterPaths(paths: string[]): void;
+  hasModules(modules: string[]): boolean;
 }
 
 export { IHomeService };

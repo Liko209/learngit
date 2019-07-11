@@ -8,26 +8,30 @@ import { PostController } from '../controller/PostController';
 import { Post, IPostQuery, IPostResult } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { daoManager, QUERY_DIRECTION } from '../../../dao';
-import { PostDao } from '../../../module/post/dao';
+import { PostDao } from '../dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import { ProfileService } from '../../profile';
-import { Item } from '../../../module/item/entity';
+import { Item } from '../../item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { IGroupService } from '../../group/service/IGroupService';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
-import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { ChangeModel } from 'sdk/module/sync/types';
 import { PostNotificationController } from '../controller/PostNotificationController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
-  constructor(private _groupService: IGroupService) {
+  constructor(
+    private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
+  ) {
     super({ isSupportedCache: false }, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -38,9 +42,7 @@ class PostService extends EntityBaseService<Post> {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST));
   }
 
   protected canSaveRemoteEntity(): boolean {
@@ -53,7 +55,10 @@ class PostService extends EntityBaseService<Post> {
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController(this._groupService);
+      this.postController = new PostController(
+        this._groupService,
+        this._groupConfigService,
+      );
     }
     return this.postController;
   }
@@ -100,7 +105,9 @@ class PostService extends EntityBaseService<Post> {
   }: IPostQuery): Promise<IPostResult> {
     return this.getPostController()
       .getPostFetchController()
-      .getPostsByGroupId({ groupId, postId, limit, direction });
+      .getPostsByGroupId({
+        groupId, postId, limit, direction,
+      });
   }
 
   async getPostsByIds(
@@ -163,7 +170,7 @@ class PostService extends EntityBaseService<Post> {
     await this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed, changeMap);
-  }
+  };
 
   handleSexioData = async (data: Raw<Post>[]) => {
     if (data.length) {
@@ -173,7 +180,7 @@ class PostService extends EntityBaseService<Post> {
         this.getEntityNotificationController().onReceivedNotification(posts);
       }
     }
-  }
+  };
 
   async searchPosts(params: ContentSearchParams) {
     return await this.getPostController()

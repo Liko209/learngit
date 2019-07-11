@@ -5,6 +5,7 @@ import { GroupController } from '../../controller/GroupController';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamSetting } from '../../types';
 import { GroupService } from '../GroupService';
+import { GROUP_QUERY_TYPE } from 'sdk/service';
 
 jest.mock('../../controller/GroupActionController', () => ({
   GroupActionController: jest.fn(),
@@ -23,6 +24,11 @@ describe('GroupService', () => {
     canJoinTeam: jest.fn(),
     getTeamSetting: jest.fn(),
     updateTeamSetting: jest.fn(),
+    createTeam: jest.fn(),
+    convertToTeam: jest.fn(),
+    updateGroupPrivacy: jest.fn(),
+    isGroupCanBeShown: jest.fn(),
+    updateGroupLastAccessedTime: jest.fn(),
   };
   const mockTeamPermissionController = {
     getTeamUserPermissionFlags: jest.fn(),
@@ -32,6 +38,13 @@ describe('GroupService', () => {
     doFuzzySearchAllGroups: jest.fn(),
     doFuzzySearchGroups: jest.fn(),
     doFuzzySearchTeams: jest.fn(),
+    getGroupsByType: jest.fn(),
+    getGroupsByIds: jest.fn(),
+    getPersonIdsBySelectedItem: jest.fn(),
+    getLocalGroup: jest.fn(),
+    getOrCreateGroupByMemberList: jest.fn(),
+    isFavored: jest.fn(),
+    getGroupEmail: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -398,9 +411,50 @@ describe('GroupService', () => {
         undefined,
       );
     });
+
+    it('should call getGroupFetchDataController when call getGroupsByType', async () => {
+      await groupService.getGroupsByType(GROUP_QUERY_TYPE.ALL, 1, 1);
+      expect(mockGroupFetchDataController.getGroupsByType).toBeCalledWith(
+        GROUP_QUERY_TYPE.ALL,
+        1,
+        1,
+      );
+    });
+
+    it('should call getGroupFetchDataController when call getGroupsByIds', async () => {
+      await groupService.getGroupsByIds([1], true);
+      expect(mockGroupFetchDataController.getGroupsByIds).toBeCalledWith(
+        [1],
+        true,
+      );
+    });
+    it('should call getGroupFetchDataController when call getPersonIdsBySelectedItem', async () => {
+      await groupService.getPersonIdsBySelectedItem([1]);
+      expect(
+        mockGroupFetchDataController.getPersonIdsBySelectedItem,
+      ).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call getLocalGroup', async () => {
+      await groupService.getLocalGroup([1]);
+      expect(mockGroupFetchDataController.getLocalGroup).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call getOrCreateGroupByMemberList', async () => {
+      await groupService.getOrCreateGroupByMemberList([1]);
+      expect(
+        mockGroupFetchDataController.getOrCreateGroupByMemberList,
+      ).toBeCalledWith([1]);
+    });
+    it('should call getGroupFetchDataController when call isFavored', async () => {
+      await groupService.isFavored(1, 1);
+      expect(mockGroupFetchDataController.isFavored).toBeCalledWith(1, 1);
+    });
+    it('should call getGroupFetchDataController when call isFavored', async () => {
+      await groupService.getGroupEmail(1);
+      expect(mockGroupFetchDataController.getGroupEmail).toBeCalledWith(1);
+    });
   });
 
-  describe('handleGroupFetchedPosts', () => {
+  describe('GroupController', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -413,6 +467,7 @@ describe('GroupService', () => {
         [],
       );
     });
+
   });
 
   describe('getById', () => {
@@ -424,4 +479,37 @@ describe('GroupService', () => {
       }
     });
   });
+
+  describe('GroupActionController', () => {
+    it('should call with right parameters', async () => {
+      await groupService.createTeam(1, [1, 2], {});
+      expect(mockGroupActionController.createTeam).toBeCalledWith(
+        1, [1, 2], {}
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.convertToTeam(1, [1, 2], {});
+      expect(mockGroupActionController.convertToTeam).toBeCalledWith(
+        1, [1, 2], {}
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.updateGroupPrivacy({ id: 1, privacy: '1' });
+      expect(mockGroupActionController.updateGroupPrivacy).toBeCalledWith(
+        { id: 1, privacy: '1' }
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.isGroupCanBeShown(1);
+      expect(mockGroupActionController.isGroupCanBeShown).toBeCalledWith(
+        1
+      );
+    });
+    it('should call with right parameters', async () => {
+      await groupService.updateGroupLastAccessedTime({ id: 1, timestamp: 1 });
+      expect(mockGroupActionController.updateGroupLastAccessedTime).toBeCalledWith(
+        { id: 1, timestamp: 1 }
+      );
+    });
+  })
 });

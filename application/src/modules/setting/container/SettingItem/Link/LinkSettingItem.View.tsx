@@ -28,18 +28,18 @@ class LinkSettingItemViewComponent extends Component<Props> {
     url && window.open(url);
     const { dataTracking } = this.props.settingItem;
     dataTracking && dataTrackingForSetting(dataTracking);
-  }
+  };
 
   @catchError.flash({
-    network: 'setting.errorText.network',
-    server: 'setting.errorText.server',
+    network: 'setting.errorText.forLink',
+    server: 'setting.errorText.forLink',
   })
-  private _getUrl = () => {
-    return this.props.getUrl();
-  }
+  private _getUrl = () => this.props.getUrl();
 
   render() {
-    const { t, id, disabled, settingItem } = this.props;
+    const {
+      t, id, disabled, settingItem,
+    } = this.props;
 
     return (
       <JuiSettingSectionItem
@@ -58,7 +58,7 @@ class LinkSettingItemViewComponent extends Component<Props> {
           onClick={this._handleClick}
           loading={this._loading}
         >
-          {t('setting.update')}
+          {t('setting.edit')}
         </JuiButton>
       </JuiSettingSectionItem>
     );

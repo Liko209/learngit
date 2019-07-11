@@ -32,7 +32,7 @@ class JuiListItemWithHover extends Component<Props, States> {
     if (!this.state.hover) {
       this.setState({ hover: true });
     }
-  }
+  };
 
   handleMouseOut = (event: React.MouseEvent) => {
     const { target, currentTarget, relatedTarget } = event;
@@ -42,8 +42,8 @@ class JuiListItemWithHover extends Component<Props, States> {
     ) {
       this.setState({ hover: false });
     }
-  }
-
+  };
+  /* eslint-disable sx-a11y/mouse-events-have-key-events */
   render() {
     const { render, ...rest } = this.props;
     return (

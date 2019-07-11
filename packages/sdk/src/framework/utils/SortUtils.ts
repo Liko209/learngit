@@ -3,9 +3,9 @@
  * @Date: 2019-01-09 07:52:45
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-import { IdModel, ModelIdType } from '../model';
+import { IdModel, ModelIdType, SortableModel } from '../model';
 class SortUtils {
   static sortModelByKey<
     T extends IdModel<IdType>,
@@ -49,6 +49,37 @@ class SortUtils {
       return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
     }
     return desc ? natureCompare(rhs.id, lhs.id) : natureCompare(lhs.id, rhs.id);
+  }
+
+  static compareSortableModel<T>(lhs: SortableModel<T>, rhs: SortableModel<T>) {
+    let result = SortUtils.compareArrayOfSameLens(
+      rhs.sortWeights,
+      lhs.sortWeights,
+    );
+
+    if (result === 0) {
+      if (lhs.lowerCaseName < rhs.lowerCaseName) {
+        result = -1;
+      } else if (lhs.lowerCaseName > rhs.lowerCaseName) {
+        result = 1;
+      }
+    }
+
+    return result;
+  }
+
+  static compareArrayOfSameLens(arrA: number[], arrB: number[]) {
+    const len = arrA.length;
+    let i = 0;
+    while (i < len) {
+      const res = arrA[i] - arrB[i];
+      if (res !== 0) {
+        return res;
+      }
+      i++;
+    }
+
+    return 0;
   }
 }
 

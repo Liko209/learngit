@@ -3,6 +3,9 @@
  * @Date: 2019-01-30 14:38:03
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -35,9 +38,10 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
         hovered={hovered}
         onClick={onClick}
         Avatar={
-          <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
+          <JuiIconography iconSize='medium' iconColor={['grey', '500']}>
             search
-          </JuiIconography>}
+          </JuiIconography>
+        }
         value={contentText}
         afterValue={inThisConversation.get()}
         terms={terms}

@@ -130,9 +130,9 @@ describe('Telephony store', () => {
   it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
     const store = createStore();
     store.directCall();
-    call.holdState = HOLD_STATE.DISABLE;
+    call.holdState = HOLD_STATE.DISABLED;
 
-    expect(store.holdState).toBe(HOLD_STATE.DISABLE);
+    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
   });
 
   it('holdState should change to HOLD_STATE.IDLE when connected', () => {
@@ -145,7 +145,7 @@ describe('Telephony store', () => {
   it('recordDisabled should to be RECORD_DISABLED_STATE.DISABLED when instantiated TelephonyStore', () => {
     const store = createStore();
     store.directCall();
-    call.recordState = RECORD_STATE.DISABLE;
+    call.recordState = RECORD_STATE.DISABLED;
     expect(store.recordDisabled).toBe(true);
   });
 
@@ -231,23 +231,6 @@ describe('Telephony store', () => {
     expect(store.isMute).toBeFalsy();
   });
 
-  it('should initialize with not entering contact search page', () => {
-    const store = createStore();
-
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-  });
-
-  it('should not entering contact search page when make/hangup a call', () => {
-    const store = createStore();
-    store.callerName = 'name';
-    store.phoneNumber = '112233';
-    call.muteState = MUTE_STATE.MUTED;
-    store.directCall();
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-    store.end();
-    expect(store.shouldEnterContactSearch).toBeFalsy();
-  });
-
   it('should sync dialer entered state', () => {
     const store = createStore();
     expect(store.enteredDialer).toBeFalsy();
@@ -297,5 +280,17 @@ describe('Telephony store', () => {
     store.openDialer();
     store.attachedWindow();
     expect(store.isDetached).toBeFalsy();
+  });
+
+  it('jumpToRecentCall()', () => {
+    const store = createStore();
+    store.jumpToRecentCall();
+    expect(store.isRecentCalls).toBeTruthy();
+  });
+
+  it('backToDialer()', () => {
+    const store = createStore();
+    store.backToDialer();
+    expect(store.isRecentCalls).toBeFalsy();
   });
 });

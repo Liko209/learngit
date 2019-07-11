@@ -14,7 +14,8 @@
       "save": "Save",
       "send": "Send",
       "delete": "Delete",
-      "close": "Close"
+      "close": "Close",
+      "deleteAll": "Delete all"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -72,7 +73,8 @@
     "team": "team",
     "play": "Play",
     "pause": "Pause",
-    "reload": "Reload"
+    "reload": "Reload",
+    "goToConversation": "Go to conversation"
   },
   "auth": {
     "signIn": "Sign in",
@@ -129,7 +131,6 @@
     "ThisWeek": "This week",
     "ThisMonth": "This month",
     "ThisYear": "This year",
-
     "prompt": {
       "contentSearchNetworkError": "We aren't able to complete this search. Check your network connection, then try again.",
       "contentSearchServiceError": "Sorry, something went wrong on our end and we aren't able to complete this search. Try again later."
@@ -148,6 +149,9 @@
     "bookmarkPosts": "Bookmarks",
     "@mentionsTitle": "@Mentions",
     "bookmarksTitle": "Bookmarks",
+    "noMentionPosts": "There are currently no posts that @mention you directly.",
+    "noBookmarkPosts": "You have no bookmarks yet. Hover on a post and click on the Bookmark icon to mark and save it for later reference.",
+    "loadingError": "Oops! Something went wrong, please try again.",
     "favoriteGroups": "favorites",
     "directGroups": "direct messages",
     "teamGroups": "teams",
@@ -182,6 +186,7 @@
           "dark": "Dark Skin Tone"
         }
       },
+      "emojiTooltip": "Emoji",
       "emojiDefaultTitle": "Pick your emoji",
       "toggleButtonLabel": "Keep open",
       "emojiMatching": "Emojis matching"
@@ -237,6 +242,8 @@
       "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection, then try again.",
       "editPostFailedForServerIssue": "Sorry, something went wrong on our end and we weren't able to apply edits to this post. Try again later.",
       "editPostFailedForNetworkIssue": "We weren't able to apply edits to this post. Check your network connection, then try again.",
+      "viewInPostFailedWithServerIssue": "Sorry, something went wrong on our end and we weren't able to jump to the post. Try again later.",
+      "viewInPostFailedWithNetworkIssue": "Sorry, we weren't able to jump to the post. Check your network connection, then try again.",
       "contentLength": "A maximum of 10000 characters can be sent",
       "contentIllegal": "Javascript not allowed",
       "deletePostTitle": "Delete Post?",
@@ -265,6 +272,7 @@
       "NewMessage": "New Message",
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
+      "newMessageDirectlyTip": "Send the message to the selected contacts individually.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
       "changeDefaultPhoneAppTitle": "Change default phone app",
@@ -278,7 +286,8 @@
     },
     "fileAction": {
       "deleteFile": "Delete file",
-      "editFileName": "Edit filename"
+      "editFileName": "Edit filename",
+      "viewInPost": "View in post"
     },
     "Messages": "Messages",
     "message": "Message",
@@ -289,6 +298,11 @@
       "oneTyping": "<0>{{personA}}</0> is typing...",
       "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
       "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    },
+    "initialization": {
+      "initializing": "Initializing...",
+      "failure": "The message service failed to start.",
+      "tryAgain": " Please try again later."
     }
   },
   "item": {
@@ -581,7 +595,9 @@
       "back": "Back",
       "forward": "Forward",
       "customForward": "Custom...",
-      "flip": "Flip"
+      "flip": "Flip",
+      "recentCall": "Recent calls",
+      "backToDialer": "Back to dialer"
     },
     "customReplyMessagePlaceholder": "Type a custom message",
     "customReplyLabel": "Custom message",
@@ -605,6 +621,10 @@
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
     "prompt": {
+      "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
+      "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
+      "RCPhoneIsNotInstalledOK": "Download RingCentral Phone",
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
       "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
@@ -628,6 +648,9 @@
       "ForwardCallSuccess": "Your call was forwarded successfully.",
       "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
       "FlipSuccess": "Call flipped",
+      "NoCallPermission": "You no longer have the permission to make the call.",
+      "CountryBlock": "VoIP is not available in your country.",
+      "VoipUnavailable": "VoIP is currently not available.",
       "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "AutoRecording": "Cannot start call recording."
     },
@@ -642,7 +665,8 @@
       "record": "Record the call",
       "stopRecord": "Stop recording",
       "minimize": "Minimize the dialog",
-      "callActions": "Call actions"
+      "callActions": "Call actions",
+      "recentCall": "Show recent calls"
     },
     "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
@@ -669,16 +693,23 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "noCallLogAvailable": "There is not call log yet"
   },
   "phone": {
     "tab": {
       "callHistory": "Call history"
     },
+    "callBack": "Call back",
     "AllCalls": "All calls",
     "MissedCalls": "Missed calls",
     "callhistory": "Call history",
     "voicemail": "Voicemail",
+    "block": "Block",
+    "blockNumber": "Block number",
+    "unblockNumber": "Unblock number",
+    "blockThisNumber": "Block this number",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "This number will not be able to reach you if blocked. Do you want to block it?",
     "faxes": "Faxes",
     "unknownCaller": "Unknown caller",
     "unknown": "Unknown",
@@ -687,6 +718,12 @@
     "noCallLogAvailable": "No call log",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
+      "numberHasBeenBlocked": "The number has been blocked",
+      "numberHasBeenUnblocked": "The number has been unblocked",
+      "notAbleToUnblockForNetworkIssue": "Sorry, we weren't able to unblock this number. Check your network connection, then try again.",
+      "notAbleToUnblockForServerIssue": "Sorry, something went wrong on our end and we weren't able to unblock this number. Try again later.",
+      "notAbleToBlockForNetworkIssue": "Sorry, we weren't able to block this number. Check your network connection, then try again.",
+      "notAbleToBlockForServerIssue": "Sorry, something went wrong on our end and we weren't able to block this number. Try again later.",
       "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
       "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
       "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",
@@ -695,6 +732,8 @@
     }
   },
   "calllog": {
+    "inputFilter": "Filter call history",
+    "clearFilter": "Clear call history filter",
     "deleteCallLog": "Delete call log",
     "deleteCallHistory": "Delete call history",
     "deleteAllCallHistory": "Delete all call history",
@@ -715,12 +754,10 @@
     },
     "inputFilter": "Filter voicemail",
     "clearFilter": "Clear voicemail filter",
-    "downloadVoicemail": "Download Voicemail",
-    "messageIsReadMarkItAsUnread": "Message is read. Mark it as unread",
-    "messageIsUnreadMarkItAsRead": "Message is unread. Mark it as read",
-    "markUnread": "Mark Unread",
-    "markRead": "Mark Read",
-    "deleteVoicemail": "Delete Voicemail",
+    "downloadVoicemail": "Download voicemail",
+    "markUnread": "Mark as unread",
+    "markRead": "Mark as read",
+    "deleteVoicemail": "Delete voicemail",
     "areYouSureYouWantToDeleteTheVoicemail": "Are you sure you want to delete the voicemail?",
     "prompt": {
       "notAbleToUnreadVoicemalForNetworkIssue": "Sorry, we weren't able to mark the voicemail as unread due to a poor network connection. Try again.",
@@ -738,13 +775,14 @@
   "setting": {
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
-      "network": "We weren't able to save your settings. Check your network connection, then try again."
+      "network": "We weren't able to save your settings. Check your network connection, then try again.",
+      "forLink": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
     },
     "Settings": "Settings",
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": {
-      "title": "Notification and Sounds",
+      "title": "Notifications and sounds",
       "otherNotificationSettings": {
         "title": "Other notification settings",
         "newMessageBadgeCount": {
@@ -773,11 +811,11 @@
         },
         "incomingCalls": {
           "label": "Incoming calls",
-          "description": "Choose your preference for desktop notifications for incoming calls"
+          "description": "Receive notifications for incoming calls"
         },
         "callsAndVoicemails": {
           "label": "Missed calls and new voicemails",
-          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+          "description": "Receive notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
@@ -792,7 +830,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Choose your preferences for email notifications for team messages"
+          "description": "Receive email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily digest",
@@ -809,7 +847,6 @@
     "messages": "Messages",
     "meetings": "Meetings",
     "calendar": "Calendar",
-    "update": "Update",
     "edit": "Edit",
     "phone": {
       "title": "Phone",
@@ -859,7 +896,7 @@
       },
       "volume": {
         "label": "Volume control",
-        "description": "Update the volume"
+        "description": "Update the app volume"
       }
     },
     "useDefault": "Use system default",

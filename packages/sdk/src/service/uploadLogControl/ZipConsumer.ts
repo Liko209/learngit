@@ -53,7 +53,7 @@ export class ZipConsumer {
         setTimeout(() => {
           this.count -= 1;
           this.consume(localZip);
-        },         RETRY_DELAY);
+        }, RETRY_DELAY);
       }
     }
   }

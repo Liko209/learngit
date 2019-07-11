@@ -522,12 +522,12 @@ describe('SearchPersonController', () => {
       expect(result.sortableModels.length).toBe(0);
     });
 
-    it('search persons,  with name matched, recent searched will be on top of result', async () => {
+    it('search persons,  with name matched and first sort is same, recent searched will be on top of result', async () => {
       const time = Date.now();
       const records = new Map([
-        [20002, { id: 20002, time_stamp: time }],
-        [20003, { id: 20003, time_stamp: time - 1 }],
-        [20005, { id: 20005, time_stamp: time - 2 }],
+        [20012, { id: 20012, time_stamp: time }],
+        [20013, { id: 20013, time_stamp: time - 1 }],
+        [20014, { id: 20014, time_stamp: time - 2 }],
       ]);
       groupService.getIndividualGroups = jest.fn().mockReturnValue(new Map());
       searchService.getRecentSearchRecordsByType = jest
@@ -539,23 +539,26 @@ describe('SearchPersonController', () => {
         recentFirst: true,
       })) as SearchResultType;
       expect(result.sortableModels.length).toBe(20);
-      expect(result.sortableModels[0].id).toBe(20002);
-      expect(result.sortableModels[1].id).toBe(20003);
-      expect(result.sortableModels[2].id).toBe(20005);
-      expect(result.sortableModels[3].id).toBe(20011);
+      const firstFewResults = result.sortableModels.slice(0, 4);
+      expect(firstFewResults.map(x => x.id)).toEqual([
+        20012,
+        20013,
+        20014,
+        20011,
+      ]);
     });
 
     it('search persons,  with name matched, recent contacted will be on top of result', async () => {
       const time = Date.now();
       const groupConfigs = new Map([
-        [20002, { id: 20002, my_last_post_time: time }],
-        [20003, { id: 20003, my_last_post_time: time - 1 }],
-        [20005, { id: 20005, my_last_post_time: time - 2 }],
+        [20012, { id: 20012, my_last_post_time: time }],
+        [20013, { id: 20013, my_last_post_time: time - 1 }],
+        [20014, { id: 20014, my_last_post_time: time - 2 }],
       ]);
       const groups = new Map([
-        [20002, { id: 20002 }],
-        [20003, { id: 20003 }],
-        [20005, { id: 20005 }],
+        [20012, { id: 20012 }],
+        [20013, { id: 20013 }],
+        [20014, { id: 20014 }],
       ]);
       groupService.getIndividualGroups = jest.fn().mockReturnValue(groups);
       searchService.getRecentSearchRecordsByType = jest
@@ -570,19 +573,22 @@ describe('SearchPersonController', () => {
         searchKey: 'monkey',
         recentFirst: true,
       })) as SearchResultType;
+      const firstFewResult = result.sortableModels.slice(0, 4);
+      expect(firstFewResult.map(x => x.id)).toEqual([
+        20012,
+        20013,
+        20014,
+        20011,
+      ]);
       expect(result.sortableModels.length).toBe(20);
-      expect(result.sortableModels[0].id).toBe(20002);
-      expect(result.sortableModels[1].id).toBe(20003);
-      expect(result.sortableModels[2].id).toBe(20005);
-      expect(result.sortableModels[3].id).toBe(20011);
     });
 
     it('search persons,  will order by recent searched and contacted both', async () => {
       const time = Date.now();
       const groupConfigs = new Map([
-        [20002, { id: 20002, my_last_post_time: time }],
-        [20003, { id: 20003, my_last_post_time: time - 1 }],
-        [20005, { id: 20005, my_last_post_time: time - 2 }],
+        [20016, { id: 20016, my_last_post_time: time }],
+        [20011, { id: 20011, my_last_post_time: time - 1 }],
+        [20012, { id: 20012, my_last_post_time: time - 2 }],
       ]);
       groupConfigService.getSynchronously = jest
         .fn()
@@ -591,9 +597,9 @@ describe('SearchPersonController', () => {
         });
 
       const groups = new Map([
-        [20002, { id: 20002 }],
-        [20003, { id: 20003 }],
-        [20005, { id: 20005 }],
+        [20016, { id: 20016 }],
+        [20011, { id: 20011 }],
+        [20012, { id: 20012 }],
       ]);
       groupService.getIndividualGroups = jest.fn().mockReturnValue(groups);
 
@@ -610,14 +616,17 @@ describe('SearchPersonController', () => {
         searchKey: 'monkey',
         recentFirst: true,
       })) as SearchResultType;
+      const firstFewResult = result.sortableModels.slice(0, 6);
+
       expect(result.sortableModels.length).toBe(20);
-      expect(result.sortableModels[0].id).toBe(20014);
-      expect(result.sortableModels[1].id).toBe(20013);
-      expect(result.sortableModels[2].id).toBe(20002);
-      expect(result.sortableModels[3].id).toBe(20003);
-      expect(result.sortableModels[4].id).toBe(20005);
-      expect(result.sortableModels[5].id).toBe(20015);
-      expect(result.sortableModels[6].id).toBe(20011);
+      expect(firstFewResult.map(x => x.id)).toEqual([
+        20014,
+        20013,
+        20016,
+        20011,
+        20012,
+        20015,
+      ]);
     });
   });
 
@@ -788,6 +797,51 @@ describe('SearchPersonController', () => {
       result!.phoneContacts.forEach(item => {
         expect(item.phoneNumber.id.startsWith('65022700')).toBeTruthy();
       });
+    });
+  });
+
+  describe('duFuzzySearchPersonAndGroup', () => {
+    it('should return person value', async () => {
+      const persons = [{ id: 1 }, { id: 2 }];
+      const groups = [{ id: 3 }, { id: 4 }];
+      const value = {
+        terms: '1',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      groupService.doFuzzySearchALlGroups = jest.fn().mockReturnValue({
+        sortableModels: groups,
+      });
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        { searchKey: '1' },
+      );
+      expect(result).toEqual({
+        terms: '1',
+        sortableModels: [...persons, ...groups],
+      });
+      expect(groupService.doFuzzySearchALlGroups).toBeCalled();
+    });
+    it('should return person value when not search key', async () => {
+      const persons = [];
+      const value = {
+        terms: '',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        { searchKey: '' },
+      );
+      expect(result).toEqual({
+        terms: '',
+        sortableModels: persons,
+      });
+      expect(groupService.doFuzzySearchALlGroups).not.toBeCalled();
     });
   });
 });

@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { LeftRail } from '../';
+import { LeftRail } from '..';
 import { mountWithTheme } from 'shield/utils';
 import { test, testable } from 'shield';
 import { MISSED_CALL_BADGE_ID } from 'sdk/module/RCItems/callLog/constants';

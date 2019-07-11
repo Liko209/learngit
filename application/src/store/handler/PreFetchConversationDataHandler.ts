@@ -3,14 +3,14 @@
  * @Date: 2019-04-01 15:14:12
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { IPreFetchController } from './cache/interface/IPreFetchController';
 import { WINDOW } from 'sdk/service/eventKey';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import PreFetchPostProcessor from '@/store/handler/cache/PreFetchPostProcessor';
 import pinnedPostCacheController from './cache/PinnedPostCacheController';
 import conversationPostCacheController from './cache/ConversationPostCacheController';
+
 class PreFetchConversationDataHandler {
   private _cachedGroupIds: Set<number>;
   private _preFetchControllers: IPreFetchController[] = [];
@@ -19,9 +19,9 @@ class PreFetchConversationDataHandler {
   constructor(preFetchControllers: IPreFetchController[]) {
     this._cachedGroupIds = new Set();
     this._preFetchControllers = preFetchControllers;
-    this._preFetchQueueHandler = new SequenceProcessorHandler(
-      'PreFetchConversationDataHandler',
-    );
+    this._preFetchQueueHandler = new SequenceProcessorHandler({
+      name: 'PreFetchConversationDataHandler',
+    });
 
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this._onNetWorkChanged(onLine);
@@ -35,9 +35,7 @@ class PreFetchConversationDataHandler {
 
   private _onNetWorkChanged(onLine: boolean) {
     if (onLine) {
-      this._preFetchControllers.map(controller =>
-        this._preFetchUnCachedGroupData(controller),
-      );
+      this._preFetchControllers.map(controller => this._preFetchUnCachedGroupData(controller));
     }
   }
 
@@ -81,15 +79,11 @@ class PreFetchConversationDataHandler {
   }
 
   setCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller =>
-      controller.setCurrentCacheConversation(groupId),
-    );
+    this._preFetchControllers.forEach(controller => controller.setCurrentCacheConversation(groupId));
   }
 
   releaseCurrentConversation(groupId: number) {
-    this._preFetchControllers.forEach(controller =>
-      controller.releaseCurrentConversation(groupId),
-    );
+    this._preFetchControllers.forEach(controller => controller.releaseCurrentConversation(groupId));
   }
 
   removeCache(groupId: number) {

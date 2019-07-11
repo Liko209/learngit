@@ -10,7 +10,7 @@ import { RCInfoFetchController } from './RCInfoFetchController';
 import { mainLogger } from 'foundation';
 import { UndefinedAble } from 'sdk/types';
 import { JOB_KEY, jobScheduler } from 'sdk/framework/utils/jobSchedule';
-
+/* eslint-disable */
 const LOG_TAG = 'RCWebSettingInfoController';
 const SAFE_SYNC_INTERVAL = 5 * 60 * 1000;
 const DEFAULT_TTL = 5 * 60;

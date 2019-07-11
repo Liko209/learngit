@@ -1,19 +1,22 @@
-import { ComponentType } from 'react';
+import { Caller } from 'sdk/module/RCItems/types';
+import PersonModel from '@/store/models/Person';
 import { ENTITY_TYPE } from '../constants';
-
-enum BUTTON_TYPE {
-  ICON,
-  MENU_ITEM,
-}
 
 type ActionsProps = {
   id: number | string;
   entity: ENTITY_TYPE;
-  hookAfterClick: () => void;
+  caller?: Caller;
+  isPseudo?: boolean;
+  maxButtonCount: number;
+  canEditBlockNumbers: boolean;
+  showCall: boolean;
 };
 
 type ActionsViewProps = {
-  actions: ComponentType<any>[];
+  shouldShowBlock: boolean;
+  person: PersonModel | null;
+  isBlock: boolean;
+  phoneNumber: string | null;
 };
 
-export { BUTTON_TYPE, ActionsProps, ActionsViewProps, ENTITY_TYPE };
+export { ActionsProps, ActionsViewProps, ENTITY_TYPE };

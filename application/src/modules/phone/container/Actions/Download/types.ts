@@ -3,7 +3,9 @@
  * @Date: 2019-05-24 07:27:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { BUTTON_TYPE } from '../types';
+import { BUTTON_TYPE } from 'jui/pattern/Phone/VoicemailItem';
+import { PHONE_TAB } from '@/AnalyticsCollector/constants';
+import { ENTITY_TYPE } from '../../constants';
 
 type DownloadProps = {
   id: number;
@@ -12,8 +14,9 @@ type DownloadProps = {
 type DownloadViewProps = {
   date: string;
   type: BUTTON_TYPE;
+  tabName: PHONE_TAB;
+  entity: ENTITY_TYPE;
   getUri: () => Promise<string>;
-  hookAfterClick: () => void;
 };
 
-export { BUTTON_TYPE, DownloadProps, DownloadViewProps };
+export { DownloadProps, DownloadViewProps };

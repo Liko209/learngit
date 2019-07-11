@@ -12,6 +12,8 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
+import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
+
 class AnalyticsCollector {
   constructor() {
     dataAnalysis.setProduction(config.isProductionAccount());
@@ -32,7 +34,9 @@ class AnalyticsCollector {
     if (!user.email || !company.name) {
       return;
     }
-    const { email, companyId, inviterId, displayName } = user;
+    const {
+      email, companyId, inviterId, displayName,
+    } = user;
     const { name, rcAccountId } = company;
     const version = await fetchVersionInfo();
     const properties = {
@@ -102,6 +106,26 @@ class AnalyticsCollector {
     this.page('Jup_Web/DT_phone_voicemailHistory', {});
   }
 
+  // [FIJI-4687] Segment - Block/Unblock a number
+  blockNumber(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_blockNumber', {
+      source,
+    });
+  }
+
+  unblockNumber(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_unblockNumber', {
+      source,
+    });
+  }
+
+  // [FIJI-6851] [FIJI-4798] Segment - Add event - click action button
+  phoneActions(tab: PHONE_TAB, actions: PHONE_ITEM_ACTIONS) {
+    dataAnalysis.track(`Jup_Web/DT_phone_${tab}Actions`, {
+      actions,
+    });
+  }
+
   // [FIJI-4573] Segment - Add event - open contact's min profile
   openMiniProfile(source: string) {
     dataAnalysis.track('Jup_Web/DT_profile_openMiniProfile', {
@@ -132,6 +156,23 @@ class AnalyticsCollector {
 
   clearAllCallHistory() {
     dataAnalysis.track('Jup_Web/DT_phone_callHistory_deleteAll');
+  }
+
+  // [FIJI-5138] Segment - Add event - Recent Call Logs
+  recentCallLogs() {
+    dataAnalysis.track('Jup_Web/DT_phone_dialer_callHistory');
+  }
+
+  phoneGoToConversation(source: string) {
+    dataAnalysis.track('Jup_Web/DT_msg_goToConversation', {
+      source,
+    });
+  }
+
+  phoneCallBack(source: string) {
+    dataAnalysis.track('Jup_Web/DT_phone_outboundCall', {
+      source,
+    });
   }
 }
 

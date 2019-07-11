@@ -39,9 +39,7 @@ abstract class RCItemFetchController<
   ): Promise<(data: T) => boolean> {
     const { filterKey } = option;
     if (!filterKey) {
-      return () => {
-        return true;
-      };
+      return () => true;
     }
     const phoneContacts = await ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
@@ -49,7 +47,13 @@ abstract class RCItemFetchController<
     const numberSet = new Set(
       phoneContacts.phoneContacts.map(data => data.phoneNumber.id),
     );
-    const terms = SearchUtils.getTermsFromText(filterKey.toLowerCase().trim());
+    const terms: string[] = SearchUtils.getTermsFromText(
+      filterKey.toLowerCase().trim(),
+    );
+    const formattedTerms = terms.map((term: string) => {
+      const validNumber = SearchUtils.getValidPhoneNumber(term);
+      return { validNumber, origin: term };
+    });
 
     return (data: T): boolean => {
       const { name, extensionNumber, phoneNumber } = this.getFilterInfo(data);
@@ -58,12 +62,19 @@ abstract class RCItemFetchController<
         (extensionNumber && numberSet.has(extensionNumber)) ||
         (phoneNumber && numberSet.has(phoneNumber));
       if (!result) {
-        result = terms.every((term: string) => {
-          return !!(
-            (lowerCaseName && lowerCaseName.includes(term)) ||
-            (extensionNumber && extensionNumber.includes(term)) ||
-            (phoneNumber && phoneNumber.includes(term))
-          );
+        result = formattedTerms.every(term => {
+          // match name
+          if (lowerCaseName && lowerCaseName.includes(term.origin)) {
+            return true;
+          }
+          // match phoneNumber
+          if (term.validNumber) {
+            return Boolean(
+              (extensionNumber && extensionNumber.includes(term.validNumber)) ||
+                (phoneNumber && phoneNumber.includes(term.validNumber)),
+            );
+          }
+          return false;
         });
       }
       return !!result;
@@ -109,7 +120,8 @@ abstract class RCItemFetchController<
               : SYNC_DIRECTION.NEWER,
             false,
           ).catch((reason: JError) => {
-            if (!results.length) {
+            // The error page for callLog/voicemail is displayed only when the first fetch data failed
+            if (!anchorId && !results.length) {
               throw reason;
             }
             return [];

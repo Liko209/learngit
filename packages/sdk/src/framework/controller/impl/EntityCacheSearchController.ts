@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel, SortableModel, ModelIdType } from '../../../framework/model';
+import { IdModel, SortableModel, ModelIdType } from '../../model';
 import {
   IEntityCacheSearchController,
   Terms,
@@ -13,6 +13,7 @@ import {
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import { SearchUtils } from '../../utils/SearchUtils';
+
 const soundex = require('soundex-code');
 
 class EntityCacheSearchController<
@@ -56,9 +57,9 @@ class EntityCacheSearchController<
     arrangeIds?: IdType[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
   ): Promise<{
-    terms: Terms;
-    sortableModels: SortableModel<T>[];
-  }> {
+      terms: Terms;
+      sortableModels: SortableModel<T>[];
+    }> {
     const terms: Terms = {
       searchKeyTerms: [],
       searchKeyTermsToSoundex: [],
@@ -82,9 +83,7 @@ class EntityCacheSearchController<
       }
 
       if (isUseSoundex) {
-        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item =>
-          soundex(item),
-        );
+        terms.searchKeyTermsToSoundex = terms.searchKeyTerms.map(item => soundex(item));
       }
     }
 

@@ -5,6 +5,7 @@
  */
 
 import { IdModel, SortableModel, ModelIdType } from '../../model';
+
 type FormattedKey = {
   original: string;
   formatted: string;
@@ -56,4 +57,6 @@ interface IEntityCacheSearchController<
   isInitialized(): boolean;
 }
 
-export { IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms };
+export {
+  IEntityCacheSearchController, Terms, FormattedKey, FormattedTerms,
+};

@@ -34,7 +34,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
       onClick && onClick(event);
     };
 
-    notification.onclose = event => {
+    notification.onclose = () => {
       this._store.remove(scope, id);
     };
 
@@ -60,7 +60,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
     notification && notification.close();
   }
 
-  clear(scope: string) {
+  clear() {
     // to-do
     Object.values(this._store.items).forEach((i: Notification) => i.close());
   }

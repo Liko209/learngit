@@ -1,0 +1,10 @@
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/RightRail/*.ts", "./fixtures/MessageInput/*.ts", "./fixtures/ImageViewer/*.ts"
+          ],
+          "browsers": [
+            "selenium:chrome"
+          ]
+   }
+  }

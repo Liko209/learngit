@@ -6,9 +6,13 @@
 
 import { LaunchDarklyClient } from '../LaunchDarklyClient';
 import { LaunchDarklyController } from '../LaunchDarklyController';
-import { notificationCenter } from '../../../../../service';
+import { notificationCenter, SERVICE } from '../../../../../service';
 import UserPermissionType from '../../../types';
-
+import { Api } from 'sdk/api';
+import { EnvConfig } from 'sdk/module/env/config';
+jest.mock('sdk/module/env/config');
+jest.mock('../LaunchDarklyClient');
+jest.mock('../../../../../service');
 LaunchDarklyClient.prototype.hasPermission = (type: UserPermissionType) => {
   const result = type === UserPermissionType.JUPITER_CREATE_TEAM;
   return result;
@@ -18,19 +22,27 @@ LaunchDarklyClient.prototype.hasFlags = () => {
   return true;
 };
 
-jest.mock('../LaunchDarklyClient');
-jest.mock('../../../../../service');
-
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
 describe('LaunchDarklyController', () => {
+  let controller: LaunchDarklyController;
+  function setUp() {
+    controller = new LaunchDarklyController(() => {});
+  }
+  beforeEach(() => {
+    clearMocks();
+    setUp();
+  });
   describe('constructor', () => {
     it('should call notificationCenter.on three times', () => {
-      new LaunchDarklyController(() => {});
       expect(notificationCenter.on).toHaveBeenCalledTimes(4);
     });
   });
   describe('hasPermission', () => {
     it('should return local default value when LaunchDarkly is not ready', () => {
-      const controller = new LaunchDarklyController(() => {});
       let permission = controller.hasPermission(
         UserPermissionType.JUPITER_CREATE_TEAM,
       );
@@ -45,7 +57,6 @@ describe('LaunchDarklyController', () => {
       expect(permission).toBeFalsy();
     });
     it('should return launchDarkly value when LaunchDarkly is  ready', () => {
-      const controller = new LaunchDarklyController(() => {});
       Object.assign(controller, {
         isClientReady: true,
         launchDarklyClient: new LaunchDarklyClient({}),
@@ -58,6 +69,20 @@ describe('LaunchDarklyController', () => {
         UserPermissionType.JUPITER_SEND_NEW_MESSAGE,
       );
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('emit change', () => {
+    it('should', (done: jest.DoneCallback) => {
+      Api.httpConfig.launchdarkly = {
+        clientId: '1',
+      };
+      EnvConfig.getDisableLD = jest.fn().mockReturnValue(false);
+      notificationCenter.emit(SERVICE.LOGIN);
+      setTimeout(() => {
+        expect(controller.getDisableLD).toBeUndefined();
+        done();
+      });
     });
   });
 });

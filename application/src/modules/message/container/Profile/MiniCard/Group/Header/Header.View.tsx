@@ -20,7 +20,7 @@ import { Favorite, Privacy } from '@/containers/common';
 @observer
 class ProfileMiniCardGroupHeaderView extends Component<
   ProfileMiniCardGroupHeaderViewProps
-> {
+  > {
   render() {
     const { id, group } = this.props;
     const { displayName } = group;

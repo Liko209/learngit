@@ -40,9 +40,7 @@ function highlight(
   let v = value;
   let reg = terms.join('|');
   reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'); // replace invalid characters
-  v = v.replace(new RegExp(reg, 'gi'), (term: string) => {
-    return `<span>${term}</span>`;
-  });
+  v = v.replace(new RegExp(reg, 'gi'), (term: string) => `<span>${term}</span>`);
 
   return {
     __html: `${beforeValue}${v}${afterValue}`,
@@ -50,7 +48,9 @@ function highlight(
 }
 
 const JuiSearchItemValue = memo((props: JuiSearchItemValueProps) => {
-  const { value, terms, beforeValue = '', afterValue = '', ...rest } = props;
+  const {
+    value, terms, beforeValue = '', afterValue = '', ...rest
+  } = props;
   const highlightValue = highlight(value, terms, beforeValue, afterValue);
   return (
     <SearchItemValueWrapper

@@ -11,6 +11,7 @@ import { PostParser } from './PostParser';
 import { EMOJI_REGEX, EMOJI_SIZE_MAP } from '../utils';
 import { EmojiTransformer } from './EmojiTransformer';
 import { Emoji } from 'emoji-mart';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
 
 class EmojiParser extends PostParser implements IPostParser {
   type = ParserType.EMOJI;
@@ -28,7 +29,14 @@ class EmojiParser extends PostParser implements IPostParser {
     const DEFAULT_TONE_INDEX = 1;
     const id = result[1];
     const emojiData = EmojiTransformer.emojiDataMap[id];
-    const { isCustomEmoji, name, tone, isEnlarged, ...others } = emojiData;
+    const {
+      isCustomEmoji,
+      name,
+      tone,
+      isEnlarged,
+      alt = 'emoji',
+      ...others
+    } = emojiData;
     if (!isCustomEmoji && name) {
       elem = (
         <Emoji
@@ -36,12 +44,13 @@ class EmojiParser extends PostParser implements IPostParser {
           skin={tone + DEFAULT_TONE_INDEX || DEFAULT_TONE_INDEX}
           set={EMOJI_SET}
           size={isEnlarged ? EMOJI_SIZE_MAP.large : EMOJI_SIZE_MAP.small}
+          backgroundImageFn={backgroundImageFn}
         >
           {emojiData.alt ? emojiData.alt : `:${name}:`}
         </Emoji>
       );
     } else {
-      elem = <img {...others} />;
+      elem = <img alt={alt} {...others} />;
     }
 
     return elem;

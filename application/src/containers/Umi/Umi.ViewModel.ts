@@ -3,8 +3,9 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { computed, untracked } from 'mobx';
-import _ from 'lodash';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
@@ -57,7 +58,7 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
       getSingleEntity(
         ENTITY_NAME.USER_SETTING,
         MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
-      ) === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+      ).value === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
     );
   }
 

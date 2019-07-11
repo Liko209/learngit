@@ -3,7 +3,7 @@
  * @Date: 2019-05-03 09:54:21
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { IntegrationItemViewProps } from './types';
 import { observer } from 'mobx-react';
@@ -14,6 +14,7 @@ import {
   SearchHighlightContext,
   HighlightContextInfo,
 } from '@/common/postParser';
+
 @observer
 class IntegrationItemView extends Component<IntegrationItemViewProps> {
   static contextType = SearchHighlightContext;

@@ -18,30 +18,29 @@ import { InputFooter } from './InputFooter';
 import { Emoji } from '@/modules/emoji';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
-import { ImageDownloader } from '@/common/ImageDownloader';
-import { IImageDownloadedListener } from 'sdk/pal';
-import { PRELOAD_ITEM } from './ColonEmoji/constants';
 import moize from 'moize';
+import { ImageDownloader } from '@/common/ImageDownloader';
+import { backgroundImageFn } from 'jui/pattern/Emoji';
 
 type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
+const sheetSize = 64;
+const set = 'emojione';
 @observer
 class MessageInputViewComponent extends Component<
   Props,
   {
     modules: object;
   }
-> {
+  > {
   private _mentionRef: RefObject<any> = createRef();
   private _attachmentsRef: RefObject<any> = createRef();
   private _emojiRef: RefObject<any> = createRef();
   private _imageDownloader: ImageDownloader;
-  private _listner: IImageDownloadedListener;
   state = {
     modules: {},
   };
 
   componentDidMount() {
-    this._imageDownloader = new ImageDownloader();
     this.updateModules();
     this.props.addOnPostCallback(() => {
       const { current } = this._attachmentsRef;
@@ -49,7 +48,11 @@ class MessageInputViewComponent extends Component<
         current.vm.cleanFiles();
       }
     });
-    this._imageDownloader.download(PRELOAD_ITEM, this._listner);
+    this._imageDownloader = new ImageDownloader();
+    this._imageDownloader.download({
+      id: -1,
+      url: backgroundImageFn(set, sheetSize),
+    });
   }
 
   componentWillUnmount() {
@@ -90,21 +93,21 @@ class MessageInputViewComponent extends Component<
     if (current) {
       current.vm.autoUploadFiles(array);
     }
-  }
+  };
 
   handleCopyPasteFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files, false);
     }
-  }
+  };
 
   handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
       current.vm.autoUploadFiles(files);
     }
-  }
+  };
 
   private _getMenus() {
     const { t } = this.props;
@@ -153,13 +156,18 @@ class MessageInputViewComponent extends Component<
           onFileChanged={this._autoUploadFile}
           data-test-automation-id="message-action-bar-attachment"
         />
-        <Emoji handleEmojiClick={insertEmoji} sheetSize={64} set="emojione" />
+        <Emoji
+          tooltip={t('message.emoji.emojiTooltip')}
+          handleEmojiClick={insertEmoji}
+          sheetSize={sheetSize}
+          set={set}
+        />
       </MessageActionBar>
     ),
   );
 
   private _getAttachmentsNode = moize((id: number) => (
-    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+    <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft />
   ));
 
   private _getFooterNode = moize((hasInput: boolean) => (

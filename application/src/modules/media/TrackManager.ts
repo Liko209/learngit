@@ -24,8 +24,8 @@ class TrackManager {
       mediaTrack = trackIds.includes(trackId)
         ? (this._getTrackById(trackId) as MediaTrack)
         : this._createTrack({
-            id: trackId,
-          });
+          id: trackId,
+        });
     } else {
       mediaTrack =
         this._getTrackById(DEFAULT_TRACK_ID) ||
@@ -73,16 +73,12 @@ class TrackManager {
   }
 
   private _getTrackById(id: string) {
-    const track = this._tracks.filter(track => {
-      return track.id === id;
-    });
+    const track = this._tracks.filter(track => track.id === id);
     return track.length !== 0 ? track[0] : null;
   }
 
   private _getAllTrackIds() {
-    return this._tracks.map(track => {
-      return track.id;
-    });
+    return this._tracks.map(track => track.id);
   }
 
   private _createTrack(options: MediaTrackOptions) {

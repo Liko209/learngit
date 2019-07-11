@@ -3,6 +3,7 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { createRef } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
@@ -12,7 +13,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -21,7 +22,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-
+import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 type State = {
   message: string;
 };
@@ -61,7 +62,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       if (node) {
         node.focus();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -73,18 +74,18 @@ class NewMessageComponent extends React.Component<Props, State> {
     const { newMessage } = this.props;
     newMessage(message);
     this.onClose();
-  }
+  };
 
   onClose = () => this.context();
 
   openCreateTeam = () => {
     this.onClose();
     CreateTeam.show();
-  }
+  };
 
   handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ message: e.target.value });
-  }
+  };
 
   renderFailError() {
     const message = 'message.prompt.SorryWeWereNotAbleToSendTheMessage';
@@ -107,6 +108,7 @@ class NewMessageComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       errorUnknown,
+      canMentionTeam,
     } = this.props;
     if (errorUnknown) {
       this.renderFailError();
@@ -123,24 +125,37 @@ class NewMessageComponent extends React.Component<Props, State> {
         okText={t('common.dialog.send')}
         contentBefore={
           serverError && (
-            <StyledSnackbarsContent type="error">
+            <StyledSnackbarsContent type='error'>
               {t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
         }
         cancelText={t('common.dialog.cancel')}
       >
-        <ContactSearch
-          onSelectChange={handleSearchContactChange}
-          label={t('people.team.Members')}
-          placeholder={t('people.team.SearchContactPlaceholder')}
-          error={emailError}
-          helperText={emailError ? t(emailErrorMsg) : ''}
-          errorEmail={errorEmail}
-          messageRef={this.messageRef}
-          multiple={true}
-          autoSwitchEmail={true}
-        />
+        {
+          // temporary: ContactAndGroupSearch contain group and person
+          canMentionTeam ? <ContactAndGroupSearch
+            onSelectChange={handleSearchContactChange}
+            label={t('people.team.Members')}
+            placeholder={t('people.team.SearchContactPlaceholder')}
+            error={emailError}
+            helperText={emailError ? t(emailErrorMsg) : ''}
+            errorEmail={errorEmail}
+            messageRef={this.messageRef}
+            multiple={true}
+            autoSwitchEmail={true}
+          /> : <ContactSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              messageRef={this.messageRef}
+              multiple={true}
+              autoSwitchEmail={true}
+            />
+        }
         <JuiTextarea
           id={t('message.action.typeNewMessage')}
           label={t('message.action.typeNewMessage')}
@@ -149,8 +164,15 @@ class NewMessageComponent extends React.Component<Props, State> {
             maxLength: 10000,
           }}
           onChange={this.handleMessageChange}
-          data-test-automation-id="newMessageTextarea"
+          data-test-automation-id='newMessageTextarea'
         />
+        {canMentionTeam && (
+          <JuiCheckboxLabel
+            checked={this.props.isDirectMessage}
+            label={t('message.prompt.newMessageDirectlyTip')}
+            handleChange={this.props.handleCheckboxChange}
+          />
+        )}
         <StyledTextWithLink>
           <JuiTextWithLink
             text={t('message.prompt.newMessageTip')}

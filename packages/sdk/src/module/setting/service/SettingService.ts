@@ -20,10 +20,13 @@ class SettingService extends AbstractService {
     this._settingController && this._settingController.dispose();
   }
 
-  async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
-    return (await this.settingController.getById(id)) as Nullable<
-      UserSettingEntity<T>
-    >;
+  async getById<T>(id: number, internal?: number): Promise<Nullable<UserSettingEntity<T>>> {
+    const promise = this.settingController.getById<T>(id);
+    if (internal !== undefined) {
+      const internalPromise = new Promise<null>(resolve => setTimeout(() => resolve(null), internal));
+      return Promise.race([promise, internalPromise]);
+    }
+    return promise;
   }
 
   registerModuleSetting(moduleSetting: IModuleSetting) {

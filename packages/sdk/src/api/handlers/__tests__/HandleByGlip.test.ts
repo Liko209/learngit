@@ -28,11 +28,11 @@ const postRequest = () => {
 };
 
 describe('HandleByGlip', () => {
-  describe('requestDecoration', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
+  describe('requestDecoration', () => {
     it('should not add tk to headers if needAuth is false', () => {
       handler.isOAuthTokenAvailable = jest.fn().mockImplementation(() => true);
       handler.accessToken = jest.fn().mockImplementation(() => 'token');
@@ -87,6 +87,23 @@ describe('HandleByGlip', () => {
       decoration(request);
       expect(request.headers['X-RC-Access-Token-Data']).toEqual('access_token');
       expect(request).toEqual(request);
+    });
+  });
+
+  describe('onRefreshTokenFailure', () => {
+    it('should do nothing when delegate is invalid', () => {
+      HandleByGlip.platformHandleDelegate = undefined as any;
+      HandleByGlip.onRefreshTokenFailure(true);
+    });
+
+    it('should call delegate when delegate is valid', () => {
+      HandleByGlip.platformHandleDelegate = {
+        onRefreshTokenFailure: jest.fn(),
+      } as any;
+      HandleByGlip.onRefreshTokenFailure(true);
+      expect(
+        HandleByGlip.platformHandleDelegate.onRefreshTokenFailure,
+      ).toBeCalledWith(true);
     });
   });
 });

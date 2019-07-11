@@ -3,7 +3,7 @@
  * @Date: 2018-11-08 15:54:47
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { NoteViewProps } from './types';
 import {
@@ -19,6 +19,7 @@ import {
   SearchHighlightContext,
 } from '@/common/postParser';
 import { openNoteViewer } from '../../ConversationDetailViewer';
+
 type NoteViewType = NoteViewProps & WithTranslation;
 
 @observer
@@ -29,7 +30,7 @@ class NoteViewComponent extends Component<NoteViewType> {
   _handleClick = async () => {
     const { title, id } = this.props;
     openNoteViewer(title, id);
-  }
+  };
 
   render() {
     const { title, summary } = this.props;
@@ -39,7 +40,7 @@ class NoteViewComponent extends Component<NoteViewType> {
         onClick={this._handleClick}
         Icon={<NoteIcon />}
       >
-        <JuiNoteContent data-test-automation-id="note-body">
+        <JuiNoteContent data-test-automation-id='note-body'>
           {postParser(summary, {
             keyword: this.context.keyword,
             phoneNumber: true,

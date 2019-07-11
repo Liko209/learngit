@@ -4,6 +4,7 @@ import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { TelephonyStore } from '../../store';
+import { computed } from 'mobx';
 
 export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   implements DialerPanelViewProps {
@@ -23,4 +24,12 @@ export class DialerPanelViewModel extends StoreViewModel<DialerPanelProps>
   }
 
   onAfterDialerOpen = () => this._telephonyService.onAfterDialerOpen();
+
+  @computed
+  get displayCallerIdSelector() {
+    return (
+      Array.isArray(this._telephonyStore.callerPhoneNumberList) &&
+      !!this._telephonyStore.callerPhoneNumberList.length
+    );
+  }
 }

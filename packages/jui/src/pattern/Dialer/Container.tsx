@@ -18,6 +18,7 @@ type Props = {
   removeMargin: boolean;
   removePadding: boolean;
   CallAction?: React.ComponentType;
+  CallerIdSelector?: React.ComponentType | JSX.Element | null;
   KeypadActions: React.ComponentType[] | JSX.Element;
   keypadFullSize: boolean;
   onFocus?: (e?: MouseEvent) => void;
@@ -45,10 +46,11 @@ const StyledKeypadActionsContainer = styled('div')`
   && {
     flex: 1;
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    flex-direction: column;
     position: relative;
     cursor: default;
+    min-height: 0;
   }
 `;
 
@@ -57,8 +59,7 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    margin-bottom: ${({ removeMargin, theme }) =>
-      removeMargin ? spacing(-5)({ theme }) : 0};
+    margin-bottom: ${({ removeMargin, theme }) => (removeMargin ? spacing(-5)({ theme }) : 0)};
   }
 `;
 
@@ -73,8 +74,7 @@ const JuiKeypadAction = styled('div')`
       color: ${grey('700')};
       ${typography('caption1')};
       &.disabled {
-        color: ${({ theme }) =>
-          palette('action', 'disabledBackground')({ theme })};
+        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })};
       }
     }
   }
@@ -89,19 +89,6 @@ class JuiContainer extends PureComponent<Props> {
     removePadding: false,
     keypadFullSize: false,
   };
-
-  state = {
-    showHoverActions: false,
-  };
-
-  _onFocus = (e: any) => {
-    const { onFocus } = this.props;
-    // prevent drag & drop
-    e.stopPropagation();
-    e.preventDefault();
-
-    onFocus && onFocus(e);
-  }
 
   componentDidMount() {
     if (this._containerRef.current) {
@@ -121,6 +108,14 @@ class JuiContainer extends PureComponent<Props> {
       this._onFocus,
     );
   }
+  _onFocus = (e: any) => {
+    const { onFocus } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onFocus && onFocus(e);
+  };
 
   render() {
     const {
@@ -129,12 +124,13 @@ class JuiContainer extends PureComponent<Props> {
       removeMargin,
       removePadding,
       keypadFullSize,
+      CallerIdSelector,
     } = this.props;
 
     const keypadActions = Array.isArray(KeypadActions)
       ? KeypadActions.map((Action: React.ComponentType) => (
           <Action key={Action.displayName} />
-        ))
+      ))
       : KeypadActions;
 
     return (
@@ -150,6 +146,7 @@ class JuiContainer extends PureComponent<Props> {
               {keypadActions}
             </StyledKeypadActions>
           )}
+          {CallerIdSelector}
         </StyledKeypadActionsContainer>
         {CallAction && (
           <StyledCallAction onMouseDown={this._onFocus}>
@@ -170,16 +167,16 @@ const KeypadHeaderContainer = styled.div`
   padding: ${spacing(0, 9, 1, 5)};
 `;
 
-const ContactSearchContainer = styled.div<{}>`
+const ContactSearchContainer = styled.div<{ addMargin: boolean }>`
   && {
     position: relative;
-    width: 100%;
-    position: relative;
     height: 100%;
+    width: 100%;
     flex: 1;
-    & > div:nth-child(2) {
-      margin-top: ${spacing(11)};
-      height: calc(100% - ${spacing(11)});
+    min-height: 0;
+    & > .contact-search-list-container {
+      margin-top: ${({ addMargin }) => (addMargin ? spacing(11) : 0)};
+      height: ${({ addMargin, theme }) => `calc(${addMargin ? `100% - ${spacing(11)({ theme })}` : '100%'})`};
       overflow: hidden;
     }
   }
