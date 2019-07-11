@@ -65,6 +65,11 @@ class CallLogItemViewModel extends StoreViewModel<CallLogItemProps> {
   }
 
   @computed
+  get isPseudo() {
+    return this.data.isPseudo;
+  }
+
+  @computed
   get icon() {
     if (this.isMissedCall) {
       return 'missedcall';
