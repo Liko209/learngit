@@ -122,6 +122,33 @@ describe('SearchService', () => {
     });
   });
 
+  describe('doFuzzySearchPersons', () => {
+    let searchPersonController: SearchPersonController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      searchPersonController = new SearchPersonController(searchService);
+      Object.defineProperty(searchService, 'searchPersonController', {
+        get: jest.fn(() => searchPersonController),
+      });
+    });
+
+    it('should call correct parameter', () => {
+      const options = {
+        searchKey: 'test keys',
+        excludeSelf: true,
+      };
+      searchService.doFuzzySearchPersonsAndGroups(options);
+      expect(
+        searchPersonController.doFuzzySearchPersonsAndGroups,
+      ).toBeCalledWith({
+        searchKey: 'test keys',
+        excludeSelf: true,
+      });
+    });
+  });
+
   describe('doFuzzySearchPhoneContacts', () => {
     let searchPersonController: SearchPersonController;
     beforeEach(() => {

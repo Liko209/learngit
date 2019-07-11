@@ -1,8 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "noUnusedLocals": true
-  },
-  "exclude": ["src/**/__tests__/*", "src/**/*(.spec|.test).ts(x)?"]
+    "target": "es5"
+  }
 }
