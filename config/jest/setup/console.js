@@ -5,7 +5,19 @@
  */
 global.console.info = jest.fn();
 global.console.log = jest.fn();
-global.console.error = jest.fn();
+const rawConsoleError = console.error;
+const blackList = [
+  /When testing, code that causes React state updates should be wrapped into act/,
+];
+global.console.error = (arg1, ...args) => {
+  if (
+    Object.prototype.toString.call(arg1) === '[object String]' &&
+    !!blackList.find(reg => reg.test(arg1))
+  ) {
+    return;
+  }
+  rawConsoleError.apply(console, [arg1, ...args]);
+};
 // global.console = {
 //   assert: jest.fn(),
 //   clear: jest.fn(),

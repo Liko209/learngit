@@ -1,4 +1,4 @@
-var baseConfig = require('./jest-default.config');
+const baseConfig = require('./jest-default.config');
 
 module.exports = {
   ...baseConfig,
@@ -7,5 +7,8 @@ module.exports = {
     color: 'green',
   },
   testMatch: [`${process.env.APP}/src/**/__test?(s)__/**/*.test.it.(j|t)s?(x)`],
-  setupFiles: [...baseConfig.setupFiles, '<rootDir>/config/integrationMock.js'],
+  setupFiles: [
+    ...baseConfig.setupFiles,
+    '<rootDir>/config/setupIntegration.js',
+  ],
 };
