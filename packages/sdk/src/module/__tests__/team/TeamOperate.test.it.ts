@@ -5,11 +5,11 @@
  */
 import { GroupService, Group } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk } from 'shield/sdk/SdkItFramework';
-import { IRequestResponse } from 'shield/sdk/utils/network/networkDataTool';
+import { itForSdk } from 'shield/sdk';
+import { IApiContract, IRequestResponse } from 'shield/sdk/types';
+import { readJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
-import { IApiContract } from 'shield/sdk/types';
-itForSdk('Group Integration test', ({ data, sdk, mockResponse, readJson }) => {
+itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
   let groupService: GroupService;
 
   data.useInitialData(data.template.STANDARD);

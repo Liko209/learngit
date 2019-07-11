@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { itForSdk } from 'shield/sdk/SdkItFramework';
+import { itForSdk } from 'shield/sdk';
 import { h, act, bootstrap, TestApp, WrapperType } from 'shield/application';
 import { wait } from 'shield/utils';
 import { container, Jupiter } from 'framework';

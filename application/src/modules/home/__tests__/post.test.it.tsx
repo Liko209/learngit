@@ -6,7 +6,7 @@
 
 import React from 'react';
 import fs from 'fs';
-import { itForSdk } from 'shield/sdk/SdkItFramework';
+import { itForSdk } from 'shield/sdk';
 import { h, act, t, MockApp, bootstrap } from 'shield/application';
 import { wait } from 'shield/utils';
 

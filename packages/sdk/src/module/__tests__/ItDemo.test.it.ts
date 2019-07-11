@@ -6,17 +6,18 @@
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SearchService } from 'sdk/module/search';
-import { itForSdk } from 'shield/sdk/SdkItFramework';
+import { itForSdk } from 'shield/sdk';
 import { PersonService } from 'sdk/module/person';
 import { PostService } from 'sdk/module/post';
 import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { debug } from 'sdk/__tests__/utils';
 import { StateService } from '../state';
+import { createSuccessResponse } from 'shield/sdk/utils';
 jest.setTimeout(30000);
 
 itForSdk(
   'Service Integration test',
-  ({ data, sdk, mockResponse, createSuccessResponse: createRequestResponse }) => {
+  ({ data, sdk, mockResponse }) => {
     let groupService: GroupService;
     let personService: PersonService;
     let searchService: SearchService;
@@ -90,7 +91,7 @@ itForSdk(
       });
       it('[getPosts]should mock response work', async () => {
         mockResponse(
-          createRequestResponse(
+          createSuccessResponse(
             {
               host: 'glip',
               method: 'get',

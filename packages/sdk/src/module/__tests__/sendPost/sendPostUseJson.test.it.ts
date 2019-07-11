@@ -5,12 +5,12 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk } from 'shield/sdk/SdkItFramework';
+import { itForSdk } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
-import { createErrorResponse, readJson } from 'shield/sdk/utils/responseUtil';
+import { createErrorResponse, readJson } from 'shield/sdk/utils';
 jest.setTimeout(30 * 1000);
 itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
   let groupService: GroupService;
