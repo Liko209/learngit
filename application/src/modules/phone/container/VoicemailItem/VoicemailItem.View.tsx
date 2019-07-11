@@ -67,9 +67,10 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
     return voiceMailResponsiveMap.audioMode;
   }
 
-  componentDidUpdate() {
-    const { selected, shouldPause } = this.props;
-    if ((!selected || shouldPause) && this._AudioPlayer.current) {
+  componentDidUpdate({ selected: preSelected }: VoicemailItemProps) {
+    const { selected } = this.props;
+
+    if (preSelected && !selected && this._AudioPlayer.current) {
       this._AudioPlayer.current.pause();
     }
   }

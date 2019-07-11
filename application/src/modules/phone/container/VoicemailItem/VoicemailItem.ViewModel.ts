@@ -10,13 +10,12 @@ import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ENTITY_NAME } from '@/store';
-import { getEntity, getGlobalValue } from '@/store/utils';
+import { getEntity } from '@/store/utils';
 import VoicemailModel from '@/store/models/Voicemail';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity';
 import { ATTACHMENT_TYPE, READ_STATUS } from 'sdk/module/RCItems/constants';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import {
@@ -47,21 +46,12 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
     ServiceConfig.RC_INFO_SERVICE,
   );
 
-  // in order to handle incoming call
-  @observable shouldPause: boolean = false;
   @observable canEditBlockNumbers: boolean = false;
 
   constructor(props: VoicemailProps) {
     super(props);
 
     this._fetchBlockPermission();
-
-    this.reaction(
-      () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
-      () => {
-        this.shouldPause = true;
-      },
-    );
 
     this.reaction(
       () => this.attachment,
@@ -168,11 +158,10 @@ class VoicemailItemViewModel extends StoreViewModel<VoicemailProps>
 
   @action
   onBeforePlay = async () => {
-    this.shouldPause = false;
-
     if (!this.selected) {
       this.props.onVoicemailPlay(this.props.id);
     }
+
     this.voicemailService.updateReadStatus(this.props.id, READ_STATUS.READ);
   };
 
