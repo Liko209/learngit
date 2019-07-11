@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { HomeService } from './service';
+import { IHomeService } from './interface/IHomeService';
 import { config } from './home.config';
 import { service } from 'sdk';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
@@ -12,7 +12,7 @@ import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeModule extends AbstractModule {
-  @inject(HomeService) private _homeService: HomeService;
+  @IHomeService private _homeService: IHomeService;
   @inject(FeaturesFlagsService)
   private _featuresFlagsService: FeaturesFlagsService;
   @inject(Jupiter) private _jupiter: Jupiter;

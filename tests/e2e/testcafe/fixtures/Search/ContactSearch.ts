@@ -201,7 +201,7 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 30e3 });
     for (const team of searchResults) {
       await searchDialog.instantPage.conversationEntryByName(team.name);
     }
@@ -242,7 +242,7 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 30e3 });
     for (const team of searchResults) {
       await searchDialog.instantPage.conversationsContainName(team.name);
     }

@@ -253,6 +253,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this._groupFetchDataController.getGroupsByIds(ids, order);
   }
 
+  async getPersonIdsBySelectedItem(ids: (number | string)[]) {
+    return await this._groupFetchDataController.getPersonIdsBySelectedItem(ids);
+  }
+
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
     return await this._groupFetchDataController.getLocalGroup(personIds);
   }

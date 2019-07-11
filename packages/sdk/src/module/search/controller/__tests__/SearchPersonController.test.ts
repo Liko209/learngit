@@ -799,4 +799,49 @@ describe('SearchPersonController', () => {
       });
     });
   });
+
+  describe('duFuzzySearchPersonAndGroup', () => {
+    it('should return person value', async () => {
+      const persons = [{ id: 1 }, { id: 2 }];
+      const groups = [{ id: 3 }, { id: 4 }];
+      const value = {
+        terms: '1',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      groupService.doFuzzySearchALlGroups = jest.fn().mockReturnValue({
+        sortableModels: groups,
+      });
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        { searchKey: '1' },
+      );
+      expect(result).toEqual({
+        terms: '1',
+        sortableModels: [...persons, ...groups],
+      });
+      expect(groupService.doFuzzySearchALlGroups).toBeCalled();
+    });
+    it('should return person value when not search key', async () => {
+      const persons = [];
+      const value = {
+        terms: '',
+        sortableModels: persons,
+      };
+      searchPersonController.doFuzzySearchPersons = jest
+        .fn()
+        .mockReturnValue(value);
+
+      const result = await searchPersonController.doFuzzySearchPersonsAndGroups(
+        { searchKey: '' },
+      );
+      expect(result).toEqual({
+        terms: '',
+        sortableModels: persons,
+      });
+      expect(groupService.doFuzzySearchALlGroups).not.toBeCalled();
+    });
+  });
 });

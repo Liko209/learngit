@@ -43,7 +43,6 @@ class SplitIOClient {
         readyTimeout: 5, // 5 seconds
         retriesOnFailureBeforeReady: 2, // 2 retries
       },
-
     };
     this.client = SplitFactory(settings).client();
     this._subscribeSplitEvents();

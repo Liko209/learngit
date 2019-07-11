@@ -23,7 +23,7 @@ const dllManifestPath = path.join(outputPath, 'package.json');
 
 /**
  * I use node_modules/boilerplate-dlls by default just because
- * it isn't going to be version controlled and babel wont try to parse it.
+ * it isn't going to be version controlled and ts-loader wont try to parse it.
  */
 // eslint-disable-next-line
 mkdir('-p', outputPath);
@@ -43,17 +43,17 @@ if (!exists(dllManifestPath)) {
         private: true,
         author: appPackage.author,
         repository: appPackage.repository,
-        version: appPackage.version
+        version: appPackage.version,
       }),
       null,
-      2
+      2,
     ),
-    'utf8'
+    'utf8',
   );
 }
 
 // the BUILDING_DLL env var is set to avoid confusing the development environment
 // eslint-disable-next-line
 exec(
-  'BUILDING_DLL=true webpack --display-chunks --color --config config/webpack.config.dll.js --hide-modules'
+  'BUILDING_DLL=true webpack --display-chunks --color --config config/webpack.config.dll.js --hide-modules',
 );
