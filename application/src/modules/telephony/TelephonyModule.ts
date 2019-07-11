@@ -5,8 +5,8 @@
  */
 
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { HomeService } from '@/modules/home/service/HomeService';
-import { GlobalSearchService } from '@/modules/GlobalSearch/service';
+import { IHomeService } from '@/modules/home/interface/IHomeService';
+import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from './interface/constant';
@@ -33,8 +33,8 @@ class TelephonyModule extends AbstractModule {
   private _notificationManager: TelephonyNotificationManager;
   @inject(TelephonySettingManager)
   private _settingManager: TelephonySettingManager;
-  @inject(HomeService)
-  private _homeService: HomeService;
+  @IHomeService
+  private _homeService: IHomeService;
   @inject(GlobalSearchService)
   private _globalSearchService: GlobalSearchService;
 
@@ -83,7 +83,7 @@ class TelephonyModule extends AbstractModule {
     } else {
       this._disposeTelephony();
     }
-  }
+  };
 
   private _handleLeave = () => {
     if (this._telephonyService.getAllCallCount() > 0) {
@@ -95,7 +95,7 @@ class TelephonyModule extends AbstractModule {
       return true;
     }
     return false;
-  }
+  };
 }
 
 export { TelephonyModule };

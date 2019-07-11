@@ -6,7 +6,7 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { Sdk, LogControlManager, service } from 'sdk';
+import { sdk, LogControlManager, service } from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store/base/StoreManager';
@@ -188,7 +188,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
-    await Sdk.init({
+    await sdk.init({
       api,
       db,
     });

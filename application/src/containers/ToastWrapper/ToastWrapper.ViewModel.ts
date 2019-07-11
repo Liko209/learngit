@@ -6,15 +6,14 @@
 
 import { computed } from 'mobx';
 import { ToastProps } from './Toast/types';
-// import { GLOBAL_KEYS } from '@/store/constants';
-// import { getGlobalValue } from '@/store/utils';
 import { AbstractViewModel } from '@/base/AbstractViewModel';
-import { Notification } from '../Notification';
+import { notificationData } from '../Notification';
 
 class ToastWrapperViewModel extends AbstractViewModel {
   @computed
   get toasts(): ToastProps[] {
-    return Notification.data || [];
+    // return Notification.data || [];
+    return notificationData;
   }
 }
 
