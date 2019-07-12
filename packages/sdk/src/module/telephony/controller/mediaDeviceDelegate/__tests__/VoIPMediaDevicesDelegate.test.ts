@@ -49,13 +49,14 @@ describe('VoIPMediaDevicesDelegate', () => {
 
   function createDevicesChangeInfo(
     devices: string[],
-    delta: { added?: string[]; deleted?: string[] },
+    delta: { added?: string[]; deleted?: string[], hashChanged?: boolean },
   ) {
     const idsToMockDevices = (ids: string[]): MediaDeviceInfo[] =>
       ids.map(deviceId => ({ deviceId } as MediaDeviceInfo));
     return {
       devices: idsToMockDevices(devices),
       delta: {
+        hashChanged: !!delta.hashChanged,
         added: idsToMockDevices(delta.added || []),
         deleted: idsToMockDevices(delta.deleted || []),
       },
@@ -177,6 +178,21 @@ describe('VoIPMediaDevicesDelegate', () => {
       ).toBeCalled();
       expect(deviceDelegate['_ringerSyncManager'].ensureDevice).toBeCalled();
     });
+    it('The default audio source setting should sync when I change the setting from the system [JPT-2497]', () => {
+      const deviceIds = ['a', 'b', 'c'];
+      jest.spyOn(deviceDelegate['_speakerSyncManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_microphoneSyncManager'], 'ensureDevice');
+      jest.spyOn(deviceDelegate['_ringerSyncManager'], 'ensureDevice');
+      deviceDelegate.onMediaDevicesChanged(
+        createDevicesChangeInfo(deviceIds, { hashChanged: true }),
+        createDevicesChangeInfo(deviceIds, { hashChanged: true }),
+      );
+      expect(deviceDelegate['_speakerSyncManager'].ensureDevice).toBeCalled();
+      expect(
+        deviceDelegate['_microphoneSyncManager'].ensureDevice,
+      ).toBeCalled();
+      expect(deviceDelegate['_ringerSyncManager'].ensureDevice).toBeCalled();
+    });
     it('should emit device change notification', () => {
       const deviceIds = ['a', 'b', 'c'];
       deviceDelegate.onMediaDevicesChanged(
@@ -258,7 +274,7 @@ describe('VoIPMediaDevicesDelegate', () => {
       deviceDelegate['_ringerSyncManager'].setDevice({
         deviceId: 'a',
       } as any);
-      expect(mockRtcEngine.setCurrentAudioOutput).toBeCalledWith('a');
+      expect(deviceDelegate['_currentRingerId']).toEqual('a');
       expect(TelephonyGlobalConfig.put).toBeCalledWith(
         TELEPHONY_GLOBAL_KEYS.CURRENT_RINGER,
         'a',

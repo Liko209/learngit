@@ -12,7 +12,8 @@ import { notificationCenter, SERVICE } from '../../../../service';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../../../account/service';
 import { PersonService } from '../../../person';
-import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { EnvConfig } from 'sdk/module/env/config';
 
 class SplitIOController {
   private splitIOClient: SplitIOClient;
@@ -91,7 +92,11 @@ class SplitIOController {
         mainLogger.log('incoming event splitIOUpdate');
       },
     };
-    this.splitIOClient = new SplitIOClient(params);
+    const { clientSecret } = Api.httpConfig.splitio;
+    const disableLD = EnvConfig.getDisableLD();
+    if (clientSecret && !disableLD) {
+      this.splitIOClient = new SplitIOClient(params);
+    }
   }
 }
 

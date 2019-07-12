@@ -52,11 +52,13 @@ class LinkSettingItemViewComponent extends Component<Props> {
         <JuiButton
           color="primary"
           disabled={disabled}
-          data-test-automation-id={`settingItemButton-${settingItem.automationId}`}
+          data-test-automation-id={`settingItemButton-${
+            settingItem.automationId
+          }`}
           onClick={this._handleClick}
           loading={this._loading}
         >
-          {t('setting.update')}
+          {t('setting.edit')}
         </JuiButton>
       </JuiSettingSectionItem>
     );

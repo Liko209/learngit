@@ -32,7 +32,7 @@ import {
   ScrollPosition,
 } from './hooks';
 import {
-  createKeyMapper, createRange, getChildren, isRangeIn,
+  createKeyMapper, createRange, getChildren, isRangeIn, createIndexMapper,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
@@ -201,7 +201,13 @@ JuiVirtualizedListProps
   const scrollToBottom = () => {
     if (ref.current) {
       // JIRA FIJI-5392 scroll to bottom should be more strict because the height detacted is not precise and lagged
-      ref.current.scrollTop = ref.current.scrollHeight;
+      ref.current.scrollTop = 9999;
+      prevAtBottomRef.current = true;
+      window.requestAnimationFrame(() => {
+        if (ref.current) {
+          ref.current.scrollTop = 9999;
+        }
+      });
     }
   };
   const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
@@ -230,9 +236,11 @@ JuiVirtualizedListProps
   };
 
   const keyMapper = createKeyMapper(children);
+  const indexMapper = createIndexMapper(children);
   const childrenCount = children.length;
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
+
 
   //
   // Forward ref
@@ -296,6 +304,8 @@ JuiVirtualizedListProps
   );
   const renderedRange = computeRenderedRange(visibleRange);
   const { startIndex, stopIndex } = renderedRange;
+  const startKey = keyMapper(startIndex);
+  const stopKey = keyMapper(Math.min(stopIndex, maxIndex));
 
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
@@ -328,6 +338,7 @@ JuiVirtualizedListProps
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const result = { diff: 0 };
       if (el.offsetParent) {
+        const startIndex = indexMapper(startKey);
         const diff = rowManager.computeDiff(startIndex + i, el.offsetHeight);
         if (shouldUseNativeImplementation) {
           rowManager.setRowHeight(startIndex + i, el.offsetHeight);
@@ -388,7 +399,7 @@ JuiVirtualizedListProps
       });
       observers = undefined;
     };
-  }, [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
+  }, [startKey, stopKey, indexMapper]);
 
   //
   // Scroll to last remembered position,

@@ -10,8 +10,8 @@ import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 
 fixture('Telephony/Reply')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
   caseIds: ['JPT-1704'],
@@ -112,7 +112,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1712'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Reply the pre-defined message is successful', async(t) => {
+})('Reply the pre-defined message is successful', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
@@ -146,7 +146,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickReplyInMeetingButton();
   });
 
-  const alertText = 'Your voice message was sent successfully.'
+  const alertText = 'Voice message sent.'
   await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
@@ -181,6 +181,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Click the reply with will call back entry button', async () => {
+    await t.wait(1e3); // @TODO: due to this button need time to active...
     await telephonyDialog.clickReplyWithWillCallBackEntryButton();
   });
 
@@ -205,7 +206,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1717', 'JPT-1726'],
   maintainers: ['peng.yu'],
   keywords: ['Reply']
-})('Reply with custom message is successful', async(t) => {
+})('Reply with custom message is successful', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
@@ -260,7 +261,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1721'],
   maintainers: ['peng.yu'],
   keywords: ['Reply']
-})('Can not reply with blank or empty custom message', async(t) => {
+})('Can not reply with blank or empty custom message', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
@@ -321,7 +322,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1710'],
   maintainers: ['zack'],
   keywords: ['Reply']
-})('Back to the previous call window when caller ends the call', async(t) => {
+})('Back to the previous call window when caller ends the call', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);

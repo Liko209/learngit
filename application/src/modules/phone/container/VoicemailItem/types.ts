@@ -24,7 +24,6 @@ type VoicemailViewProps = {
   onBeforeAction: (status: JuiAudioStatus) => void;
   updateStartTime: (timestamp: number) => void;
   isAudioActive: boolean | Audio | undefined;
-  shouldPause: boolean;
   createTime: string;
   direction: RCMessage['direction'];
   shouldShowCall: () => Promise<boolean>;
@@ -54,7 +53,7 @@ type Handler = {
 enum BREAK_POINT_MAP {
   FULL = 832,
   EXPAND = 640,
-  SMALL = 480,
+  SMALL = 520,
   SHORT = 400,
 }
 

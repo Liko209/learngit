@@ -3,7 +3,6 @@
  * @Date: 2018-08-30 11:01:41
  * Copyright © RingCentral. All rights reserved.
  */
-'use strict';
 
 const fs = require('fs');
 const glob = require('glob');
@@ -24,6 +23,8 @@ const dllPlugin = require('./dll');
 const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
+
+// eslint-disable-next-line import/no-dynamic-require
 const appPackage = require(paths.appPackageJson);
 const eslintRules = require('../../.eslintrc');
 
@@ -74,6 +75,7 @@ function dependencyHandlers() {
   return [
     new webpack.DllReferencePlugin({
       context: process.cwd(),
+      // eslint-disable-next-line
       manifest: require(manifestPath),
     }),
   ];
@@ -120,7 +122,7 @@ module.exports = {
     // There are also additional JS chunk files if you use code splitting.
     chunkFilename: 'static/js/[name].chunk.js',
     // This is the URL that app is served from. We use "/" in development.
-    publicPath: publicPath,
+    publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
@@ -162,7 +164,7 @@ module.exports = {
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
       // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
+      // This often causes confusion because we only process files within src/ with ts-loader.
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
@@ -200,9 +202,6 @@ module.exports = {
           {
             options: {
               formatter: require.resolve('react-dev-utils/eslintFormatter'),
-              baseConfig: {
-                extends: require.resolve('../../eslint-config'),
-              },
               ignore: true,
               failOnError: true,
               cache: true,
@@ -215,7 +214,19 @@ module.exports = {
       },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
-
+      {
+        test: /\.worker\.ts$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          { loader: 'workerize-loader', options: { inline: false } },
+          {
+            loader: require.resolve('ts-loader'),
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
       {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
@@ -239,33 +250,16 @@ module.exports = {
           // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept([
-              'jui',
-              'sdk',
-              'foundation',
-              'ringcentral-web-phone.+ts$',
-            ]),
-            use: {
-              loader: require.resolve('babel-loader'),
-              options: {
-                cacheDirectory: true,
-                // cacheCompression: isEnvProduction,
-                // compact: isEnvProduction,
-                babelrc: false,
-                presets: [['react-app', { flow: false, typescript: true }]],
-                plugins: [
-                  ['@babel/plugin-syntax-dynamic-import'],
-                  [
-                    'babel-plugin-styled-components',
-                    {
-                      ssr: false,
-                      displayName: true,
-                    },
-                  ],
-                  'react-hot-loader/babel',
-                ],
+            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            use: [
+              { loader: 'cache-loader' },
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                },
               },
-            },
+            ],
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -289,7 +283,9 @@ module.exports = {
                   // https://github.com/facebookincubator/create-react-app/issues/2677
                   ident: 'postcss',
                   plugins: () => [
+                    // eslint-disable-next-line global-require
                     require('postcss-flexbugs-fixes'),
+                    // eslint-disable-next-line global-require
                     require('postcss-preset-env')({
                       autoprefixer: {
                         flexbox: 'no-2009',
@@ -337,25 +333,6 @@ module.exports = {
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
-            },
-          },
-        ],
-      },
-      {
-        test: /\.worker\.ts$/,
-        // include: paths.appSrc,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('babel-loader'),
-            options: {
-              cacheDirectory: true,
-              // cacheCompression: isEnvProduction,
-              // compact: isEnvProduction,
-              babelrc: false,
-              presets: [['react-app', { flow: false, typescript: true }]],
-              plugins: [['@babel/plugin-syntax-dynamic-import']],
             },
           },
         ],
@@ -413,16 +390,16 @@ module.exports = {
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      onDetected({ module: webpackModuleRecord, paths, compilation }) {
-        compilation.errors.push(new Error(paths.join(' -> ')));
-      },
+      // onDetected({ module: webpackModuleRecord, paths, compilation }) {
+      //   compilation.errors.push(new Error(paths.join(' -> ')));
+      // },
     }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
-      publicPath: publicPath,
+      publicPath,
     }),
     // add dll.js to html
     ...(dllPlugin

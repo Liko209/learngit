@@ -18,7 +18,7 @@ type ActiveVoicemailId = number | null;
 
 type VoicemailViewProps = {
   isError: boolean;
-  filterValue: string;
+  filterFOCKey: string;
   activeVoicemailId: ActiveVoicemailId;
   onFilterChange: IJuiChangePhoneFilter;
   onVoicemailPlay: (id: ActiveVoicemailId) => void;

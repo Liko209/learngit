@@ -22,10 +22,11 @@ registerConfigs.classes.forEach(config => container.registerClass(config));
 registerConfigs.constants.forEach(config => container.registerConstantValue(config));
 
 const sdk: Sdk = container.get(Sdk.name);
-export { sdk as Sdk };
+
 export {
   sdk, service, utils, dao, api, error
 };
+
 export {
   mainLogger, ILogger, dataAnalysis, logManager, SessionManager, DateFormatter, PerformanceTracer
 } from 'foundation';

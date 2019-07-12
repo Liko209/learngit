@@ -11,15 +11,10 @@ import enLngJson from '../public/locales/en/translations.json';
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
   const lastDotChar = value.lastIndexOf('.');
-  const actualValue =
-    lastDotChar > 0 && lastDotChar !== value.length - 1
-      ? value.substring(lastDotChar + 1)
-      : value;
+  const actualValue = lastDotChar > 0 && lastDotChar !== value.length - 1 ? value.substring(lastDotChar + 1) : value;
   const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
-  if (
-    letters.find((l: string) => firstLetter === l)
-  ) {
+  if (letters.find((l: string) => firstLetter === l)) {
     correctWordForm = capitalize ? 'An' : 'an';
   } else {
     correctWordForm = capitalize ? 'A' : 'a';
@@ -52,22 +47,7 @@ const config: i18next.InitOptions = {
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: [
-    'en',
-    'de-DE',
-    'en-AU',
-    'en-GB',
-    'es-419',
-    'es-ES',
-    'fr-CA',
-    'fr-FR',
-    'it-IT',
-    'ja-JP',
-    'pt-BR',
-    'zh-CN',
-    'zh-HK',
-    'zh-TW',
-  ],
+  whitelist: ['en', 'de-DE', 'en-AU', 'en-GB', 'es-419', 'es-ES', 'fr-CA', 'fr-FR', 'it-IT', 'ja-JP', 'pt-BR', 'zh-CN', 'zh-HK', 'zh-TW'],
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',

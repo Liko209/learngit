@@ -165,7 +165,9 @@ storiesOf('Pattern/ConversationCard', module).add(
         const ratioString = `${(height / width).toFixed(2)} -> ${(
           size.height / size.width
         ).toFixed(2)}`;
-        const sizeString = `${size.width} x ${size.height} (${width} x ${height} ${ratioString})`;
+        const sizeString = `${size.width} x ${
+          size.height
+        } (${width} x ${height} ${ratioString})`;
         const titleStyle: CSSProperties = {
           width: size.width,
           position: 'absolute',

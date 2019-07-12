@@ -7,6 +7,4 @@
 import { ErrorParserHolder } from './ErrorParserHolder';
 
 const errorParser = ErrorParserHolder.getErrorParser();
-export {
-  errorParser,
-};
+export { errorParser };

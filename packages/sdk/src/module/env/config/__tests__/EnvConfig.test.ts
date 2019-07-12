@@ -39,4 +39,14 @@ describe('EnvConfig', () => {
       'TEST',
     );
   });
+
+  describe('getDisableLD', () => {
+    it('should call get when try to getDisableLD', () => {
+      EnvConfig.getDisableLD();
+      expect(mockConfigService.get).toHaveBeenCalledWith(
+        MODULE,
+        CONFIG_KEYS.DISABLE_LD,
+      );
+    });
+  });
 });

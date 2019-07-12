@@ -55,5 +55,5 @@ function set(object: object, property: string | string[], value: any) {
 }
 
 export {
-  parseDirectoryConfig, loadFileConfigs, getEnvArray, get, set,
+  parseDirectoryConfig, loadFileConfigs, getEnvArray, get, set
 };

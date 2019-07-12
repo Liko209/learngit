@@ -8,6 +8,8 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { VoicemailService } from 'sdk/module/RCItems/voicemail';
 import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 import {
   ActiveVoicemailId,
   FetchVoicemailData,
@@ -16,6 +18,7 @@ import {
   VoicemailProps,
   VoicemailViewProps,
 } from './types';
+import { INITIAL_COUNT } from './config';
 import { VoicemailListHandler } from './VoicemailListHandler';
 import { HoverControllerViewModel } from '../HoverController';
 
@@ -25,13 +28,19 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   isError = false;
 
   @observable
-  filterValue = '';
-
-  @observable
-  _filterFunc: VoicemailFilterFunc = null;
+  filterFOCKey = '';
 
   @observable
   activeVoicemailId: ActiveVoicemailId = null;
+
+  @observable
+  private _filterValue = '';
+
+  @observable
+  private _handler: VoicemailListHandler;
+
+  @observable
+  private _filterFunc: VoicemailFilterFunc = null;
 
   @action
   onVoicemailPlay = (id: ActiveVoicemailId) => {
@@ -41,11 +50,29 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   constructor(props: any) {
     super(props);
 
+    this._setHandler(this.getHandler());
+
     this.reaction(
-      () => this.filterValue,
-      async filterKey => {
+      () => this._filterValue,
+      async (filterKey: string) => {
         this._filterFunc = await this._service.buildFilterFunc({ filterKey });
+
+        const handler = this.getHandler();
+
+        await handler.fetchSortableDataListHandler.fetchData(
+          QUERY_DIRECTION.NEWER,
+          INITIAL_COUNT,
+        );
+
+        this._setFilterFOCKey(filterKey);
+
+        this._setHandler(handler);
       },
+    );
+
+    this.reaction(
+      () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
+      () => this.onVoicemailPlay(null),
     );
   }
 
@@ -53,9 +80,18 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
     ServiceConfig.VOICEMAIL_SERVICE,
   );
 
-  @computed
-  private get _handler() {
+  getHandler() {
     return new VoicemailListHandler(this._fetchData, this._filterFunc);
+  }
+
+  @action
+  private _setHandler(handler: VoicemailListHandler) {
+    this._handler = handler;
+  }
+
+  @action
+  private _setFilterFOCKey(key: string) {
+    this.filterFOCKey = key;
   }
 
   @computed
@@ -80,7 +116,7 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
       anchorId: anchor && anchor.id,
     };
 
-    if (this.filterValue && this._filterFunc) {
+    if (this._filterValue && this._filterFunc) {
       options.filterFunc = this._filterFunc;
     }
 
@@ -100,7 +136,7 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
 
   @action
   onFilterChange: IJuiChangePhoneFilter = value => {
-    this.filterValue = value;
+    this._filterValue = value;
   };
 }
 

@@ -29,7 +29,7 @@ import { CALL_REPORT_PROPS } from '../report/types';
 import { kRTCGetStatsInterval } from '../account/constants';
 import { RTCMediaStatsManager } from './RTCMediaStatsManager';
 
-const MediaStreams = require('ringcentral-web-phone/src/mediaStreams');
+const MediaStreams = require('ringcentral-web-phone/lib/mediaStreams');
 
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
@@ -618,7 +618,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
       rtcLogger.debug(
         LOG_TAG,
-        `mediaElement: ${this._mediaElement} setSinkId: ${this._mediaElement.local.setSinkId}`,
+        `mediaElement: ${this._mediaElement} setSinkId: ${
+          this._mediaElement.local.setSinkId
+        }`,
       );
       this._mediaElement.local
         .setSinkId(deviceID)
@@ -631,7 +633,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         .catch((error: any) => {
           rtcLogger.warn(
             LOG_TAG,
-            `set local audio output device ${deviceID} failed with: ${error.message}`,
+            `set local audio output device ${deviceID} failed with: ${
+              error.message
+            }`,
           );
         });
 
@@ -646,7 +650,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         .catch((error: any) => {
           rtcLogger.warn(
             LOG_TAG,
-            `set remote audio output device ${deviceID} failed with: ${error.message}`,
+            `set remote audio output device ${deviceID} failed with: ${
+              error.message
+            }`,
           );
         });
     }

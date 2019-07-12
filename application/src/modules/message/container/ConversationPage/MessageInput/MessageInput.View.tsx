@@ -176,6 +176,7 @@ class MessageInputViewComponent extends Component<
 
   render() {
     const {
+      hasFocused,
       draft,
       contentChange,
       error,
@@ -192,12 +193,12 @@ class MessageInputViewComponent extends Component<
         onChange={contentChange}
         error={error ? t(error) : error}
         modules={modules}
-        id={id}
         toolbarNode={this._getToolbarNode(t, insertEmoji)}
         footerNode={this._getFooterNode(hasInput)}
         attachmentsNode={this._getAttachmentsNode(id)}
         didDropFile={this.handleCopyPasteFile}
         placeholder={t('message.action.typeNewMessage')}
+        hasFocused={hasFocused}
       >
         <Mention id={id} ref={this._mentionRef} />
         <ColonEmoji id={id} ref={this._emojiRef} />

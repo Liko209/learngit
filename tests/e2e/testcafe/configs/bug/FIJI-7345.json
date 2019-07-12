@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/PhoneTab/CallHistory/Filter.ts",
+      "./fixtures/PhoneTab/CallHistory/ContentPanel/EmptyPage.ts",
+      "./fixtures/PhoneTab/Voicemail/Filter.ts",
+      "./fixtures/PhoneTab/Voicemail/EmptyPage.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

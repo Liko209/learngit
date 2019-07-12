@@ -131,7 +131,6 @@
     "ThisWeek": "This week",
     "ThisMonth": "This month",
     "ThisYear": "This year",
-
     "prompt": {
       "contentSearchNetworkError": "We aren't able to complete this search. Check your network connection, then try again.",
       "contentSearchServiceError": "Sorry, something went wrong on our end and we aren't able to complete this search. Try again later."
@@ -273,6 +272,7 @@
       "NewMessage": "New Message",
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
+      "newMessageDirectlyTip": "Send the message to the selected contacts individually.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
       "changeDefaultPhoneAppTitle": "Change default phone app",
@@ -665,7 +665,8 @@
       "record": "Record the call",
       "stopRecord": "Stop recording",
       "minimize": "Minimize the dialog",
-      "callActions": "Call actions"
+      "callActions": "Call actions",
+      "recentCall": "Show recent calls"
     },
     "dialerPlaceholder": "Enter a name or number",
     "delete": "Delete",
@@ -781,7 +782,7 @@
     "teamSettings": "Settings",
     "general": "General",
     "notificationAndSounds": {
-      "title": "Notification and Sounds",
+      "title": "Notifications and sounds",
       "otherNotificationSettings": {
         "title": "Other notification settings",
         "newMessageBadgeCount": {
@@ -810,11 +811,11 @@
         },
         "incomingCalls": {
           "label": "Incoming calls",
-          "description": "Choose your preference for desktop notifications for incoming calls"
+          "description": "Receive notifications for incoming calls"
         },
         "callsAndVoicemails": {
           "label": "Missed calls and new voicemails",
-          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+          "description": "Receive notifications for missed calls and new voicemails"
         }
       },
       "emailNotifications": {
@@ -829,7 +830,7 @@
         },
         "teams": {
           "label": "Teams",
-          "description": "Choose your preferences for email notifications for team messages"
+          "description": "Receive email notifications for team messages"
         },
         "dailyDigest": {
           "label": "Daily digest",
@@ -846,7 +847,6 @@
     "messages": "Messages",
     "meetings": "Meetings",
     "calendar": "Calendar",
-    "update": "Update",
     "edit": "Edit",
     "phone": {
       "title": "Phone",
@@ -896,7 +896,7 @@
       },
       "volume": {
         "label": "Volume control",
-        "description": "Update the volume"
+        "description": "Update the app volume"
       }
     },
     "useDefault": "Use system default",

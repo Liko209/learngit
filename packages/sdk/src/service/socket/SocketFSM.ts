@@ -75,7 +75,9 @@ export class SocketFSM extends StateMachine {
 
         onEnterState() {
           this.info(
-            `onEnterState ${this.state} isManualStopped:${this.isManualStopped}`,
+            `onEnterState ${this.state} isManualStopped:${
+              this.isManualStopped
+            }`,
           );
 
           if (this.stateHandler) {
@@ -172,7 +174,9 @@ export class SocketFSM extends StateMachine {
       this.socketClient.socket.io
     ) {
       this.info(
-        `setReconnection: ${this.socketClient.socket.io._reconnection} ==> ${bOn}`,
+        `setReconnection: ${
+          this.socketClient.socket.io._reconnection
+        } ==> ${bOn}`,
       );
       this.socketClient.socket.io.reconnection(bOn);
     } else {
@@ -312,7 +316,9 @@ export class SocketFSM extends StateMachine {
   }
   protected fsmGlipPingPongCallback(success: boolean) {
     this.info(
-      ` glipPingPongCallback success: ${success} state:${this.state} isManualStopped :${this.isManualStopped}`,
+      ` glipPingPongCallback success: ${success} state:${
+        this.state
+      } isManualStopped :${this.isManualStopped}`,
     );
     this.glipPingPongStatusCallback && this.glipPingPongStatusCallback(success);
   }
