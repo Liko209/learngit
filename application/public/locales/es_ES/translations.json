@@ -1,0 +1,968 @@
+{
+  "common": {
+    "button": {
+      "ariaToggleOn": "Activado, haga clic para desactivar",
+      "ariaToggleOff": "Desactivado, haga clic para activar",
+      "tryAgain": "Vuelva a intentarlo"
+    },
+    "dialog": {
+      "OK": "Aceptar",
+      "cancel": "Cancelar",
+      "update": "Actualizar",
+      "create": "Crear",
+      "done": "Listo",
+      "save": "Guardar",
+      "send": "Enviar",
+      "delete": "Eliminar",
+      "close": "Cerrar",
+      "deleteAll": "Eliminar todo"
+    },
+    "prompt": {
+      "NoInternetConnection": "Sin conexión a Internet",
+      "Network Error": "Red desconectada. Vuelva a intentarlo cuando se reanude la red.",
+      "tryAgain": "Vuelva a intentarlo.",
+      "tryAgainLater": "Vuelva a intentarlo más tarde.",
+      "thenTryAgain": "y vuelva a intentarlo.",
+      "loadError": "¡Vaya! Se ha producido un error. Vuelva a intentarlo."
+    },
+    "preposition": {
+      "in": "en"
+    },
+    "time": {
+      "at": "a la(s)",
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "tomorrow": "Mañana",
+      "Monday": "Lunes",
+      "Tuesday": "Martes",
+      "Wednesday": "Miércoles",
+      "Thursday": "Jueves",
+      "Friday": "Viernes",
+      "Saturday": "Sábado",
+      "Sunday": "Domingo",
+      "hour": "hora",
+      "min": "min",
+      "sec": "s"
+    },
+    "verb": {
+      "like": "me gusta",
+      "likes": "me gusta"
+    },
+    "pronoun": {
+      "this": "esto"
+    },
+    "conj": {
+      "and": "y"
+    },
+    "delete": "Eliminar",
+    "more": "Más",
+    "copy": "Copiar",
+    "remove": "Quitar",
+    "pin": "Anclar",
+    "ariaCopy": "Copiar esto {{value}}",
+    "call": "Llamar",
+    "ariaCall": "Llamar a {{value}}",
+    "download": "Descargar",
+    "expand": "Ampliar",
+    "collapse": "Contraer",
+    "back": "Atrás",
+    "forward": "Adelante",
+    "You": "Usted",
+    "Connecting": "Conectando",
+    "deactivatedUsers": "Usuarios desactivados",
+    "team": "equipo",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "reload": "Cargar de nuevo",
+    "goToConversation": "Ir a la conversación"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "signInFailedTitle": "Error al iniciar sesión",
+    "signInFailedContent": "Ha habido un problema al iniciar sesión. Vuelva a intentarlo más tarde."
+  },
+  "home": {
+    "menu": "Menú",
+    "search": "Buscar",
+    "showMore": "Mostrar más",
+    "ClearHistory": "Borrar historial",
+    "RecentSearches": "Búsquedas recientes",
+    "newActions": "Nuevas acciones",
+    "viewYourProfile": "Vea su perfil",
+    "aboutRingCentral": "Acerca de RingCentral",
+    "sendFeedback": "Enviar comentarios",
+    "version": "Versión",
+    "lastCommit": "Última confirmación",
+    "deployedTime": "Fecha",
+    "allRightsReserved": "Todos los derechos reservados",
+    "dialer": "Marcador",
+    "openDialer": "Abrir marcador"
+  },
+  "globalSearch": {
+    "search": "Buscar",
+    "showMore": "Mostrar más",
+    "ClearHistory": "Borrar historial",
+    "clear": "Borrar",
+    "RecentSearches": "Búsquedas recientes",
+    "contentSearch": "Búsqueda de contenido",
+    "inThisConversation": "en esta conversación",
+    "Messages": "Mensajes",
+    "people": "personas",
+    "groups": "grupos",
+    "team": "equipo",
+    "postedBy": "Publicado por",
+    "postedIn": "Publicado en",
+    "postedByPlaceholder": "Nombre o correo electrónico",
+    "postedInPlaceholder": "Equipo o conversación",
+    "filters": "Filtros",
+    "People": "Personas",
+    "Groups": "Grupos",
+    "Teams": "Equipos",
+    "All": "Todo",
+    "Events": "Eventos",
+    "Files": "Archivos",
+    "Links": "Enlaces",
+    "Notes": "Notas",
+    "Tasks": "Tareas",
+    "Type": "Tipo",
+    "TimePosted": "Hora de publicación",
+    "Anytime": "Cualquier momento",
+    "ThisWeek": "Esta semana",
+    "ThisMonth": "Este mes",
+    "ThisYear": "Este año",
+    "prompt": {
+      "contentSearchNetworkError": "No pudimos completar esta búsqueda. Compruebe la conexión de red y vuelva a intentarlo.",
+      "contentSearchServiceError": "Lo sentimos, algo salió mal y no pudimos completar esta búsqueda. Vuelva a intentarlo más tarde."
+    },
+    "Results": "Resultados ({{count}})",
+    "NoMatchesFound": "No se encontraron coincidencias",
+    "SearchForContactsAndKeywords": "Buscar por contactos y palabras clave"
+  },
+  "dashboard": {
+    "Dashboard": "Panel de control"
+  },
+  "message": {
+    "showUnreads": "Mostrar no leídos",
+    "meGroup": "yo",
+    "mentionPosts": "Menciones",
+    "bookmarkPosts": "Marcadores",
+    "@mentionsTitle": "@Menciones",
+    "bookmarksTitle": "Marcadores",
+    "noMentionPosts": "En este momento, no hay ninguna publicación con una @mención suya directamente.",
+    "noBookmarkPosts": "Aún no tiene marcadores. Mantenga el mouse sobre una publicación y haga clic en el icono de marcador para añadirlo y guardarlo para consultarlo luego.",
+    "loadingError": "¡Vaya! Se ha producido un error. Vuelva a intentarlo.",
+    "favoriteGroups": "favoritos",
+    "directGroups": "mensajes directos",
+    "teamGroups": "equipos",
+    "messageTypeNameSMS": "mensaje",
+    "jumpToConversation": "Ir a la conversación",
+    "emoji": {
+      "i18n": {
+        "search": "Buscar",
+        "clear": "Borrar",
+        "notfound": "No se encontraron emojis",
+        "skintext": "Elija su tono de piel predeterminado",
+        "categories": {
+          "search": "Resultados de búsqueda",
+          "recent": "Utilizado frecuentemente",
+          "people": "Emoticonos y personas",
+          "nature": "Animales y naturaleza",
+          "foods": "Comida y bebida",
+          "activity": "Actividad",
+          "places": "Viajes y lugares",
+          "objects": "Objetos",
+          "symbols": "Símbolos",
+          "flags": "Banderas",
+          "custom": "Personalizado"
+        },
+        "categorieslabel": "Categorías de emojis",
+        "skintones": {
+          "default": "Tono de piel predeterminado",
+          "light": "Tono de piel claro",
+          "mediumLight": "Tono de piel medianamente claro",
+          "medium": "Tono de piel medio",
+          "mediumDark": "Tono de piel medianamente oscuro",
+          "dark": "Tono de piel oscuro"
+        }
+      },
+      "emojiTooltip": "Emoji",
+      "emojiDefaultTitle": "Elija su emoji",
+      "toggleButtonLabel": "Mantener abierto",
+      "emojiMatching": "Emojis coincidentes"
+    },
+    "sharedItems": "ha compartido elementos",
+    "initialPost": {
+      "directMessageDescription": "Este es el comienzo de su historial de mensaje directo con {{displayName}}",
+      "createATeam": "ha creado un equipo",
+      "on": "el",
+      "postInitialTitle": "Comenzar",
+      "shareFile": "Compartir un archivo",
+      "createTask": "Crear una tarea",
+      "integrateApps": "Integrar aplicaciones"
+    },
+    "action": {
+      "like": "Me gusta",
+      "unlike": "Ya no me gusta",
+      "bookmark": "Añadir marcador",
+      "removeBookmark": "Quitar marcador",
+      "quote": "Citar",
+      "pin": "Anclar",
+      "unpin": "Desanclar",
+      "editPost": "Editar publicación",
+      "deletePost": "Eliminar publicación",
+      "resendPost": "Reenviar publicación",
+      "attachFile": "Adjuntar archivo",
+      "typeNewMessage": "Escribir nuevo mensaje",
+      "sendNewMessage": "Enviar nuevo mensaje"
+    },
+    "inputMenus": {
+      "uploadFileMenuTitle": "Cargar archivos desde",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Equipo"
+    },
+    "stream": {
+      "addedToTeam": "{{inviter}} ha añadido a {{newUser}} al equipo",
+      "changeTeamName": "{{changer}} ha cambiado el nombre del equipo de {{oldValue}} a {{value}}",
+      "joinTheTeam": "{{newUser}} se ha unido al equipo",
+      "newMessages": "nuevos mensajes",
+      "newMessagesDivider": "Nuevos mensajes"
+    },
+    "teamMembers": "miembros del equipo",
+    "suggestedPeople": "personas sugeridas",
+    "conversationDetails": "Detalles de la conversación",
+    "conversationDetailsShow": "Mostrar detalles",
+    "conversationDetailsHide": "Ocultar detalles",
+    "prompt": {
+      "deletePostFailedForServerIssue": "Lo sentimos, algo salió mal y no pudimos eliminar esta publicación. Vuelva a intentarlo más tarde.",
+      "deletePostFailedForNetworkIssue": "No pudimos eliminar esta publicación. Compruebe la conexión de red y vuelva a intentarlo.",
+      "editPostFailedForServerIssue": "Lo sentimos, algo salió mal y no pudimos editar esta publicación. Vuelva a intentarlo más tarde.",
+      "editPostFailedForNetworkIssue": "No pudimos editar esta publicación. Compruebe la conexión de red y vuelva a intentarlo.",
+      "viewInPostFailedWithServerIssue": "Lo sentimos, algo salió mal y no pudimos ir a la publicación. Vuelva a intentarlo más tarde.",
+      "viewInPostFailedWithNetworkIssue": "Lo sentimos, no pudimos ir a la publicación. Compruebe la conexión de red y vuelva a intentarlo.",
+      "contentLength": "Se puede enviar un máximo de 10 000 caracteres",
+      "contentIllegal": "No se permite JavaScript",
+      "deletePostTitle": "¿Desea eliminar la publicación?",
+      "deleteFileTitle": "¿Desea eliminar el archivo?",
+      "deletePostContent": "¿Está seguro de que desea eliminar esta publicación?",
+      "deleteFileContent": "¿Está seguro de que desea eliminar el archivo <0>{{fileName}}</0>?",
+      "SorryWeWereNotAbleToSendTheMessage": "Lo sentimos, no pudimos enviar el mensaje. Vuelva a intentarlo.",
+      "notAbleToUnlikeForNetworkIssue": "No pudimos indicar que este mensaje ya no le gusta. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToUnlikeForServerIssue": "Lo sentimos, algo salió mal y no pudimos indicar que ya no le gusta este mensaje. Vuelva a intentarlo más tarde.",
+      "notAbleToLikeThisMessageForNetworkIssue": "No pudimos indicar que le gusta este mensaje. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToLikeThisMessageForServerIssue": "Lo sentimos, algo salió mal y no pudimos indicar que le gusta este mensaje. Vuelva a intentarlo más tarde.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Lo sentimos, no pudimos quitar su marcador debido a una conexión de red débil. Vuelva a intentarlo.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Lo sentimos, algo salió mal y no pudimos quitar su marcador. Vuelva a intentarlo más tarde.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "No pudimos añadir un marcador a este mensaje debido a una conexión de red débil. Compruebe la conexión y vuelva a intentarlo.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Lo sentimos, algo salió mal y no pudimos añadir un marcador a este mensaje. Vuelva a intentarlo más tarde.",
+      "notAbleToUnpinForNetworkIssue": "No pudimos desanclar este mensaje. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToUnpinForServerIssue": "Lo sentimos, algo salió mal y no pudimos desanclar este mensaje. Vuelva a intentarlo más tarde.",
+      "notAbleToPinForNetworkIssue": "No pudimos anclar este mensaje. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToPinForServerIssue": "Lo sentimos, algo salió mal y no pudimos anclar este mensaje. Vuelva a intentarlo más tarde.",
+      "notAbleToLoadOlderMessagesForNetworkIssue": "No pudimos cargar mensajes más antiguos. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToLoadOlderMessagesForServerIssue": "Lo sentimos, algo salió mal y no pudimos cargar mensajes más antiguos. Vuelva a intentarlo más tarde.",
+      "SorryWeWereNotAbleToLoadNewerMessages": "Lo sentimos, no pudimos cargar mensajes más nuevos. Vuelva a intentarlo.",
+      "MessageLoadingErrorTip": "No pudimos abrir esta conversación.",
+      "MessageLoadingErrorTipForNetworkIssue": "No podemos abrir esta conversación. Compruebe la conexión de red ",
+      "MessageLoadingErrorTipForServerIssue": "Lo sentimos, algo salió mal y no podemos abrir esta conversación. ",
+      "NewMessage": "Nuevo mensaje",
+      "newMessageTip": "Las conversaciones con una o más personas específicas son excelentes para una charla informal. En cambio, para proyectos, departamentos o incluso una conversación sobre un tema particular debe ",
+      "newMessageTipLink": "crear un Equipo.",
+      "NewMessageError": "Ha habido un problema al crear este mensaje nuevo. Vuelva a intentarlo más tarde.",
+      "disabledText": "Este equipo es de solo lectura",
+      "changeDefaultPhoneAppTitle": "Cambiar la aplicación de teléfono predeterminada",
+      "changeDefaultPhoneAppContent": "Está a punto de elegir RingCentral Phone para las funciones predeterminadas de su teléfono. Instale la aplicación RingCentral Phone antes de continuar. ¿Está seguro de que desea elegir RingCentral Phone como su opción predeterminada?",
+      "editFileNameTitle": "Cambiar nombre de archivo",
+      "editFileNameInputLabel": "Nombre de archivo",
+      "editFileNameBackendError": "Lo sentimos, algo salió mal y no podemos guardar el cambio. Vuelva a intentarlo más tarde.",
+      "editFileNameNetworkError": "No podemos guardar el cambio. Compruebe la conexión de red y vuelva a intentarlo.",
+      "deleteFileBackendError": "Lo sentimos, algo salió mal y no pudimos eliminar este archivo. Vuelva a intentarlo más tarde.",
+      "deleteFileNetworkError": "No pudimos eliminar este archivo. Compruebe la conexión de red y vuelva a intentarlo."
+    },
+    "fileAction": {
+      "deleteFile": "Eliminar archivo",
+      "editFileName": "Editar nombre de archivo",
+      "viewInPost": "Ver en publicación"
+    },
+    "Messages": "Mensajes",
+    "message": "Mensaje",
+    "atMentionAllTeam": "Equipo",
+    "atMentionAllAdmin": "administrador",
+    "markupTips": "*cursiva* **negrita** __subrayado__ ~~tachado~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> está escribiendo...",
+      "twoTyping": "<0>{{personA}}</0> y <0>{{personB}}</0> están escribiendo...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> y más personas están escribiendo..."
+    }
+  },
+  "item": {
+    "activity": {
+      "created a task": "ha creado una tarea",
+      "assigned task": "ha asignado la tarea",
+      "reassigned task": "ha reasignado la tarea",
+      "completed task": "ha terminado la tarea",
+      "completed {{count}}% of task": "ha completado el {{count}} % de la tarea",
+      "marked task incomplete": "ha marcado la tarea como incompleta",
+      "marked task incomplete for {{user}}": "ha marcado la tarea como incompleta para {{user}}",
+      "completed task for {{user}}": "ha terminado la tarea para {{user}}",
+      "created a event": "ha creado un evento",
+      "updated a event": "ha actualizado un evento",
+      "updated event": "ha actualizado el evento",
+      "shared a note": "ha compartido una nota",
+      "shared a file": "ha compartido un archivo",
+      "shared {{count}} file": "ha compartido {{count}} archivos",
+      "uploaded version {{number}}": "ha cargado la versión {{number}}",
+      "shared a link": "ha compartido un enlace",
+      "shared {{count}} link": "ha compartido {{count}} enlaces",
+      "shared a snippet": "ha compartido un fragmento",
+      "shared items": "ha compartido elementos",
+      "started a audio conference": "ha iniciado una conferencia de audio",
+      "started a video chat": "ha iniciado un chat de vídeo",
+      "replied": "ha respondido",
+      "via": "mediante"
+    },
+    "meeting": {
+      "videoCallInProgress": "Videollamada en curso",
+      "videoCallEnded": "Videollamada terminada",
+      "videoCallCancelled": "Videollamada cancelada",
+      "videoCallDuration": "Duración",
+      "startVideoCall": "Iniciando videollamada...",
+      "meetingUrl": "URL de reunión",
+      "meetingId": "ID de reunión",
+      "duration": "Duración",
+      "help": "Ayuda",
+      "installProblems": "¿Tiene problemas con la instalación?",
+      "readThis": "Lea esto"
+    },
+    "dialInNumber": "Número de marcación",
+    "avatarNamesWithOthers": " y otras {{count}} personas",
+    "attachments": "Archivos adjuntos",
+    "assignee": "Usuario asignado",
+    "due": "Fecha límite",
+    "section": "Sección",
+    "descriptionNotes": "Descripción",
+    "hideEventHistory": "Ocultar",
+    "showEventHistory": "Mostrar anteriores",
+    "locationTitle": "Ubicación",
+    "repeatingEveryDay": "repetir todos los días",
+    "repeatingEveryWeekday": "repetir todos los días laborables",
+    "repeatingEveryWeek": "repetir todas las semanas",
+    "repeatingEveryMonth": "repetir todos los meses",
+    "repeatingEveryYear": "repetir todos los años",
+    "forDayTimes": "por {{count}} días",
+    "forDayTimes_interval": "(1){for one day};",
+    "forWeekTimes": "por {{count}} semanas",
+    "forWeekTimes_interval": "(1){for one week};",
+    "forWeekdailyTimes": "por {{count}} días laborables",
+    "forWeekdailyTimes_interval": "(1){for one weekday};",
+    "forMonthlyTimes": "por {{count}} meses",
+    "forMonthlyTimes_interval": "(1){for one month};",
+    "forYearlyTimes": "por {{count}} años",
+    "forYearlyTimes_interval": "(1){for one year};",
+    "until": "hasta",
+    "updateFiles": "¿Actualizar archivos?",
+    "theFollowingFilesAlreadyExist": "Los siguientes archivos ya existen.",
+    "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "¿Desea actualizar los archivos actuales o crear uno nuevo?",
+    "audioConferenceTitle": "Conferencia de audio",
+    "or": "o",
+    "globalNumber": "Número global",
+    "hostCode": "Acceso de host",
+    "participantCode": "Acceso de participante",
+    "downloadToSeeTheRestLine": "Descargar para ver la {{restLines}} línea restante",
+    "downloadToSeeTheRestLine_plural": "Descargar para ver las {{restLines}} líneas restantes",
+    "expandLines": "Ampliar ({{lineNumber}} líneas)",
+    "pinned": "Anclado",
+    "files": "Archivos",
+    "images": "Imágenes",
+    "links": "Enlaces",
+    "tasks": "Tareas",
+    "notes": "Notas",
+    "events": "Eventos",
+    "integrations": "Integraciones",
+    "pinnedListSubheader": "Publicaciones ancladas",
+    "fileListSubheader": "Archivos",
+    "taskListSubheader": "Tareas",
+    "noteListSubheader": "Notas",
+    "linkListSubheader": "Enlaces",
+    "eventListSubheader": "Eventos",
+    "imageListSubheader": "Imágenes",
+    "youHaveNothingPinnedYet": "Aún no ha anclado nada",
+    "noFilesSharedYet": "Aún no se compartieron archivos",
+    "noImagesSharedYet": "Aún no se compartieron imágenes",
+    "noTasksYet": "Aún no hay tareas",
+    "noLinksSharedYet": "Aún no se compartieron enlaces",
+    "noNotesCreatedYet": "Aún no se crearon notas",
+    "noEventsCreatedYet": "Aún no se crearon eventos",
+    "noIntegrationInstallationYet": "Aún no se instaló la integración",
+    "noPinSubText": "Todo lo que ancla se muestra aquí para que pueda verlo más tarde.",
+    "noFileSubText": "Los archivos que se comparten en su conversación se muestran aquí automáticamente.",
+    "noImageSubText": "Las imágenes que se comparten en su conversación se muestran aquí automáticamente.",
+    "noTaskSubText": "Rastree las tareas que se asigna a usted mismo o que le asignan aquí.",
+    "noLinkSubText": "Los enlaces que se comparten en su conversación se muestran aquí automáticamente.",
+    "noNoteSubText": "Las notas que se crean en su conversación se muestran aquí automáticamente.",
+    "noEventSubText": "Los eventos de su calendario se muestran aquí automáticamente.",
+    "noIntegrationSubText": "Actualmente no hay integraciones instaladas. Cuando instala integraciones se muestran aquí.",
+    "networkErrorPinnedPrompt": "Lo sentimos, no pudimos cargar más publicaciones.",
+    "networkErrorFilesPrompt": "Lo sentimos, no pudimos cargar más archivos.",
+    "networkErrorImagesPrompt": "Lo sentimos, no pudimos cargar más imágenes.",
+    "networkErrorLinksPrompt": "Lo sentimos, no pudimos cargar más enlaces.",
+    "networkErrorTasksPrompt": "Lo sentimos, no pudimos cargar más tareas.",
+    "networkErrorEventsPrompt": "Lo sentimos, no pudimos cargar más eventos.",
+    "networkErrorNotesPrompt": "Lo sentimos, no pudimos cargar más notas.",
+    "networkErrorIntegrationsPrompt": "Lo sentimos, no pudimos cargar más integraciones activas.",
+    "pinnedMore": "y {{num}} más",
+    "prompt": {
+      "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Su carga falló. Ya se está cargando un archivo. Espere hasta que se haya completado.",
+      "fileNoLongerExists": "Lo sentimos, no pudimos cargar el archivo porque ya no existe.",
+      "notAbleToCancelUpload": "Lo sentimos, no pudimos cancelar la carga.",
+      "notAbleToCancelUploadTryAgain": "Lo sentimos, no pudimos cancelar la carga. Vuelva a intentarlo."
+    }
+  },
+  "people": {
+    "profile": {
+      "checkMoreTeamOption": "Consulte más opciones para este equipo",
+      "copyEmail": "Copiar correo electrónico",
+      "copyUrl": "Copiar URL",
+      "guest": "Invitado",
+      "admin": "Administrador",
+      "company": "Compañía",
+      "location": "Ubicación",
+      "extensionNumber": "Ext.",
+      "ariaExtensionNumber": "número de extensión",
+      "directNumber": "Número directo",
+      "ariaDirectNumber": "número de teléfono",
+      "email": "Correo electrónico",
+      "ariaEmail": "dirección de correo electrónico",
+      "linkedIn": "LinkedIn",
+      "webpage": "Página web",
+      "ariaWebpage": "página web",
+      "ariaGoToMe": "Ir a la estación de trabajo propia",
+      "ariaGoToOther": "Ir a la conversación con {{name}}"
+    },
+    "team": {
+      "Members": "Miembros",
+      "SearchContactPlaceholder": "Escribir nombres o direcciones de correo electrónico",
+      "CreateTeam": "Crear equipo",
+      "Create": "Crear",
+      "SetAsPublicTeam": "Equipo público (visible para todos los compañeros)",
+      "MembersMayPostMessages": "Permitir que los miembros publiquen mensajes",
+      "MembersMayAddOtherMembers": "Permitir que los miembros añadan a otros miembros",
+      "MembersMayPinPosts": "Permitir que los miembros anclen publicaciones",
+      "teamName": "Nombre del equipo",
+      "teamNamePlaceholder": "Escribir nombre del equipo",
+      "teamDescription": "Descripción del equipo",
+      "allowTeamMembersTo": "Permitir a los miembros del equipo",
+      "addTeamMembers": "Añadir miembros del equipo",
+      "postMessages": "Publicar mensajes",
+      "pinPosts": "Anclar mensajes",
+      "leaveTeam": "Abandonar equipo",
+      "leaveTeamConfirmTitle": "Abandonar equipo",
+      "leaveTeamConfirmContent": "Una vez que abandone <0>{{teamName}}</0>, ya no podrá acceder al contenido.",
+      "leaveTeamConfirmOk": "abandonar",
+      "deleteTeam": "Eliminar equipo",
+      "deleteTeamToolTip": "Eliminar equipo permanentemente.",
+      "deleteTeamConfirmTitle": "¿Eliminar equipo?",
+      "deleteTeamConfirmContent": "¿Está seguro de que desea eliminar el equipo <0>{{teamName}}</0> permanentemente?",
+      "deleteTeamConfirmOk": "eliminar",
+      "deleteTeamSuccessMsg": "El equipo se ha eliminado correctamente.",
+      "archiveTeam": "Archivar equipo",
+      "archiveTeamToolTip": "Archive un equipo para que no se muestre en sus conversaciones activas. El equipo seguirá apareciendo en la lista de equipos y podrá restaurarlo.",
+      "archiveTeamConfirmTitle": "¿Archivar equipo?",
+      "archiveTeamConfirmContent": "Los equipos archivados todavía estarán disponibles en la parte inferior de la página de equipos, pero no aparecerán en sus conversaciones activas.",
+      "archiveTeamConfirmOk": "archivar",
+      "archiveTeamSuccessMsg": "El equipo se ha archivado correctamente.",
+      "changeToPublic": "Cambiar a equipo público",
+      "changeToPrivate": "Cambiar a equipo privado",
+      "publicTeam": "Este equipo es público",
+      "privateTeam": "Este equipo es privado",
+      "teamMembers": "Miembros del equipo",
+      "groupMembers": "Miembros del grupo",
+      "searchMembers": "Buscar miembros",
+      "makeTeamAdmin": "Designar administrador del equipo",
+      "revokeTeamAdmin": "Cancelar privilegios del administrador del equipo",
+      "addTeamMemberSubmit": "Añadir",
+      "AddTeamMembers": "Añadir miembros del equipo",
+      "AddTeamMembersTitle": "Añadir miembros del equipo",
+      "removeFromTeam": "Quitar del equipo",
+      "joinButtonTitle": "Unirse",
+      "joinTeam": "Unirse al equipo",
+      "ariaJoinTeam": "Unirse al equipo {{name}}.",
+      "joinTeamTitle": "¿Unirse al equipo?",
+      "joinTeamContent": "Actualmente no es miembro del equipo <0>{{teamName}}</0>. ¿Desea unirse al equipo?",
+      "joinTeamSubmit": "Unirse",
+      "joinedStatus": "Se unió",
+      "ariaGoToTeam": "Ir a la conversación con el equipo {{name}}",
+      "ariaGoToGroup": "Ir a la conversación con el grupo",
+      "favorite": "Favorito",
+      "addToFavorites": "Añadir a Favoritos",
+      "removeFromFavorites": "Quitar de Favoritos",
+      "profile": "Perfil",
+      "teamDetails": "Detalles del equipo",
+      "close": "Cerrar",
+      "markAsRead": "Marcar como leído",
+      "markAsUnread": "Marcar como no leído",
+      "convertToTeam": "Convertir en equipo",
+      "convertToTeamNamePrefix": "Equipo: ",
+      "convertToTeamPreviousMessageHandle": "Si convierte esta conversación en un equipo, cualquier persona que se una al equipo podrá ver todos los mensajes y archivos publicados anteriormente.",
+      "noMatchesFound": "No se encontraron coincidencias",
+      "archivedSuffix": " - Archivado",
+      "adminActions": "Acciones de administrador"
+    },
+    "company": {},
+    "prompt": {
+      "noLongerAMemberOfThisTeam": "Lo sentimos, ya no es miembro de este equipo. Para unirse, póngase en contacto con el administrador del equipo.",
+      "closeConfirmDialogHeader": "¿Desea cerrar la conversación?",
+      "closeConfirmDialogContent": "Si cierra la conversación, se quitará del panel izquierdo, pero no se eliminará el contenido.",
+      "closeConfirmDialogDontAskMeAgain": "No volver a preguntarme",
+      "notAbleToCloseTheConversationForServerIssue": "Lo sentimos, algo salió mal y no pudimos cerrar esta conversación. Vuelva a intentarlo más tarde.",
+      "notAbleToCloseTheConversationForNetworkIssue": "No pudimos cerrar esta conversación. Compruebe la conexión de red y vuelva a intentarlo.",
+      "SorryWeWereNotAbleToOpenThisProfile": "Lo sentimos, no pudimos abrir este perfil. Vuelva a intentarlo.",
+      "JoinTeamErrorForAuthIssue": "Este equipo ahora es privado. Para unirse, póngase en contacto con el administrador del equipo.",
+      "JoinTeamErrorForNetworkIssue": "No pudimos unirlo al equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "JoinTeamErrorForServerIssue": "Lo sentimos, algo salió mal y no pudimos unirlo al equipo. Vuelva a intentarlo más tarde.",
+      "alreadyTaken": "Este nombre ya existe, elija otro.",
+      "CreateTeamError": "Ha habido un problema al crear este equipo. Vuelva a intentarlo más tarde.",
+      "SaveTeamUpdateErrorForNetworkIssue": "No pudimos guardar la actualización. Compruebe la conexión de red y vuelva a intentarlo.",
+      "SaveTeamUpdateErrorForServerIssue": "Lo sentimos, algo salió mal y no pudimos guardar la actualización. Vuelva a intentarlo más tarde.",
+      "YouAreAnAdminToThisTeam": "Usted es administrador del equipo.",
+      "LearnAboutTeamAdministration": "Obtenga información sobre la administración de equipos.",
+      "WeWerentAbleToCreateTheTeamTryAgain": "No pudimos crear el equipo. Vuelva a intentarlo.",
+      "changeTeamPrivateTypeErrorForNetworkIssue": "No pudimos cambiar el tipo de equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "changeTeamPrivateTypeErrorForServerIssue": "Lo sentimos, algo salió mal y no pudimos cambiar el tipo de equipo. Vuelva a intentarlo más tarde.",
+      "notAbleToUnFavoriteForNetworkIssue": "No pudimos quitar esta conversación de Favoritos. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToUnFavoriteForServerIssue": "Lo sentimos, algo salió mal y no pudimos quitar esta conversación de Favoritos. Vuelva a intentarlo más tarde.",
+      "notAbleToFavoriteThisMessageForNetworkIssue": "Lo sentimos, no pudimos añadir esta conversación a Favoritos. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToFavoriteThisMessageForServerIssue": "Lo sentimos, algo salió mal y no pudimos añadir esta conversación a Favoritos. Vuelva a intentarlo más tarde.",
+      "leaveTeamServerErrorContent": "Lo sentimos, algo salió mal y no pudimos quitarlo del equipo. Vuelva a intentarlo más tarde.",
+      "leaveTeamNetworkErrorContent": "Tenemos un problema con la conexión de red, por lo que no podemos quitarlo del equipo. Compruebe la conexión y vuelva a intentarlo.",
+      "deleteTeamServerErrorContent": "Lo sentimos, algo salió mal y no pudimos eliminar este equipo. Vuelva a intentarlo más tarde.",
+      "deleteTeamNetworkErrorContent": "Lo sentimos, no pudimos eliminar este equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "archiveTeamServerErrorContent": "Lo sentimos, algo salió mal y no pudimos archivar este equipo. Vuelva a intentarlo más tarde.",
+      "archiveTeamNetworkErrorContent": "Lo sentimos, no pudimos archivar este equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "AddTeamMembersBackendError": "Lo sentimos, algo salió mal y no pudimos añadir miembros del equipo. Vuelva a intentarlo más tarde.",
+      "AddTeamMembersNetworkError": "No pudimos añadir miembros del equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "removeMemberNetworkError": "No pudimos quitar a este miembro del equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "removeMemberBackendError": "Lo sentimos, algo salió mal y no pudimos quitar este miembro del equipo. Vuelva a intentarlo más tarde.",
+      "makeTeamAdminNetworkError": "No pudimos designar a este miembro como administrador del equipo. Compruebe la conexión de red y vuelva a intentarlo.",
+      "makeTeamAdminBackendError": "Lo sentimos, algo salió mal y no pudimos designar a este miembro como administrador del equipo. Vuelva a intentarlo más tarde.",
+      "revokeTeamAdminBackendError": "Lo sentimos, algo salió mal y no pudimos anular los permisos de administrador del equipo para este miembro. Vuelva a intentarlo más tarde.",
+      "revokeTeamAdminNetworkError": "Lo sentimos, no pudimos anular los permisos de administrador del equipo para este miembro. Compruebe la conexión de red y vuelva a intentarlo.",
+      "InvalidEmail": "Correo electrónico no válido",
+      "markAsRead": "No se pudo marcar esta conversación como leída. Vuelva a intentarlo más tarde.",
+      "markAsUnread": "No se pudo marcar esta conversación como no leída. Vuelva a intentarlo más tarde.",
+      "FailedToConvertThisConversationToTeam": "No se pudo convertir esta conversación en equipo. Vuelva a intentarlo más tarde.",
+      "conversationDeleted": "El equipo se eliminó. Para obtener más información, póngase en contacto con el administrador del equipo.",
+      "conversationArchived": "Este equipo se archivó. Para obtener más información, póngase en contacto con el administrador del equipo.",
+      "conversationPrivate": "Lo sentimos, no es miembro de este equipo. Para unirse, póngase en contacto con el administrador del equipo."
+    }
+  },
+  "contact": {
+    "Contacts": "Contactos"
+  },
+  "calendar": {
+    "Calendar": "Calendario"
+  },
+  "telephony": {
+    "Phone": "Teléfono",
+    "Ext": "Ext.",
+    "action": {
+      "minimize": "Minimizar",
+      "detach": "Desasociar",
+      "attach": "Adjuntar",
+      "mute": "Silenciar",
+      "unmute": "Reactivar",
+      "keypad": "Teclado",
+      "hold": "Retener",
+      "unhold": "Reanudar",
+      "add": "Añadir",
+      "record": "Grabar",
+      "stopRecord": "Detener",
+      "callActions": "Acciones de llamada",
+      "reply": "Responder",
+      "park": "Aparcar",
+      "end": "Finalizar llamada",
+      "Answer": "Responder",
+      "back": "Atrás",
+      "forward": "Adelante",
+      "customForward": "Personalizado...",
+      "flip": "Traspasar",
+      "recentCall": "Llamadas recientes",
+      "backToDialer": "Volver al marcador"
+    },
+    "customReplyMessagePlaceholder": "Escribir un mensaje personalizado",
+    "customReplyLabel": "Mensaje personalizado",
+    "predefinedMessage": {
+      "inMeeting": "En una reunión",
+      "onMyWay": "En camino",
+      "callMeBack": "Vuelva a llamarme en...",
+      "willCallBack": "Le volveré a llamar en..."
+    },
+    "predefinedTime": {
+      "5min": "5 min",
+      "10min": "10 min",
+      "30min": "30 min",
+      "1hour": "1 hora"
+    },
+    "countText": "Responder en ",
+    "countdownUnit": "s",
+    "ignoreTheCall": "Ignorar llamada",
+    "sendToVoicemail": "Enviar al buzón de voz",
+    "moreOptions": "Más opciones",
+    "answerTheCall": "Responder llamada",
+    "unknownCaller": "Llamada desconocida",
+    "prompt": {
+      "RCPhoneGetDownloadError": "Lo sentimos, algo salió mal y no pudimos abrir la página. Vuelva a intentarlo más tarde.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone no instalado",
+      "RCPhoneIsNotInstalledBody": "No puede realizar llamadas porque RingCentral Phone no está instalado. Primero instale RingCentral Phone.",
+      "RCPhoneIsNotInstalledOK": "Descargar RingCentral Phone",
+      "NoNetwork": "Lo sentimos, no pudimos realizar la llamada porque no hay conexión con el servidor. Vuelva a intentarlo más tarde.",
+      "CallFailed": "Lo sentimos, ha habido un problema al realizar esta llamada; vuelva a intentarlo más tarde.",
+      "CallTimeout": "Lo sentimos, no pudimos realizar la llamada. Vuelva a intentarlo más tarde.",
+      "LogoutTitle": "¿Cerrar sesión?",
+      "LogoutContent": "Si cierra sesión, su llamada finalizará. ¿Desea cerrar sesión y finalizar la llamada?",
+      "LogoutOk": "Cerrar sesión",
+      "FailedToHold": "Lo sentimos, algo salió mal y no pudimos retener la llamada",
+      "FailedToResume": "Lo sentimos, algo salió mal y no pudimos reanudar la llamada",
+      "FailedToRecord": "Lo sentimos, no pudimos grabar esta llamada. Vuelva a intentarlo más tarde.",
+      "FailedToStopRecording": "Lo sentimos, no pudimos detener la grabación de la llamada. Vuelva a intentarlo más tarde.",
+      "LackOfRecordingPermission": "Lo sentimos, pero su cuenta no incluye la función para grabar llamadas. Para habilitar esta función, póngase en contacto con el administrador de su cuenta.",
+      "RecordOnServiceWeb": "Lo sentimos, la función para grabar llamadas está desactivada en su cuenta. Para habilitar esta función, póngase en contacto con el administrador de su cuenta.",
+      "RecordAutomatically": "No se puede iniciar la grabación de la llamada.",
+      "InvalidNumber": "El número de teléfono ingresado no es válido. Compruebe el número de teléfono y vuelva a intentarlo.",
+      "ParkErrorStopRecording": "Lo sentimos, su grabación de llamadas se está guardando. Intente aparcar la llamada luego.",
+      "ParkError": "Lo sentimos, algo salió mal y no pudimos aparcar la llamada. Vuelva a intentarlo más tarde.",
+      "ParkOk": "Su llamada se ha aparcado en la ubicación",
+      "ReplyCustomMessageEmpty": "Lo sentimos, no puede enviar un mensaje vacío.",
+      "ReplyMessageSuccess": "Mensaje de voz enviado.",
+      "ForwardBackendError": "Lo sentimos, algo salió mal y no pudimos desviar la llamada.",
+      "ForwardCallSuccess": "Su llamada se desvió correctamente.",
+      "FlipBackendError": "Lo sentimos, no pudimos traspasar la llamada. Vuelva a intentarlo más tarde.",
+      "FlipSuccess": "Llamada transferida",
+      "OnDemandRecording": "Lo sentimos, la función para grabar llamadas está desactivada en su cuenta. Para habilitar esta función, póngase en contacto con el administrador de su cuenta.",
+      "AutoRecording": "No se puede iniciar la grabación de la llamada."
+    },
+    "notification": {
+      "incomingCall": "Llamada entrante",
+      "answer": "Responder",
+      "unknownCaller": "Llamada desconocida"
+    },
+    "accessibility": {
+      "hold": "Retener llamada",
+      "resume": "Reanudar llamada",
+      "record": "Grabar llamada",
+      "stopRecord": "Detener grabación",
+      "minimize": "Minimizar el diálogo",
+      "callActions": "Acciones de llamada"
+    },
+    "dialerPlaceholder": "Introduzca un nombre o un número",
+    "delete": "Eliminar",
+    "callFrom": "Llamar desde:",
+    "phoneNumberType": {
+      "directNumber": "Número directo",
+      "mainCompanyNumber": "Número principal de la compañía",
+      "blocked": "Bloqueado",
+      "nickName": "Sobrenombre",
+      "companyNumber": "Número de la compañía",
+      "companyFaxNumber": "Número de fax de la compañía"
+    },
+    "callerIdSelector": {
+      "tooltip": "Puede cambiar este ID de llamadas predeterminado en Configuración."
+    },
+    "direction": {
+      "inboundcall": "Llamada entrante",
+      "outboundcall": "Llamada saliente"
+    },
+    "result": {
+      "missedcall": "Llamada perdida"
+    },
+    "nocalllogs": "No hay registros de llamadas",
+    "dial": "Marcar:",
+    "noMatch": "No hay registros que coincidan",
+    "searching": "Buscando...",
+    "forwardCall": "Desviar llamadas",
+    "noCallLogAvailable": "No hay registros de llamadas aún"
+  },
+  "phone": {
+    "tab": {
+      "callHistory": "Historial de llamadas"
+    },
+    "callBack": "Devolver llamada",
+    "AllCalls": "Todas las llamadas",
+    "MissedCalls": "Llamadas perdidas",
+    "callhistory": "Historial de llamadas",
+    "voicemail": "Buzón de voz",
+    "block": "Bloquear",
+    "blockNumber": "Bloquear número",
+    "unblockNumber": "Desbloquear número",
+    "blockThisNumber": "Bloquear este número",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "Este número no podrá contactarse con usted si lo bloquea. ¿Desea bloquearlo?",
+    "faxes": "Faxes",
+    "unknownCaller": "Llamada desconocida",
+    "unknown": "Desconocido",
+    "recordings": "Grabaciones",
+    "noMatchesFound": "No se encontraron coincidencias",
+    "noCallLogAvailable": "No hay registro de llamadas",
+    "noVoicemailAvailable": "No hay registros de buzón de voz",
+    "prompt": {
+      "numberHasBeenBlocked": "El número se ha bloqueado",
+      "numberHasBeenUnblocked": "El número se ha desbloqueado",
+      "notAbleToUnblockForNetworkIssue": "Lo sentimos, no pudimos desbloquear este número. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToUnblockForServerIssue": "Lo sentimos, algo salió mal y no pudimos desbloquear este número. Vuelva a intentarlo más tarde.",
+      "notAbleToBlockForNetworkIssue": "Lo sentimos, no pudimos bloquear este número. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToBlockForServerIssue": "Lo sentimos, algo salió mal y no pudimos bloquear este número. Vuelva a intentarlo más tarde.",
+      "notAbleToLoadVoicemailsForNetworkIssue": "No pudimos cargar mensajes del buzón de voz. Compruebe la conexión de red.",
+      "notAbleToLoadVoicemailsForServerIssue": "No pudimos cargar mensajes del buzón de voz. Vuelva a intentarlo más tarde.",
+      "notAbleToLoadCallLogsForNetworkIssue": "No pudimos cargar registros de llamadas. Compruebe la conexión de red.",
+      "notAbleToLoadCallLogsForServerIssue": "No pudimos cargar registros de llamadas. Vuelva a intentarlo más tarde.",
+      "playVoicemailLoadError": "Lo sentimos, no pudimos reproducir/cargar los mensajes del buzón de voz debido a una conexión de red débil. Vuelva a intentarlo."
+    }
+  },
+  "calllog": {
+    "inputFilter": "Filtrar historial de llamadas",
+    "clearFilter": "Borrar filtro de historial de llamadas",
+    "deleteCallLog": "Eliminar registro de llamadas",
+    "deleteCallHistory": "Eliminar historial de llamadas",
+    "deleteAllCallHistory": "Eliminar todo el historial de llamadas",
+    "doYouWanttoDeleteThisCallLog": "¿Desea eliminar este registro de llamadas de la lista?",
+    "doYouWanttoDeleteAllCallLog": " ¿Está seguro de que desea eliminar permanentemente todos los registros de llamadas? Nota: Los registros de llamadas no se pueden recuperar de ningún modo.",
+    "prompt": {
+      "notAbleToDeleteCallLogForNetworkIssue": "Lo sentimos, no pudimos eliminar el registro. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToDeleteAllCallLogForNetworkIssue": "Lo sentimos, no pudimos eliminar el historial de llamadas. Compruebe la conexión de red y vuelva a intentarlo.",
+      "notAbleToDeleteCallLogForServerIssue": "Lo sentimos, algo salió mal y no pudimos eliminar el registro. Vuelva a intentarlo más tarde.",
+      "notAbleToDeleteAllCallLogForServerIssue": "Lo sentimos, algo salió mal y no pudimos eliminar el historial de llamadas. Vuelva a intentarlo más tarde."
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "Reproducir mensajes del buzón de voz",
+      "pause": "Pausar mensajes del buzón de voz",
+      "reload": "Volver a cargar mensajes del buzón de voz"
+    },
+    "inputFilter": "Filtrar mensajes del buzón de voz",
+    "clearFilter": "Borrar filtro de mensajes del buzón de voz",
+    "downloadVoicemail": "Descargar mensajes del buzón de voz",
+    "markUnread": "Marcar como no leído",
+    "markRead": "Marcar como leído",
+    "deleteVoicemail": "Eliminar mensajes del buzón de voz",
+    "areYouSureYouWantToDeleteTheVoicemail": "¿Está seguro de que desea eliminar este mensaje del buzón de voz?",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "Lo sentimos, no pudimos marcar el mensaje del buzón de voz como no leído debido a una conexión de red débil. Vuelva a intentarlo.",
+      "notAbleToUnreadVoicemalForServerIssue": "Lo sentimos, algo salió mal y no pudimos marcar el mensaje del buzón de voz como no leído. Vuelva a intentarlo más tarde.",
+      "notAbleToReadVoicemailForNetworkIssue": "Lo sentimos, no pudimos marcar el mensaje del buzón de voz como leído debido a una conexión de red débil. Vuelva a intentarlo.",
+      "notAbleToReadVoicemailForServerIssue": "Lo sentimos, algo salió mal y no pudimos marcar el mensaje del buzón de voz como leído. Vuelva a intentarlo más tarde.",
+      "notAbleToDeleteVoicemailForNetworkIssue": "Lo sentimos, no pudimos eliminar el mensaje del buzón de voz debido a una conexión de red débil. Vuelva a intentarlo.",
+      "notAbleToDeleteVoicemailForServerIssue": "Lo sentimos, algo salió mal y no pudimos eliminar el mensaje del buzón de voz. Vuelva a intentarlo más tarde."
+    }
+  },
+  "meeting": {
+    "Meetings": "Reuniones"
+  },
+  "integration": "",
+  "setting": {
+    "errorText": {
+      "server": "Lo sentimos, algo salió mal y no pudimos guardar su configuración. Vuelva a intentarlo más tarde.",
+      "network": "No pudimos guardar su configuración. Compruebe la conexión de red y vuelva a intentarlo.",
+      "forLink": "Lo sentimos, algo salió mal y no pudimos abrir la página. Vuelva a intentarlo más tarde."
+    },
+    "Settings": "Configuración",
+    "teamSettings": "Configuración",
+    "general": "General",
+    "notificationAndSounds": {
+      "title": "Notificaciones y sonidos",
+      "otherNotificationSettings": {
+        "title": "Otra configuración de notificaciones",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Solo mensajes directos y menciones",
+            "all": "Todos los mensajes nuevos"
+          },
+          "description": "Elija cómo desea que la aplicación cuente los mensajes nuevos en el total de elementos",
+          "label": "Total de mensajes nuevos"
+        }
+      },
+      "desktopNotifications": {
+        "title": "Notificaciones de sobremesa",
+        "notificationsForBrowser": {
+          "label": "Notificaciones de sobremesa para el navegador",
+          "description": "Active o desactive las notificaciones de sobremesa en su navegador web. Se requiere permiso del navegador para las notificaciones de sobremesa."
+        },
+        "newMessages": {
+          "label": "Nuevos mensajes",
+          "description": "Elija su preferencia para las notificaciones de sobremesa de mensajes nuevos",
+          "options": {
+            "always": "Todos los mensajes nuevos",
+            "mentions_or_dms": "Mensajes directos y menciones",
+            "never": "Desactivado"
+          }
+        },
+        "incomingCalls": {
+          "label": "Llamadas entrantes",
+          "description": "Elija su preferencia para las notificaciones de sobremesa de llamadas entrantes"
+        },
+        "callsAndVoicemails": {
+          "label": "Llamadas perdidas y nuevos mensajes del buzón de voz",
+          "description": "Elija su preferencia para las notificaciones de sobremesa de llamadas perdidas y nuevos mensajes del buzón de voz"
+        }
+      },
+      "emailNotifications": {
+        "title": "Notificaciones por correo electrónico",
+        "directMessages": {
+          "label": "Mensajes directos",
+          "description": "Reciba notificaciones por correo electrónico de mensajes directos"
+        },
+        "mentions": {
+          "label": "Menciones",
+          "description": "Reciba notificaciones por correo electrónico cuando lo mencionen"
+        },
+        "teams": {
+          "label": "Equipos",
+          "description": "Elija su preferencia para las notificaciones por correo electrónico de mensajes de equipo"
+        },
+        "dailyDigest": {
+          "label": "Resumen diario",
+          "description": "Reciba correos electrónicos de Glip con resúmenes diarios de tareas y eventos de equipo"
+        },
+        "options": {
+          "0": "Desactivado",
+          "900000": "Cada 15 minutos",
+          "3600000": "Cada hora"
+        }
+      }
+    },
+    "sounds": "Sonidos",
+    "messages": "Mensajes",
+    "meetings": "Reuniones",
+    "calendar": "Calendario",
+    "update": "Actualizar",
+    "edit": "Editar",
+    "phone": {
+      "title": "Teléfono",
+      "general": {
+        "title": "General",
+        "defaultPhoneApp": {
+          "label": "Aplicación de teléfono predeterminada para llamadas",
+          "description": "Elija qué aplicación desea utilizar para realizar llamadas",
+          "option": {
+            "glip": "Utilizar la aplicación de RingCentral (esta aplicación)",
+            "ringcentral": "Utilizar RingCentral Phone"
+          }
+        },
+        "callerID": {
+          "label": "ID de llamadas",
+          "Blocked": "Bloqueado",
+          "description": "Elija su ID de llamadas predeterminado para realizar llamadas de RingCentral"
+        },
+        "extensions": {
+          "label": "Ajustes de extensión",
+          "description": "Personalice sus ajustes de extensión de RingCentral (direccionamiento de llamadas, mensaje de bienvenida del buzón de voz y más)"
+        },
+        "regionSetting": {
+          "label": "Región",
+          "region": "Región",
+          "country": "País",
+          "areaCode": "Código de área",
+          "areaCodeErrorText": "Código de área no válido",
+          "saveSuccessText": "Su región se actualizó correctamente.",
+          "regionChangeDesc": "Introduzca el país y el código de área de su región. Estos datos se utilizarán para realizar llamadas locales y de emergencia y para dar formato al número de teléfono."
+        }
+      }
+    },
+    "audioSource": {
+      "title": "Fuentes de audio",
+      "microphoneSource": {
+        "label": "Fuente de micrófono",
+        "description": "Actualice la fuente de su micrófono para las llamadas de voz de RingCentral"
+      },
+      "speakerSource": {
+        "label": "Fuente de altavoz",
+        "description": "Actualice la fuente de su altavoz para las llamadas de voz de RingCentral"
+      },
+      "ringerSource": {
+        "label": "Fuente de timbre",
+        "description": "Actualice la fuente de timbre para las llamadas de voz de RingCentral"
+      },
+      "volume": {
+        "label": "Control de volumen",
+        "description": "Actualizar volumen"
+      }
+    },
+    "useDefault": "Utilizar la opción predeterminada del sistema",
+    "speaker": "Altavoz",
+    "noDevices": "Sin dispositivos",
+    "allDevices": "Todas las fuentes de audio",
+    "off": "Desactivado",
+    "microphone": "Micrófono",
+    "builtInMicrophone": "Micrófono integrado",
+    "builtInSpeaker": "Altavoz integrado",
+    "prompt": {
+      "updateRegionalSettingsBackendError": "Lo sentimos, algo salió mal y no pudimos guardar la configuración de su región. Vuelva a intentarlo más tarde.",
+      "updateRegionalSettingsNetworkError": "Lo sentimos, no pudimos guardar la configuración de su región debido a una conexión de red débil. Vuelva a intentarlo."
+    }
+  },
+  "viewer": {
+    "ZoomIn": "Aumentar el tamaño del archivo",
+    "ZoomOut": "Disminuir el tamaño del archivo",
+    "ZoomReset": "Restablecer zoom",
+    "PreviousFile": "Ver archivo anterior",
+    "NextFile": "Ver próximo archivo",
+    "ImageDeleted": "Lo sentimos, la imagen que estaba viendo se eliminó.",
+    "FileDeleted": "El archivo se eliminó.",
+    "TeamDeleted": "El equipo se eliminó. Para obtener más información, póngase en contacto con el administrador del equipo.",
+    "TeamArchived": "Este equipo se archivó. Para obtener más información, póngase en contacto con el administrador del equipo.",
+    "ConversationClosed": "Usted quitó la conversación."
+  },
+  "notification": {
+    "mentionedOne2One": "{{person}} le ha mencionado",
+    "group": "{{person}} ha publicado en {{conversation}}",
+    "mentioned": "{{person}} le ha mencionado en {{conversation}}",
+    "notificationEnabled": "Las notificaciones ahora están activadas.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral necesita su permiso para activar las notificaciones de sobremesa.",
+      "enablePermissionAction": "Activar notificaciones",
+      "blockedPermissionMessage": "Las notificaciones de RingCentral están bloqueadas. Vaya a la configuración de su navegador para permitir que RingCentral envíe notificaciones."
+    },
+    "notificationBlockedDialog": {
+      "title": "Notificaciones no permitidas",
+      "content": "Actualmente tiene desactivadas las notificaciones de sobremesa de RingCentral. Actualice la configuración de su navegador para activar las notificaciones de sobremesa.",
+      "button": "Aceptar"
+    }
+  },
+  "feedback": {
+    "name": "Comentarios",
+    "uploading": "cargando",
+    "uploadRecentLogsDialogHeader": "Enviar comentarios",
+    "uploadRecentLogsDialogContent": "Cargar registros recientes al correo electrónico de comentarios de Jupiter.",
+    "submit": "Enviar",
+    "describeYourProblemHere": "Describa su problema aquí",
+    "uploadLogSuccess": "Registro cargado correctamente.",
+    "uploadLogFailed": "Lo sentimos, no pudimos enviar los comentarios. Vuelva a intentarlo más tarde.",
+    "openEmailFailed": "No pudimos abrir el correo electrónico.",
+    "sendFeedbackSuccess": "Los comentarios se enviaron correctamente.",
+    "sendFeedbackFailed": "Lo sentimos, no pudimos enviar los comentarios. Vuelva a intentarlo más tarde.",
+    "title": "Parece que estamos teniendo problemas.",
+    "issueTitle": "Resumen",
+    "issueDescription": "¿Qué sucedió?",
+    "sendingInBackground": "Enviando comentarios..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "Su aplicación de sobremesa no está actualizada",
+      "dialogMessage": " Para tener la mejor experiencia de usuario, actualícela a la versión más reciente. Hasta que no actualice la versión, es posible que algunas funciones no se ejecuten correctamente.",
+      "ignoreOnce": "Ignorar una vez",
+      "upgrade": "Actualizar",
+      "notNow": "Ahora no",
+      "ignore": "Ignorar",
+      "noUpgradeDialogTitle": "No se requiere actualización",
+      "noUpgradeDialogMessage": "Su aplicación de sobremesa está actualizada.",
+      "noUpgradeDialogOk": "Aceptar",
+      "topBannerWarning": "Su aplicación de sobremesa no está actualizada. Actualizar de inmediato."
+    }
+  },
+  "dialer": {
+    "newCall": "Nueva llamada"
+  }
+}
