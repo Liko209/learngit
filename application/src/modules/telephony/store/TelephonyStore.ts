@@ -346,10 +346,15 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
-    this.id = 0;
+
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
+
+    // for TelephonyNotificationManger can get call disconnected state.
+    Promise.resolve().then(() => {
+      this.id = 0;
+    });
   };
 
   @action
