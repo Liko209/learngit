@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export const CONFIG_KEYS = {
-  ENV: 'ENV',
-  DISABLE_LD: 'DISABLE_LD',
-};
+export enum CONFIG_KEYS {
+  ENV = 'ENV',
+  DISABLE_LD = 'DISABLE_LD',
+  DISABLE_SPLIT_IO = 'DISABLE_SPLIT_IO',
+}

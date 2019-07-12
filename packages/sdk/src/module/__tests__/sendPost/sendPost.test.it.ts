@@ -12,14 +12,14 @@ import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
 import { createErrorResponse } from 'shield/sdk/utils';
 jest.setTimeout(30 * 1000);
-itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
+itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
   let postService: PostService;
   let stateService: StateService;
 
-  const glipData = data.useInitialData(data.template.BASIC);
-  const team1 = data
-    .helper()
+  const glipData = helper.useInitialData(template.BASIC);
+  const team1 = helper
+    .glipDataHelper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
   beforeAll(async () => {
@@ -55,7 +55,7 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
     });
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      mockResponse(
+      helper.mockResponse(
         createErrorResponse<IGlipPostPost>(
           {
             host: 'glip',
@@ -110,7 +110,7 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
     });
     it('create a new group then send post', async () => {
       const result = await groupService.getOrCreateGroupByMemberList([
-        currentUserId(),
+        userContext.currentUserId(),
         667,
       ]);
       expect(result.id > 0).toBeTruthy();

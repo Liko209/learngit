@@ -17,29 +17,33 @@ import { GlipData, InitialData } from './mocks/server/glip/types';
 import { parseInitialData } from './mocks/server/glip/utils';
 import { InstanceManager } from './mocks/server/InstanceManager';
 import { ProxyServer } from './mocks/server/ProxyServer';
-import { blockExternalRequest } from './utils/network/blockExternalRequest';
+import { blockExternalRequest } from './utils';
 import assert = require('assert');
-import { MockResponse, IRegexpRequestResponse } from './types';
+import { MockResponse, IMockRequestResponse } from './types';
 import { sdk } from 'sdk/index';
 import { globalConfig } from './globalConfig';
+import { EnvConfig } from 'sdk/module/env/config';
 
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
 type ItContext = {
-  currentUserId: () => number;
-  currentCompanyId: () => number;
-  mockResponse: MockResponse;
-  data: {
-    template: {
-      BASIC: InitialData;
-      STANDARD: InitialData;
-    };
+  userContext: {
+    currentUserId: () => number;
+    currentCompanyId: () => number;
+  };
+  template: {
+    BASIC: InitialData;
+    STANDARD: InitialData;
+  };
+  helper: {
     useInitialData: (initialData: InitialData) => GlipData;
-    helper: () => GlipDataHelper;
+    glipDataHelper: () => GlipDataHelper;
+    mockResponse: MockResponse;
+    clearMocks: () => void;
   };
   sdk: {
-    setup: () => Promise<void>;
+    setup: (mode?: 'glip' | 'rc') => Promise<void>;
     cleanUp: () => Promise<void>;
   };
 };
@@ -50,6 +54,8 @@ function clearMocks() {
 }
 
 async function initSdk() {
+  EnvConfig.disableSplitIo(true);
+  EnvConfig.disableLD(true)
   await sdk.init({});
 }
 
@@ -99,25 +105,25 @@ export function itForSdk(
     return new GlipDataHelper(_companyId, _userId);
   };
   let glipData: GlipData;
-  let dataHelper: GlipDataHelper;
+  let glipDataHelper: GlipDataHelper;
   const useInitialData = (initialData: InitialData) => {
     glipData = parseInitialData(initialData);
-    dataHelper = useAccount(initialData.company_id, initialData.user_id);
+    glipDataHelper = useAccount(initialData.company_id, initialData.user_id);
     return glipData;
   };
 
-  const helper = () => {
-    assert(dataHelper, 'Please useInitialData firstly.');
-    return dataHelper;
+  const getGlipDataHelper = () => {
+    assert(glipDataHelper, 'Please useInitialData firstly.');
+    return glipDataHelper;
   };
 
   const applyData = () => {
     mockGlipServer.applyGlipData(glipData);
   };
 
-  const mockResponse: MockResponse = (requestResponse, extractor) => {
+  const mockResponse: MockResponse = (requestResponse, extractor, mapper) => {
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
-      const requestResponsePool: IRegexpRequestResponse[] = [];
+      const requestResponsePool: IMockRequestResponse[] = [];
       jest
         .spyOn(proxyServer, 'getRequestResponsePool')
         .mockImplementation(() => requestResponsePool);
@@ -128,6 +134,7 @@ export function itForSdk(
     const pool = proxyServer.getRequestResponsePool();
     pool.push({
       ...requestResponse,
+      mapper,
       pathRegexp: pathToRegexp(requestResponse.path),
     });
     return extractResult;
@@ -135,22 +142,25 @@ export function itForSdk(
 
   // provide for it case to mock data.
   const itCtx: ItContext = {
-    mockResponse,
-    currentUserId: () => userId,
-    currentCompanyId: () => companyId,
-    data: {
+    helper: {
+      clearMocks,
+      mockResponse,
       useInitialData,
-      helper,
-      template: {
-        BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
-        STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
-      },
+      glipDataHelper: getGlipDataHelper,
+    },
+    userContext: {
+      currentUserId: () => userId,
+      currentCompanyId: () => companyId,
+    },
+    template: {
+      BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
+      STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
     },
     sdk: {
       cleanUp,
-      setup: async () => {
+      setup: async (mode: 'glip' | 'rc' = 'glip') => {
         applyData();
-        await setup();
+        await setup(mode);
       },
     },
   };

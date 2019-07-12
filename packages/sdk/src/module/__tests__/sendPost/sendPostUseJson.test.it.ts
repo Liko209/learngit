@@ -11,15 +11,16 @@ import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
 import { createErrorResponse, readJson } from 'shield/sdk/utils';
+import { createResponse } from 'shield/sdk/mocks/server/utils';
 jest.setTimeout(30 * 1000);
-itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
+itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
   let postService: PostService;
   let stateService: StateService;
 
-  const glipData = data.useInitialData(data.template.BASIC);
-  const team1 = data
-    .helper()
+  const glipData = helper.useInitialData(template.BASIC);
+  const team1 = helper
+    .glipDataHelper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
   beforeAll(async () => {
@@ -30,22 +31,21 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
   });
 
   afterAll(async () => {
-    await sdk.cleanUp();
+    // await sdk.cleanUp();
   });
 
   describe('PostService', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
-      jest.resetModules();
-      jest.restoreAllMocks();
+      helper.clearMocks()
     });
     it('send post 1: success', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),
         data => {
           // modify the response
           data.request.data!.group_id = team1._id;
           data.response.data.group_id = team1._id;
+          data.response.data._id = helper.glipDataHelper().post.factory.build()._id;
           return {
             text: data.request.data!.text!,
             id: data.response.data._id,
@@ -65,14 +65,14 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
     });
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      mockResponse(
+      helper.mockResponse(
         createErrorResponse<IGlipPostPost>(
           {
             host: 'glip',
             method: 'post',
             path: '/api/post',
           },
-          { status: 500 },
+          { status: 400 },
         ),
       );
       await expect(
@@ -89,6 +89,20 @@ itForSdk('Send post test', ({ data, sdk, currentUserId, mockResponse }) => {
       expect(sendFailedPost.id < 0).toBeTruthy();
     });
     it('resend post successfully', async () => {
+      helper.mockResponse(
+        readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),
+        data => {
+          data.response.data.group_id = team1._id;
+          data.response.data.text = 'test post 2';
+          data.response.data._id = helper.glipDataHelper().post.factory.build()._id;
+        },
+        (request, requestResponse) => {
+          return createResponse({
+            ...requestResponse.response,
+            data: {...requestResponse.response.data, unique_id: request.data.unique_id}
+          })
+        }
+      );
       await postService.reSendPost(sendFailedPost.id);
       const result = await postService.getPostsByGroupId({
         groupId: team1._id,

@@ -67,6 +67,7 @@ type MockResponse = <
 >(
   requestResponse: IRequestResponse<ReqData, ResData>,
   extractor?: T,
+  mapper?: (request: IJRequest<ReqData>, mockRequestResponse: IMockRequestResponse<ReqData, ResData>) => IJResponse<ResData>
 ) => ReturnType<T>;
 
 interface ISocketRequest<T = object> {
@@ -121,9 +122,10 @@ interface IRequestResponse<Req = any, Res = any>
   response: IBaseResponse<Res>;
 }
 
-interface IRegexpRequestResponse<Req = any, Res = any>
+interface IMockRequestResponse<Req = any, Res = any>
   extends IRequestResponse {
   pathRegexp: RegExp;
+  mapper?: (request: IJRequest, mockRequestResponse: IMockRequestResponse) => IJResponse;
 }
 
 interface ISocketInfo<T = any> extends INetworkInfo {
@@ -159,6 +161,6 @@ export {
   ISocketRequestInfo,
   ISocketResponseInfo,
   IRequestResponse,
-  IRegexpRequestResponse,
+  IMockRequestResponse,
   ISocketInfo,
 };

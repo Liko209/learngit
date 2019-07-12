@@ -57,7 +57,7 @@ class SplitIOController {
   }
 
   private async _initClient() {
-    if (this.isIniting || this.isClientReady) {
+    if (this.isIniting || this.isClientReady || EnvConfig.getDisableSplitIo()) {
       return;
     }
     const userConfig = ServiceLoader.getInstance<AccountService>(

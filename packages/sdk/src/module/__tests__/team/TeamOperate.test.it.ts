@@ -9,10 +9,10 @@ import { itForSdk } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
-itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
+itForSdk('Group Integration test', ({ helper, sdk, template }) => {
   let groupService: GroupService;
 
-  data.useInitialData(data.template.STANDARD);
+  helper.useInitialData(template.STANDARD);
 
   beforeAll(async () => {
     await sdk.setup();
@@ -23,7 +23,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
   });
   describe('GroupService', () => {
     it('create team', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         readJson<IGlipTeamPost>(require('./data/CREATE_TEAM.SUCCESS.json')),
         api => {
           const {
@@ -47,7 +47,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
       expect(result!.members).toEqual(mockInfo.members);
     });
     it('modify team name', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         readJson<IApiContract<any, Group>>(
           require('./data/MODIFY_TEAM_NAME.SUCCESS.json'),
         ),
@@ -69,7 +69,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
       expect(result!.set_abbreviation).toEqual(mockInfo.name);
     });
     it('disable all team permission', async () => {
-      const mockTeamInfo = mockResponse(
+      const mockTeamInfo = helper.mockResponse(
         readJson<IApiContract<any, Group>>(
           require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
         ),
@@ -101,7 +101,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
       expect(afterUpdate!.permissions).toEqual(mockTeamInfo.permissions);
     });
     it('enable all team permission', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         readJson<IApiContract<any, Group>>(
           require('./data/DISABLE_TEAM_PERMISSION.SUCCESS.json'),
         ),
@@ -133,7 +133,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
       expect(afterUpdate!.permissions).toEqual(mockInfo.permissions);
     });
     it('add team member', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         readJson<IApiContract<any, Group>>(
           require('./data/ADD_TEAM_MEMBER.SUCCESS.json'),
         ),
@@ -153,7 +153,7 @@ itForSdk('Group Integration test', ({ data, sdk, mockResponse }) => {
       expect(result!.members).toEqual(mockInfo.newMembers);
     });
     it('archived team', async () => {
-      const mockInfo = mockResponse(
+      const mockInfo = helper.mockResponse(
         require('./data/ARCHIVED_TEAM.SUCCESS.json'),
         (reqRes: IRequestResponse<Group, Group>) => {
           return {

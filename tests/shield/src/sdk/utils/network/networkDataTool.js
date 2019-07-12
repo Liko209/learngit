@@ -18,317 +18,274 @@ const GLIP_SOCKET_CHANEL_PATTERN = /^\d+\[\"([^"]*)\",(.*)\]$/;
 // [fullMatch, hostName, path]
 const URL_HOST_PATH = /^((?:https|http|wss|ws)?\:\/\/(?:[^\/:?#]+))(?:\:\d*)?(\/*[^?#]*[^?#\/])/;
 const SERVER_ALIAS_MAP = {
-  // GLP-DEV-XMN
-  'https://api-glpdevxmn.lab.nordigy.ru': 'rc',
-  'https://glpdevxmn.asialab.glip.net': 'glip',
-  // xmnup
-  'https://api-xmnup.lab.nordigy.ru': 'rc',
-  'https://xmnup.asialab.glip.net': 'glip',
-  // chris sandbox
-  'https://aws13-g04-uds02.asialab.glip.net': 'glip',
-  // production
-  'https://platform.ringcentral.com': 'rc',
-  'https://app.glip.com': 'glip',
+    // GLP-DEV-XMN
+    'https://api-glpdevxmn.lab.nordigy.ru': 'rc',
+    'https://glpdevxmn.asialab.glip.net': 'glip',
+    'wss://glpdevxmn.asialab.glip.net': 'glip',
+    // xmnup
+    'https://api-xmnup.lab.nordigy.ru': 'rc',
+    'https://xmnup.asialab.glip.net': 'glip',
+    'wss://xmnup.asialab.glip.net': 'glip',
+    // chris sandbox
+    'https://aws13-g04-uds02.asialab.glip.net': 'glip',
+    'wss://aws13-g04-uds02.asialab.glip.net': 'glip',
+    // production
+    'https://platform.ringcentral.com': 'rc',
+    'https://app.glip.com': 'glip',
+    'wss://app.glip.com': 'glip',
 };
 class Utils {
-  static parseHostPath(url) {
-    const match = url.match(URL_HOST_PATH);
-    if (match) {
-      const [, host, path] = match;
-      return {
-        host,
-        path,
-      };
-    }
-    return {
-      host: url,
-      path: '',
-    };
-  }
-  static parseHeaders(headers) {
-    const parsed = {};
-    let key;
-    let val;
-    let i;
-    if (!headers) {
-      return parsed;
-    }
-    headers.split('\n').forEach(line => {
-      i = line.indexOf(':');
-      key = line
-        .substr(0, i)
-        .trim()
-        .toLowerCase();
-      val = line.substr(i + 1).trim();
-      if (key) {
-        if (key === 'set-cookie') {
-          parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
-        } else {
-          parsed[key] = parsed[key] ? `${parsed[key]},  ${val}` : val;
+    static parseHostPath(url) {
+        const match = url.match(URL_HOST_PATH);
+        if (match) {
+            const [, host, path] = match;
+            return {
+                host,
+                path,
+            };
         }
-      }
-    });
-    return parsed;
-  }
-  static fromSocketRequest(request) {
-    return {
-      // url: `${request.host}${request.uri}`,
-      host: request.host,
-      path: request.uri,
-      method: request.method,
-      headers: request.headers,
-      data: request.parameters,
-    };
-  }
-  static fromSocketResponse(response) {
-    const header = Object.assign({}, response);
-    delete header.request;
-    delete header.body;
-    return {
-      headers: header,
-      status: response.request.status_code,
-      statusText: response.request.status_text,
-      data: Utils.toJson(response.body),
-    };
-  }
-  static isString(obj) {
-    return Object.prototype.toString.call(obj) === '[object String]';
-  }
-  static toJson(data) {
-    if (Utils.isString(data)) {
-      try {
-        return Utils.toJson(JSON.parse(data));
-      } catch (_a) {
+        return {
+            host: url,
+            path: '',
+        };
+    }
+    static parseHeaders(headers) {
+        const parsed = {};
+        let key;
+        let val;
+        let i;
+        if (!headers) {
+            return parsed;
+        }
+        headers.split('\n').forEach(line => {
+            i = line.indexOf(':');
+            key = line
+                .substr(0, i)
+                .trim()
+                .toLowerCase();
+            val = line.substr(i + 1).trim();
+            if (key) {
+                if (key === 'set-cookie') {
+                    parsed[key] = (parsed[key] ? parsed[key] : []).concat([val]);
+                }
+                else {
+                    parsed[key] = parsed[key] ? `${parsed[key]},  ${val}` : val;
+                }
+            }
+        });
+        return parsed;
+    }
+    static fromSocketRequest(request) {
+        return {
+            // url: `${request.host}${request.uri}`,
+            host: request.host,
+            path: request.uri,
+            method: request.method,
+            headers: request.headers,
+            data: request.parameters,
+        };
+    }
+    static fromSocketResponse(response) {
+        const header = Object.assign({}, response);
+        delete header.request;
+        delete header.body;
+        return {
+            headers: header,
+            status: response.request.status_code,
+            statusText: response.request.status_text,
+            data: Utils.toJson(response.body),
+        };
+    }
+    static isString(obj) {
+        return Object.prototype.toString.call(obj) === '[object String]';
+    }
+    static toJson(data) {
+        if (Utils.isString(data)) {
+            try {
+                return Utils.toJson(JSON.parse(data));
+            }
+            catch (_a) {
+                return data;
+            }
+        }
         return data;
-      }
     }
-    return data;
-  }
-  static saveBlob(name, blob) {
-    const a = document.createElement('a');
-    a.href = window.URL.createObjectURL(blob);
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-  static parseGlip(info) {
-    if (GLIP_SOCKET_CHANEL_PATTERN.test(info.rawData)) {
-      const [, chanel, data] = GLIP_SOCKET_CHANEL_PATTERN.exec(info.rawData);
-      info.chanel = chanel;
-      info.data = Utils.toJson(data);
+    static saveBlob(name, blob) {
+        const a = document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
-    return info;
-  }
+    static parseGlip(info) {
+        if (GLIP_SOCKET_CHANEL_PATTERN.test(info.rawData)) {
+            const [, chanel, data] = GLIP_SOCKET_CHANEL_PATTERN.exec(info.rawData);
+            info.chanel = chanel;
+            info.data = Utils.toJson(data);
+        }
+        return info;
+    }
 }
 let onXhrInfoComing;
 let onSocketInfoComing;
 function subscribeXHR(callback) {
-  onXhrInfoComing = callback;
-  if (!XMLHttpRequest.prototype[INJECT_FLAG]) {
-    const originOpen = XMLHttpRequest.prototype.open;
-    const originSend = XMLHttpRequest.prototype.send;
-    const originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
-    XMLHttpRequest.prototype[INJECT_FLAG] = true;
-    XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
-      // tslint:disable-next-line:no-this-assignment
-      const request = this;
-      request[INJECT_HEADER] = request[INJECT_HEADER] || {};
-      request[INJECT_HEADER][name] = value;
-      originSetRequestHeader.apply(this, arguments);
-    };
-    XMLHttpRequest.prototype.open = function() {
-      const method = arguments[0];
-      const openUrl = arguments[1];
-      // tslint:disable-next-line:no-this-assignment
-      const request = this;
-      request[INJECT_FLAG] = true;
-      const readyStateChangeListener = () => {
-        request[INJECT_FLAG] = false;
-        if (request.readyState === 4) {
-          request.removeEventListener(
-            'readystatechange',
-            readyStateChangeListener,
-          );
-          const { host, path } = Utils.parseHostPath(openUrl);
-          const responseHeader =
-            request.getAllResponseHeaders && request.getAllResponseHeaders();
-          onXhrInfoComing &&
-            onXhrInfoComing({
-              host,
-              path,
-              method,
-              type: 'request-response',
-              via: 'xhr',
-              request: {
-                host,
-                path,
-                method,
-                data: request[INJECT_DATA],
-                headers: request[INJECT_HEADER],
-              },
-              response: {
-                status: request.status,
-                statusText: request.statusText,
-                data: ['', 'text'].includes(request.responseType)
-                  ? Utils.toJson(request.responseText)
-                  : request.responseType,
-                headers: Utils.parseHeaders(responseHeader),
-              },
-            });
-        }
-      };
-      this.addEventListener('readystatechange', readyStateChangeListener);
-      return originOpen.apply(this, arguments);
-    };
-    XMLHttpRequest.prototype.send = function(data) {
-      // tslint:disable-next-line:no-this-assignment
-      const request = this;
-      if (request[INJECT_FLAG]) {
-        request[INJECT_DATA] = data;
-      }
-      return originSend.apply(this, arguments);
-    };
-  }
+    onXhrInfoComing = callback;
+    if (!XMLHttpRequest.prototype[INJECT_FLAG]) {
+        const originOpen = XMLHttpRequest.prototype.open;
+        const originSend = XMLHttpRequest.prototype.send;
+        const originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+        XMLHttpRequest.prototype[INJECT_FLAG] = true;
+        XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+            // tslint:disable-next-line:no-this-assignment
+            const request = this;
+            request[INJECT_HEADER] = request[INJECT_HEADER] || {};
+            request[INJECT_HEADER][name] = value;
+            originSetRequestHeader.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.open = function () {
+            const method = arguments[0];
+            const openUrl = arguments[1];
+            // tslint:disable-next-line:no-this-assignment
+            const request = this;
+            request[INJECT_FLAG] = true;
+            const readyStateChangeListener = () => {
+                request[INJECT_FLAG] = false;
+                if (request.readyState === 4) {
+                    request.removeEventListener('readystatechange', readyStateChangeListener);
+                    const { host, path } = Utils.parseHostPath(openUrl);
+                    const responseHeader = request.getAllResponseHeaders && request.getAllResponseHeaders();
+                    onXhrInfoComing &&
+                        onXhrInfoComing({
+                            host,
+                            path,
+                            method,
+                            type: 'request-response',
+                            via: 'xhr',
+                            request: {
+                                host,
+                                path,
+                                method,
+                                data: request[INJECT_DATA],
+                                headers: request[INJECT_HEADER],
+                            },
+                            response: {
+                                status: request.status,
+                                statusText: request.statusText,
+                                data: ['', 'text'].includes(request.responseType)
+                                    ? Utils.toJson(request.responseText)
+                                    : request.responseType,
+                                headers: Utils.parseHeaders(responseHeader),
+                            },
+                        });
+                }
+            };
+            this.addEventListener('readystatechange', readyStateChangeListener);
+            return originOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function (data) {
+            // tslint:disable-next-line:no-this-assignment
+            const request = this;
+            if (request[INJECT_FLAG]) {
+                request[INJECT_DATA] = data;
+            }
+            return originSend.apply(this, arguments);
+        };
+    }
 }
 function subscribeSocket(callback) {
-  onSocketInfoComing = callback;
-  const originSocketSend = WebSocket.prototype.send;
-  WebSocket.prototype.send = function() {
-    // tslint:disable-next-line:no-this-assignment
-    const socket = this;
-    onSocketInfoComing &&
-      onSocketInfoComing(
-        Object.assign(
-          { type: 'socket-message' },
-          Utils.parseHostPath(socket.url),
-          {
-            protocol: socket.protocol,
-            direction: 'send',
-            rawData: arguments[0],
-          },
-        ),
-      );
-    if (!socket[INJECT_FLAG]) {
-      socket[INJECT_FLAG] = true;
-      const messageListener = function(event) {
+    onSocketInfoComing = callback;
+    const originSocketSend = WebSocket.prototype.send;
+    WebSocket.prototype.send = function () {
+        // tslint:disable-next-line:no-this-assignment
+        const socket = this;
         onSocketInfoComing &&
-          onSocketInfoComing(
-            Object.assign(
-              { type: 'socket-message' },
-              Utils.parseHostPath(socket.url),
-              {
-                protocol: socket.protocol,
-                direction: 'receive',
-                rawData: event.data,
-              },
-            ),
-          );
-      };
-      const closeListener = () => {
-        socket[INJECT_FLAG] = false;
-        socket.removeEventListener('message', messageListener);
-        socket.removeEventListener('close', closeListener);
-      };
-      socket.addEventListener('message', messageListener);
-      socket.addEventListener('close', closeListener);
-    }
-    return originSocketSend.apply(this, arguments);
-  };
-  return () => {};
+            onSocketInfoComing(Object.assign({ type: 'socket-message' }, Utils.parseHostPath(socket.url), { protocol: socket.protocol, direction: 'send', rawData: arguments[0] }));
+        if (!socket[INJECT_FLAG]) {
+            socket[INJECT_FLAG] = true;
+            const messageListener = function (event) {
+                onSocketInfoComing &&
+                    onSocketInfoComing(Object.assign({ type: 'socket-message' }, Utils.parseHostPath(socket.url), { protocol: socket.protocol, direction: 'receive', rawData: event.data }));
+            };
+            const closeListener = () => {
+                socket[INJECT_FLAG] = false;
+                socket.removeEventListener('message', messageListener);
+                socket.removeEventListener('close', closeListener);
+            };
+            socket.addEventListener('message', messageListener);
+            socket.addEventListener('close', closeListener);
+        }
+        return originSocketSend.apply(this, arguments);
+    };
+    return () => { };
 }
 class NetworkDataTool {
-  constructor() {
-    this._infoPool = [];
-  }
-  _aliasHost(host) {
-    const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
-      host.startsWith(key),
-    );
-    return match ? match[1] : host;
-  }
-  startWatch() {
-    subscribeXHR(xhrInfo => {
-      xhrInfo.host = this._aliasHost(xhrInfo.host);
-      this._infoPool.push(xhrInfo);
-    });
-    subscribeSocket(socketInfo => {
-      const parseResult = Utils.parseGlip(socketInfo);
-      socketInfo.host = this._aliasHost(socketInfo.host);
-      this._infoPool.push(parseResult);
-      switch (socketInfo.chanel) {
-        case 'response':
-          const socketResponse = socketInfo;
-          const {
-            request: {
-              parameters: { request_id },
-            },
-          } = socketResponse.data;
-          const sourceRequest = this._infoPool.find(
-            item =>
-              item.type === 'socket-message' &&
-              item['chanel'] === 'request' &&
-              item.data.id.toString() === request_id,
-          );
-          if (sourceRequest) {
-            const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
-            // const { host, path } = Utils.parseHostPath(rawRequest.url);
-            this._infoPool.push({
-              host: rawRequest.host,
-              path: rawRequest.path,
-              method: rawRequest.method,
-              type: 'request-response',
-              via: 'socket',
-              // url: rawRequest.url,
-              // hostAlias: this._aliasHost(rawRequest.host),
-              request: rawRequest,
-              response: Utils.fromSocketResponse(socketResponse.data),
-            });
-          }
-          break;
-        default:
-          break;
-      }
-    });
-  }
-  clear() {
-    this._infoPool.splice(0);
-    return this;
-  }
-  filter(_filter) {
-    this._infoPool = this._infoPool.filter(_filter);
-    return this;
-  }
-  save() {
-    Utils.saveBlob(
-      'network_all.json',
-      new Blob([JSON.stringify(this._infoPool, null, 2)]),
-    );
-  }
-  saveSocketOnly() {
-    Utils.saveBlob(
-      'network_socket_only.json',
-      new Blob([
-        JSON.stringify(
-          this._infoPool.filter(item => item.type === 'socket-message'),
-          null,
-          2,
-        ),
-      ]),
-    );
-  }
-  saveRequestResponseOnly() {
-    Utils.saveBlob(
-      'network_request_response_only.json',
-      new Blob([
-        JSON.stringify(
-          this._infoPool.filter(item => item.type === 'request-response'),
-          null,
-          2,
-        ),
-      ]),
-    );
-  }
+    constructor() {
+        this._infoPool = [];
+    }
+    _aliasHost(host) {
+        const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) => host.startsWith(key));
+        return match ? match[1] : host;
+    }
+    startWatch() {
+        subscribeXHR(xhrInfo => {
+            xhrInfo.host = this._aliasHost(xhrInfo.host);
+            this._infoPool.push(xhrInfo);
+        });
+        subscribeSocket(socketInfo => {
+            const parseResult = Utils.parseGlip(socketInfo);
+            socketInfo.host = this._aliasHost(socketInfo.host);
+            this._infoPool.push(parseResult);
+            switch (socketInfo.chanel) {
+                case 'response':
+                    const socketResponse = socketInfo;
+                    const { request: { parameters: { request_id }, }, } = socketResponse.data;
+                    const sourceRequest = this._infoPool.find(item => item.type === 'socket-message' &&
+                        item['chanel'] === 'request' &&
+                        item.data.id.toString() === request_id);
+                    if (sourceRequest) {
+                        const rawRequest = Utils.fromSocketRequest(sourceRequest.data);
+                        rawRequest.host = this._aliasHost(rawRequest.host);
+                        // const { host, path } = Utils.parseHostPath(rawRequest.url);
+                        this._infoPool.push({
+                            host: rawRequest.host,
+                            path: rawRequest.path,
+                            method: rawRequest.method,
+                            type: 'request-response',
+                            via: 'socket',
+                            // url: rawRequest.url,
+                            // hostAlias: this._aliasHost(rawRequest.host),
+                            request: rawRequest,
+                            response: Utils.fromSocketResponse(socketResponse.data),
+                        });
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+    clear() {
+        this._infoPool.splice(0);
+        return this;
+    }
+    filter(_filter) {
+        this._infoPool = this._infoPool.filter(_filter);
+        return this;
+    }
+    save() {
+        Utils.saveBlob('network_all.json', new Blob([JSON.stringify(this._infoPool, null, 2)]));
+    }
+    saveSocketOnly() {
+        Utils.saveBlob('network_socket_only.json', new Blob([
+            JSON.stringify(this._infoPool.filter(item => item.type === 'socket-message'), null, 2),
+        ]));
+    }
+    saveRequestResponseOnly() {
+        Utils.saveBlob('network_request_response_only.json', new Blob([
+            JSON.stringify(this._infoPool.filter(item => item.type === 'request-response'), null, 2),
+        ]));
+    }
 }
 const _networkDataTool = new NetworkDataTool();
 _networkDataTool.startWatch();

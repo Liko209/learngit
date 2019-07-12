@@ -8,6 +8,7 @@ import http, { RequestOptions, IncomingMessage } from 'http';
 import { EventEmitter } from 'events';
 import { createDebug } from 'sdk/__tests__/utils';
 import _ from 'lodash';
+
 const debug = createDebug('BlockExternalRequest', false);
 class SimpleBlockRequest extends EventEmitter {
   emit(event: any, ...args: any) {

@@ -17,7 +17,7 @@ jest.setTimeout(30000);
 
 itForSdk(
   'Service Integration test',
-  ({ data, sdk, mockResponse }) => {
+  ({ helper, sdk, userContext, template }) => {
     let groupService: GroupService;
     let personService: PersonService;
     let searchService: SearchService;
@@ -25,17 +25,20 @@ itForSdk(
     let stateService: StateService;
 
     // const glipData = data.useInitialData(require('./test-demo-initial.json'));
-    const glipData = data.useInitialData(data.template.BASIC);
+    const glipData = helper.useInitialData(template.BASIC);
     // data.helper().team.createTeam('Test Team with thomas', [123]),
-    const team1 = data
-      .helper()
+    const team1 = helper
+      .glipDataHelper()
       .team.createTeam('Test Team with thomas', [123], { post_cursor: 11 });
-    glipData.teams.push(team1, ...data.helper().team.factory.buildList(2));
+    glipData.teams.push(team1, ...helper
+      .glipDataHelper().team.factory.buildList(2));
     glipData.groupState.push(
-      data.helper().groupState.createGroupState(team1._id, { post_cursor: 8 }),
+      helper
+      .glipDataHelper().groupState.createGroupState(team1._id, { post_cursor: 8 }),
     );
     glipData.people.push(
-      data.helper().person.build({ display_name: 'Special Name +86789' }),
+      helper
+      .glipDataHelper().person.build({ display_name: 'Special Name +86789' }),
     );
 
     beforeAll(async () => {
@@ -90,7 +93,7 @@ itForSdk(
         expect(result.posts[0].text).toEqual('xx');
       });
       it('[getPosts]should mock response work', async () => {
-        mockResponse(
+        helper.mockResponse(
           createSuccessResponse(
             {
               host: 'glip',

@@ -75,4 +75,8 @@ if (argv.includes('debug')) {
   process.env.DEBUG_LOG = true;
 }
 
+if (argv.includes('promise')) {
+  process.env.PROMISE_LOG = true;
+}
+
 jest.run(argv);

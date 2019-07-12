@@ -11,20 +11,26 @@ import { Route } from '../../../decorators/Route.decorator';
 import { IJRequest } from '../../../types';
 import { createResponse, String2Number } from '../utils';
 import {
-     GlipGroup,  GlipPost, GlipProfile, GlipState
+ GlipGroup, GlipPost, GlipProfile, GlipState
 } from './types';
 import { genPostId, parseState, doPartialUpdate } from './utils';
-import { PRequest, PContext, PQuery } from '../../../decorators/Parameter.decorator';
+import {
+  PRequest,
+  PContext,
+  PQuery,
+} from '../../../decorators/Parameter.decorator';
 import { IGlipServerContext } from './IGlipServerContext';
 
 const debug = createDebug('GlipController');
 
 export class GlipController {
-
   @Route({
     path: '/api/posts',
   })
-  async getPosts(@PRequest request: IJRequest, @PContext context: IGlipServerContext) {
+  async getPosts(
+    @PRequest request: IJRequest,
+    @PContext context: IGlipServerContext,
+  ) {
     const { limit = 20, direction = 'older', group_id } = request.params as any;
     return createResponse({
       request,
@@ -38,7 +44,10 @@ export class GlipController {
   @Route({
     path: '/api/posts_items_by_ids',
   })
-  async getPostsItemsByIds(@PRequest request: IJRequest, @PContext context: IGlipServerContext) {
+  async getPostsItemsByIds(
+    @PRequest request: IJRequest,
+    @PContext context: IGlipServerContext,
+  ) {
     const post_ids = request.params['post_ids']
       .split(',')
       .map((it: string) => Number(it));
@@ -57,7 +66,10 @@ export class GlipController {
     path: '/api/post',
     method: 'post',
   })
-  async createPost(@PRequest request: IJRequest<GlipPost>, @PContext context: IGlipServerContext) {
+  async createPost(
+    @PRequest request: IJRequest<GlipPost>,
+    @PContext context: IGlipServerContext,
+  ) {
     const serverPost: GlipPost = { _id: genPostId(), ...request.data };
     const groupId = serverPost.group_id;
     const updateResult = context.postDao.put(serverPost);
@@ -103,22 +115,22 @@ export class GlipController {
       id: String2Number,
     },
   })
-  saveStatePartial(@PRequest request: IJRequest<GlipState>, @PContext context: IGlipServerContext, @PQuery query: { id: number }) {
+  saveStatePartial(
+    @PRequest request: IJRequest<GlipState>,
+    @PContext context: IGlipServerContext,
+    @PQuery query: { id: number },
+  ) {
     debug('handle saveStatePartial -> request', query);
     const groupStates = parseState(request.data);
     if (groupStates && groupStates[0]) {
       debug('saveStatePartial -> groupStates[0] %O', groupStates[0]);
       return createResponse({
         request,
-        data: doPartialUpdate(
-          context.groupStateDao,
-          groupStates[0],
-          result => context.socketServer.emitPartial(result),
-        ),
+        data: doPartialUpdate(context.groupStateDao, groupStates[0], result => context.socketServer.emitPartial(result),),
       });
     }
     return createResponse({
-      status: 500,
+      status: 200,
       statusText: 'saveStatePartial failed',
     });
   }
@@ -127,7 +139,10 @@ export class GlipController {
     path: '/api/group',
     method: 'post',
   })
-  createGroup(@PRequest request: IJRequest<GlipGroup>, @PContext context: IGlipServerContext) {
+  createGroup(
+    @PRequest request: IJRequest<GlipGroup>,
+    @PContext context: IGlipServerContext,
+  ) {
     const serverGroup = context.dataHelper.group.factory.build(request.data);
     context.groupDao.put(serverGroup);
     context.socketServer.emitEntityCreate(serverGroup);
@@ -144,7 +159,11 @@ export class GlipController {
       id: String2Number,
     },
   })
-  updateGroup(@PRequest request: IJRequest<GlipGroup>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
+  updateGroup(
+    @PRequest request: IJRequest<GlipGroup>,
+    @PQuery routeParams: object,
+    @PContext context: IGlipServerContext,
+  ) {
     assert(routeParams['id'], 'update group lack ok id');
     return createResponse({
       request,
@@ -160,7 +179,10 @@ export class GlipController {
     path: '/api/team',
     method: 'post',
   })
-  createTeam(@PRequest request: IJRequest<GlipGroup>, @PContext context: IGlipServerContext) {
+  createTeam(
+    @PRequest request: IJRequest<GlipGroup>,
+    @PContext context: IGlipServerContext,
+  ) {
     const serverTeam = context.dataHelper.team.factory.build(request.data);
     context.groupDao.put(serverTeam);
     context.socketServer.emitEntityCreate(serverTeam);
@@ -177,7 +199,11 @@ export class GlipController {
       id: String2Number,
     },
   })
-  updateTeam(@PRequest request: IJRequest<GlipGroup>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
+  updateTeam(
+    @PRequest request: IJRequest<GlipGroup>,
+    @PQuery routeParams: object,
+    @PContext context: IGlipServerContext,
+  ) {
     assert(routeParams['id'], 'update team lack ok id');
     return createResponse({
       request,
@@ -196,7 +222,11 @@ export class GlipController {
       id: String2Number,
     },
   })
-  getProfile(@PRequest request: IJRequest<GlipProfile>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
+  getProfile(
+    @PRequest request: IJRequest<GlipProfile>,
+    @PQuery routeParams: object,
+    @PContext context: IGlipServerContext,
+  ) {
     assert(routeParams['id'], 'get profile lack ok id');
     return createResponse({
       request,
@@ -211,7 +241,11 @@ export class GlipController {
       id: String2Number,
     },
   })
-  updateProfile(@PRequest request: IJRequest<GlipProfile>, @PQuery routeParams: object, @PContext context: IGlipServerContext) {
+  updateProfile(
+    @PRequest request: IJRequest<GlipProfile>,
+    @PQuery routeParams: object,
+    @PContext context: IGlipServerContext,
+  ) {
     assert(routeParams['id'], 'update profile lack ok id');
     return createResponse({
       request,
@@ -231,20 +265,23 @@ export class GlipController {
     return createResponse({
       request,
       status: 200,
-    })
+    });
   }
 
   @Route({
     path: '/glip-presence/v1/person/:ids/presence',
     method: 'get',
     query: {
-      ids: (raw: string) => raw.split(',')
-    }
+      ids: (raw: string) => raw.split(','),
+    },
   })
-  presence(@PRequest request: IJRequest, @PQuery query: {ids: number[]}) {
+  presence(@PRequest request: IJRequest, @PQuery query: { ids: number[] }) {
     return createResponse({
       request,
-      data: query.ids.map(id => ({personId: id, calculatedStatus: 'Available'}))
-    })
+      data: query.ids.map(id => ({
+        personId: id,
+        calculatedStatus: 'Available',
+      })),
+    });
   }
 }

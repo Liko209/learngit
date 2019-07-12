@@ -7,15 +7,17 @@
 import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk';
-import { h, act, t, MockApp, bootstrap } from 'shield/application';
+import {
+ h, act, t, MockApp, bootstrap
+} from 'shield/application';
 import { wait } from 'shield/utils';
 
 jest.setTimeout(300 * 1000);
 
-itForSdk('Service Integration test', ({ data, sdk }) => {
-  const glipData = data.useInitialData(data.template.BASIC);
-  const team1 = data
-    .helper()
+itForSdk('Service Integration test', ({ helper, template, sdk }) => {
+  const glipData = helper.useInitialData(template.BASIC);
+  const team1 = helper
+    .glipDataHelper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
 
@@ -31,7 +33,7 @@ itForSdk('Service Integration test', ({ data, sdk }) => {
       const url = `/messages/${team1._id}`;
       await bootstrap({ url });
 
-      const app = await h(<MockApp inited={true} />);
+      const app = await h(<MockApp inited />);
 
       await t(app, async () => {
         app.messageInput.input('hello');

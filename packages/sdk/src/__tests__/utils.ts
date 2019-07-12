@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { FunctionPropertyNames } from '../types';
 import _debug from 'debug';
+
 const debug = _debug('UT_LOG');
 const debugEnabled = !!process.env.DEBUG_LOG;
 debug['useColors'] = true;
@@ -17,7 +18,7 @@ function createDebug(tag: string, enabled?: boolean) {
   return newDebug;
 }
 
-function to<T>(data): T {
+function to<T>(data: object): T {
   return Object.assign({} as T, data);
 }
 

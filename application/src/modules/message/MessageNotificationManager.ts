@@ -4,7 +4,7 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { buildAtMentionMap } from '../../common/buildAtMentionMap';
-import { UserSettingEntity, SettingService } from 'sdk/module/setting';
+import { UserSettingEntity } from 'sdk/module/setting';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -211,8 +211,6 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
     };
-    const settingService: SettingService;
-    settingService.grq;
     return strategy[this.currentMessageNotificationSetting]();
   }
 
@@ -279,7 +277,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   getIcon(
-    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
+    {
+      id, headshotVersion = '', headshot = '', hasHeadShot,
+    }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {
