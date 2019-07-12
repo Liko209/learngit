@@ -870,9 +870,11 @@
         },
         "regionSetting": {
           "label": "Region",
+          "descriptionWithoutAreaCode": "Country: {{country}}",
+          "description": "Country: {{country}}, area code: {{areaCode}}",
           "region": "Region",
           "country": "Country",
-          "areaCode": "Area Code",
+          "areaCode": "Area code",
           "areaCodeErrorText": "Invalid area code",
           "saveSuccessText": "Your region is updated successfully.",
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."

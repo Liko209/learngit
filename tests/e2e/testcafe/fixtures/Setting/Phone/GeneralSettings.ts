@@ -130,7 +130,7 @@ test.meta(<ITestMeta>{
   const saveButton = 'Save';
   const cancelButton = 'Cancel';
   const countryLabel = 'Country';
-  const areaCodeLabel = 'Area Code';
+  const areaCodeLabel = 'Area code';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
