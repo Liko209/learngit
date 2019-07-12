@@ -6,7 +6,7 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import {
-  observable, computed, action, reaction
+ observable, computed, action, reaction
 } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -58,16 +58,10 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string; // original phone number without parsed
-
-  @observable
   isContactMatched: boolean = false;
 
   @observable
   id: number = 0;
-
-  @observable
-  callerName?: string;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -344,7 +338,6 @@ class TelephonyStore {
         this._history.delete(DIALING);
         break;
       default:
-        // this._history.delete(DIALING);
         break;
     }
 
@@ -353,8 +346,7 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
-    this.callerName = undefined;
-    this.phoneNumber = undefined;
+    this.id = 0;
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
@@ -565,9 +557,6 @@ class TelephonyStore {
 
   @computed
   get callId() {
-    if (this.callDisconnected) {
-      return undefined;
-    }
     return this.call.callId;
   }
 
@@ -613,6 +602,17 @@ class TelephonyStore {
       this.hasActiveInBoundCall ||
       this.isIncomingCall
     );
+  }
+
+  @computed
+  get callerName() {
+    return this.call.fromName;
+  }
+
+  @computed
+  get phoneNumber() {
+    const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
+    return phoneNumber !== ANONYMOUS ? phoneNumber : '';
   }
 
   @action

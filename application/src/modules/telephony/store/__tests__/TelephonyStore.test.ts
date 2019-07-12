@@ -220,8 +220,6 @@ describe('Telephony store', () => {
 
   it('reset status when the call status is idle', () => {
     const store = createStore();
-    store.callerName = 'name';
-    store.phoneNumber = '112233';
     call.muteState = MUTE_STATE.MUTED;
     store.directCall();
     store.end();

@@ -26,7 +26,7 @@ import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
 import {
-  reaction, IReactionDisposer, runInAction, action
+ reaction, IReactionDisposer, runInAction, action
 } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -104,15 +104,9 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.id = id;
-    const { fromNum, callId, fromName } = this._telephonyStore.call;
+    const { fromNum, callId } = this._telephonyStore.call;
     this._callId = id;
 
-    this._telephonyStore.callerName = fromName;
-    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
-    if (phoneNumber !== this._telephonyStore.phoneNumber) {
-      this._telephonyStore.isContactMatched = false;
-      this._telephonyStore.phoneNumber = phoneNumber;
-    }
     this._telephonyStore.incomingCall();
     // need factor in new module design
     // if has incoming call voicemail should be pause
@@ -439,7 +433,6 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
     return true;
   };
 
@@ -573,7 +566,9 @@ class TelephonyService {
   holdOrUnhold = async () => {
     if (this._telephonyStore.holdDisabled || !this._callId) {
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
+          this._telephonyStore.holdDisabled
+        }`,
       );
       return;
     }
@@ -668,7 +663,9 @@ class TelephonyService {
     }
     this._telephonyStore.hasManualSelected = true;
     mainLogger.info(
-      `${TelephonyService.TAG} set caller phone number: ${this._telephonyStore.chosenCallerPhoneNumber}`,
+      `${TelephonyService.TAG} set caller phone number: ${
+        this._telephonyStore.chosenCallerPhoneNumber
+      }`,
     );
   };
 
