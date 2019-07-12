@@ -7,7 +7,7 @@
 import { DBConfigService } from '../../../config/service/DBConfigService';
 import { RCInfoUserConfig } from '../RCInfoUserConfig';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { MODULE_NAME, RC_INFO_KEYS } from '../constants';
+import { MODULE_NAME, RC_INFO_KEYS, DEFAULT_PHONE_DATA_VERSION } from '../constants';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -126,6 +126,14 @@ describe('RCInfoUserConfig', () => {
       });
       const res = await rcInfoUserConfig[getName]();
       expect(res).toEqual(data);
+    });
+  });
+
+  describe('getPhoneDataVersion', () => {
+    it('should get default version when version is invalid', async () => {
+      dbConfigService.get = jest.fn().mockReturnValue(undefined);
+      const res = await rcInfoUserConfig.getPhoneDataVersion();
+      expect(res).toEqual(DEFAULT_PHONE_DATA_VERSION);
     });
   });
 });
