@@ -353,8 +353,8 @@ class TelephonyService {
   private async _isJupiterDefaultApp() {
     const entity = await ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
-    ).getById(SettingEntityIds.Phone_DefaultApp, 0);
-    return (entity && entity.value) !== CALLING_OPTIONS.RINGCENTRAL;
+    ).getById(SettingEntityIds.Phone_DefaultApp);
+    return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
   makeCall = async (toNumber: string, callback?: Function) => {
@@ -377,6 +377,7 @@ class TelephonyService {
       ToastCallError.toastPermissionError();
       return;
     }
+
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
