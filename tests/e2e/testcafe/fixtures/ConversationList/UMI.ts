@@ -597,6 +597,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(group.glipId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
+      await t.wait(2e3);
       await conversationPage.scrollToMiddle();
       await h(t).platform(otherUser).sendTextPost('test again', group.glipId);
     });
