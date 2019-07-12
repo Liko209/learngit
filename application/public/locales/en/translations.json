@@ -620,6 +620,7 @@
     "moreOptions": "More options",
     "answerTheCall": "Answer the call",
     "unknownCaller": "Unknown Caller",
+    "unknownCallee": "Unknown",
     "prompt": {
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
