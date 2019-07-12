@@ -693,8 +693,7 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call",
-    "noCallLogAvailable": "There is not call log yet"
+    "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
@@ -715,7 +714,7 @@
     "unknown": "Unknown",
     "recordings": "Recordings",
     "noMatchesFound": "No matches found",
-    "noCallLogAvailable": "No call log",
+    "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
