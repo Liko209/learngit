@@ -512,7 +512,8 @@ class TelephonyStore {
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, +this.id);
+    const id = this.id || NaN;
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, id);
   }
 
   @computed
