@@ -63,7 +63,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
       <JuiEmptyPage
         data-test-automation-id="recentCallsEmptyPage"
         image={noCallLogImage}
-        message={t('telephony.noCallLogAvailable')}
+        message={t('phone.noCallLogAvailable')}
       />
     );
   }
