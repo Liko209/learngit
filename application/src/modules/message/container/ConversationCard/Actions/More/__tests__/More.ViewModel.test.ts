@@ -56,7 +56,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: {} },
+        post: { itemTypeIds: {}, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -70,7 +70,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] } },
+        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] }, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -84,7 +84,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] } },
+        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] }, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -165,6 +165,7 @@ describe('MoreVM', () => {
         },
         post: {
           creatorId: 2,
+          id: 1,
         },
       });
       ViewModel = new MoreViewModel({ id: 1 });
@@ -185,7 +186,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: {} },
+        post: { itemTypeIds: {}, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -199,7 +200,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] } },
+        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] }, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -213,7 +214,7 @@ describe('MoreVM', () => {
         group: {
           canPost: true,
         },
-        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] } },
+        post: { itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] }, id: 1 },
       });
       ViewModel = new MoreViewModel({ id: 1 });
 
@@ -244,6 +245,7 @@ describe('MoreVM', () => {
         },
         post: {
           creatorId: 2,
+          id: 1,
         },
       });
       ViewModel = new MoreViewModel({ id: 1 });

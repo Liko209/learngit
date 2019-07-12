@@ -142,7 +142,61 @@ describe('RecentCallLogsHandler', () => {
       recentCallLogsHandler['_idListHandler'].onSourceIdsChanged = jest.fn();
     });
 
-    it('should replace existing data when receive replace', () => {
+    it('should redo init when a call become unknown from known', (done: any) => {
+      recentCallLogsHandler['_recentCallIds'] = ['1-update', '2-update'];
+      const cpCallLog = {..._.cloneDeep(callLog), to: { name: 'good' }}
+      const payload: NotificationEntityUpdatePayload<CallLog, string> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: ['1-update', '2-update'],
+          entities: new Map([['1-update', cpCallLog], ['2-update', callLog2]]),
+        },
+      };
+      recentCallLogsHandler['_initRecentCallInfo'] = jest.fn();
+      recentCallLogsHandler.handleCallLogChanges(payload);
+      
+      setTimeout(() => {
+      
+        expect(
+          recentCallLogsHandler['_initRecentCallInfo']
+        ).toHaveBeenCalled();
+        expect(
+          recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
+        ).toHaveBeenCalled()
+        done();
+      }, 10);
+      
+    });
+
+
+    it('should redo init when a call become deactivated', (done: any) => {
+      recentCallLogsHandler['_recentCallIds'] = ['1-update', '2-update'];
+      const cpCallLog = {..._.cloneDeep(callLog), __deactivated: true}
+      const payload: NotificationEntityUpdatePayload<CallLog, string> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: ['1-update', '2-update'],
+          entities: new Map([['1-update', cpCallLog], ['2-update', callLog2]]),
+        },
+      };
+      recentCallLogsHandler['_initRecentCallInfo'] = jest.fn();
+      recentCallLogsHandler.handleCallLogChanges(payload);
+      
+      setTimeout(() => {
+      
+        expect(
+          recentCallLogsHandler['_initRecentCallInfo']
+        ).toHaveBeenCalled();
+        expect(
+          recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
+        ).toHaveBeenCalled()
+        done();
+      }, 10);
+      
+    });
+
+
+    it('should replace existing data when receive replace', (done: any) => {
       const payload: NotificationEntityReplacePayload<CallLog, string> = {
         type: EVENT_TYPES.REPLACE,
         body: {
@@ -153,14 +207,18 @@ describe('RecentCallLogsHandler', () => {
       };
 
       recentCallLogsHandler.handleCallLogChanges(payload);
-      const newIds = ['1-update', '1', '4'];
-      expect(
-        recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-      ).toHaveBeenCalledWith(newIds);
-      expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
+      setTimeout(() => {
+        const newIds = ['1-update', '1', '4'];
+        expect(
+          recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
+        ).toHaveBeenCalledWith(newIds);
+        expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
+        done();  
+      }, 10);
+      
     });
 
-    it('should update source ids when receive update', () => {
+    it('should update source ids when receive update', (done: any) => {
       const payload: NotificationEntityUpdatePayload<CallLog, string> = {
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -169,11 +227,15 @@ describe('RecentCallLogsHandler', () => {
         },
       };
       recentCallLogsHandler.handleCallLogChanges(payload);
-      const newIds = ['2-update', '1-update', '1', '3', '4'];
-      expect(
-        recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
-      ).toHaveBeenCalledWith(newIds);
-      expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);
+      setTimeout(() => {
+        const newIds = ['2-update', '1-update', '1', '3', '4'];
+        expect(
+          recentCallLogsHandler['_idListHandler'].onSourceIdsChanged,
+        ).toHaveBeenCalledWith(newIds);
+        expect(recentCallLogsHandler['_recentCallIds']).toEqual(newIds);  
+        done();
+      }, 10);
+      
     });
 
     it('should re-fetch from DB when delete a id in recent call list', async (done: any) => {

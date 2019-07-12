@@ -693,8 +693,7 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call",
-    "noCallLogAvailable": "There is not call log yet"
+    "forwardCall": "Forward Call"
   },
   "phone": {
     "tab": {
@@ -715,7 +714,7 @@
     "unknown": "Unknown",
     "recordings": "Recordings",
     "noMatchesFound": "No matches found",
-    "noCallLogAvailable": "No call log",
+    "noCallLogAvailable": "No call logs",
     "noVoicemailAvailable": "No voicemail records",
     "prompt": {
       "numberHasBeenBlocked": "The number has been blocked",
@@ -871,9 +870,11 @@
         },
         "regionSetting": {
           "label": "Region",
+          "descriptionWithoutAreaCode": "Country: {{country}}",
+          "description": "Country: {{country}}, area code: {{areaCode}}",
           "region": "Region",
           "country": "Country",
-          "areaCode": "Area Code",
+          "areaCode": "Area code",
           "areaCodeErrorText": "Invalid area code",
           "saveSuccessText": "Your region is updated successfully.",
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
