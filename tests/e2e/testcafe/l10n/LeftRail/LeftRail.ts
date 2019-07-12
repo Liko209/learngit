@@ -6,7 +6,7 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 
 fixture('LeftRail/LeftRail').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase());
 
-test(formalName('Enter message in left navigator', ['P2','Message','LeftRail','V1.4','Knight.Shen']),async t => {
+test(formalName('Enter message in left navigator', ['P2','Message','LeftRail','V1.4','V1.6','Knight.Shen']),async t => {
 	const loginUser = h(t).rcData.mainCompany.users[4];
 	const app = new AppRoot(t);
 
