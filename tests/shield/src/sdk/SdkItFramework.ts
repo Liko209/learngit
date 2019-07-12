@@ -23,25 +23,36 @@ import { MockResponse, IMockRequestResponse } from './types';
 import { sdk } from 'sdk/index';
 import { globalConfig } from './globalConfig';
 import { EnvConfig } from 'sdk/module/env/config';
+import { MockSocketServer } from './mocks/server/MockSocketServer';
+import { SocketServerManager } from './mocks/server/SocketServerManager';
 
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
 type ItContext = {
+  // ACCOUNT user info
   userContext: {
     currentUserId: () => number;
     currentCompanyId: () => number;
   };
+  // ACCOUNT data template
   template: {
     BASIC: InitialData;
     STANDARD: InitialData;
   };
+  // some useful helper for  test
   helper: {
+    // apply template
     useInitialData: (initialData: InitialData) => GlipData;
+    // model build helper
     glipDataHelper: () => GlipDataHelper;
+    // mock api response
     mockResponse: MockResponse;
+    // glip socketServer, use to send message to client.
+    socketServer: MockSocketServer;
     clearMocks: () => void;
   };
+  // sdk setup/cleanUp
   sdk: {
     setup: (mode?: 'glip' | 'rc') => Promise<void>;
     cleanUp: () => Promise<void>;
@@ -146,6 +157,7 @@ export function itForSdk(
       clearMocks,
       mockResponse,
       useInitialData,
+      socketServer: SocketServerManager.get('glip'),
       glipDataHelper: getGlipDataHelper,
     },
     userContext: {
