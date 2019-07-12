@@ -60,6 +60,11 @@ test(formalName('UMI should be added received messages count in conversations', 
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And I click a private chat', async () => {
@@ -152,6 +157,11 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const team = teamsSection.conversationEntryById(teamId);
@@ -211,6 +221,11 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
   await h(t).withLog('Then I can open the private chat', async () => {
     await pvtChat.enter();
@@ -244,8 +259,8 @@ test.meta(<ITestMeta>{
   keywords: ['ConversationList', 'UMI']
 })('Should not display UMI when section is expended & Should display UMI when section is collapsed', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[6];
-  const otherUser = users[4];
+  const loginUser = users[2];
+  const otherUser = users[3];
 
   const favChat = <IGroup>{
     type: 'DirectMessage',
@@ -286,7 +301,7 @@ test.meta(<ITestMeta>{
   }
 
   const conversations = [favChat, favTeam, group1, group2, team1, team2]
-  // let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
+
   let meChatId;
   await h(t).withLog('Given I have an extension and reset its profile and state', async () => {
     await h(t).platform(loginUser).init();
@@ -298,10 +313,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And this extension with some conversations', async () => {
     await h(t).scenarioHelper.createTeamsOrChats(conversations);
-  });
-
-  await h(t).withLog('and set NewMessageBadges "groups_and_mentions"', async () => {
-    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
   });
 
   await h(t).withLog('And favorite 2 conversations and mechat before login', async () => {
@@ -317,6 +328,12 @@ test.meta(<ITestMeta>{
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
+
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
@@ -454,13 +471,17 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected',
-    async () => {
-      await directMessagesSection.conversationEntryById(groupId3).enter();
-    },
+  await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected', async () => {
+    await directMessagesSection.conversationEntryById(groupId3).enter();
+  },
   );
 
   await h(t).withLog('Send posts to conversations', async () => {
@@ -567,6 +588,11 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await app.homePage.ensureLoaded();
     });
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(group.glipId).enter();
@@ -622,6 +648,11 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       await app.homePage.ensureLoaded();
     });
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
       await h(t).platform(otherUser).sendTextPost(postContent, pvtChatId);
@@ -661,6 +692,11 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
+    });
+
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
     });
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
@@ -713,6 +749,11 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
       },
     );
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).umi.shouldBeNumber(0);
@@ -751,6 +792,11 @@ test.meta(<ITestMeta>{
     });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+  });
+
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
   });
 
   await h(t).withLog('And the conversation received one unread post from other members', async () => {
@@ -801,6 +847,11 @@ test.meta(<ITestMeta>{
     })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+  });
+
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
   });
 
   await h(t).withLog('Then I can find 1 UMI in the left navigation panel Messages Entry', async () => {
@@ -862,6 +913,10 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const moreMenu = app.homePage.messageTab.moreMenu;
