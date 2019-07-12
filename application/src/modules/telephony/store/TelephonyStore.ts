@@ -61,7 +61,7 @@ class TelephonyStore {
   isContactMatched: boolean = false;
 
   @observable
-  id: number = 0;
+  id: number | undefined = undefined;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -353,7 +353,7 @@ class TelephonyStore {
 
     // for TelephonyNotificationManger can get call disconnected state.
     Promise.resolve().then(() => {
-      this.id = 0;
+      this.id = undefined;
     });
   };
 
@@ -512,7 +512,7 @@ class TelephonyStore {
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, +this.id);
   }
 
   @computed
