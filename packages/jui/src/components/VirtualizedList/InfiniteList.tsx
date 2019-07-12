@@ -4,14 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, {
-  useState, memo, forwardRef, useRef, useCallback,
+  useState, memo, forwardRef, useRef, useCallback
 } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
-import {
-  JuiVirtualizedList,
-  JuiVirtualizedListHandles,
-} from './VirtualizedList';
+import { JuiVirtualizedList, JuiVirtualizedListHandles } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange } from './types';
 import { useMountState } from './hooks';
@@ -73,16 +70,18 @@ const JuiInfiniteList = (
   if (forwardRef) {
     ref = forwardRef;
   }
-  const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+  const [isStickToBottomEnabled, setStickToBottom] = useState(true);
   const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
     async (direction: 'up' | 'down', count: number) => {
-      enableStickToBottom(false);
+      if (direction === 'down') {
+        setStickToBottom(false);
+      }
       await loadMore(direction, count);
-      isMountedRef.current && enableStickToBottom(true);
+      isMountedRef.current && setStickToBottom(true);
     },
-    [loadMore, enableStickToBottom],
+    [loadMore, setStickToBottom],
   );
 
   if (!height) {
@@ -90,18 +89,9 @@ const JuiInfiniteList = (
   }
 
   return (
-    <JuiDataLoader
-      hasMore={hasMore}
-      loadInitialData={loadInitialData}
-      loadMore={_loadMore}
-      loadMoreStrategy={loadMoreStrategy}
-    >
+    <JuiDataLoader hasMore={hasMore} loadInitialData={loadInitialData} loadMore={_loadMore} loadMoreStrategy={loadMoreStrategy}>
       {({
-        loadingInitial,
-        loadingUp,
-        loadingDown,
-        loadingInitialFailed,
-        onScroll: handleScroll,
+        loadingInitial, loadingUp, loadingDown, loadingInitialFailed, onScroll: handleScroll
       }) => {
         const _handleScroll = (delta?: { x: number; y: number; z: number }) => {
           if (ref.current) {
