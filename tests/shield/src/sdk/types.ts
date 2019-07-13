@@ -12,6 +12,7 @@ import {
   INetworkRequestExecutorListener,
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
+import * as Factory from 'factory.ts';
 
 interface IApiContract<Req = any, Res = any> {
   host: string;
@@ -24,16 +25,15 @@ interface IApiContract<Req = any, Res = any> {
 
 type QueryParser<T> = { [key in keyof T]: (v: string) => T[key] };
 
-type HttpVerb = 'get' | 'post' | 'put' | 'delete';
-type Handler = (
+type JRequestHandler = (
+  request: IJRequest,
+  cb: INetworkRequestExecutorListener,
+) => void | Promise<void>;
+
+type RequestHandler = (
   request: IJRequest,
   queryObject?: object,
 ) => Promise<IJResponse> | IJResponse;
-
-type VerbHandler = { [key in HttpVerb]: Handler };
-interface IApiMap {
-  [key: string]: Partial<VerbHandler>;
-}
 
 type IRoute<T extends IApiContract> = {
   path: string;
@@ -42,21 +42,17 @@ type IRoute<T extends IApiContract> = {
 };
 
 interface IResponseAdapter {
-  adapt: (handler: Handler) => RouterHandler;
+  adapt: (handler: RequestHandler) => JRequestHandler;
 }
 
-type RouterHandler = (
-  request: IJRequest,
-  cb: INetworkRequestExecutorListener,
-) => void | Promise<void>;
 interface IRouter {
-  use(method: string, path: string, handler: Handler): this;
-  match(option: { method: string; path: string }): Nullable<Handler>;
-  dispatch(request: IJRequest): ReturnType<Handler>;
+  use(method: string, path: string, handler: RequestHandler): this;
+  match(option: { method: string; path: string }): Nullable<RequestHandler>;
+  dispatch(request: IJRequest): ReturnType<RequestHandler>;
 }
 
 interface IMockServer {
-  handle: RouterHandler;
+  handleRequest: JRequestHandler;
 }
 
 type MockResponse = <
@@ -67,7 +63,10 @@ type MockResponse = <
 >(
   requestResponse: IRequestResponse<ReqData, ResData>,
   extractor?: T,
-  mapper?: (request: IJRequest<ReqData>, mockRequestResponse: IMockRequestResponse<ReqData, ResData>) => IJResponse<ResData>
+  mapper?: (
+    request: IJRequest<ReqData>,
+    mockRequestResponse: IMockRequestResponse<ReqData, ResData>,
+  ) => IJResponse<ResData>,
 ) => ReturnType<T>;
 
 interface ISocketRequest<T = object> {
@@ -122,10 +121,12 @@ interface IRequestResponse<Req = any, Res = any>
   response: IBaseResponse<Res>;
 }
 
-interface IMockRequestResponse<Req = any, Res = any>
-  extends IRequestResponse {
+interface IMockRequestResponse<Req = any, Res = any> extends IRequestResponse {
   pathRegexp: RegExp;
-  mapper?: (request: IJRequest, mockRequestResponse: IMockRequestResponse) => IJResponse;
+  mapper?: (
+    request: IJRequest,
+    mockRequestResponse: IMockRequestResponse,
+  ) => IJResponse;
 }
 
 interface ISocketInfo<T = any> extends INetworkInfo {
@@ -138,6 +139,12 @@ interface ISocketInfo<T = any> extends INetworkInfo {
   data?: T;
 }
 
+type IFactory<T = any> = Factory.Factory<T>;
+
+interface IScenarioDataHelper<T> {
+  factory: IFactory<T>;
+}
+
 export {
   IJRequest,
   IJResponse,
@@ -146,11 +153,9 @@ export {
   INetworkRequestExecutorListener,
   IRoute,
   IApiContract,
-  IApiMap,
-  VerbHandler,
-  Handler,
+  RequestHandler,
   IMockServer,
-  RouterHandler,
+  JRequestHandler,
   QueryParser,
   IRouter,
   IResponseAdapter,
@@ -163,4 +168,6 @@ export {
   IRequestResponse,
   IMockRequestResponse,
   ISocketInfo,
+  IFactory,
+  IScenarioDataHelper,
 };

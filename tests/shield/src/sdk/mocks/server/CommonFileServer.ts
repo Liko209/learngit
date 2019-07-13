@@ -17,7 +17,7 @@ const debug = createDebug('FileServer');
 const error = createDebug('FileServer', true);
 
 export class CommonFileServer implements IMockServer {
-  handle = (request: IJRequest, cb: INetworkRequestExecutorListener) => {
+  handleRequest = (request: IJRequest, cb: INetworkRequestExecutorListener) => {
     const mockJsonPath = this.getMockJsonPath(
       request.host,
       request.path,

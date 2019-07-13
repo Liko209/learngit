@@ -88,29 +88,29 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
       expect(result.posts.length).toEqual(2);
       expect(sendFailedPost.id < 0).toBeTruthy();
     });
-    it('resend post successfully', async () => {
-      helper.mockResponse(
-        readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),
-        data => {
-          data.response.data.group_id = team1._id;
-          data.response.data.text = 'test post 2';
-          data.response.data._id = helper.glipDataHelper().post.factory.build()._id;
-        },
-        (request, requestResponse) => {
-          return createResponse({
-            ...requestResponse.response,
-            data: {...requestResponse.response.data, unique_id: request.data.unique_id}
-          })
-        }
-      );
-      await postService.reSendPost(sendFailedPost.id);
-      const result = await postService.getPostsByGroupId({
-        groupId: team1._id,
-      });
+    // it('resend post successfully', async () => {
+    //   helper.mockResponse(
+    //     readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),
+    //     data => {
+    //       data.response.data.group_id = team1._id;
+    //       data.response.data.text = 'test post 2';
+    //       data.response.data._id = helper.glipDataHelper().post.factory.build()._id;
+    //     },
+    //     (request, requestResponse) => {
+    //       return createResponse({
+    //         ...requestResponse.response,
+    //         data: {...requestResponse.response.data, unique_id: request.data.unique_id}
+    //       })
+    //     }
+    //   );
+    //   await postService.reSendPost(sendFailedPost.id);
+    //   const result = await postService.getPostsByGroupId({
+    //     groupId: team1._id,
+    //   });
 
-      expect(result.posts.length).toEqual(2);
-      expect(result.posts[1].text).toEqual(sendFailedPost.text);
-      expect(result.posts[1].id > 0).toBeTruthy();
-    });
+    //   expect(result.posts.length).toEqual(2);
+    //   expect(result.posts[1].text).toEqual(sendFailedPost.text);
+    //   expect(result.posts[1].id > 0).toBeTruthy();
+    // });
   });
 });

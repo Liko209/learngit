@@ -6,8 +6,7 @@
 import { SocketIO } from 'mock-socket';
 
 function create(url, protocol) {
-  // url = url.replace()
-  console.warn('create socket.io instance: ', url);
+  process.env.DEBUG_MODE && console.info('create socket.io instance: ', url);
   const socket = SocketIO(url, protocol);
   socket.__mock__ = true;
   socket.connect = () => {

@@ -4,12 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import {
- IRouter, IJRequest, IJResponse, Handler
+ IRouter, IJRequest, IJResponse, RequestHandler
 } from '../../types';
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
 import { createResponse } from './utils';
+import {
+  META_ROUTE,
+  META_PARAM_QUERY,
+  META_PARAM_CONTEXT,
+  META_PARAM_REQUEST,
+} from '../../decorators/constants';
+import { getMeta, getParamMeta } from '../../decorators/metaUtil';
+import { IApiContract, IRoute } from '../../types';
 
 const debug = createDebug('Router');
 const error = createDebug('Router', true);
@@ -18,13 +26,45 @@ export class Router implements IRouter {
   private _routes: {
     [key: string]: {
       path: string;
-      handler: Handler;
+      handler: RequestHandler;
       regexp: RegExp;
       keys: pathToRegexp.Key[];
     }[];
   } = {};
 
   constructor() {}
+
+  applyRoute(cls: { new (...params: any): object }, instance: any, context: any) {
+    const routeMetaArray = getMeta<IRoute<IApiContract>>(
+      cls.prototype,
+      META_ROUTE,
+    );
+
+    routeMetaArray.map(({ key, meta }) => {
+      const { method = 'get', path, query = {} } = meta;
+      const contextParam = getParamMeta(cls.prototype, META_PARAM_CONTEXT, key);
+      const queryParam = getParamMeta(cls.prototype, META_PARAM_QUERY, key);
+      const requestParam = getParamMeta(cls.prototype, META_PARAM_REQUEST, key);
+      this.use(method, path, (request, queryObject = {}) => {
+        const params: any[] = [];
+        if (queryParam) {
+          const queryParams = { ...queryObject };
+          Object.entries(query).forEach(([key, value]) => {
+            queryParams[key] = (value as any)(queryObject[key]);
+          });
+          params[queryParam.index] = queryParams;
+        }
+        if (requestParam) {
+          params[requestParam.index] = request;
+        }
+
+        if (contextParam) {
+          params[contextParam.index] = context;
+        }
+        return (instance[key] as Function).apply(instance, params);
+      });
+    });
+  }
 
   match = (option: { method: string; path: string }) => {
     const array = this._routes[option.method] || [];
@@ -44,7 +84,6 @@ export class Router implements IRouter {
         });
       debug('route dispatch: ', request.method, ': ', request.path);
       return target.handler(request, query);
-      // debug('dispatch -> target', request.path, target);
     }
     error('no rule match', request.path, request.method);
     return createResponse({
@@ -56,7 +95,7 @@ export class Router implements IRouter {
     } as IJResponse);
   };
 
-  use(method: string, path: string, handler: Handler) {
+  use(method: string, path: string, handler: RequestHandler) {
     this._routes[method] = this._routes[method] || [];
     const keys: pathToRegexp.Key[] = [];
     const regexp = pathToRegexp(path, keys);

@@ -3,7 +3,7 @@ import { FunctionPropertyNames } from '../types';
 import _debug from 'debug';
 
 const debug = _debug('UT_LOG');
-const debugEnabled = !!process.env.DEBUG_LOG;
+const debugEnabled = !!process.env.DEBUG_MODE;
 debug['useColors'] = true;
 debug.enabled = debugEnabled;
 _debug.enable('-UT_LOG');

@@ -44,7 +44,7 @@ export class ProxyServer implements IMockServer {
     return [];
   }
 
-  handle = (
+  handleRequest = (
     request: IJRequest<any>,
     listener: INetworkRequestExecutorListener,
   ) => {
@@ -88,11 +88,8 @@ export class ProxyServer implements IMockServer {
         NETWORK_HANDLE_TYPE.UPLOAD,
       ].includes(request.handlerType.name)
     ) {
-      const router = InstanceManager.get(MockGlipServer).getRouter();
-      if (router.match(request)) {
-        return this.adapter.adapt(router.dispatch)(request, listener);
-      }
+      return InstanceManager.get(MockGlipServer).handleRequest(request, listener);
     }
-    InstanceManager.get(CommonFileServer).handle(request, listener);
+    InstanceManager.get(CommonFileServer).handleRequest(request, listener);
   };
 }

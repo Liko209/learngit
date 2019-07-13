@@ -12,7 +12,7 @@ import { ProxyServer } from '../mocks/server/ProxyServer';
 
 export default class Http {
   request = (request: IRequest, listener: INetworkRequestExecutorListener) => {
-    InstanceManager.get(ProxyServer).handle(request, listener);
+    InstanceManager.get(ProxyServer).handleRequest(request, listener);
   }
 
   isNetworkReachable = () => window.navigator.onLine;

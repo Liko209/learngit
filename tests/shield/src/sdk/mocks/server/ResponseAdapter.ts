@@ -7,19 +7,25 @@ import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
 
 import {
-  Handler, IJRequest, INetworkRequestExecutorListener, IResponseAdapter
+  RequestHandler,
+  IJRequest,
+  INetworkRequestExecutorListener,
+  IResponseAdapter,
 } from '../../types';
 import { createResponse, isPromise } from './utils';
 
 const error = createDebug('ResponseAdapter', true);
 
 export class ResponseAdapter implements IResponseAdapter {
-  adapt = (handler: Handler) => (request: IJRequest, cb: INetworkRequestExecutorListener) => {
+  adapt = (handler: RequestHandler) => (
+    request: IJRequest,
+    cb: INetworkRequestExecutorListener,
+  ) => {
     let handlerResp;
     try {
       handlerResp = handler(request);
-    } catch (error) {
-      error('handle error: ', error);
+    } catch (e) {
+      error('handle error: ', e);
       cb.onFailure(
         createResponse({
           request,
@@ -36,8 +42,8 @@ export class ResponseAdapter implements IResponseAdapter {
         .then(response => {
           cb.onSuccess(response);
         })
-        .catch(error => {
-          error('handle error: ', error);
+        .catch(e => {
+          error('handle error: ', e);
           cb.onFailure(
             createResponse({
               request,

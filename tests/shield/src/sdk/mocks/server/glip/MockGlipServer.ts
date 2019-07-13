@@ -8,15 +8,7 @@ import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
 
-import {
-  META_ROUTE,
-  META_PARAM_QUERY,
-  META_PARAM_CONTEXT,
-  META_PARAM_REQUEST,
-} from '../../../decorators/constants';
-import { getMeta, getParamMeta } from '../../../decorators/metaUtil';
 import { Route } from '../../../decorators/Route.decorator';
-import { IApiContract, IRoute } from '../../../types';
 import { Router } from '../Router';
 import { createResponse } from '../utils';
 import { STATE_KEYS } from './constants';
@@ -37,11 +29,21 @@ import { GlipData, InitialData } from './types';
 import { GlipController } from './GlipController';
 import { IGlipServerContext } from './IGlipServerContext';
 import { globalConfig } from '../../../globalConfig';
+import {
+  IMockServer,
+  JRequestHandler,
+  IResponseAdapter,
+} from 'shield/sdk/types';
+import { ResponseAdapter } from '../ResponseAdapter';
+import { InstanceManager } from '../InstanceManager';
+import { CommonFileServer } from '../CommonFileServer';
 
 const debug = createDebug('MockGlipServer');
 const GLIP_SOCKET_HOST = 'glip';
 
-export class MockGlipServer implements IGlipServerContext {
+export class MockGlipServer implements IGlipServerContext, IMockServer {
+  adapter: IResponseAdapter = new ResponseAdapter();
+
   private _router: Router;
   postDao: GlipPostDao;
   itemDao: GlipItemDao;
@@ -59,43 +61,21 @@ export class MockGlipServer implements IGlipServerContext {
   constructor() {
     this.socketServer = SocketServerManager.get(GLIP_SOCKET_HOST); // new MockSocketServer(`https://${GLIP_SOCKET_HOST}`);
     this._router = new Router();
-    this.applyRoute(MockGlipServer, this);
-    this.applyRoute(GlipController, new GlipController());
+    this._router.applyRoute(MockGlipServer, this, this);
+    this._router.applyRoute(GlipController, new GlipController(), this);
 
     this.init();
   }
 
-  applyRoute(cls: { new (...params: any): object }, instance: any) {
-    const routeMetaArray = getMeta<IRoute<IApiContract>>(
-      cls.prototype,
-      META_ROUTE,
+  handleRequest: JRequestHandler = (request: any, listener: any) => {
+    if (this._router.match(request)) {
+      return this.adapter.adapt(this._router.dispatch)(request, listener);
+    }
+    return InstanceManager.get(CommonFileServer).handleRequest(
+      request,
+      listener,
     );
-
-    routeMetaArray.map(({ key, meta }) => {
-      const { method = 'get', path, query = {} } = meta;
-      const contextParam = getParamMeta(cls.prototype, META_PARAM_CONTEXT, key);
-      const queryParam = getParamMeta(cls.prototype, META_PARAM_QUERY, key);
-      const requestParam = getParamMeta(cls.prototype, META_PARAM_REQUEST, key);
-      this._router.use(method, path, (request, queryObject = {}) => {
-        const params: any[] = [];
-        if (queryParam) {
-          const queryParams = { ...queryObject };
-          Object.entries(query).forEach(([key, value]) => {
-            queryParams[key] = (value as any)(queryObject[key]);
-          });
-          params[queryParam.index] = queryParams;
-        }
-        if (requestParam) {
-          params[requestParam.index] = request;
-        }
-
-        if (contextParam) {
-          params[contextParam.index] = this;
-        }
-        return (instance[key] as Function).apply(instance, params);
-      });
-    });
-  }
+  };
 
   public init() {
     this.db = new LokiDB(schema);
@@ -202,6 +182,4 @@ export class MockGlipServer implements IGlipServerContext {
       data: buildInitialData,
     });
   }
-
-  getRouter = () => this._router;
 }

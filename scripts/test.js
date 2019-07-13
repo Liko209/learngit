@@ -72,11 +72,11 @@ switch (true) {
 }
 
 if (argv.includes('debug')) {
-  process.env.DEBUG_LOG = true;
+  process.env.DEBUG_MODE = true;
 }
 
 if (argv.includes('promise')) {
-  process.env.PROMISE_LOG = true;
+  process.env.DEBUG_PROMISE = true;
 }
 
 jest.run(argv);

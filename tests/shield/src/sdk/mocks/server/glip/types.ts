@@ -134,4 +134,3 @@ export type GlipData = {
   profile: GlipProfile;
 };
 
-export type IFactory<T = any> = Factory.Factory<T>;
