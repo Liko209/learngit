@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IDatabase, IDatabaseCollection, LokiCollection } from 'foundation/db';
-import Query from 'sdk/framework/dao/impl/Query';
-import { GlipModel } from './types';
 import _ from 'lodash';
+import Query from 'sdk/framework/dao/impl/Query';
+
+import { GlipModel } from './types';
 
 export class GlipBaseDao<T extends GlipModel> {
   db: IDatabase;
@@ -51,9 +52,7 @@ export class GlipBaseDao<T extends GlipModel> {
     if (!Array.isArray(array)) {
       return this.put(array);
     }
-    return array.map(async (item: T) => {
-      return this.put(item);
-    });
+    return array.map(async (item: T) => this.put(item));
   }
 
   delete(id: number): void {

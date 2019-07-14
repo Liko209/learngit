@@ -3,6 +3,7 @@
  * @Date: 2019-07-10 16:20:02
  * Copyright © RingCentral. All rights reserved.
  */
+import { IFactory, IScenarioDataHelper } from 'shield/sdk/types';
 import {
   GlipGroup,
   GlipGroupState,
@@ -19,9 +20,7 @@ import {
   profileFactory,
   stateFactory,
   teamFactory,
-  userFactory,
 } from './factories';
-import { IScenarioDataHelper, IFactory } from 'shield/sdk/types';
 
 class AccountDataFactory {
   private _factoryMap: Map<string, any> = new Map();

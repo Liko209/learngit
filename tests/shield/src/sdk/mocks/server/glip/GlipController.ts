@@ -7,19 +7,19 @@ import assert from 'assert';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
 
+import {
+  PContext,
+  PParam,
+  PRequest,
+} from '../../../decorators/Parameter.decorator';
 import { Route } from '../../../decorators/Route.decorator';
 import { IJRequest } from '../../../types';
 import { createResponse, String2Number } from '../utils';
+import { IGlipServerContext } from './IGlipServerContext';
 import {
  GlipGroup, GlipPost, GlipProfile, GlipState
 } from './types';
-import { genPostId, parseState, doPartialUpdate } from './utils';
-import {
-  PRequest,
-  PContext,
-  PParam,
-} from '../../../decorators/Parameter.decorator';
-import { IGlipServerContext } from './IGlipServerContext';
+import { doPartialUpdate, genPostId, parseState } from './utils';
 
 const debug = createDebug('GlipController');
 

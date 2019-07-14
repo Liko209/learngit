@@ -6,26 +6,26 @@
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
+import { sdk } from 'sdk/index';
 import { AccountService } from 'sdk/module/account';
+import { EnvConfig } from 'sdk/module/env/config';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { wait } from '../utils';
+import { globalConfig } from './globalConfig';
 import { GlipDataHelper } from './mocks/server/glip/data/data';
 import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { GlipData, InitialData } from './mocks/server/glip/types';
 import { parseInitialData } from './mocks/server/glip/utils';
 import { InstanceManager } from './mocks/server/InstanceManager';
-import { ProxyServer } from './mocks/server/ProxyServer';
-import { blockExternalRequest, createApiResponse } from './utils';
-import assert = require('assert');
-import { MockResponse, IMockRequestResponse, MockApi } from './types';
-import { sdk } from 'sdk/index';
-import { globalConfig } from './globalConfig';
-import { EnvConfig } from 'sdk/module/env/config';
 import { MockSocketServer } from './mocks/server/MockSocketServer';
+import { ProxyServer } from './mocks/server/ProxyServer';
 import { SocketServerManager } from './mocks/server/SocketServerManager';
+import { IMockRequestResponse, MockApi, MockResponse } from './types';
+import { blockExternalRequest, createApiResponse } from './utils';
 
+import assert = require('assert');
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 

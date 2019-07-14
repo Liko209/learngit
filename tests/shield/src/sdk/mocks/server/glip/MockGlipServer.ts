@@ -7,9 +7,16 @@ import assert from 'assert';
 import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
+import { IMockServer, IResponseAdapter, JRequestHandler } from 'shield/sdk/types';
 
 import { Route } from '../../../decorators/Route.decorator';
+import { globalConfig } from '../../../globalConfig';
+import { CommonFileServer } from '../CommonFileServer';
+import { InstanceManager } from '../InstanceManager';
+import { MockSocketServer } from '../MockSocketServer';
+import { ResponseAdapter } from '../ResponseAdapter';
 import { Router } from '../Router';
+import { SocketServerManager } from '../SocketServerManager';
 import { createResponse } from '../utils';
 import { STATE_KEYS } from './constants';
 import { GlipClientConfigDao } from './dao/clientConfig';
@@ -22,21 +29,10 @@ import { GlipPostDao } from './dao/post';
 import { GlipProfileDao } from './dao/profile';
 import { GlipStateDao } from './dao/state';
 import { GlipDataHelper } from './data/data';
-import { schema } from './glipSchema';
-import { MockSocketServer } from '../MockSocketServer';
-import { SocketServerManager } from '../SocketServerManager';
-import { GlipData, InitialData } from './types';
 import { GlipController } from './GlipController';
+import { schema } from './glipSchema';
 import { IGlipServerContext } from './IGlipServerContext';
-import { globalConfig } from '../../../globalConfig';
-import {
-  IMockServer,
-  JRequestHandler,
-  IResponseAdapter,
-} from 'shield/sdk/types';
-import { ResponseAdapter } from '../ResponseAdapter';
-import { InstanceManager } from '../InstanceManager';
-import { CommonFileServer } from '../CommonFileServer';
+import { GlipData, InitialData } from './types';
 
 const debug = createDebug('MockGlipServer');
 const GLIP_SOCKET_HOST = 'glip';

@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import * as Factory from 'factory.ts';
 import {
-  IRequest as IJRequest,
-  IResponse as IJResponse,
   IBaseRequest,
   IBaseResponse,
   INetworkRequestExecutorListener,
+  IRequest as IJRequest,
+  IResponse as IJResponse,
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
-import * as Factory from 'factory.ts';
 
 interface IApiPath<T extends IApiContract> {
   host: T['host'];

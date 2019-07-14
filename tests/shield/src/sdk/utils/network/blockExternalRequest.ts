@@ -3,11 +3,11 @@
  * @Date: 2019-07-10 16:18:06
  * Copyright © RingCentral. All rights reserved.
  */
-import https from 'https';
-import http, { RequestOptions, IncomingMessage } from 'http';
 import { EventEmitter } from 'events';
-import { createDebug } from 'sdk/__tests__/utils';
+import http, { IncomingMessage, RequestOptions } from 'http';
+import https from 'https';
 import _ from 'lodash';
+import { createDebug } from 'sdk/__tests__/utils';
 
 const debug = createDebug('BlockExternalRequest', false);
 class SimpleBlockRequest extends EventEmitter {

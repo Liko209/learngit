@@ -5,6 +5,7 @@
  */
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
+
 import { descriptorAOP } from '../core/utils';
 
 const mockServiceCache = new Map();
