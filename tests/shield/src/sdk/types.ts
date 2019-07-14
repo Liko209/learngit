@@ -24,7 +24,7 @@ interface IApiContract<Req = any, Res = any> {
   host: string;
   path: string;
   method: string;
-  query?: object;
+  pathParams?: object;
   request: Partial<Pick<IBaseRequest<Req>, 'data'>>;
   response: Pick<IBaseResponse<Res>, 'data'>;
 }
@@ -44,7 +44,7 @@ type RequestHandler = (
 type IRoute<T extends IApiContract> = {
   path: string;
   method?: string;
-  query?: QueryParser<T['query']>;
+  query?: QueryParser<T['pathParams']>;
 };
 
 interface IResponseAdapter {

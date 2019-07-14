@@ -10,7 +10,7 @@ export interface IGlipPostPut extends IApiContract {
   host: 'glip';
   path: '/api/post/:id';
   method: 'put';
-  query: {
+  pathParams: {
     id: number;
   };
   request: {

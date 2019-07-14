@@ -9,7 +9,7 @@ import { IApiContract, defineApiPath } from 'shield/sdk';
 export interface IGlipGroupPost extends IApiContract {
   path: '/api/group';
   method: 'post';
-  query: {
+  pathParams: {
     id: number;
   };
   request: {

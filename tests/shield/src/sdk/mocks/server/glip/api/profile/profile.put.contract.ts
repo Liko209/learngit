@@ -10,7 +10,7 @@ export interface IGlipProfilePut extends IApiContract {
   host: 'glip';
   path: '/api/profile/:id';
   method: 'put';
-  query: {
+  pathParams: {
     id: number;
   };
   request: {
