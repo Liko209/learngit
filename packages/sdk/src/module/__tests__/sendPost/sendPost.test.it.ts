@@ -56,7 +56,9 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     it('send post 2: failed', async () => {
       helper.mockApi(
           IGlipPostPost,
-          { status: 401 },
+          {
+            status: 401,
+          },
       );
       await expect(
         postService.sendPost({

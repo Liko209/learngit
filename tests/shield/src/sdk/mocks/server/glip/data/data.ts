@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import {
- GlipGroup, GlipGroupState, GlipPerson, GlipPost
+  GlipGroup,
+  GlipGroupState,
+  GlipPerson,
+  GlipPost,
+  GlipProfile,
+  GlipState,
 } from '../types';
 import {
   groupFactory,
@@ -64,6 +69,20 @@ class AccountDataFactory {
         creator_id: this.userId,
       }),);
   }
+
+  profile(): IFactory<GlipProfile> {
+    return this._get<IFactory<GlipProfile>>('GlipProfile', () => profileFactory.extend({
+        person_id: this.userId,
+        creator_id: this.userId,
+      }),);
+  }
+
+  state(): IFactory<GlipState> {
+    return this._get<IFactory<GlipState>>('GlipState', () => stateFactory.extend({
+        creator_id: this.userId,
+        person_id: this.userId,
+      }),);
+  }
 }
 
 class GroupScenarioDataHelper implements IScenarioDataHelper<GlipGroup> {
@@ -113,6 +132,14 @@ class PostScenarioDataHelper implements IScenarioDataHelper<GlipPost> {
   }
 }
 
+class ProfileScenarioDataHelper implements IScenarioDataHelper<GlipProfile> {
+  constructor(public factory: IFactory<GlipProfile>) {}
+}
+
+class StateScenarioDataHelper implements IScenarioDataHelper<GlipState> {
+  constructor(public factory: IFactory<GlipState>) {}
+}
+
 class GroupStateScenarioDataHelper
   implements IScenarioDataHelper<GlipGroupState> {
   constructor(public factory: IFactory<GlipGroupState>) {}
@@ -131,6 +158,8 @@ export class GlipDataHelper {
   team: TeamScenarioDataHelper;
   person: IFactory<GlipPerson>;
   post: PostScenarioDataHelper;
+  profile: ProfileScenarioDataHelper;
+  state: StateScenarioDataHelper;
   groupState: GroupStateScenarioDataHelper;
   constructor(companyId: number, userId: number) {
     const glipFactory = new AccountDataFactory(companyId, userId);
@@ -138,6 +167,8 @@ export class GlipDataHelper {
     this.team = new TeamScenarioDataHelper(glipFactory.team());
     this.person = glipFactory.people();
     this.post = new PostScenarioDataHelper(glipFactory.post());
+    this.profile = new ProfileScenarioDataHelper(glipFactory.profile());
+    this.state = new StateScenarioDataHelper(glipFactory.state());
     this.groupState = new GroupStateScenarioDataHelper(
       glipFactory.groupState(),
     );
