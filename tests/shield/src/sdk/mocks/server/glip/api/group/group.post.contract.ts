@@ -3,8 +3,8 @@
  * @Date: 2019-07-10 16:21:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApiContract } from '../../../../../types';
 import { GlipGroup } from '../../types';
+import { IApiContract, defineApiPath } from 'shield/sdk';
 
 export interface IGlipGroupPost extends IApiContract {
   path: '/api/group';
@@ -19,3 +19,9 @@ export interface IGlipGroupPost extends IApiContract {
     data: GlipGroup;
   };
 }
+
+export const IGlipGroupPost = defineApiPath<IGlipGroupPost>({
+  host: 'glip',
+  path: '/api/group',
+  method: 'post',
+});

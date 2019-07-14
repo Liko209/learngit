@@ -117,6 +117,9 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
   login() {
     if (globalConfig.get('mode') === 'glip') {
       return createResponse({
+        headers: {
+          'x-authorization': 'mock-x-authorization'
+        },
         status: 200,
         statusText: '[mock] glip login success',
       });

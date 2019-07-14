@@ -3,8 +3,8 @@
  * @Date: 2019-07-10 16:21:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApiContract } from '../../../../../types';
 import { GlipPost, GlipItem } from '../../types';
+import { IApiContract, defineApiPath } from 'shield/sdk';
 
 export interface IGlipPostsItemsByIds extends IApiContract {
   host: 'glip';
@@ -21,3 +21,9 @@ export interface IGlipPostsItemsByIds extends IApiContract {
     };
   };
 }
+
+export const IGlipPostsItemsByIds = defineApiPath<IGlipPostsItemsByIds>({
+  host: 'glip',
+  path: '/api/posts_items_by_ids/:ids',
+  method: 'get',
+});

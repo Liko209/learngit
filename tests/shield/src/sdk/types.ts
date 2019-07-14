@@ -14,6 +14,12 @@ import {
 import { Nullable } from 'sdk/types';
 import * as Factory from 'factory.ts';
 
+interface IApiPath<T extends IApiContract> {
+  host: T['host'];
+  method: T['method'];
+  path: T['path'];
+}
+
 interface IApiContract<Req = any, Res = any> {
   host: string;
   path: string;
@@ -54,6 +60,21 @@ interface IRouter {
 interface IMockServer {
   handleRequest: JRequestHandler;
 }
+
+type MockApi = <
+  A extends IApiContract<any, any> = IApiContract<any, any>,
+  ReqData = A extends IApiContract<infer B, any> ? B : any,
+  ResData = A extends IApiContract<any, infer B> ? B : any,
+  T extends (api: A) => any = (api: IApiContract<ReqData, ResData>) => any
+>(
+  options: IApiPath<A>,
+  data: Partial<A['response'] | IBaseResponse<ResData>>,
+  extractor?: T,
+  mapper?: (
+    request: IJRequest<ReqData>,
+    mockRequestResponse: IMockRequestResponse<ReqData, ResData>,
+  ) => IJResponse<ResData>,
+) => ReturnType<T>;
 
 type MockResponse = <
   A extends IApiContract<any, any> = IApiContract<any, any>,
@@ -153,12 +174,14 @@ export {
   INetworkRequestExecutorListener,
   IRoute,
   IApiContract,
+  IApiPath,
   RequestHandler,
   IMockServer,
   JRequestHandler,
   QueryParser,
   IRouter,
   IResponseAdapter,
+  MockApi,
   MockResponse,
   ISocketRequest,
   ISocketResponse,

@@ -6,3 +6,5 @@
 export * from './mockService';
 export * from './SdkItFramework';
 export * from './globalConfig';
+export * from './types'
+export * from './utils'

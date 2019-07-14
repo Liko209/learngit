@@ -10,7 +10,6 @@ import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
-import { createErrorResponse } from 'shield/sdk/utils';
 jest.setTimeout(30 * 1000);
 itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
@@ -55,15 +54,9 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     });
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      helper.mockResponse(
-        createErrorResponse<IGlipPostPost>(
-          {
-            host: 'glip',
-            method: 'post',
-            path: '/api/post',
-          },
+      helper.mockApi(
+          IGlipPostPost,
           { status: 401 },
-        ),
       );
       await expect(
         postService.sendPost({
@@ -110,7 +103,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     });
     it('create a new group then send post', async () => {
       const result = await groupService.getOrCreateGroupByMemberList([
-        userContext.currentUserId(),
+        userContext.glipUserId(),
         667,
       ]);
       expect(result.id > 0).toBeTruthy();

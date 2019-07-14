@@ -3,7 +3,7 @@
  * @Date: 2019-07-10 16:21:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApiContract } from '../../../../../types';
+import { IApiContract, defineApiPath } from 'shield/sdk';
 import { GlipPost } from '../../types';
 
 export interface IGlipPostPost extends IApiContract {
@@ -17,3 +17,10 @@ export interface IGlipPostPost extends IApiContract {
     data: GlipPost;
   };
 }
+
+
+export const IGlipPostPost = defineApiPath<IGlipPostPost>({
+  host: 'glip',
+  path: '/api/post',
+  method: 'post',
+});

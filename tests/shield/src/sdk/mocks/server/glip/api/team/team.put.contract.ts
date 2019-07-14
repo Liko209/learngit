@@ -3,8 +3,8 @@
  * @Date: 2019-07-10 16:20:58
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApiContract } from '../../../../../types';
 import { GlipGroup } from '../../types';
+import { IApiContract, defineApiPath } from 'shield/sdk';
 
 export interface IGlipTeamPut extends IApiContract {
   path: '/api/team/:id';
@@ -19,3 +19,9 @@ export interface IGlipTeamPut extends IApiContract {
     data: GlipGroup;
   };
 }
+
+export const IGlipTeamPut = defineApiPath<IGlipTeamPut>({
+  host: 'glip',
+  path: '/api/team/:id',
+  method: 'put',
+});

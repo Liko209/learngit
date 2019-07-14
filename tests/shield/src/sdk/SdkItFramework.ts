@@ -17,9 +17,9 @@ import { GlipData, InitialData } from './mocks/server/glip/types';
 import { parseInitialData } from './mocks/server/glip/utils';
 import { InstanceManager } from './mocks/server/InstanceManager';
 import { ProxyServer } from './mocks/server/ProxyServer';
-import { blockExternalRequest } from './utils';
+import { blockExternalRequest, createApiResponse } from './utils';
 import assert = require('assert');
-import { MockResponse, IMockRequestResponse } from './types';
+import { MockResponse, IMockRequestResponse, MockApi } from './types';
 import { sdk } from 'sdk/index';
 import { globalConfig } from './globalConfig';
 import { EnvConfig } from 'sdk/module/env/config';
@@ -32,8 +32,8 @@ blockExternalRequest();
 type ItContext = {
   // ACCOUNT user info
   userContext: {
-    currentUserId: () => number;
-    currentCompanyId: () => number;
+    glipUserId: () => number;
+    glipCompanyId: () => number;
   };
   // ACCOUNT data template
   template: {
@@ -46,8 +46,9 @@ type ItContext = {
     useInitialData: (initialData: InitialData) => GlipData;
     // model build helper
     glipDataHelper: () => GlipDataHelper;
-    // mock api response
     mockResponse: MockResponse;
+    // mock api response
+    mockApi: MockApi;
     // glip socketServer, use to send message to client.
     socketServer: MockSocketServer;
     clearMocks: () => void;
@@ -73,7 +74,7 @@ async function initSdk() {
 async function login() {
   await ServiceLoader.getInstance<AccountService>(
     ServiceConfig.ACCOUNT_SERVICE,
-  ).unifiedLogin({ code: 'mockCode', token: 'mockToken' });
+  ).unifiedLogin({ code: 'mockRCCode' });
 }
 
 async function onLogin(mode: 'glip' | 'rc' = 'glip') {
@@ -108,7 +109,6 @@ export function itForSdk(
   let userId: number;
   let companyId: number;
   const proxyServer = InstanceManager.get(ProxyServer);
-  // const fileServer = InstanceManager.get(CommonFileServer);
   const mockGlipServer = InstanceManager.get(MockGlipServer);
   const useAccount = (_companyId: number, _userId: number) => {
     userId = _userId;
@@ -133,6 +133,7 @@ export function itForSdk(
   };
 
   const mockResponse: MockResponse = (requestResponse, extractor, mapper) => {
+    // const requestResponse = createSuccessResponse(apiPath, response);
     if (!jest.isMockFunction(proxyServer.getRequestResponsePool)) {
       const requestResponsePool: IMockRequestResponse[] = [];
       jest
@@ -151,18 +152,23 @@ export function itForSdk(
     return extractResult;
   };
 
+  const mockApi: MockApi = (apiPath, response, extractor, mapper) => {
+    return mockResponse(createApiResponse(apiPath, response), extractor, mapper)
+  }
+
   // provide for it case to mock data.
   const itCtx: ItContext = {
     helper: {
       clearMocks,
       mockResponse,
+      mockApi,
       useInitialData,
       socketServer: SocketServerManager.get('glip'),
       glipDataHelper: getGlipDataHelper,
     },
     userContext: {
-      currentUserId: () => userId,
-      currentCompanyId: () => companyId,
+      glipUserId: () => userId,
+      glipCompanyId: () => companyId,
     },
     template: {
       BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),

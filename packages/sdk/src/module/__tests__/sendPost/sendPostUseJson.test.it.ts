@@ -3,20 +3,15 @@
  * @Date: 2019-07-10 16:25:48
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { itForSdk } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
-import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
-import { createErrorResponse, readJson } from 'shield/sdk/utils';
-import { createResponse } from 'shield/sdk/mocks/server/utils';
+import { readJson } from 'shield/sdk/utils';
 jest.setTimeout(30 * 1000);
 itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
-  let groupService: GroupService;
   let postService: PostService;
-  let stateService: StateService;
 
   const glipData = helper.useInitialData(template.BASIC);
   const team1 = helper
@@ -25,9 +20,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   glipData.teams.push(team1);
   beforeAll(async () => {
     await sdk.setup();
-    groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
     postService = ServiceLoader.getInstance(ServiceConfig.POST_SERVICE);
-    stateService = ServiceLoader.getInstance(ServiceConfig.STATE_SERVICE);
   });
 
   afterAll(async () => {
@@ -65,15 +58,9 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     });
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      helper.mockResponse(
-        createErrorResponse<IGlipPostPost>(
-          {
-            host: 'glip',
-            method: 'post',
-            path: '/api/post',
-          },
+      helper.mockApi(
+          IGlipPostPost,
           { status: 400 },
-        ),
       );
       await expect(
         postService.sendPost({

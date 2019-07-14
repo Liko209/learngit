@@ -9,6 +9,8 @@ import { itForSdk } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
+import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
+
 itForSdk('Group Integration test', ({ helper, sdk, template }) => {
   let groupService: GroupService;
 
@@ -35,8 +37,7 @@ itForSdk('Group Integration test', ({ helper, sdk, template }) => {
             members: data.members,
             name: data.set_abbreviation,
           };
-        },
-      );
+      });
       await groupService.createTeam(mockInfo.creatorId, mockInfo.members, {
         name: mockInfo.name,
       });
@@ -139,13 +140,11 @@ itForSdk('Group Integration test', ({ helper, sdk, template }) => {
         ),
         (
           reqRes: IRequestResponse<{ _id: number; members: number[] }, Group>,
-        ) => {
-          return {
+        ) => ({
             id: reqRes.request.data!._id,
             addMembers: reqRes.request.data!.members,
             newMembers: reqRes.response.data!.members,
-          };
-        },
+          }),
       );
       await groupService.addTeamMembers(mockInfo.addMembers, mockInfo.id);
       const result = await groupService.getById(mockInfo.id!);
@@ -155,11 +154,9 @@ itForSdk('Group Integration test', ({ helper, sdk, template }) => {
     it('archived team', async () => {
       const mockInfo = helper.mockResponse(
         require('./data/ARCHIVED_TEAM.SUCCESS.json'),
-        (reqRes: IRequestResponse<Group, Group>) => {
-          return {
+        (reqRes: IRequestResponse<Group, Group>) => ({
             id: reqRes.request.data!._id!,
-          };
-        },
+          }),
       );
       await groupService.archiveTeam(mockInfo.id);
       const result = await groupService.getById(mockInfo.id!);

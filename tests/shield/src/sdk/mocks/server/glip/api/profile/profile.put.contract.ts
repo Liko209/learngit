@@ -3,8 +3,8 @@
  * @Date: 2019-07-10 16:21:12
  * Copyright © RingCentral. All rights reserved.
  */
-import { IApiContract } from '../../../../../types';
 import { GlipProfile } from '../../types';
+import { IApiContract, defineApiPath } from 'shield/sdk';
 
 export interface IGlipProfilePut extends IApiContract {
   host: 'glip';
@@ -20,3 +20,9 @@ export interface IGlipProfilePut extends IApiContract {
     data: GlipProfile;
   };
 }
+
+export const IGlipProfilePut = defineApiPath<IGlipProfilePut>({
+  host: 'glip',
+  path: '/api/profile/:id',
+  method: 'put',
+});
