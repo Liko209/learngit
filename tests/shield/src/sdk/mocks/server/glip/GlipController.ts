@@ -17,7 +17,7 @@ import { genPostId, parseState, doPartialUpdate } from './utils';
 import {
   PRequest,
   PContext,
-  PQuery,
+  PParam,
 } from '../../../decorators/Parameter.decorator';
 import { IGlipServerContext } from './IGlipServerContext';
 
@@ -118,7 +118,7 @@ export class GlipController {
   saveStatePartial(
     @PRequest request: IJRequest<GlipState>,
     @PContext context: IGlipServerContext,
-    @PQuery query: { id: number },
+    @PParam query: { id: number },
   ) {
     debug('handle saveStatePartial -> request', query);
     const groupStates = parseState(request.data);
@@ -161,7 +161,7 @@ export class GlipController {
   })
   updateGroup(
     @PRequest request: IJRequest<GlipGroup>,
-    @PQuery routeParams: object,
+    @PParam routeParams: object,
     @PContext context: IGlipServerContext,
   ) {
     assert(routeParams['id'], 'update group lack ok id');
@@ -201,7 +201,7 @@ export class GlipController {
   })
   updateTeam(
     @PRequest request: IJRequest<GlipGroup>,
-    @PQuery routeParams: object,
+    @PParam routeParams: object,
     @PContext context: IGlipServerContext,
   ) {
     assert(routeParams['id'], 'update team lack ok id');
@@ -224,7 +224,7 @@ export class GlipController {
   })
   getProfile(
     @PRequest request: IJRequest<GlipProfile>,
-    @PQuery routeParams: object,
+    @PParam routeParams: object,
     @PContext context: IGlipServerContext,
   ) {
     assert(routeParams['id'], 'get profile lack ok id');
@@ -243,7 +243,7 @@ export class GlipController {
   })
   updateProfile(
     @PRequest request: IJRequest<GlipProfile>,
-    @PQuery routeParams: object,
+    @PParam routeParams: object,
     @PContext context: IGlipServerContext,
   ) {
     assert(routeParams['id'], 'update profile lack ok id');
@@ -275,7 +275,7 @@ export class GlipController {
       ids: (raw: string) => raw.split(','),
     },
   })
-  presence(@PRequest request: IJRequest, @PQuery query: { ids: number[] }) {
+  presence(@PRequest request: IJRequest, @PParam query: { ids: number[] }) {
     return createResponse({
       request,
       data: query.ids.map(id => ({

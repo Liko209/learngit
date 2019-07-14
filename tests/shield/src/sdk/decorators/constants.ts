@@ -6,5 +6,5 @@
 export const META_ROUTE = 'meta_route';
 export const META_CONTROLLER = 'meta_controller';
 export const META_PARAM_REQUEST = 'meta_param_request';
-export const META_PARAM_QUERY = 'meta_param_query';
+export const META_PARAM_PARAM = 'meta_param_param';
 export const META_PARAM_CONTEXT = 'meta_param_context';

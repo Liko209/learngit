@@ -12,7 +12,7 @@ import { createDebug } from 'sdk/__tests__/utils';
 import { createResponse } from './utils';
 import {
   META_ROUTE,
-  META_PARAM_QUERY,
+  META_PARAM_PARAM,
   META_PARAM_CONTEXT,
   META_PARAM_REQUEST,
 } from '../../decorators/constants';
@@ -43,7 +43,7 @@ export class Router implements IRouter {
     routeMetaArray.map(({ key, meta }) => {
       const { method = 'get', path, query = {} } = meta;
       const contextParam = getParamMeta(cls.prototype, META_PARAM_CONTEXT, key);
-      const queryParam = getParamMeta(cls.prototype, META_PARAM_QUERY, key);
+      const queryParam = getParamMeta(cls.prototype, META_PARAM_PARAM, key);
       const requestParam = getParamMeta(cls.prototype, META_PARAM_REQUEST, key);
       this.use(method, path, (request, queryObject = {}) => {
         const params: any[] = [];

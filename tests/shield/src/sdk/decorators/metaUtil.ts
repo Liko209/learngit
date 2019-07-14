@@ -12,12 +12,19 @@ export const getPrototypeDefineFunctions = (prototype: any): string[] => {
   return [
     ...getPrototypeDefineFunctions(superPrototype),
     ...Object.getOwnPropertyNames(prototype).filter(key => {
-      return key !== 'constructor' && Object.prototype.toString.call(prototype[key] === '[object Function]');
+      return (
+        key !== 'constructor' &&
+        Object.prototype.toString.call(prototype[key] === '[object Function]')
+      );
     }),
   ];
 };
 
-export const getMeta = <META>(prototype: any, metaKey: string, functionKeys?: string[]): ({ key: string; meta: META })[] => {
+export const getMeta = <META>(
+  prototype: any,
+  metaKey: string,
+  functionKeys?: string[],
+): ({ key: string; meta: META })[] => {
   return (functionKeys || getPrototypeDefineFunctions(prototype))
     .map(key => {
       return {
@@ -28,7 +35,10 @@ export const getMeta = <META>(prototype: any, metaKey: string, functionKeys?: st
     .filter(result => !!result.meta);
 };
 
-export const createParameterDecorator = (metaKey: string, ...params: any): ParameterDecorator => {
+export const createParameterDecorator = (
+  metaKey: string,
+  ...params: any
+): ParameterDecorator => {
   return (target, propertyKey, index) => {
     Reflect.defineMetadata(
       metaKey,
@@ -42,6 +52,10 @@ export const createParameterDecorator = (metaKey: string, ...params: any): Param
   };
 };
 
-export const getParamMeta = <T>(prototype: any, metaKey: string, propertyKey: string): UndefinedAble<{ index: number; params: T }> => {
+export const getParamMeta = <T>(
+  prototype: any,
+  metaKey: string,
+  propertyKey: string,
+): UndefinedAble<{ index: number; params: T }> => {
   return Reflect.getMetadata(metaKey, prototype, propertyKey);
 };
