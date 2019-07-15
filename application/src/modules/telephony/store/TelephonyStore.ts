@@ -559,6 +559,11 @@ class TelephonyStore {
   }
 
   @computed
+  get activeCallDirection() {
+    return this.call && this.call.direction;
+  }
+
+  @computed
   get callDisconnected(): boolean {
     return this.callState === CALL_STATE.DISCONNECTED;
   }
