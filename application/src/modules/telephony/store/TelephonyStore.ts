@@ -6,7 +6,7 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import {
-  observable, computed, action, reaction
+ observable, computed, action, reaction
 } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -196,15 +196,6 @@ class TelephonyStore {
       length => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForForwardString();
-        }
-      },
-    );
-
-    reaction(
-      () => this.call && this.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTED) {
-          this.end();
         }
       },
     );
