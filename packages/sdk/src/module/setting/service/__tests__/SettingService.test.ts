@@ -37,34 +37,19 @@ describe('SearchService', () => {
     });
     it('should proxy settingController.registerModuleSetting', () => {
       settingService.registerModuleSetting({} as any);
-      expect(settingController.registerModuleSetting).toHaveBeenCalledWith({});
-    });
-  });
-
-  describe('getById()', () => {
-    it('should return expect value when internal is undefined', async () => {
-      settingController.getById = jest.fn().mockReturnValue(1);
-      const result = await settingService.getById(1);
-      expect(result).toEqual(1);
-    });
-    it('should return expect value when internal is undefined and getById has resolve', async () => {
-      settingController.getById = jest.fn().mockReturnValue(1);
-      Promise.race = jest.fn().mockReturnValue(0);
-      const result = await settingService.getById(1, 0);
-      expect(result).toEqual(0);
-      expect(Promise.race).toHaveBeenCalled();
+      expect(settingController.registerModuleSetting).toBeCalledWith({});
     });
   });
   describe('onStarted', () => {
     it('should call init when setting controller is not null', () => {
       settingService.onStarted();
-      expect(settingController.init).toHaveBeenCalled();
+      expect(settingController.init).toBeCalled();
     });
   });
   describe('onStopped', () => {
     it('should call init when setting controller is not null', () => {
       settingService.onStopped();
-      expect(settingController.dispose).toHaveBeenCalled();
+      expect(settingController.dispose).toBeCalled();
     });
   });
 
@@ -78,9 +63,7 @@ describe('SearchService', () => {
     });
     it('should proxy settingController.unRegisterModuleSetting', () => {
       settingService.unRegisterModuleSetting({} as any);
-      expect(settingController.unRegisterModuleSetting).toHaveBeenCalledWith(
-        {},
-      );
+      expect(settingController.unRegisterModuleSetting).toBeCalledWith({});
     });
   });
 });

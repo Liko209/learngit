@@ -160,7 +160,6 @@ class ProfileService extends EntityBaseService<Profile>
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(
         this,
-        ServiceLoader.getInstance(ServiceConfig.TELEPHONY_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.ACCOUNT_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.SETTING_SERVICE),
       );
