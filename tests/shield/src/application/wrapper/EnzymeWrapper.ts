@@ -9,12 +9,18 @@ import { IWrapper } from './interface';
 import ReactQuill, { Quill } from 'react-quill';
 import { needWait } from './utils';
 
-
 class EnzymeWrapper implements IWrapper<ReactWrapper> {
   protected wrapper: ReactWrapper;
 
   constructor(wrapper: ReactWrapper) {
-    this.init(wrapper);
+    // for copy-constructor
+    if (wrapper instanceof EnzymeWrapper) {
+      const arg = wrapper as EnzymeWrapper;
+      this.init(arg.wrapper);
+    } else {
+      // normal init routine
+      this.init(wrapper);
+    }
   }
 
   init(origin: any) {
@@ -88,6 +94,10 @@ class EnzymeWrapper implements IWrapper<ReactWrapper> {
     } else {
       this.wrapper.simulate('change', { target: { value: text } });
     }
+  }
+
+  text() {
+    return this.wrapper.text();
   }
 
   flush() {

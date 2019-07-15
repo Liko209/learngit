@@ -8,9 +8,8 @@ import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk';
 import {
- h, act, t, MockApp, bootstrap
+ h, t, MockApp, bootstrap
 } from 'shield/application';
-import { wait } from 'shield/utils';
 
 jest.setTimeout(300 * 1000);
 
@@ -36,12 +35,12 @@ itForSdk('Service Integration test', ({ helper, template, sdk }) => {
       const app = await h(<MockApp inited />);
 
       await t(app, async () => {
-        app.messageInput.input('hello');
+        const message = 'hello';
+        app.messageInput.input(message);
         await app.messageInput.enter();
 
-        // need to flush UI when try to resolve component
-        app.flush();
         const postView = app.postViewByID();
+        expect(postView.textMessageView().text()).toEqual(message);
         fs.writeFileSync('./out.txt', `${app.toString()}`);
       });
     });
