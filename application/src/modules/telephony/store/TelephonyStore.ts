@@ -58,16 +58,10 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string; // original phone number without parsed
-
-  @observable
   isContactMatched: boolean = false;
 
   @observable
-  id: number = 0;
-
-  @observable
-  callerName?: string;
+  id: number | undefined = undefined;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -335,7 +329,6 @@ class TelephonyStore {
         this._history.delete(DIALING);
         break;
       default:
-        // this._history.delete(DIALING);
         break;
     }
 
@@ -344,11 +337,15 @@ class TelephonyStore {
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
-    this.callerName = undefined;
-    this.phoneNumber = undefined;
+
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
+
+    // for TelephonyNotificationManger can get call disconnected state.
+    Promise.resolve().then(() => {
+      this.id = undefined;
+    });
   };
 
   @action
@@ -506,7 +503,8 @@ class TelephonyStore {
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
+    const id = this.id || NaN;
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, id);
   }
 
   @computed
@@ -561,9 +559,6 @@ class TelephonyStore {
 
   @computed
   get callId() {
-    if (this.callDisconnected) {
-      return undefined;
-    }
     return this.call.callId;
   }
 
@@ -609,6 +604,17 @@ class TelephonyStore {
       this.hasActiveInBoundCall ||
       this.isIncomingCall
     );
+  }
+
+  @computed
+  get callerName() {
+    return this.call.fromName;
+  }
+
+  @computed
+  get phoneNumber() {
+    const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
+    return phoneNumber !== ANONYMOUS ? phoneNumber : '';
   }
 
   @action

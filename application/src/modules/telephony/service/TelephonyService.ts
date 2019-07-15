@@ -106,15 +106,9 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.id = id;
-    const { fromNum, callId, fromName } = this._telephonyStore.call;
+    const { fromNum, callId } = this._telephonyStore.call;
     this._callEntityId = id;
 
-    this._telephonyStore.callerName = fromName;
-    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
-    if (phoneNumber !== this._telephonyStore.phoneNumber) {
-      this._telephonyStore.isContactMatched = false;
-      this._telephonyStore.phoneNumber = phoneNumber;
-    }
     this._telephonyStore.incomingCall();
     // need factor in new module design
     // if has incoming call voicemail should be pause
@@ -451,7 +445,6 @@ class TelephonyService {
       }
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
     return true;
   };
 
