@@ -3,7 +3,6 @@
  * @Date: 2019-06-28 16:16:14
  * Copyright © RingCentral. All rights reserved.
  */
-import { ReactElement } from 'react';
 import { TestApp } from './application';
 import { act as ract } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';

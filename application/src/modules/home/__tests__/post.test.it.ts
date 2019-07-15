@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk';
-import { h, t } from 'shield/application';
+import { h } from 'shield/application';
 
 jest.setTimeout(300 * 1000);
 
@@ -27,10 +26,9 @@ itForSdk('Service Integration test', ({ helper, template, sdk }) => {
       // await sdk.cleanUp();
     });
     it('should send post', async () => {
-      const url = `/messages/${team1._id}`;
-      const app = await h({ url });
+      const app = await h({ url: `/messages/${team1._id}` });
 
-      await t(app, async () => {
+      await app.test(async () => {
         const message = 'hello';
         app.messageInput.input(message);
         await app.messageInput.enter();

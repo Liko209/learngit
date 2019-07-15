@@ -9,6 +9,7 @@ import { ReactWrapper } from 'enzyme';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { ConversationCard } from '@/modules/message/container/ConversationCard/';
 import { ConversationPage } from './ConversationPage';
+import { t } from './helper';
 
 type Config = {
   autoFlush: boolean;
@@ -122,6 +123,10 @@ class TestApp<T> {
       this.flush();
     }
     return this._imp.toString();
+  }
+
+  async test(callback: () => Promise<void>) {
+    await t(this, callback);
   }
 }
 
