@@ -15,7 +15,7 @@ test(formalName('Check mini profile is displayed correct', ['P2', 'Messages', 'C
 
   const team = <IGroup> {
     name: uuid(),
-    type: "team",
+    type: "Team",
     owner: loginUser,
     members: [loginUser]
   }
