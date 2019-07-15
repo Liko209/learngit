@@ -9,7 +9,7 @@ import { IGroup } from "../../v2/models";
 fixture('RightRail/ImagesMore')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Image files display more button on the right rail', ['P2', 'Messages', 'RightRail', 'ImagesMore', 'V1.5', 'Hanny.Han']), async(t) => {
+test(formalName('Image files display more button on the right rail', ['P2', 'Messages', 'RightRail', 'ImagesMore', 'V1.6', 'Hanny.Han']), async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
 
   const team = <IGroup> {

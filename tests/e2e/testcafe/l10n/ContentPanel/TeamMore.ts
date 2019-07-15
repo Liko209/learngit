@@ -10,7 +10,7 @@ fixture('ContentPanel/TeamMore')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
 
-test(formalName('Check the team conversation more button',['P2','ContentPanel','TeamMore', 'V1.5', 'Hanny.Han']),async (t) => {
+test(formalName('Check the team conversation more button',['P2','ContentPanel','TeamMore', 'V1.6', 'Hanny.Han']),async (t) => {
 
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
