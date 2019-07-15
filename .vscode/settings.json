@@ -3,6 +3,7 @@
   "prettier.tslintIntegration": false,
   "prettier.eslintIntegration": true,
   "typescript.surveys.enabled": false,
+  "prettier.singleQuote": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
   "[handlebars]": {

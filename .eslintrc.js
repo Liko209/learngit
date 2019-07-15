@@ -3,6 +3,7 @@ module.exports = {
   extends: [
     'plugin:jest/recommended',
     'airbnb-typescript',
+    'prettier',
     'prettier/@typescript-eslint',
   ],
   plugins: ['react-hooks'],
@@ -64,6 +65,7 @@ module.exports = {
     'react/jsx-indent': 'off',
     'react/destructuring-assignment': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
+    "jsx-quotes": [1, "prefer-double"],
     'class-methods-use-this': 'off',
     'operator-assignment': 'off',
     'operator-linebreak': 'off',
