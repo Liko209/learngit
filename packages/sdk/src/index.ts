@@ -8,6 +8,7 @@ import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
 import * as error from './error';
+import './module/debug';
 import Sdk from './Sdk';
 import { container } from './container';
 import { registerConfigs } from './registerConfigs';

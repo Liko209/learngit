@@ -35,12 +35,12 @@ class SyncService extends EntityBaseService<IdModel> {
     );
     this.setHealthModuleController(
       new HealthModuleController(MODULE_IDENTIFY, MODULE_NAME, {
-        SyncStatus: () => ({
+        SyncStatus: () => (this._userConfig ? {
           lastIndexStatus: this._userConfig.getIndexSucceed()
             ? 'success'
             : 'failed',
-          lastIndexTimestamp: this.getSyncController().getIndexTimestamp(),
-        }),
+          lastIndexTimestamp: this._userConfig.getLastIndexTimestamp(),
+        } : ''),
       }),
     );
   }
