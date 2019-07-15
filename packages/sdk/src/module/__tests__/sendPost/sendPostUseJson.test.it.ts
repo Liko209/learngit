@@ -78,6 +78,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     });
     it('received a post', async () => {
       await helper.socketServer.emitPacket(require('./data/RECEIVE_POST.SOCKET.json'));
+      await wait();
       const result = await postService.getPostsByGroupId({
         groupId: 16386
       })

@@ -22,7 +22,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
   beforeAll(async () => {
-    await sdk.setup();
+    await sdk.setup('glip');
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
     postService = ServiceLoader.getInstance(ServiceConfig.POST_SERVICE);
     stateService = ServiceLoader.getInstance(ServiceConfig.STATE_SERVICE);

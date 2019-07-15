@@ -126,7 +126,8 @@ export class GlipController {
       debug('saveStatePartial -> groupStates[0] %O', groupStates[0]);
       return createResponse({
         request,
-        data: doPartialUpdate(context.groupStateDao, groupStates[0], result => context.socketServer.emitPartial(result),),
+        data: doPartialUpdate(context.groupStateDao, groupStates[0], result =>
+          context.socketServer.emitPartial(result),),
       });
     }
     return createResponse({

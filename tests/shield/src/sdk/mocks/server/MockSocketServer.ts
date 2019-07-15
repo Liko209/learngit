@@ -38,11 +38,12 @@ export class MockSocketServer {
   async emitPacket<T>(packet: ISocketInfo<T>) {
     assert(packet.channel, 'socket packet should contain channel info.');
     assert(packet.data, 'socket packet should contain data.');
+    await wait();
     this.socket.emit(packet.channel, JSON.stringify(packet.data));
-    await wait(10);
   }
 
   async emitEntityCreate(entity: object) {
+    await wait();
     debug('-> emitEntityCreate');
     this.socket.emit(
       'message',
@@ -53,10 +54,10 @@ export class MockSocketServer {
         },
       }),
     );
-    await wait(10);
   }
 
   async emitMessage(entity: object) {
+    await wait();
     debug('-> emitMessage');
     this.socket.emit(
       'message',
@@ -67,11 +68,12 @@ export class MockSocketServer {
         },
       }),
     );
-    await wait(10);
+    // await wait();
   }
 
   async emitPartial(partial: object, partialBody?: object) {
-    debug('-> emitPartial');
+    await wait();
+    debug('-> emitPartial', partial);
     this.socket.emit(
       'partial',
       JSON.stringify({
@@ -83,6 +85,6 @@ export class MockSocketServer {
         },
       }),
     );
-    await wait(1);
+    // await wait();
   }
 }
