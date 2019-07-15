@@ -1,14 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/AtMention/*/.ts",
-      "./fixtures/Bookmarks/*/.ts",
-      "./fixtures/ConversationList/*/.ts",
-      "./fixtures/CreateTeam/*/.ts",
-      "./fixtures/Electron/*/.ts",
       "./fixtures/Profile/*/.ts",
-      "./fixtures/Search/*/.ts",
-      "./fixtures/SendNewMessage/*/.ts",
       "./fixtures/Setting/*/.ts",
       "./fixtures/SignInOut/*/.ts",
       "./fixtures/Team/*/.ts",
@@ -17,10 +10,6 @@
       "./fixtures/UnifiedLogin.ts",
       "./telephony/phoneSetting/*.ts",
       "./telephony/*.ts"
-    ],
-    "include_tags": [
-      "P0",
-      "P1"
     ],
     "browsers": [
       "selenium:chrome"
