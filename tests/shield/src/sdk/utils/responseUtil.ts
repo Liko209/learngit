@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { IApiContract, IRequestResponse, IApiPath } from '../types';
+import { IApiContract, IRequestResponse, IApiPath, ISocketInfo } from '../types';
 import { createResponse } from '../mocks/server/utils';
 
 import assert = require('assert');
