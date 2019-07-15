@@ -7,7 +7,7 @@ import {
   KVStorageManager,
   DexieDB,
   DatabaseType,
-  mainLogger,
+  mainLogger
 } from 'foundation';
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
@@ -23,7 +23,7 @@ import { IDBObserver } from './IDBObserver';
 const LOG_TAG = 'DaoManager';
 
 class DaoManager extends Manager<
-BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
+  BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
 > {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
@@ -39,9 +39,10 @@ BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
   }
 
   async initDatabase(): Promise<void> {
-    const dbType = this.kvStorageManager.isLocalStorageSupported()
-      ? DatabaseType.DexieDB
-      : DatabaseType.LokiDB;
+    const dbType =
+      window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
+        ? DatabaseType.DexieDB
+        : DatabaseType.LokiDB;
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
@@ -92,7 +93,7 @@ BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
   }
 
   getDao<T extends BaseDao<IdModel<ModelIdType>, ModelIdType>>(
-    DaoClass: INewable<T>,
+    DaoClass: INewable<T>
   ): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
@@ -129,7 +130,7 @@ BaseDao<IdModel<ModelIdType>, ModelIdType> | BaseKVDao | DBKVDao
       // TODO FIJI-4396
       // 'any' because of circular reference
       const synConfig = ServiceLoader.getInstance<any>(
-        ServiceConfig.SYNC_SERVICE,
+        ServiceConfig.SYNC_SERVICE
       ).userConfig;
       synConfig.clearSyncConfigsForDBUpgrade();
       jobScheduler.userConfig.clearFetchDataConfigs();

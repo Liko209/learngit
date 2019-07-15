@@ -5,11 +5,19 @@
  */
 
 import config from '@/config';
-import { FirebasePerformance } from '../../../packages/foundation';
+import {
+  FirebasePerformance,
+  KVStorageManager
+} from '../../../packages/foundation';
 
 class FirebasePerformanceController {
   initialize() {
-    if (config.isProductionAccount()) {
+    const storageManager = new KVStorageManager();
+    if (
+      window.indexedDB &&
+      storageManager.isLocalStorageSupported() &&
+      config.isProductionAccount()
+    ) {
       FirebasePerformance.getInstance().initialize();
     }
   }
