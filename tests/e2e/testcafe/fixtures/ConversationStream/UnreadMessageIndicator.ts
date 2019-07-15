@@ -39,6 +39,11 @@ test.meta(<ITestMeta>{
   });
 
   const app = new AppRoot(t);
+  await h(t).withLog('And I set new_message_badges is all', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).setNewMessageBadges('all');
+  });
+
 
   await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({

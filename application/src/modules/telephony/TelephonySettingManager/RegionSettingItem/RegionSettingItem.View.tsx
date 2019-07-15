@@ -48,18 +48,28 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     const { value, state } = settingItemEntity;
 
     const regionText = t('setting.phone.general.regionSetting.region');
-    const countryText = t('setting.phone.general.regionSetting.country');
-    const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
 
-    let descriptionText = `${countryText}: `;
+    let descriptionText = '';
     if (value) {
       const { areaCode, countryInfo } = value;
       const { name, callingCode } = countryInfo;
-      descriptionText += `${name} (+${callingCode})`;
+      const countryDesc = `${name} (+${callingCode})`;
+      descriptionText = t(
+        'setting.phone.general.regionSetting.descriptionWithoutAreaCode',
+        {
+          country: countryDesc,
+        },
+      );
+
       if (areaCode) {
-        descriptionText += `, ${areaCodeText}: ${areaCode}`;
+        const areaCodeDesc = areaCode ? `${areaCode}` : '';
+        descriptionText = t('setting.phone.general.regionSetting.description', {
+          country: countryDesc,
+          areaCode: areaCodeDesc,
+        });
       }
     }
+
     const disabled = state === ESettingItemState.DISABLE;
     return (
       <JuiSettingSectionItem

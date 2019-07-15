@@ -24,7 +24,6 @@ const runtimeCaching = require('./runtimeCaching');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
-
 // eslint-disable-next-line import/no-dynamic-require
 const appPackage = require(paths.appPackageJson);
 const SentryWebpackPlugin = require('@sentry/webpack-plugin');
@@ -40,7 +39,9 @@ const publicPath = paths.servedPath;
 const shouldUseRelativeAssetPaths = publicPath === './';
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
-const shouldUploadMapToSentry = ['production', 'public'].includes(process.env.JUPITER_ENV);
+const shouldUploadMapToSentry = ['production', 'public'].includes(
+  process.env.JUPITER_ENV,
+);
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -77,7 +78,10 @@ module.exports = {
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
+    devtoolModuleFilenameTemplate: info =>
+      path
+        .relative(paths.appSrc, info.absoluteResourcePath)
+        .replace(/\\/g, '/'),
     globalObject: 'this',
   },
   optimization: {
@@ -131,13 +135,13 @@ module.exports = {
           parser: safePostCssParser,
           map: shouldUseSourceMap
             ? {
-              // `inline: false` forces the sourcemap to be output into a
-              // separate file
-              inline: false,
-              // `annotation: true` appends the sourceMappingURL to the end of
-              // the css file, helping the browser find the sourcemap
-              annotation: true,
-            }
+                // `inline: false` forces the sourcemap to be output into a
+                // separate file
+                inline: false,
+                // `annotation: true` appends the sourceMappingURL to the end of
+                // the css file, helping the browser find the sourcemap
+                annotation: true,
+              }
             : false,
         },
       }),
@@ -204,7 +208,11 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin([paths.appPublicEn], [paths.appSrc, paths.depPackages], [paths.appPackageJson]),
+      new ModuleScopePlugin(
+        [paths.appPublicEn],
+        [paths.appSrc, paths.depPackages],
+        [paths.appPackageJson],
+      ),
       new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
     ],
   },
@@ -223,7 +231,14 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /\.test.(ts|tsx)$/,
-        include: [paths.appSrc, paths.foundationPkg, paths.frameworkPkg, paths.juiPkg, paths.sdkPkg, paths.voipPkg],
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
+        ],
         enforce: 'pre',
         use: [
           {
@@ -237,6 +252,19 @@ module.exports = {
               ...eslintRules,
             },
             loader: require.resolve('eslint-loader'),
+          },
+        ],
+      },
+      {
+        test: /\.worker\.ts$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          { loader: 'workerize-loader', options: { inline: false } },
+          {
+            loader: require.resolve('ts-loader'),
+            options: {
+              transpileOnly: true,
+            },
           },
         ],
       },
@@ -262,12 +290,14 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: {
-              loader: require.resolve('ts-loader'),
-              options: {
-                transpileOnly: true,
+            use: [
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                },
               },
-            },
+            ],
           },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
@@ -286,7 +316,12 @@ module.exports = {
             loader: [
               {
                 loader: MiniCssExtractPlugin.loader,
-                options: Object.assign({}, shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined),
+                options: Object.assign(
+                  {},
+                  shouldUseRelativeAssetPaths
+                    ? { publicPath: '../../' }
+                    : undefined,
+                ),
               },
               {
                 loader: require.resolve('css-loader'),
@@ -337,7 +372,12 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [{ removeTitle: true }, { convertColors: { shorthex: false } }, { convertPathData: true }, { reusePaths: true }],
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathData: true },
+                    { reusePaths: true },
+                  ],
                 },
               },
             ],
@@ -360,19 +400,6 @@ module.exports = {
 
           // ** STOP ** Are you adding a new loader?
           // Make sure to add the new loader(s) before the "file" loader.
-        ],
-      },
-      {
-        test: /\.worker\.ts$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
-            },
-          },
         ],
       },
     ],
@@ -461,13 +488,15 @@ module.exports = {
     }),
     shouldUploadMapToSentry
       ? new SentryWebpackPlugin({
-        release: appPackage.version,
-        include: './build/static/js',
-        urlPrefix: '~/static/js',
-        configFile: './sentryclirc',
-      })
+          release: appPackage.version,
+          include: './build/static/js',
+          urlPrefix: '~/static/js',
+          configFile: './sentryclirc',
+        })
       : () => {},
-    ...[argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {}],
+    ...[
+      argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {},
+    ],
   ],
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

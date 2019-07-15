@@ -66,7 +66,9 @@ function dependencyHandlers() {
   const manifestPath = path.resolve(dllPath, 'boilerplateDeps.json');
 
   if (!fs.existsSync(manifestPath)) {
-    console.log(chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'));
+    console.log(
+      chalk.red('The DLL manifest is missing. Please run `npm run build:dll`'),
+    );
     process.exit(0);
   }
 
@@ -122,7 +124,8 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
+    devtoolModuleFilenameTemplate: info =>
+      path.resolve(info.absoluteResourcePath).replace(/\\/g, '/'),
     globalObject: 'this',
   },
   optimization: {
@@ -165,7 +168,11 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin([paths.appPublicEn], [paths.appSrc, paths.depPackages], [paths.appPackageJson]),
+      new ModuleScopePlugin(
+        [paths.appPublicEn],
+        [paths.appSrc, paths.depPackages],
+        [paths.appPackageJson],
+      ),
       new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
     ],
   },
@@ -183,7 +190,14 @@ module.exports = {
         test: /\.(ts|tsx)$/,
         exclude: /\.test.(ts|tsx)$/,
         enforce: 'pre',
-        include: [paths.appSrc, paths.foundationPkg, paths.frameworkPkg, paths.juiPkg, paths.sdkPkg, paths.voipPkg],
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
+        ],
         use: [
           {
             options: {
@@ -200,7 +214,19 @@ module.exports = {
       },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
-
+      {
+        test: /\.worker\.ts$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [
+          { loader: 'workerize-loader', options: { inline: false } },
+          {
+            loader: require.resolve('ts-loader'),
+            options: {
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
       {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
@@ -225,12 +251,15 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: {
-              loader: require.resolve('ts-loader'),
-              options: {
-                transpileOnly: true,
+            use: [
+              { loader: 'cache-loader' },
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                },
               },
-            },
+            ],
           },
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -280,7 +309,12 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [{ removeTitle: true }, { convertColors: { shorthex: false } }, { convertPathData: true }, { reusePaths: true }],
+                  plugins: [
+                    { removeTitle: true },
+                    { convertColors: { shorthex: false } },
+                    { convertPathData: true },
+                    { reusePaths: true },
+                  ],
                 },
               },
             ],
@@ -299,19 +333,6 @@ module.exports = {
             loader: require.resolve('file-loader'),
             options: {
               name: 'static/media/[name].[hash:8].[ext]',
-            },
-          },
-        ],
-      },
-      {
-        test: /\.worker\.ts$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
             },
           },
         ],
@@ -383,11 +404,12 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-        dllPath => new AddAssetHtmlPlugin({
-          filepath: dllPath,
-          includeSourcemap: false,
-        }),
-      )
+          dllPath =>
+            new AddAssetHtmlPlugin({
+              filepath: dllPath,
+              includeSourcemap: false,
+            }),
+        )
       : [() => {}]),
   ]),
   // Some libraries import Node modules but don't use them in the browser.

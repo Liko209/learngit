@@ -193,15 +193,6 @@ class TelephonyStore {
         }
       },
     );
-
-    reaction(
-      () => this.call && this.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTED) {
-          this.end();
-        }
-      },
-    );
   }
 
   @computed
@@ -554,6 +545,11 @@ class TelephonyStore {
   @computed
   get isOutbound(): boolean {
     return this.call.direction === CALL_DIRECTION.OUTBOUND;
+  }
+
+  @computed
+  get activeCallDirection() {
+    return this.call && this.call.direction;
   }
 
   @computed

@@ -235,6 +235,9 @@ class JuiHeader extends PureComponent<Props, State> {
   }
 
   private _handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
+    if (e.button) { // Only handle the primary key
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     this._mouseDownTime = +new Date();
@@ -250,6 +253,9 @@ class JuiHeader extends PureComponent<Props, State> {
   };
   /* eslint-disable react/no-find-dom-node */
   private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
+    if (e.button) { // Only handle the primary key
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     const input =
