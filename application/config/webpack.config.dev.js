@@ -215,19 +215,6 @@ module.exports = {
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
       {
-        test: /\.worker\.ts$/,
-        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              transpileOnly: true,
-            },
-          },
-        ],
-      },
-      {
         // "oneOf" will traverse all following loaders until one will
         // match the requirements. When no loader matches it will fall
         // back to the "file" loader at the end of the loader list.
@@ -338,6 +325,11 @@ module.exports = {
         ],
       },
 
+      {
+        test: /\.worker\.(ts|js)$/,
+        exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+        use: [{ loader: 'workerize-loader', options: { inline: false } }],
+      },
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
     ],
