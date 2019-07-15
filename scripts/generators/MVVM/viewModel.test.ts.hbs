@@ -3,17 +3,23 @@
  * @Date: {{{currentDate}}}
  * Copyright © RingCentral. All rights reserved.
  */
+import { test, testable } from 'shield';
+// import { globalStore } from 'shield/integration-test';
+// import { mockEntity } from 'shield/application';
+// import { mockService } from 'shield/sdk';
 import { {{ properCase name }}ViewModel } from '../{{ properCase name }}.ViewModel';
 
 let vm: {{ properCase name }}ViewModel;
 
 describe('{{ properCase name }}ViewModel', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-    vm = new {{ properCase name }}ViewModel();
-  });
-
-  it('Expect to have unit tests specified', () => {
-    expect(true).toEqual(false);
-  });
+  @testable
+  class _viewModelMethods {
+    @test('should return true while ViewModel exist')
+    //@mockService()
+    //@mockEntity()
+    t1() {
+      const vm = new {{ properCase name }}ViewModel({ id: 1 });
+      expect(vm).toBeTruthy();
+    }
+  }
 });
