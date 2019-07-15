@@ -117,7 +117,7 @@ describe('contactSearchListViewModel', () => {
   it('should not make the call whenever hit the enter key even with empty results while dialer not focused', async () => {
     const searchString = '456';
     contactSearchListViewModel._telephonyStore.inputString = searchString;
-    contactSearchListViewModel._telephonyStore.dialerFocused = false;
+    contactSearchListViewModel._telephonyStore.dialerInputFocused = false;
     contactSearchListViewModel._telephonyService.makeCall = jest.fn();
 
     await sleep();
@@ -131,7 +131,7 @@ describe('contactSearchListViewModel', () => {
   it('should make the call whenever hit the enter key even with empty results while dialer being focused', async () => {
     const searchString = '123';
     contactSearchListViewModel._telephonyStore.inputString = searchString;
-    contactSearchListViewModel._telephonyStore.dialerFocused = true;
+    contactSearchListViewModel._telephonyStore.dialerInputFocused = true;
     contactSearchListViewModel._telephonyService.makeCall = jest.fn();
 
     await sleep();
