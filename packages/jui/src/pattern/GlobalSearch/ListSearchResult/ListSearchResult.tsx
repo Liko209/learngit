@@ -11,6 +11,8 @@ const JuiListSearchResult = styled.div`
   background: ${palette('common', 'white')};
   padding: ${spacing(0, 0, 2)};
   width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 export { JuiListSearchResult };

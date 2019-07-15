@@ -9,11 +9,8 @@ import { testable, test } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { registerModule } from 'shield/utils';
-import { globalStore } from 'shield/integration-test';
 import { READ_STATUS, ATTACHMENT_TYPE } from 'sdk/module/RCItems/constants';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { Notification } from '@/containers/Notification';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import {
@@ -413,25 +410,6 @@ describe('VoicemailItemViewModel', () => {
         startTime: 123,
         downloadUrl: '',
       });
-    }
-  }
-
-  @testable
-  class shouldPause {
-    @test('should be true if has incoming call [JPT-2222]')
-    @mockService(RCInfoService, 'isRCFeaturePermissionEnabled', true)
-    @mockEntity({
-      attachments: [],
-    })
-    async t1() {
-      const vm = new VoicemailItemViewModel({ id: 1 });
-      globalStore.set(GLOBAL_KEYS.INCOMING_CALL, true);
-      await when(
-        () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
-        () => {
-          expect(vm.shouldPause).toBeTruthy();
-        },
-      );
     }
   }
 

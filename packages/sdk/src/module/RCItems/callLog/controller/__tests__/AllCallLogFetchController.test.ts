@@ -25,6 +25,7 @@ describe('AllLogFetchController', () => {
     getEntityNotificationKey: jest.fn(),
     bulkUpdate: jest.fn(),
     bulkDelete: jest.fn(),
+    bulkPut: jest.fn(),
     clear: jest.fn(),
   } as any;
   const mockUserConfig = {

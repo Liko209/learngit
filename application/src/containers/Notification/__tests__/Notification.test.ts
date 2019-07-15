@@ -86,7 +86,9 @@ describe('Notification', () => {
       expect(notificationData).toHaveLength(3);
       expect(Notification._buffer).toHaveLength(1);
       dismiss && dismiss();
-      expect(Notification._buffer).toHaveLength(0);
+      setImmediate(() => {
+        expect(Notification._buffer).toHaveLength(0);
+      })
     });
 
     it('should call the private method by calling flashToast or flagToast', () => {
