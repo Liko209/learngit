@@ -136,7 +136,7 @@ class Utils {
   static parseGlip(info: ISocketInfo) {
     if (GLIP_SOCKET_CHANEL_PATTERN.test(info.rawData)) {
       const [, chanel, data] = GLIP_SOCKET_CHANEL_PATTERN.exec(info.rawData)!;
-      info.chanel = chanel;
+      info.channel = chanel;
       info.data = Utils.toJson(data);
     }
     return info;
@@ -277,7 +277,7 @@ class NetworkDataTool {
       const parseResult = Utils.parseGlip(socketInfo);
       socketInfo.host = this._aliasHost(socketInfo.host);
       this._infoPool.push(parseResult);
-      switch (socketInfo.chanel) {
+      switch (socketInfo.channel) {
         case 'response':
           const socketResponse = socketInfo as ISocketResponseInfo;
           const {
@@ -288,7 +288,7 @@ class NetworkDataTool {
           const sourceRequest = this._infoPool.find(
             item =>
               item.type === 'socket-message' &&
-              item['chanel'] === 'request' &&
+              item['channel'] === 'request' &&
               (item as ISocketRequestInfo).data.id.toString() === request_id,
           ) as ISocketInfo;
           if (sourceRequest) {

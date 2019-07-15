@@ -5,7 +5,10 @@
  */
 import { Server } from 'mock-socket';
 import { createDebug } from 'sdk/__tests__/utils';
+import { ISocketInfo } from 'shield/sdk/types';
 import { wait } from 'shield/utils';
+
+import assert = require('assert');
 
 const debug = createDebug('MockSocketServer');
 
@@ -27,12 +30,19 @@ export class MockSocketServer {
     this.socket.on(channel, listener);
   }
 
-  emit(channel: string, message: any) {
+  async emit(channel: string, message: any) {
     this.socket.emit(channel, message);
+    await wait(10);
+  }
+
+  async emitPacket<T>(packet: ISocketInfo<T>) {
+    assert(packet.channel, 'socket packet should contain channel info.');
+    assert(packet.data, 'socket packet should contain data.');
+    this.socket.emit(packet.channel, JSON.stringify(packet.data));
+    await wait(10);
   }
 
   async emitEntityCreate(entity: object) {
-    await wait();
     debug('-> emitEntityCreate');
     this.socket.emit(
       'message',
@@ -43,10 +53,10 @@ export class MockSocketServer {
         },
       }),
     );
+    await wait(10);
   }
 
   async emitMessage(entity: object) {
-    await wait();
     debug('-> emitMessage');
     this.socket.emit(
       'message',
@@ -57,10 +67,10 @@ export class MockSocketServer {
         },
       }),
     );
+    await wait(10);
   }
 
   async emitPartial(partial: object, partialBody?: object) {
-    await wait();
     debug('-> emitPartial');
     this.socket.emit(
       'partial',
@@ -73,5 +83,6 @@ export class MockSocketServer {
         },
       }),
     );
+    await wait(1);
   }
 }

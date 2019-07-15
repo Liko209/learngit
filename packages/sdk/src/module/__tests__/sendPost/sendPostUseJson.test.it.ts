@@ -9,6 +9,7 @@ import { PostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
 import { readJson } from 'shield/sdk/utils';
+import { wait } from 'shield/utils';
 jest.setTimeout(30 * 1000);
 itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let postService: PostService;
@@ -16,7 +17,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   const glipData = helper.useInitialData(template.BASIC);
   const team1 = helper
     .glipDataHelper()
-    .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
+    .team.createTeam('Test Team with thomas', [123], { post_cursor: 0, _id: 16386 });
   glipData.teams.push(team1);
   beforeAll(async () => {
     await sdk.setup();
@@ -75,6 +76,13 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
       expect(result.posts.length).toEqual(2);
       expect(sendFailedPost.id < 0).toBeTruthy();
     });
+    it('received a post', async () => {
+      await helper.socketServer.emitPacket(require('./data/RECEIVE_POST.SOCKET.json'));
+      const result = await postService.getPostsByGroupId({
+        groupId: 16386
+      })
+      expect(result.posts.find(item => item.text === 'hello')).not.toBeUndefined();
+    })
     // it('resend post successfully', async () => {
     //   helper.mockResponse(
     //     readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),

@@ -122,12 +122,12 @@ interface INetworkInfo {
 }
 
 interface ISocketRequestInfo<T = any> extends ISocketInfo {
-  chanel: 'request';
+  channel: 'request';
   data: ISocketRequest<T>;
 }
 
 interface ISocketResponseInfo<T = any> extends ISocketInfo {
-  chanel: 'response';
+  channel: 'response';
   data: ISocketResponse<T>;
 }
 
@@ -156,7 +156,7 @@ interface ISocketInfo<T = any> extends INetworkInfo {
   protocol: string;
   direction: 'send' | 'receive';
   rawData: string;
-  chanel?: string;
+  channel?: string;
   data?: T;
 }
 
