@@ -6,6 +6,7 @@ type ActionsProps = {
   id: number | string;
   entity: ENTITY_TYPE;
   caller?: Caller;
+  isPseudo?: boolean;
   maxButtonCount: number;
   canEditBlockNumbers: boolean;
   showCall: boolean;

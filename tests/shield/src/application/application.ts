@@ -8,31 +8,43 @@ import { ComponentType } from 'react';
 import { ReactWrapper } from 'enzyme';
 import { MessageActionBar } from 'jui/pattern/MessageInput/MessageActionBar';
 import { ConversationCard } from '@/modules/message/container/ConversationCard/';
+import { ConversationPage } from './ConversationPage';
+
+type Config = {
+  autoFlush: boolean;
+};
 
 class TestApp<T> {
   private _imp: IWrapper<T>;
+  private _config: Config;
 
   constructor(imp: IWrapper<T>) {
     this._imp = imp;
+    this._config = { autoFlush: true };
   }
 
   get leftNav() {
+    this._autoFlush();
     return this._imp.findByAutomationID('leftPanel', true);
   }
 
   get aboutDialog() {
+    this._autoFlush();
     return this._imp.findByAutomationID('about-page-dialog', true);
   }
 
   get messageInput() {
+    this._autoFlush();
     return this._imp.findByAutomationID('message-input', true);
   }
 
   get messageActionBar() {
+    this._autoFlush();
     return this._imp.find(MessageActionBar)[0];
   }
 
   get messageAttachmentButton() {
+    this._autoFlush();
     return this._imp.findByAutomationID(
       'conversation-chatbar-attachment-button',
       true,
@@ -40,6 +52,7 @@ class TestApp<T> {
   }
 
   get messageEmojiButton() {
+    this._autoFlush();
     return this._imp.findByAutomationID(
       'conversation-chatbar-emoji-button',
       true,
@@ -48,6 +61,7 @@ class TestApp<T> {
 
   // topbars
   get addMenuButton() {
+    this._autoFlush();
     return this._imp.findWhere((wrapper: T) => {
       const w: ReactWrapper = wrapper as any;
       const f = w.prop('data-test-automation-id') === 'addMenuBtn';
@@ -59,29 +73,37 @@ class TestApp<T> {
   }
 
   get rightRail() {
+    this._autoFlush();
     return this._imp.findByAutomationID('rightRail', true);
   }
 
   get streamWrapper() {
+    this._autoFlush();
     return this._imp.findByAutomationID('jui-stream-wrapper', true);
   }
 
   get stream() {
+    this._autoFlush();
     return this._imp.findByAutomationID('jui-stream', true);
   }
 
-  postViewByID(id?: number) {
+  postViewByID(id?: number): ConversationPage {
+    this._autoFlush();
+    let result;
     if (id) {
-      return this._imp.findByProps({ id });
+      result = this._imp.findByProps({ id });
     }
-    return this._imp.find(ConversationCard);
+    result = this._imp.find(ConversationCard);
+    return new ConversationPage(result[0] as any);
   }
 
   sendPost() {
+    this._autoFlush();
     this.messageInput.enter();
   }
 
   find(component: ComponentType) {
+    this._autoFlush();
     return this._imp.find(component);
   }
 
@@ -89,8 +111,14 @@ class TestApp<T> {
     this._imp.flush();
   }
 
+  private _autoFlush() {
+    if (this._config.autoFlush) {
+      this.flush();
+    }
+  }
+
   toString(flush: boolean = true) {
-    if (flush) {
+    if (flush || this._config.autoFlush) {
       this.flush();
     }
     return this._imp.toString();

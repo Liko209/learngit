@@ -203,6 +203,7 @@ describe('PhoneParserUtility', () => {
     });
 
     it('should return false when _initialized = false and phoneData is invalid', async () => {
+      PhoneParserUtility['_notifyReadPhoneDataFinished'] = jest.fn();
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = false;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(undefined);
@@ -213,9 +214,11 @@ describe('PhoneParserUtility', () => {
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
       ).toBeCalledTimes(0);
       expect(PhoneParserUtility['_initialized']).toBeFalsy();
+      expect(PhoneParserUtility['_notifyReadPhoneDataFinished']).toBeCalledWith(false);
     });
 
     it('should do init when _initialized = true and force = true', async () => {
+      PhoneParserUtility['_notifyReadPhoneDataFinished'] = jest.fn();
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(123456);
@@ -234,6 +237,7 @@ describe('PhoneParserUtility', () => {
       expect(mockRCInfoService.setPhoneDataVersion).toBeCalledWith('1.3');
       expect(mockRCInfoService.loadRegionInfo).toHaveBeenCalled();
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
+      expect(PhoneParserUtility['_notifyReadPhoneDataFinished']).toBeCalledWith(true);
     });
   });
 

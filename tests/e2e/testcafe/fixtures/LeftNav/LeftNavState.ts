@@ -47,8 +47,8 @@ test(formalName('Check the each user can remember the status of left navigation'
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`Then width of left panel should be ${minLeftPanelWidth}`, async () => {
-    await leftPanel.widthShouldBe(minLeftPanelWidth);
+  await h(t).withLog(`Then width of left panel should be ${maxLeftPanelWidth}`, async () => {
+    await leftPanel.widthShouldBe(maxLeftPanelWidth);
   });
 
   await h(t).withLog(`When otherUser log out and login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

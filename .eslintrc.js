@@ -70,6 +70,7 @@ module.exports = {
     'comma-dangle': 'off',
     'no-unexpected-multiline': 'off',
     'max-len': ['off', { code: 80 }],
+    'implicit-arrow-linebreak': 'off',
   },
   settings: {
     react: {

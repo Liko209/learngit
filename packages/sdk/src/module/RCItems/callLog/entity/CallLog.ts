@@ -68,6 +68,7 @@ type CallLog = IdModel<string> & {
   __localInfo: number;
   __timestamp: number;
   __deactivated: boolean;
+  __isPseudo?: boolean;
 };
 
 type CallLogView = IdModel<string> & {

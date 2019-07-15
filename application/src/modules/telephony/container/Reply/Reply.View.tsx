@@ -30,6 +30,7 @@ import {
 } from 'sdk/module/telephony';
 import { getDisplayName } from '../../helpers';
 import { Avatar } from '@/containers/Avatar';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 type Props = ViewProps & WithTranslation;
 
@@ -260,7 +261,7 @@ class ReplyViewComponent extends React.Component<Props> {
           <JuiTitleBar />
           <JuiHeader
             Avatar={this._Avatar}
-            name={getDisplayName(t, name)}
+            name={getDisplayName(t, CALL_DIRECTION.INBOUND, name)}
             phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             showDialerInputField={false}
             Back={this._Back}
