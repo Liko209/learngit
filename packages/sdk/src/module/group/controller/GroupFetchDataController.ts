@@ -81,7 +81,7 @@ export class GroupFetchDataController {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
+    mainLogger.tags(LOG_TAG).info(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
@@ -97,6 +97,7 @@ export class GroupFetchDataController {
       const hiddenIds = profile
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
+        mainLogger.tags(LOG_TAG).info(`check hiddenIds`);
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -110,6 +111,7 @@ export class GroupFetchDataController {
           (userId ? item.members.includes(userId) : true) &&
           (isTeam ? item.is_team === isTeam : !item.is_team),
       );
+      mainLogger.tags(LOG_TAG).info(`fetched from entity source done`);
       if (offset !== 0) {
         result = result.slice(offset + 1, result.length);
       }
@@ -127,6 +129,7 @@ export class GroupFetchDataController {
         UserPermissionType.CAN_SHOW_ALL_GROUP,
       );
       count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
+      mainLogger.tags(LOG_TAG).info(`check permission canShowAll:${canShowAll}`);
     }
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
