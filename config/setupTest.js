@@ -17,3 +17,5 @@ jest.mock('jui/components/Tabs/Tabs');
 jest.mock('jui/components/AutoSizer/AutoSizer');
 jest.mock('jui/components/VirtualizedList/InfiniteList');
 jest.mock('jui/hoc/withDelay/withDelay');
+
+jest.setTimeout(30 * 1000);

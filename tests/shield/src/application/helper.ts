@@ -10,6 +10,7 @@ import { getWrapper, WrapperType } from './wrapper';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { SERVICE } from 'sdk/service';
 import { wait } from '../utils';
+import { mockApp, BootstrapConfig } from './mock';
 
 type TestCallback = (() => void) | (() => Promise<void>);
 
@@ -30,9 +31,13 @@ function act(callback: TestCallback): Promise<void> {
   });
 }
 
-async function helper(element: ReactElement, type: WrapperType = WrapperType.Enzyme) {
+async function helper(
+  config: BootstrapConfig,
+  type: WrapperType = WrapperType.Enzyme,
+) {
   let p: any;
   await act(async () => {
+    const element = await mockApp(config);
     p = new TestApp(getWrapper(element, type));
     notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
     notificationCenter.emitKVChange(SERVICE.RC_LOGIN);

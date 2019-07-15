@@ -7,9 +7,7 @@
 import React from 'react';
 import fs from 'fs';
 import { itForSdk } from 'shield/sdk';
-import {
- h, t, MockApp, bootstrap
-} from 'shield/application';
+import { h, t } from 'shield/application';
 
 jest.setTimeout(300 * 1000);
 
@@ -30,9 +28,7 @@ itForSdk('Service Integration test', ({ helper, template, sdk }) => {
     });
     it('should send post', async () => {
       const url = `/messages/${team1._id}`;
-      await bootstrap({ url });
-
-      const app = await h(<MockApp inited />);
+      const app = await h({ url });
 
       await t(app, async () => {
         const message = 'hello';

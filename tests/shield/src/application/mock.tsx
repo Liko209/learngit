@@ -83,18 +83,13 @@ function bootstrap(config: BootstrapConfig): Promise<void> {
   return jupiter.bootstrap();
 }
 
-const mock = (Comp: ComponentType) => (props: MockAppProps) => {
-  const [loaded, setLoaded] = useState(props.inited);
-
-  useEffect(() => {
-    if (!loaded) {
-      const { modules } = props;
-      bootstrap({ modules }).then(() => setLoaded(true));
-    }
-  });
-  return loaded ? <Comp /> : null;
+const mock = (Comp: ComponentType) => async (config: BootstrapConfig) => {
+  await bootstrap(config);
+  return <Comp />;
 };
 
-const MockApp = mock(App);
+const mockApp = mock(App);
 
-export { MockApp, mock, bootstrap, BootstrapConfig };
+export {
+  mockApp, mock, bootstrap, BootstrapConfig
+};
