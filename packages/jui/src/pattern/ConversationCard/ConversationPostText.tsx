@@ -14,6 +14,7 @@ const JuiConversationPostText = styled('div')`
   overflow-wrap: break-word;
   color: ${grey('900')};
   white-space: pre-wrap;
+  word-wrap: break-word;
 
   a {
     color: ${palette('primary', 'light')};
