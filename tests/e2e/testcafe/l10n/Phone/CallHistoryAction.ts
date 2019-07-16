@@ -10,7 +10,7 @@ fixture('Phone/CallHistoryAction')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-  test(formalName('Check call history action tips and delete call log popup', ['P2', 'Phone', 'CallHistory' ,'Sean.Zhuang']), async (t) => {
+  test(formalName('Check call history action tips and delete call log popup', ['P2', 'Phone', 'CallHistory', 'V1.6', 'Sean.Zhuang']), async (t) => {
     const users = h(t).rcData.mainCompany.users;
     const loginUser = h(t).rcData.mainCompany.users[4];
     const guestUser = h(t).rcData.guestCompany.users[5];
