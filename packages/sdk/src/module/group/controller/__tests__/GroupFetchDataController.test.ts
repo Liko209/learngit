@@ -358,12 +358,12 @@ describe('GroupFetchDataController', () => {
       expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
     });
 
-    it('should return all groups if has show all group permission', async () => {
+    it('should return all groups if left rail max count in LD is -1', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 85; i++) {
         mock.push({ id: 1 });
       }
-      jest.spyOn(permissionService, 'hasPermission').mockResolvedValue(true);
+      jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(-1);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -381,13 +381,13 @@ describe('GroupFetchDataController', () => {
       expect(result3).toEqual(mock);
     });
 
-    it('should return limit groups if has not show all group permission', async () => {
+    it('should return limit groups if left rail max count is not -1 in LD', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 85; i++) {
         mock.push({ id: 1 });
       }
-      const spy = jest.spyOn(permissionService, 'hasPermission');
-      spy.mockResolvedValue(false);
+      const spy = jest.spyOn(permissionService, 'getFeatureFlag');
+      spy.mockReturnValueOnce(78);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -403,15 +403,15 @@ describe('GroupFetchDataController', () => {
         20,
       );
       expect(spy).toBeCalled();
-      expect(result3).toEqual(mock.slice(0, 80));
+      expect(result3).toEqual(mock.slice(0, 78));
     });
 
-    it('should not call has permission api if result count < 80', async () => {
+    it('should return all groups if result count < max count in LD', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 20; i++) {
         mock.push({ id: 1 });
       }
-      const spy = jest.spyOn(permissionService, 'hasPermission');
+      jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(89);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -426,8 +426,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(spy).not.toBeCalled();
-      expect(result3).toEqual(mock.slice(0, 20));
+      expect(result3).toEqual(mock);
     });
   });
 

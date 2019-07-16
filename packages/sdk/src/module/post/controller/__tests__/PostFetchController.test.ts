@@ -40,6 +40,7 @@ describe('PostFetchController()', () => {
   const postDataController = new PostDataController(
     groupService,
     null,
+    null,
     entitySourceController,
   );
   // const groupService = new GroupService();
@@ -509,27 +510,48 @@ describe('PostFetchController()', () => {
       setup();
     });
 
-    it('should return [] if start post id is 0', async () => {
+    it('should get from server if start post id is 0 and has more older is true', async () => {
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(
+        getMockHasMore({}),
+      );
+      const localSpy = jest.spyOn(postFetchController, '_getUnreadPostsFromDb');
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
       const result = await postFetchController.getUnreadPostsByGroupId({
         groupId: 1,
         startPostId: 0,
         endPostId: 2,
         unreadCount: 500,
       });
-      const localSpy = jest.spyOn(
-        postFetchController,
-        '_getIntervalPostsFromDb',
-      );
+      expect(localSpy).not.toBeCalled();
+      expect(remoteSpy).toBeCalledTimes(1);
+    });
+
+    it('should get from db if start post id is 0 and has more older is false', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      postDao.queryUnreadPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce({ older: false });
+      const localSpy = jest.spyOn(postFetchController, '_getUnreadPostsFromDb');
       const remoteSpy = jest.spyOn(
         postFetchController,
         'getRemotePostsByGroupId',
       );
-      expect(localSpy).not.toBeCalled();
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 0,
+        endPostId: 2,
+        unreadCount: 500,
+      });
+      expect(localSpy).toBeCalled();
       expect(remoteSpy).not.toBeCalled();
       expect(result).toEqual({
         hasMore: getMockHasMore({}),
-        items: [],
-        posts: [],
+        items: mockItems,
+        posts: mockPosts,
         limit: 500,
       });
     });
@@ -541,10 +563,7 @@ describe('PostFetchController()', () => {
         endPostId: 2,
         unreadCount: 500,
       });
-      const localSpy = jest.spyOn(
-        postFetchController,
-        '_getIntervalPostsFromDb',
-      );
+      const localSpy = jest.spyOn(postFetchController, '_getUnreadPostsFromDb');
       const remoteSpy = jest.spyOn(
         postFetchController,
         'getRemotePostsByGroupId',
@@ -562,7 +581,7 @@ describe('PostFetchController()', () => {
     it('should just return local post when read through post in db', async () => {
       const mockPosts = postFactory.buildList(2);
       const mockItems = itemFactory.buildList(3);
-      postDao.queryIntervalPostsByGroupId.mockResolvedValue(mockPosts);
+      postDao.queryUnreadPostsByGroupId.mockResolvedValue(mockPosts);
       itemService.getByPosts.mockResolvedValue(mockItems);
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(true);
       const result = await postFetchController.getUnreadPostsByGroupId({
@@ -580,19 +599,22 @@ describe('PostFetchController()', () => {
       });
     });
 
-    it('should return server result when read through post not in db', async () => {
+    it('should return server result when read through post not in db and not has more older', async () => {
       const mockPosts = postFactory.buildList(2);
       const mockItems = itemFactory.buildList(3);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce({ older: false });
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
       itemService.getByPosts.mockResolvedValue(mockItems);
-      jest
-        .spyOn(postFetchController, 'getRemotePostsByGroupId')
-        .mockResolvedValueOnce({
-          success: true,
-          hasMore: false,
-          posts: mockPosts,
-          items: mockItems,
-        });
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+      remoteSpy.mockResolvedValueOnce({
+        success: true,
+        hasMore: false,
+        posts: mockPosts,
+        items: mockItems,
+      });
       itemService.handleIncomingData = jest
         .fn()
         .mockResolvedValueOnce(mockItems);
@@ -603,7 +625,7 @@ describe('PostFetchController()', () => {
         endPostId: 2,
         unreadCount: 500,
       });
-
+      expect(remoteSpy).toBeCalledTimes(1);
       expect(result).toEqual({
         hasMore: getMockHasMore({ newer: false }),
         items: mockItems,
@@ -612,7 +634,39 @@ describe('PostFetchController()', () => {
       });
     });
 
+    it('should return [] when read through post not in db and not newer in server', async () => {
+      groupService.hasMorePostInRemote.mockResolvedValueOnce({ older: true });
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      itemService.getByPosts.mockResolvedValue([]);
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+      remoteSpy.mockResolvedValueOnce({
+        success: true,
+        hasMore: false,
+        posts: [],
+        items: [],
+      });
+      itemService.handleIncomingData = jest.fn().mockResolvedValueOnce([]);
+
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        unreadCount: 500,
+      });
+      expect(remoteSpy).toBeCalledTimes(1);
+      expect(result).toEqual({
+        hasMore: getMockHasMore({ newer: false }),
+        items: [],
+        posts: [],
+        limit: 500,
+      });
+    });
+
     it('should call getRemotePostsByGroupId with shouldSaveToDb as true', async () => {
+      groupService.hasMorePostInRemote.mockResolvedValueOnce({ older: true });
       const mockPosts = postFactory.buildList(2);
       const mockItems = itemFactory.buildList(3);
       jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
@@ -644,6 +698,41 @@ describe('PostFetchController()', () => {
         postId: 1,
         direction: QUERY_DIRECTION.NEWER,
         shouldSaveToDb: true,
+      });
+    });
+
+    it('should return newer and older result when read through post not in db and has more older', async () => {
+      const mockPosts = postFactory.buildList(2);
+      const mockItems = itemFactory.buildList(3);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce({ older: true });
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+      const remoteSpy = jest.spyOn(
+        postFetchController,
+        'getRemotePostsByGroupId',
+      );
+      remoteSpy.mockResolvedValue({
+        success: true,
+        hasMore: false,
+        posts: mockPosts,
+        items: mockItems,
+      });
+      itemService.handleIncomingData = jest
+        .fn()
+        .mockResolvedValueOnce(mockItems);
+
+      const result = await postFetchController.getUnreadPostsByGroupId({
+        groupId: 1,
+        startPostId: 1,
+        endPostId: 2,
+        unreadCount: 500,
+      });
+      expect(remoteSpy).toBeCalledTimes(2);
+      expect(result).toEqual({
+        hasMore: getMockHasMore({ newer: false, older: false }),
+        items: [...mockItems, ...mockItems],
+        posts: [...mockPosts, ...mockPosts],
+        limit: 500,
       });
     });
   });

@@ -352,7 +352,9 @@ class StreamViewComponent extends Component<Props> {
       updateHistoryHandler();
       markAsRead();
     });
-    this._loadMoreStrategy.updatePreloadCount(this.props.historyUnreadCount);
+    this._loadMoreStrategy.updatePreloadCount(
+      this.props.historyUnreadCount,
+    );
     requestAnimationFrame(() => {
       if (this._jumpToPostRef.current) {
         this._jumpToPostRef.current.highlight();
