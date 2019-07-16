@@ -6,7 +6,8 @@ import { AppRoot } from '../../v2/page-models/AppRoot';
 
 fixture('LeftRail/LeftRail').beforeEach(setupCase(BrandTire.RCOFFICE)).afterEach(teardownCase());
 
-test(formalName('Enter message in left navigator', ['P2','Message','LeftRail','V1.4','Knight.Shen']),async t => {
+//Update Knight.Shen V1.4 to Hanny.han V1.6
+test(formalName('Enter message in left navigator', ['P2','Message','LeftRail','V1.4','V1.6','Hanny.han']),async t => {
 	const loginUser = h(t).rcData.mainCompany.users[4];
 	const app = new AppRoot(t);
 
