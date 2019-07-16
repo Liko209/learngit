@@ -4,7 +4,6 @@
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "src",
     "paths": {
       "foundation/*": ["../foundation/src/*"]
     }

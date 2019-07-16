@@ -98,6 +98,8 @@ interface IBaseResponse<T = any> {
 
 interface IRequest<T = any> extends IJRequest<T> {
   readonly id: string;
+  method: NETWORK_METHOD;
+  headers: Header;
   params: object;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY;
