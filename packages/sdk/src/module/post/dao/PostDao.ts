@@ -87,10 +87,8 @@ class PostDao extends BaseDao<Post> {
     );
   }
 
-  async queryIntervalPostsByGroupId(
-    unreadPostQuery: UnreadPostQuery,
-  ): Promise<Post[]> {
-    return this.getPostViewDao().queryIntervalPostsByGroupId(
+  queryUnreadPostsByGroupId(unreadPostQuery: UnreadPostQuery): Promise<Post[]> {
+    return this.getPostViewDao().queryUnreadPostsByGroupId(
       this._fetchPostsFunc,
       unreadPostQuery,
     );

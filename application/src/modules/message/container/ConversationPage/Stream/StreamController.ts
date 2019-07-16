@@ -195,7 +195,6 @@ class StreamController {
   private _unreadPostsLoader = async () => {
     let hasMore: HasMore = { older: true, newer: true, both: true };
     let postsNewerThanAnchor: Post[] = [];
-    let postsOlderThanAnchor: Post[] = [];
 
     // (1)
     // Fetch all posts between readThrough and firstPost
@@ -210,25 +209,10 @@ class StreamController {
     }));
 
     // (2)
-    // Fetch $BEFORE_ANCHOR_POSTS_COUNT posts that older than
-    // oldest post of (1)
-    const oldestPost = _.last(postsNewerThanAnchor);
-    if (oldestPost) {
-      ({
-        posts: postsOlderThanAnchor,
-      } = await this._postService.getPostsByGroupId({
-        groupId: this._groupId,
-        postId: oldestPost.id,
-        direction: QUERY_DIRECTION.OLDER,
-        limit: BEFORE_ANCHOR_POSTS_COUNT,
-      }));
-    }
-
-    // (3)
-    // Return all the posts from (1) and (2)
+    // Return all the posts from (1)
     return {
       hasMore,
-      data: [...postsNewerThanAnchor, ...postsOlderThanAnchor],
+      data: postsNewerThanAnchor,
     };
   }
 }

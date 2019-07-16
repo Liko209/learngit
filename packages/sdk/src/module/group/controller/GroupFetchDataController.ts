@@ -49,7 +49,6 @@ const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-const MAX_LEFT_RAIL_GROUP: number = 80;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -118,19 +117,22 @@ export class GroupFetchDataController {
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
     let count = result.length;
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const maxCount = (permissionService.getFeatureFlag(
+      UserPermissionType.LEFT_RAIL_MAX_COUNT,
+    )) as number;
     mainLogger
       .tags(LOG_TAG)
-      .info('getGroupsByType() result origin count:', count);
-    if (count > MAX_LEFT_RAIL_GROUP) {
-      const permissionService = ServiceLoader.getInstance<PermissionService>(
-        ServiceConfig.PERMISSION_SERVICE,
+      .info(
+        groupType,
+        'getGroupsByType() result origin count:',
+        count,
+        'maxCount:',
+        maxCount,
       );
-      const canShowAll = await permissionService.hasPermission(
-        UserPermissionType.CAN_SHOW_ALL_GROUP,
-      );
-      count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
-      mainLogger.tags(LOG_TAG).info(`check permission canShowAll:${canShowAll}`);
-    }
+    count = maxCount !== -1 && count > maxCount ? maxCount : count;
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
       : result.slice(0, count);
