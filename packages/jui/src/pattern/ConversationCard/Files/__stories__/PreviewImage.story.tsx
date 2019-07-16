@@ -15,15 +15,16 @@ storiesOf('Pattern/ConversationCard', module).add('JuiPreviewImage', () => {
   const fileName = text('fileName', '123.jpg');
   const actions = [
     <JuiIconButton
-      key='download'
-      variant='plain'
-      tooltipTitle='download'
+      key="download"
+      variant="plain"
+      tooltipTitle="download"
       symbol={download}
     />,
   ];
   return (
     <div>
       <JuiPreviewImage
+        fileID={1}
         url={image}
         width={360}
         height={202}
@@ -31,6 +32,7 @@ storiesOf('Pattern/ConversationCard', module).add('JuiPreviewImage', () => {
         Actions={actions}
       />
       <JuiPreviewImage
+        fileID={12}
         url={image}
         fileName={fileName}
         width={360}
@@ -38,6 +40,7 @@ storiesOf('Pattern/ConversationCard', module).add('JuiPreviewImage', () => {
         Actions={actions}
       />
       <JuiPreviewImage
+        fileID={123}
         url={image}
         fileName={fileName}
         width={360}
@@ -45,6 +48,7 @@ storiesOf('Pattern/ConversationCard', module).add('JuiPreviewImage', () => {
         Actions={actions}
       />
       <JuiPreviewImage
+        fileID={1234}
         url={image}
         fileName={fileName}
         width={360}
