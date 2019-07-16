@@ -13,10 +13,11 @@ import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeModule extends AbstractModule {
   @IHomeService private _homeService: IHomeService;
-  @inject(FeaturesFlagsService)
-  private _featuresFlagsService: FeaturesFlagsService;
   @inject(Jupiter) private _jupiter: Jupiter;
   private _subModuleRegistered: boolean = false;
+  get _featuresFlagsService() {
+    return this._jupiter.get(FeaturesFlagsService);
+  }
 
   async bootstrap() {
     // load subModule
