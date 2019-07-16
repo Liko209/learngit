@@ -13,11 +13,11 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import PostModel from '@/store/models/Post';
-import config from '../../Activity';
-import { TypeDictionary } from 'sdk/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-
-const CHECK_TYPE = [TypeDictionary.TYPE_ID_EVENT, TypeDictionary.TYPE_ID_TASK];
+import {
+  getActivityData,
+  getActivity,
+} from '../../Activity/handler/getActivity';
 
 const PIN_OPTION_EXCLUDE_VERBS = [
   'assigned',
@@ -25,6 +25,7 @@ const PIN_OPTION_EXCLUDE_VERBS = [
   'completed',
   'updated',
   'marked',
+  'started',
 ];
 
 class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
@@ -40,28 +41,18 @@ class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
 
   @computed
   private get _activityData() {
-    let activityData: any;
-    const { itemTypeIds } = this._post;
-    if (itemTypeIds) {
-      Object.keys(itemTypeIds).some((type: string) => {
-        if (CHECK_TYPE.includes(+type)) {
-          const props = {
-            ...this._post,
-            ids: itemTypeIds[type],
-          };
-          activityData = config[type](props);
-          return true;
-        }
-        return false;
-      });
-    }
-    return activityData;
+    return getActivityData(this._post);
+  }
+
+  @computed
+  private get _activity() {
+    return getActivity(this._post, this._activityData);
   }
 
   @computed
   get shouldShowPinOption() {
-    if (this._activityData) {
-      const { verb } = this._activityData.parameter;
+    if (this._activity && this._activity.parameter) {
+      const { verb } = this._activity.parameter;
       const popVerb = verb.split('.').pop();
       return !PIN_OPTION_EXCLUDE_VERBS.includes(popVerb);
     }
@@ -86,7 +77,7 @@ class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
       ServiceConfig.GROUP_SERVICE,
     );
     await groupService.pinPost(postId, groupId, toPin);
-  }
+  };
 }
 
 export { PinViewModel };

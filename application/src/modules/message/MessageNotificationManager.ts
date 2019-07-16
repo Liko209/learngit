@@ -4,7 +4,6 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { buildAtMentionMap } from '../../common/buildAtMentionMap';
-import { UserSettingEntity } from 'sdk/module/setting';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -38,14 +37,13 @@ import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import SettingModel from '../../store/models/UserSetting';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -158,13 +156,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     };
     return opts;
   }
-  get currentMessageNotificationSetting() {
-    return (
-      getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
-        ENTITY_NAME.USER_SETTING,
-        MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
-      ).value || 'default'
-    );
+  async getCurrentMessageNotificationSetting() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES);
+    return (entity && entity.value) || 'default';
   }
   async shouldEmitNotification(post: Post) {
     const activityData = post.activity_data || {};
@@ -211,7 +207,8 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
     };
-    return strategy[this.currentMessageNotificationSetting]();
+    const setting: string = await this.getCurrentMessageNotificationSetting();
+    return strategy[setting]();
   }
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {
@@ -250,7 +247,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostContent(post: PostModel) {
-    const _text = Remove_Markdown(post.text, { dont_escape: true });
+    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(/(^|\n)> ([^\n]*)/g, (full_match, start, text) => `${start} ${text}`);
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,

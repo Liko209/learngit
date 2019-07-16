@@ -11,11 +11,7 @@ import { IHomeService } from './interface/IHomeService';
 
 const config: ModuleConfig = {
   entry: HomeModule,
-  provides: [
-    HomeStore,
-    HomeService,
-    { name: IHomeService, value: HomeService },
-  ],
+  provides: [HomeStore, { name: IHomeService, value: HomeService }],
 };
 
 export { config };

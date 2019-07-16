@@ -60,6 +60,9 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
 
   @action
   makeCall = async (focusIndex?: number) => {
+    if (!this.dialerInputFocused) {
+      return;
+    }
     if (typeof focusIndex === 'number') {
       this.focusIndex = focusIndex;
     }
@@ -68,7 +71,7 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
     }
     analyticsCollector.makeOutboundCall(ANALYTICS_SOURCE);
     return this._telephonyService.makeCall(this.phoneNumber);
-  }
+  };
 
   @computed
   private get _callLogId() {
@@ -149,8 +152,8 @@ class RecentCallsViewModel extends StoreViewModel<Props> {
   }
 
   @computed
-  get dialerFocused() {
-    return this._telephonyStore.dialerFocused;
+  get dialerInputFocused() {
+    return this._telephonyStore.dialerInputFocused;
   }
 
   @action

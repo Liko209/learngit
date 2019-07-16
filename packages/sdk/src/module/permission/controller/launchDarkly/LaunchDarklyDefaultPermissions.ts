@@ -10,7 +10,8 @@ const LaunchDarklyDefaultPermissions = {
   JUPITER_SEARCH_SUPPORT_BY_SOUNDEX: false,
   JUPITER_CAN_USE_TELEPHONY: true,
   CAN_SHOW_NOTE: false,
-  CAN_SHOW_ALL_GROUP: false,
+  LEFT_RAIL_MAX_COUNT: 80,
+  CAN_MENTION_TEAM: false,
 };
 
 export { LaunchDarklyDefaultPermissions };

@@ -20,6 +20,7 @@ type Props = {
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   onSwitchExpand: (isExpanded: boolean) => void;
   defaultExpansionStatus?: boolean;
+  fileID: number;
 };
 
 type State = {
@@ -84,6 +85,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
       i18UnfoldLess,
       icon,
       handleImageClick,
+      fileID,
     } = this.props;
 
     return (
@@ -106,6 +108,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
         }
       >
         <JuiPreviewImage
+          fileID={fileID}
           url={previewUrl}
           fileName={fileName}
           handleImageClick={handleImageClick}

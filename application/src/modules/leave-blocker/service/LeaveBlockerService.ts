@@ -12,9 +12,7 @@ class LeaveBlockerService implements ILeaveBlockerService {
   handlers: LeaveHandler[] = [];
 
   init() {
-    window.onbeforeunload = () => (this.handlers.some((handler: LeaveHandler) => handler())
-      ? true
-      : undefined);
+    window.onbeforeunload = () => (this.handlers.some((handler: LeaveHandler) => handler()) ? true : undefined);
   }
 
   dispose() {
@@ -26,7 +24,7 @@ class LeaveBlockerService implements ILeaveBlockerService {
   }
 
   offLeave(handler: LeaveHandler) {
-    _.remove(this.handlers, handler);
+    _.remove(this.handlers, item => item === handler);
   }
 }
 

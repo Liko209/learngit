@@ -352,7 +352,9 @@ class StreamViewComponent extends Component<Props> {
       updateHistoryHandler();
       markAsRead();
     });
-    this._loadMoreStrategy.updatePreloadCount(this.props.historyUnreadCount);
+    this._loadMoreStrategy.updatePreloadCount(
+      this.props.historyUnreadCount,
+    );
     requestAnimationFrame(() => {
       if (this._jumpToPostRef.current) {
         this._jumpToPostRef.current.highlight();
@@ -362,7 +364,7 @@ class StreamViewComponent extends Component<Props> {
   };
 
   private _defaultLoading() {
-    return <DefaultLoadingWithDelay delay={100} />;
+    return <DefaultLoadingWithDelay size={36} delay={100} />;
   }
 
   private _defaultLoadingMore() {

@@ -96,7 +96,6 @@ class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
 
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
-    this.quitReply();
   };
 
   @computed

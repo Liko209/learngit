@@ -31,8 +31,19 @@ class LaunchDarklyController {
       : this._defaultPermission(type);
   }
 
+  getFeatureFlag(type: UserPermissionType): number | string {
+    return (
+      (this.isClientReady && this.launchDarklyClient.getFeatureFlag(type)) ||
+      this._defaultFeatureFlag(type)
+    );
+  }
+
   private _defaultPermission(type: UserPermissionType) {
     return !!LaunchDarklyDefaultPermissions[type];
+  }
+
+  private _defaultFeatureFlag(type: UserPermissionType) {
+    return LaunchDarklyDefaultPermissions[type];
   }
 
   private _subscribeNotifications() {

@@ -140,7 +140,7 @@ describe('CallLogHandleDataController', () => {
       expect(controller['_getCallLogFromMissedCall']).not.toBeCalled();
     });
 
-    it('should parse and save/notify pseudo data', async () => {
+    it('should parse and save/notify pseudo data, JPT-2504', async () => {
       mockConfig.getSyncToken.mockReturnValue('token');
       mockConfig.getPseudoCallLogInfo.mockReturnValue({
         id: {
@@ -164,7 +164,7 @@ describe('CallLogHandleDataController', () => {
           result: CALL_RESULT.MISSED,
         },
       });
-      expect(mockSourceController.bulkUpdate).toBeCalled();
+      expect(mockSourceController.bulkUpdate.mock.calls[0][0][0]).toHaveProperty('__isPseudo', true);
     });
   });
 
@@ -195,7 +195,7 @@ describe('CallLogHandleDataController', () => {
       expect(controller['_saveDataAndNotify']).not.toBeCalled();
     });
 
-    it('should parse and save/notify pseudo data', async () => {
+    it('should parse and save/notify pseudo data, JPT-2504', async () => {
       controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue('token');
       const mockData = {
@@ -245,6 +245,8 @@ describe('CallLogHandleDataController', () => {
           result: 'Unknown',
         },
       });
+      expect(mockSourceController.bulkUpdate.mock.calls[0][0][0]).toHaveProperty('__isPseudo', true);
+      expect(mockSourceController.bulkUpdate.mock.calls[0][0][1]).toHaveProperty('__isPseudo', true);
     });
   });
 
