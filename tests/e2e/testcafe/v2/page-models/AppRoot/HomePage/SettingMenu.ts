@@ -13,16 +13,24 @@ export class SettingMenu extends BaseWebComponent {
     return this.getSelectorByAutomationId('viewYourProfile', this.self);
   }
 
-  async clickViewYourProfile() {
-    await this.t.click(this.viewYourProfileButton);
-  }
-
   get aboutButton() {
     return this.getSelectorByAutomationId('aboutPage', this.self);
   }
 
+  get sendFeedBackButton() {
+    return this.getSelectorByAutomationId('sendFeedback', this.self);
+  }
+
+  async clickViewYourProfile() {
+    await this.t.click(this.viewYourProfileButton);
+  }
+
   async clickAboutButton() {
     await this.t.click(this.aboutButton);
+  }
+
+  async clickSendFeedBackButton() {
+    await this.t.click(this.sendFeedBackButton);
   }
 
   async clickLogout() {
