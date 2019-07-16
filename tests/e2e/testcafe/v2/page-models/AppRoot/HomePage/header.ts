@@ -16,13 +16,43 @@ export class Header extends BaseWebComponent {
     return this.getBackNForward('back');
   }
 
+  get backButtonByClass() {
+    return this.getSelector('.chevron_left');
+  }
+
+  async clickBackButton() {
+    await this.t.click(this.backButtonByClass)
+  }
+
+  async hoverBackButton() {
+    await this.t.hover(this.backButtonByClass)
+  }
+
+
   get forwardButton() {
     return this.getBackNForward('forward');
+  }
+
+  get forwardButtonByClass() {
+    return this.getSelector('.chevron_right');
+  }
+
+  async clickForwardButton() {
+    await this.t.click(this.forwardButtonByClass)
+  }
+
+  async hoverForwardButton() {
+    await this.t.hover(this.forwardButtonByClass)
   }
 
   get searchBar() {
     this.warnFlakySelector();
     return this.getComponent(SearchBar, this.getSelectorByAutomationId('topBar-search-bar'));
+  }
+
+  get searchBarSmall(){
+    this.warnFlakySelector();
+    return this.getComponent(SearchBar, this.getSelectorByIcon('search', this.self).parent('button'));
   }
 }
 

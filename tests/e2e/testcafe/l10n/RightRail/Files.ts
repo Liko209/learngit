@@ -35,6 +35,9 @@ test(formalName('Files display on the right rail', ['P2', 'Messages', 'RightRail
 
   await h(t).withLog('When I open a team and click Files Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
     await rightRail.filesEntry.enter();
   });
 

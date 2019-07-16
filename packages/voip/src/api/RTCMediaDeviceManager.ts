@@ -117,37 +117,45 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   }
 
   private _gotMediaDevices(deviceInfos: MediaDeviceInfo[]) {
-    const audioInputs: MediaDeviceInfo[] = [];
-    const audioOutputs: MediaDeviceInfo[] = [];
+    const originalAudioInputs: MediaDeviceInfo[] = [];
+    const originalAudioOutputs: MediaDeviceInfo[] = [];
+    let audioInputs: MediaDeviceInfo[] = [];
+    let audioOutputs: MediaDeviceInfo[] = [];
     let hasDefaultAudioInput = false;
     let hasDefaultAudioOutput = false;
     // get audio outputs and audio inputs
     deviceInfos.forEach((deviceInfo: MediaDeviceInfo) => {
       if (deviceInfo.kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT) {
-        audioInputs.push(deviceInfo);
+        originalAudioInputs.push(deviceInfo);
         if (defaultAudioID === deviceInfo.deviceId) {
           hasDefaultAudioInput = true;
         }
       } else if (deviceInfo.kind === RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT) {
-        audioOutputs.push(deviceInfo);
+        originalAudioOutputs.push(deviceInfo);
         if (defaultAudioID === deviceInfo.deviceId) {
           hasDefaultAudioOutput = true;
         }
       }
     });
-    if (hasDefaultAudioInput && hasDefaultAudioOutput) {
-      rtcLogger.debug(LOG_TAG, "Detect audio devices has 'default' as deviceId");
+
+    if (hasDefaultAudioInput) {
+      rtcLogger.debug(LOG_TAG, "Detect audio input devices has 'default' as deviceId");
+      audioInputs = originalAudioInputs;
       this._updateAudioDevices(RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT, audioInputs);
-      this._updateAudioDevices(RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT, audioOutputs);
-      return {
-        audioInputs,
-        audioOutputs,
-      };
+    } else {
+      rtcLogger.debug(LOG_TAG, "Audio input devices has 'default' as deviceId NOT FOUND");
     }
-    rtcLogger.debug(LOG_TAG, "Audio devices has 'default' as deviceId NOT FOUND");
+    if (hasDefaultAudioOutput) {
+      rtcLogger.debug(LOG_TAG, "Detect audio output devices has 'default' as deviceId");
+      audioOutputs = originalAudioOutputs;
+      this._updateAudioDevices(RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT, audioOutputs);
+    } else {
+      rtcLogger.debug(LOG_TAG, "Audio output devices has 'default' as deviceId NOT FOUND");
+    }
+
     return {
-      audioInputs: [],
-      audioOutputs: [],
+      audioInputs,
+      audioOutputs,
     };
   }
 
@@ -184,8 +192,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         const oldAudioOutputs = this._audioOutputs;
         const { audioInputs, audioOutputs } = this._gotMediaDevices(deviceInfos);
         this._delegate &&
-          audioInputs.length !== 0 &&
-          audioOutputs.length !== 0 &&
+          (audioInputs.length !== 0 || audioOutputs.length !== 0) &&
           this._delegate.onMediaDevicesChanged(
             {
               devices: audioOutputs,

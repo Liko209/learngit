@@ -272,6 +272,7 @@ test.meta(<ITestMeta>{
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
   const phoneSettingPage = settingTab.phoneSettingPage;
+  const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -294,8 +295,20 @@ test.meta(<ITestMeta>{
     await t.expect(phoneSettingPage.callIdSetting.exists).notOk();
   });
 
+  await h(t).withLog(`And I click notificationAndSounds tab`, async () => {
+    await settingTab.notificationAndSoundsEntry.enter();
+  });
+
+  await h(t).withLog('Then the Missed Calls and New Voicemails is hidden', async () => {
+    await t.expect(notificationAndSoundsSettingPage.missedCallsAndVoicemailsItem.exists).notOk();
+  });
+
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+  });
+
+  await h(t).withLog('Then the Missed Calls and New Voicemails is displayed', async () => {
+    await t.expect(notificationAndSoundsSettingPage.missedCallsAndVoicemailsItem.exists).ok();
   });
 
   await h(t).withLog(`And I click Phone tab`, async () => {

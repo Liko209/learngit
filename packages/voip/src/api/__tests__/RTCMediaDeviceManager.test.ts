@@ -5,6 +5,12 @@
  */
 
 import { RTCMediaDeviceManager } from '../RTCMediaDeviceManager';
+import { IRTCMediaDeviceDelegate } from '../IRTCMediaDeviceDelegate';
+
+class mockDelegate implements IRTCMediaDeviceDelegate {
+  onMediaDevicesInitialed = jest.fn()
+  onMediaDevicesChanged = jest.fn();
+}
 
 navigator.mediaDevices = {
   enumerateDevices: jest.fn(),
@@ -144,6 +150,46 @@ describe('Media device', () => {
       groupId: '4',
     },
   ];
+  const devicesNoDefaultInput: MediaDeviceInfo[] = [
+    {
+      deviceId: 'default',
+      kind: 'audiooutput',
+      label: 'Default - Output 1',
+      groupId: '1',
+    },
+    {
+      deviceId: '123',
+      kind: 'audiooutput',
+      label: 'Input 1',
+      groupId: '1',
+    },
+    {
+      deviceId: '124',
+      kind: 'audioinput',
+      label: 'Input 1',
+      groupId: '1',
+    },
+  ];
+  const devicesNoDefaultOutput: MediaDeviceInfo[] = [
+    {
+      deviceId: 'default',
+      kind: 'audioinput',
+      label: 'Default - Output 1',
+      groupId: '1',
+    },
+    {
+      deviceId: '123',
+      kind: 'audioinput',
+      label: 'Input 1',
+      groupId: '1',
+    },
+    {
+      deviceId: '124',
+      kind: 'audiooutput',
+      label: 'Input 1',
+      groupId: '1',
+    },
+  ];
   it("should do nothing if device list doesn't change when add/remove device. [JPT-1728]", async () => {
     (navigator.mediaDevices.enumerateDevices as jest.Mock).mockResolvedValue([
       ...devices1,
@@ -153,7 +199,6 @@ describe('Media device', () => {
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioInputDevice');
     jest.spyOn(RTCMediaDeviceManager.instance(), 'setAudioOutputDevice');
     await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
-    // RTCMediaDeviceManager.instance()._gotMediaDevices(devices1);
     expect(
       RTCMediaDeviceManager.instance().setAudioInputDevice,
     ).not.toBeCalled();
@@ -306,5 +351,36 @@ describe('Media device', () => {
         newDeviceList,
       ).deleted,
     ).toEqual(deleted);
+  });
+
+  it('should return real output audio list and call "delegate._onMediaDevicesChange()" func when there is no "default" input audio device and has "default" output audio device [JPT-2501]', async () => {
+    RTCMediaDeviceManager.instance().destroy();
+    const delegate = new mockDelegate();
+    RTCMediaDeviceManager.instance().setMediaDeviceDelegate(delegate);
+    const { audioInputs, audioOutputs } = RTCMediaDeviceManager.instance()['_gotMediaDevices'](devicesNoDefaultInput);
+    jest.spyOn(RTCMediaDeviceManager.instance(), '_getDevicesDelta');
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
+    expect(audioInputs).toEqual(
+      [],
+    );
+    expect(audioOutputs).toEqual(
+      [devicesNoDefaultInput[0],devicesNoDefaultInput[1]],
+    );
+    expect(delegate.onMediaDevicesChanged).toHaveBeenCalled();
+  });
+  it('should return real input audio list and call "delegate._onMediaDevicesChange()" func  when there is no "default" output audio device and has "default" input audio device [JPT-2500]', async() => {
+    RTCMediaDeviceManager.instance().destroy();
+    const delegate = new mockDelegate();
+    RTCMediaDeviceManager.instance().setMediaDeviceDelegate(delegate);
+    const { audioInputs, audioOutputs } = RTCMediaDeviceManager.instance()['_gotMediaDevices'](devicesNoDefaultOutput);
+    jest.spyOn(RTCMediaDeviceManager.instance(), '_getDevicesDelta');
+    await RTCMediaDeviceManager.instance()['_onMediaDevicesChange']();
+    expect(audioOutputs).toEqual(
+      [],
+    );
+    expect(audioInputs).toEqual(
+      [devicesNoDefaultOutput[0],devicesNoDefaultOutput[1]],
+    );
+    expect(delegate.onMediaDevicesChanged).toHaveBeenCalled();
   });
 });
