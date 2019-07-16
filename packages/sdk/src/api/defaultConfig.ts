@@ -2,35 +2,33 @@ import { ApiConfig } from '../types';
 
 const defaultConfig: ApiConfig = {
   rc: {
-    server: 'https://api-glpdevxmn.lab.nordigy.ru',
-    clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
+    server: 'rc',
     pathPrefix: '/restapi',
-    redirectUri: 'glip://rclogin',
+    clientId: '',
+    redirectUri: '',
   },
   glip: {
-    server: 'https://glpdevxmn.asialab.glip.net',
-    apiServer: 'https://glpdevxmn.asialab.glip.net:8443',
-    cacheServer: 'https://glpdevxmn.asialab.glip.net:31337',
-    presenceServer: 'https://glpdevxmn.asialab.glip.net:8443',
+    server: 'glip',
+    apiServer: '',
     pathPrefix: '/api',
+    presenceServer: '',
   },
   glip_desktop: {
-    server: 'https://glpdevxmn.asialab.glip.net',
     pathPrefix: '/v1.0/desktop',
+    server: 'glip',
   },
   upload: {
-    server: 'https://glpdevxmn.asialab.glip.net:8443',
-  },
-  launchdarkly: {
-    clientId: '5c6a4261eb049c2df965e0a7',
+    server: 'glip',
   },
   splitio: {
-    clientSecret: '2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt',
+    clientSecret: '',
+  },
+  launchdarkly: {
+    clientId: '',
   },
   sumologic: {
-    server: 'https://collectors.sumologic.com/receiver/v1/http/',
-    uniqueHttpCollectorCode:
-      'ZaVnC4dhaV3dzvBaY1wZqHcCh6D_2Ai3S-v_j39KpeGfbifz6Ir-C_hqAy0SaJROQ8A6tBsgSOKrmgynKRSZW9CCGvcqfYV1crTV9x0NDS6bYSZIC7Z4jw==',
+    server: 'sumologic',
+    uniqueHttpCollectorCode: '',
   },
 };
 
