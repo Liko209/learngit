@@ -17,7 +17,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   const anotherUser = h(t).rcData.mainCompany.users[7];
   const searchDialog = app.homePage.searchDialog;
   const group: IGroup = {
-    type: 'group',
+    type: 'Group',
     owner: loginUser,
     members: [loginUser, otherUser, anotherUser],
   };
@@ -95,7 +95,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
     await t.click(theTeamWhichWithoutMe.self);
   });
-  
+
   await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
 
   await h(t).withLog('When I click the "search" box again', async () => {
