@@ -69,6 +69,11 @@ class SplitIOClient {
     return result[type] === 'on';
   }
 
+  async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
+    const result = await this.client.getTreatments([type], this.attributes);
+    return result[type];
+  }
+
   shutdown() {
     this.client.destroy();
   }
