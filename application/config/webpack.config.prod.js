@@ -26,7 +26,7 @@ const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 // eslint-disable-next-line import/no-dynamic-require
 const appPackage = require(paths.appPackageJson);
-const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const SentryWebpackPluginWrapper = require('./SentryWebpackPluginWrapper');
 const eslintRules = require('../../.eslintrc');
 
 const argv = process.argv;
@@ -39,9 +39,6 @@ const publicPath = paths.servedPath;
 const shouldUseRelativeAssetPaths = publicPath === './';
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
-const shouldUploadMapToSentry = ['production', 'public'].includes(
-  process.env.JUPITER_ENV,
-);
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -456,14 +453,12 @@ module.exports = {
       importScripts: ['sw-notification.js'],
       runtimeCaching,
     }),
-    shouldUploadMapToSentry
-      ? new SentryWebpackPlugin({
-          release: appPackage.version,
-          include: './build/static/js',
-          urlPrefix: '~/static/js',
-          configFile: './sentryclirc',
-        })
-      : () => {},
+    new SentryWebpackPluginWrapper({
+      release: appPackage.version,
+      include: './build/static/js',
+      urlPrefix: '~/static/js',
+      configFile: '../sentry.properties',
+    }),
     ...[
       argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {},
     ],

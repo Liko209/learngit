@@ -45,7 +45,8 @@
     "fixed:version": "ts-node fixedVersion.ts",
     "update-icon": "node application/scripts/update-icon.js",
     "postupdate-icon": "npm run test application/src/__tests__/icons.test.ts",
-    "make-pseudo": "node ./scripts/make-pseudo.js"
+    "make-pseudo": "node ./scripts/make-pseudo.js",
+    "releaseToSentry": "node ./scripts/releaseToSentry.js"
   },
   "devDependencies": {
     "@jest-runner/electron": "2.0.1",
