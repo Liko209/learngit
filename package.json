@@ -39,7 +39,7 @@
     "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
-    "tsc": "tsc -v && concurrently -r \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
+    "tsc": "tsc -v && concurrently --kill-others-on-fail -r \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
     "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
     "fixed:version": "ts-node fixedVersion.ts",
