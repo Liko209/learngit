@@ -8,20 +8,14 @@ import { PhoneParserUtility } from '../PhoneParserUtility';
 import notificationCenter from '../../../service/notificationCenter';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { MODULE_STATUS } from '../constants';
-import { ModuleParams, mainLogger } from 'foundation';
+import { ModuleParams } from 'foundation';
 
 const mockModuleFunc = jest.fn();
-jest.mock('foundation', () => {
+jest.mock('foundation/src/telephony', () => {
   return {
     Module: (params: ModuleParams) => {
       mockModuleFunc();
       return { params };
-    },
-    Container: jest.fn(),
-    mainLogger: {
-      debug: jest.fn(),
-      warn: jest.fn(),
-      tags: jest.fn(),
     },
   };
 });
@@ -74,7 +68,6 @@ describe('PhoneParserUtility', () => {
     jest.spyOn(PhoneParserUtility, 'isStationUK');
     jest.spyOn(PhoneParserUtility, 'isStationUSorCA');
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockRCInfoService);
-    mainLogger.tags.mockReturnValue({ info: jest.fn() });
 
     PhoneParserUtility['_moduleStatus'] = MODULE_STATUS.IDLE;
     PhoneParserUtility['_loadingQueue'] = [];
@@ -163,7 +156,6 @@ describe('PhoneParserUtility', () => {
       const waiter = new Promise(resolve => {
         PhoneParserUtility['_loadingQueue'].push(resolve);
       });
-
       expect(await PhoneParserUtility.loadModule()).toBeFalsy();
       expect(notificationCenter.on).toBeCalledTimes(2);
       expect(notificationCenter.off).toBeCalledTimes(2);
@@ -211,6 +203,7 @@ describe('PhoneParserUtility', () => {
     });
 
     it('should return false when _initialized = false and phoneData is invalid', async () => {
+      PhoneParserUtility['_notifyReadPhoneDataFinished'] = jest.fn();
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = false;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(undefined);
@@ -221,9 +214,11 @@ describe('PhoneParserUtility', () => {
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
       ).toBeCalledTimes(0);
       expect(PhoneParserUtility['_initialized']).toBeFalsy();
+      expect(PhoneParserUtility['_notifyReadPhoneDataFinished']).toBeCalledWith(false);
     });
 
     it('should do init when _initialized = true and force = true', async () => {
+      PhoneParserUtility['_notifyReadPhoneDataFinished'] = jest.fn();
       PhoneParserUtility.loadModule.mockResolvedValueOnce(true);
       PhoneParserUtility['_initialized'] = true;
       mockRCInfoService.getPhoneData.mockReturnValueOnce(123456);
@@ -242,6 +237,7 @@ describe('PhoneParserUtility', () => {
       expect(mockRCInfoService.setPhoneDataVersion).toBeCalledWith('1.3');
       expect(mockRCInfoService.loadRegionInfo).toHaveBeenCalled();
       expect(PhoneParserUtility['_initialized']).toBeTruthy();
+      expect(PhoneParserUtility['_notifyReadPhoneDataFinished']).toBeCalledWith(true);
     });
   });
 

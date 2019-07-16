@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { container } from 'framework';
 import { TelephonyService } from '../../service';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props } from './types';
+import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import {
   RTC_REPLY_MSG_PATTERN,
@@ -22,8 +22,9 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { formatPhoneNumber } from '@/modules/common/container/PhoneNumberFormat';
 
-class ReplyViewModel extends StoreViewModel<Props> {
+class ReplyViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyService: TelephonyService = container.get(
     TELEPHONY_SERVICE,
   );
@@ -38,7 +39,10 @@ class ReplyViewModel extends StoreViewModel<Props> {
       fullWidth: false,
       dismissible: false,
     });
-  }
+  };
+
+  @observable
+  shiftKeyStatus = false;
 
   @computed
   get isOffline() {
@@ -58,32 +62,27 @@ class ReplyViewModel extends StoreViewModel<Props> {
     ) {
       this._onActionSuccess('telephony.prompt.ReplyMessageSuccess');
     }
-  }
+  };
 
   replyWithMessage = () => {
     this._telephonyService.replyWithMessage(this.customReplyMessage);
-  }
+  };
 
   startReply = () => {
     this._telephonyService.startReply();
-  }
+  };
 
   quitReply = () => {
     this._telephonyStore.backIncoming();
-  }
+  };
 
   storeCustomMessage = (message: string) => {
     this._telephonyStore.inputCustomReplyMessage(message);
-  }
+  };
 
   setShiftKeyDown = (down: boolean) => {
-    this._telephonyStore.setShiftKeyDown(down);
-  }
-
-  @computed
-  get shiftKeyDown(): boolean {
-    return this._telephonyStore.shiftKeyDown;
-  }
+    this.shiftKeyStatus = down;
+  };
 
   @computed
   get customReplyMessage() {
@@ -92,12 +91,34 @@ class ReplyViewModel extends StoreViewModel<Props> {
 
   @computed
   get replyCountdownTime() {
-    return this._telephonyStore.replyCountdownTime;
+    return this._telephonyStore.replyCountdownTime || 0;
   }
 
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
-    this.quitReply();
+  };
+
+  @computed
+  get isExt() {
+    return this._telephonyStore.isExt;
+  }
+
+  @computed
+  get phone() {
+    const phoneNumber = this._telephonyStore.phoneNumber;
+    if (phoneNumber) {
+      return formatPhoneNumber(phoneNumber);
+    }
+    return phoneNumber;
+  }
+
+  @computed
+  get uid() {
+    return this._telephonyStore.uid;
+  }
+  @computed
+  get name() {
+    return this._telephonyStore.displayName;
   }
 }
 

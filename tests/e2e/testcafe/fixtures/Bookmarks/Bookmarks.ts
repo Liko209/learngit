@@ -202,7 +202,7 @@ test.meta(<ITestMeta>{
   }
 
   let bookmarksPostTeamId1, bookmarksPostTeamId2, bookmarksPostTeamId3;
-  await h(t).withLog(`Given I have one team named {name} and 3 post`, async (step) => {
+  await h(t).withLog(`Given I have one team named {name} and 3 posts`, async (step) => {
     step.setMetadata('name', team.name);
     await h(t).scenarioHelper.createTeam(team);
     await h(t).platform(otherUser).init();
@@ -259,8 +259,7 @@ test.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog('When the sender delete the new post', async () => {
-    await h(t).glip(otherUser).init();
-    await h(t).glip(otherUser).deletePost(bookmarksPostTeamId3, team.glipId);
+    await h(t).platform(otherUser).deletePost(bookmarksPostTeamId3, team.glipId);
   });
 
   await h(t).withLog('Then the last at bookmark post should not exist in bookmarks page', async () => {
@@ -654,4 +653,68 @@ test.meta(<ITestMeta>{
     await BookPostCard.likeShouldBe(0);
   });
 
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2486'],
+  keywords: ['Bookmarks'],
+  maintainers: ['Alessia.Li']
+})('Show empty page when there are no posts in Bookmarks list', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).bookmarkPosts([]);
+
+  const app = new AppRoot(t);
+  const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const emptyPage = bookmarkPage.emptyPage;
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  let bookmarkPostId;
+  await h(t).withLog(`Given I have one team named ${team.name} and 1 post`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+    await h(t).platform(otherUser).init();
+    bookmarkPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension which has no Bookmark posts: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can see empty page in the bookmark page', async () => {
+    await bookmarkEntry.enter();
+    await t.expect(emptyPage.exists).ok();
+  }, true);
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And I bookmark a team post', async () => {
+    await teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.postItemById(bookmarkPostId).clickBookmarkToggle();
+  });
+
+  await h(t).withLog('Then I can see this post instead of empty page in the bookmark page', async () => {
+    await bookmarkEntry.enter();
+    await t.expect(emptyPage.exists).notOk();
+    const bookmarkPostCard = bookmarkPage.postItemById(bookmarkPostId);
+    await t.expect(bookmarkPostCard.exists).ok();
+  }, true);
+
+  await h(t).withLog('And I unBookmark the team post', async () => {
+    const bookmarkPostCard = bookmarkPage.postItemById(bookmarkPostId);
+    await bookmarkPostCard.clickBookmarkToggle();
+  });
+
+  await h(t).withLog('Then I can see empty page in the bookmark page again', async () => {
+    await t.expect(emptyPage.exists).ok();
+  }, true);
 });

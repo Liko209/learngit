@@ -54,7 +54,7 @@ class JuiTextField extends React.PureComponent<Props> {
       e.preventDefault();
     }
     onKeyDown && onKeyDown(e);
-  }
+  };
 
   render() {
     const { innerRef, ...textFieldRest } = this.props;
@@ -90,9 +90,9 @@ class JuiTextField extends React.PureComponent<Props> {
           classes: isOutlinedTextFieldProps(this.props)
             ? inputPropsClasses
             : {
-                underline: 'underline',
-                ...inputPropsClasses,
-              },
+              underline: 'underline',
+              ...inputPropsClasses,
+            },
           ...inputPropsRest,
         }}
       />

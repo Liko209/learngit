@@ -5,6 +5,7 @@
  */
 import { ISortableModel } from '@/store/base/fetch/types';
 import { StreamItem } from '../../types';
+
 export type AssemblerAddFuncArgs = {
   added: ISortableModel[];
   postList: ISortableModel[];

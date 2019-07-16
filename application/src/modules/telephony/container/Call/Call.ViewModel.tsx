@@ -96,18 +96,23 @@ class CallViewModel extends AbstractViewModel<CallProps>
   }
 
   @action
-  call = () => {
-    if (this.phoneNumber) {
-      this._telephonyService.directCall(this.phoneNumber);
+  call = async () => {
+    if (!this.phoneNumber) return;
+
+    const isCallSuccess = await this._telephonyService.directCall(
+      this.phoneNumber,
+    );
+    if (!isCallSuccess) {
+      this._telephonyService.hangUp();
     }
-  }
+  };
 
   @action
   trackCall = (analysisSource?: string) => {
     if (analysisSource) {
       analyticsCollector.makeOutboundCall(analysisSource);
     }
-  }
+  };
 
   showIcon = promisedComputed(false, async () => {
     const phoneNumber = this.phoneNumber;

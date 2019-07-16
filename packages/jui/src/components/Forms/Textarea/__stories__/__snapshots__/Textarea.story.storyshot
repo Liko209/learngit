@@ -1,0 +1,75 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Forms Textarea: Components/Forms Textarea 1`] = `
+.c0.c0 textarea {
+  height: 72px;
+  background: #f5f6fb;
+  margin: 8px 0 0 0;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.c0.c0 textarea:hover,
+.c0.c0 textarea:focus {
+  background: #fff;
+}
+
+.c0 .input-root {
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+}
+
+.c0 .input-root.input-underline:after {
+  border-color: #0684bd;
+}
+
+.c0 .form-label-root {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  top: 4px;
+  z-index: 1;
+}
+
+.c0 .form-label-root.form-label-focus {
+  color: #0684bd;
+}
+
+<div
+  className="MuiFormControl-root MuiFormControl-fullWidth c0"
+  onKeyDown={[Function]}
+>
+  <label
+    className="MuiFormLabel-root form-label-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+    data-shrink={true}
+    htmlFor="New Message"
+  >
+    New Message
+  </label>
+  <div
+    className="MuiInputBase-root MuiInput-root input-root MuiInput-underline input-underline MuiInputBase-fullWidth MuiInput-fullWidth MuiInputBase-formControl MuiInput-formControl MuiInputBase-multiline MuiInput-multiline"
+    onClick={[Function]}
+  >
+    <textarea
+      aria-invalid={false}
+      className="MuiInputBase-input MuiInput-input MuiInputBase-inputMultiline MuiInput-inputMultiline"
+      disabled={false}
+      id="New Message"
+      onBlur={[Function]}
+      onChange={[Function]}
+      onFocus={[Function]}
+      placeholder="placeholder"
+      required={false}
+      rows={3}
+    />
+  </div>
+</div>
+`;

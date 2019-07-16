@@ -10,19 +10,19 @@ import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 
 fixture('Telephony/Reply')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
-.afterEach(teardownCase());
+  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
   caseIds: ['JPT-1704'],
   priority: ['P2'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Should the tooltip "More options" of "more" button is showed', async (t) => {
+})('Should the tooltip "Call actions" of "more" button is showed', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
+  const tooltipText = 'Call actions';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -112,7 +112,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1712'],
   maintainers: ['shining.miao'],
   keywords: ['Reply']
-})('Reply the pre-defined message is successful', async(t) => {
+})('Reply the pre-defined message is successful', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
@@ -146,7 +146,7 @@ test.meta(<ITestMeta>{
     await telephonyDialog.clickReplyInMeetingButton();
   });
 
-  const alertText = 'Your voice message was sent successfully.'
+  const alertText = 'Voice message sent.'
   await h(t).withLog(`And there should be success flash toast (short = 2s) displayed "${alertText}"`, async () => {
     await app.homePage.alertDialog.shouldBeShowMessage(alertText);
   });
@@ -181,6 +181,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Click the reply with will call back entry button', async () => {
+    await t.wait(1e3); // @TODO: due to this button need time to active...
     await telephonyDialog.clickReplyWithWillCallBackEntryButton();
   });
 
@@ -205,11 +206,10 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1717', 'JPT-1726'],
   maintainers: ['peng.yu'],
   keywords: ['Reply']
-})('Reply with custom message is successful', async(t) => {
+})('Reply with custom message is successful', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -261,11 +261,10 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1721'],
   maintainers: ['peng.yu'],
   keywords: ['Reply']
-})('Can not reply with blank or empty custom message', async(t) => {
+})('Can not reply with blank or empty custom message', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = 'More options';
   const callerWebPhone = await h(t).newWebphoneSession(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -315,5 +314,62 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('And callerUser webphone session status is "terminated"', async () => {
     await callerWebPhone.waitForStatus('terminated');
+  });
+})
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1710'],
+  maintainers: ['zack'],
+  keywords: ['Reply']
+})('Back to the previous call window when caller ends the call', async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+  const caller = h(t).rcData.mainCompany.users[1];
+  const app = new AppRoot(t);
+  const callerWebPhone = await h(t).newWebphoneSession(caller);
+
+  const telephonyDialog = app.homePage.telephonyDialog;
+
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the to diapad button', async () => {
+    await app.homePage.openDialer();
+  });
+
+  await h(t).withLog('Then display the dialer', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I type a character in the input field`, async () => {
+    await telephonyDialog.typeTextInDialer('123');
+  });
+
+  // Inbound call
+  await h(t).withLog('And I receive an incoming call', async () => {
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+  });
+
+  await h(t).withLog('Then my telephony dialog is displayed', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And I click more options button', async () => {
+    await telephonyDialog.clickMoreOptionsButton();
+  });
+
+  await h(t).withLog('Click the reply option into reply page', async () => {
+    await telephonyDialog.clickReplyActionButton();
+  });
+
+  await h(t).withLog('When the other user hangup the call', async () => {
+    await callerWebPhone.hangup();
+  });
+
+  await h(t).withLog('Then telephony dialog should back to previous dialer page', async () => {
+    await telephonyDialog.ensureLoaded();
+    await t.expect(app.homePage.telephonyDialog.dialerInput.value).eql('123');
   });
 })

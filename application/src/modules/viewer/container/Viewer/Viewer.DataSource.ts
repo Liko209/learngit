@@ -74,12 +74,10 @@ class ItemListDataSource {
     );
   }
 
-  private _transformFunc = (model: Item) => {
-    return {
-      id: model.id,
-      sortValue: FileItemUtils.getLatestPostId(model),
-    } as ISortableModelWithData<Item>;
-  }
+  private _transformFunc = (model: Item) => ({
+    id: model.id,
+    sortValue: FileItemUtils.getLatestPostId(model),
+  } as ISortableModelWithData<Item>)
 
   @action
   private _buildSortableMemberListHandler(
@@ -90,18 +88,14 @@ class ItemListDataSource {
   ) {
     const typeId = getTypeId(type);
 
-    const isMatchFunc = (model: Item) => {
-      return model
-        ? isExpectedItemOfThisGroup(groupId, type, model, false)
-        : false;
-    };
+    const isMatchFunc = (model: Item) => (model
+      ? isExpectedItemOfThisGroup(groupId, type, model, false)
+      : false);
 
     const sortFunc = (
       lhs: ISortableModelWithData<Item>,
       rhs: ISortableModelWithData<Item>,
-    ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
-    };
+    ): number => SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
 
     const dataProvider = new GroupItemDataProvider(
       groupId,

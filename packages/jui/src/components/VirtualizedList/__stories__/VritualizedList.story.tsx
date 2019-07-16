@@ -20,11 +20,11 @@ import { DemoItem } from './DemoItem';
 import { itemFactory } from './itemFactory';
 import { useDemoHelper } from './useDemoHelper';
 
-const sleep = function (time: number) {
+const sleep = function(time: number) {
   return new Promise((resolve: Function) => {
     setTimeout(() => {
       resolve();
-    },         time);
+    }, time);
   });
 };
 
@@ -84,11 +84,11 @@ const DebugTable = ({
         </tr>
       </thead>
       <tbody>
-        <DebugTableRow name="visible" range={visibleRange} />
+        <DebugTableRow name='visible' range={visibleRange} />
         {renderedRange && (
-          <DebugTableRow name="rendered" range={renderedRange} />
+          <DebugTableRow name='rendered' range={renderedRange} />
         )}
-        {loadedRange && <DebugTableRow name="loaded" range={loadedRange} />}
+        {loadedRange && <DebugTableRow name='loaded' range={loadedRange} />}
       </tbody>
     </table>
   );
@@ -140,7 +140,7 @@ storiesOf('Components/VirtualizedList', module)
           <br />
           <label>
             scrollToIndex:
-            <input onInput={handleDataChange} type="number" />
+            <input onInput={handleDataChange} type='number' />
           </label>
 
           <br />
@@ -153,7 +153,7 @@ storiesOf('Components/VirtualizedList', module)
               initialScrollToIndex={initialScrollToIndex}
               onVisibleRangeChange={setVisibleRange}
               onRenderedRangeChange={setRenderedRange}
-              stickToBottom={true}
+              stickToBottom
             >
               {children}
             </JuiVirtualizedList>
@@ -224,8 +224,9 @@ storiesOf('Components/VirtualizedList', module)
         }
       };
 
-      const loadingMoreRenderer = useMemo(() => <LoadingMore />, []);
-      const loadingRenderer = useMemo(() => <div>loading initial</div>, []);
+      const loadingMoreRenderer = () => useMemo(() => <LoadingMore />, []);
+      const loadingRenderer = () =>
+        useMemo(() => <div>loading initial</div>, []);
       const noRowsRenderer = useMemo(() => <div>Empty</div>, []);
 
       return (
@@ -329,7 +330,7 @@ storiesOf('Components/VirtualizedList', module)
             <input
               ref={ref}
               onInput={handleHeightChange}
-              type="number"
+              type='number'
               defaultValue={`${listHeight}`}
             />
           </label>
@@ -341,9 +342,9 @@ storiesOf('Components/VirtualizedList', module)
             initialScrollToIndex={initialDataCount - 1}
             loadInitialData={loadInitialData}
             loadMore={loadMore}
-            stickToBottom={true}
-            loadingMoreRenderer={<LoadingMore />}
-            loadingRenderer={<div>loading initial</div>}
+            stickToBottom
+            loadingMoreRenderer={() => <LoadingMore />}
+            loadingRenderer={() => <div>loading initial</div>}
             noRowsRenderer={<div>Empty</div>}
           >
             {children}

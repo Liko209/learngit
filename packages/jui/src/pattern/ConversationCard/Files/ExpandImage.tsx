@@ -20,6 +20,7 @@ type Props = {
   handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   onSwitchExpand: (isExpanded: boolean) => void;
   defaultExpansionStatus?: boolean;
+  fileID: number;
 };
 
 type State = {
@@ -44,7 +45,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
       expand: !expand,
     });
     onSwitchExpand(!expand);
-  }
+  };
 
   _Actions = moize((tooltip: string, ImageActions?: JSX.Element) => {
     if (ImageActions) {
@@ -54,6 +55,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
           onClick={this.switchExpand}
           variant="plain"
           tooltipTitle={tooltip}
+          data-test-automation-id="collapse-button"
           key="unfoldAction"
         >
           unfold_less
@@ -65,6 +67,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
         onClick={this.switchExpand}
         variant="plain"
         tooltipTitle={tooltip}
+        data-test-automation-id="collapse-button"
         key="unfoldAction"
       >
         unfold_less
@@ -82,6 +85,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
       i18UnfoldLess,
       icon,
       handleImageClick,
+      fileID,
     } = this.props;
 
     return (
@@ -96,6 +100,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
               onClick={this.switchExpand}
               variant="plain"
               tooltipTitle={i18UnfoldMore}
+              data-test-automation-id="expand-button"
             >
               unfold_more
             </JuiIconButton>
@@ -103,6 +108,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
         }
       >
         <JuiPreviewImage
+          fileID={fileID}
           url={previewUrl}
           fileName={fileName}
           handleImageClick={handleImageClick}

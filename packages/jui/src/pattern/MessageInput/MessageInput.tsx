@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
-import ReactQuill from 'react-quill';
-import { Delta } from 'quill';
+import ReactQuill, { Quill } from 'react-quill';
+import { Delta, Sources, RangeStatic } from 'quill';
 import styled, { createGlobalStyle } from '../../foundation/styled-components';
 import {
   spacing,
@@ -15,14 +15,16 @@ import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
 
+Quill.debug(false);
+
 const MessageInputDropZoneClasses: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
 };
-
-const Wrapper = styled.div<{
+type WrapperProps = {
   isEditMode?: boolean;
-}>`
+};
+const Wrapper = styled.div<WrapperProps>`
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
   padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   min-height: ${props => !props.isEditMode && height(22)};
@@ -94,21 +96,25 @@ const StyledError = styled.div`
 
 const formats = ['mention'];
 
+type eventHandler = (range: RangeStatic, source: Sources) => void;
+
 type Props = {
   value?: string | Delta;
   defaultValue?: string;
   onChange?: (newValue: string) => void;
-  onBlur?: Function;
+  onFocus?: eventHandler;
+  onBlur?: eventHandler;
   error: string;
   children: React.ReactNode;
   modules: object;
   toolbarNode?: React.ReactNode;
+  footerNode?: React.ReactNode;
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
   didDropFile?: (file: File[]) => void;
   autofocus?: boolean;
-  id?: number;
   placeholder: string;
+  hasFocused?: boolean;
 };
 
 class JuiMessageInput extends React.PureComponent<Props> {
@@ -118,9 +124,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
 
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
-  componentDidMount() {
-    setTimeout(this._autoFocus, 0);
-  }
+  private _timerId: NodeJS.Timeout;
 
   componentDidUpdate(prevProps: Props) {
     if (
@@ -131,7 +135,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
       this._enable(false);
       setTimeout(() => this._enable(true), 0);
     }
-    if (prevProps.id !== this.props.id) {
+    if (this.props.hasFocused && !prevProps.hasFocused) {
       this._autoFocus();
     }
   }
@@ -143,29 +147,32 @@ class JuiMessageInput extends React.PureComponent<Props> {
       editor = this._inputRef.current.getEditor();
     } else {
       editor = {
-        enable: (enabled: boolean) => {},
+        enable: () => {},
       };
     }
 
     return editor;
-  }
+  };
 
   private _enable = (enabled: boolean) => {
     this._getEditor().enable(enabled);
-  }
+  };
 
   private _autoFocus = () => {
     if (this.props.autofocus) {
       this.focusEditor();
     }
-  }
+  };
 
   focusEditor = () => {
-    if (this._inputRef.current) {
-      const quill = this._inputRef.current.getEditor();
-      setTimeout(() => quill.setSelection(999999, 0), 300);
-    }
-  }
+    clearTimeout(this._timerId);
+    this._timerId = setTimeout(() => {
+      if (this._inputRef.current) {
+        const quill = this._inputRef.current.getEditor();
+        quill.setSelection(999999, 0);
+      }
+    }, 300);
+  };
 
   onChange = (content: string, delta: Delta) => {
     const { ops } = delta;
@@ -177,7 +184,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
     if (onChange) {
       onChange(content);
     }
-  }
+  };
 
   private _handlePaste = (event: any) => {
     if (event.clipboardData) {
@@ -194,11 +201,12 @@ class JuiMessageInput extends React.PureComponent<Props> {
         event.preventDefault();
       }
     }
-  }
+  };
   render() {
     const {
       value,
       toolbarNode,
+      footerNode,
       attachmentsNode,
       defaultValue,
       error,
@@ -206,6 +214,8 @@ class JuiMessageInput extends React.PureComponent<Props> {
       modules,
       isEditMode,
       placeholder,
+      onBlur,
+      onFocus,
     } = this.props;
     const reactQuillValueProp = defaultValue
       ? {
@@ -235,10 +245,13 @@ class JuiMessageInput extends React.PureComponent<Props> {
           formats={formats}
           readOnly={initialReadOnly}
           ref={this._inputRef}
+          onBlur={onBlur}
+          onFocus={onFocus}
         />
         {error ? <StyledError>{error}</StyledError> : null}
         {children}
         <GlobalStyle />
+        {footerNode}
         {attachmentsNode}
       </Wrapper>
     );

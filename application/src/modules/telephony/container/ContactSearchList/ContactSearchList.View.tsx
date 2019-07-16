@@ -3,7 +3,7 @@
  * @Date: 2019-05-30 10:34:43
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, createRef } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
@@ -52,10 +52,10 @@ class ContactSearchListViewComponent extends Component<
 
   state = {
     height: 0,
-    initialScrollToIndex: 0,
   };
 
   componentDidMount() {
+    /* eslint-disable react/no-find-dom-node */
     const container = ReactDOM.findDOMNode(this._containerRef.current);
     if (container) {
       this.setState({
@@ -73,8 +73,8 @@ class ContactSearchListViewComponent extends Component<
     }
   }
   private _scrollToView = (f: () => void) => () => {
-    const { dialerFocused } = this.props;
-    if (!dialerFocused) {
+    const { dialerInputFocused } = this.props;
+    if (!dialerInputFocused) {
       return;
     }
     f();
@@ -87,10 +87,9 @@ class ContactSearchListViewComponent extends Component<
         this._listRef.current.scrollToIndex(newFS, true);
       }
     }
-  }
+  };
 
   private onUpKeyDown = this._scrollToView(this.props.decreaseFocusIndex);
-
   private onDownKeyDown = this._scrollToView(this.props.increaseFocusIndex);
 
   render() {
@@ -109,7 +108,10 @@ class ContactSearchListViewComponent extends Component<
     const hasResult = !!displayedSearchResult.length;
 
     return (
-      <ContactSearchListContainer ref={this._containerRef}>
+      <ContactSearchListContainer
+        ref={this._containerRef}
+        className='contact-search-list-container'
+      >
         {hasResult ? (
           <HotKeys
             keyMap={{
@@ -118,14 +120,12 @@ class ContactSearchListViewComponent extends Component<
               enter: onEnter,
             }}
           >
-            <StyledList data-test-automation-id="telephony-contact-search-list">
+            <StyledList data-test-automation-id='telephony-contact-search-list'>
               <JuiInfiniteList
                 height={this.state.height}
                 minRowHeight={ROW_HEIGHT}
                 loadMore={loadMore}
                 loadInitialData={loadInitialData}
-                loadingMoreRenderer={<></>}
-                loadingRenderer={<></>}
                 hasMore={hasMore}
                 initialScrollToIndex={focusIndex === -1 ? 0 : focusIndex}
                 ref={this._listRef}

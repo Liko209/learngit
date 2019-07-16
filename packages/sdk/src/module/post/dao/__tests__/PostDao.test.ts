@@ -35,6 +35,40 @@ const posts: Post[] = [
   }),
 ];
 
+const unreadPosts: Post[] = [
+  postFactory.build({
+    id: 3752569593860,
+    text: '2',
+    group_id: 9163628546,
+    created_at: 1,
+  }),
+  postFactory.build({
+    id: 3752569593870,
+    group_id: 9163628546,
+    created_at: 3,
+  }),
+  postFactory.build({
+    id: 3752569593960,
+    group_id: 9163628546,
+    created_at: 4,
+  }),
+  postFactory.build({
+    id: 3752569593866,
+    group_id: 9163628546,
+    created_at: 2,
+  }),
+  postFactory.build({
+    id: 3752569594960,
+    group_id: 9163628546,
+    created_at: 5,
+  }),
+  postFactory.build({
+    id: 3752569693960,
+    group_id: 9163628546,
+    created_at: 6,
+  }),
+];
+
 describe('Post Dao', () => {
   let postViewDao: PostViewDao;
   let postDao: PostDao;
@@ -114,11 +148,11 @@ describe('Post Dao', () => {
     });
   });
 
-  describe('queryIntervalPostsByGroupId()', () => {
+  describe('queryUnreadPostsByGroupId()', () => {
     beforeAll(async () => {
       jest.spyOn(postDao, 'getPostViewDao').mockReturnValue(postViewDao);
       await postDao.clear();
-      await postDao.bulkPut(posts);
+      await postDao.bulkPut(unreadPosts);
     });
 
     beforeEach(async () => {
@@ -129,8 +163,8 @@ describe('Post Dao', () => {
     });
 
     it('should call postViewDao queryIntervalPostsByGroupId', async () => {
-      const spy = jest.spyOn(postViewDao, 'queryIntervalPostsByGroupId');
-      const result = await postDao.queryIntervalPostsByGroupId({
+      const spy = jest.spyOn(postViewDao, 'queryUnreadPostsByGroupId');
+      const result = await postDao.queryUnreadPostsByGroupId({
         groupId: 9163628546,
         startPostId: 1151236554756,
         endPostId: 1151236399108,
@@ -140,15 +174,15 @@ describe('Post Dao', () => {
     });
 
     it('should return interval posts if start post is in db and end post is in db', async () => {
-      const result = await postDao.queryIntervalPostsByGroupId({
+      const result = await postDao.queryUnreadPostsByGroupId({
         groupId: 9163628546,
-        startPostId: 1151236554756,
-        endPostId: 1151236399108,
+        startPostId: 3752569593866,
+        endPostId: 3752569594960,
         limit: 500,
       });
-      expect(result).toHaveLength(2);
-      expect(_.first(result).created_at).toBe(2);
-      expect(_.last(result).created_at).toBe(3);
+      expect(result).toHaveLength(5);
+      expect(_.first(result).created_at).toBe(1);
+      expect(_.last(result).created_at).toBe(5);
     });
   });
 
@@ -186,6 +220,14 @@ describe('Post Dao', () => {
     it('should return 0 when there has not post group_id 99999', async () => {
       const result = await postDao.groupPostCount(99999);
       expect(result).toEqual(0);
+    });
+  });
+
+  describe('queryPostIdsByGroupId', () => {
+    it('should call post view batchGet', async () => {
+      postViewDao.batchGet = jest.fn().mockReturnValue([]);
+      await postDao.queryPostViewByIds([1]);
+      expect(postViewDao.batchGet).toBeCalledWith([1]);
     });
   });
 });

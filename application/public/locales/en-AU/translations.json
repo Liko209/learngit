@@ -1,0 +1,968 @@
+{
+  "common": {
+    "button": {
+      "ariaToggleOn": "On, click to turn off",
+      "ariaToggleOff": "Off, click to turn on",
+      "tryAgain": "Try again"
+    },
+    "dialog": {
+      "OK": "OK",
+      "cancel": "Cancel",
+      "update": "Update",
+      "create": "Create",
+      "done": "Done",
+      "save": "Save",
+      "send": "Send",
+      "delete": "Delete",
+      "close": "Close",
+      "deleteAll": "Delete all"
+    },
+    "prompt": {
+      "NoInternetConnection": "No Internet connection",
+      "Network Error": "Network disconnected. Please try again when the network is available.",
+      "tryAgain": "Try again.",
+      "tryAgainLater": "Try again later.",
+      "thenTryAgain": "then try again.",
+      "loadError": "Oops! Something went wrong. Please try again."
+    },
+    "preposition": {
+      "in": "in"
+    },
+    "time": {
+      "at": "at",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "tomorrow": "Tomorrow",
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday",
+      "Sunday": "Sunday",
+      "hour": "hour",
+      "min": "min.",
+      "sec": "sec."
+    },
+    "verb": {
+      "like": "like",
+      "likes": "likes"
+    },
+    "pronoun": {
+      "this": "this"
+    },
+    "conj": {
+      "and": "and"
+    },
+    "delete": "Delete",
+    "more": "More",
+    "copy": "Copy",
+    "remove": "Remove",
+    "pin": "Pin",
+    "ariaCopy": "Copy this {{value}}",
+    "call": "Call",
+    "ariaCall": "Call {{value}}",
+    "download": "Download",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "back": "Back",
+    "forward": "Forward",
+    "You": "You",
+    "Connecting": "Connecting",
+    "deactivatedUsers": "Deactivated Users",
+    "team": "team",
+    "play": "Play",
+    "pause": "Pause",
+    "reload": "Reload",
+    "goToConversation": "Go to conversation"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signInFailedTitle": "Sign-in failed",
+    "signInFailedContent": "We are having trouble signing you in. Please try again later."
+  },
+  "home": {
+    "menu": "Menu",
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "RecentSearches": "Recent searches",
+    "newActions": "New actions",
+    "viewYourProfile": "View your profile",
+    "aboutRingCentral": "About RingCentral",
+    "sendFeedback": "Send Feedback",
+    "version": "Version",
+    "lastCommit": "Last Commit",
+    "deployedTime": "Date",
+    "allRightsReserved": "All rights reserved",
+    "dialer": "Dialler",
+    "openDialer": "Open the dialler"
+  },
+  "globalSearch": {
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "clear": "Clear",
+    "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
+    "Messages": "Messages",
+    "people": "people",
+    "groups": "groups",
+    "team": "team",
+    "postedBy": "Posted by",
+    "postedIn": "Posted in",
+    "postedByPlaceholder": "Name or email address",
+    "postedInPlaceholder": "Team or Conversation",
+    "filters": "Filters",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
+    "All": "All",
+    "Events": "Events",
+    "Files": "Files",
+    "Links": "Links",
+    "Notes": "Notes",
+    "Tasks": "Tasks",
+    "Type": "Type",
+    "TimePosted": "Time posted",
+    "Anytime": "Any time",
+    "ThisWeek": "This week",
+    "ThisMonth": "This month",
+    "ThisYear": "This year",
+    "prompt": {
+      "contentSearchNetworkError": "We aren't able to complete this search. Check your network connection and then try again.",
+      "contentSearchServiceError": "Sorry, something went wrong at our end and we aren't able to complete this search. Try again later."
+    },
+    "Results": "Results ({{count}})",
+    "NoMatchesFound": "No matches found",
+    "SearchForContactsAndKeywords": "Search for contacts and keywords"
+  },
+  "dashboard": {
+    "Dashboard": "Dashboard"
+  },
+  "message": {
+    "showUnreads": "Show unread",
+    "meGroup": "me",
+    "mentionPosts": "Mentions",
+    "bookmarkPosts": "Bookmarks",
+    "@mentionsTitle": "@Mentions",
+    "bookmarksTitle": "Bookmarks",
+    "noMentionPosts": "There are currently no posts that @mention you directly.",
+    "noBookmarkPosts": "You have no bookmarks yet. Hover on a post and click on the Bookmark icon to mark and save it for later reference.",
+    "loadingError": "Oops! Something went wrong. Please try again.",
+    "favoriteGroups": "favourites",
+    "directGroups": "direct messages",
+    "teamGroups": "teams",
+    "messageTypeNameSMS": "text",
+    "jumpToConversation": "Jump to conversation",
+    "emoji": {
+      "i18n": {
+        "search": "Search",
+        "clear": "Clear",
+        "notfound": "No Emoji Found",
+        "skintext": "Choose your default skin tone",
+        "categories": {
+          "search": "Search Results",
+          "recent": "Frequently Used",
+          "people": "Smileys & People",
+          "nature": "Animals & Nature",
+          "foods": "Food & Drink",
+          "activity": "Activity",
+          "places": "Travel & Places",
+          "objects": "Objects",
+          "symbols": "Symbols",
+          "flags": "Flags",
+          "custom": "Custom"
+        },
+        "categorieslabel": "Emoji categories",
+        "skintones": {
+          "default": "Default Skin Tone",
+          "light": "Light Skin Tone",
+          "mediumLight": "Medium-Light Skin Tone",
+          "medium": "Medium Skin Tone",
+          "mediumDark": "Medium-Dark Skin Tone",
+          "dark": "Dark Skin Tone"
+        }
+      },
+      "emojiTooltip": "Emoji",
+      "emojiDefaultTitle": "Pick your emoji",
+      "toggleButtonLabel": "Keep open",
+      "emojiMatching": "Emojis matching"
+    },
+    "sharedItems": "shared items",
+    "initialPost": {
+      "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
+      "createATeam": "created a team",
+      "on": "on",
+      "postInitialTitle": "Get Started",
+      "shareFile": "Share a file",
+      "createTask": "Create a task",
+      "integrateApps": "Integrate apps"
+    },
+    "action": {
+      "like": "Like",
+      "unlike": "Unlike",
+      "bookmark": "Bookmark",
+      "removeBookmark": "Remove bookmark",
+      "quote": "Quote",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "editPost": "Edit post",
+      "deletePost": "Delete post",
+      "resendPost": "Resend post",
+      "attachFile": "Attach file",
+      "typeNewMessage": "Type new message",
+      "sendNewMessage": "Send new message"
+    },
+    "inputMenus": {
+      "uploadFileMenuTitle": "Upload files from",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Computer"
+    },
+    "stream": {
+      "addedToTeam": "{{inviter}} added {{newUser}} to the team",
+      "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
+      "joinTheTeam": "{{newUser}} joined the team",
+      "newMessages": "new messages",
+      "newMessagesDivider": "New messages"
+    },
+    "teamMembers": "team members",
+    "suggestedPeople": "suggested people",
+    "conversationDetails": "Conversation details",
+    "conversationDetailsShow": "Show details",
+    "conversationDetailsHide": "Hide details",
+    "prompt": {
+      "deletePostFailedForServerIssue": "Sorry, something went wrong at our end and we weren't able to delete this post. Try again later.",
+      "deletePostFailedForNetworkIssue": "We weren't able to delete this post. Check your network connection and then try again.",
+      "editPostFailedForServerIssue": "Sorry, something went wrong at our end and we weren't able to apply edits to this post. Try again later.",
+      "editPostFailedForNetworkIssue": "We weren't able to apply edits to this post. Check your network connection and then try again.",
+      "viewInPostFailedWithServerIssue": "Sorry, something went wrong on our end and we weren't able to jump to the post. Try again later.",
+      "viewInPostFailedWithNetworkIssue": "Sorry, we weren't able to jump to the post. Check your network connection and then try again.",
+      "contentLength": "A maximum of 10,000 characters can be sent",
+      "contentIllegal": "JavaScript not allowed",
+      "deletePostTitle": "Delete Post?",
+      "deleteFileTitle": "Delete the file?",
+      "deletePostContent": "Are you sure you want to delete this post?",
+      "deleteFileContent": "Are you sure you want to delete this file <0>{{fileName}}</0>?",
+      "SorryWeWereNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
+      "notAbleToUnlikeForNetworkIssue": "We weren't able to unlike this message. Check your network connection and then try again.",
+      "notAbleToUnlikeForServerIssue": "Sorry, something went wrong at our end and we weren't able to unlike this message. Try again later.",
+      "notAbleToLikeThisMessageForNetworkIssue": "We weren't able to like this message. Check your network connection and then try again.",
+      "notAbleToLikeThisMessageForServerIssue": "Sorry, something went wrong at our end and we weren't able to like this message. Try again later.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "We weren't able to bookmark this message due to a poor network connection. Please check your connection, then try again.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Sorry, something went wrong at our end and we weren't able to bookmark this message. Try again later.",
+      "notAbleToUnpinForNetworkIssue": "We weren't able to unpin this message. Check your network connection and then try again.",
+      "notAbleToUnpinForServerIssue": "Sorry, something went wrong at our end and we weren't able to unpin this message. Try again later.",
+      "notAbleToPinForNetworkIssue": "We weren't able to pin this message. Check your network connection and then try again.",
+      "notAbleToPinForServerIssue": "Sorry, something went wrong at our end and we weren't able to pin this message. Try again later.",
+      "notAbleToLoadOlderMessagesForNetworkIssue": "We weren't able to load older messages. Check your network connection and then try again.",
+      "notAbleToLoadOlderMessagesForServerIssue": "Sorry, something went wrong at our end and we weren't able to load older messages. Try again later.",
+      "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
+      "MessageLoadingErrorTip": "We weren't able to open this conversation.",
+      "MessageLoadingErrorTipForNetworkIssue": "We aren't able to open this conversation. Check your network connection, ",
+      "MessageLoadingErrorTipForServerIssue": "Sorry, something went wrong on our end and we aren't able to open this conversation. ",
+      "NewMessage": "New Message",
+      "newMessageTip": "Conversations with one or more specific people are great for informal chats. For projects, departments or even topic-based discussion, you should ",
+      "newMessageTipLink": "create a Team instead.",
+      "NewMessageError": "We are having trouble creating this new message. Please try again later.",
+      "disabledText": "This team is read-only",
+      "changeDefaultPhoneAppTitle": "Change default phone app",
+      "changeDefaultPhoneAppContent": "You are about to choose RingCentral Phone for your default phone features. Install the RingCentral Phone app before continuing. Are you sure you want to change your default to RingCentral Phone?",
+      "editFileNameTitle": "Rename file",
+      "editFileNameInputLabel": "File name",
+      "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
+      "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection and then try again.",
+      "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
+      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection and then try again."
+    },
+    "fileAction": {
+      "deleteFile": "Delete file",
+      "editFileName": "Edit file name",
+      "viewInPost": "View in post"
+    },
+    "Messages": "Messages",
+    "message": "Message",
+    "atMentionAllTeam": "Team",
+    "atMentionAllAdmin": "admin",
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> is typing...",
+      "twoTyping": "<0>{{personA}}</0> and <0>{{personB}}</0> are typing...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> and more are typing..."
+    }
+  },
+  "item": {
+    "activity": {
+      "created a task": "created a task",
+      "assigned task": "assigned task",
+      "reassigned task": "reassigned a task.",
+      "completed task": "completed task",
+      "completed {{count}}% of task": "completed {{count}}% of task",
+      "marked task incomplete": "marked task as incomplete",
+      "marked task incomplete for {{user}}": "marked task as incomplete {{user}}",
+      "completed task for {{user}}": "completed task for {{user}}",
+      "created a event": "created an event",
+      "updated a event": "updated an event",
+      "updated event": "updated event",
+      "shared a note": "shared a note",
+      "shared a file": "shared a file",
+      "shared {{count}} file": "shared {{count}} files",
+      "uploaded version {{number}}": "uploaded version {{number}}",
+      "shared a link": "shared a link",
+      "shared {{count}} link": "shared {{count}} links",
+      "shared a snippet": "shared a snippet",
+      "shared items": "shared items",
+      "started a audio conference": "started an audio conference",
+      "started a video chat": "started a video chat",
+      "replied": "replied",
+      "via": "via"
+    },
+    "meeting": {
+      "videoCallInProgress": "Video Call in progress",
+      "videoCallEnded": "Video Call ended",
+      "videoCallCancelled": "Video Call cancelled",
+      "videoCallDuration": "Duration",
+      "startVideoCall": "Starting Video Call...",
+      "meetingUrl": "Meeting URL",
+      "meetingId": "Meeting ID",
+      "duration": "Duration",
+      "help": "Help",
+      "installProblems": "Installation problems?",
+      "readThis": "Read this"
+    },
+    "dialInNumber": "Dial-in Number",
+    "avatarNamesWithOthers": " and other {{count}} people",
+    "attachments": "Attachments",
+    "assignee": "Assignee",
+    "due": "Due",
+    "section": "Section",
+    "descriptionNotes": "Description",
+    "hideEventHistory": "Hide",
+    "showEventHistory": "Show old",
+    "locationTitle": "Location",
+    "repeatingEveryDay": "repeating every day",
+    "repeatingEveryWeekday": "repeating every weekday",
+    "repeatingEveryWeek": "repeating every week",
+    "repeatingEveryMonth": "repeating every month",
+    "repeatingEveryYear": "repeating every year",
+    "forDayTimes": "for {{count}} days",
+    "forDayTimes_interval": "(1){for one day};",
+    "forWeekTimes": "for {{count}} weeks",
+    "forWeekTimes_interval": "(1){for one week};",
+    "forWeekdailyTimes": "for {{count}} weekdays",
+    "forWeekdailyTimes_interval": "(1){for one weekday};",
+    "forMonthlyTimes": "for {{count}} months",
+    "forMonthlyTimes_interval": "(1){for one month};",
+    "forYearlyTimes": "for {{count}} years",
+    "forYearlyTimes_interval": "(1){for one year};",
+    "until": "until",
+    "updateFiles": "Update file(s)?",
+    "theFollowingFilesAlreadyExist": "The following file(s) already exist(s).",
+    "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
+    "audioConferenceTitle": "Audio Conference",
+    "or": "or",
+    "globalNumber": "Global number",
+    "hostCode": "Host access",
+    "participantCode": "Participant access",
+    "downloadToSeeTheRestLine": "Download to see the remaining {{restLines}} line",
+    "downloadToSeeTheRestLine_plural": "Download to see the remaining {{restLines}} lines",
+    "expandLines": "Expand ({{lineNumber}} lines)",
+    "pinned": "Pinned",
+    "files": "Files",
+    "images": "Images",
+    "links": "Links",
+    "tasks": "Tasks",
+    "notes": "Notes",
+    "events": "Events",
+    "integrations": "Integrations",
+    "pinnedListSubheader": "Pinned posts",
+    "fileListSubheader": "Files",
+    "taskListSubheader": "Tasks",
+    "noteListSubheader": "Notes",
+    "linkListSubheader": "Links",
+    "eventListSubheader": "Events",
+    "imageListSubheader": "Images",
+    "youHaveNothingPinnedYet": "You have nothing pinned yet",
+    "noFilesSharedYet": "No files shared yet",
+    "noImagesSharedYet": "No images shared yet",
+    "noTasksYet": "No tasks yet",
+    "noLinksSharedYet": "No links shared yet",
+    "noNotesCreatedYet": "No notes created yet",
+    "noEventsCreatedYet": "No events created yet",
+    "noIntegrationInstallationYet": "No integration installation yet",
+    "noPinSubText": "Anything you pin shows up here so you can refer to it later.",
+    "noFileSubText": "Files that get shared in your conversation automatically show up here.",
+    "noImageSubText": "Images that get shared in your conversation automatically show up here.",
+    "noTaskSubText": "Track tasks that you assign to yourself or that get assigned to you here.",
+    "noLinkSubText": "Links that get shared in your conversation automatically show up here.",
+    "noNoteSubText": "Notes that get created in your conversation automatically show up here.",
+    "noEventSubText": "Events on your calendar will automatically show up here.",
+    "noIntegrationSubText": "There are currently no integrations installed. Once you have installed an integration it will show up here.",
+    "networkErrorPinnedPrompt": "Sorry, we weren't able to load more posts.",
+    "networkErrorFilesPrompt": "Sorry, we weren't able to load more files.",
+    "networkErrorImagesPrompt": "Sorry, we weren't able to load more images.",
+    "networkErrorLinksPrompt": "Sorry, we weren't able to load more links.",
+    "networkErrorTasksPrompt": "Sorry, we weren't able to load more tasks.",
+    "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
+    "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
+    "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
+    "pinnedMore": "and {{num}} more",
+    "prompt": {
+      "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait until it has completed.",
+      "fileNoLongerExists": "Sorry, we weren’t able to upload the file because it no longer exists.",
+      "notAbleToCancelUpload": "Sorry, we weren't able to cancel the upload.",
+      "notAbleToCancelUploadTryAgain": "Sorry, we weren't able to cancel the upload. Try again."
+    }
+  },
+  "people": {
+    "profile": {
+      "checkMoreTeamOption": "Check what other options you have with this team",
+      "copyEmail": "Copy email",
+      "copyUrl": "Copy URL",
+      "guest": "Guest",
+      "admin": "Admin",
+      "company": "Company",
+      "location": "Location",
+      "extensionNumber": "Ext",
+      "ariaExtensionNumber": "extension number",
+      "directNumber": "Direct number",
+      "ariaDirectNumber": "phone number",
+      "email": "Email",
+      "ariaEmail": "email address",
+      "linkedIn": "LinkedIn",
+      "webpage": "Webpage",
+      "ariaWebpage": "web page",
+      "ariaGoToMe": "Go to the workstation of yourself",
+      "ariaGoToOther": "Go to the conversation with {{name}}"
+    },
+    "team": {
+      "Members": "Members",
+      "SearchContactPlaceholder": "Enter names or email addresses",
+      "CreateTeam": "Create Team",
+      "Create": "Create",
+      "SetAsPublicTeam": "Public team (visible to any co-worker)",
+      "MembersMayPostMessages": "Allow members to post messages",
+      "MembersMayAddOtherMembers": "Allow members to add other members",
+      "MembersMayPinPosts": "Allow members to pin posts",
+      "teamName": "Team name",
+      "teamNamePlaceholder": "Enter team name",
+      "teamDescription": "Team description",
+      "allowTeamMembersTo": "Allow team members to",
+      "addTeamMembers": "Add team members",
+      "postMessages": "Post messages",
+      "pinPosts": "Pin posts",
+      "leaveTeam": "Leave team",
+      "leaveTeamConfirmTitle": "Leave team",
+      "leaveTeamConfirmContent": "Once you leave <0>{{teamName}}</0>, you will no longer have access to the content.",
+      "leaveTeamConfirmOk": "leave",
+      "deleteTeam": "Delete team",
+      "deleteTeamToolTip": "Delete a team permanently.",
+      "deleteTeamConfirmTitle": "Delete team?",
+      "deleteTeamConfirmContent": "Are you sure you want to permanently delete <0>{{teamName}}</0> team?",
+      "deleteTeamConfirmOk": "delete",
+      "deleteTeamSuccessMsg": "Team deleted successfully.",
+      "archiveTeam": "Archive team",
+      "archiveTeamToolTip": "Archive a team so that it doesn't show up in your active conversations. The team will still show up on your team list and can be restored.",
+      "archiveTeamConfirmTitle": "Archive team?",
+      "archiveTeamConfirmContent": "Archived teams are still available at the bottom of the Teams page, but won't show up in your active conversations.",
+      "archiveTeamConfirmOk": "archive",
+      "archiveTeamSuccessMsg": "Team archived successfully.",
+      "changeToPublic": "Change to public team",
+      "changeToPrivate": "Change to private team",
+      "publicTeam": "This is a public team",
+      "privateTeam": "This is a private team",
+      "teamMembers": "Team members",
+      "groupMembers": "Group members",
+      "searchMembers": "Search members",
+      "makeTeamAdmin": "Make team admin",
+      "revokeTeamAdmin": "Revoke team admin",
+      "addTeamMemberSubmit": "Add",
+      "AddTeamMembers": "Add team members",
+      "AddTeamMembersTitle": "Add team members",
+      "removeFromTeam": "Remove from team",
+      "joinButtonTitle": "Join",
+      "joinTeam": "Join team",
+      "ariaJoinTeam": "Join the {{name}} team",
+      "joinTeamTitle": "Join team?",
+      "joinTeamContent": "You are not currently a member of the <0>{{teamName}}</0> team. Would you like to join the team?",
+      "joinTeamSubmit": "Join",
+      "joinedStatus": "Joined",
+      "ariaGoToTeam": "Go to the conversation with team {{name}}",
+      "ariaGoToGroup": "Go to the conversation with group",
+      "favorite": "Favourite",
+      "addToFavorites": "Add to Favourites",
+      "removeFromFavorites": "Remove from Favourites",
+      "profile": "Profile",
+      "teamDetails": "Team details",
+      "close": "Close",
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread",
+      "convertToTeam": "Convert to team",
+      "convertToTeamNamePrefix": "Team: ",
+      "convertToTeamPreviousMessageHandle": "By converting this conversation to a team, all messages and files previously posted will be visible to anyone new invited to the team.",
+      "noMatchesFound": "No matches found",
+      "archivedSuffix": " - Archived",
+      "adminActions": "Admin actions"
+    },
+    "company": {},
+    "prompt": {
+      "noLongerAMemberOfThisTeam": "Sorry, you're no longer a member of this Team. To join, contact the team administrator.",
+      "closeConfirmDialogHeader": "Close Conversation?",
+      "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
+      "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
+      "notAbleToCloseTheConversationForServerIssue": "Sorry, something went wrong at our end and we weren't able to close this conversation. Try again later.",
+      "notAbleToCloseTheConversationForNetworkIssue": "We weren't able to close this conversation. Check your network connection and then try again.",
+      "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
+      "JoinTeamErrorForAuthIssue": "This team is now private. To join, contact the team administrator.",
+      "JoinTeamErrorForNetworkIssue": "You weren't able to join the team. Check your network connection and then try again.",
+      "JoinTeamErrorForServerIssue": "Sorry, something went wrong at our end and you weren't able to join the team. Try again later.",
+      "alreadyTaken": "This name is already taken, try choosing another one.",
+      "CreateTeamError": "We are having trouble creating this team. Please try again later.",
+      "SaveTeamUpdateErrorForNetworkIssue": "We weren't able to save the update. Check your network connection and then try again.",
+      "SaveTeamUpdateErrorForServerIssue": "Sorry, something went wrong at our end and we weren't able to save the update. Try again later.",
+      "YouAreAnAdminToThisTeam": "You are an admin to this team.",
+      "LearnAboutTeamAdministration": "Learn about team administration.",
+      "WeWerentAbleToCreateTheTeamTryAgain": "We weren't able to create the team. Try again.",
+      "changeTeamPrivateTypeErrorForNetworkIssue": "We weren't able to change the team type. Check your network connection and then try again.",
+      "changeTeamPrivateTypeErrorForServerIssue": "Sorry, something went wrong on our end and we weren't able to change the team type. Try again later.",
+      "notAbleToUnFavoriteForNetworkIssue": "We weren't able to remove this conversation from favourites. Check your network connection and then try again.",
+      "notAbleToUnFavoriteForServerIssue": "Sorry, something went wrong at our end and we weren't able to remove this conversation from Favourites. Try again later.",
+      "notAbleToFavoriteThisMessageForNetworkIssue": "Sorry, we weren't able to favourite this conversation. Check your network connection and then try again.",
+      "notAbleToFavoriteThisMessageForServerIssue": "Sorry, something went wrong at our end and we weren't able to favourite this conversation. Try again later.",
+      "leaveTeamServerErrorContent": "Sorry, something went wrong on our end and you weren't able to leave the team. Try again later.",
+      "leaveTeamNetworkErrorContent": "We are having an issue with reaching your network connection so you weren't able to leave the team. Check your connectivity and then try again.",
+      "deleteTeamServerErrorContent": "Sorry, something went wrong on our end and we weren't able to delete this team. Try again later.",
+      "deleteTeamNetworkErrorContent": "Sorry, we weren't able to delete this team. Check your network connection and then try again.",
+      "archiveTeamServerErrorContent": "Sorry, something went wrong on our end and we weren't able to archive this team. Try again later.",
+      "archiveTeamNetworkErrorContent": "Sorry, we weren't able to archive this team. Check your network connection and then try again.",
+      "AddTeamMembersBackendError": "Sorry, something went wrong on our end and we weren't able to add team members. Try again later.",
+      "AddTeamMembersNetworkError": "We weren't able to add team members. Check your network connection and then try again.",
+      "removeMemberNetworkError": "We weren't able to remove this team member. Check your network connection and then try again.",
+      "removeMemberBackendError": "Sorry, something went wrong on our end and we weren't able to remove this team member. Try again later.",
+      "makeTeamAdminNetworkError": "We weren't able to make this member a team admin. Check your network connection and then try again.",
+      "makeTeamAdminBackendError": "Sorry, something went wrong on our end and we weren't able to make this member a team admin. Try again later.",
+      "revokeTeamAdminBackendError": "Sorry, something went wrong on our end and we weren't able to revoke team admin permissions for this team member. Try again later.",
+      "revokeTeamAdminNetworkError": "We weren't able to revoke team admin permissions for this member. Check your network connection and then try again.",
+      "InvalidEmail": "Invalid Email Address",
+      "markAsRead": "Failed to mark this conversation as read. Try again later.",
+      "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
+      "conversationDeleted": "The team was deleted. To learn more, contact the team administrator.",
+      "conversationArchived": "This team was archived. To learn more, contact the team administrator.",
+      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
+    }
+  },
+  "contact": {
+    "Contacts": "Contacts"
+  },
+  "calendar": {
+    "Calendar": "Calendar"
+  },
+  "telephony": {
+    "Phone": "Phone",
+    "Ext": "Ext.",
+    "action": {
+      "minimize": "Minimise",
+      "detach": "Detach",
+      "attach": "Attach",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "keypad": "Keypad",
+      "hold": "Hold",
+      "unhold": "Unhold",
+      "add": "Add",
+      "record": "Record",
+      "stopRecord": "Stop",
+      "callActions": "Call actions",
+      "reply": "Reply",
+      "park": "Park",
+      "end": "End call",
+      "Answer": "Answer",
+      "back": "Back",
+      "forward": "Forward",
+      "customForward": "Custom...",
+      "flip": "Flip",
+      "recentCall": "Recent calls",
+      "backToDialer": "Back to dialler"
+    },
+    "customReplyMessagePlaceholder": "Type a custom message",
+    "customReplyLabel": "Custom message",
+    "predefinedMessage": {
+      "inMeeting": "In a meeting",
+      "onMyWay": "On my way",
+      "callMeBack": "Call me back in...",
+      "willCallBack": "Will call you back in..."
+    },
+    "predefinedTime": {
+      "5min": "5 min",
+      "10min": "10 min",
+      "30min": "30 min",
+      "1hour": "1 hour"
+    },
+    "countText": "Reply in ",
+    "countdownUnit": "s",
+    "ignoreTheCall": "Ignore the call",
+    "sendToVoicemail": "Send to voicemail",
+    "moreOptions": "More options",
+    "answerTheCall": "Answer the call",
+    "unknownCaller": "Unknown Caller",
+    "prompt": {
+      "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
+      "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
+      "RCPhoneIsNotInstalledOK": "Download RingCentral Phone",
+      "NoNetwork": "Sorry, we weren't able to place the call as there is no connection to the server. Try again later.",
+      "CallFailed": "Sorry, we are having trouble placing this call. Please try again later.",
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
+      "LogoutTitle": "Log out?",
+      "LogoutContent": "Your call will be disconnected if you log out. Do you want to log out and end the call?",
+      "LogoutOk": "Log out",
+      "FailedToHold": "Sorry, something went wrong at our end and we weren't able to hold the call",
+      "FailedToResume": "Sorry, something went wrong at our end and we weren't able to resume the call",
+      "FailedToRecord": "Sorry, we weren't able to record the call. Try again later.",
+      "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
+      "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
+      "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "RecordAutomatically": "Cannot start call recording.",
+      "InvalidNumber": "The phone number entered is invalid. Check the number and try again.",
+      "ParkErrorStopRecording": "Sorry, your call recording is being saved. Try to park the call later.",
+      "ParkError": "Sorry, something went wrong on our end and we weren't able to park the call. Try again later.",
+      "ParkOk": "Your call is parked at location",
+      "ReplyCustomMessageEmpty": "Sorry, you cannot send an empty message.",
+      "ReplyMessageSuccess": "Voice message sent.",
+      "ForwardBackendError": "Sorry, something went wrong on our end and we weren't able to forward the call.",
+      "ForwardCallSuccess": "Your call was forwarded successfully.",
+      "FlipBackendError": "Sorry, we weren't able to flip the call. Try again later.",
+      "FlipSuccess": "Call flipped",
+      "OnDemandRecording": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "AutoRecording": "Cannot start call recording."
+    },
+    "notification": {
+      "incomingCall": "Incoming Call",
+      "answer": "Answer",
+      "unknownCaller": "Unknown Caller"
+    },
+    "accessibility": {
+      "hold": "Hold the call",
+      "resume": "Resume the call",
+      "record": "Record the call",
+      "stopRecord": "Stop recording",
+      "minimize": "Minimise the dialogue",
+      "callActions": "Call actions"
+    },
+    "dialerPlaceholder": "Enter a name or number",
+    "delete": "Delete",
+    "callFrom": "Call from:",
+    "phoneNumberType": {
+      "directNumber": "Direct Number",
+      "mainCompanyNumber": "Main company number",
+      "blocked": "Blocked",
+      "nickName": "Nick name",
+      "companyNumber": "Company number",
+      "companyFaxNumber": "Company fax number"
+    },
+    "callerIdSelector": {
+      "tooltip": "You can change this default Caller ID in settings."
+    },
+    "direction": {
+      "inboundcall": "Inbound call",
+      "outboundcall": "Outbound call"
+    },
+    "result": {
+      "missedcall": "Missed call"
+    },
+    "nocalllogs": "No call logs",
+    "dial": "Dial:",
+    "noMatch": "No matched records",
+    "searching": "Searching...",
+    "forwardCall": "Forward Call",
+    "noCallLogAvailable": "There is no call log yet"
+  },
+  "phone": {
+    "tab": {
+      "callHistory": "Call history"
+    },
+    "callBack": "Call back",
+    "AllCalls": "All calls",
+    "MissedCalls": "Missed calls",
+    "callhistory": "Call history",
+    "voicemail": "Voicemail",
+    "block": "Block",
+    "blockNumber": "Block number",
+    "unblockNumber": "Unblock number",
+    "blockThisNumber": "Block this number",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "This number will not be able to reach you if it is blocked. Do you want to block it?",
+    "faxes": "Faxes",
+    "unknownCaller": "Unknown caller",
+    "unknown": "Unknown",
+    "recordings": "Recordings",
+    "noMatchesFound": "No matches found",
+    "noCallLogAvailable": "No call log",
+    "noVoicemailAvailable": "No voicemail records",
+    "prompt": {
+      "numberHasBeenBlocked": "The number has been blocked",
+      "numberHasBeenUnblocked": "The number has been unblocked",
+      "notAbleToUnblockForNetworkIssue": "Sorry, we weren't able to unblock this number. Check your network connection and then try again.",
+      "notAbleToUnblockForServerIssue": "Sorry, something went wrong on our end and we weren't able to unblock this number. Try again later.",
+      "notAbleToBlockForNetworkIssue": "Sorry, we weren't able to block this number. Check your network connection and then try again.",
+      "notAbleToBlockForServerIssue": "Sorry, something went wrong on our end and we weren't able to block this number. Try again later.",
+      "notAbleToLoadVoicemailsForNetworkIssue": "We weren't able to load voicemails. Check your network connection.",
+      "notAbleToLoadVoicemailsForServerIssue": "We weren't able to load voicemails. Try again later.",
+      "notAbleToLoadCallLogsForNetworkIssue": "We weren't able to load call logs. Check your network connection.",
+      "notAbleToLoadCallLogsForServerIssue": "We weren't able to load call logs. Try again later.",
+      "playVoicemailLoadError": "Sorry, we weren't able to play/load the voicemail due to a poor network connection. Try again."
+    }
+  },
+  "calllog": {
+    "inputFilter": "Filter call history",
+    "clearFilter": "Clear call history filter",
+    "deleteCallLog": "Delete call log",
+    "deleteCallHistory": "Delete call history",
+    "deleteAllCallHistory": "Delete all call history",
+    "doYouWanttoDeleteThisCallLog": "Do you want to delete this call log from the list?",
+    "doYouWanttoDeleteAllCallLog": " Are you sure you want to permanently delete all the call logs? Note: Call logs cannot be retrieved from anywhere.",
+    "prompt": {
+      "notAbleToDeleteCallLogForNetworkIssue": "Sorry, we weren't able to delete the log. Check your network connection and then try again.",
+      "notAbleToDeleteAllCallLogForNetworkIssue": "Sorry, we weren't able to delete the call history. Check your network connection and then try again.",
+      "notAbleToDeleteCallLogForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the log. Try again later.",
+      "notAbleToDeleteAllCallLogForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the call history. Try again later."
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "Play Voicemail",
+      "pause": "Pause Voicemail",
+      "reload": "Reload Voicemail"
+    },
+    "inputFilter": "Filter voicemail",
+    "clearFilter": "Clear voicemail filter",
+    "downloadVoicemail": "Download voicemail",
+    "markUnread": "Mark as unread",
+    "markRead": "Mark as read",
+    "deleteVoicemail": "Delete voicemail",
+    "areYouSureYouWantToDeleteTheVoicemail": "Are you sure you want to delete the voicemail?",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "Sorry, we weren't able to mark the voicemail as unread due to a poor network connection. Try again.",
+      "notAbleToUnreadVoicemalForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as unread. Try again later.",
+      "notAbleToReadVoicemailForNetworkIssue": "Sorry, we weren't able to mark the voicemail as read due to a poor network connection. Try again.",
+      "notAbleToReadVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to mark the voicemail as read. Try again later.",
+      "notAbleToDeleteVoicemailForNetworkIssue": "Sorry, we weren't able to delete the voicemail due to a poor network connection. Try again.",
+      "notAbleToDeleteVoicemailForServerIssue": "Sorry, something went wrong on our end and we weren't able to delete the voicemail. Try again later."
+    }
+  },
+  "meeting": {
+    "Meetings": "Meetings"
+  },
+  "integration": "",
+  "setting": {
+    "errorText": {
+      "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
+      "network": "We weren't able to save your settings. Check your network connection and then try again.",
+      "forLink": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later."
+    },
+    "Settings": "Settings",
+    "teamSettings": "Settings",
+    "general": "General",
+    "notificationAndSounds": {
+      "title": "Notification and Sounds",
+      "otherNotificationSettings": {
+        "title": "Other notification settings",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Direct messages and mentions only",
+            "all": "All new messages"
+          },
+          "description": "Choose how the app will count new messages in the app badge count",
+          "label": "New message badge count"
+        }
+      },
+      "desktopNotifications": {
+        "title": "Desktop notifications",
+        "notificationsForBrowser": {
+          "label": "Desktop notifications for browser",
+          "description": "Turn desktop notifications on/off on your web browser. Browser permission is needed for desktop notifications."
+        },
+        "newMessages": {
+          "label": "New messages",
+          "description": "Choose your preference for desktop notifications for new messages",
+          "options": {
+            "always": "All new messages",
+            "mentions_or_dms": "Direct messages and mentions",
+            "never": "Off"
+          }
+        },
+        "incomingCalls": {
+          "label": "Incoming calls",
+          "description": "Choose your preference for desktop notifications for incoming calls"
+        },
+        "callsAndVoicemails": {
+          "label": "Missed calls and new voicemails",
+          "description": "Choose your preference for desktop notifications for missed calls and new voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "Email notifications",
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Receive email notifications for direct messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Receive email notifications for when you are mentioned"
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Choose your preferences for email notifications for team messages"
+        },
+        "dailyDigest": {
+          "label": "Daily digest",
+          "description": "Receive Glip daily digest emails summarising daily tasks and team events"
+        },
+        "options": {
+          "0": "Off",
+          "900000": "Every 15 minutes",
+          "3600000": "Every hour"
+        }
+      }
+    },
+    "sounds": "Sounds",
+    "messages": "Messages",
+    "meetings": "Meetings",
+    "calendar": "Calendar",
+    "update": "Update",
+    "edit": "Edit",
+    "phone": {
+      "title": "Phone",
+      "general": {
+        "title": "General",
+        "defaultPhoneApp": {
+          "label": "Default Phone app for calling",
+          "description": "Choose which app you'd like use to make calls",
+          "option": {
+            "glip": "Use RingCentral app (this app)",
+            "ringcentral": "Use RingCentral Phone"
+          }
+        },
+        "callerID": {
+          "label": "Caller ID",
+          "Blocked": "Blocked",
+          "description": "Choose your default Caller ID for making RingCentral phone calls"
+        },
+        "extensions": {
+          "label": "Extension settings",
+          "description": "Customise your RingCentral extension settings (call routing, voicemail greetings and more)"
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Country",
+          "areaCode": "Area code",
+          "areaCodeErrorText": "Invalid area code",
+          "saveSuccessText": "Your region has been updated successfully.",
+          "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialling, and phone number formatting."
+        }
+      }
+    },
+    "audioSource": {
+      "title": "Audio sources",
+      "microphoneSource": {
+        "label": "Microphone source",
+        "description": "Update your microphone source for RingCentral voice calls"
+      },
+      "speakerSource": {
+        "label": "Speaker source",
+        "description": "Update your speaker source for RingCentral voice calls"
+      },
+      "ringerSource": {
+        "label": "Ringer source",
+        "description": "Update your ringer source for RingCentral voice calls"
+      },
+      "volume": {
+        "label": "Volume control",
+        "description": "Update the volume"
+      }
+    },
+    "useDefault": "Use system default",
+    "speaker": "Speaker",
+    "noDevices": "No devices",
+    "allDevices": "All audio sources",
+    "off": "Off",
+    "microphone": "Microphone",
+    "builtInMicrophone": "Built-in microphone",
+    "builtInSpeaker": "Built-in speaker",
+    "prompt": {
+      "updateRegionalSettingsBackendError": "Sorry, something went wrong on our end and we weren't able to save your region settings. Try again later.",
+      "updateRegionalSettingsNetworkError": "Sorry, we weren't able to save your region settings due to a poor network connection. Try again."
+    }
+  },
+  "viewer": {
+    "ZoomIn": "Scale file up",
+    "ZoomOut": "Scale file down",
+    "ZoomReset": "Reset zoom",
+    "PreviousFile": "View previous file",
+    "NextFile": "View next file",
+    "ImageDeleted": "Sorry, the image you were viewing has been deleted.",
+    "FileDeleted": "The file was deleted.",
+    "TeamDeleted": "The team was deleted. To learn more, contact the team administrator.",
+    "TeamArchived": "This team was archived. To learn more, contact the team administrator.",
+    "ConversationClosed": "You removed the conversation."
+  },
+  "notification": {
+    "mentionedOne2One": "{{person}} mentioned you",
+    "group": "{{person}} posted in {{conversation}}",
+    "mentioned": "{{person}} mentioned you in {{conversation}}",
+    "notificationEnabled": "Notifications are now enabled.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral needs your permission to enable desktop notifications.",
+      "enablePermissionAction": "Enable notifications",
+      "blockedPermissionMessage": "RingCentral notifications are blocked. Go to your browser settings to allow RingCentral to send notifications."
+    },
+    "notificationBlockedDialog": {
+      "title": "Notifications not allowed",
+      "content": "You currently have desktop notifications for RingCentral turned off. Update your browser settings to allow desktop notifications.",
+      "button": "OK"
+    }
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "uploading",
+    "uploadRecentLogsDialogHeader": "Send feedback",
+    "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
+    "submit": "Send",
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Uploaded log successfully.",
+    "uploadLogFailed": "Sorry, we weren't able to send the feedback. Try again later.",
+    "openEmailFailed": "Opening email failed.",
+    "sendFeedbackSuccess": "Feedback sent successfully.",
+    "sendFeedbackFailed": "Sorry, we weren't able to send the feedback. Try again later.",
+    "title": "It looks like we're having issues.",
+    "issueTitle": "Summary",
+    "issueDescription": "What happened?",
+    "sendingInBackground": "Sending feedback..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "Your desktop app is out of date",
+      "dialogMessage": " In order to have the best user experience, upgrade to the newest version. Until you upgrade, some features may not work as expected.",
+      "ignoreOnce": "Ignore once",
+      "upgrade": "Upgrade",
+      "notNow": "Not now",
+      "ignore": "Ignore",
+      "noUpgradeDialogTitle": "No upgrade needed",
+      "noUpgradeDialogMessage": "Your desktop app is up to date.",
+      "noUpgradeDialogOk": "OK",
+      "topBannerWarning": "Your desktop app is out of date. Please upgrade immediately."
+    }
+  },
+  "dialer": {
+    "newCall": "New call"
+  }
+}

@@ -5,6 +5,7 @@
  */
 import UserPermissionType from '../../types';
 import { SplitFactory } from '@splitsoftware/splitio';
+import { mainLogger } from 'foundation';
 
 type SplitIOClientParams = {
   authKey: string;
@@ -37,6 +38,11 @@ class SplitIOClient {
         trafficType: this.trafficType,
         key: params.userId,
       },
+      startup: {
+        requestTimeoutBeforeReady: 5, // 5 seconds
+        readyTimeout: 5, // 5 seconds
+        retriesOnFailureBeforeReady: 2, // 2 retries
+      },
     };
     this.client = SplitFactory(settings).client();
     this._subscribeSplitEvents();
@@ -49,6 +55,9 @@ class SplitIOClient {
     this.client.on(this.client.Event.SDK_UPDATE, () => {
       this.splitUpdateCallback && this.splitUpdateCallback();
     });
+    this.client.on(this.client.Event.SDK_READY_TIMED_OUT, (e: any) => {
+      mainLogger.info('SplitIO SDK_READY_TIMED_OUT', e);
+    });
   }
 
   async getAllPermissions() {
@@ -58,6 +67,11 @@ class SplitIOClient {
   async hasPermission(type: UserPermissionType): Promise<boolean> {
     const result = await this.client.getTreatments([type], this.attributes);
     return result[type] === 'on';
+  }
+
+  async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
+    const result = await this.client.getTreatments([type], this.attributes);
+    return result[type];
   }
 
   shutdown() {

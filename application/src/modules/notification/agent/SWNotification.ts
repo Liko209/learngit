@@ -89,12 +89,12 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
     );
   }
 
-  async clear(scope: string) {
-    // todo
-    const notifications = await this.getNotifications();
-    for (const notification of notifications) {
-      notification.close();
-    }
+  async clear() {
+    // FIJI-7475 temporarily disable
+    // const notifications = await this.getNotifications();
+    // for (const notification of notifications) {
+    //   notification.close();
+    // }
   }
 
   async getNotifications() {
@@ -102,7 +102,7 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
     return registration.getNotifications();
   }
 
-  async checkNotificationValid(id: number) {
+  async checkNotificationValid() {
     // todo multitab problems
     return true;
   }

@@ -26,14 +26,12 @@ class FeaturesFlagsService {
     });
   }
 
-  canUseTelephony = async () => {
-    return (
-      (await this._rcInfoService.isVoipCallingAvailable()) &&
+  canUseTelephony = async () => (
+    (await this._rcInfoService.isVoipCallingAvailable()) &&
       (await this._permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
       ))
-    );
-  }
+  )
 
   getSupportFeatureModules = async () => {
     const supportFeature = await this._getSupportFeature();

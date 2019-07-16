@@ -7,6 +7,7 @@ import React from 'react';
 import { IntegrationItem } from '../IntegrationItem';
 import { mountWithTheme } from '@/__tests__/utils';
 import { getEntity } from '@/store/utils';
+
 jest.mock('@/store/utils');
 
 const mockItem = {

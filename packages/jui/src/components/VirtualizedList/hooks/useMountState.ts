@@ -7,7 +7,7 @@ const useMountState = () => {
     return () => {
       isMountedRef.current = false;
     };
-  },        []);
+  }, []);
   return isMountedRef;
 };
 

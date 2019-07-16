@@ -7,12 +7,11 @@ import { ChildrenType } from '@/common/postParser';
 
 type TextMessageProps = {
   id: number; // post id
+  keyword: string;
 };
 
 type TextMessageViewProps = {
-  getContent: (keyword?: string) => Promise<ChildrenType>;
-  directCall: (phoneNumber: string) => void;
-  canUseTelephony: () => Promise<boolean>;
+  renderText: ChildrenType;
 };
 
 export { TextMessageProps, TextMessageViewProps };

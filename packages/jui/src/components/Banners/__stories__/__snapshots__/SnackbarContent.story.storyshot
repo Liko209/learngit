@@ -1,0 +1,226 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnackbars 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c2 {
+  margin: 0px 8px 0px 0px;
+  color: #f6ad16;
+}
+
+.c6 {
+  margin: 0px 8px 0px 0px;
+  color: #0684bd;
+}
+
+.c8 {
+  margin: 0px 8px 0px 0px;
+  color: #26a304;
+}
+
+.c10 {
+  margin: 0px 8px 0px 0px;
+  color: #f44336;
+}
+
+.c0.c0 {
+  padding: 8px 24px;
+  color: #212121;
+  background: rgba(246,173,22,0.12);
+  box-shadow: none;
+  width: 100% !important;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.c0 .message {
+  padding: 0;
+}
+
+.c5.c5 {
+  padding: 8px 24px;
+  color: #212121;
+  background: rgba(6,132,189,0.12);
+  box-shadow: none;
+  width: 100% !important;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.c5 .message {
+  padding: 0;
+}
+
+.c7.c7 {
+  padding: 8px 24px;
+  color: #212121;
+  background: rgba(38,163,4,0.12);
+  box-shadow: none;
+  width: 100% !important;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.c7 .message {
+  padding: 0;
+}
+
+.c9.c9 {
+  padding: 8px 24px;
+  color: #212121;
+  background: rgba(244,67,54,0.12);
+  box-shadow: none;
+  width: 100% !important;
+  border-radius: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.c9 .message {
+  padding: 0;
+}
+
+.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+<div>
+  <div
+    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0"
+    role="alertdialog"
+  >
+    <div
+      className="MuiSnackbarContent-message message"
+    >
+      <div
+        className="c1"
+      >
+        <span
+          className="c2  icon c3"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+        I'm warn snackbar
+      </div>
+    </div>
+  </div>
+  <br />
+  <div
+    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c5"
+    role="alertdialog"
+  >
+    <div
+      className="MuiSnackbarContent-message message"
+    >
+      <div
+        className="c1"
+      >
+        <span
+          className="c6  icon c3"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+        I'm info snackbar
+      </div>
+    </div>
+  </div>
+  <br />
+  <div
+    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c7"
+    role="alertdialog"
+  >
+    <div
+      className="MuiSnackbarContent-message message"
+    >
+      <div
+        className="c1"
+      >
+        <span
+          className="c8  icon c3"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+        I'm success snackbar
+      </div>
+    </div>
+  </div>
+  <br />
+  <div
+    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c9"
+    role="alertdialog"
+  >
+    <div
+      className="MuiSnackbarContent-message message"
+    >
+      <div
+        className="c1"
+      >
+        <span
+          className="c10  icon c3"
+        >
+          <svg
+            className="c4"
+            role="img"
+          >
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
+          </svg>
+        </span>
+        I'm error snackbar
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -11,13 +11,15 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import GroupModel from '@/store/models/Group';
+import { GroupState } from 'sdk/module/state/entity';
+import GroupStateModel from '@/store/models/GroupState';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/history';
 import { CONVERSATION_TYPES } from '@/constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
-  ConversationListItemViewProps
+ConversationListItemViewProps
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;
@@ -79,7 +81,10 @@ class ConversationListItemViewModel extends StoreViewModel<
 
   @computed
   get umiHint() {
-    const groupState = getEntity(ENTITY_NAME.GROUP_STATE, this.groupId);
+    const groupState = getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
     let hint = !!groupState.unreadCount;
     untracked(() => {
       const currentGroupId = getGlobalValue(

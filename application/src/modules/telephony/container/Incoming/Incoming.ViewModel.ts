@@ -33,6 +33,7 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
   get uid() {
     return this._telephonyStore.uid;
   }
+
   @computed
   get isExt() {
     return this._telephonyStore.isExt;

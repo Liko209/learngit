@@ -6,7 +6,7 @@
 
 import { mainLogger } from 'foundation';
 import { IdModel, ModelIdType } from '../../model';
-import { IDao } from '../../../framework/dao';
+import { IDao } from '../../dao';
 import _ from 'lodash';
 import { IRequestController } from '../interface/IRequestController';
 import { IEntitySourceController } from '../interface/IEntitySourceController';
@@ -20,8 +20,11 @@ class EntitySourceController<
   constructor(
     public entityPersistentController: IEntityPersistentController<T, IdType>,
     public deactivatedDao: IDao<T, IdType>,
-    public requestController?: IRequestController<T, IdType>,
-    public canSaveRemoteData?: boolean,
+    public requestConfig?: {
+      requestController: IRequestController<T, IdType>;
+      canSaveRemoteData: boolean;
+      canRequest: () => boolean;
+    },
   ) {}
 
   async put(item: T | T[]): Promise<void> {
@@ -54,7 +57,7 @@ class EntitySourceController<
 
   async get(key: IdType): Promise<T | null> {
     let result = await this.getEntityLocally(key);
-    if (!result && this.requestController) {
+    if (!result && this._canRequest()) {
       result = await this._getEntityFromServer(key);
     }
     return result;
@@ -81,13 +84,14 @@ class EntitySourceController<
       resultEntities = resultEntities.concat(deactivatedEntities);
     }
 
-    const deactivatedIds = this._getIds(deactivatedEntities);
-    const remoteIds = _.difference(diffIds, deactivatedIds);
-
-    if (remoteIds && remoteIds.length) {
-      const remoteEntities = await this._getEntitiesFromServer(remoteIds);
-      if (remoteEntities && remoteEntities.length) {
-        resultEntities = resultEntities.concat(remoteEntities);
+    if (this._canRequest()) {
+      const deactivatedIds = this._getIds(deactivatedEntities);
+      const remoteIds = _.difference(diffIds, deactivatedIds);
+      if (remoteIds && remoteIds.length) {
+        const remoteEntities = await this._getEntitiesFromServer(remoteIds);
+        if (remoteEntities && remoteEntities.length) {
+          resultEntities = resultEntities.concat(remoteEntities);
+        }
       }
     }
 
@@ -99,9 +103,7 @@ class EntitySourceController<
   }
 
   private _getIds(entities: T[]): IdType[] {
-    return entities.map((entity: T) => {
-      return entity.id;
-    });
+    return entities.map((entity: T) => entity.id);
   }
 
   private _orderAsIds(ids: IdType[], entities: T[]) {
@@ -125,8 +127,8 @@ class EntitySourceController<
     if (_.isNumber(key) && key < 0) {
       return null;
     }
-    const result = await this.requestController!.get(key);
-    if (this.canSaveRemoteData && result) {
+    const result = await this.requestConfig!.requestController.get(key);
+    if (this.requestConfig!.canSaveRemoteData && result) {
       await this.put(result);
     }
     return result;
@@ -135,17 +137,12 @@ class EntitySourceController<
   private async _getEntitiesFromServer(remoteIds: IdType[]): Promise<T[]> {
     // TODO https://jira.ringcentral.com/browse/FIJI-3903
     const promises = remoteIds.map(async (id: IdType) => {
-      if (this.requestController) {
-        try {
-          return await this._getEntityFromServer(id);
-        } catch (error) {
-          mainLogger
-            .tags(LOG_TAG)
-            .log('failed to _getEntitiesFromServer', error);
-          return null;
-        }
+      try {
+        return await this._getEntityFromServer(id);
+      } catch (error) {
+        mainLogger.tags(LOG_TAG).log('failed to _getEntitiesFromServer', error);
+        return null;
       }
-      return null;
     });
 
     const remoteEntities: T[] = [];
@@ -203,7 +200,15 @@ class EntitySourceController<
   }
 
   getRequestController(): IRequestController<T, IdType> | null {
-    return this.requestController ? this.requestController : null;
+    return this.requestConfig ? this.requestConfig.requestController : null;
+  }
+
+  private _canRequest() {
+    return (
+      this.requestConfig &&
+      this.requestConfig.requestController &&
+      this.requestConfig.canRequest()
+    );
   }
 }
 

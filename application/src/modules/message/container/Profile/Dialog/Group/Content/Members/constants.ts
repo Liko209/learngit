@@ -18,6 +18,8 @@ const DIALOG_MARGIN = 48;
 const PROFILE_FIX_HEIGHT = PROFILE_TITLE_HEIGHT + HORIZONTAL_LINE * 2;
 const EMPTY_HEIGHT = 270;
 
+const ANALYTICS_KEY = 'teamProfile_teamMembers';
+
 export {
   ITEM_HEIGHT,
   MAX_HEIGHT,
@@ -29,4 +31,5 @@ export {
   DIALOG_MARGIN,
   SHADOW_HEIGHT,
   EMPTY_HEIGHT,
+  ANALYTICS_KEY,
 };

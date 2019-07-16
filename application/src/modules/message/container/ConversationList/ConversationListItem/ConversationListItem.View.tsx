@@ -3,6 +3,7 @@
  * @Date: 2018-09-19 13:53:48
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { MouseEvent, Fragment } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
@@ -68,7 +69,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this.setState({
       isHover: true,
     });
-  }
+  };
 
   private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -77,14 +78,15 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this.setState({
       isHover: false,
     });
-  }
+  };
 
   render() {
     const { isHover } = this.state;
     return (
       <Fragment>
         <JuiConversationListItem
-          className="conversation-list-item"
+          className='conversation-list-item'
+          data-test-automation-id='conversation-list-item'
           tabIndex={0}
           isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}

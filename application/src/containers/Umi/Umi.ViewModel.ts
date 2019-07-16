@@ -3,8 +3,9 @@
  * @Date: 2018-09-29 19:01:54
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { computed, untracked } from 'mobx';
-import _ from 'lodash';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getGlobalValue, getSingleEntity } from '@/store/utils';
@@ -23,6 +24,7 @@ import { StateService, GROUP_BADGE_TYPE } from 'sdk/module/state';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import BadgeModel from '@/store/models/Badge';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
+import { MESSAGE_SETTING_ITEM } from '@/modules/message/interface/constant';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
@@ -50,10 +52,13 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
 
     return unreadInfo;
   }
+
   private get _onlyIncludeTeamMention() {
     return (
-      getSingleEntity(ENTITY_NAME.PROFILE, 'newMessageBadges') ===
-      NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
+      getSingleEntity(
+        ENTITY_NAME.USER_SETTING,
+        MESSAGE_SETTING_ITEM.NEW_MESSAGE_BADGE_COUNT,
+      ).value === NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS
     );
   }
 

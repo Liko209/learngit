@@ -6,11 +6,10 @@
 
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiSearchFilter } from '..';
 import { differenceBy } from 'lodash';
 import { JuiDownshift } from '../../../components/Downshift';
-import { JuiSearchItem } from '../../../pattern/ContactSearch';
+import { JuiSearchItem } from '../../ContactSearch';
 import { JuiChip } from '../../../components/Chip';
 
 const suggestions = [
@@ -84,12 +83,12 @@ const MultipleDownshift = () => {
   return (
     <JuiDownshift
       selectedItems={[]}
-      inputValue=""
+      inputValue=''
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
-      inputLabel="Downshift"
-      inputPlaceholder="placeholder"
+      inputLabel='Downshift'
+      inputPlaceholder='placeholder'
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}
@@ -97,13 +96,11 @@ const MultipleDownshift = () => {
   );
 };
 
-storiesOf('Pattern/SearchFilter', module)
-  .addDecorator(withInfoDecorator(JuiSearchFilter, { inline: true }))
-  .add('SearchFilter', () => {
-    return (
-      <JuiSearchFilter title="Filter">
-        <MultipleDownshift />
-        <MultipleDownshift />
-      </JuiSearchFilter>
-    );
-  });
+storiesOf('Pattern/SearchFilter', module).add('SearchFilter', () => {
+  return (
+    <JuiSearchFilter title='Filter'>
+      <MultipleDownshift />
+      <MultipleDownshift />
+    </JuiSearchFilter>
+  );
+});

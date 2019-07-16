@@ -27,16 +27,12 @@ import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 import { networkLogger } from '../log';
 
-const DEFAULT_RETRY_STRATEGY: RetryStrategy = (
-  doRetry: () => void,
-  retryCounter: number,
-) => {
+const DEFAULT_RETRY_STRATEGY: RetryStrategy = (doRetry: () => void) => {
   setTimeout(doRetry, 3000);
 };
 const LOG_TAG = 'NetworkRequestExecutor';
 
-export class NetworkRequestExecutor
-  implements INetworkRequestExecutorListener, INetworkRequestExecutor {
+export class NetworkRequestExecutor implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
@@ -44,19 +40,14 @@ export class NetworkRequestExecutor
   retryCounter: number = 0;
   retryStrategy: RetryStrategy;
   client: BaseClient;
-  status: NETWORK_REQUEST_EXECUTOR_STATUS =
-    NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
+  status: NETWORK_REQUEST_EXECUTOR_STATUS = NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
   isComplete: boolean = false;
   responseListener: IResponseListener;
   listener?: INetworkRequestConsumerListener;
 
   private _requestDecoration?: IRequestDecoration;
 
-  constructor(
-    request: IRequest,
-    client: BaseClient,
-    decoration?: IRequestDecoration,
-  ) {
+  constructor(request: IRequest, client: BaseClient, decoration?: IRequestDecoration) {
     this.request = request;
     this.via = request.via;
     this.handlerType = request.handlerType;
@@ -77,9 +68,7 @@ export class NetworkRequestExecutor
   }
 
   onFailure(response: IResponse): void {
-    networkLogger
-      .tags(LOG_TAG)
-      .info('onFailure', ' executor status:', this.status);
+    networkLogger.tags(LOG_TAG).info('onFailure', ' executor status:', this.status);
 
     if (this._isCompletion()) {
       networkLogger.tags(LOG_TAG).info('onFailure() _isCompletion = true');
@@ -105,10 +94,7 @@ export class NetworkRequestExecutor
       this._performNetworkRequest();
     } else {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      this._callXApiResponse(
-        RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION,
-        NETWORK_FAIL_TEXT.NOT_NETWORK_CONNECTION,
-      );
+      this._callXApiResponse(RESPONSE_STATUS_CODE.LOCAL_NOT_NETWORK_CONNECTION, NETWORK_FAIL_TEXT.NOT_NETWORK_CONNECTION);
     }
   }
 
@@ -119,10 +105,7 @@ export class NetworkRequestExecutor
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._cancelClientRequest();
-    this._callXApiResponse(
-      RESPONSE_STATUS_CODE.LOCAL_CANCELLED,
-      NETWORK_FAIL_TEXT.CANCELLED,
-    );
+    this._callXApiResponse(RESPONSE_STATUS_CODE.LOCAL_CANCELLED, NETWORK_FAIL_TEXT.CANCELLED);
   }
 
   isPause() {
@@ -142,14 +125,8 @@ export class NetworkRequestExecutor
 
   private _performNetworkRequest() {
     networkLogger.tags(LOG_TAG).info('_performNetworkRequest()');
-    if (
-      this._requestDecoration &&
-      !this._requestDecoration.decorate(this.request)
-    ) {
-      this._callXApiResponse(
-        RESPONSE_STATUS_CODE.UNAUTHORIZED,
-        NETWORK_FAIL_TEXT.UNAUTHORIZED,
-      );
+    if (this._requestDecoration && !this._requestDecoration.decorate(this.request)) {
+      this._callXApiResponse(RESPONSE_STATUS_CODE.UNAUTHORIZED, NETWORK_FAIL_TEXT.UNAUTHORIZED);
       return;
     }
     doRequestLog(this.request);
@@ -164,13 +141,7 @@ export class NetworkRequestExecutor
 
   private _retry() {
     this.retryCounter += 1;
-    networkLogger
-      .tags(LOG_TAG)
-      .info(
-        '_retry()',
-        ' counter/total',
-        `${this.retryCounter}/${this.retryCount}`,
-      );
+    networkLogger.tags(LOG_TAG).info('_retry()', ' counter/total', `${this.retryCounter}/${this.retryCount}`);
     this.retryStrategy(this.execute.bind(this), this.retryCounter);
   }
 
@@ -181,13 +152,15 @@ export class NetworkRequestExecutor
   private _callXApiResponseCallback(response: IResponse) {
     switch (response.status) {
       case RESPONSE_STATUS_CODE.UNAUTHORIZED:
-        this._handle401XApiCompletionCallback(response);
+        this._handle401XApiCompletionCallback();
         return;
       case RESPONSE_STATUS_CODE.BAD_GATEWAY:
-        this._handle502XApiCompletionCallback(response);
+        this._handle502XApiCompletionCallback();
         break;
       case RESPONSE_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
+        break;
+      default:
         break;
     }
 
@@ -209,27 +182,22 @@ export class NetworkRequestExecutor
       this._notifyCompletion();
       callback(response);
     } else {
-      networkLogger
-        .tags(LOG_TAG)
-        .info('_callXApiCompletionCallback() callback undefined');
+      networkLogger.tags(LOG_TAG).info('_callXApiCompletionCallback() callback undefined');
     }
   }
 
-  private _handle401XApiCompletionCallback(response: IResponse) {
+  private _handle401XApiCompletionCallback() {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this._removeAuthorization();
-    this.responseListener &&
-      this.responseListener.onAccessTokenInvalid(this.handlerType);
+    this.responseListener && this.responseListener.onAccessTokenInvalid(this.handlerType);
   }
 
   private _removeAuthorization() {
-    this.request.headers.Authorization &&
-      delete this.request.headers.Authorization;
+    this.request.headers.Authorization && delete this.request.headers.Authorization;
   }
 
-  private _handle502XApiCompletionCallback(response: IResponse) {
-    this.responseListener &&
-      this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
+  private _handle502XApiCompletionCallback() {
+    this.responseListener && this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
   }
 
   private _handle503XApiCompletionCallback(response: IResponse) {
@@ -237,11 +205,7 @@ export class NetworkRequestExecutor
       return;
     }
     if (response.data && this._isCMN211Error(response.data)) {
-      this.responseListener &&
-        this.responseListener.onSurvivalModeDetected(
-          SURVIVAL_MODE.SURVIVAL,
-          response.retryAfter,
-        );
+      this.responseListener && this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, response.retryAfter);
     }
   }
 
@@ -250,17 +214,16 @@ export class NetworkRequestExecutor
   }
 
   private _isServerErrorCodeMatched(data: any, errorCode: string): boolean {
-    if (data.hasOwnProperty('errorCode') && data.errorCode === errorCode) {
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
+    const hasErrorProperty = hasOwnProperty.call(data, 'errors');
+    const hasErrorCodeProperty = hasOwnProperty.call(data, 'errorCode');
+    if (hasErrorCodeProperty && data.errorCode === errorCode) {
       return true;
     }
-    if (data.hasOwnProperty('errors')) {
+    if (hasErrorProperty) {
       const errors = data.errors;
       if (Array.isArray(errors)) {
-        return errors.some((error: any) => {
-          return (
-            error.hasOwnProperty('errorCode') && error.errorCode === errorCode
-          );
-        });
+        return errors.some((error: any) => hasErrorCodeProperty && error.errorCode === errorCode);
       }
     }
     return false;

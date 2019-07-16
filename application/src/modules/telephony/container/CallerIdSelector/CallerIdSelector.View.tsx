@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { PureComponent, createRef, ChangeEvent } from 'react';
 import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
 import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
@@ -14,10 +15,13 @@ import {
   CallerIdSelectorState,
   Direction,
   ICallerPhoneNumber,
+  CallerIdViewProps,
 } from './types';
 import './styles.css';
 import { LazyFormatPhone } from './LazyFormatPhone';
 import { CallerIdContainer } from 'jui/pattern/Dialer';
+import { RuiTooltip } from 'rcui/components/Tooltip';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
 const MENU_PADDING = 2;
 const MIN_ROW_HEIGHT = 32;
@@ -42,7 +46,7 @@ class RawCallerIdSelector extends PureComponent<
     height: 0,
     focusIndex:
       this.props.menu.findIndex(
-        (item) => item.phoneNumber === this.props.value,
+        item => item.phoneNumber === this.props.value,
       ) || 0,
     displayStartIdx: 0,
     displayEndIdx: 0,
@@ -55,7 +59,7 @@ class RawCallerIdSelector extends PureComponent<
       return idx >= maxIdx ? maxIdx : idx;
     }
     return idx <= 0 ? 0 : idx;
-  }
+  };
 
   private _handleVisibilityChanged = async (range: {
     startIndex: number;
@@ -64,7 +68,7 @@ class RawCallerIdSelector extends PureComponent<
     const { startIndex, stopIndex } = range;
     this._startIndex = startIndex;
     this._stopIndex = stopIndex;
-  }
+  };
 
   private _scrollToView = (f: () => number) => () => {
     const next = f();
@@ -75,7 +79,7 @@ class RawCallerIdSelector extends PureComponent<
     ) {
       this._listRef.current.scrollToIndex(next);
     }
-  }
+  };
 
   private _onUpKeyDown = this._scrollToView(() => {
     const next = this.state.focusIndex - 1;
@@ -97,7 +101,7 @@ class RawCallerIdSelector extends PureComponent<
 
   private _onEnter = () => {
     this._onSelect(this.state.focusIndex);
-  }
+  };
 
   private _onSelect = (idx: number) => {
     const target = this.props.menu[idx] as any;
@@ -110,7 +114,7 @@ class RawCallerIdSelector extends PureComponent<
     this.props.onChange(evt);
     // HACK
     this._clickToHide();
-  }
+  };
 
   private _clickToHide = () => {
     const listEl = document.getElementsByClassName(
@@ -123,7 +127,7 @@ class RawCallerIdSelector extends PureComponent<
       .firstChild as HTMLDivElement).dispatchEvent(
       new Event('click', { bubbles: true }),
     );
-  }
+  };
 
   private _keyMap = {
     up: this._onUpKeyDown,
@@ -138,7 +142,7 @@ class RawCallerIdSelector extends PureComponent<
       this._cachedClickCallBacks[idx] = () => this._onSelect(idx);
     }
     return this._cachedClickCallBacks[idx];
-  }
+  };
 
   render() {
     const { menu, renderValue, ...rest } = this.props;
@@ -147,7 +151,7 @@ class RawCallerIdSelector extends PureComponent<
     return (
       <JuiBoxSelect
         {...rest}
-        automationId="caller-id-selector"
+        automationId='caller-id-selector'
         renderValue={renderValue}
         MenuProps={styleProp}
         ref={this._containerRef}
@@ -184,11 +188,36 @@ class RawCallerIdSelector extends PureComponent<
   }
 }
 
-const CallerIdSelector = CallerIdContainer((props: CallerIdSelectorProps) => (
-  <RawCallerIdSelector
-    {...props}
-    renderValue={(i: any) => <LazyFormatPhone value={i} />}
-  />
-));
+const CallerIdSelectorWithLazyFormat = CallerIdContainer(
+  (props: CallerIdSelectorProps) => (
+    <RawCallerIdSelector
+      {...props}
+      renderValue={(i: any) => <LazyFormatPhone value={i} />}
+    />
+  ),
+);
 
-export { CallerIdSelector, CallerIdSelectorProps, RawCallerIdSelector };
+const CallerIdSelector = withTranslation('translations')(
+  ({ tooltipProps, callerIdProps, t }: CallerIdViewProps & WithTranslation) => {
+    return (
+      <RuiTooltip
+        placement='bottom'
+        {...tooltipProps}
+        title={t('telephony.callerIdSelector.tooltip')}
+      >
+        <CallerIdSelectorWithLazyFormat
+          {...callerIdProps}
+          heightSize='default'
+          label={t('telephony.callFrom')}
+        />
+      </RuiTooltip>
+    );
+  },
+);
+
+export {
+  CallerIdSelector,
+  CallerIdSelectorProps,
+  RawCallerIdSelector,
+  CallerIdSelectorWithLazyFormat,
+};

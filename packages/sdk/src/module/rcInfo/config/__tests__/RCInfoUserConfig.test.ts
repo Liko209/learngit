@@ -7,7 +7,7 @@
 import { DBConfigService } from '../../../config/service/DBConfigService';
 import { RCInfoUserConfig } from '../RCInfoUserConfig';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { MODULE_NAME, RC_INFO_KEYS } from '../constants';
+import { MODULE_NAME, RC_INFO_KEYS, DEFAULT_PHONE_DATA_VERSION } from '../constants';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -78,6 +78,13 @@ describe('RCInfoUserConfig', () => {
       } as any,
     ],
     [
+      RC_INFO_KEYS.EXTENSION_CALLER_ID,
+      {
+        getName: 'getExtensionCallerId',
+        setName: 'setExtensionCallerId',
+      } as any,
+    ],
+    [
       RC_INFO_KEYS.DIALING_PLAN,
       {
         getName: 'getDialingPlan',
@@ -98,7 +105,14 @@ describe('RCInfoUserConfig', () => {
         setName: 'setForwardingNumbers',
       } as any,
     ],
-  ])(' %s ', async (key: string, { getName, setName }: any) => {
+    [
+      RC_INFO_KEYS.BLOCK_NUMBER,
+      {
+        getName: 'getBlockNumbers',
+        setName: 'setBlockNumbers',
+      } as any,
+    ],
+  ])(' %s ', (key: string, { getName, setName }: any) => {
     it('should set right data', async () => {
       const data: any = {};
       await rcInfoUserConfig[setName](data);
@@ -112,6 +126,14 @@ describe('RCInfoUserConfig', () => {
       });
       const res = await rcInfoUserConfig[getName]();
       expect(res).toEqual(data);
+    });
+  });
+
+  describe('getPhoneDataVersion', () => {
+    it('should get default version when version is invalid', async () => {
+      dbConfigService.get = jest.fn().mockReturnValue(undefined);
+      const res = await rcInfoUserConfig.getPhoneDataVersion();
+      expect(res).toEqual(DEFAULT_PHONE_DATA_VERSION);
     });
   });
 });

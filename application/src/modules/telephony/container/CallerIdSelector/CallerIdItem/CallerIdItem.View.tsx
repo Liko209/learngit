@@ -14,12 +14,13 @@ import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const style = {
   minWidth: 180,
+  maxWidth: 288,
 };
 
 @observer
 class CallerIdItemComponent extends Component<
   CallerIdItemViewProps & WithTranslation
-> {
+  > {
   render() {
     const {
       phoneNumber,
@@ -35,9 +36,9 @@ class CallerIdItemComponent extends Component<
       this.props.usageType === PhoneNumberType.NickName
         ? label
         : t(
-            `telephony.phoneNumberType.${this.props.usageType[0].toLowerCase() +
+          `telephony.phoneNumberType.${this.props.usageType[0].toLowerCase() +
               this.props.usageType.slice(1, this.props.usageType.length)}`,
-          );
+        );
 
     return (
       <JuiMenuItem

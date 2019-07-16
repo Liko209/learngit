@@ -17,6 +17,7 @@ node_modules
 /application/build/
 /application/dist/
 /application/build-es/
+/application/.cache-loader
 
 # misc
 .DS_Store
@@ -35,6 +36,7 @@ yarn-error.log*
 # cache
 .rpt2_cache
 packages/jui/.cache
+.eslintcache
 # lint report folder
 /lint
 # UT error
@@ -47,3 +49,5 @@ v8-compile-cache*
 
 # ts cache
 .tsc_cache*
+packages/jui/package-lock.json
+packages/rcui/package-lock.json

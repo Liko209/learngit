@@ -6,10 +6,7 @@
 import axios, { AxiosError } from 'axios';
 
 import {
-  INetworkRequestExecutorListener,
-  IRequest,
-  NETWORK_FAIL_TEXT,
-  RESPONSE_STATUS_CODE,
+  INetworkRequestExecutorListener, IRequest, NETWORK_FAIL_TEXT, RESPONSE_STATUS_CODE
 } from '../../network';
 import BaseClient from '../BaseClient';
 import HttpResponseBuilder from './HttpResponseBuilder';
@@ -28,7 +25,7 @@ function parseNoResponseErrorStatus(code: string | undefined, message: string) {
     } else if (message.startsWith('timeout')) {
       status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
     }
-  } else if (code === null) {
+  } else if (code === null || code === undefined) {
     if (message === 'Network Error') {
       status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
     }
@@ -40,12 +37,7 @@ class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
     const {
-      method,
-      headers,
-      host,
-      path,
-      timeout,
-      requestConfig = {},
+      method, headers, host, path, timeout, requestConfig = {}
     } = request;
     const source = axios.CancelToken.source();
     request.cancel = source.cancel;
@@ -92,6 +84,7 @@ class Http extends BaseClient {
         let statusText: string = '';
         let responseHeaders: any;
         let retryAfter = 0;
+        /*eslint-disable */
         if (isAxiosError(err)) {
           const { response, message, code } = err;
           networkLogger.info('axios error: ', { message, code });
@@ -102,12 +95,7 @@ class Http extends BaseClient {
             networkLogger.info('server error: ', { status, statusText });
             responseHeaders = response.headers;
             data = response['data'];
-            if (
-              response['headers'] &&
-              response['headers'].hasOwnProperty(
-                RESPONSE_HEADER_KEY.RETRY_AFTER,
-              )
-            ) {
+            if (response['headers'] && response['headers'].hasOwnProperty(RESPONSE_HEADER_KEY.RETRY_AFTER)) {
               retryAfter = response['headers'][RESPONSE_HEADER_KEY.RETRY_AFTER];
             }
           } else {

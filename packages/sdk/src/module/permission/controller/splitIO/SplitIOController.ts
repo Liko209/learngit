@@ -12,7 +12,9 @@ import { notificationCenter, SERVICE } from '../../../../service';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../../../account/service';
 import { PersonService } from '../../../person';
-import { ServiceConfig, ServiceLoader } from '../../../../module/serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { EnvConfig } from 'sdk/module/env/config';
+
 class SplitIOController {
   private splitIOClient: SplitIOClient;
   private isClientReady: boolean = false;
@@ -24,13 +26,15 @@ class SplitIOController {
   }
 
   async hasPermission(type: UserPermissionType): Promise<boolean> {
-    return this.isClientReady
-      ? this.splitIOClient.hasPermission(type)
-      : this._defaultPermission(type);
+    return this.isClientReady ? this.splitIOClient.hasPermission(type) : this._defaultPermission(type);
+  }
+
+  async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
+    return (this.isClientReady && this.splitIOClient.getFeatureFlag(type)) || this._defaultFeatureFlag(type);
   }
 
   private _subscribeNotifications() {
-    notificationCenter.on(SERVICE.LOGIN, async () => {
+    notificationCenter.on(SERVICE.RC_LOGIN, async () => {
       await this._initClient();
     });
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, async () => {
@@ -54,29 +58,29 @@ class SplitIOController {
     return !!SplitIODefaultPermissions[type];
   }
 
+  private _defaultFeatureFlag(type: UserPermissionType) {
+    return SplitIODefaultPermissions[type];
+  }
+
   private async _initClient() {
     if (this.isIniting || this.isClientReady) {
       return;
     }
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
     const userId: number = userConfig.getGlipUserId();
     if (!userId) {
       return;
     }
     this.isIniting = true;
 
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
+    const personService = ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE);
     const person = await personService.getById(userId);
     const params = {
       userId: userId.toString(),
       attributes: {
         companyId: (person && person['company_id']) || '',
         name: (person && person['display_name']) || '',
-        email: (person && person['email']) || '',
+        email: (person && person['email']) || ''
       },
       authKey: Api.httpConfig.splitio.clientSecret,
       permissions: Object.keys(SplitIODefaultPermissions),
@@ -88,9 +92,13 @@ class SplitIOController {
       splitIOUpdate: (): void => {
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
         mainLogger.log('incoming event splitIOUpdate');
-      },
+      }
     };
-    this.splitIOClient = new SplitIOClient(params);
+    const { clientSecret } = Api.httpConfig.splitio;
+    const disableLD = EnvConfig.getDisableLD();
+    if (clientSecret && !disableLD) {
+      this.splitIOClient = new SplitIOClient(params);
+    }
   }
 }
 

@@ -22,7 +22,9 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
   }
 
   render() {
-    const { kind, caption, ids, t, postFetcher } = this.props;
+    const {
+      kind, caption, ids, t, postFetcher,
+    } = this.props;
     return (
       <JuiSizeMeasurer>
         {({ ref, height }) => (
@@ -45,6 +47,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
                   />
                   {ids ? (
                     <Stream
+                      type={kind}
                       postIds={ids}
                       key={kind}
                       postFetcher={postFetcher}

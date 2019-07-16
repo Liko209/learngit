@@ -13,13 +13,13 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiSnackbarContent } from 'jui/components/Banners';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
+import { Loading } from 'jui/hoc/withLoading';
 import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
@@ -39,14 +39,6 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
     margin: 0 0 ${spacing(4)} 0;
   }
 `;
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
 
 type Props = ViewProps & WithTranslation;
 
@@ -93,7 +85,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
         automationId: 'CreateTeamCanPinPost',
       },
     ];
-  }
+  };
 
   static getDerivedStateFromProps(props: any, state: any) {
     let items = CreateTeamComponent.initItems(props);
@@ -115,13 +107,13 @@ class CreateTeamComponent extends React.Component<Props, State> {
       if (node) {
         node.focus();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
     clearTimeout(this.focusTimer);
   }
-
+  /* eslint-disable */
   handleSwitchChange = (item: JuiListToggleItemProps, checked: boolean) => {
     const newItems = this.state.items.map((oldItem: JuiListToggleItemProps) => {
       if (oldItem.text === item.text) {
@@ -142,7 +134,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
     this.setState({
       items: newItems,
     });
-  }
+  };
 
   createTeam = async () => {
     const { items } = this.state;
@@ -152,7 +144,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
     const uiSetting = items.reduce((options, option) => {
       options[option.type] = option.checked;
       return options;
-    },                             {}) as {
+    }, {}) as {
       isPublic: boolean;
       canAddMember: boolean;
       canPost: boolean;
@@ -178,7 +170,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
     } catch (e) {
       this.renderServerUnknownError();
     }
-  }
+  };
 
   onClose = () => this.context();
 
@@ -207,12 +199,13 @@ class CreateTeamComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       loading,
+      canMentionTeam,
       t,
     } = this.props;
     return (
       <JuiModal
         modalProps={{ scroll: 'body' }}
-        open={true}
+        open
         size={'medium'}
         title={t('people.team.CreateTeam')}
         onCancel={this.onClose}
@@ -220,7 +213,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
         okText={t('people.team.Create')}
         contentBefore={
           serverError && (
-            <StyledSnackbarsContent type="error">
+            <StyledSnackbarsContent type='error'>
               {t('people.prompt.CreateTeamError')}
             </StyledSnackbarsContent>
           )
@@ -234,12 +227,12 @@ class CreateTeamComponent extends React.Component<Props, State> {
           'data-test-automation-id': 'createToTeamCancelButton',
         }}
       >
-        <Loading loading={loading} alwaysComponentShow={true} delay={0}>
+        <Loading loading={loading} alwaysComponentShow delay={0}>
           <JuiTextField
             id={t('people.team.teamName')}
             label={t('people.team.teamName')}
             placeholder={t('people.team.teamNamePlaceholder')}
-            fullWidth={true}
+            fullWidth
             error={nameError}
             inputProps={{
               maxLength: 200,
@@ -249,17 +242,31 @@ class CreateTeamComponent extends React.Component<Props, State> {
             helperText={nameError && t(errorMsg)}
             onChange={handleNameChange}
           />
-          <ContactSearch
-            onSelectChange={handleSearchContactChange}
-            label={t('people.team.Members')}
-            placeholder={t('people.team.SearchContactPlaceholder')}
-            error={emailError}
-            helperText={emailError ? t(emailErrorMsg) : ''}
-            errorEmail={errorEmail}
-            isExcludeMe={true}
-            multiple={true}
-            autoSwitchEmail={true}
-          />
+
+          {
+            // temporary: ContactAndGroupSearch contain group and person
+            canMentionTeam ? <ContactAndGroupSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              isExcludeMe
+              multiple
+              autoSwitchEmail
+            /> : <ContactSearch
+                onSelectChange={handleSearchContactChange}
+                label={t('people.team.Members')}
+                placeholder={t('people.team.SearchContactPlaceholder')}
+                error={emailError}
+                helperText={emailError ? t(emailErrorMsg) : ''}
+                errorEmail={errorEmail}
+                isExcludeMe
+                multiple
+                autoSwitchEmail
+              />
+          }
           <JuiTextarea
             id={t('people.team.teamDescription')}
             label={t('people.team.teamDescription')}
@@ -267,11 +274,11 @@ class CreateTeamComponent extends React.Component<Props, State> {
               'data-test-automation-id': 'CreateTeamDescription',
               maxLength: 1000,
             }}
-            fullWidth={true}
+            fullWidth
             onChange={handleDescChange}
           />
           <JuiListToggleButton
-            data-test-automation-id="CreateTeamToggleList"
+            data-test-automation-id='CreateTeamToggleList'
             items={items}
             onChange={this.handleSwitchChange}
           />

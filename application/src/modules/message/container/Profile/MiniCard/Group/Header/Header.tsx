@@ -10,7 +10,7 @@ import { ProfileMiniCardGroupViewModel } from '../Group.ViewModel';
 import { ProfileMiniCardGroupHeaderProps } from './types';
 
 const ProfileMiniCardGroupHeader = buildContainer<
-  ProfileMiniCardGroupHeaderProps
+ProfileMiniCardGroupHeaderProps
 >({
   View: ProfileMiniCardGroupHeaderView,
   ViewModel: ProfileMiniCardGroupViewModel,

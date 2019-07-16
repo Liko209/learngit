@@ -4,14 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SocketFSM, StateHandlerType } from './SocketFSM';
-import notificationCenter from '../../service/notificationCenter';
-import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
-import { mainLogger } from 'foundation';
+import notificationCenter from '../notificationCenter';
+import { CONFIG, SOCKET, SERVICE } from '../eventKey';
+import {
+  mainLogger,
+  HealthModuleManager,
+  BaseHealthModule,
+  powerMonitor,
+} from 'foundation';
 import { AccountService } from '../../module/account/service';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { SyncService } from '../../module/sync/service';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { MODULE_IDENTIFY, MODULE_NAME } from './constants';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -22,7 +28,6 @@ export class SocketManager {
   private _closingFSMs: { [key: string]: SocketFSM } = {};
   private _successConnectedUrls: string[] = [];
   private _hasLoggedIn: boolean = false;
-  private _isScreenLocked: boolean = false;
   private _isOffline: boolean = false;
   private _isFirstInit: boolean = true;
   private _currentId: number = 0;
@@ -33,6 +38,26 @@ export class SocketManager {
     this._logPrefix = `[${SOCKET_LOGGER} manager]`;
 
     this._subscribeExternalEvent();
+    HealthModuleManager.getInstance().register(
+      new BaseHealthModule(MODULE_IDENTIFY, MODULE_NAME),
+    );
+
+    HealthModuleManager.getInstance()
+      .get(MODULE_IDENTIFY)!
+      .register({
+        name: 'SocketConnectState',
+        getStatus: () => ({
+          state: this.activeFSM ? this.activeFSM.state : 'none',
+        }),
+      });
+
+    powerMonitor.onLock(this._onLockScreen);
+    powerMonitor.onUnlock(this._onUnlockScreen);
+  }
+
+  public cleanup() {
+    powerMonitor.offLock(this._onLockScreen);
+    powerMonitor.offUnlock(this._onUnlockScreen);
   }
 
   public static getInstance() {
@@ -56,26 +81,8 @@ export class SocketManager {
     mainLogger.tags(this._logPrefix).error(...messages);
   }
 
-  public onPowerMonitorEvent(actionName: string) {
-    this.info(
-      `[PowerMonitor] Locked[${this._isScreenLocked}] ==> ${actionName}`,
-    );
-
-    if (!this._isScreenLocked && actionName === 'lock-screen') {
-      this._isScreenLocked = true;
-      this._onLockScreen();
-    } else if (this._isScreenLocked && actionName === 'unlock-screen') {
-      this._isScreenLocked = false;
-      this._onUnlockScreen();
-    }
-  }
-
   public hasActiveFSM() {
     return this.activeFSM !== null;
-  }
-
-  public isScreenLocked() {
-    return this._isScreenLocked;
   }
 
   public isOffline() {
@@ -104,11 +111,8 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
-      if (isRCOnlyMode) {
-        return;
-      }
-      this._onLogin();
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
+      success && this._onLogin();
     });
 
     notificationCenter.on(SERVICE.LOGOUT, () => {
@@ -248,7 +252,7 @@ export class SocketManager {
       return;
     }
 
-    if (this._isScreenLocked) {
+    if (powerMonitor.isScreenLocked()) {
       this.info('Not start socket when online due to locked screen');
       return;
     }
@@ -286,14 +290,13 @@ export class SocketManager {
     }
   }
 
-  private _onLockScreen() {
+  private _onLockScreen = () => {
     if (!this.activeFSM) {
       this.info('No activeFSM when lock screen.');
-      return;
     }
-  }
+  };
 
-  private _onUnlockScreen() {
+  private _onUnlockScreen = () => {
     if (this.isConnected()) {
       return;
     }
@@ -305,9 +308,8 @@ export class SocketManager {
     if (this._hasLoggedIn && !this._isOffline) {
       this.info('Will renew socketFSM due to unlocking screen.');
       this._restartFSM();
-      return;
     }
-  }
+  };
 
   private _onReconnect(data: any) {
     // socket emit reconnect
@@ -451,10 +453,11 @@ export class SocketManager {
   }
 
   private _restartFSM() {
-    if (this._isScreenLocked || this._isDoingCanConnect()) {
+    const isScreenLocked = powerMonitor.isScreenLocked();
+    if (isScreenLocked || this._isDoingCanConnect()) {
       this.info(
-        'should not restartFSM _isScreenLocked:',
-        this._isScreenLocked,
+        'should not restartFSM isScreenLocked:',
+        isScreenLocked,
         ', _isDoingCanConnect:',
         this._isDoingCanConnect(),
       );

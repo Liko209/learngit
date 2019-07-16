@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../../foundation/styled-components';
-import { width, height, spacing, grey } from '../../../foundation/utils';
+import {
+  width, height, spacing, grey,
+} from '../../../foundation/utils';
 
 const IconWrapper = styled.div`
   && {

@@ -14,9 +14,16 @@ import { IPostActionController } from '../../interface/IPostActionController';
 import { PostItemController } from '../PostItemController';
 import { localPostJson4UnitTest } from './PostData';
 import { ServiceLoader } from '../../../../serviceLoader';
+import { daoManager } from 'sdk/dao';
+import { PostDao } from 'sdk/module/post/dao';
+import PostAPI from 'sdk/api/glip/post';
+import { IProcessor } from 'sdk/framework/processor';
 
-jest.mock('../../../../../module/item');
-
+jest.mock('sdk/dao');
+jest.mock('sdk/module/post/dao');
+jest.mock('sdk/api/glip/post');
+jest.mock('sdk/module/item');
+jest.mock('sdk/framework/processor');
 class FakeActionController implements IPostActionController {
   likePost(
     postId: number,
@@ -42,7 +49,14 @@ let postItemController: PostItemControllers;
 
 describe('PostItemController', () => {
   const itemService = new ItemService();
+  let postDao: PostDao;
   beforeEach(() => {
+    postDao = new PostDao(null);
+    daoManager.getDao.mockImplementation(arg => {
+      if (arg === PostDao) {
+        return postDao;
+      }
+    });
     ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
     const fakeActionController = new FakeActionController();
     postItemController = new PostItemController(fakeActionController);
@@ -247,6 +261,145 @@ describe('PostItemController', () => {
         PROGRESS_STATUS.INPROGRESS,
       );
       expect(result).toBe(false);
+    });
+  });
+
+  describe('getLatestPostIdByItem', () => {
+    it('should call addProcessor', (done: jest.DoneCallback) => {
+      postItemController['_sequenceProcessor'].addProcessor = jest.fn();
+      postItemController.getLatestPostIdByItem(1, 1);
+      setTimeout(() => {
+        expect(
+          postItemController['_sequenceProcessor'].addProcessor,
+        ).toBeCalled();
+        done();
+      },         0);
+    });
+  });
+
+  describe('_addProcessorStrategy()', () => {
+    const removedProcessor: IProcessor = {
+      process: jest.fn(),
+      name: jest.fn(),
+      cancel: jest.fn(),
+    };
+    const newProcessor: IProcessor = {
+      process: jest.fn(),
+      name: jest.fn(),
+      cancel: jest.fn(),
+    };
+    it('should change old to new when have two processor', async () => {
+      const result = await postItemController['_addProcessorStrategy'](
+        [removedProcessor],
+        newProcessor,
+        true,
+      );
+      expect(result).toEqual([newProcessor]);
+      expect(removedProcessor.cancel).toBeCalled();
+    });
+
+    it('should add a new when have one processor', async () => {
+      const totalProcessors: IProcessor[] = [];
+      totalProcessors.forEach = jest.fn();
+      const result = await postItemController['_addProcessorStrategy'](
+        totalProcessors,
+        newProcessor,
+        true,
+      );
+      expect(result).toEqual([newProcessor]);
+      expect(totalProcessors.forEach).not.toBeCalled();
+    });
+  });
+
+  describe('_getLatestPostIdByItem()', () => {
+    beforeEach(() => {
+      const localPosts = [
+        {
+          id: 5,
+          group_id: 1,
+          created_at: 5,
+        },
+        {
+          id: 6,
+          group_id: 1,
+          created_at: 6,
+        },
+        {
+          id: 7,
+          group_id: 1,
+          created_at: 7,
+        },
+      ];
+      const remoteData = {
+        posts: [
+          {
+            id: 3,
+            group_id: 1,
+            created_at: 3,
+          },
+          {
+            id: 4,
+            group_id: 1,
+            created_at: 4,
+          },
+          {
+            id: 1,
+            group_id: 5,
+            created_at: 1,
+          },
+          {
+            id: 2,
+            group_id: 1,
+            created_at: 2,
+            deactivated: true,
+          },
+        ],
+      };
+      itemService.getById = jest
+        .fn()
+        .mockResolvedValue({ post_ids: [4, 5, 6, 7] });
+      postDao.batchGet = jest.fn().mockResolvedValue(localPosts);
+      PostAPI.requestByIds = jest.fn().mockResolvedValue(remoteData);
+    });
+    it('should return latest post id is 7 when get post in local', async () => {
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
+      expect(PostAPI.requestByIds).not.toBeCalled();
+      expect(result.id).toBe(7);
+    });
+    it('should return latest post id is 5 when can not get post in local', async () => {
+      postDao.batchGet = jest.fn().mockResolvedValue([
+        {
+          id: 7,
+          group_id: 2,
+          created_at: 7,
+        },
+      ]);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
+      expect(PostAPI.requestByIds).toBeCalled();
+      expect(result.id).toBe(4);
+    });
+    it('should return null when post_ids is not in local and remote', async () => {
+      postDao.batchGet = jest.fn().mockResolvedValue([]);
+      PostAPI.requestByIds = jest.fn().mockResolvedValue({ posts: [] });
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
+      expect(result).toBeNull();
+    });
+    it('should return null when item is null', async () => {
+      itemService.getById = jest.fn().mockResolvedValue(null);
+      const result = await postItemController['_getLatestPostIdByItem']({
+        groupId: 1,
+        itemId: 1,
+      });
+      expect(result).toBeNull();
     });
   });
 });

@@ -6,14 +6,10 @@
 
 import { Voicemail } from '../entity';
 import { EntityBaseService } from 'sdk/framework';
-import { daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { daoManager } from 'sdk/dao';
 import { VoicemailDao } from '../dao';
-import {
-  DEFAULT_FETCH_SIZE,
-  READ_STATUS,
-  SYNC_DIRECTION,
-} from '../../constants';
-import { FetchResult } from '../../types';
+import { READ_STATUS, SYNC_DIRECTION } from '../../constants';
+import { FetchResult, FetchDataOptions, FilterOptions } from '../../types';
 import { RCItemUserConfig } from '../../config';
 import { MODULE_NAME } from '../constants';
 import { VoicemailController } from '../controller';
@@ -24,7 +20,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
   private _rcItemUserConfig: RCItemUserConfig;
   private _voicemailController: VoicemailController;
   constructor() {
-    super(false, daoManager.getDao(VoicemailDao));
+    super({ isSupportedCache: false }, daoManager.getDao(VoicemailDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SUBSCRIPTION.MESSAGE_STORE]: this._syncImmediately,
@@ -32,8 +28,8 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     );
   }
 
-  onLogin() {
-    super.onLogin();
+  onRCLogin() {
+    super.onRCLogin();
     this._initBadge();
   }
 
@@ -60,15 +56,19 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     this._getVoicemailController().voicemailFetchController.requestSync();
   }
 
+  async buildFilterFunc(
+    options: FilterOptions<Voicemail>,
+  ): Promise<(voicemail: Voicemail) => boolean> {
+    return this._getVoicemailController().voicemailFetchController.buildFilterFunc(
+      options,
+    );
+  }
+
   async fetchVoicemails(
-    limit = DEFAULT_FETCH_SIZE,
-    direction = QUERY_DIRECTION.OLDER,
-    anchorId?: number,
+    options: FetchDataOptions<Voicemail>,
   ): Promise<FetchResult<Voicemail>> {
-    return this._getVoicemailController().voicemailFetchController.fetchVoicemails(
-      limit,
-      direction,
-      anchorId,
+    return this._getVoicemailController().voicemailFetchController.fetchData(
+      options,
     );
   }
 
@@ -79,7 +79,7 @@ class VoicemailService extends EntityBaseService<Voicemail> {
     );
   }
 
-  async downloadTranscription(id: number): Promise<string> {
+  async downloadTranscription(): Promise<string> {
     // todo
     return 'This is transcription.';
   }
@@ -117,11 +117,11 @@ class VoicemailService extends EntityBaseService<Voicemail> {
       SYNC_DIRECTION.NEWER,
       true,
     );
-  }
+  };
 
   private _initBadge = async () => {
     await this._getVoicemailController().voicemailBadgeController.initializeUnreadCount();
-  }
+  };
 }
 
 export { VoicemailService };

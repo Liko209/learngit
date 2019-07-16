@@ -28,7 +28,6 @@ class SubscribeRequestController {
       this.successCallback(data);
     } catch (err) {
       this.failCallback(ids, false);
-      return;
     }
   }
 }

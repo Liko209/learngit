@@ -7,29 +7,63 @@ import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
 import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
-
-import { Audio } from '../../types';
+import { HoverControllerBaseViewProps } from '../HoverController';
+import { Audio, Checker } from '../../types';
+import { ActiveVoicemailId } from '../Voicemail/types';
 
 type VoicemailViewProps = {
   selected: boolean;
   onChange: (event: React.ChangeEvent, expanded: boolean) => void;
-  // id: number;
   caller?: Caller;
   readStatus: Voicemail['readStatus'];
   isUnread: boolean;
+  canEditBlockNumbers: boolean;
   audio?: Audio;
   onError: () => void;
   onBeforePlay: () => void;
   onBeforeAction: (status: JuiAudioStatus) => void;
   updateStartTime: (timestamp: number) => void;
-  mode: JuiAudioMode | undefined;
-  shouldPause: boolean;
+  isAudioActive: boolean | Audio | undefined;
   createTime: string;
   direction: RCMessage['direction'];
+  shouldShowCall: () => Promise<boolean>;
 };
 
-type VoicemailProps = {
+type VoicemailProps = HoverControllerBaseViewProps & {
+  width: number;
   id: number;
+  activeVoicemailId: ActiveVoicemailId;
+  onVoicemailPlay(id: ActiveVoicemailId): void;
 };
 
-export { VoicemailViewProps, VoicemailProps, JuiAudioMode, JuiAudioStatus };
+type CommonResponsiveObject = {
+  buttonToShow: number;
+  dateFormat: string;
+};
+
+type ResponsiveObject = CommonResponsiveObject & {
+  audioMode: JuiAudioMode;
+  showTranscriptionText: boolean;
+};
+
+type Handler = {
+  checker: Checker;
+  info: ResponsiveObject;
+};
+enum BREAK_POINT_MAP {
+  FULL = 832,
+  EXPAND = 640,
+  SMALL = 520,
+  SHORT = 400,
+}
+
+export {
+  Handler,
+  VoicemailViewProps,
+  VoicemailProps,
+  JuiAudioMode,
+  JuiAudioStatus,
+  ResponsiveObject,
+  BREAK_POINT_MAP,
+  CommonResponsiveObject,
+};

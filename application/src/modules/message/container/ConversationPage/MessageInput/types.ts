@@ -11,17 +11,20 @@ type MessageInputProps = {
   id: number; // group id
   onPost?: () => void;
   viewRef: React.RefObject<any>;
+  onUpArrowPressed: () => void;
 };
 
 type MessageInputViewProps = {
   draft: string;
   error: string;
+  hasInput: boolean;
   forceSaveDraft(): void;
   forceSendPost(): void;
   addOnPostCallback(callback: OnPostCallback): void;
   contentChange(draft: string): void;
   insertEmoji(emoji: any, cb?: Function): void;
   cellWillChange(newGroupId: number, oldGroupId: number): void;
+  hasFocused: boolean;
   keyboardEventHandler: {
     enter: {
       key: number;

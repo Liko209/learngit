@@ -37,10 +37,11 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
     };
     const target = getAtMentionNode(event.target as HTMLElement);
     const className = target.getAttribute('class') || '';
+    const idAttr = target.getAttribute('id');
     const id =
-      target.getAttribute('id') === '-1'
+      idAttr === '-1' && this.props.isTeamMention
         ? this.props.conversationId
-        : Number(target.getAttribute('id'));
+        : Number(idAttr);
     if (className.indexOf('at_mention_compose') > -1) {
       event.stopPropagation();
       MiniCard.show(<Profile id={id} type={PROFILE_TYPE.MINI_CARD} />, {
@@ -50,7 +51,9 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   render() {
-    const { type, id, cardRef, mode } = this.props;
+    const {
+      type, id, cardRef, mode,
+    } = this.props;
     const Component = PostTypeMappingComponent[type];
     return (
       <Component

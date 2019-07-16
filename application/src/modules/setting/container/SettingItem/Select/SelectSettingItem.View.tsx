@@ -14,16 +14,17 @@ import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
+import { JuiText } from 'jui/components/Text';
 
 type SourceItemType =
   | {
-      id: number | string;
-    }
+    id: number | string;
+  }
   | string
   | number;
 type Props<T> = SelectSettingItemViewProps<T> &
-  SelectSettingItemProps &
-  WithTranslation;
+SelectSettingItemProps &
+WithTranslation;
 
 @observer
 class SelectSettingItemViewComponent<
@@ -35,53 +36,17 @@ class SelectSettingItemViewComponent<
   })
   private _handleChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     await this.props.saveSetting(event.target.value);
-  }
-
-  render() {
-    const { t, id, disabled, settingItem } = this.props;
-    return (
-      <JuiSettingSectionItem
-        id={id}
-        automationId={settingItem.automationId}
-        disabled={disabled}
-        label={t(settingItem.title || '')}
-        description={t(settingItem.description || '')}
-      >
-        {this._renderSelect()}
-      </JuiSettingSectionItem>
-    );
-  }
-
-  private _renderSelect() {
-    const { value, disabled, settingItem } = this.props;
-    return (
-      <JuiBoxSelect
-        onChange={this._handleChange}
-        disabled={disabled}
-        value={value}
-        displayEmpty={true}
-        automationId={`settingItemSelectBox-${settingItem.automationId}`}
-        data-test-automation-value={value}
-        isFullWidth={true}
-        name="settings"
-        renderValue={settingItem.valueRenderer && this._renderValue}
-      >
-        {this._renderSource()}
-      </JuiBoxSelect>
-    );
-  }
-
+  };
   private _renderValue = (value: string) => {
     const { source, settingItem } = this.props;
     const rawValue = source.find(
       sourceItem => this.props.extractValue(sourceItem) === value,
     );
+    const renderer = settingItem.valueRenderer || settingItem.sourceRenderer;
 
-    const ValueComponent = settingItem.valueRenderer;
-
-    if (!ValueComponent) {
+    if (!renderer) {
       mainLogger.error(
-        '[SelectSettingItemViewComponent] valueRenderer is required for _renderValue()',
+        '[SelectSettingItemViewComponent] valueRenderer or sourceRenderer is required for _renderValue()',
       );
       return null;
     }
@@ -90,9 +55,30 @@ class SelectSettingItemViewComponent<
       return null;
     }
 
-    return <ValueComponent value={rawValue} />;
+    const reactNode = renderer({ source, value: rawValue });
+    if (typeof reactNode === 'string') {
+      return <JuiText>{reactNode}</JuiText>;
+    }
+    return reactNode;
+  };
+  private _renderSelect() {
+    const { value, disabled, settingItem } = this.props;
+    return (
+      <JuiBoxSelect
+        onChange={this._handleChange}
+        disabled={disabled}
+        value={value}
+        displayEmpty
+        automationId={`settingItemSelectBox-${settingItem.automationId}`}
+        data-test-automation-value={value}
+        isFullWidth
+        name="settings"
+        renderValue={this._renderValue}
+      >
+        {this._renderSource()}
+      </JuiBoxSelect>
+    );
   }
-
   private _renderSource() {
     return this.props.source.map((item: T) => this._renderSourceItem(item));
   }
@@ -117,11 +103,27 @@ class SelectSettingItemViewComponent<
 
   private _renderMenuItemChildren(sourceItem: T, itemValue: string) {
     const { source, settingItem } = this.props;
-    const { sourceRenderer: ItemComponent } = settingItem;
-    return ItemComponent ? (
-      <ItemComponent key={itemValue} value={sourceItem} source={source} />
+    const { sourceRenderer } = settingItem;
+    return sourceRenderer ? (
+      sourceRenderer({ source, value: sourceItem })
     ) : (
       <JuiTextWithEllipsis>{itemValue}</JuiTextWithEllipsis>
+    );
+  }
+  render() {
+    const {
+      t, id, disabled, settingItem,
+    } = this.props;
+    return (
+      <JuiSettingSectionItem
+        id={id}
+        automationId={settingItem.automationId}
+        disabled={disabled}
+        label={t(settingItem.title || '')}
+        description={t(settingItem.description || '')}
+      >
+        {this._renderSelect()}
+      </JuiSettingSectionItem>
     );
   }
 }

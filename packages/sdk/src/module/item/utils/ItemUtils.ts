@@ -9,6 +9,7 @@ import { SanitizedEventItem } from '../module/event/entity';
 import { EventUtils } from '../module/event/utils';
 import moment from 'moment';
 
+const DATE_FORMAT = 'YYYY-MM-DD';
 const { TYPE_ID_TASK, TYPE_ID_FILE, TYPE_ID_EVENT } = TypeDictionary;
 
 type ItemLike = { id: number; group_ids: number[] };
@@ -18,26 +19,22 @@ type EventLike = SanitizedEventItem;
 
 class ItemUtils {
   static taskFilter<T extends TaskLike>(groupId: number, showAll: boolean) {
-    return (task: T) =>
-      this._isValidExpectedType(groupId, task, TYPE_ID_TASK) &&
+    return (task: T) => this._isValidExpectedType(groupId, task, TYPE_ID_TASK) &&
       (showAll || !task.complete);
   }
 
   static fileFilter<T extends FileLike>(groupId: number) {
-    return (file: T) =>
-      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+    return (file: T) => this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
       !this._isPic(file);
   }
 
   static imageFilter<T extends FileLike>(groupId: number) {
-    return (file: T) =>
-      this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
+    return (file: T) => this._isValidExpectedType(groupId, file, TYPE_ID_FILE) &&
       this._isPic(file);
   }
 
   static eventFilter<T extends EventLike>(groupId: number) {
-    return (event: T) =>
-      this._isValidExpectedType(groupId, event, TYPE_ID_EVENT) &&
+    return (event: T) => this._isValidExpectedType(groupId, event, TYPE_ID_EVENT) &&
       this._isTodayOrAfter(event);
   }
 
@@ -62,8 +59,12 @@ class ItemUtils {
 
   private static _isTodayOrAfter<T extends EventLike>(event: T) {
     const effectEnd = EventUtils.getEffectiveEnd(event);
-    const endDate = new Date(effectEnd).toLocaleDateString();
-    const today = new Date(Date.now()).toLocaleDateString();
+    const endDate = moment(effectEnd)
+      .local()
+      .format(DATE_FORMAT);
+    const today = moment(Date.now())
+      .local()
+      .format(DATE_FORMAT);
     return (
       effectEnd >= Number.MAX_SAFE_INTEGER ||
       moment(endDate).isSameOrAfter(today)

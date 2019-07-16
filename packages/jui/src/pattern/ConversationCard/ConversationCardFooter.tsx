@@ -10,7 +10,7 @@ import styled from '../../foundation/styled-components';
 const StyledConversationCardFooter = styled('div')`
   padding: ${spacing(0, 4, 4, 0)};
 `;
-
+/* eslint-disable react/prop-types */
 class JuiConversationCardFooter extends React.PureComponent {
   render() {
     const { children } = this.props;

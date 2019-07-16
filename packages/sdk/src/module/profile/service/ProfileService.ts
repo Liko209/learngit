@@ -20,13 +20,14 @@ import { SettingOption } from '../types';
 import { ProfileSetting } from '../setting';
 import { SettingService } from 'sdk/module/setting';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Nullable } from 'sdk/types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
   private profileController: ProfileController;
   private _profileSetting: ProfileSetting;
   constructor() {
-    super(true, daoManager.getDao(ProfileDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(ProfileDao), {
       basePath: '/profile',
       networkClient: Api.glipNetworkClient,
     });
@@ -39,9 +40,8 @@ class ProfileService extends EntityBaseService<Profile>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
-    });
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE),);
   }
 
   protected onStarted() {
@@ -70,22 +70,25 @@ class ProfileService extends EntityBaseService<Profile>
     await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source, changeMap);
-  }
+  };
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()
       .getProfileActionController()
       .handleGroupIncomesNewPost(groupIds);
-  }
+  };
 
   getProfileController(): ProfileController {
     if (!this.profileController) {
-      this.profileController = new ProfileController(this.getEntitySource());
+      this.profileController = new ProfileController(
+        this.getEntitySource(),
+        this.getEntityCacheController(),
+      );
     }
     return this.profileController;
   }
 
-  async getProfile(): Promise<Profile> {
+  async getProfile(): Promise<Nullable<Profile>> {
     return await this.getProfileController()
       .getProfileDataController()
       .getProfile();
@@ -153,17 +156,10 @@ class ProfileService extends EntityBaseService<Profile>
       .updateSettingOptions(options);
   }
 
-  async getDefaultCaller() {
-    return await this.getProfileController()
-      .getProfileDataController()
-      .getDefaultCaller();
-  }
-
   private get profileSetting() {
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(
         this,
-        ServiceLoader.getInstance(ServiceConfig.TELEPHONY_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.ACCOUNT_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.SETTING_SERVICE),
       );

@@ -6,12 +6,11 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../../foundation/utils/decorators';
-import { JuiFabButton, JuiButton, JuiButtonProps } from '../';
+import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
+import { JuiFabButton, JuiButton, JuiButtonProps } from '..';
 import styled from '../../../../foundation/styled-components';
+import previous from '../../../../assets/jupiter-icon/icon-previous.svg';
+import forward from '../../../../assets/jupiter-icon/icon-forward.svg';
 
 function getKnobs() {
   const content = text('content', 'button');
@@ -51,12 +50,11 @@ const Wrapper = styled.div`
 
 storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiButton, { inline: true }))
   .add('Contained Button', () => {
     const { content, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant="contained" {...rest}>
+        <JuiButton variant='contained' {...rest}>
           {content}
         </JuiButton>
       </div>
@@ -66,7 +64,7 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant="text" {...rest}>
+        <JuiButton variant='text' {...rest}>
           {content}
         </JuiButton>
       </div>
@@ -76,7 +74,7 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant="round" {...rest}>
+        <JuiButton variant='round' {...rest}>
           {content}
         </JuiButton>
       </div>
@@ -89,18 +87,19 @@ storiesOf('Components/Buttons', module)
       <Wrapper>
         <JuiFabButton
           {...rest}
-          className="buttonWrapper"
-          tooltipTitle="previous"
-          color="common.white"
-          iconColor={['grey', '900']}
-          iconName="previous"
+          className='buttonWrapper'
+          tooltipTitle='previous'
+          iconColor={['common', 'white']}
+          iconName='previous'
+          icon={previous}
         />
         <JuiFabButton
           {...rest}
-          className="buttonWrapper"
-          tooltipTitle="forward"
-          iconColor={['grey', '900']}
-          iconName="forward"
+          className='buttonWrapper'
+          tooltipTitle='forward'
+          iconColor={['common', 'white']}
+          iconName='forward'
+          icon={forward}
         />
       </Wrapper>
     );

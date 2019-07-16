@@ -33,6 +33,7 @@ export class CommonResponseParser implements IResponseParser {
         'Api Error: Please check network connection',
       );
     }
+    /* eslint-disable */
     if (
       (isNumber(status) && 399 < status && 600 > status) ||
       (isString(status) && REGEXP_4XX_5XX.test(status))

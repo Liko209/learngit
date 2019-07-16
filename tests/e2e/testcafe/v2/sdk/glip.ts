@@ -172,6 +172,14 @@ export class GlipSdk {
     });
   }
 
+  removeGuest(rcId?: string) {
+    const personId = rcId ? this.toPersonId(rcId) : this.myPersonId;
+    const uri = `api/remove_guest/${personId}`;
+    return this.axiosClient.put(uri, undefined, {
+      headers: this.headers,
+    });
+  }
+
   async getPersonPartialData(keyword: string, rcId?: string) {
     return await this.getPerson(rcId).then(res => res.data[keyword]);
   }
@@ -277,13 +285,14 @@ export class GlipSdk {
   }
 
   /* post */
-  sendPost(groupId, text: string) {
+  sendPost(groupId, text: string, options?: object) {
     const uri = 'api/post';
     const data = {
       group_id: groupId,
       is_new: true,
       is_sms: true,
       text,
+      ...options
     };
     return this.axiosClient.post(uri, data, {
       headers: this.headers,
@@ -378,7 +387,7 @@ export class GlipSdk {
     const meChatId = await this.getMeChatId();
 
     const initData = {
-      new_message_badges:"groups_and_mentions",
+      new_message_badges: "groups_and_mentions",
       model_size: 0,
       is_new: false,
       want_email_people: 900000,
@@ -399,7 +408,7 @@ export class GlipSdk {
       skip_close_conversation_confirmation: false,
       max_leftrail_group_tabs2: 20,
       favorite_post_ids: [],
-      calling_option:'glip'
+      calling_option: 'glip'
     }
     const data = _.assign(initData, ...groups.map(key => ({ [key]: false })));
     return await this.updateProfile(data, rcId);
@@ -412,8 +421,8 @@ export class GlipSdk {
     await this.updateProfile(data, rcId);
   }
 
-  async setDefaultPhoneApp(val:'ringcentral'|'glip',rcId?:string) {
-      await this.updateProfile({calling_option:val}, rcId);
+  async setDefaultPhoneApp(val: 'ringcentral' | 'glip', rcId?: string) {
+    await this.updateProfile({ calling_option: val }, rcId);
   }
 
   /* state */
@@ -582,6 +591,10 @@ export class GlipSdk {
       favorite_group_ids: [],
     }
     await this.updateProfile(data, rcId);
+  }
+
+  async setNewMessageBadges(value: 'groups_and_mentions' | 'all', rcId?) {
+    await this.updateProfile({ new_message_badges: value }, rcId);
   }
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
@@ -784,13 +797,12 @@ export class GlipSdk {
 
   async getPostItemsByTypeId(postId: string | number, typeId: number | string) {
     const items = await this.getPost(postId).then(res => res.data.items);
-    const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
-    return ids;
+    return items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
   }
 
   /* file and image */
   async getFilesIdsFromPostId(postId: string | number) {
-    return this.getPostItemsByTypeId(postId, 10);
+    return await this.getPostItemsByTypeId(postId, 10);
   }
 
   getFile(fileId: string | number) {

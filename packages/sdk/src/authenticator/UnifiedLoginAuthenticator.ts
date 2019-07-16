@@ -4,16 +4,16 @@
  * Copyright © RingCentral. All rights reserved
  */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { loginGlip, RCInfoApi, RCAuthApi, ITokenModel } from '../api';
+import { RCInfoApi, RCAuthApi, ITokenModel } from '../api';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
-
 import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
-import { PerformanceTracer, PERFORMANCE_KEYS } from '../utils';
+import { PerformanceTracer } from 'foundation';
+import { AUTHENTICATOR_PERFORMANCE_KEYS } from './config/performanceKeys';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -30,7 +30,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   async authenticate(
     params: IUnifiedLoginAuthenticateParams,
   ): Promise<IAuthResponse> {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     if (params.code) {
       return this._authenticateRC(params.code);
     }
@@ -38,7 +38,9 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     if (params.token) {
       return this._authenticateGlip(params.token);
     }
-    performanceTracer.end({ key: PERFORMANCE_KEYS.UNIFIED_LOGIN });
+    performanceTracer.end({
+      key: AUTHENTICATOR_PERFORMANCE_KEYS.UNIFIED_LOGIN,
+    });
     return {
       success: false,
       error: new Error('invalid tokens'),
@@ -71,7 +73,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     const response = {
       success: true,
-      isRCOnlyMode: false,
+      isRCOnlyMode: true,
       isFirstLogin: true,
       accountInfos: [
         {
@@ -80,21 +82,6 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
         },
       ],
     };
-
-    // login glip
-    try {
-      const glipToken = await this._loginGlipByRCToken(rcToken);
-      response.accountInfos.push({
-        type: GlipAccount.name,
-        data: glipToken,
-      });
-    } catch (err) {
-      // todo: for now, ui can not support the rc only mode
-      // so will throw error to logout when glip is down
-      // mainLogger.tags('UnifiedLogin').error(err);
-      // response.isRCOnlyMode = true;
-      throw err;
-    }
     return response;
   }
 
@@ -119,19 +106,6 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     AccountGlobalConfig.setUserDictionary(
       (await rcInfoService.getRCExtensionInfo())!.id.toString(),
     );
-  }
-
-  private async _loginGlipByRCToken(rcToken: ITokenModel) {
-    // fetch glip token
-    const glipLoginResponse = await loginGlip(rcToken);
-    if (glipLoginResponse.status >= 200 && glipLoginResponse.status < 300) {
-      const glipToken = glipLoginResponse.headers['x-authorization'];
-      notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, {
-        glipToken,
-      });
-      return glipToken;
-    }
-    throw Error(`login glip failed, ${glipLoginResponse.statusText}`);
   }
 }
 

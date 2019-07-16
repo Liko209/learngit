@@ -5,10 +5,8 @@
  */
 
 import {
-  // JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
-import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -22,43 +20,37 @@ import {
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
-import { USED_HEIGHT, MIN_HEIGHT_FIX } from '../ContentSearchResult/constants';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
+
+import { PerformanceTracer } from 'sdk';
+import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
 import {
   MAX_COUNT,
   ITEM_HEIGHT,
-  FULLSCREEN_WIDTH,
+  MAX_HEIGHT,
   LOADING_DELAY,
 } from './config';
 
 type Props = ItemListProps &
-  ItemListViewProps &
-  WithTranslation & { terms: string[] };
-
-type State = {
-  width?: number;
-  height?: number;
-};
+ItemListViewProps &
+WithTranslation & { terms: string[] };
 
 @observer
-class ItemListViewComponent extends Component<Props, State> {
+class ItemListViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
-    loadingRenderer: <JuiRightRailContentLoading delay={LOADING_DELAY} />,
-    loadingMoreRenderer: <JuiRightRailLoadingMore />,
+    loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
+    loadingMoreRenderer: () => <JuiRightRailLoadingMore />,
     stickToLastPosition: false,
   };
 
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<
-    JuiVirtualizedListHandles
+  JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
 
-  state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
-
-  private _performanceTracer: PerformanceTracer = PerformanceTracer.initial();
+  private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -69,19 +61,17 @@ class ItemListViewComponent extends Component<Props, State> {
       });
     }
     return fnMap.get(fnKey);
-  }
+  };
 
-  hoverHighlight = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
-  }
+  hoverHighlight = (index: number) => this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => {
-    return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
-  }
+  selectIndexChange = (index: number) => this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
 
   scrollToView = () => {
-    const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
+    const {
+      selectIndex, startIndex, stopIndex, setRangeIndex,
+    } = this.props;
     if (selectIndex >= stopIndex) {
       this._dataList.current &&
         this._dataList.current.loadMore('down', MAX_COUNT);
@@ -98,25 +88,25 @@ class ItemListViewComponent extends Component<Props, State> {
         stopIndex: selectIndex + MAX_COUNT,
       });
     }
-  }
+  };
 
   onKeyUp = () => {
     const { onKeyUp } = this.props;
     onKeyUp();
     this.scrollToView();
-  }
+  };
 
   onKeyDown = () => {
     const { onKeyDown, ids } = this.props;
     onKeyDown(ids);
     this.scrollToView();
-  }
+  };
 
   onEnter = (evt: KeyboardEvent) => {
     const { onEnter, ids, type } = this.props;
     onEnter(evt, ids, type);
     this.scrollToView();
-  }
+  };
 
   createSearchItem = (config: { id: number; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
@@ -136,30 +126,11 @@ class ItemListViewComponent extends Component<Props, State> {
         key={id}
       />
     );
-  }
-
-  private _handleSizeUpdate = (size: Size) => {
-    const width = size.width;
-    let height = size.height;
-    if (size.width < FULLSCREEN_WIDTH) {
-      height = size.height - USED_HEIGHT;
-    } else {
-      height = Math.max(
-        Math.min(
-          ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.ids.length),
-          size.height - USED_HEIGHT,
-        ),
-        MIN_HEIGHT_FIX,
-      );
-    }
-    if (height !== this.state.height || width !== this.state.width) {
-      this.setState({ height, width });
-    }
-  }
+  };
 
   componentDidUpdate() {
     this._performanceTracer.end({
-      key: PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
+      key: GLOBAL_SEARCH_PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
       count: this.props.ids.length,
     });
   }
@@ -167,13 +138,11 @@ class ItemListViewComponent extends Component<Props, State> {
   private _renderItems() {
     const { listHandler, type } = this.props;
     return listHandler.sortableListStore.getIds.map(
-      (id: number, index: number) => {
-        return this.createSearchItem({
-          id,
-          type,
-          index,
-        });
-      },
+      (id: number, index: number) => this.createSearchItem({
+        id,
+        type,
+        index,
+      }),
     );
   }
 
@@ -191,14 +160,13 @@ class ItemListViewComponent extends Component<Props, State> {
           enter: this.onEnter,
         }}
       >
-        <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
         <DataList
           ref={this._dataList}
           initialDataCount={30}
           listHandler={listHandler}
-          reverse={true}
+          reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: this.state.height,
+            height: MAX_HEIGHT,
             ref: this._listRef,
             overscan: 20,
             onVisibleRangeChange: setRangeIndex,

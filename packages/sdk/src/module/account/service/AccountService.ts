@@ -10,7 +10,7 @@ import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
 import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../../api';
 import notificationCenter from '../../../service/notificationCenter';
-import { SERVICE } from '../../../service/eventKey';
+import { SERVICE, SOCKET } from '../../../service/eventKey';
 import { ProfileService } from '../../profile';
 import { setRCToken } from '../../../authenticator/utils';
 import { AccountGlobalConfig } from '../config';
@@ -21,9 +21,15 @@ import {
   IUnifiedLogin,
   ILogin,
 } from '../controller/AuthController';
-import { AbstractService, AccountManager } from '../../../framework';
+import {
+  AbstractService,
+  AccountManager,
+  GLIP_LOGIN_STATUS,
+} from '../../../framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { Nullable } from '../../../types';
+import { ISubscribeController } from 'sdk/framework/controller/interface/ISubscribeController';
+import { SubscribeController } from 'sdk/module/base/controller/SubscribeController';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 const LOG_TAG = 'AccountService';
@@ -43,13 +49,28 @@ class AccountService extends AbstractService
   private _authController: AuthController;
   private _userConfig: AccountUserConfig;
   private _authUserConfig: AuthUserConfig;
+  private _subscribeController: ISubscribeController;
 
   constructor(private _accountManager: AccountManager) {
     super();
+    this._subscribeController = SubscribeController.buildSubscriptionController(
+      {
+        [SOCKET.LOGOUT]: this.onGlipForceLogout,
+      },
+    );
   }
 
-  protected onStarted() {}
-  protected onStopped() {}
+  protected onStarted() {
+    if (this._subscribeController) {
+      this._subscribeController.subscribe();
+    }
+  }
+  protected onStopped() {
+    if (this._subscribeController) {
+      this._subscribeController.unsubscribe();
+    }
+    delete this._subscribeController;
+  }
 
   get userConfig() {
     if (!this._userConfig) {
@@ -73,16 +94,20 @@ class AccountService extends AbstractService
   }
 
   isAccountReady(): boolean {
-    return this.userConfig.getGlipUserId() ? true : false;
+    try {
+      return this.userConfig.getGlipUserId() ? true : false;
+    } catch {
+      return false;
+    }
   }
 
   async getCurrentUserInfo(): Promise<Nullable<Person>> {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
     if (!this.isAccountReady()) {
       return null;
     }
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const userId = this.userConfig.getGlipUserId();
     try {
       return await personService.getById(userId);
@@ -145,9 +170,7 @@ class AccountService extends AbstractService
   async getRCToken() {
     let rcToken = this.authUserConfig.getRCToken();
     if (rcToken && this._isRCTokenExpired(rcToken)) {
-      rcToken = await this.refreshRCToken().catch((reason: JError) => {
-        return null;
-      });
+      rcToken = await this.refreshRCToken().catch(() => null);
     }
 
     return rcToken;
@@ -186,8 +209,19 @@ class AccountService extends AbstractService
   }
 
   onRefreshTokenFailure(forceLogout: boolean) {
+    mainLogger
+      .tags(LOG_TAG)
+      .info('Refresh Token failed, force logout:', forceLogout);
+    this.onForceLogout(forceLogout);
+  }
+
+  onGlipForceLogout = (forceLogout: boolean) => {
+    mainLogger.tags(LOG_TAG).info('Glip force logout:', forceLogout);
+    this.onForceLogout(forceLogout);
+  };
+
+  onForceLogout(forceLogout: boolean) {
     if (forceLogout) {
-      mainLogger.tags(LOG_TAG).info('Refresh Token failed, force logout.');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
   }
@@ -202,10 +236,6 @@ class AccountService extends AbstractService
 
   async unifiedLogin({ code, token }: IUnifiedLogin) {
     await this.getAuthController().unifiedLogin({ code, token });
-  }
-
-  async login(params: ILogin) {
-    await this.getAuthController().login(params);
   }
 
   async loginGlip(params: ILogin) {
@@ -224,12 +254,19 @@ class AccountService extends AbstractService
     return this.getAuthController().isLoggedIn();
   }
 
-  scheduleReLoginGlipJob() {
-    this.getAuthController().scheduleReLoginGlipJob();
+  isRCOnlyMode(): boolean {
+    return this.getAuthController().isRCOnlyMode();
   }
 
-  async reLoginGlip(): Promise<boolean> {
-    return await this.getAuthController().reLoginGlip();
+  getGlipLoginStatus(): GLIP_LOGIN_STATUS {
+    if (this.isAccountReady()) {
+      this._accountManager.setGlipLoginStatus(GLIP_LOGIN_STATUS.SUCCESS);
+    }
+    return this.getAuthController().getGlipLoginStatus();
+  }
+
+  startLoginGlip() {
+    this.getAuthController().startLoginGlip();
   }
 }
 

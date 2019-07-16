@@ -8,11 +8,13 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { Badge } from '../entity';
 import notificationCenter from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service/eventKey';
+
 class BadgeService extends EntityBaseService<Badge, string> {
+  /* eslint-disable */
   private _badgeMap = new Map<string, () => Badge>();
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
   }
 
   async getById(id: string): Promise<Badge | null> {

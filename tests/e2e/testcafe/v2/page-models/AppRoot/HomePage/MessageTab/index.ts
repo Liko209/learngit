@@ -177,8 +177,12 @@ class ConversationEntry extends BaseWebComponent {
     await this.t.hover(moreButton);
   }
 
+  get draftIcon() {
+    return this.getSelectorByIcon('draft', this.self);
+  }
+
   get hasDraftMessage() {
-    return this.getSelectorByIcon('draft').exists;
+    return this.draftIcon.exists;
   }
 
   async enter() {
@@ -266,6 +270,10 @@ class CloseConversationModal extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId('DialogTitle');
   }
 
   get dontAskAgainCheckbox() {
@@ -396,5 +404,4 @@ export class MessageTab extends BaseWebComponent {
   get emojiMatchList() {
     return this.getComponent(EmojiMatchList);
   }
-
 }

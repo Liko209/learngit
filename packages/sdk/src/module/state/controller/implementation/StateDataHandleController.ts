@@ -18,7 +18,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { mainLogger } from 'foundation';
 import { AccountService } from '../../../account/service';
 import { StateService } from '../../service';
-import { SYNC_SOURCE, ChangeModel } from '../../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../../sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
@@ -39,7 +39,13 @@ class StateDataHandleController {
     source: SYNC_SOURCE,
     changeMap?: Map<string, ChangeModel>,
   ): Promise<void> {
+    const ignoreCursorValidate = [
+      SYNC_SOURCE.INDEX,
+      SYNC_SOURCE.INITIAL,
+      SYNC_SOURCE.REMAINING,
+    ].includes(source);
     const stateTask: DataHandleTask = {
+      ignoreCursorValidate,
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
@@ -49,8 +55,12 @@ class StateDataHandleController {
     }
   }
 
-  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
+  async handleGroupCursor(
+    groups: Partial<Group>[],
+    ignoreCursorValidate?: boolean,
+  ): Promise<void> {
     const groupTask: DataHandleTask = {
+      ignoreCursorValidate,
       type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
@@ -72,6 +82,7 @@ class StateDataHandleController {
       } else {
         transformedState = this._transformGroupData(task.data);
       }
+      transformedState.ignoreCursorValidate = task.ignoreCursorValidate;
       const updatedState = await this._generateUpdatedState(transformedState);
       await this._updateEntitiesAndDoNotification(
         updatedState,
@@ -108,6 +119,7 @@ class StateDataHandleController {
           return;
         }
         const groupState: GroupState = { id: groupId };
+        /* eslint-disable */
         Object.keys(group).forEach((key: string) => {
           switch (key) {
             case '__trigger_ids': {
@@ -152,7 +164,7 @@ class StateDataHandleController {
     };
     const myState: Partial<State> = {};
     const groupStates = {};
-    const groupIds = new Set();
+    const groupIds = new Set<string>();
     states.forEach((state: Partial<State>) => {
       Object.keys(state).forEach((key: string) => {
         if (key.includes('unread_count')) {
@@ -160,10 +172,6 @@ class StateDataHandleController {
         }
         if (key === '_id') {
           myState.id = state[key];
-          return;
-        }
-        if (key === '__from_index') {
-          transformedState.isFromIndexData = true;
           return;
         }
         const keys = [
@@ -231,11 +239,8 @@ class StateDataHandleController {
           });
           if (localGroupState) {
             if (
-              this._hasInvalidCursor(
-                groupState,
-                localGroupState,
-                transformedState.isFromIndexData || false,
-              )
+              !transformedState.ignoreCursorValidate &&
+              this._hasInvalidCursor(groupState, localGroupState)
             ) {
               return;
             }
@@ -272,7 +277,6 @@ class StateDataHandleController {
   private _hasInvalidCursor(
     updateState: GroupState,
     localState: GroupState,
-    isFromIndex: boolean,
   ): boolean {
     if (
       updateState.group_post_cursor !== undefined &&
@@ -321,8 +325,7 @@ class StateDataHandleController {
     if (
       updateState.post_cursor !== undefined &&
       updateState.post_cursor < (localState.post_cursor || 0) &&
-      !updateState.marked_as_unread &&
-      !isFromIndex
+      !updateState.marked_as_unread
     ) {
       mainLogger
         .tags(LOG_TAG)

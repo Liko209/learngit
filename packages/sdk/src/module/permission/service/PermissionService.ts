@@ -21,7 +21,7 @@ class PermissionService extends EntityBaseService<UserPermission>
   private permissionController: PermissionController;
 
   constructor() {
-    super(false);
+    super({ isSupportedCache: false });
     this.permissionController = new PermissionController();
   }
 
@@ -35,6 +35,10 @@ class PermissionService extends EntityBaseService<UserPermission>
 
   async hasPermission(type: UserPermissionType) {
     return this.permissionController.hasPermission(type);
+  }
+
+  getFeatureFlag(type: UserPermissionType) {
+    return this.permissionController.getFeatureFlag(type);
   }
 
   async getById(id: number): Promise<UserPermission> {

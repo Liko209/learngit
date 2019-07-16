@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BaseDao, daoManager, QUERY_DIRECTION } from 'sdk/dao';
+import { BaseDao, daoManager } from 'sdk/dao';
 import { CallLog } from '../entity';
 import { IDatabase } from 'foundation';
 import { CallLogViewDao } from './CallLogViewDao';
-import { CALL_LOG_SOURCE } from '../constants';
 import { Nullable } from 'sdk/types';
 import _ from 'lodash';
 import { CALL_DIRECTION } from '../../constants';
-import { Caller } from '../../types';
+import { Caller, FetchDataOptions } from '../../types';
+import { CALL_LOG_SOURCE } from '../constants';
 
 class CallLogDao extends BaseDao<CallLog, string> {
   static COLLECTION_NAME = 'callLog';
@@ -91,18 +91,13 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   async queryCallLogs(
-    source: CALL_LOG_SOURCE,
-    anchorId?: string,
-    direction = QUERY_DIRECTION.OLDER,
-    limit: number = Infinity,
+    options: FetchDataOptions<CallLog, string>,
   ): Promise<CallLog[]> {
-    return this._viewDao.queryCallLogs(
-      this._fetchCallLogsFunc,
-      source,
-      anchorId,
-      direction,
-      limit,
-    );
+    return this._viewDao.queryCallLogs(this._fetchCallLogsFunc, options);
+  }
+
+  async queryAllUniquePhoneNumberCalls(source: CALL_LOG_SOURCE) {
+    return this._viewDao.getAllUniquePhoneNumberCalls(source);
   }
 
   async doInTransaction(func: () => {}): Promise<void> {
@@ -141,18 +136,14 @@ class CallLogDao extends BaseDao<CallLog, string> {
     return this._viewDao.queryNewestTimestamp();
   }
 
-  private _fetchCallLogsFunc = async (ids: string[]): Promise<CallLog[]> => {
-    return await this.batchGet(ids, true);
-  }
+  private _fetchCallLogsFunc = async (ids: string[]): Promise<CallLog[]> => await this.batchGet(ids, true);
 
   private async _putCallLogView(callLog: CallLog) {
     await this._viewDao.put(this._toCallLogView(callLog));
   }
 
   private async _bulkPutCallLogView(array: CallLog[]) {
-    const callLogViews = array.map((callLog: CallLog) => {
-      return this._toCallLogView(callLog);
-    });
+    const callLogViews = array.map((callLog: CallLog) => this._toCallLogView(callLog));
     await this._viewDao.bulkPut(callLogViews);
   }
 
@@ -167,6 +158,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
   }
 
   private _toPartialCallLogView(callLog: Partial<CallLog>) {
+    /* eslint-disable no-nested-ternary */
     const caller = callLog.direction
       ? callLog.direction === CALL_DIRECTION.INBOUND
         ? callLog.from
@@ -203,9 +195,7 @@ class CallLogDao extends BaseDao<CallLog, string> {
     array: Partial<CallLog>[],
     shouldDoPut: boolean,
   ) {
-    const callLogViews = array.map((callLog: CallLog) => {
-      return this._toPartialCallLogView(callLog);
-    });
+    const callLogViews = array.map((callLog: CallLog) => this._toPartialCallLogView(callLog));
 
     await this._viewDao.bulkUpdate(callLogViews, shouldDoPut);
   }

@@ -10,10 +10,9 @@ import { Raw } from '../../../framework/model';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { transform } from '../../../service/utils';
-import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class PersonDataController {
@@ -54,7 +53,7 @@ class PersonDataController {
         }
       }
     }
-  }
+  };
 
   handleIncomingData = async (
     persons: Raw<Person>[],
@@ -64,12 +63,10 @@ class PersonDataController {
     if (persons.length === 0) {
       return;
     }
-    const transformedData: Person[] = persons.map((item: Raw<Person>) =>
-      transform(item),
-    );
+    const transformedData: Person[] = persons.map((item: Raw<Person>) => transform(item));
     this.handleTeamRemovedIds(transformedData, changeMap);
     this._saveDataAndDoNotification(transformedData, source, changeMap);
-  }
+  };
 
   private _saveDataAndDoNotification(
     persons: Person[],
@@ -88,17 +85,19 @@ class PersonDataController {
       }
     });
 
-    this._saveData(deactivatedData, normalData);
-    if (shouldEmitNotification(source)) {
-      if (changeMap) {
-        changeMap.set(ENTITY.PERSON, { entities: persons });
-      } else {
-        notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
-      }
+    this._saveData(deactivatedData, normalData, source);
+    if (changeMap) {
+      changeMap.set(ENTITY.PERSON, { entities: persons });
+    } else {
+      notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
     }
   }
 
-  private async _saveData(deactivatedData: Person[], normalData: Person[]) {
+  private async _saveData(
+    deactivatedData: Person[],
+    normalData: Person[],
+    source: SYNC_SOURCE,
+  ) {
     if (deactivatedData.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
       await this.entitySourceController.bulkDelete(
@@ -106,7 +105,9 @@ class PersonDataController {
       );
     }
     if (normalData.length > 0) {
-      await this.entitySourceController.bulkPut(normalData);
+      source === SYNC_SOURCE.SOCKET
+        ? await this.entitySourceController.bulkUpdate(normalData)
+        : await this.entitySourceController.bulkPut(normalData);
     }
   }
 }

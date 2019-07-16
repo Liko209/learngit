@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import { UserSettingEntity } from '../entity';
 import { IModuleSetting } from '../moduleSetting/types';
+import { Nullable } from 'sdk/types';
 
 type SettingItemRequest<T> = {
   id: number;
@@ -23,15 +24,13 @@ class SettingController {
     moduleSetting.init();
     this._moduleSettings.push(moduleSetting);
     const requestsCanBeHandled = this._requestPool.filter(r =>
-      moduleSetting.has(r.id),
-    );
+      moduleSetting.has(r.id),);
     this._requestPool = this._requestPool.filter(r => !moduleSetting.has(r.id));
 
     requestsCanBeHandled.map(r =>
       moduleSetting.getById(r.id).then(result => {
         result ? r.resolve(result) : r.reject(result);
-      }),
-    );
+      }),);
   }
 
   unRegisterModuleSetting(moduleSetting: IModuleSetting) {
@@ -41,7 +40,7 @@ class SettingController {
     moduleSetting.dispose();
   }
 
-  async getById(id: number) {
+  async getById<T>(id: number): Promise<Nullable<UserSettingEntity<T>>> {
     const moduleSetting = _.find(this._moduleSettings, it => it.has(id));
     if (moduleSetting) {
       return await moduleSetting.getById(id);

@@ -5,10 +5,9 @@
  */
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { JuiViewerDocument } from '../ViewerDocument';
 
-type ScaleType = 'page-fit' | number;
+type ScaleType = number;
 type ViewportType = {
   width: number;
   height: number;
@@ -99,7 +98,7 @@ const ViewerDocument = () => {
           pages={getPages()}
           pageIndex={pageIndex}
           scale={scale}
-          onScaleChange={scale => scale && setCurrentScale(scale)}
+          onScaleChange={scale => scale && setCurrentScale(Number(scale))}
           onCurrentPageIdxChanged={idx => setCurrentPageIdx(idx)}
         />
       </div>
@@ -107,6 +106,6 @@ const ViewerDocument = () => {
   );
 };
 
-storiesOf('Pattern/Viewer', module)
-  .addDecorator(withInfoDecorator(JuiViewerDocument, { inline: true }))
-  .add('ViewerDocument', () => <ViewerDocument />);
+storiesOf('Pattern/Viewer', module).add('ViewerDocument', () => (
+  <ViewerDocument />
+));

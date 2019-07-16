@@ -3,7 +3,7 @@
  * @Date: 2019-05-09 14:00:02
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { JuiButton } from 'jui/components/Buttons';
@@ -15,6 +15,12 @@ import { JuiRegionSelect } from 'jui/components/Selects';
 import { JuiTextField } from 'jui/components/Forms';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { ESettingItemState } from 'sdk/framework/model/setting';
+import { dataTrackingForSetting } from '@/modules/setting/container/SettingItem/utils/dataTrackingForSetting';
+
+const DATA_REACTING_CONFIG = {
+  name: 'regionSettings',
+  type: 'phoneGeneral',
+};
 
 type Props = WithTranslation & RegionSettingItemViewProps;
 type State = {
@@ -34,40 +40,51 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     this.setState({
       dialogOpen: true,
     });
-  }
+    dataTrackingForSetting(DATA_REACTING_CONFIG);
+  };
 
   render() {
     const { t, settingItemEntity } = this.props;
     const { value, state } = settingItemEntity;
 
     const regionText = t('setting.phone.general.regionSetting.region');
-    const countryText = t('setting.phone.general.regionSetting.country');
-    const areaCodeText = t('setting.phone.general.regionSetting.areaCode');
 
-    let descriptionText = `${countryText}: `;
+    let descriptionText = '';
     if (value) {
       const { areaCode, countryInfo } = value;
       const { name, callingCode } = countryInfo;
-      descriptionText += `${name} (+${callingCode})`;
+      const countryDesc = `${name} (+${callingCode})`;
+      descriptionText = t(
+        'setting.phone.general.regionSetting.descriptionWithoutAreaCode',
+        {
+          country: countryDesc,
+        },
+      );
+
       if (areaCode) {
-        descriptionText += `, ${areaCodeText}: ${areaCode}`;
+        const areaCodeDesc = areaCode ? `${areaCode}` : '';
+        descriptionText = t('setting.phone.general.regionSetting.description', {
+          country: countryDesc,
+          areaCode: areaCodeDesc,
+        });
       }
     }
+
     const disabled = state === ESettingItemState.DISABLE;
     return (
       <JuiSettingSectionItem
-        id="regionSetting"
+        id='regionSetting'
         label={regionText}
         description={descriptionText}
         disabled={disabled}
       >
         <JuiButton
-          color="primary"
+          color='primary'
           onClick={this.handleClicked}
           disabled={disabled}
-          data-test-automation-id="settingItemButton-regionSetting"
+          data-test-automation-id='settingItemButton-regionSetting'
         >
-          {t('setting.update')}
+          {t('setting.edit')}
         </JuiButton>
         {this._renderDialog()}
       </JuiSettingSectionItem>
@@ -78,13 +95,13 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
     const { saveRegion, dialPlanISOCode, areaCode } = this.props;
     const save = await saveRegion(dialPlanISOCode, areaCode);
     save && this.setState({ dialogOpen: false });
-  }
+  };
 
   private _onCancel = () => {
     this.setState({
       dialogOpen: false,
     });
-  }
+  };
 
   private _renderDialog() {
     const {
@@ -117,11 +134,11 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
             'data-test-automation-id': 'dialog-regionSetting',
           }}
           title={
-            <JuiDialogTitle data-test-automation-id="dialog-header-regionSetting">
+            <JuiDialogTitle data-test-automation-id='dialog-header-regionSetting'>
               {regionText}
             </JuiDialogTitle>
           }
-          size="small"
+          size='small'
           okText={saveText}
           cancelText={cancelText}
           open={this.state.dialogOpen}
@@ -138,7 +155,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           <JuiTypography
             variant={'caption'}
             gutterBottom={true}
-            data-test-automation-id="dialog-contentDescription-regionSetting"
+            data-test-automation-id='dialog-contentDescription-regionSetting'
           >
             {regionChangeDesc}
           </JuiTypography>
@@ -151,7 +168,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
           />
           {!!renderAreaCode && (
             <JuiTextField
-              id="areaCode"
+              id='areaCode'
               label={areaCodeText}
               value={areaCode}
               fullWidth={true}
@@ -162,7 +179,7 @@ class RegionSettingItemViewComponent extends Component<Props, State> {
               }}
               helperText={areaCodeError && errorMsg}
               onChange={handleAreaCodeChange}
-              data-test-automation-id="dialog-regionSetting-areaCodeTextField"
+              data-test-automation-id='dialog-regionSetting-areaCodeTextField'
             />
           )}
         </JuiModal>

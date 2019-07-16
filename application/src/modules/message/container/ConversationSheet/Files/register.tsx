@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TypeDictionary } from 'sdk/utils';
-import { Files } from './';
+import { Files } from '.';
 
 export default {
   priority: 0,

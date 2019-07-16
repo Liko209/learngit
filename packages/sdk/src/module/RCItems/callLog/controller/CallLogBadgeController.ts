@@ -8,15 +8,15 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { BadgeService } from 'sdk/module/badge';
 import { notificationCenter, EVENT_TYPES, ENTITY } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
-import { PERFORMANCE_KEYS, PerformanceTracer } from 'sdk/utils';
 import { CallLog } from '../entity';
 import { MISSED_CALL_BADGE_ID, CALL_RESULT } from '../constants';
 import { Profile } from 'sdk/module/profile/entity';
 import { UndefinedAble } from 'sdk/types';
 import { BADGE_STATUS } from '../../constants';
 import { ProfileService } from 'sdk/module/profile';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 class CallLogBadgeController {
   private _unreadMap: Map<string, number>;
@@ -42,11 +42,11 @@ class CallLogBadgeController {
   async initializeUnreadCount() {
     try {
       this._badgeStatus = BADGE_STATUS.INITIALIZING;
-      const performanceTracer = PerformanceTracer.initial();
+      const performanceTracer = PerformanceTracer.start();
       const profile = await ServiceLoader.getInstance<ProfileService>(
         ServiceConfig.PROFILE_SERVICE,
       ).getProfile();
-      this._lastReadMissed = profile.last_read_missed;
+      this._lastReadMissed = profile ? profile.last_read_missed : undefined;
       const data = await this._sourceController.getEntities();
       data.forEach((data: CallLog) => {
         this._updateUnreadCount(data);
@@ -54,7 +54,7 @@ class CallLogBadgeController {
       this._registerBadge();
       this._updateBadge();
       performanceTracer.end({
-        key: PERFORMANCE_KEYS.INIT_CALL_LOG_BADGE,
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.INIT_RC_CALL_LOG_BADGE,
         infos: { id: MISSED_CALL_BADGE_ID, count: this._unreadMap.size },
       });
       this._badgeStatus = BADGE_STATUS.INITIALIZED;
@@ -82,7 +82,7 @@ class CallLogBadgeController {
     } else if (payload.type === EVENT_TYPES.REPLACE) {
       this.handleCallLogReplace(payload.body.entities);
     }
-  }
+  };
 
   handleProfile = async (payload: NotificationEntityPayload<Profile>) => {
     if (payload.type === EVENT_TYPES.UPDATE) {
@@ -103,7 +103,7 @@ class CallLogBadgeController {
         this._updateBadge();
       }
     }
-  }
+  };
 
   handleCallLogReplace(replaceData: Map<string, CallLog>) {
     if (this._badgeStatus === BADGE_STATUS.IDLE) {
@@ -138,15 +138,27 @@ class CallLogBadgeController {
   }
 
   private _updateUnreadCount(data: CallLog): boolean {
-    if (data.result === CALL_RESULT.MISSED && !data.__deactivated) {
-      if (!this._lastReadMissed || this._lastReadMissed < data.__timestamp) {
-        this._unreadMap.set(data.id, data.__timestamp);
-      } else {
-        this._unreadMap.delete(data.id);
-      }
-      return true;
+    if (
+      data.result !== CALL_RESULT.MISSED &&
+      data.result !== CALL_RESULT.VOICEMAIL
+    ) {
+      return false;
     }
-    return false;
+
+    let unreadChanged = false;
+    if (
+      data.__deactivated ||
+      (this._lastReadMissed && this._lastReadMissed >= data.__timestamp)
+    ) {
+      if (this._unreadMap.has(data.id)) {
+        this._unreadMap.delete(data.id);
+        unreadChanged = true;
+      }
+    } else {
+      this._unreadMap.set(data.id, data.__timestamp);
+      unreadChanged = true;
+    }
+    return unreadChanged;
   }
 
   private _updateBadge(): void {
@@ -163,9 +175,7 @@ class CallLogBadgeController {
   private _registerBadge() {
     ServiceLoader.getInstance<BadgeService>(
       ServiceConfig.BADGE_SERVICE,
-    ).registerBadge(MISSED_CALL_BADGE_ID, () => {
-      return { id: MISSED_CALL_BADGE_ID, unreadCount: this._unreadMap.size };
-    });
+    ).registerBadge(MISSED_CALL_BADGE_ID, () => ({ id: MISSED_CALL_BADGE_ID, unreadCount: this._unreadMap.size }));
   }
 }
 

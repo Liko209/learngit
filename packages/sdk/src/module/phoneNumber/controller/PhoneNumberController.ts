@@ -36,8 +36,17 @@ class PhoneNumberController {
       : phoneNumber;
   }
 
+  async isShortNumber(phoneNumber: string) {
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      false,
+    );
+
+    return phoneParserUtility ? phoneParserUtility.isShortNumber() : false;
+  }
+
   isValidNumber(toNumber: string) {
-    return new RegExp('^[0-9+*# ()-]+$').test(toNumber.trim());
+    return new RegExp('^[0-9+*# ()-.]+$').test(toNumber.trim());
   }
 
   async generateMatchedPhoneNumberList(

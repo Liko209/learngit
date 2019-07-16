@@ -90,11 +90,9 @@ abstract class PostParser implements IPostParser {
 
   removeReplacersInsideRange(range: TextRange) {
     // remove existing replacers that are inside the range.
-    this.content.removeReplacersBy(({ element, ...rg }) =>
-      containsRange(range, rg),
-    );
+    this.content.removeReplacersBy(({ element, ...rg }) => containsRange(range, rg));
   }
-
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   checkPreCondition(str: string) {
     return true;
   }
@@ -108,8 +106,7 @@ abstract class PostParser implements IPostParser {
     return !this.content
       .getReplacers()
       .some(
-        ignoredRange =>
-          hasIntersection(ignoredRange, range) &&
+        ignoredRange => hasIntersection(ignoredRange, range) &&
           !containsRange(range, ignoredRange),
       );
   }

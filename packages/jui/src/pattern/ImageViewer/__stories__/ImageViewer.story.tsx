@@ -6,34 +6,39 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiFabGroup } from '../index';
-import {
-  withInfoDecorator,
-  alignCenterDecorator,
-} from '../../../foundation/utils/decorators';
+import { alignCenterDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../../components/Buttons';
+import zoomIn from '../../../assets/jupiter-icon/icon-zoom-in.svg';
+import zoomOut from '../../../assets/jupiter-icon/icon-zoom-out.svg';
+import resetZoom from '../../../assets/jupiter-icon/icon-reset-zoom.svg';
 
 storiesOf('Pattern/ImageViewer', module)
   .addDecorator(alignCenterDecorator)
-  .addDecorator(withInfoDecorator(JuiFabGroup, { inline: true }))
   .add('ZoomGroup', () => {
     return (
       <JuiFabGroup
         centerText={'100%'}
-        resetMode={true}
+        resetMode
         ZoomIn={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_in">
-            zoom_in
-          </JuiIconButton>
+          <JuiIconButton
+            variant='plain'
+            tooltipTitle='zoom_in'
+            symbol={zoomIn}
+          />
         }
         ZoomOut={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_out">
-            zoom_out
-          </JuiIconButton>
+          <JuiIconButton
+            variant='plain'
+            tooltipTitle='zoom_out'
+            symbol={zoomOut}
+          />
         }
         ZoomReset={
-          <JuiIconButton variant="plain" tooltipTitle="zoom_out">
-            reset_zoom
-          </JuiIconButton>
+          <JuiIconButton
+            variant='plain'
+            tooltipTitle='reset zoom'
+            symbol={resetZoom}
+          />
         }
       />
     );

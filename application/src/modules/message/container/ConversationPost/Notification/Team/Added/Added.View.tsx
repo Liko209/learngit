@@ -3,7 +3,7 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { AddedViewProps } from './types';
@@ -27,7 +27,7 @@ class AddedViewComponent extends Component<AddedViewProps & WithTranslation> {
     return (
       <React.Fragment>
         <div dangerouslySetInnerHTML={{ __html: html }} />
-        <div className="datetime">{createdAt}</div>
+        <div className='datetime'>{createdAt}</div>
       </React.Fragment>
     );
   }

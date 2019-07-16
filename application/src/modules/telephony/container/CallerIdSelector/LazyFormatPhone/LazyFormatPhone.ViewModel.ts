@@ -13,7 +13,7 @@ import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import i18next from 'i18next';
 
 export class LazyFormatPhoneViewModel extends StoreViewModel<
-  LazyFormatPhoneProps
+LazyFormatPhoneProps
 > {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
 

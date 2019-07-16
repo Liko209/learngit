@@ -67,7 +67,9 @@ function withUploadFile(Component: ComponentType<any>) {
     }
 
     render() {
-      const { onClick, accept, multiple, onFileChanged, ...rest } = this.props;
+      const {
+        onClick, accept, multiple, onFileChanged, ...rest
+      } = this.props;
       return (
         <Fragment>
           <Component {...rest} onClick={this._handleOnClickEvent} />

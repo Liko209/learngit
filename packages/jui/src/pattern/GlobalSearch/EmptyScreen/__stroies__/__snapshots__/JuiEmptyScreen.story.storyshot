@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/GlobalSearch/EmptyScreen EmptyScreen: Pattern/GlobalSearch/EmptyScreen EmptyScreen 1`] = `
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.c1 {
+  width: 400px;
+  height: 320px;
+}
+
+.c2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 28px;
+  color: #212121;
+  margin-top: 40px;
+}
+
+<div>
+  <div
+    className="c0"
+  >
+    <img
+      className="c1"
+      src="test-file-stub"
+    />
+    <div
+      className="c2"
+    >
+      asdf asdf
+    </div>
+  </div>
+</div>
+`;

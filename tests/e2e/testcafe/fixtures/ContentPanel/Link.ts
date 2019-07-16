@@ -316,3 +316,90 @@ test.meta(<ITestMeta>{
     await t.expect(messageTab.postItemById(postId).text.find('span.highlight-term').nth(0).parent().getAttribute('class')).contains('at_mention_compose');
   });
 });
+
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-216'],
+  maintainers: ['potar.he'],
+  keywords: ['urlFormat'],
+})('Check the UI of the link with preview', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+  await h(t).glip(loginUser).init()
+  await h(t).scenarioHelper.resetProfile(loginUser);
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  const url1 = 'https://www.google.com';
+  // const url2 = 'https://www.baidu.com';
+
+  await h(t).withLog(`Given I have 1:1 chat`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the chat conversation`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const lastPostItem = conversationPage.lastPostItem;
+  await h(t).withLog(`When I send one link {url1}`, async (step) => {
+    step.setMetadata('url1', url1);
+    await conversationPage.sendMessage(url1);
+    await lastPostItem.waitForPostToSend();
+  });
+
+  let linkData;
+  await h(t).withLog(`Then There should be text 'shared a link' `, async () => {
+    await t.expect(lastPostItem.itemCardActivity.textContent).eql('shared a link');
+    const postId = await lastPostItem.postId;
+    await h(t).glip(loginUser).init();
+    const linkIds = await h(t).glip(loginUser).getLinksIdsFromPostId(postId);
+    linkData = await h(t).glip(loginUser).getLink(linkIds[0]).then(res => res.data);
+  });
+
+  const title = linkData.title || linkData.url;
+  // todo: automation id for link card
+  
+  await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
+    step.initMetadata({ title, url1 });
+    await t.expect(lastPostItem.self.find('a').nth(1).textContent).eql(title);
+    await t.expect(lastPostItem.self.find('a').nth(1).getAttribute('href')).eql(url1);
+  });
+
+  if (linkData.summary) {
+    await h(t).withLog(`And display link card: summary of url`, async () => {
+      await t.expect(lastPostItem.self.find('p').withText(linkData.summary).exists).ok();
+    });
+  }
+
+  // todo logo Icon
+
+
+  await h(t).withLog(`When I click remove button of the link card`, async () => {
+    await t.click(lastPostItem.getSelectorByIcon('close', lastPostItem.self));
+  });
+
+  await h(t).withLog(`Then Can remove a link card from the message card.`, async () => {
+    await t.expect(lastPostItem.self.find('a').count).eql(1);
+  });
+
+
+
+});

@@ -6,7 +6,6 @@
 
 import { ParseContent } from './ParseContent';
 import { createContext } from 'react';
-import { CustomEmojiMap } from '../emojiHelpers';
 
 type ChildrenType = React.ReactChild | null | (React.ReactChild | null)[];
 
@@ -29,7 +28,6 @@ type AtMentionParserOption = ParserOption & {
     name: string,
     isCurrent: boolean,
   ) => ChildrenType;
-  textEncoded?: boolean;
 };
 
 enum EmojiConvertType {
@@ -40,9 +38,7 @@ enum EmojiConvertType {
 }
 
 type EmojiTransformerOption = ParserOption & {
-  customEmojiMap?: CustomEmojiMap;
   unicodeOnly?: boolean;
-  hostName?: string;
 };
 
 type FileNameParserOption = ParserOption & {
@@ -76,6 +72,7 @@ type PostParserOptions = {
   emoji?: EmojiTransformerOption;
   html?: boolean | HTMLParserOption;
   emojiTransformed?: boolean;
+  atMentionTransformed?: boolean;
 };
 
 interface IPostParser {

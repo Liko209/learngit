@@ -4,11 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
-import styled from '../../foundation/styled-components';
-import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
 import { isEmailByReg } from '../../foundation/utils';
+import { StyledTextField } from './styles';
 
 type SelectedItem = {
   label: string;
@@ -42,37 +40,27 @@ type JuiDownshiftTextFieldProps = {
   onInputChange: (value: string) => void;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftTextFieldKeyDownEvent) => void;
+  autoFocus?: boolean;
+  onComposition: (isComposition: boolean) => void;
+  openMenu: () => void;
 };
 
-const StyledTextField = styled<TextFieldProps>(JuiTextField)`
-  && {
-    .inputRoot {
-      flex-wrap: wrap;
-    }
-    .input {
-      flex: 1;
-    }
-    .downshift-label {
-      width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-` as typeof MuiTextField;
-
 class JuiDownshiftTextField extends React.PureComponent<
-  JuiDownshiftTextFieldProps,
-  JuiDownshiftTextFieldStates
+JuiDownshiftTextFieldProps,
+JuiDownshiftTextFieldStates
 > {
   state: JuiDownshiftTextFieldStates = {
     showPlaceholder: true,
   };
   handleFocus = () => {
+    const { inputValue, openMenu } = this.props;
+    if (inputValue) {
+      openMenu();
+    }
     this.setState({
       showPlaceholder: false,
     });
-  }
+  };
   handleBlur = () => {
     const { inputValue, selectedItems } = this.props;
     if (!inputValue.length && !selectedItems.length) {
@@ -80,7 +68,7 @@ class JuiDownshiftTextField extends React.PureComponent<
         showPlaceholder: true,
       });
     }
-  }
+  };
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {
       autoSwitchEmail,
@@ -92,6 +80,7 @@ class JuiDownshiftTextField extends React.PureComponent<
     const { value } = event.target;
 
     onInputChange(value);
+
     if (
       autoSwitchEmail &&
       isEmailByReg(value) &&
@@ -117,15 +106,30 @@ class JuiDownshiftTextField extends React.PureComponent<
 
       onInputChange('');
     }
-  }
+  };
   handleKeyDown = (event: JuiDownshiftTextFieldKeyDownEvent) => {
-    const { onSelectChange, inputValue, selectedItems, onKeyDown } = this.props;
+    const {
+      onSelectChange, inputValue, selectedItems, onKeyDown,
+    } = this.props;
     if (selectedItems.length && !inputValue.length && event.keyCode === 8) {
       onSelectChange(selectedItems.slice(0, selectedItems.length - 1));
     }
 
     onKeyDown && onKeyDown(event);
-  }
+  };
+
+  handleCompositionStart = () => {
+    this.props.onComposition(true);
+  };
+
+  handleCompositionEnd = () => {
+    this.props.onComposition(false);
+    const { inputValue, openMenu } = this.props;
+    if (inputValue) {
+      openMenu();
+    }
+  };
+
   handleDelete = (item: SelectedItem) => () => {
     const { onSelectChange, inputValue } = this.props;
     let { selectedItems } = this.props;
@@ -137,7 +141,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       showPlaceholder,
     });
     onSelectChange(selectedItems);
-  }
+  };
 
   render() {
     const {
@@ -152,20 +156,22 @@ class JuiDownshiftTextField extends React.PureComponent<
       selectedItems,
       maxLength,
       multiple,
+      autoFocus,
     } = this.props;
     const { showPlaceholder } = this.state;
     const placeholderText =
       selectedItems.length === 0 && showPlaceholder ? placeholder : '';
+    /* eslint-disable react/jsx-no-duplicate-props */
     return (
       <StyledTextField
         label={label}
-        fullWidth={true}
+        fullWidth
         error={nameError}
         helperText={nameError ? helperText : ''}
         InputProps={{
           ...getInputProps({
-            startAdornment: selectedItems.map((item: SelectedItem) => {
-              return InputItem ? (
+            autoFocus,
+            startAdornment: selectedItems.map((item: SelectedItem) => (InputItem ? (
                 <InputItem
                   label={item.label}
                   key={item.id}
@@ -174,8 +180,7 @@ class JuiDownshiftTextField extends React.PureComponent<
                   id={item.id}
                   onDelete={this.handleDelete(item)}
                 />
-              ) : null;
-            }),
+            ) : null)),
             inputRef: messageRef,
             onFocus: this.handleFocus,
             onBlur: this.handleBlur,
@@ -191,6 +196,8 @@ class JuiDownshiftTextField extends React.PureComponent<
         }}
         inputProps={{
           maxLength,
+          onCompositionStart: this.handleCompositionStart,
+          onCompositionEnd: this.handleCompositionEnd,
         }}
         InputLabelProps={{
           classes: {

@@ -4,8 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const renderPerson = (personId: number, personName: string) => {
-  return `<button class="at_mention_compose" id="${personId}">${personName}</button>`;
-};
+const renderPerson = (personId: number, personName: string) => `<button class="at_mention_compose" id="${personId}">${personName}</button>`;
 
 export { renderPerson };

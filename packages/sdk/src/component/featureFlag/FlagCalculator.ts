@@ -10,7 +10,7 @@ import {
 } from './interface';
 import { AccountService } from '../../module/account/service';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
-
+/* eslint-disable */
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;
   _flags: IFlag | {};

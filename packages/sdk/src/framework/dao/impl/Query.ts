@@ -16,7 +16,7 @@ import { IQueryOpt } from '../interface/IQueryOpt';
 import { IdModel, ModelIdType } from '../../model';
 
 class Query<T extends IdModel<IdType>, IdType extends ModelIdType = number>
-  implements IQueryOpt<T, IdType> {
+implements IQueryOpt<T, IdType> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 

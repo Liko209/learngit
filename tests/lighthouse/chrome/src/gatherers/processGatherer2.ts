@@ -14,7 +14,6 @@ class ProcessGatherer2 extends BaseGatherer {
   private processIntervalId;
   private resolve;
   private timeoutId;
-  private browser;
   private indexReceived;
   private metrics: Array<PerformanceMetric> = new Array();
 
@@ -71,7 +70,7 @@ class ProcessGatherer2 extends BaseGatherer {
           }
 
           memoryArr.push(process["privateMemory"]);
-          
+
           if (memoryArr.length < 5) {
             return;
           }
@@ -103,12 +102,15 @@ class ProcessGatherer2 extends BaseGatherer {
       this.resolve = resolve;
 
       this.processIntervalId = setInterval(async () => {
-        await driver.evaluateAsync(`(function() {
+        try {
+          await driver.evaluateAsync(`(function() {
                   if (chrome.runtime && chrome.runtime.sendMessage) {
                       chrome.runtime.sendMessage("${EXTENSION_ID}", {});
                   }
                   return true;
               })()`);
+        } catch (err) {
+        }
       }, 1000);
     });
   }

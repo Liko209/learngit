@@ -4,26 +4,22 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { DeskTopNotification } from '../agent/DesktopNotification';
-import _ from 'lodash';
 import {
   INotificationService,
   NotificationOpts,
   INotificationPermission,
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
-// import { SWNotification } from '../agent/SWNotification';
+import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
-import { computed, autorun } from 'mobx';
-import { Disposer } from 'mobx-react';
-const logger = mainLogger.tags('AbstractNotificationManager');
-import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
-import { ENTITY_NAME } from '@/store/constants';
-import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
+
+const logger = mainLogger.tags('AbstractNotificationManager');
 
 class NotificationService implements INotificationService {
   @INotificationPermission
@@ -34,30 +30,20 @@ class NotificationService implements INotificationService {
   private _maximumTxtLength = 700;
   constructor() {
     this._notificationDistributors = new Map();
-    // temp solution for solving crash problem
-    // this._notificationDistributors.set('sw', new SWNotification());
+    this._notificationDistributors.set('sw', new SWNotification());
     this._notificationDistributors.set('desktop', new DeskTopNotification());
   }
 
-  private disposer: Disposer;
-  private shouldShowNotification: boolean;
-
-  @computed
-  get browserSettingItem() {
-    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
-      ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__NOTIFICATION_BROWSER,
+  async shouldShowNotification() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DNSM>(SETTING_ITEM__NOTIFICATION_BROWSER);
+    return (
+      isElectron || (entity && entity.value && entity.value.wantNotifications)
     );
   }
 
   init() {
-    this.disposer = autorun(() => {
-      this.shouldShowNotification =
-        isElectron ||
-        (!!this.browserSettingItem.value &&
-          this.browserSettingItem.value.wantNotifications);
-    });
-
     Pal.instance.setNotificationPermission(this._permission);
     for (const _distributor of this._notificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
@@ -72,7 +58,8 @@ class NotificationService implements INotificationService {
   }
 
   async show(title: string, opts: NotificationOpts, force?: boolean) {
-    if (!this.shouldShowNotification && !force) {
+    const shouldShowNotification = await this.shouldShowNotification();
+    if ((!shouldShowNotification && !force) || !this._permission.isGranted) {
       return;
     }
     const { id, scope } = opts.data;
@@ -90,25 +77,17 @@ class NotificationService implements INotificationService {
     }
     customOps.body = this.addEllipsis(customOps.body, this._maximumTxtLength);
     titleFormatted = this.addEllipsis(title, this._maximumTxtLength);
-    if (!this._permission.isGranted) {
-      await this._permission.request();
-      if (this._permission.isGranted) {
-        this._notificationDistributor.create(titleFormatted, customOps);
-      }
-    } else {
-      this._notificationDistributor.create(titleFormatted, customOps);
-    }
+    this._notificationDistributor.create(titleFormatted, customOps);
   }
 
   close(scope: string, id: number) {
     this._notificationDistributor.close(scope, id);
   }
 
-  clear = (scope?: string) => {
+  clear = () => {
     // todo clear scope
     this._notificationDistributor.clear();
-    this.disposer && this.disposer();
-  }
+  };
 }
 
 export { NotificationService };

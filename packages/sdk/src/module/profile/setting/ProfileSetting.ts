@@ -3,7 +3,6 @@
  * @Date: 2019-05-09 17:21:43
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   SettingEntityIds,
   BaseModuleSetting,
@@ -14,10 +13,7 @@ import { NotificationsSettingHandler } from './itemHandler/NotificationsSettingH
 import { NewMessagesSettingHandler } from './itemHandler/NewMessagesSettingHandler';
 import { IncomingCallsSettingHandler } from './itemHandler/IncomingCallsSettingHandler';
 import { NewVoicemailsSettingHandler } from './itemHandler/NewVoicemailsSettingHandler';
-import { TelephonyService } from 'sdk/module/telephony';
 import { AccountService } from 'sdk/module/account';
-import { CallerIdSettingHandler } from './itemHandler/CallerIdSettingHandler';
-import { DefaultAppSettingHandler } from './itemHandler/DefaultAppSettingHandler';
 import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
 import { ProfileSubscribeEntityHandler } from './itemHandler/ProfileSubscribeEntityHandler';
 import {
@@ -25,9 +21,8 @@ import {
   EMAIL_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
 } from '../constants';
+
 type HandlerMap = {
-  [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
-  [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
   [SettingEntityIds.Notification_NewMessageBadgeCount]: MessageBadgeSettingHandler;
   [SettingEntityIds.Notification_Browser]: NotificationsSettingHandler;
   [SettingEntityIds.Notification_NewMessages]: NewMessagesSettingHandler;
@@ -50,7 +45,6 @@ type HandlerMap = {
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
   constructor(
     private _profileService: IProfileService,
-    private _telephonyService: TelephonyService,
     private _accountService: AccountService,
     private _settingService: SettingService,
   ) {
@@ -59,14 +53,6 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
 
   getHandlerMap() {
     return {
-      [SettingEntityIds.Phone_CallerId]: new CallerIdSettingHandler(
-        this._profileService,
-      ),
-      [SettingEntityIds.Phone_DefaultApp]: new DefaultAppSettingHandler(
-        this._accountService,
-        this._profileService,
-        this._telephonyService,
-      ),
       [SettingEntityIds.Notification_NewMessageBadgeCount]: new MessageBadgeSettingHandler(
         this._profileService,
       ),
@@ -105,26 +91,26 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Notification_Mentions]:
         // prettier-ignore
         new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
-        this._profileService,
-        {
-          id: SettingEntityIds.Notification_Mentions,
-          setting_key: SETTING_KEYS.EMAIL_MENTION,
-        },
-      ),
+          this._profileService,
+          {
+            id: SettingEntityIds.Notification_Mentions,
+            setting_key: SETTING_KEYS.EMAIL_MENTION,
+          },
+        ),
       [SettingEntityIds.Notification_Teams]:
         // prettier-ignore
         new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
-        this._profileService,
-        {
-          id: SettingEntityIds.Notification_Teams,
-          setting_key: SETTING_KEYS.EMAIL_TEAM,
-          source: [
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
-            EMAIL_NOTIFICATION_OPTIONS.OFF,
-          ],
-        },
-      ),
+          this._profileService,
+          {
+            id: SettingEntityIds.Notification_Teams,
+            setting_key: SETTING_KEYS.EMAIL_TEAM,
+            source: [
+              EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+              EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+              EMAIL_NOTIFICATION_OPTIONS.OFF,
+            ],
+          },
+        ),
       // prettier-ignore
       [SettingEntityIds.Notification_DailyDigest]: new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
         this._profileService,
@@ -132,7 +118,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           id: SettingEntityIds.Notification_DailyDigest,
           setting_key: SETTING_KEYS.EMAIL_TODAY,
         },
-      ),
+      )
     };
   }
 }

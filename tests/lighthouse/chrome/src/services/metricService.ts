@@ -18,7 +18,9 @@ import {
   FpsDto,
   VersionDto,
   LoadingTimeDevelopSummaryDto,
-  LoadingTimeReleaseSummaryDto
+  LoadingTimeReleaseSummaryDto,
+  MemoryDto,
+  MemorySummaryDto
 } from "../models";
 import { DashboardService } from '.';
 
@@ -211,6 +213,8 @@ class MetricService {
     if (dtoArr.length > 0) {
       await PerformanceItemDto.bulkCreate(dtoArr);
     }
+
+    await MetricService.summaryMemory(sceneDto);
   }
 
   static async createFpsItem(sceneDto: SceneDto, scene: Scene) {
@@ -511,6 +515,101 @@ class MetricService {
         await LoadingTimeDevelopSummaryDto.create(versionSummary);
       }
     }
+  }
+
+  static async summaryMemory(sceneDto: SceneDto): Promise<void> {
+    if (!sceneDto || sceneDto.name.startsWith('FPS.')
+      || ['LoginScene', 'OfflineScene', 'RefreshScene'].indexOf(sceneDto.name) >= 0) {
+      return;
+    }
+
+    let items = await PerformanceItemDto.findAll({ where: { sceneId: sceneDto.id }, order: [['index', 'ASC']] });
+    if (!items || items.length === 0) {
+      return;
+    }
+
+    let version = await VersionDto.findOne({ where: { name: sceneDto.appVersion } });
+    if (!version) {
+      return;
+    }
+
+    // let arr1: Array<Array<number>> = [];
+    // let arr2: Array<Array<number>> = [];
+    let y: number, n = items.length;
+    let sumX = 0, sumY = 0, sumXX = 0, sumXY = 0;
+    const avgCount = 5;
+    let startArray: Array<number> = [], endArray: Array<number> = [];
+    for (let x = 0; x < n; x++) {
+      y = parseFloat('' + items[x].privateMemory);
+      // arr1.push([x, y]);
+
+      sumX += x;
+      sumY += y;
+      sumXX += x * x;
+      sumXY += x * y;
+
+      if (x < avgCount) {
+        startArray.push(y);
+      }
+
+      if (x >= (n - avgCount)) {
+        endArray.push(y);
+      }
+    }
+
+    let k = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+    let b = (sumY - k * sumX) / n;
+
+    // for (let x = 0; x < n; x++) {
+    //   arr2.push([x, k * x + b]);
+    // }
+    // console.log(JSON.stringify(arr1));
+    // console.log(JSON.stringify(arr2));
+
+    let startMemory = startArray.reduce((a, b) => a + b).valueOf() / startArray.length;
+    let endMemory = endArray.reduce((a, b) => a + b).valueOf() / endArray.length;
+
+    await MemoryDto.create({
+      sceneId: sceneDto.id,
+      sceneName: sceneDto.name,
+      startMemory, endMemory, k, b,
+      isRelease: sceneDto.isRelease,
+      versionId: version.id,
+      version: version.name,
+      platform: sceneDto.platform
+    });
+
+    const where = {
+      isRelease: sceneDto.isRelease, versionId: version.id, platform: sceneDto.platform, sceneName: sceneDto.name
+    };
+
+    await MemorySummaryDto.destroy({ where });
+
+    let memoryDtos = await MemoryDto.findAll({ where });
+    k = 0;
+    b = 0;
+    startMemory = 0;
+    endMemory = 0;
+    for (let dto of memoryDtos) {
+      k += parseFloat('' + dto.k);
+      b += parseFloat('' + dto.b);
+      startMemory += parseFloat('' + dto.startMemory);
+      endMemory += parseFloat('' + dto.endMemory);
+    }
+
+    k = k / memoryDtos.length;
+    b = b / memoryDtos.length;
+    startMemory = startMemory / memoryDtos.length;
+    endMemory = endMemory / memoryDtos.length;
+
+    await MemorySummaryDto.create({
+      sceneName: sceneDto.name,
+      startMemory, endMemory, k, b,
+      isRelease: sceneDto.isRelease,
+      versionId: version.id,
+      version: version.name,
+      platform: sceneDto.platform
+    });
   }
 }
 

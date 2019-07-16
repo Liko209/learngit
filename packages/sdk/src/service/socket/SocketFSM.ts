@@ -3,12 +3,13 @@
  * @Date: 2018-06-22 15:18:29
  * Copyright © RingCentral. All rights reserved.
  */
-import notificationCenter from '../../service/notificationCenter';
-import { SOCKET } from '../../service/eventKey';
+import notificationCenter from '../notificationCenter';
+import { SOCKET } from '../eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
 import { GlipPingPong } from './GlipPingPong';
+
 const SOCKET_LOGGER = 'SOCKET';
 
 type StateHandlerType = {
@@ -282,16 +283,16 @@ export class SocketFSM extends StateMachine {
     });
 
     this.socketClient.socket.on('presence_unified', (data: any) => {
-      dataDispatcher.onPresenceArrived(data);
+      dataDispatcher.onDataArrived('presence_unified', data);
     });
 
     this.socketClient.socket.on('message', (data: any) => {
       this.info('socket-> message. ', data);
-      dataDispatcher.onDataArrived(data);
+      dataDispatcher.onDataArrived('message', data);
     });
 
     this.socketClient.socket.on('partial', (data: any) => {
-      dataDispatcher.onDataArrived(data, true);
+      dataDispatcher.onDataArrived('partial', data, true);
       this.info('socket-> partial. ', data);
     });
 
@@ -300,11 +301,12 @@ export class SocketFSM extends StateMachine {
     });
 
     this.socketClient.socket.on('typing', (data: any) => {
+      dataDispatcher.onDataArrived('typing', data);
       this.info('socket-> typing. ', data);
     });
 
     this.socketClient.socket.on('system_message', (data: any) => {
-      dataDispatcher.onDataArrived(data);
+      dataDispatcher.onDataArrived('system_message', data);
       this.info('socket-> system_message. ', data);
     });
 

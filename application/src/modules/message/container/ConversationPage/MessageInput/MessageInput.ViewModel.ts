@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import {
+  action,
+  runInAction,
+  observable,
+  computed,
+} from 'mobx';
 import {
   MessageInputProps,
   MessageInputViewProps,
@@ -12,6 +17,7 @@ import {
 } from './types';
 import { notificationCenter } from 'sdk/service';
 import { GroupConfigService } from 'sdk/module/groupConfig';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -26,34 +32,22 @@ import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
 import { container } from 'framework';
-import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
 import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
-
-const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
-  container
-    .get(FeedbackService)
-    .zipRecentLogs(level)
-    .then(zipResult => {
-      if (!zipResult) {
-        mainLogger.debug('Zip log fail.');
-        return;
-      }
-      saveBlob(zipResult.zipName, zipResult.zipBlob);
-    });
-};
+import debounce from 'lodash/debounce';
+import { isEmpty } from './helper';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    saveDebugLog(ZipItemLevel.NORMAL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
   },
   '/debug-save-all': () => {
-    saveDebugLog(ZipItemLevel.DEBUG_ALL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL);
   },
 };
 
@@ -71,6 +65,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _onPostCallbacks: OnPostCallback[] = [];
   private _groupConfigService: GroupConfigService;
+  private _groupService: GroupService;
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
@@ -80,21 +75,41 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private _oldId: number;
-
+  private _debounceFactor: number = 3e2;
   @observable
   error: string = '';
+
+  private _upHandler = debounce(
+    this.props.onUpArrowPressed,
+    this._debounceFactor,
+    {
+      leading: true,
+    },
+  );
 
   keyboardEventHandler = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
     },
+    up: {
+      key: 38,
+      empty: true,
+      handler: this._upHandler,
+    },
   };
+
+  @observable
+  hasFocused = false;
 
   constructor(props: MessageInputProps) {
     super(props);
     this._postService = ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
+    );
+
+    this._groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
     );
 
     this._itemService = ServiceLoader.getInstance<ItemService>(
@@ -103,21 +118,34 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-    this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(
       () => this.props.id,
       (id: number) => {
         this._oldId = id;
+        this.hasFocused = false;
         this.error = '';
         this.forceSaveDraft();
       },
     );
+    this.reaction(() => ({
+      hasDraft: this._memoryDraftMap.has(this.props.id),
+    }), ({ hasDraft }) => {
+      setTimeout(() => this.hasFocused = hasDraft, 0);
+    });
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.addEventListener(
+      'beforeunload',
+      this._handleBeforeUnload,
+    );
   }
 
   dispose = () => {
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+    window.removeEventListener(
+      'beforeunload',
+      this._handleBeforeUnload,
+    );
   }
 
   @action
@@ -129,12 +157,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     groupId: number;
   }) => {
     this._memoryDraftMap.set(groupId, quote);
-  }
-
-  private _isEmpty = (content: string) => {
-    const commentText = content.trim();
-    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>)+$/gm;
-    return re.test(commentText);
   }
 
   private _doToneTransfer = (colons: string) => {
@@ -152,9 +174,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     return newString;
   }
 
-  private _doUnderscoreTransfer = (colons: string) => {
-    return colons.split('-').join('_');
-  }
+  private _doUnderscoreTransfer = (colons: string) => colons.split('-').join('_')
 
   @action
   insertEmoji = (emoji: any, cb: Function) => {
@@ -175,19 +195,23 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     setTimeout(() => {
       quill.focus();
       quill.setSelection(index + colons.length, 0);
-    },         0);
+    }, 0);
     cb && cb();
   }
 
   @action
   contentChange = (draft: string) => {
+    if ((isEmpty(draft) && isEmpty(this.draft)) || draft === this.draft) {
+      return;
+    }
     this.error = '';
     this.draft = draft;
+    this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
   }
 
   @action
   cellWillChange = (newGroupId: number, oldGroupId: number) => {
-    const draft = this._isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
+    const draft = isEmpty(this._memoryDraftMap.get(oldGroupId) || '')
       ? ''
       : this._memoryDraftMap.get(oldGroupId) || '';
     this._groupConfigService.updateDraft({
@@ -197,7 +221,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSaveDraft = () => {
-    const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    const draft = isEmpty(this.draft) ? '' : this.draft;
     this._memoryDraftMap.set(this.props.id, draft);
     this._groupConfigService.updateDraft({
       draft,
@@ -223,17 +247,25 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     if (this._memoryDraftMap.has(this.props.id)) {
       return this._memoryDraftMap.get(this.props.id) || '';
     }
+
     this.getDraftFromLocal();
     return '';
   }
 
-  async getDraftFromLocal() {
+  getDraftFromLocal = async () => {
     const draft = await this._groupConfigService.getDraft(this.props.id);
-    this._memoryDraftMap.set(this.props.id, draft);
+    runInAction(() => {
+      this.draft = draft;
+    });
   }
 
   set draft(draft: string) {
     this._memoryDraftMap.set(this.props.id, draft);
+  }
+
+  @computed
+  get hasInput() {
+    return !isEmpty(this.draft);
   }
 
   @computed
@@ -278,7 +310,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     };
   }
 
-  private async _sendPost(content: string, ids: number[]) {
+  private _sendPost = async (content: string, ids: number[]) => {
     if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
       DEBUG_COMMAND_MAP[content.trim()]();
       this.contentChange('');
@@ -289,11 +321,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       this._trackSendPost();
-      let realContent: string = content;
-
-      if (content.trim().length === 0) {
-        realContent = '';
-      }
+      const realContent: string = content.trim();
       await this._postService.sendPost({
         text: realContent,
         groupId: this.props.id,
@@ -328,6 +356,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       this._group.analysisType,
     );
   }
+
+  private _handleBeforeUnload = () => {
+    this.forceSaveDraft();
+  }
 }
 
-export { MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH };
+export {
+  MessageInputViewModel, ERROR_TYPES, CONTENT_ILLEGAL, CONTENT_LENGTH,
+};

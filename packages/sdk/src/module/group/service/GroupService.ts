@@ -9,14 +9,19 @@ import { buildPartialModifyController } from '../../../framework/controller';
 import { PartialModifyController } from '../../../framework/controller/impl/PartialModifyController';
 import { Raw, SortableModel } from '../../../framework/model';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { GroupDao } from '../../../module/group/dao';
+import { GroupDao } from '../dao';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { ENTITY, SERVICE, SOCKET } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PERMISSION_ENUM } from '../constants';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
-import { Group, TeamPermission, TeamPermissionParams } from '../entity';
+import {
+  Group,
+  TeamPermission,
+  TeamPermissionParams,
+  GroupTyping,
+} from '../entity';
 import {
   PermissionFlags,
   TeamSetting,
@@ -25,16 +30,18 @@ import {
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { TypingIndicatorController } from '../controller/TypingIndicatorController';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
   groupConfigController: GroupConfigController;
+  typingIndicatorController: TypingIndicatorController;
   constructor() {
-    super(true, daoManager.getDao(GroupDao), {
+    super({ isSupportedCache: true }, daoManager.getDao(GroupDao), {
       basePath: '/team',
       networkClient: Api.glipNetworkClient,
     });
@@ -42,19 +49,17 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       SubscribeController.buildSubscriptionController({
         [SOCKET.GROUP]: this.handleData,
         [`${ENTITY.POST}.*`]: this.handleGroupMostRecentPostChanged,
-        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this
-          .deleteAllTeamInformation,
+        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this.handleRemovedFromTeam,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
           .setAsTrue4HasMoreConfigByDirection,
+        [SOCKET.TYPING]: this.handleIncomingTyingEvent,
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return (
-        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+    this.setCheckTypeFunc((id: number) => (
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
         GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
-      );
-    });
+    ));
   }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
@@ -88,6 +93,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.groupConfigController;
   }
 
+  protected getTypingIndicatorController() {
+    if (!this.typingIndicatorController) {
+      this.typingIndicatorController = new TypingIndicatorController();
+    }
+    return this.typingIndicatorController;
+  }
+
   handleData = async (
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
@@ -96,7 +108,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getHandleDataController()
       .handleData(groups, source, changeMap);
-  }
+  };
 
   handleGroupMostRecentPostChanged = async (
     payload: NotificationEntityUpdatePayload<Post>,
@@ -104,7 +116,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     await this.getGroupController()
       .getHandleDataController()
       .handleGroupMostRecentPostChanged(payload);
-  }
+  };
 
   handleGroupFetchedPosts(groupId: number, posts: Post[]) {
     this.getGroupController()
@@ -112,11 +124,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .handleGroupFetchedPost(groupId, posts);
   }
 
-  deleteAllTeamInformation = async (ids: number[]) => {
+  handleRemovedFromTeam = async (ids: number[]) => {
     await this.getGroupController()
       .getGroupActionController()
-      .deleteAllTeamInformation(ids);
-  }
+      .handleRemovedFromTeam(ids);
+  };
 
   isValid(group: Group): boolean {
     return group && !group.is_archived && !group.deactivated && !!group.members;
@@ -207,11 +219,8 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .hasTeamAdmin(permission);
   }
 
-  async hasMorePostInRemote(groupId: number, direction: QUERY_DIRECTION) {
-    return this.getGroupConfigController().hasMorePostInRemote(
-      groupId,
-      direction,
-    );
+  async hasMorePostInRemote(groupId: number) {
+    return this.getGroupConfigController().hasMorePostInRemote(groupId);
   }
 
   updateHasMore(groupId: number, direction: QUERY_DIRECTION, hasMore: boolean) {
@@ -254,6 +263,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     return await this._groupFetchDataController.getGroupsByIds(ids, order);
+  }
+
+  async getPersonIdsBySelectedItem(ids: (number | string)[]) {
+    return await this._groupFetchDataController.getPersonIdsBySelectedItem(ids);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -314,9 +327,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -330,9 +343,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     includeUserSelf?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchAllGroups(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -346,9 +359,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Group>[];
-  }> {
+      terms: string[];
+      sortableModels: SortableModel<Group>[];
+    }> {
     return await this._groupFetchDataController.doFuzzySearchTeams(
       searchKey,
       fetchAllIfSearchKeyEmpty,
@@ -363,11 +376,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   setAsTrue4HasMoreConfigByDirection = async (
     ids: number[],
     direction: QUERY_DIRECTION,
-  ): Promise<void> => {
-    return await this.getGroupController()
-      .getGroupActionController()
-      .setAsTrue4HasMoreConfigByDirection(ids, direction);
-  }
+  ): Promise<void> => await this.getGroupController()
+    .getGroupActionController()
+    .setAsTrue4HasMoreConfigByDirection(ids, direction);
+
+  handleIncomingTyingEvent = (groupTyping: GroupTyping) => {
+    this.getTypingIndicatorController().handleIncomingTyingEvent(groupTyping);
+  };
 
   // update partial group data, for last accessed time
   async updateGroupLastAccessedTime(params: {
@@ -411,6 +426,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getSoundexById(id: number): string[] {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getSoundexById(id);
+  }
+
+  sendTypingEvent(groupId: number, isClear: boolean) {
+    return this.getTypingIndicatorController().sendTypingEvent(
+      groupId,
+      isClear,
+    );
   }
 }
 

@@ -318,7 +318,7 @@ describe('SectionGroupHandler', () => {
           id: 11111,
           is_team: false,
           created_at: 0,
-          creator_id: 1,
+          creator_id: 3,
           members: [3],
         },
       ];
@@ -359,6 +359,7 @@ describe('SectionGroupHandler', () => {
           is_team: true,
           created_at: 0,
           is_archived: true,
+          members: [],
         },
       ];
       groupService.getGroupsByType = jest
@@ -682,7 +683,12 @@ describe('SectionGroupHandler', () => {
         },
       ]);
       isDelete = true;
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, [1]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [
+        {
+          id: 1,
+          members: [],
+        },
+      ] as any);
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -753,7 +759,7 @@ describe('SectionGroupHandler', () => {
           id: 11111,
           is_team: false,
           created_at: 0,
-          creator_id: 1,
+          creator_id: 3,
           members: [3],
         },
       ];
@@ -823,6 +829,7 @@ describe('SectionGroupHandler', () => {
           set_abbreviation: '',
           email_friendly_abbreviation: '',
           most_recent_content_modified_at: 1,
+          members: [],
         },
       ]);
       setTimeout(() => {
@@ -962,15 +969,16 @@ describe('SectionGroupHandler', () => {
       SectionGroupHandler.getInstance()['_handlersMap'] = {};
       SectionGroupHandler.getInstance()['_handlersMap'][
         SECTION_TYPE.DIRECT_MESSAGE
-] = {};
+      ] = {};
       getEntity.mockReturnValueOnce({ unreadCount: 1 });
       jest
         .spyOn(SectionGroupHandler.getInstance(), 'getGroupIdsByType')
         .mockReturnValueOnce([123, 456, 789]);
       SectionGroupHandler.getInstance()['_removeByIds'] = jest.fn();
       SectionGroupHandler.getInstance()['_updateUrl'] = jest.fn();
-      SectionGroupHandler.getInstance()[ '_removeGroupsIfExistedInHiddenGroups'
-]();
+      SectionGroupHandler.getInstance()[
+        '_removeGroupsIfExistedInHiddenGroups'
+      ]();
       expect(SectionGroupHandler.getInstance()['_removeByIds']).toBeCalledWith(
         SECTION_TYPE.DIRECT_MESSAGE,
         [456],

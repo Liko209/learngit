@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { IFetchSortableDataProvider } from './FetchSortableDataListHandler';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { hasValidEntity, getEntity } from '@/store/utils';
-import { IdModel } from 'sdk/framework/model';
+import { IdModel, ModelIdType } from 'sdk/framework/model';
 import { Entity } from '../../store';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error/sdk';
 import notificationCenter from 'sdk/service/notificationCenter';
@@ -15,25 +15,35 @@ import { ISortableModel, IMatchFunc, IEntityDataProvider } from './types';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store/constants';
 
-type IdListDataProviderOptions<T, K> = {
+type IdListDataProviderOptions<
+  T extends IdModel<IdType>,
+  K extends Entity<IdType>,
+  IdType extends ModelIdType = number
+> = {
   eventName: string;
   entityName: ENTITY_NAME;
-  entityDataProvider: IEntityDataProvider<T>;
+  entityDataProvider: IEntityDataProvider<T, IdType>;
   filterFunc: IMatchFunc<K>;
 };
 
 const DEFAULT_PAGE_SIZE = 20;
 
-class IdListPagingDataProvider<T extends IdModel, K extends Entity>
-  implements IFetchSortableDataProvider<T> {
-  private _cursors: { front: number | undefined; end: number | undefined } = {
+class IdListPagingDataProvider<
+  T extends IdModel<IdType>,
+  K extends Entity<IdType>,
+  IdType extends ModelIdType = number
+> implements IFetchSortableDataProvider<T, IdType, ISortableModel<IdType>> {
+  private _cursors: { front: IdType | undefined; end: IdType | undefined } = {
     front: undefined,
     end: undefined,
   };
-  private _options: IdListDataProviderOptions<T, K>;
-  private _sourceIds: number[];
+  private _options: IdListDataProviderOptions<T, K, IdType>;
+  private _sourceIds: IdType[];
 
-  constructor(sourceIds: number[], options: IdListDataProviderOptions<T, K>) {
+  constructor(
+    sourceIds: IdType[],
+    options: IdListDataProviderOptions<T, K, IdType>,
+  ) {
     this._sourceIds = sourceIds;
     this._options = options;
   }
@@ -41,7 +51,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel,
+    anchor?: ISortableModel<IdType>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     if (!this._sourceIds.length) {
       return { data: [], hasMore: false };
@@ -53,7 +63,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     const pageData = this._getIdsByPage(direction, pageSize, realAnchorId);
     await this._fetchAndSaveModels(pageData.ids);
     const validModels: K[] = [];
-    pageData.ids.forEach((id: number) => {
+    pageData.ids.forEach((id: IdType) => {
       if (hasValidEntity(this._options.entityName, id)) {
         const model = getEntity(this._options.entityName, id) as K;
         this._options.filterFunc(model) && validModels.push(model);
@@ -70,7 +80,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
           direction === QUERY_DIRECTION.NEWER
             ? this._cursors.end
             : this._cursors.front,
-        ),
+        ) as ISortableModel<IdType>,
       );
       idModels =
         direction === QUERY_DIRECTION.NEWER
@@ -84,28 +94,28 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     };
   }
 
-  onSourceIdsChanged(newSourceIds: number[]) {
+  onSourceIdsChanged(newSourceIds: IdType[]) {
     const oldSourceIds = _.cloneDeep(this._sourceIds);
     const newIds = new Set(_.difference(newSourceIds, oldSourceIds));
     const deletedIds = new Set(_.difference(oldSourceIds, newSourceIds));
     const newIdsWithoutNew = newSourceIds.filter(
-      (value: number) => !newIds.has(value),
+      (value: IdType) => !newIds.has(value),
     );
     const oldIdsWithoutOld = oldSourceIds.filter(
-      (value: number) => !deletedIds.has(value),
+      (value: IdType) => !deletedIds.has(value),
     );
 
     if (!_.isEqual(newIdsWithoutNew, oldIdsWithoutOld)) {
       const range = this._getCursorRange();
       const oldInRangeIds = this._getInCursorRangeIds(oldSourceIds, range);
-      const idPosMap: Map<number, number> = new Map();
-      newSourceIds.forEach((value: number, index: number) => {
+      const idPosMap: Map<IdType, number> = new Map();
+      newSourceIds.forEach((value: IdType, index: number) => {
         idPosMap.set(value, index);
       });
 
       let endPos = 0;
       let frontPos = 0;
-      oldInRangeIds.forEach((id: number) => {
+      oldInRangeIds.forEach((id: IdType) => {
         const pos = idPosMap.get(id);
         if (pos) {
           frontPos = pos < frontPos ? pos : frontPos;
@@ -133,16 +143,16 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     this._sourceIds = newSourceIds;
   }
 
-  private _notifyDeletes(deletedIds: number[]) {
+  private _notifyDeletes(deletedIds: IdType[]) {
     deletedIds.length > 0 &&
       notificationCenter.emitEntityDelete(this._options.eventName, deletedIds);
   }
 
-  private async _notifyUpdates(updatedIds: number[]) {
+  private async _notifyUpdates(updatedIds: IdType[]) {
     const updateEntities = await this._options.entityDataProvider.getByIds(
       updatedIds,
     );
-    notificationCenter.emitEntityUpdate(
+    notificationCenter.emitEntityUpdate<T, IdType>(
       this._options.eventName,
       updateEntities,
     );
@@ -174,13 +184,13 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   private _getInCursorRangeIds(
-    sourceIds: number[],
+    sourceIds: IdType[],
     range: { front: number; end: number },
   ) {
     return _.slice(sourceIds, range.front, range.end + 1);
   }
 
-  private _getRightAnchor(direction: QUERY_DIRECTION, anchorId: number) {
+  private _getRightAnchor(direction: QUERY_DIRECTION, anchorId: IdType) {
     const anchorPos = this._sourceIds.indexOf(anchorId);
     switch (direction) {
       case QUERY_DIRECTION.NEWER: {
@@ -207,23 +217,21 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     }
   }
 
-  private _toSortableModel(id?: number) {
+  private _toSortableModel(id?: IdType) {
     return id ? { id, sortValue: id } : undefined;
   }
 
-  private _toIdModels(ids: number[]) {
-    return ids.map((id: number) => {
-      return { id } as T;
-    });
+  private _toIdModels(ids: IdType[]) {
+    return ids.map((id: IdType) => ({ id } as T));
   }
 
   private _getIdsByPage(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchorId?: number,
-  ): { ids: number[]; hasMore: boolean } {
+    anchorId?: IdType,
+  ): { ids: IdType[]; hasMore: boolean } {
     let hasMore = true;
-    let slicedIds: number[] = [];
+    let slicedIds: IdType[] = [];
 
     const pos = anchorId ? this._sourceIds.indexOf(anchorId) : -1;
     switch (direction) {
@@ -237,7 +245,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
         if (!this._cursors.front) {
           this._cursors.front = anchorId
             ? anchorId
-            : (_.first(this._sourceIds) as number);
+            : (_.first(this._sourceIds) as IdType);
         }
 
         break;
@@ -257,7 +265,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
         if (!this._cursors.end) {
           this._cursors.end = anchorId
             ? anchorId
-            : (_.last(this._sourceIds) as number);
+            : (_.last(this._sourceIds) as IdType);
         }
         break;
       }
@@ -268,15 +276,13 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     return { hasMore, ids: slicedIds };
   }
 
-  private async _fetchAndSaveModels(ids: number[]) {
-    const needFetchIds: number[] = ids.filter((id: number) => {
-      return !hasValidEntity(this._options.entityName, id);
-    });
+  private async _fetchAndSaveModels(ids: IdType[]) {
+    const needFetchIds: IdType[] = ids.filter((id: IdType) => !hasValidEntity(this._options.entityName, id));
 
     needFetchIds.length > 0 && (await this._fetchFromService(needFetchIds));
   }
 
-  private async _fetchFromService(ids: number[]) {
+  private async _fetchFromService(ids: IdType[]) {
     const entities = await this._options.entityDataProvider.getByIds(ids);
     this._updateEntityStore(entities);
   }

@@ -7,9 +7,11 @@ import SocketRequest from './SocketRequest';
 import io from './socket.io';
 import SocketRequestHelper from './SocketRequestHelper';
 import { SocketResponse } from './SocketResponse';
+
 interface ISocketRequestDelegate {
   request: (request: SocketRequest) => Promise<SocketResponse>;
   isClientAvailable: () => boolean;
+  send: (type: string, options: any) => void;
 }
 class SocketClient implements ISocketRequestDelegate {
   static get: () => ISocketRequestDelegate;
@@ -34,15 +36,17 @@ class SocketClient implements ISocketRequestDelegate {
     this.socket.on('disconnect', () => {
       this.socketRequestHelper.onSocketDisconnect();
     });
-    SocketClient.get = () => {
-      return this as ISocketRequestDelegate;
-    };
+    SocketClient.get = () => this as ISocketRequestDelegate;
   }
 
   request(request: SocketRequest) {
     const socketRequestPromise = this.socketRequestHelper.newRequest(request);
     this.socket.emit('request', request);
     return socketRequestPromise;
+  }
+
+  send(type: string, options: any) {
+    this.socket.emit(type, options);
   }
 
   isClientAvailable() {

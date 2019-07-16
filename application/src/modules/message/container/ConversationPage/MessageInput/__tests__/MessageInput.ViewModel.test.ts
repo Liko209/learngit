@@ -13,14 +13,17 @@ import {
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
+import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
+import { isEmpty } from '../helper';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
+jest.mock('sdk/module/group');
 
 const postService = new PostService();
 const userId = 1232222;
@@ -31,6 +34,10 @@ const groupConfigService = {
 
 const itemService = {
   getUploadItems: jest.fn(),
+};
+
+const groupService = {
+  sendTypingEvent: jest.fn(),
 };
 
 ServiceLoader.getInstance = jest
@@ -48,7 +55,11 @@ ServiceLoader.getInstance = jest
       return groupConfigService;
     }
 
-    return { userConfig:{ getGlipUserId: () => userId }};
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
+    }
+
+    return { userConfig: { getGlipUserId: () => userId } };
   });
 
 const mockGroupEntityData = {
@@ -61,7 +72,10 @@ describe('MessageInputViewModel', () => {
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
     }));
-    messageInputViewModel = new MessageInputViewModel({ id: 123 });
+    messageInputViewModel = new MessageInputViewModel({
+      id: 123,
+      onUpArrowPressed: jest.fn(),
+    });
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -125,6 +139,16 @@ describe('MessageInputViewModel', () => {
         expect(messageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
       });
 
+      it('should trim prefix / suffix spaces when send post [JPT-383]', () => {
+        const text = '   abc   ';
+        markdownFromDeltaGen(text)();
+        expect(postService.sendPost).toBeCalledWith({
+          text: text.trim(),
+          groupId: 123,
+          itemIds: [],
+        });
+      });
+
       it('should handle error when post service fails', () => {
         postService.sendPost = jest
           .fn()
@@ -154,6 +178,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();
@@ -164,6 +189,7 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel = new MessageInputViewModel({
           id: 123,
           onPost: onPostHandler,
+          onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
         expect(onPostHandler).toBeCalled();
@@ -200,9 +226,26 @@ describe('MessageInputViewModel', () => {
         expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(draft);
       });
       it('should remove empty line without any text when save draft', () => {
+        messageInputViewModel.draft = '<p><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove multiple empty lines without any text when save draft', () => {
         messageInputViewModel.draft = '<p><br></p><p><br></p>';
         messageInputViewModel.forceSaveDraft();
         expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove empty line with 2 <br> when save draft', () => {
+        messageInputViewModel.draft = '<p><br><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
+      });
+      it('should remove empty line with <br> and some text when save draft', () => {
+        messageInputViewModel.draft = '<p><br>abc</p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(
+          '<p><br>abc</p>',
+        );
       });
     });
     describe('insertEmoji', () => {
@@ -247,6 +290,30 @@ describe('MessageInputViewModel', () => {
         const emoji = { colons: ':baby::skin-tone-2:' };
         messageInputViewModel.insertEmoji(emoji);
         expect(setTimeout).toHaveBeenCalledTimes(1);
+      });
+    });
+    describe('hasInput', () => {
+      beforeEach(() => {
+        jest.clearAllMocks();
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onUpArrowPressed: jest.fn(),
+        });
+      });
+      it('should be true when there is draft in current conversation input', () => {
+        messageInputViewModel._memoryDraftMap = new Map();
+        messageInputViewModel._memoryDraftMap.set(123, 'test');
+        expect(messageInputViewModel.hasInput).toBeTruthy();
+      });
+    });
+    describe('contentChange()', () => {
+      it('should not call sendTypingEvent when being called and both new and old draft has no content', () => {
+        messageInputViewModel.contentChange('');
+        expect(groupService.sendTypingEvent).not.toBeCalled();
+      });
+      it('should call sendTypingEvent when being called and new draft has content', () => {
+        messageInputViewModel.contentChange('xx');
+        expect(groupService.sendTypingEvent).toBeCalledWith(123, false);
       });
     });
   });

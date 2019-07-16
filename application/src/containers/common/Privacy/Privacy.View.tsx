@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -22,7 +23,7 @@ class PrivacyViewComponent extends Component<Props> {
   onClickPrivacy = async () => {
     const { handlePrivacy } = this.props;
     await handlePrivacy();
-  }
+  };
 
   getTipText = () => {
     const { isPublic, isAdmin } = this.props;
@@ -32,7 +33,7 @@ class PrivacyViewComponent extends Component<Props> {
         : 'people.team.changeToPublic';
     }
     return isPublic ? 'people.team.publicTeam' : 'people.team.privateTeam';
-  }
+  };
 
   render() {
     const { isPublic, size, t, isAdmin, isTeam } = this.props;
@@ -43,12 +44,15 @@ class PrivacyViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size={size}
-        color="grey.500"
-        className="privacy"
+        color='grey.500'
+        className='privacy'
         disabled={!isAdmin}
         alwaysEnableTooltip={true}
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
+        data-test-automation-id={
+          isPublic ? 'privacy-is-public' : 'privacy-is-private'
+        }
       >
         {isPublic ? 'lock_open' : 'lock'}
       </JuiIconButton>

@@ -95,6 +95,37 @@ class ToastCallError {
       "Call error: something went wrong on our end and we weren't able to park the call.",
     );
   }
+
+  static toastPermissionError(): void {
+    ToastCallError.toast('telephony.prompt.NoCallPermission', 3000);
+    mainLogger.info(
+      'Call error: You no longer have the permission to make the call.',
+    );
+  }
+
+  static toastCountryBlockError(): void {
+    ToastCallError.toast('telephony.prompt.CountryBlock', 3000);
+    mainLogger.info('Call error: VoIP is not available in your country.');
+  }
+
+  static toastVoipUnavailableError(): void {
+    ToastCallError.toast('telephony.prompt.VoipUnavailable', 3000);
+    mainLogger.info('Call error: VoIP is currently not available.');
+  }
+
+  static toastOnDemandRecording() {
+    ToastCallError.toast('telephony.prompt.OnDemandRecording', 3000);
+    mainLogger.info(
+      'Call error: On-demand call recording disabled in Service Web.',
+    );
+  }
+
+  static toastAutoRecording() {
+    ToastCallError.toast('telephony.prompt.AutoRecording', 3000);
+    mainLogger.info(
+      'Call error: Automatic call recording enabled in Service Web.',
+    );
+  }
 }
 
 export { ToastCallError };

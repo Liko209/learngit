@@ -18,9 +18,11 @@ const RC_INFO_KEYS = {
   PHONE_DATA: 'PHONE_DATA',
   PHONE_DATA_VERSION: 'PHONE_DATA_VERSION',
   EXTENSION_PHONE_NUMBER_LIST: 'extension_phone_number_list',
+  EXTENSION_CALLER_ID: 'extension_caller_id',
   DIALING_PLAN: 'dialing_plan',
   ACCOUNT_SERVICE_INFO: 'account_service_info',
   FORWARDING_NUMBERS: 'forwarding_numbers',
+  BLOCK_NUMBER: 'block_number',
 };
 
 const RC_INFO_GLOBAL_KEYS = {
@@ -45,4 +47,15 @@ const RC_INFO_HISTORY: ConfigChangeHistory = {
   },
 };
 
-export { MODULE_NAME, RC_INFO_KEYS, RC_INFO_GLOBAL_KEYS, RC_INFO_HISTORY };
+const CALLER_ID_FEATURE_NAME = 'AdditionalSoftphone';
+
+const DEFAULT_PHONE_DATA_VERSION = '8.2';
+
+export {
+  MODULE_NAME,
+  RC_INFO_KEYS,
+  RC_INFO_GLOBAL_KEYS,
+  RC_INFO_HISTORY,
+  CALLER_ID_FEATURE_NAME,
+  DEFAULT_PHONE_DATA_VERSION,
+};

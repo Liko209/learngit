@@ -8,8 +8,9 @@ import { AbstractService } from './AbstractService';
 import { IdModel, ModelIdType } from '../model';
 import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
+import { IHealthModuleController } from '../controller/interface/IHealthModuleController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
-import { BaseDao } from '../../framework/dao';
+import { BaseDao } from '../dao';
 import NetworkClient from '../../api/NetworkClient';
 import {
   buildRequestController,
@@ -26,9 +27,10 @@ import { IEntityNotificationController } from '../controller/interface/IEntityNo
 import { BaseSettingEntity } from '../model/setting';
 import { IConfigHistory } from '../config/IConfigHistory';
 import { configMigrator } from '../config';
-import { Nullable } from 'sdk/types';
+import { Nullable, UndefinedAble } from 'sdk/types';
 import { ConfigChangeHistory } from '../config/types';
 import { notificationCenter, SERVICE } from 'sdk/service';
+import { UserConfig } from 'sdk/module/config';
 
 class EntityBaseService<
   T extends IdModel<IdType>,
@@ -39,15 +41,22 @@ class EntityBaseService<
   private _entityCacheController: IEntityCacheController<T, IdType>;
   private _checkTypeFunc: (id: IdType) => boolean;
   private _entityNotificationController: IEntityNotificationController<T>;
-
+  private _healthModuleController: IHealthModuleController;
   constructor(
-    public isSupportedCache: boolean,
+    public entityOptions: {
+      isSupportedCache: boolean;
+      entityName?: string;
+    },
     public dao?: BaseDao<T, IdType>,
     public networkConfig?: { basePath: string; networkClient: NetworkClient },
   ) {
     super();
     configMigrator.addHistory(this);
     this._initControllers();
+  }
+
+  getUserConfig(): UndefinedAble<UserConfig> {
+    return undefined;
   }
 
   getHistoryDetail(): Nullable<ConfigChangeHistory> {
@@ -89,32 +98,37 @@ class EntityBaseService<
   }
 
   protected onStarted() {
-    notificationCenter.on(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.on(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.on(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.on(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.subscribe();
     }
+    this._healthModuleController && this._healthModuleController.init();
   }
   protected onStopped() {
-    notificationCenter.off(SERVICE.LOGIN, this.onLogin.bind(this));
+    notificationCenter.off(SERVICE.RC_LOGIN, this.onRCLogin.bind(this));
+    notificationCenter.off(SERVICE.GLIP_LOGIN, this.onGlipLogin.bind(this));
     notificationCenter.off(SERVICE.LOGOUT, this.onLogout.bind(this));
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
-
+    this._healthModuleController && this._healthModuleController.dispose();
     delete this._subscribeController;
     delete this._entitySourceController;
     delete this._entityCacheController;
     delete this._entityNotificationController;
   }
 
-  protected onLogin() {}
+  protected onRCLogin() {}
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  protected onGlipLogin(success: boolean) {}
 
   protected onLogout() {}
 
-  async batchGet(ids: IdType[]): Promise<T[]> {
+  async batchGet(ids: IdType[], order?: boolean): Promise<T[]> {
     if (this._entitySourceController) {
-      return await this._entitySourceController.batchGet(ids);
+      return await this._entitySourceController.batchGet(ids, order);
     }
 
     throw new Error('entitySourceController is null');
@@ -132,23 +146,28 @@ class EntityBaseService<
   }
 
   isCacheEnable(): boolean {
-    return this._entityCacheController ? true : false;
+    return !!this._entityCacheController;
   }
 
   protected buildEntityCacheController() {
-    return buildEntityCacheController<T, IdType>();
+    return buildEntityCacheController<T, IdType>(this.entityOptions.entityName);
   }
 
   protected canSaveRemoteEntity(): boolean {
     return true;
   }
 
+  protected canRequest(): boolean {
+    return true;
+  }
+
+  private _canRequest = () => this.canRequest();
+
   private _initControllers() {
-    if (this.isSupportedCache && !this._entityCacheController) {
+    if (this.entityOptions.isSupportedCache && !this._entityCacheController) {
       this._entityCacheController = this.buildEntityCacheController();
       this.initialEntitiesCache();
     }
-
     if (this.dao || this._entityCacheController) {
       this._entitySourceController = buildEntitySourceController(
         buildEntityPersistentController<T, IdType>(
@@ -156,20 +175,21 @@ class EntityBaseService<
           this._entityCacheController,
         ),
         this.networkConfig
-          ? buildRequestController<T, IdType>(this.networkConfig)
+          ? {
+            requestController: buildRequestController<T, IdType>(
+              this.networkConfig,
+            ),
+            canSaveRemoteData: this.canSaveRemoteEntity(),
+            canRequest: this._canRequest,
+          }
           : undefined,
-        this.canSaveRemoteEntity(),
       );
     }
   }
 
   protected async initialEntitiesCache() {
     mainLogger.debug('_initialEntitiesCache begin');
-    if (
-      this.dao &&
-      this._entityCacheController &&
-      !this._entityCacheController.isStartInitial()
-    ) {
+    if (this.dao && !this._entityCacheController.isStartInitial()) {
       const models = await this.dao.getAll();
       this._entityCacheController.initialize(models);
       mainLogger.debug('_initialEntitiesCache done');
@@ -199,14 +219,16 @@ class EntityBaseService<
     return this._entityNotificationController;
   }
 
-  async getSettingsByParentId(settingId: number): Promise<BaseSettingEntity[]> {
+  async getSettingsByParentId(): Promise<BaseSettingEntity[]> {
     return [];
   }
 
-  async getSettingItemById(
-    settingId: number,
-  ): Promise<BaseSettingEntity | undefined> {
+  async getSettingItemById(): Promise<BaseSettingEntity | undefined> {
     return undefined;
+  }
+
+  setHealthModuleController(controller: IHealthModuleController) {
+    this._healthModuleController = controller;
   }
 }
 

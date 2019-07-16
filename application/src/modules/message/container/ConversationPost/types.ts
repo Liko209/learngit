@@ -16,6 +16,7 @@ type ConversationPostProps = {
 type ConversationPostViewProps = ConversationPostProps & {
   type: POST_TYPE;
   conversationId: number;
+  isTeamMention: boolean;
 };
 
 export { ConversationPostProps, ConversationPostViewProps };

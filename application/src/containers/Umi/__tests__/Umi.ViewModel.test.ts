@@ -13,7 +13,9 @@ jest.mock('framework');
 
 describe('UmiViewModel', () => {
   let viewModel: UmiViewModel;
-  let currentSetting = NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS;
+  let currentSetting = {
+    value: NEW_MESSAGE_BADGES_OPTIONS.GROUPS_AND_MENTIONS,
+  };
   beforeEach(() => {
     const props: UmiProps = {
       type: UMI_SECTION_TYPE.FAVORITE,
@@ -95,6 +97,29 @@ describe('UmiViewModel', () => {
     it('should get correct unread when id is valid and unreadCount > 0 and umi setting is to display all', () => {
       currentSetting = NEW_MESSAGE_BADGES_OPTIONS.ALL;
       jest.spyOn(utils, 'getSingleEntity').mockReturnValue(currentSetting);
+      viewModel['props'].id = 123;
+      const mockState = {
+        unreadCount: 12,
+        unreadMentionsCount: 54,
+      };
+      const mockGroup = {
+        isTeam: true,
+      };
+      // @ts-ignore
+      utils.getEntity = jest
+        .fn()
+        .mockReturnValueOnce(mockState)
+        .mockReturnValueOnce(mockGroup);
+
+      expect(viewModel['_getSingleUnreadInfo']()).toEqual({
+        unreadCount: 12,
+        important: true,
+      });
+    });
+    it('should get correct unread when id is valid and unreadCount > 0 and umi setting is unset', () => {
+      jest
+        .spyOn(utils, 'getSingleEntity')
+        .mockReturnValue({ value: undefined });
       viewModel['props'].id = 123;
       const mockState = {
         unreadCount: 12,

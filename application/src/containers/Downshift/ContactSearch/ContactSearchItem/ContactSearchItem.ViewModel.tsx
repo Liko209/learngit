@@ -14,10 +14,7 @@ import PersonModel from '@/store/models/Person';
 class ContactSearchItemViewModel extends StoreViewModel<Props> {
   @computed
   get person() {
-    return getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.props.itemId,
-    );
+    return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.props.itemId);
   }
 }
 

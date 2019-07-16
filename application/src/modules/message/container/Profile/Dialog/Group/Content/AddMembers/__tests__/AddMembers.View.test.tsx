@@ -10,6 +10,7 @@ import { JuiButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { JuiModal } from 'jui/components/Dialog';
 import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
+
 jest.mock('@/containers/Notification');
 
 const someProps = {
@@ -57,10 +58,10 @@ describe('AddMembersView', () => {
         .find(JuiButton)
         .simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'people.prompt.AddTeamMembersNetworkError',
-          }),
-        );
+        expect.objectContaining({
+          message: 'people.prompt.AddTeamMembersNetworkError',
+        }),
+      );
     });
   });
 });

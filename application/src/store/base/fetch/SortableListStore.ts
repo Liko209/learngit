@@ -39,9 +39,7 @@ export class SortableListStore<
         _.isEqualWith(
           unionAndSortIds,
           this._items,
-          (objValue: ISortableModel, otherValue: ISortableModel) => {
-            return objValue.id === otherValue.id;
-          },
+          (objValue: ISortableModel, otherValue: ISortableModel) => objValue.id === otherValue.id,
         )
       ) {
         mainLogger.debug(
@@ -80,8 +78,6 @@ export class SortableListStore<
   }
 
   getById(id: IdType) {
-    return this.items.find((item: SortableModel) => {
-      return item.id === id;
-    });
+    return this.items.find((item: SortableModel) => item.id === id);
   }
 }

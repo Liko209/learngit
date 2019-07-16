@@ -56,7 +56,7 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
     return this.post.activityData || {};
   }
 
-  getTimeText(value: any, event: EventItemModel) {
+  getTimeText(value: any) {
     const {
       repeat,
       repeatEndingAfter,
@@ -87,12 +87,12 @@ class EventUpdateViewModel extends StoreViewModel<EventUpdateProps>
 
   oldTimeText = promisedComputed('', async () => {
     const { old_values } = this.activityData;
-    return await this.getTimeText(old_values, this.event);
+    return await this.getTimeText(old_values);
   });
 
   newTimeText = promisedComputed('', async () => {
     const { new_values } = this.activityData;
-    return await this.getTimeText(new_values, this.event);
+    return await this.getTimeText(new_values);
   });
 }
 

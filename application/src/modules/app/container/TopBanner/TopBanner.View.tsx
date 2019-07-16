@@ -9,16 +9,18 @@ import { JuiTopBannerContainer } from 'jui/pattern/TopBanner';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
 import { TopBannerViewProps } from './types';
-import { TopBannerViewModel } from './TopBanner.ViewModel';
+import { container } from 'framework';
+import { AppStore } from '../../store';
 
 @observer
 class TopBannerView extends React.Component<TopBannerViewProps> {
+  private _appStore: AppStore = container.get(AppStore);
   render() {
-    const children = _(TopBannerViewModel.data)
+    const children = _(this._appStore.topBanners)
       .orderBy('priority', 'asc')
-      .map(({ priority, Component, props, isShow }) => {
-        return isShow ? <Component key={priority} {...props} /> : null;
-      })
+      .map(({
+        priority, Component, props, isShow,
+      }) => (isShow ? <Component key={priority} {...props} /> : null))
       .value();
     return <JuiTopBannerContainer>{children}</JuiTopBannerContainer>;
   }

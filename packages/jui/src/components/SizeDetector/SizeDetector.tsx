@@ -32,16 +32,21 @@ const JuiSizeDetector = ({
   };
   useEffect(() => {
     if (targets) {
-      const disposers: ResizeObserver[] = targets.map((target: HTMLElement) => {
-        const observer = new ResizeObserver(updateSize);
-        observer.observe(target);
-        return observer;
-      });
-      return () => disposers.forEach((ro: ResizeObserver) => ro.disconnect());
+      let disposers: ResizeObserver[] | undefined = targets.map(
+        (target: HTMLElement) => {
+          const observer = new ResizeObserver(updateSize);
+          observer.observe(target);
+          return observer;
+        },
+      );
+      return () => {
+        (disposers as ResizeObserver[]).forEach((ro: ResizeObserver) => ro.disconnect());
+        disposers = undefined;
+      };
     }
 
     return () => {};
-  },        [targets]);
+  }, [targets]);
   return <></>;
 };
 
@@ -81,9 +86,7 @@ class JuiSizeManager implements ISizeManager {
       this._notifySizeChanged();
     }
   }
-  getSize = (key: string) => {
-    return this._sizes[key] || { width: 0, height: 0 };
-  }
+  getSize = (key: string) => this._sizes[key] || { width: 0, height: 0 }
   getUsedSize = (key: string) => {
     const accSize: Size = { width: 0, height: 0 };
     Object.keys(this._sizes).forEach((keyLooper: string) => {

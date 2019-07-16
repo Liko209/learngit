@@ -3,14 +3,21 @@
  * @Date: 2019-04-01 12:43:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo, useRef } from 'react';
+import React, {
+  memo,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import {
   JuiOutlineTextField,
   JuiOutlineTextFieldRef,
   JuiOutlineTextFieldProps,
 } from '../../../components/Forms/OutlineTextField';
 import styled from '../../../foundation/styled-components';
-import { spacing, grey, typography, radius } from '../../../foundation/utils';
+import {
+  spacing, grey, typography, radius,
+} from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   display: flex;
@@ -40,12 +47,21 @@ type JuiGlobalSearchInputProps = {
   onClose: () => void;
 } & JuiOutlineTextFieldProps;
 
-const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
-  const { showClear, onClear, onClose, clearText, ...rest } = props;
+const JuiGlobalSearchInput = memo(forwardRef((props: JuiGlobalSearchInputProps, ref) => {
+  const {
+    showClear, onClear, onClose, clearText, ...rest
+  } = props;
 
-  const ref = useRef<JuiOutlineTextFieldRef>(null);
+  const inputRef = useRef<JuiOutlineTextFieldRef>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current && inputRef.current.focus();
+    }
+  }));
+
   const baseOnClear = () => {
-    ref.current && ref.current.focus();
+    inputRef.current && inputRef.current.focus();
     onClear();
   };
 
@@ -56,7 +72,7 @@ const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
       iconPosition="both"
       onClickIconRight={onClose}
       size="large"
-      ref={ref as any}
+      ref={inputRef as any}
       inputAfter={
         showClear && (
           <ClearButton
@@ -70,6 +86,6 @@ const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
       {...rest}
     />
   );
-});
+}));
 
-export { JuiGlobalSearchInput };
+export { JuiGlobalSearchInput, JuiOutlineTextFieldRef };

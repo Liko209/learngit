@@ -18,9 +18,10 @@ import { Reply } from '../Reply';
 import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
 import { getDisplayName } from '../../helpers';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 const More = (props: CallActionsProps) => (
-  <CallActions showLabel={false} {...props} shouldPersistBg={true} />
+  <CallActions showLabel={false} {...props} shouldPersistBg />
 );
 
 More.displayName = 'more';
@@ -37,14 +38,16 @@ class IncomingViewComponent extends Component<Props> {
       <Avatar
         uid={uid}
         showDefaultAvatar={!uid}
-        cover={true}
+        cover
         imgProps={{ draggable: false }}
       />
     );
-  }
+  };
 
   render() {
-    const { name, phone, t, isExt, incomingState } = this.props;
+    const {
+      name, phone, t, isExt, incomingState,
+    } = this.props;
 
     switch (incomingState) {
       case INCOMING_STATE.REPLY:
@@ -56,7 +59,7 @@ class IncomingViewComponent extends Component<Props> {
       default:
         return (
           <JuiIncomingCall
-            name={getDisplayName(t, name)}
+            name={getDisplayName(t, CALL_DIRECTION.INBOUND, name)}
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
             Ignore={Ignore}

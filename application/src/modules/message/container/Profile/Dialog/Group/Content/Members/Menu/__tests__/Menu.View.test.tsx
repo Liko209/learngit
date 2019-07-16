@@ -8,6 +8,7 @@ import { shallow } from 'enzyme';
 import { MenuViewComponent } from '../Menu.View';
 import { Notification } from '@/containers/Notification';
 import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
+
 jest.mock('@/containers/Notification');
 
 const someProps = {
@@ -29,9 +30,9 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      await Wrapper.find('[data-test-automation-id="revokeTeamAdmin"]').simulate(
-        'click',
-      );
+      await Wrapper.find(
+        '[data-test-automation-id="revokeTeamAdmin"]',
+      ).simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'people.prompt.revokeTeamAdminNetworkError',
@@ -47,9 +48,9 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      await Wrapper.find('[data-test-automation-id="revokeTeamAdmin"]').simulate(
-        'click',
-      );
+      await Wrapper.find(
+        '[data-test-automation-id="revokeTeamAdmin"]',
+      ).simulate('click');
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'people.prompt.revokeTeamAdminBackendError',

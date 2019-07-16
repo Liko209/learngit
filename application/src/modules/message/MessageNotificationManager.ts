@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
-import { UserSettingEntity } from 'sdk/module/setting';
+import { buildAtMentionMap } from '../../common/buildAtMentionMap';
 import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from '../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -33,18 +33,17 @@ import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 import { mainLogger } from 'sdk';
 import { isFirefox, isWindows } from '@/common/isUserAgent';
 import { throttle } from 'lodash';
-import { Company } from 'sdk/module/company/entity';
-import CompanyModel from '../../store/models/Company';
 import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import SettingModel from '../../store/models/UserSetting';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  NOTIFICATION_OPTIONS,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
+import { CONVERSATION_TYPES } from '@/constants';
+import { HTMLUnescape } from '@/common/postParser/utils';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -84,9 +83,13 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     }
     const { postModel, groupModel } = result;
     this.enqueueVM(postModel, groupModel);
-  }
+  };
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
+    const ids = this._vmQueue.map(i => i.id);
+    if (ids.includes(id)) {
+      return;
+    }
     const MAX_SIZE = 50;
     const vm = new MessageNotificationViewModel(id, {
       onCreate: () => this.buildNotification(postModel, groupModel),
@@ -101,7 +104,15 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     });
 
     if (this._vmQueue.length >= MAX_SIZE) {
-      this._vmQueue[MAX_SIZE - 1].vm.dispose();
+      const notification = this._vmQueue[MAX_SIZE - 1];
+      if (!notification) {
+        logger.warn(
+          'notification view model not found, current length is',
+          this._vmQueue.length,
+        );
+      } else {
+        notification.vm.dispose();
+      }
       delete this._vmQueue[MAX_SIZE - 1];
       this._vmQueue.length = MAX_SIZE - 1;
     }
@@ -145,13 +156,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     };
     return opts;
   }
-  get currentMessageNotificationSetting() {
-    return (
-      getEntity<UserSettingEntity, SettingModel<NOTIFICATION_OPTIONS>>(
-        ENTITY_NAME.USER_SETTING,
-        MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
-      ).value || 'default'
-    );
+  async getCurrentMessageNotificationSetting() {
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES);
+    return (entity && entity.value) || 'default';
   }
   async shouldEmitNotification(post: Post) {
     const activityData = post.activity_data || {};
@@ -198,7 +207,8 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       },
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
     };
-    return strategy[this.currentMessageNotificationSetting]();
+    const setting: string = await this.getCurrentMessageNotificationSetting();
+    return strategy[setting]();
   }
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {
@@ -212,45 +222,47 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     person: PersonModel,
     group: GroupModel,
   ) {
-    let body: string;
-    let title = group.displayName;
-    if (post.existItemIds.length || post.parentId) {
+    const isOne2One = group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    const isActivity = post.existItemIds.length || post.parentId;
+    const translationArgs = {
+      person: person.userDisplayName,
+      conversation: group.displayName,
+    };
+    let title =
+      isOne2One || isActivity
+        ? group.displayName
+        : await i18nT('notification.group', translationArgs);
+    let body = this.handlePostContent(post);
+    if (this.isMyselfAtMentioned(post)) {
+      if (isOne2One) {
+        title = await i18nT('notification.mentionedOne2One', translationArgs);
+      } else {
+        title = await i18nT('notification.mentioned', translationArgs);
+      }
+    } else if (isActivity) {
       const { key, parameter } = getActivity(post, getActivityData(post));
       body = `${person.userDisplayName} ${await i18nT(key, parameter)}`;
-    } else {
-      if (this.isMyselfAtMentioned(post)) {
-        title = await i18nT('notification.mentioned');
-        body = group.displayName;
-      } else {
-        body = this.handlePostContent(post.text);
-      }
     }
     return { body, title };
   }
 
-  handlePostContent(text: string) {
-    const _text = Remove_Markdown(text, { dont_escape: true });
-    const staticServer = getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
-    const currentCompanyId = getGlobalValue(GLOBAL_KEYS.CURRENT_COMPANY_ID);
-    const company =
-      (currentCompanyId &&
-        getEntity<Company, CompanyModel>(
-          ENTITY_NAME.COMPANY,
-          currentCompanyId,
-        )) ||
-      {};
+  handlePostContent(post: PostModel) {
+    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(/(^|\n)> ([^\n]*)/g, (full_match, start, text) => `${start} ${text}`);
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,
+        map: buildAtMentionMap(post),
       },
       emoji: {
-        hostName: staticServer,
-        customEmojiMap: company.customEmoji,
         unicodeOnly: true,
       },
     });
-
-    return renderToStaticMarkup(parsedResult as React.ReactElement);
+    if (typeof parsedResult === 'string') {
+      return parsedResult;
+    }
+    return HTMLUnescape(
+      renderToStaticMarkup(parsedResult as React.ReactElement),
+    );
   }
 
   isMyselfAtMentioned(post: PostModel) {
@@ -262,7 +274,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   getIcon(
-    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
+    {
+      id, headshotVersion = '', headshot = '', hasHeadShot,
+    }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {

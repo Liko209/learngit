@@ -98,10 +98,12 @@ describe('AutoAuthenticator', () => {
         .fn()
         .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
-
-      // todo: for now, ui can not support the rc only mode
-      // so will return false to logout when glip is down
-      expect(resp).toEqual({ success: false });
+      expect(resp).toEqual({
+        success: true,
+        isFirstLogin: false,
+        isRCOnlyMode: true,
+        accountInfos: [{ data: 'rc_token', type: 'RCAccount' }],
+      });
     });
   });
 });

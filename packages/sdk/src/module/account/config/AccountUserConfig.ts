@@ -5,7 +5,7 @@
  */
 
 import { ACCOUNT_KEYS } from './configKeys';
-import { UserConfig } from '../../../module/config';
+import { UserConfig } from '../../config';
 import { AccountGlobalConfig } from './AccountGlobalConfig';
 
 class AccountUserConfig extends UserConfig {
@@ -55,7 +55,7 @@ class AccountUserConfig extends UserConfig {
     return profileId;
   }
 
-  getGlipUserId() {
+  getGlipUserId(): number {
     return this.get(ACCOUNT_KEYS.GLIP_USER_ID);
   }
 

@@ -1,0 +1,723 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern AudioPlayer: Pattern AudioPlayer 1`] = `
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c9.c9 .c3,
+.c9.c9 .c3 svg {
+  font-size: 20px;
+}
+
+.c9.c9:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c9.c9:active .c3 {
+  color: #9e9e9e;
+}
+
+.c9.c9.c9.c9.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c2.c2 .c3,
+.c2.c2 .c3 svg {
+  font-size: 20px;
+}
+
+.c2.c2:hover {
+  background-color: rgba(158,158,158,0.12);
+}
+
+.c2.c2:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c2.c2:active .c3 {
+  color: #9e9e9e;
+}
+
+.c2.c2.c2.c2.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c10.c10 .c3,
+.c10.c10 .c3 svg {
+  font-size: 20px;
+}
+
+.c10.c10:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c10.c10:active .c3 {
+  color: #0684bd;
+}
+
+.c10.c10.c10.c10.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c11.c11 .c3,
+.c11.c11 .c3 svg {
+  font-size: 20px;
+}
+
+.c11.c11:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c11.c11:active .c3 {
+  color: #0684bd;
+}
+
+.c11.c11.c11.c11.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c12.c12 .c3,
+.c12.c12 .c3 svg {
+  font-size: 20px;
+}
+
+.c12.c12:hover .c3 {
+  color: rgba(237,182,60,0.88);
+}
+
+.c12.c12:active .c3 {
+  color: #edb63c;
+}
+
+.c12.c12.c12.c12.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c13.c13 .c3,
+.c13.c13 .c3 svg {
+  font-size: 16px;
+}
+
+.c13.c13:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c13.c13:active .c3 {
+  color: #9e9e9e;
+}
+
+.c13.c13.c13.c13.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 {
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  color: #0684bd;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c8.c8 .c3,
+.c8.c8 .c3 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover {
+  background-color: rgba(6,132,189,0.12);
+}
+
+.c8.c8:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c8.c8:active .c3 {
+  color: #0684bd;
+}
+
+.c8.c8.c8.c8.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .rippleVisible {
+  color: #0684bd;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c1.c1 {
+  margin-right: 8px;
+}
+
+.c6 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #757575;
+}
+
+.c7.c7 {
+  margin: 0px 10px;
+  width: 90px;
+}
+
+.c7 > div > div {
+  -webkit-transition: none;
+  transition: none;
+}
+
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+<dl>
+  <dt>
+    mode tiny
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+  </dd>
+  <dt>
+    mode mini
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <span
+        className="c6"
+        data-test-automation-id="audio-end-time"
+      >
+        03:08
+      </span>
+    </div>
+  </dd>
+  <dt>
+    mode full
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <span
+        className="c6"
+        data-test-automation-id="audio-current-time"
+      >
+        00:30
+      </span>
+      <div
+        aria-orientation="horizontal"
+        aria-valuemax={188}
+        aria-valuemin={0}
+        aria-valuenow={30}
+        className="MuiSlider-root c7"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onTouchMove={[Function]}
+        onTouchStartCapture={[Function]}
+        role="slider"
+      >
+        <div
+          className="MuiSlider-container"
+        >
+          <div
+            className="MuiSlider-track MuiSlider-trackBefore"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.1595744680851064)",
+              }
+            }
+          />
+          <div
+            className="MuiSlider-thumbWrapper"
+            style={
+              Object {
+                "transform": "translateX(15.957446808510639%)",
+              }
+            }
+          >
+            <button
+              className="MuiButtonBase-root MuiSlider-thumb"
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              onTouchStartCapture={[Function]}
+              tabIndex="0"
+              type="button"
+            />
+          </div>
+          <div
+            className="MuiSlider-track MuiSlider-trackAfter"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.8404255319148937)",
+              }
+            }
+          />
+        </div>
+      </div>
+      <span
+        className="c6"
+        data-test-automation-id="audio-end-time"
+      >
+        03:08
+      </span>
+    </div>
+  </dd>
+  <dt>
+    highlight display
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c8"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <span
+        className="c6"
+        data-test-automation-id="audio-current-time"
+      >
+        01:00
+      </span>
+      <div
+        aria-orientation="horizontal"
+        aria-valuemax={188}
+        aria-valuemin={0}
+        aria-valuenow={60}
+        className="MuiSlider-root c7"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onTouchMove={[Function]}
+        onTouchStartCapture={[Function]}
+        role="slider"
+      >
+        <div
+          className="MuiSlider-container"
+        >
+          <div
+            className="MuiSlider-track MuiSlider-trackBefore"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.3191489361702128)",
+              }
+            }
+          />
+          <div
+            className="MuiSlider-thumbWrapper"
+            style={
+              Object {
+                "transform": "translateX(31.914893617021278%)",
+              }
+            }
+          >
+            <button
+              className="MuiButtonBase-root MuiSlider-thumb"
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              onTouchStartCapture={[Function]}
+              tabIndex="0"
+              type="button"
+            />
+          </div>
+          <div
+            className="MuiSlider-track MuiSlider-trackAfter"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.6808510638297872)",
+              }
+            }
+          />
+        </div>
+      </div>
+      <span
+        className="c6"
+        data-test-automation-id="audio-end-time"
+      >
+        03:08
+      </span>
+    </div>
+  </dd>
+  <dt>
+    reload display
+  </dt>
+  <dd>
+    <div
+      className="c0"
+    >
+      <button
+        aria-describedby={null}
+        aria-label="play voicemail"
+        className="MuiButtonBase-root MuiIconButton-root c1 c2"
+        data-test-automation-id="audio-play-btn"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseOver={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        size="medium"
+        tabIndex="0"
+        title={null}
+        type="button"
+        variant="round"
+      >
+        <span
+          className="MuiIconButton-label"
+        >
+          <span
+            className="c3 play icon c4"
+            size="medium"
+          >
+            <svg
+              className="c5"
+              role="img"
+            >
+              <use
+                href="#icon-play"
+                xlinkHref="#icon-play"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          className="MuiTouchRipple-root"
+        />
+      </button>
+      <span
+        className="c6"
+        data-test-automation-id="audio-current-time"
+      >
+        01:30
+      </span>
+      <div
+        aria-orientation="horizontal"
+        aria-valuemax={188}
+        aria-valuemin={0}
+        aria-valuenow={90}
+        className="MuiSlider-root c7"
+        onClick={[Function]}
+        onMouseDown={[Function]}
+        onTouchMove={[Function]}
+        onTouchStartCapture={[Function]}
+        role="slider"
+      >
+        <div
+          className="MuiSlider-container"
+        >
+          <div
+            className="MuiSlider-track MuiSlider-trackBefore"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.4787234042553192)",
+              }
+            }
+          />
+          <div
+            className="MuiSlider-thumbWrapper"
+            style={
+              Object {
+                "transform": "translateX(47.87234042553192%)",
+              }
+            }
+          >
+            <button
+              className="MuiButtonBase-root MuiSlider-thumb"
+              onBlur={[Function]}
+              onContextMenu={[Function]}
+              onFocus={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              onMouseDown={[Function]}
+              onMouseLeave={[Function]}
+              onMouseUp={[Function]}
+              onTouchEnd={[Function]}
+              onTouchMove={[Function]}
+              onTouchStart={[Function]}
+              onTouchStartCapture={[Function]}
+              tabIndex="0"
+              type="button"
+            />
+          </div>
+          <div
+            className="MuiSlider-track MuiSlider-trackAfter"
+            style={
+              Object {
+                "transform": "translateY(-50%) scaleX(0.5212765957446809)",
+              }
+            }
+          />
+        </div>
+      </div>
+      <span
+        className="c6"
+        data-test-automation-id="audio-end-time"
+      >
+        03:08
+      </span>
+    </div>
+  </dd>
+</dl>
+`;

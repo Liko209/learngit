@@ -35,4 +35,6 @@ type EventUpdateViewProps = {
   color?: [keyof Palette, string];
 };
 
-export { EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps };
+export {
+  EventProps, EventViewProps, EventUpdateViewProps, EventUpdateProps,
+};

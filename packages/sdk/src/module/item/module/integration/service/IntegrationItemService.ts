@@ -8,14 +8,13 @@ import { IntegrationItemController } from '../controller/IntegrationItemControll
 import { IntegrationItem } from '../entity';
 import { GlipTypeUtil } from '../../../../../utils';
 import { EntityBaseService } from '../../../../../framework/service';
+
 class IntegrationItemService extends EntityBaseService<IntegrationItem> {
   private _integrationItemController: IntegrationItemController;
 
   constructor() {
-    super(false);
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isIntegrationType(id);
-    });
+    super({ isSupportedCache: false });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isIntegrationType(id));
   }
 
   protected get integrationItemController() {

@@ -1,0 +1,599 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip with Avatar & DeleteIcon 1`] = `
+.c1.c1 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c1.c1:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c1.c1:active {
+  opacity: 0.76;
+}
+
+.c1 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c2.c2 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c2.c2 .c3,
+.c2.c2 .c3 svg {
+  font-size: 20px;
+}
+
+.c2.c2:hover {
+  background-color: transparent;
+}
+
+.c2.c2:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c2.c2:active .c3 {
+  color: #9e9e9e;
+}
+
+.c2.c2.c2.c2.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c2.c2 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c6.c6 .c3,
+.c6.c6 .c3 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c6.c6:active .c3 {
+  color: #9e9e9e;
+}
+
+.c6.c6.c6.c6.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .c3,
+.c7.c7 .c3 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c7.c7:active .c3 {
+  color: #0684bd;
+}
+
+.c7.c7.c7.c7.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .c3,
+.c8.c8 .c3 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c8.c8:active .c3 {
+  color: #0684bd;
+}
+
+.c8.c8.c8.c8.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+.c0 .deleteIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.c0 .label {
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c0 .avatar {
+  color: #fff;
+}
+
+.c0 .avatar span {
+  width: auto;
+  height: auto;
+}
+
+<div
+  className="MuiChip-root MuiChip-deletable c0"
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  role="button"
+  tabIndex={0}
+>
+  <div
+    className="MuiAvatar-root MuiChip-avatar avatar c1"
+    size="small"
+  >
+    <img
+      className="MuiAvatar-img"
+      src="test-file-stub"
+    />
+  </div>
+  <span
+    className="MuiChip-label label"
+  >
+    Basic Chip
+  </span>
+  <button
+    aria-describedby={null}
+    className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c2"
+    disabled={false}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    size="medium"
+    tabIndex="0"
+    title={null}
+    type="button"
+    variant="plain"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c3  icon c4"
+        size="medium"
+      >
+        <svg
+          className="c5"
+          role="img"
+        >
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Storyshots Components/Chip with Avatar: Components/Chip with Avatar 1`] = `
+.c1.c1 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c1.c1:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c1.c1:active {
+  opacity: 0.76;
+}
+
+.c1 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c0.c0 {
+  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+.c0 .deleteIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.c0 .label {
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c0 .avatar {
+  color: #fff;
+}
+
+.c0 .avatar span {
+  width: auto;
+  height: auto;
+}
+
+<div
+  className="MuiChip-root c0"
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  role="button"
+  tabIndex={-1}
+>
+  <div
+    className="MuiAvatar-root MuiChip-avatar avatar c1"
+    size="small"
+  >
+    <img
+      className="MuiAvatar-img"
+      src="test-file-stub"
+    />
+  </div>
+  <span
+    className="MuiChip-label label"
+  >
+    Basic Chip
+  </span>
+</div>
+`;
+
+exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with DeleteIcon 1`] = `
+.c3 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c4 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c1.c1 {
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  color: #9e9e9e;
+  opacity: 1;
+  padding: 0;
+  background-color: inherit;
+}
+
+.c1.c1 .c2,
+.c1.c1 .c2 svg {
+  font-size: 20px;
+}
+
+.c1.c1:hover {
+  background-color: transparent;
+}
+
+.c1.c1:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c1.c1:active .c2 {
+  color: #9e9e9e;
+}
+
+.c1.c1.c1.c1.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c1.c1 .rippleVisible {
+  color: #9e9e9e;
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c5.c5 .c2,
+.c5.c5 .c2 svg {
+  font-size: 20px;
+}
+
+.c5.c5:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c5.c5:active .c2 {
+  color: #9e9e9e;
+}
+
+.c5.c5.c5.c5.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #0684bd;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .c2,
+.c7.c7 .c2 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c7.c7:active .c2 {
+  color: #0684bd;
+}
+
+.c7.c7.c7.c7.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c0.c0 {
+  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+.c0 .deleteIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.c0 .label {
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c0 .avatar {
+  color: #fff;
+}
+
+.c0 .avatar span {
+  width: auto;
+  height: auto;
+}
+
+<div
+  className="MuiChip-root MuiChip-deletable c0"
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  role="button"
+  tabIndex={0}
+>
+  <span
+    className="MuiChip-label label"
+  >
+    Basic Chip
+  </span>
+  <button
+    aria-describedby={null}
+    className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c1"
+    disabled={false}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseOver={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    size="medium"
+    tabIndex="0"
+    title={null}
+    type="button"
+    variant="plain"
+  >
+    <span
+      className="MuiIconButton-label"
+    >
+      <span
+        className="c2  icon c3"
+        size="medium"
+      >
+        <svg
+          className="c4"
+          role="img"
+        >
+          <use
+            href="#undefined"
+            xlinkHref="#undefined"
+          />
+        </svg>
+      </span>
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Storyshots Components/Chip with nothing: Components/Chip with nothing 1`] = `
+.c0.c0 {
+  margin: 4px;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.c0.c0:hover {
+  opacity: 0.88;
+}
+
+.c0.c0:active {
+  opacity: 0.76;
+}
+
+.c0 .deleteIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.c0 .label {
+  display: inline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.c0 .avatar {
+  color: #fff;
+}
+
+.c0 .avatar span {
+  width: auto;
+  height: auto;
+}
+
+<div
+  className="MuiChip-root c0"
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  role="button"
+  tabIndex={-1}
+>
+  <span
+    className="MuiChip-label label"
+  >
+    Basic Chip
+  </span>
+</div>
+`;

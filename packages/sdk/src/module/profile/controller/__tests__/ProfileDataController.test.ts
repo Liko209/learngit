@@ -6,11 +6,12 @@
 import { ProfileDataController } from '../ProfileDataController';
 import { Profile } from '../../entity';
 import { MockEntitySourceController } from './MockEntitySourceController';
-import { ServiceLoader } from '../../../serviceLoader';
-import { SYNC_SOURCE } from 'sdk/module/sync';
+import { buildEntityCacheController } from 'sdk/framework/controller';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 
 jest.mock('../../../../api/glip/profile');
-jest.mock('../../../../framework/controller/interface/IEntitySourceController');
+jest.mock('sdk/framework/controller/interface/IEntitySourceController');
+jest.mock('sdk/framework/controller/impl/EntityCacheController');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -21,11 +22,14 @@ function clearMocks() {
 describe('ProfileDataController', () => {
   let profileDataController: ProfileDataController;
   let mockEntitySourceController: MockEntitySourceController;
+  let mockEntityCacheController: IEntityCacheController<Profile>;
 
   beforeEach(() => {
     mockEntitySourceController = new MockEntitySourceController();
+    mockEntityCacheController = buildEntityCacheController();
     profileDataController = new ProfileDataController(
       mockEntitySourceController,
+      mockEntityCacheController,
     );
   });
 
@@ -47,6 +51,31 @@ describe('ProfileDataController', () => {
     });
   });
 
+  describe('getLocalProfile()', () => {
+    it('should return current user profile', async () => {
+      jest
+        .spyOn(profileDataController, 'getCurrentProfileId')
+        .mockReturnValue(2);
+      jest
+        .spyOn(mockEntityCacheController, 'get')
+        .mockImplementationOnce(id => id);
+
+      const result = await profileDataController.getLocalProfile();
+      expect(result).toEqual(2);
+    });
+    it('should return null when no profile id', async () => {
+      jest
+        .spyOn(profileDataController, 'getCurrentProfileId')
+        .mockReturnValue(undefined);
+      jest
+        .spyOn(mockEntityCacheController, 'get')
+        .mockImplementationOnce(id => id);
+
+      const result = await profileDataController.getLocalProfile();
+      expect(result).toEqual(null);
+    });
+  });
+
   describe('isConversationHidden()', () => {
     it('should return false because of not profile', async () => {
       profileDataController.getProfile = jest
@@ -59,11 +88,9 @@ describe('ProfileDataController', () => {
     it('should return 5 because of  hide_group_1 in profile is 5', async () => {
       profileDataController.getProfile = jest
         .fn()
-        .mockImplementationOnce(() => {
-          return {
-            hide_group_1: 5,
-          };
-        });
+        .mockImplementationOnce(() => ({
+          hide_group_1: 5,
+        }));
       const result = await profileDataController.isConversationHidden(1);
       expect(result).toBe(5);
     });
@@ -117,7 +144,7 @@ describe('ProfileDataController', () => {
         id: 2,
         modified_at: 1,
       };
-      profileDataController.getProfile = jest.fn().mockReturnValue({
+      profileDataController.getLocalProfile = jest.fn().mockReturnValue({
         id: 2,
         modified_at: 10,
       });
@@ -128,39 +155,6 @@ describe('ProfileDataController', () => {
         id: 2,
         modified_at: 10,
       });
-    });
-  });
-
-  describe('getDefaultCaller', () => {
-    const profile = {
-      id: 111,
-      default_number: 1,
-    };
-    let rcInfoService: any;
-    beforeEach(() => {
-      clearMocks();
-      rcInfoService = {
-        getCallerById: jest.fn().mockResolvedValue({ id: 1, phoneNumber: '1' }),
-        getFirstDidCaller: jest
-          .fn()
-          .mockResolvedValue({ id: 2, phoneNumber: '2' }),
-      };
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(rcInfoService);
-      profileDataController.getProfile = jest.fn().mockResolvedValue(profile);
-    });
-
-    it('should return default caller id when has set in profile', async () => {
-      const res = await profileDataController.getDefaultCaller();
-      expect(rcInfoService.getCallerById).toBeCalledWith(
-        profile.default_number,
-      );
-      expect(res).toEqual({ id: 1, phoneNumber: '1' });
-    });
-
-    it('should return first did when has not set in profile', async () => {
-      rcInfoService.getCallerById = jest.fn().mockResolvedValue(undefined);
-      const res = await profileDataController.getDefaultCaller();
-      expect(res).toEqual({ id: 2, phoneNumber: '2' });
     });
   });
 });

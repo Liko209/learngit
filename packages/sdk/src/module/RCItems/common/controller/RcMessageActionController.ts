@@ -3,17 +3,18 @@
  * @Date: 2019-05-27 10:01:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { RCItemApi } from 'sdk/api/ringcentral';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
 import { notificationCenter } from 'sdk/service';
 import { RCMessage } from '../../types';
 import { MESSAGE_AVAILABILITY, READ_STATUS } from '../../constants';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { Raw } from 'sdk/framework/model';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
+import { RC_ITEMS_POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
+
 class RcMessageActionController<T extends RCMessage> {
   constructor(
     private controllerName: string,
@@ -22,7 +23,7 @@ class RcMessageActionController<T extends RCMessage> {
   ) {}
 
   async deleteRcMessages(entityIds: number[], purge: boolean) {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     mainLogger.tags(this.controllerName).info('deleteRcMessages', entityIds);
     try {
       const messages = await this.entitySourceController.batchGet(entityIds);
@@ -33,7 +34,7 @@ class RcMessageActionController<T extends RCMessage> {
       });
       await RCItemApi.deleteMessage(entityIds);
       performanceTracer.trace({
-        key: PERFORMANCE_KEYS.DELETE_RC_MESSAGE_FROM_SERVER,
+        key: RC_ITEMS_POST_PERFORMANCE_KEYS.DELETE_RC_MESSAGE_FROM_SERVER,
       });
       notificationCenter.emitEntityUpdate(
         this.entitySourceController.getEntityNotificationKey(),
@@ -47,7 +48,9 @@ class RcMessageActionController<T extends RCMessage> {
         .warn('failed to delete messages: ', entityIds);
       throw error;
     } finally {
-      performanceTracer.end({ key: PERFORMANCE_KEYS.DELETE_RC_MESSAGE });
+      performanceTracer.end({
+        key: RC_ITEMS_POST_PERFORMANCE_KEYS.DELETE_RC_MESSAGE,
+      });
     }
   }
 
@@ -58,10 +61,7 @@ class RcMessageActionController<T extends RCMessage> {
 
     const preHandlePartialEntity = (
       partialEntity: Partial<Raw<T>>,
-      originalEntity: T,
-    ) => {
-      return { ...partialEntity, readStatus: toStatus };
-    };
+    ) => ({ ...partialEntity, readStatus: toStatus });
 
     const doUpdateEntity = async (updatedEntity: T) => {
       const newVm = await RCItemApi.updateMessageReadStatus<T>(

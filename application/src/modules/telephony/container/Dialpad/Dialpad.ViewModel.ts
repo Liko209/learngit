@@ -6,13 +6,16 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { container } from 'framework';
-import { computed, observable, action, comparer } from 'mobx';
+import {
+  computed, observable, action, comparer,
+} from 'mobx';
 import { Props, ViewProps } from './types';
 import { TelephonyStore } from '../../store';
 import { TelephonyService } from '../../service';
-import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
+import { CALL_WINDOW_STATUS } from '../../FSM';
 import { TELEPHONY_SERVICE } from '../../interface/constant';
 import { formatSeconds } from '@/utils/date';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
 
 class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
@@ -50,11 +53,16 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
 
   maximize = () => {
     this._telephonyService.maximize();
-  }
+  };
 
   @computed
   get name() {
     return this._telephonyStore.displayName;
+  }
+
+  @computed
+  get direction() {
+    return this._telephonyStore.activeCallDirection;
   }
 
   @computed
@@ -97,7 +105,7 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
     if (activeCallTime) {
       this._intervalId = setInterval(() => {
         this._seconds = Number(`${Date.now() - activeCallTime}`.slice(0, -3));
-      },                             1000);
+      }, 1000);
     }
   }
 
@@ -123,7 +131,7 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   dispose = () => {
     this._intervalId && clearInterval(this._intervalId);
     this._intervalId = undefined;
-  }
+  };
 }
 
 export { DialpadViewModel };

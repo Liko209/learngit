@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern/Voicemail Transcription: Pattern/Voicemail Transcription 1`] = `
+.c1 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c2 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 20px;
+  fill: #9e9e9e;
+}
+
+.c0 {
+  height: 100%;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  margin-left: 16px;
+}
+
+<div
+  style={
+    Object {
+      "height": "64px",
+      "padding": "16px 0",
+    }
+  }
+>
+  <div
+    className="c0"
+  >
+    <span
+      className=" transcription icon c1"
+    >
+      <svg
+        className="c2"
+        role="img"
+        size="medium"
+      >
+        <use
+          href="#icon-transcription"
+          xlinkHref="#icon-transcription"
+        />
+      </svg>
+    </span>
+    <svg
+      className="c3"
+      preserveAspectRatio="xMidYMid meet"
+      style={
+        Object {
+          "height": "32px",
+          "width": "176",
+        }
+      }
+      viewBox="0 0 176 32"
+    >
+      <rect
+        clipPath="url(#zbeavw2v9i)"
+        height={32}
+        style={
+          Object {
+            "fill": "url(#kju8ogfryu)",
+          }
+        }
+        width={176}
+        x="0"
+        y="0"
+      />
+      <defs>
+        <clipPath
+          id="zbeavw2v9i"
+        >
+          <rect
+            height="8"
+            rx="2"
+            ry="2"
+            width="176"
+            x="0"
+            y={4}
+          />
+          <rect
+            height="8"
+            rx="2"
+            ry="2"
+            width="116"
+            x="0"
+            y="20"
+          />
+        </clipPath>
+        <linearGradient
+          id="kju8ogfryu"
+        >
+          <stop
+            offset="0%"
+            stopColor="#f0f0f0"
+            stopOpacity={1}
+          >
+            <animate
+              attributeName="offset"
+              dur="2s"
+              repeatCount="indefinite"
+              values="-3; 1"
+            />
+          </stop>
+          <stop
+            offset="50%"
+            stopColor="#e0e0e0"
+            stopOpacity={1}
+          >
+            <animate
+              attributeName="offset"
+              dur="2s"
+              repeatCount="indefinite"
+              values="-2; 2"
+            />
+          </stop>
+          <stop
+            offset="100%"
+            stopColor="#f0f0f0"
+            stopOpacity={1}
+          >
+            <animate
+              attributeName="offset"
+              dur="2s"
+              repeatCount="indefinite"
+              values="-1; 3"
+            />
+          </stop>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+</div>
+`;

@@ -37,7 +37,7 @@ const MenuListCompositionWrapper = styled.div`
   justify-content: flex-end;
   margin-right: ${({ theme }) => `${theme.spacing.unit}px`};
 `;
-
+/* eslint-disable */
 const MenuWrapper = styled(Popper)``;
 
 class JuiMenuListComposition extends React.PureComponent<
@@ -54,7 +54,7 @@ class JuiMenuListComposition extends React.PureComponent<
 
   handleToggle = (event: React.MouseEvent<HTMLElement>) => {
     this.setState({ open: !this.state.open, anchorEl: event.currentTarget });
-  }
+  };
 
   handleClose = (event: React.MouseEvent<HTMLElement>) => {
     const node = this.state.anchorEl;
@@ -63,26 +63,26 @@ class JuiMenuListComposition extends React.PureComponent<
     }
 
     this.setState({ open: false, anchorEl: null });
-  }
+  };
 
   handleMenuItemClick = (menuItemEvent: Function) => (
     event: React.MouseEvent<HTMLElement>,
   ) => {
     this.handleClose(event);
     menuItemEvent();
-  }
+  };
 
   render() {
     const { open, anchorEl } = this.state;
     const { MenuExpandTrigger, menuItems, automationId } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
-        <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
+        <MenuExpandTrigger aria-haspopup='true' onClick={this.handleToggle} />
         <MenuWrapper
           open={open}
           anchorEl={anchorEl}
-          transition={true}
-          disablePortal={true}
+          transition
+          disablePortal
           data-test-automation-id={automationId}
         >
           {({ TransitionProps, placement }) => (

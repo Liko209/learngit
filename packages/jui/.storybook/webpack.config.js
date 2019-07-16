@@ -13,10 +13,9 @@
 const webpack = require('webpack');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
+const HappyPack = require('happypack');
 
 const moduleRules = [
   {
@@ -33,56 +32,15 @@ const moduleRules = [
   {
     test: /\.ts(x)?$/,
     exclude: excludeNodeModulesExcept(['rcui']),
-    use: [
-      {
-        loader: 'ts-loader',
-        options: {
-          // disable type checker - we will use it in fork plugin
-          transpileOnly: true,
-        },
-      },
-      {
-        loader: 'react-docgen-typescript-loader',
-      },
-    ],
+    loader: 'happypack/loader?id=ts',
   },
   {
     test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/country-flag'),
     use: [
       {
         loader: 'svg-sprite-loader',
         options: {
-          extract: true,
-          publicPath: '/static/',
-          spriteFilename: 'country-flag-[hash:6].svg',
-          symbolId: 'country-flag-[name]',
-        },
-      },
-      {
-        loader: 'svgo-loader',
-        options: {
-          plugins: [
-            { removeTitle: true },
-            { convertColors: { shorthex: false } },
-            { convertPathData: true },
-            { reusePaths: true },
-          ],
-        },
-      },
-    ],
-  },
-  {
-    test: /\.svg$/,
-    include: path.resolve(__dirname, '../src/assets/jupiter-icon'),
-    use: [
-      {
-        loader: 'svg-sprite-loader',
-        options: {
-          extract: true,
-          publicPath: '/static/',
-          spriteFilename: 'jupiter-icon-[hash:6].svg',
-          symbolId: 'jupiter-[name]',
+          symbolId: 'icon-[name]',
         },
       },
       {
@@ -101,17 +59,23 @@ const moduleRules = [
 ];
 
 const plugins = [
+  new HappyPack({
+    id: 'ts',
+    threads: 5,
+    loaders: [
+      {
+        loader: 'ts-loader',
+        options: { happyPackMode: true, transpileOnly: true },
+      },
+    ],
+  }),
   new CopyWebpackPlugin([
     { from: '../../application/public/theme/', to: 'theme' },
   ]),
-  new ForkTsCheckerWebpackPlugin({
-    checkSyntacticErrors: true,
-  }),
   new webpack.ProvidePlugin({
     'window.Quill': 'quill/dist/quill.js',
     Quill: 'quill/dist/quill.js',
   }),
-  new SpriteLoaderPlugin(),
 ];
 
 const resolvePlugins = [
@@ -125,7 +89,10 @@ const resolveExtensions = ['.ts', '.tsx'];
 module.exports = async ({ config }) => {
   // modify the default svg rule
   const fileLoader = config.module.rules[3];
-  fileLoader.exclude = [path.resolve(__dirname, '../src/assets/country-flag')];
+  fileLoader.exclude = [
+    path.resolve(__dirname, '../src/assets/country-flag'),
+    path.resolve(__dirname, '../src/assets/jupiter-icon'),
+  ];
 
   // Make whatever fine-grained changes you need
   moduleRules.forEach(rule => {

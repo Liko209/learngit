@@ -18,14 +18,13 @@ type ThemeProviderPropsState = {
 class ThemeProvider extends Component<
   ThemeProviderProps,
   ThemeProviderPropsState
-  > {
+> {
   private _mounted: boolean;
   constructor(props: ThemeProviderProps) {
     super(props);
     this.state = {
       theme: null,
     };
-    this.onThemeChanged = this.onThemeChanged.bind(this);
   }
 
   async componentDidMount() {
@@ -47,7 +46,7 @@ class ThemeProvider extends Component<
     themeHandler.offAny(this.onThemeChanged);
   }
 
-  onThemeChanged(themeOptions: {}) {
+  onThemeChanged = (themeOptions: {}) => {
     if (!this._mounted) return;
     this.setState({
       theme: createTheme(themeOptions),

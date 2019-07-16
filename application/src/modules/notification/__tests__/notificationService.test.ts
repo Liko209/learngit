@@ -2,7 +2,8 @@ import { Jupiter, container } from 'framework';
 import * as notification from '@/modules/notification/module.config';
 import { INotificationService } from '../interface';
 import * as userAgent from '@/common/isUserAgent';
-import { getEntity } from '@/store/utils/entities';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('@/common/isUserAgent');
 jest.mock('@/store/utils/entities');
 
@@ -23,12 +24,14 @@ function setUpMock(
   wantNotifications: boolean,
 ) {
   userAgent.isElectron = isElectron;
-  getEntity.mockReturnValue({
-    value: {
-      browserPermission,
-      wantNotifications,
-    },
-  });
+  jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
+    getById: () => ({
+      value: {
+        browserPermission,
+        wantNotifications,
+      },
+    }),
+  }));
   const mockedSW = {
     isSupported: () => true,
     create: jest.fn(),
@@ -65,22 +68,25 @@ describe('NotificationService', () => {
     container.restore();
   });
   describe('shouldShowNotification', () => {
-    it('shouldShowNotification should be true when isElectron is true', () => {
+    it('shouldShowNotification should be true when isElectron is true', async () => {
       setUpMock(true, 'granted', false);
-      expect(service.shouldShowNotification).toBeTruthy();
+      const shouldShowNotification = await service.shouldShowNotification();
+      expect(shouldShowNotification).toBeTruthy();
     });
-    it('shouldShowNotification should be true when wantNotifications is true', () => {
+    it('shouldShowNotification should be true when wantNotifications is true', async () => {
       setUpMock(false, 'granted', true);
-      expect(service.shouldShowNotification).toBeTruthy();
+      const shouldShowNotification = await service.shouldShowNotification();
+      expect(shouldShowNotification).toBeTruthy();
     });
-    it('shouldShowNotification should be false when isElectron is false and wantNotifications is false', () => {
+    it('shouldShowNotification should be false when isElectron is false and wantNotifications is false', async () => {
       setUpMock(false, 'granted', false);
-      expect(service.shouldShowNotification).toBeFalsy();
+      const shouldShowNotification = await service.shouldShowNotification();
+      expect(shouldShowNotification).toBeFalsy();
     });
     it('should not show notification when shouldShowNotification is false', async () => {
       setUpMock(false, 'granted', false);
       await service.show('', { data: { id: 0, scope: '' } });
-      expect(service._notificationDistributor.create).not.toBeCalled();
+      expect(service._notificationDistributor.create).not.toHaveBeenCalled();
     });
   });
 
@@ -88,35 +94,15 @@ describe('NotificationService', () => {
     beforeEach(() => {
       setUpMock(false, 'granted', true);
     });
-    it('should not show notification when window is focused', async () => {
-      jest.spyOn(document, 'hasFocus').mockReturnValue(true);
-      await service.show('', { data: { id: 0, scope: '' } });
-      expect(service._notificationDistributor.create).not.toBeCalled();
-    });
-    describe('when permission is not granted', () => {
-      it('should not create notification when permission is still not granted after request', async () => {
-        jest.spyOn(document, 'hasFocus').mockReturnValue(false);
-        permissionAfterRequest = 'denied';
-        await service.show('', { data: { id: 0, scope: '' } });
-        expect(Notification.requestPermission).toBeCalled();
-        expect(service._notificationDistributor.create).not.toBeCalled();
-      });
-      it('should create notification if the permission is granted after request', async () => {
-        jest.spyOn(document, 'hasFocus').mockReturnValue(false);
-        permissionAfterRequest = 'granted';
-        await service.show('', { data: { id: 0, scope: '' } });
-        expect(Notification.requestPermission).toBeCalled();
-        expect(service._notificationDistributor.create).toBeCalled();
-      });
-    });
-    it('should show notification when window is focused and permission is granted', async () => {
-      jest.spyOn(document, 'hasFocus').mockReturnValue(false);
-      jest
-        .spyOn(Notification, 'requestPermission')
-        .mockResolvedValue('granted');
+    it('should create notification when permission is granted', async () => {
       Notification.permission = 'granted';
       await service.show('', { data: { id: 0, scope: '' } });
-      expect(service._notificationDistributor.create).toBeCalled();
+      expect(service._notificationDistributor.create).toHaveBeenCalled();
+    });
+    it('should not create notification when permission is not granted', async () => {
+      Notification.permission = 'denied';
+      await service.show('', { data: { id: 0, scope: '' } });
+      expect(service._notificationDistributor.create).not.toHaveBeenCalled();
     });
   });
 });

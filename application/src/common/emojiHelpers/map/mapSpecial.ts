@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* tslint:disable */
+/* eslint-disable */
 const mapSpecial = {
   '$': '\\$',
   '(': '\\(',

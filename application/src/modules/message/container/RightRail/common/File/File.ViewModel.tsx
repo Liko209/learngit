@@ -15,7 +15,7 @@ import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
 import { FileViewModelProps, FileViewProps } from './File.types';
 
-class FileViewModel extends AbstractViewModel<FileViewModelProps>
+class FileViewModel<P = {}> extends AbstractViewModel<FileViewModelProps & P>
   implements FileViewProps {
   @computed
   get id() {

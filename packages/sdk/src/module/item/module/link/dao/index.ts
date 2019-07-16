@@ -5,4 +5,5 @@
  */
 
 import { LinkItemDao } from './LinkItemDao';
+
 export { LinkItemDao };

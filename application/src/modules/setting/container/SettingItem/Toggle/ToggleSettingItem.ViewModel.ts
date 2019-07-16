@@ -5,15 +5,31 @@
  */
 import { action } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
+import {
+  dataTrackingForSetting,
+  booleanTransform,
+} from '../utils/dataTrackingForSetting';
 import { ToggleSettingItemProps } from './types';
 
 class ToggleSettingItemViewModel extends BaseSettingItemViewModel<
-  ToggleSettingItemProps
+ToggleSettingItemProps
 > {
   @action
-  saveSetting = (value: boolean) => {
+  saveSetting = async (value: boolean) => {
     const { valueSetter } = this.settingItemEntity;
-    return valueSetter && valueSetter(value);
+    const { beforeSaving, dataTracking } = this.settingItem;
+    if (beforeSaving) {
+      const beforeSavingReturn = await beforeSaving(value);
+      if (beforeSavingReturn === false) {
+        return;
+      }
+    }
+    valueSetter && valueSetter(value);
+    dataTracking &&
+      dataTrackingForSetting(
+        { ...dataTracking, optionTransform: () => booleanTransform(value) },
+        value,
+      );
   }
 }
 

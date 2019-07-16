@@ -64,6 +64,7 @@ const FILE_COMPS = {
     return (
       !deactivated && (
         <JuiExpandImage
+          fileID={id}
           icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
@@ -94,7 +95,9 @@ const FILE_COMPS = {
     keyword: string,
   ) => {
     const { item } = file;
-    const { name, downloadUrl, id, deactivated, type } = item;
+    const {
+      name, downloadUrl, id, deactivated, type,
+    } = item;
     return (
       !deactivated && (
         <JuiFileWithExpand
@@ -131,7 +134,7 @@ class Task extends React.Component<taskViewProps> {
     url: string,
     origWidth: number,
     origHeight: number,
-  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+  ) => async (ev: React.MouseEvent) => {
     const target = ev.currentTarget as HTMLElement;
 
     return await showImageViewer(groupId, id, {
@@ -237,16 +240,14 @@ class Task extends React.Component<taskViewProps> {
           {files && files.length > 0 && (
             <JuiLabelWithContent label={t('item.attachments')}>
               <JuiFileWrapper data-test-automation-id="task-attachments">
-                {files.map((file: ExtendFileItem) => {
-                  return FILE_COMPS[file.type](
-                    file,
-                    this.props,
-                    this.context.keyword,
-                    this._handleImageClick,
-                    initialExpansionStatus,
-                    switchExpandHandler,
-                  );
-                })}
+                {files.map((file: ExtendFileItem) => FILE_COMPS[file.type](
+                  file,
+                  this.props,
+                  this.context.keyword,
+                  this._handleImageClick,
+                  initialExpansionStatus,
+                  switchExpandHandler,
+                ))}
               </JuiFileWrapper>
             </JuiLabelWithContent>
           )}

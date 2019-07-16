@@ -27,17 +27,24 @@ export type SearchedResultData = {
   posts: Post[];
   items: Item[];
   hasMore: boolean;
+  contentCount?: SearchContentTypesCount;
   requestId: number;
 };
 
 export type SearchRequestInfo = {
   queryOptions: ContentSearchParams;
+  requestId?: number;
   responseId?: number;
   resolve?: any;
   reject?: any;
-  contentCountResolve?: any;
   scrollRequestId?: number;
-  clientRequestId?: number;
   isSearchEnded?: boolean;
   scrollSize?: number;
+  contentTypesRequestId?: number;
+  contentTypesResolver?: any;
+};
+
+export type ProcessorInfo = {
+  groupId: number;
+  itemId: number;
 };

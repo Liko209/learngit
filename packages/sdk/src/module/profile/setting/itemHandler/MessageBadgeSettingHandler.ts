@@ -3,7 +3,6 @@
  * @Date: 2019-05-29 14:18:44
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import {
   UserSettingEntity,
   AbstractSettingEntityHandler,
@@ -34,8 +33,7 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
 
   private _subscribe() {
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
-      this.onProfileEntityUpdate(payload),
-    );
+      this.onProfileEntityUpdate(payload),);
   }
 
   async updateValue(value: NEW_MESSAGE_BADGES_OPTIONS) {
@@ -82,9 +80,13 @@ export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
 
   private async _getMessageBadge() {
     const profile = await this._profileService.getProfile();
-    let messageBadge = profile[SETTING_KEYS.NEW_MESSAGE_BADGES];
-    if (messageBadge === undefined || (messageBadge as string) === '') {
-      messageBadge = NEW_MESSAGE_BADGES_OPTIONS.ALL;
+    let messageBadge = NEW_MESSAGE_BADGES_OPTIONS.ALL;
+    if (
+      profile &&
+      profile.new_message_badges !== undefined &&
+      (profile.new_message_badges as string) !== ''
+    ) {
+      messageBadge = profile.new_message_badges;
     }
     return messageBadge;
   }

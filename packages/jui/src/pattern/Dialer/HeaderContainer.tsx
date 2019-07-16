@@ -14,7 +14,7 @@ import { primary } from '../../foundation/utils/styles';
 //   from { background-position: 0 0; }
 //   to { background-position: -280px 0;
 // `;
-
+/* eslint-disable react/prop-types */
 const StyledHeaderContainer = styled('div')`
   && {
     background-color: ${primary('600')};

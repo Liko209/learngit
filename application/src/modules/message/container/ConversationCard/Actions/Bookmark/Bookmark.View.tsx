@@ -24,17 +24,13 @@ class BookmarkViewComponent extends Component<Props> {
     network: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
     server: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
   })
-  private _handleRemoveBookmark = () => {
-    return this._handleToggleBookmark();
-  }
+  private _handleRemoveBookmark = () => this._handleToggleBookmark()
 
   @catchError.flash({
     network: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
     server: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
   })
-  private _handleBookmark = () => {
-    return this._handleToggleBookmark();
-  }
+  private _handleBookmark = () => this._handleToggleBookmark()
 
   render() {
     const { isBookmark, t } = this.props;
@@ -48,6 +44,7 @@ class BookmarkViewComponent extends Component<Props> {
         onClick={isBookmark ? this._handleRemoveBookmark : this._handleBookmark}
         variant="plain"
         data-name="actionBarBookmark"
+        data-test-automation-id="actionBarBookmark"
       >
         {isBookmark ? 'bookmark' : 'bookmark_border'}
       </JuiIconButton>

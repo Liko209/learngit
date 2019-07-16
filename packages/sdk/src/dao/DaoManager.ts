@@ -7,13 +7,12 @@ import {
   KVStorageManager,
   DexieDB,
   DatabaseType,
-  mainLogger,
+  mainLogger
 } from 'foundation';
 import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { SyncService } from '../module/sync/service';
 import { jobScheduler } from '../framework/utils/jobSchedule';
 import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
@@ -40,9 +39,10 @@ class DaoManager extends Manager<
   }
 
   async initDatabase(): Promise<void> {
-    const dbType = this.kvStorageManager.isLocalStorageSupported()
-      ? DatabaseType.DexieDB
-      : DatabaseType.LokiDB;
+    const dbType =
+      window.indexedDB && this.kvStorageManager.isLocalStorageSupported()
+        ? DatabaseType.DexieDB
+        : DatabaseType.LokiDB;
     this.dbManager.initDatabase(schema, dbType);
 
     if (!this._isSchemaCompatible()) {
@@ -93,7 +93,7 @@ class DaoManager extends Manager<
   }
 
   getDao<T extends BaseDao<IdModel<ModelIdType>, ModelIdType>>(
-    DaoClass: INewable<T>,
+    DaoClass: INewable<T>
   ): T {
     const database = this.dbManager.getDatabase();
     return this.get(DaoClass, database);
@@ -128,8 +128,9 @@ class DaoManager extends Manager<
     // remove relevant config
     if (AccountGlobalConfig.getUserDictionary()) {
       // TODO FIJI-4396
-      const synConfig = ServiceLoader.getInstance<SyncService>(
-        ServiceConfig.SYNC_SERVICE,
+      // 'any' because of circular reference
+      const synConfig = ServiceLoader.getInstance<any>(
+        ServiceConfig.SYNC_SERVICE
       ).userConfig;
       synConfig.clearSyncConfigsForDBUpgrade();
       jobScheduler.userConfig.clearFetchDataConfigs();

@@ -16,13 +16,15 @@ import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
-import { SETTING_KEYS } from '../constants';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { RCInfoService } from 'sdk/module/rcInfo';
+import { Nullable } from 'sdk/types';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
+    public entityCacheController: IEntityCacheController<Profile>,
   ) {}
 
   async profileHandleData(
@@ -48,8 +50,22 @@ class ProfileDataController {
     return userConfig.getCurrentUserProfileId();
   }
 
-  async getProfile(): Promise<Profile> {
+  async getLocalProfile(): Promise<Nullable<Profile>> {
     const profileId = this.getCurrentProfileId();
+    if (!profileId) {
+      return null;
+    }
+
+    const profile = await this.entityCacheController.get(profileId);
+    return profile;
+  }
+
+  async getProfile(): Promise<Nullable<Profile>> {
+    const profileId = this.getCurrentProfileId();
+    if (!profileId) {
+      return null;
+    }
+
     const profile = await this.entitySourceController.get(profileId);
     if (!profile) {
       // Current user profile not found is a unexpected error,
@@ -74,7 +90,7 @@ class ProfileDataController {
 
   async getFavoriteGroupIds() {
     const profile = await this.getProfile();
-    return profile.favorite_group_ids || [];
+    return (profile && profile.favorite_group_ids) || [];
   }
 
   private async _handleProfile(
@@ -84,7 +100,7 @@ class ProfileDataController {
   ): Promise<Profile | null> {
     try {
       if (profile) {
-        const local = await this.getProfile();
+        const local = await this.getLocalProfile();
         if (local && local.modified_at >= profile.modified_at) {
           return local;
         }
@@ -108,21 +124,6 @@ class ProfileDataController {
       mainLogger.warn(`handleProfile error:${e}`);
       return null;
     }
-  }
-
-  async getDefaultCaller() {
-    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-      ServiceConfig.RC_INFO_SERVICE,
-    );
-
-    const profile = await this.getProfile();
-    const defaultCallerNumberId = profile[SETTING_KEYS.DEFAULT_NUMBER];
-    return (
-      (defaultCallerNumberId !== undefined &&
-        (await rcInfoService.getCallerById(defaultCallerNumberId))) ||
-      ((await rcInfoService.getFirstDidCaller()) ||
-        (await rcInfoService.getCompanyMainCaller()))
-    );
   }
 }
 

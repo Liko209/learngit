@@ -7,13 +7,13 @@
 import { notificationCenter } from 'sdk/service';
 import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { CallLog } from '../entity';
-import { mainLogger } from 'foundation';
+import { mainLogger, PerformanceTracer } from 'foundation';
 import { RCItemApi } from 'sdk/api';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ProfileService, SETTING_KEYS } from 'sdk/module/profile';
-import { PerformanceTracer, PERFORMANCE_KEYS } from 'sdk/utils';
 import { daoManager } from 'sdk/dao';
 import { CallLogDao } from '../dao';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const LOG_TAG = 'CallLogActionController';
 
@@ -23,7 +23,7 @@ class CallLogActionController {
   ) {}
 
   async deleteCallLogs(entityIds: string[]) {
-    const performanceTracer = PerformanceTracer.initial();
+    const performanceTracer = PerformanceTracer.start();
     mainLogger.tags(LOG_TAG).info('deleteCallLogs', entityIds);
     try {
       const callLogs = await this._entitySourceController.getEntitiesLocally(
@@ -35,18 +35,21 @@ class CallLogActionController {
       });
       await RCItemApi.deleteCallLog(entityIds);
       performanceTracer.trace({
-        key: PERFORMANCE_KEYS.DELETE_CALL_LOG_FROM_SERVER,
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.DELETE_CALL_LOG_FROM_SERVER,
       });
+
+      await this._entitySourceController.bulkDelete(entityIds);
       notificationCenter.emitEntityUpdate<CallLog, string>(
         this._entitySourceController.getEntityNotificationKey(),
         callLogs,
       );
-      await this._entitySourceController.bulkDelete(entityIds);
     } catch (error) {
       mainLogger.tags(LOG_TAG).warn('failed to delete callLogs: ', entityIds);
       throw error;
     } finally {
-      performanceTracer.end({ key: PERFORMANCE_KEYS.DELETE_CALL_LOG });
+      performanceTracer.end({
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.DELETE_CALL_LOG,
+      });
     }
   }
 

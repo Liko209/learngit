@@ -6,13 +6,14 @@
 
 import { BaseDao, QUERY_DIRECTION } from 'sdk/dao';
 import { CallLogView, CallLog } from '../entity';
-import { IDatabase, mainLogger } from 'foundation';
-import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE } from '../constants';
-import _ from 'lodash';
+import { IDatabase, mainLogger, PerformanceTracer } from 'foundation';
+import { CALL_LOG_SOURCE, LOCAL_INFO_TYPE, CALL_RESULT } from '../constants';
 import { ArrayUtils } from 'sdk/utils/ArrayUtils';
-import { DEFAULT_FETCH_SIZE } from '../../constants';
+import { DEFAULT_FETCH_SIZE, CALL_DIRECTION } from '../../constants';
 import { Nullable } from 'sdk/types';
 import { SortUtils } from 'sdk/framework/utils';
+import { FetchDataOptions } from '../../types';
+import { CALL_LOG_POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const LOG_TAG = 'CallLogViewDao';
 
@@ -24,11 +25,16 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
 
   async queryCallLogs(
     fetchCallLogsFunc: (ids: string[]) => Promise<CallLog[]>,
-    source: CALL_LOG_SOURCE,
-    anchorId?: string,
-    direction = QUERY_DIRECTION.OLDER,
-    limit: number = Infinity,
+    options: FetchDataOptions<CallLog, string>,
   ): Promise<CallLog[]> {
+    const {
+      limit = DEFAULT_FETCH_SIZE,
+      direction = QUERY_DIRECTION.OLDER,
+      anchorId,
+      filterFunc,
+      callLogSource = CALL_LOG_SOURCE.ALL,
+    } = options;
+
     let anchorCallLog;
     if (anchorId) {
       anchorCallLog = await this.get(anchorId);
@@ -42,31 +48,29 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
       }
     }
 
+    // get final fetch ids
+    const performanceTracer = PerformanceTracer.start();
+
     // get all views from callLogView
-    const views = await this.queryAllViews();
+    const views = await this.queryAllViews(callLogSource, false, filterFunc);
     if (!views || !views.length) {
       mainLogger.tags(LOG_TAG).info('can not get any callLogView');
+      performanceTracer.end({
+        key: CALL_LOG_POST_PERFORMANCE_KEYS.FILTER_AND_SORT_CALL_LOG,
+      });
       return [];
     }
 
-    // get final fetch ids
-    let ids: string[] = [];
-    views.forEach((view: CallLogView) => {
-      if (
-        (source === CALL_LOG_SOURCE.ALL &&
-          !(view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED_SOURCE)) ||
-        (source === CALL_LOG_SOURCE.MISSED &&
-          view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED)
-      ) {
-        ids.push(view.id);
-      }
-    });
-    ids = ArrayUtils.sliceIdArray(
-      ids,
+    const ids = ArrayUtils.sliceIdArray(
+      views.map(value => value.id),
       limit === Infinity ? DEFAULT_FETCH_SIZE : limit,
       anchorId,
       direction,
     );
+
+    performanceTracer.end({
+      key: CALL_LOG_POST_PERFORMANCE_KEYS.FILTER_AND_SORT_CALL_LOG,
+    });
 
     // get data by ids
     const data = await fetchCallLogsFunc(ids);
@@ -77,17 +81,31 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
     return data;
   }
 
-  async queryAllViews(): Promise<CallLogView[]> {
+  async queryAllViews(
+    source: CALL_LOG_SOURCE,
+    desc = false,
+    filterFunc?: (data: CallLog) => boolean,
+  ): Promise<CallLogView[]> {
     const query = this.createQuery();
-    const views = await query.toArray();
-    return views.sort((lv: CallLogView, rv: CallLogView) => {
-      return SortUtils.sortModelByKey<CallLogView, string>(
-        lv,
-        rv,
-        ['__timestamp'],
-        false,
-      );
+    const views = (await query.toArray()).filter(view => {
+      if (
+        (source === CALL_LOG_SOURCE.ALL &&
+          !(view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED_SOURCE)) ||
+        (source === CALL_LOG_SOURCE.MISSED &&
+          view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED)
+      ) {
+        return (
+          !filterFunc || filterFunc(this._translate2CallLogForFilter(view))
+        );
+      }
+      return false;
     });
+    return views.sort((lv: CallLogView, rv: CallLogView) => SortUtils.sortModelByKey<CallLogView, string>(
+      lv,
+      rv,
+      ['__timestamp'],
+      desc,
+    ));
   }
 
   async queryOldestTimestamp(): Promise<Nullable<number>> {
@@ -104,6 +122,41 @@ class CallLogViewDao extends BaseDao<CallLogView, string> {
       .first();
     mainLogger.tags(LOG_TAG).info('queryOldestTimestamp, ', view);
     return view ? view.__timestamp : null;
+  }
+
+  async getAllUniquePhoneNumberCalls(source: CALL_LOG_SOURCE) {
+    const allCalls = await this.queryAllViews(source, true);
+
+    // prettier-ignore
+    const phoneNumbers = new Map<string, { id: string; creationTime: number }>();
+    for (const callView of allCalls) {
+      const phoneNumber = callView.caller
+        ? callView.caller.extensionNumber || callView.caller.phoneNumber
+        : undefined;
+      if (phoneNumber) {
+        const view = phoneNumbers.get(phoneNumber);
+        if (!view) {
+          phoneNumbers.set(phoneNumber, {
+            id: callView.id,
+            creationTime: callView.__timestamp,
+          });
+        }
+      }
+    }
+
+    return phoneNumbers;
+  }
+
+  private _translate2CallLogForFilter(view: CallLogView): CallLog {
+    return {
+      direction: CALL_DIRECTION.INBOUND,
+      from: view.caller,
+      result:
+        view.__localInfo & LOCAL_INFO_TYPE.IS_MISSED
+          ? CALL_RESULT.MISSED
+          : CALL_RESULT.UNKNOWN,
+      __deactivated: false,
+    } as CallLog;
   }
 }
 

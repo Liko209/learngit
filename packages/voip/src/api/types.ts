@@ -54,6 +54,11 @@ enum RTC_CALL_ACTION {
   CALL_TIME_OUT = 'callTimeOut',
 }
 
+enum RTC_CALL_ACTION_ERROR_CODE {
+  INVALID = -1,
+  OTHER_ACTION_IN_PROGRESS = -6,
+}
+
 type RTCSipFlags = {
   voipFeatureEnabled: boolean;
   voipCountryBlocked: boolean;
@@ -63,13 +68,6 @@ type RTCSipFlags = {
   dscpVoice: Number;
   dscpVideo: Number;
 };
-
-enum RTC_STATUS_CODE {
-  OK = 0,
-  NUMBER_INVALID = 1000,
-  MAX_CALLS_REACHED = 1001,
-  INVALID_STATE = 1002,
-}
 
 type RTCUserInfo = {
   endpointId?: string;
@@ -101,17 +99,25 @@ enum RTC_MEDIA_ACTION {
   VOLUME_CHANGED = 'VOLUME_CHANGED',
 }
 
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  START_RECORD_IN_PROGRESS = 'startRecordInProgress',
+  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
   RTCUserInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
-  RTC_STATUS_CODE,
+  RTC_CALL_ACTION_ERROR_CODE,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
   RTCSipFlags,
   RTC_MEDIA_ACTION,
+  RECORD_STATE,
 };

@@ -11,7 +11,7 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { PartialWithKey } from '../../../models';
 import { GroupState } from '../../state/entity';
-import { GroupDao } from '../../../module/group/dao';
+import { GroupDao } from '../dao';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -27,11 +27,12 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { AccountService } from '../../account/service';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { SYNC_SOURCE, ChangeModel } from '../../../module/sync/types';
+import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 
 const LOG_TAG = 'GroupHandleDataController';
+/* eslint-disable */
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -75,7 +76,7 @@ class GroupHandleDataController {
     return transformedData.filter(
       (item: Group | null) => item !== null,
     ) as Group[];
-  }
+  };
 
   calculateDeltaData = async (
     deltaGroup: Raw<Group>,
@@ -119,7 +120,7 @@ class GroupHandleDataController {
       }
       return result;
     }
-  }
+  };
 
   getTransformData = async (groups: Raw<Group>[]): Promise<Group[]> => {
     const transformedData: (Group | null)[] = await Promise.all(
@@ -163,7 +164,7 @@ class GroupHandleDataController {
     return transformedData.filter(
       (item: Group | null) => item !== null,
     ) as Group[];
-  }
+  };
 
   doNotification = async (
     deactivatedData: Group[],
@@ -190,7 +191,7 @@ class GroupHandleDataController {
         notificationCenter.emitEntityUpdate(ENTITY.GROUP, allGroups);
       }
     }
-  }
+  };
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
     try {
@@ -206,7 +207,7 @@ class GroupHandleDataController {
     } catch (e) {
       mainLogger.error(`operateGroupDao error ${JSON.stringify(e)}`);
     }
-  }
+  };
 
   extractGroupCursor(groups: Group[], changeMap?: Map<string, ChangeModel>) {
     const groupCursors = _.cloneDeep(groups);
@@ -247,7 +248,7 @@ class GroupHandleDataController {
       await this.doNotification(deactivatedData, normalData, changeMap);
     }
     return normalData;
-  }
+  };
 
   handleData = async (
     groups: Raw<Group>[],
@@ -262,7 +263,7 @@ class GroupHandleDataController {
 
     // handle deactivated data and normal data
     await this.saveDataAndDoNotification(data, source, changeMap);
-  }
+  };
 
   doFavoriteGroupsNotification = async (favIds: number[]) => {
     mainLogger.debug('-------doFavoriteGroupsNotification--------');
@@ -287,7 +288,7 @@ class GroupHandleDataController {
       });
     }
     notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
-  }
+  };
 
   sortFavoriteGroups = (ids: number[], groups: Group[]): Group[] => {
     const result: Group[] = [];
@@ -300,7 +301,7 @@ class GroupHandleDataController {
       }
     }
     return result;
-  }
+  };
 
   handleFavoriteGroupsChanged = async (
     oldProfile: Profile,
@@ -339,7 +340,7 @@ class GroupHandleDataController {
         );
       }
     }
-  }
+  };
 
   doNonFavoriteGroupsNotification = (groups: Group[], isPut: boolean) => {
     if (isPut) {
@@ -367,14 +368,14 @@ class GroupHandleDataController {
           peopleGroupIds,
         );
     }
-  }
+  };
 
   isNeedToUpdateMostRecent4Group = (post: Post, group: Group): boolean => {
     return (
       !group.most_recent_post_created_at ||
       group.most_recent_post_created_at < post.created_at
     );
-  }
+  };
 
   getUniqMostRecentPostsByGroup = (
     posts: Post[],
@@ -399,7 +400,7 @@ class GroupHandleDataController {
     });
 
     return { uniqMaxPosts, uniqMyMaxPosts };
-  }
+  };
 
   handleGroupMostRecentPostChanged = async ({
     type,
@@ -415,7 +416,7 @@ class GroupHandleDataController {
     );
     await this._updateGroupMostRecentPost(uniqMaxPosts);
     await this._updateMyLastPostTime(uniqMyMaxPosts);
-  }
+  };
 
   private async _updateGroupMostRecentPost(uniqMaxPosts: Post[]) {
     const groupDao = daoManager.getDao(GroupDao);
@@ -461,11 +462,11 @@ class GroupHandleDataController {
       group.most_recent_post_created_at || 0,
       group.created_at,
     );
-  }
+  };
 
   hasUnread = (groupState: GroupState) => {
     return groupState.unread_count || groupState.unread_mentions_count;
-  }
+  };
 
   getUnreadGroupIds = async (groups: Group[]) => {
     const ids = _.map(groups, 'id');
@@ -474,7 +475,7 @@ class GroupHandleDataController {
     );
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
     return states.filter(this.hasUnread).map(state => state.id);
-  }
+  };
 
   /**
    * extract out groups/teams which are latest than the oldest unread post
@@ -499,6 +500,7 @@ class GroupHandleDataController {
 
     // Find oldest unread group's time
     const unreadGroupIds = await this.getUnreadGroupIds(sortedGroups);
+    mainLogger.tags(LOG_TAG).info('fetch unread group ids done');
     const oldestUnreadGroupTime = sortedGroups
       .filter(group => unreadGroupIds.includes(group.id))
       .map(this.getGroupTime)
@@ -527,7 +529,7 @@ class GroupHandleDataController {
     }
 
     return sortedGroups;
-  }
+  };
 
   handlePartialData = async (groups: Partial<Raw<Group>>[]) => {
     if (groups.length === 0) {
@@ -537,7 +539,7 @@ class GroupHandleDataController {
       groups,
     );
     await this.doNotification([], transformData);
-  }
+  };
 
   private async _updateMyLastPostTime(uniqMaxPosts: Post[]) {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(

@@ -20,6 +20,7 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { HasMore } from '@/store/base/fetch/types';
 
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
 
@@ -35,9 +36,9 @@ class StreamController {
   );
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
-    StreamItem,
-    number,
-    IStreamItemSortableModel
+  StreamItem,
+  number,
+  IStreamItemSortableModel
   >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
@@ -164,6 +165,7 @@ class StreamController {
   replacePostList(posts: Post[]) {
     this._orderListHandler.replaceAll(posts);
   }
+
   hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }
@@ -191,9 +193,8 @@ class StreamController {
   }
 
   private _unreadPostsLoader = async () => {
-    let hasMore = true;
+    let hasMore: HasMore = { older: true, newer: true, both: true };
     let postsNewerThanAnchor: Post[] = [];
-    let postsOlderThanAnchor: Post[] = [];
 
     // (1)
     // Fetch all posts between readThrough and firstPost
@@ -208,25 +209,10 @@ class StreamController {
     }));
 
     // (2)
-    // Fetch $BEFORE_ANCHOR_POSTS_COUNT posts that older than
-    // oldest post of (1)
-    const oldestPost = _.last(postsNewerThanAnchor);
-    if (oldestPost) {
-      ({
-        posts: postsOlderThanAnchor,
-      } = await this._postService.getPostsByGroupId({
-        groupId: this._groupId,
-        postId: oldestPost.id,
-        direction: QUERY_DIRECTION.OLDER,
-        limit: BEFORE_ANCHOR_POSTS_COUNT,
-      }));
-    }
-
-    // (3)
-    // Return all the posts from (1) and (2)
+    // Return all the posts from (1)
     return {
       hasMore,
-      data: [...postsNewerThanAnchor, ...postsOlderThanAnchor],
+      data: postsNewerThanAnchor,
     };
   }
 }

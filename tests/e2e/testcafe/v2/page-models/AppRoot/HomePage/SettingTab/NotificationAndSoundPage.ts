@@ -36,7 +36,6 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get microphoneSourceItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-microphoneSource');
   }
 
   get speakerSourceLabel() {
@@ -53,6 +52,22 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get speakerSourceItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  get ringerSourceSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-ringerSource');
+  }
+
+  get ringerSourceItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  get ringerSourceLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-ringerSource');
+  }
+
+  get ringerSourceDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-ringerSource');
   }
 
   microphoneSourceById(value: string) {
@@ -95,6 +110,19 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     await this.t.expect(this.speakerSourceSelectBox.getAttribute('data-test-automation-value')).eql(value);
   }
 
+  async clickRingerSourceSelectBox() {
+    await this.t.click(this.ringerSourceSelectBox);
+  }
+
+  async currentRingerSourceLabelToBe(babel: string) {
+    await this.t.expect(this.ringerSourceSelectBox.textContent).eql(babel);
+  }
+
+  async currentRingerSourceIdToBe(value: string) {
+    await this.t.expect(this.ringerSourceSelectBox.getAttribute('data-test-automation-value')).eql(value);
+  }
+
+
   speakerSourceById(value: string) {
     return this.speakerSourceItems.filter(`[data-test-automation-value="${value}"]`);
   }
@@ -109,6 +137,22 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   getSpeakerSourceIdByNth(n: number) {
     return this.speakerSourceItems.nth(n).getAttribute('data-test-automation-value');
+  }
+
+  ringerSourceById(value: string) {
+    return this.ringerSourceItems.filter(`[data-test-automation-value="${value}"]`);
+  }
+
+  ringerSourceByLabel(label: string) {
+    return this.ringerSourceItems.withExactText(label);
+  }
+
+  getRingerSourceIdByLabel(label: string) {
+    return this.microphoneSourceByLabel(label).getAttribute('data-test-automation-value');
+  }
+
+  getRingerSourceIdByNth(n: number) {
+    return this.ringerSourceItems.nth(n).getAttribute('data-test-automation-value');
   }
 
   async selectMicrophoneSourceByLabel(label: string) {
@@ -135,18 +179,137 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     await this.t.click(this.speakerSourceItems.nth(n));
   }
 
+  async selectRingerSourceByLabel(label: string) {
+    await this.t.click(this.ringerSourceByLabel(label));
+  }
+
+  async selectRingerSourceById(value: string) {
+    await this.t.click(this.ringerSourceById(value));
+  }
+
+  async selectRingerSourceByNth(n: number) {
+    await this.t.click(this.ringerSourceItems.nth(n));
+  }
+
   /** desktop notification */
   get desktopNotificationsSection() {
     return this.getSelectorByAutomationId('settingSection-desktopNotifications');
   }
 
+  get desktopNotificationSectionTitle() {
+    return this.getSelectorByAutomationId('settingSectionTitle-desktopNotifications');
+  }
+
+  get browserSwitchItem() {
+    return this.getSelectorByAutomationId('settingItem-notificationBrowser');
+  }
+  get browserSwitchItemLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-notificationBrowser');
+  }
+  get browserSwitchItemDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-notificationBrowser');
+  }
+
+  get browserSwitchItemToggle() {
+    return this.getSelectorByAutomationId('settingItemToggleButton-notificationBrowser');
+  }
+
+  // New Message
+  get newMessageItem() {
+    return this.getSelectorByAutomationId('settingItem-newMessages')
+  }
+
+  get newMessageItemStatus() {
+    return this.newMessageItem.getAttribute('data-disabled')
+  }
+
+  get newMessagesLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-newMessages');
+  }
+
+  get newMessageDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-newMessages');
+  }
+
+  get newMessageItemSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-newMessages');
+  }
+
+  get newMessageDropDownItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  // Incoming Call
+  get incomingCallsItem() {
+    return this.getSelectorByAutomationId('settingItem-incomingCalls')
+  }
+
+  get incomingCallsLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-incomingCalls');
+  }
+
+  get incomingCallsDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-incomingCalls');
+  }
+
+  get incomingCallsToggle() {
+    return this.getSelectorByAutomationId('settingItemToggleButton-incomingCalls');
+  }
+
+  // Calls and Voicemails
+  get missedCallsAndVoicemailsItem() {
+    return this.getSelectorByAutomationId('settingItem-callsAndVoicemails')
+  }
+
+  get missedCallsAndVoicemailsLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-callsAndVoicemails');
+  }
+
+  get missedCallsAndVoicemailsDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-callsAndVoicemails');
+  }
+
+  get missedCallsAndVoicemailsToggle() {
+    return this.getSelectorByAutomationId('settingItemToggleButton-callsAndVoicemails');
+  }
+
+  /// drop down check
+  async clickNewMessageItemSelectBox() {
+    await this.t.click(this.newMessageItemSelectBox);
+  }
+
+  async checkNewMessageDropDownItemCount(count: number) {
+    await this.t.expect(this.newMessageDropDownItems.count).eql(count);
+  }
+
+  async newMessageDropDownItemsContains(newMessageItems: string[]) {
+    const count = await this.newMessageDropDownItems.count;
+    for (let i = 0; i < count; i++) {
+      const text = await this.newMessageDropDownItems.nth(i).innerText;
+      const result = newMessageItems.indexOf(text) !== -1;
+      assert.ok(result, `${text} does not apply ${newMessageItems}`);
+    }
+  }
+
+  async toggleOffBrowserNotification() {
+    if (await this.browserSwitchItemToggle.find('input').checked !== false) {
+      await this.t.click(this.browserSwitchItemToggle);
+    }
+  }
+
+  async toggleOnBrowserNotification() {
+    if (await this.browserSwitchItemToggle.find('input').checked !== true) {
+      await this.t.click(this.browserSwitchItemToggle);
+    }
+  }
+
+
   get otherNotificationSettings() {
     return this.getSelectorByAutomationId('settingSection-otherNotificationSettings')
   }
 
-
   get newMessageBadgeCountDropDown() {
- return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
+    return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
   }
 
   get newMessageBadgeCount() {
@@ -159,158 +322,5 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   async clickNewMessageBadgeCountDropDown() {
     await this.t.click(this.newMessageBadgeCountDropDown);
-  }
-
-  get pageHeaderTitle() {
-    return this.getSelectorByAutomationId('settingPageHeader-notificationAndSounds');
-  }
-  get settingsSection() {
-    return this.getSelectorByAutomationId('settingSection-desktopNotifications');
-  }
-  get sectionHeaderTitle() {
-    return this.getSelectorByAutomationId('settingSectionTitle-desktopNotifications');
-  }
-  get browserSection() {
-    return this.getSelectorByAutomationId('settingItem-notificationBrowser');
-  }
-  get browserItemTitle() {
-    return this.getSelectorByAutomationId('settingItemLabel-notificationBrowser');
-  }
-  get browserItemDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-notificationBrowser');
-  }
-  get browserItemToggle() {
-    return this.getSelectorByAutomationId('settingItemToggleButton-notificationBrowser');
-  }
-  // New Message
-  get newMessageSection() {
-    return this.getSelectorByAutomationId('settingItem-newMessages')
-  }
-
-
-  get newMessageSectionStatus() {
-    return this.newMessageSection.getAttribute('data-disabled')
-  }
-  get newMessagesTitle() {
-    return this.getSelectorByAutomationId('settingItemLabel-newMessages');
-  }
-  get newMessageDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-newMessages');
-  }
-  get newMessageSelector() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-newMessages');
-  }
-  get newMessgesSelectorItem() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-newMessages-item') // check settingItemSelectBoxItem-newMessages
-  }
-  get newMessageSelectorAllItems(){
-    return this.getSelector('[data-test-automation-class="settingItemSelectBoxItem"]');
-  }
-  // Incoming Call
-  get incomingCallsSection() {
-    return this.getSelectorByAutomationId('settingItem-incomingCalls')
-  }
-
-  get incomingCallsTitle() {
-    return this.getSelectorByAutomationId('settingItemLabel-incomingCalls');
-  }
-  get incomingCallsDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-incomingCalls');
-  }
-  get incomingCallsToggle() {
-    return this.getSelectorByAutomationId('settingItemToggleButton-incomingCalls');
-  }
-  // Calls and Voicemails
-  get callsAndVoicemailsSection() {
-    return this.getSelectorByAutomationId('settingItem-callsAndVoicemails')
-  }
-  get callsAndVoicemailsTitle() {
-    return this.getSelectorByAutomationId('settingItemLabel-callsAndVoicemails');
-  }
-  get callsAndVoicemailsDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-callsAndVoicemails');
-  }
-  get callsAndVoicemailsToggle() {
-    return this.getSelectorByAutomationId('settingItemToggleButton-callsAndVoicemails');
-  }
-
-
-  async existSectionLabel(text: string) {
-    await this.t.expect(this.settingsSection.withText(text).exists).ok();
-  }
-  async existbrowserItemLabel(text: string) {
-    await this.t.expect(this.browserItemTitle.withText(text).exists).ok();
-  }
-  async existBrowserItemDescription(text: string) {
-    await this.t.expect(this.browserItemDescription.withText(text).exists).ok();
-  }
-  async existNewMessageItemLabel(text: string) {
-    await this.t.expect(this.newMessagesTitle.withText(text).exists).ok();
-  }
-  async existNewMessageDescription(text: string) {
-    await this.t.expect(this.newMessageDescription.withText(text).exists).ok();
-  }
-
-  async existBrowserToggle() {
-    await this.t.expect(this.browserItemToggle.exists).ok();
-  }
-  async existsNoIncomingCallSection() {
-    await this.t.expect(this.incomingCallsSection.exists).notOk();
-  }
-  async existsNoMissedCallAndVoicemailSection() {
-    await this.t.expect(this.callsAndVoicemailsSection.exists).notOk();
-  }
-  async existsBrowserSection() {
-    await this.t.expect(this.browserSection.exists).ok();
-  }
-  async existsNewMessageSection() {
-    await this.t.expect(this.newMessageSection.exists).ok();
-  }
-
-  async incomingcallToggleIsOn() {
-    return this.t.expect(this.incomingCallsToggle.checked).ok();
-  }
-  async callsAndVoicemailsToggleIsOn() {
-    return this.t.expect(this.callsAndVoicemailsToggle.checked).ok();
-  }
-  async existNewMessageDropDown() {
-    await this.t.expect(this.newMessageSelector.exists).ok();
-  }
-
-  /// dropdown check
-  async clickNewMessageDropDownItem() {
-    await this.t.click(this.newMessageSelector);
-  }
-  async checkNewMessageItemCount(count: number) {
-    await this.t.expect(this.newMessageSelectorAllItems.count).eql(count);
-  }
-
-  async newMessageDropDownItemContains(newMessageItems: string[]) {
-    const count = await this.newMessageSelectorAllItems.count;
-    for (let i = 0; i < count; i++) {
-      const text = await this.newMessageSelectorAllItems.nth(i).innerText;
-      const result = newMessageItems.indexOf(text) !== -1;
-      assert.ok(result, `${text} does not apply ${newMessageItems}`);
-    }
-  }
-
-  async existIncomingCallsLabel(text: string) {
-    await this.t.expect(this.incomingCallsTitle.withText(text).exists).ok();
-  }
-  async existIncomingCallsDescription(text: string) {
-    await this.t.expect(this.incomingCallsDescription.withText(text).exists).ok();
-  }
-  async existCallsAndVoicemailsLabel(text: string) {
-    await this.t.expect(this.callsAndVoicemailsTitle.withText(text).exists).ok();
-  }
-  async existCallsAndVoicemailsDescription(text: string) {
-    await this.t.expect(this.callsAndVoicemailsDescription.withText(text).exists).ok();
-  }
-
-
-  async getBrowserToggleIsOFF() {
-    if (await this.browserItemToggle.checked !== false) {
-      await this.t.click(this.browserItemToggle);
-    }
   }
 }

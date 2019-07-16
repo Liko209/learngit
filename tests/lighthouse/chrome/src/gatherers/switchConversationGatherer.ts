@@ -2,7 +2,7 @@
  * @Author: doyle.wu
  * @Date: 2018-12-12 12:56:30
  */
-import { BaseGatherer } from ".";
+import { DebugGatherer } from ".";
 import { ConversationPage } from "../pages";
 import { FileService } from "../services";
 import { PptrUtils } from "../utils";
@@ -10,13 +10,15 @@ import { Config } from "../config";
 import { globals } from "../globals";
 import * as bluebird from 'bluebird';
 
-class SwitchConversationGatherer extends BaseGatherer {
+class SwitchConversationGatherer extends DebugGatherer {
   private conversationIds: Array<string>;
   private metricKeys: Array<string> = [
     'goto_conversation_fetch_posts',
     'goto_conversation_fetch_items',
     'conversation_fetch_from_db',
-    // 'goto_conversation_shelf_fetch_items',
+    'goto_conversation_shelf_fetch_items',
+    // 'ui_message_render',
+    // 'ui_profile_render',
     // 'conversation_fetch_unread_post',
     // 'conversation_fetch_interval_post',
     // 'conversation_fetch_from_server',
@@ -38,7 +40,7 @@ class SwitchConversationGatherer extends BaseGatherer {
 
     const driver = passContext.driver;
     // pre loaded
-    await this.switchConversion(driver, conversationPage);
+    await this.switchConversion(driver, conversationPage, Config.sceneRepeatCount);
   }
 
   async _afterPass(passContext) {
@@ -94,9 +96,19 @@ class SwitchConversationGatherer extends BaseGatherer {
 
     let id, index = 0;
     while (index < switchCount) {
+      this.clearTmpGatherer(this.metricKeys);
+
       id = this.conversationIds[index++ % this.conversationIds.length];
       this.logger.info(`switch to ${id}`);
       await page.swichConversationById(id);
+
+      await page.switchDetailTab();
+
+      // await page.lookupTeamMember();
+
+      this.pushGatherer(this.metricKeys);
+
+      await bluebird.delay(2000);
 
       if (needGC && index > halfCount) {
         globals.stopCollectProcessInfo();

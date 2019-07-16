@@ -215,6 +215,8 @@ describe('StreamViewModel', () => {
         { id: 4, created_at: 104, creator_id: 1 },
       ];
       const postsNewerThanAnchor = [
+        { id: 3, created_at: 103, creator_id: 1 },
+        { id: 4, created_at: 104, creator_id: 1 },
         { id: 5, created_at: 105, creator_id: 1 },
         { id: 6, created_at: 106, creator_id: 1 },
         { id: 7, created_at: 107, creator_id: 1 },
@@ -222,14 +224,13 @@ describe('StreamViewModel', () => {
       ];
       const { vm } = setupMock({
         postsNewerThanAnchor,
-        postsOlderThanAnchor,
         readThroughPost,
         groupState: { unreadCount: 4, readThrough: readThroughPost.id },
         currentPosts: [{ id: 9, created_at: 109, creator_id: 1 }],
       });
       const firstUnreadPostId = await vm.getFirstUnreadPostByLoadAllUnread();
 
-      expect(vm.postIds).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      expect(vm.postIds).toEqual([3, 4, 5, 6, 7, 8, 9]);
       expect(firstUnreadPostId).toBe(5);
     });
 
@@ -614,7 +615,7 @@ describe('StreamViewModel', () => {
         await vm.loadNextPosts();
         await vm.loadNextPosts();
         expect(Notification.flashToast).toHaveBeenCalledTimes(1);
-      },         1000);
+      }, 1000);
     });
   });
 
@@ -692,10 +693,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });
@@ -707,10 +708,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });
@@ -722,10 +723,10 @@ describe('StreamViewModel', () => {
       const vm = setup({
         _streamController: {
           items: [
-            { type: StreamItemType.POST, value: [10] },
-            { type: StreamItemType.POST, value: [11] },
-            { type: StreamItemType.POST, value: [12] },
-            { type: StreamItemType.POST, value: [13] },
+            { type: StreamItemType.POST, value: 10 },
+            { type: StreamItemType.POST, value: 11 },
+            { type: StreamItemType.POST, value: 12 },
+            { type: StreamItemType.POST, value: 13 },
           ],
         },
       });

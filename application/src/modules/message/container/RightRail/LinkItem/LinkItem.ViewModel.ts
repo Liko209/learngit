@@ -14,6 +14,7 @@ import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
 import { LinkItemProps, LinkItemViewProps } from './types';
 import { accelerateURL } from '@/common/accelerateURL';
+
 class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
   implements LinkItemViewProps {
   @computed

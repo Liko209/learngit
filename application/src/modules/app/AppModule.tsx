@@ -6,7 +6,9 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { Sdk, LogControlManager, service } from 'sdk';
+import {
+ sdk, LogControlManager, service, powerMonitor
+} from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -90,16 +92,12 @@ class AppModule extends AbstractModule {
     } as IApplicationInfo);
 
     const {
-      notificationCenter,
-      socketManager,
-      SOCKET,
-      SERVICE,
-      CONFIG,
-    } = service;
+ notificationCenter, SOCKET, SERVICE, CONFIG
+} = service;
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
-        socketManager.onPowerMonitorEvent(actionName);
+        powerMonitor.onPowerMonitorEvent(actionName);
       };
       window.jupiterElectron.handleNativeUpgrade = showUpgradeDialog;
     }
@@ -107,7 +105,7 @@ class AppModule extends AbstractModule {
     // subscribe service notification to global store
     const globalStore = storeManager.getGlobalStore();
 
-    const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
+    const updateAccountInfoForGlobalStore = () => {
       const accountService = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       );
@@ -147,8 +145,8 @@ class AppModule extends AbstractModule {
 
     setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
 
-    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
-      updateAccountInfoForGlobalStore(isRCOnlyMode);
+    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
+      success && updateAccountInfoForGlobalStore();
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
@@ -174,7 +172,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.RELOAD, () => {
       history.replace('/messages');
-      location.reload();
+      window.location.reload();
     });
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
@@ -188,7 +186,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
-    await Sdk.init({
+    await sdk.init({
       api,
       db,
     });

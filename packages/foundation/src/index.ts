@@ -11,6 +11,9 @@ export * from './telephony';
 export * from './error';
 export * from './analysis';
 export * from './utils';
+export * from './health';
+export * from './performance';
+export * from './firebase';
 
 export { default as Foundation } from './Foundation';
 export { config } from './config';

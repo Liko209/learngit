@@ -8,7 +8,7 @@ import { storiesOf } from '@storybook/react';
 import { text, object, boolean } from '@storybook/addon-knobs';
 import Checkbox from '@material-ui/core/Checkbox';
 import styled from '../../../foundation/styled-components';
-import { JuiConversationItemCard } from '../';
+import { JuiConversationItemCard } from '..';
 import {
   JuiCodeSnippetBody,
   JuiTaskSectionOrDescription,
@@ -51,7 +51,7 @@ storiesOf('Pattern/ConversationItemCard', module)
         this.setState({
           checked: !checked,
         });
-      }
+      };
 
       render() {
         const { checked } = this.state;
@@ -65,7 +65,7 @@ storiesOf('Pattern/ConversationItemCard', module)
               complete={false}
               title={'Event Name'}
               titleClick={this.onClick}
-              Icon={<CheckboxTest checked={checked} disableRipple={true} />}
+              Icon={<CheckboxTest checked={checked} disableRipple />}
               Footer={<div>footer</div>}
             >
               content
@@ -86,13 +86,14 @@ storiesOf('Pattern/ConversationItemCard', module)
     const StyledCodeSnippetContainer = styled('div')`
       padding: 12px;
     `;
+    /* eslint-disable react/no-unescaped-entities */
     class CodeSnippet extends React.PureComponent<{}> {
       render() {
         return (
           <StyledCodeSnippetContainer>
             <JuiConversationItemCard
-              Icon="remove"
-              title="haah"
+              Icon='remove'
+              title='haah'
               contentHasPadding={false}
               headerActions={[
                 { iconName: 'copy', handler: () => {}, tooltip: 'copy' },
@@ -102,7 +103,7 @@ storiesOf('Pattern/ConversationItemCard', module)
                   tooltip: 'download',
                 },
               ]}
-              showHeaderActions={true}
+              showHeaderActions
             >
               <JuiCodeSnippetBody
                 hoverActions={[
@@ -210,13 +211,13 @@ storiesOf('Pattern/ConversationItemCard', module)
   .add('eventItemCard', () => {
     return (
       <JuiConversationItemCard
-        title="event"
+        title='event'
         iconColor={['primary', '500']}
-        Icon="event"
+        Icon='event'
       >
         <JuiSectionDivider gap={2}>
           <JuiLabelWithContent label={'new event'}>
-            <JuiTimeMessage time={`${new Date().toLocaleDateString()}`} />
+            <JuiTimeMessage time={'10/10/2018'} />
           </JuiLabelWithContent>
           <JuiLabelWithContent label={'hahaha'}>
             <JuiEventLocation>no local</JuiEventLocation>
@@ -245,7 +246,7 @@ storiesOf('Pattern/ConversationItemCard', module)
           {hasEndTime && (
             <>
               <JuiLabelWithContent label={'due'}>
-                <JuiTimeMessage time={`${new Date().toLocaleDateString()} `} />
+                <JuiTimeMessage time={'6/26/2019 '} />
               </JuiLabelWithContent>
             </>
           )}
@@ -276,8 +277,9 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiLabelWithContent label={'files'}>
               <JuiFileWrapper>
                 <JuiExpandImage
-                  Actions={(() => ({})) as any}
-                  previewUrl=""
+                  fileID={123}
+                  Actions={<div />}
+                  previewUrl=''
                   icon={'doc'}
                   fileName={'filename'}
                   i18UnfoldLess={'common.collapse'}

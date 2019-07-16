@@ -6,7 +6,9 @@
 
 import * as React from 'react';
 import styled from '../../../foundation/styled-components';
-import { width, height, spacing, typography, grey } from '../../../foundation/utils';
+import {
+  width, height, spacing, typography, grey,
+} from '../../../foundation/utils';
 import image from './img/no-result.svg';
 
 type JuiEmptyScreenProps = {

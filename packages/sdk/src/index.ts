@@ -8,6 +8,10 @@ import * as dao from './dao';
 import * as utils from './utils';
 import * as api from './api';
 import * as error from './error';
+import './module/debug';
+import Sdk from './Sdk';
+import { container } from './container';
+import { registerConfigs } from './registerConfigs';
 
 export * from './framework';
 export {
@@ -15,19 +19,17 @@ export {
 } from './utils/glip-type-dictionary/types';
 export { LogControlManager } from './service/uploadLogControl';
 
-import Sdk from './Sdk';
-import { container } from './container';
-import { registerConfigs } from './registerConfigs';
-
 registerConfigs.classes.forEach(config => container.registerClass(config));
 // registerConfigs.asyncClasses.forEach(config => container.registerAsyncClass(config));
 registerConfigs.constants.forEach(config =>
-  container.registerConstantValue(config),
-);
+  container.registerConstantValue(config),);
 
 const sdk: Sdk = container.get(Sdk.name);
-export { sdk as Sdk };
-export { sdk, service, utils, dao, api, error };
+
+export {
+ sdk, service, utils, dao, api, error
+};
+
 export {
   mainLogger,
   ILogger,
@@ -35,4 +37,7 @@ export {
   logManager,
   SessionManager,
   DateFormatter,
+  PerformanceTracer,
+  powerMonitor,
+  PowerMonitor,
 } from 'foundation';

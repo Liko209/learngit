@@ -5,21 +5,17 @@
  */
 import React from 'react';
 import Downshift from 'downshift';
+import { ChipProps } from '@material-ui/core/Chip';
 import styled from '../../foundation/styled-components';
-import { JuiPaper } from '../Paper';
 import {
   JuiDownshiftTextField,
   SelectedItem,
   JuiDownshiftTextFieldKeyDownEvent,
 } from './TextField';
-import { spacing, height } from '../../foundation/utils/styles';
-import { ChipProps } from '@material-ui/core/Chip';
-import { JuiVirtualizedList } from '../../components/VirtualizedList';
-import { JuiAutoSizer, Size } from '../../components/AutoSizer';
+import { JuiDownshiftSuggestionList } from './SuggestionList';
 
-type JuiDownshiftStates = {
-  selectedItems: SelectedItem[];
-  inputValue: string;
+type JuiDownshiftState = {
+  isComposition: boolean;
 };
 
 type JuiDownshiftKeyDownEvent = JuiDownshiftTextFieldKeyDownEvent;
@@ -44,33 +40,27 @@ type JuiDownshiftProps = {
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
   onKeyDown?: (event: JuiDownshiftKeyDownEvent) => void;
+  autoFocus?: boolean;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
   position: relative;
 `;
 
-const StyledPaper = styled(JuiPaper)`
-  && {
-    padding: ${spacing(2)} 0;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    transform: translateY(100%);
-    width: 100%;
-    max-height: ${height(50)};
-    overflow: auto;
-    z-index: ${({ theme }) => `${theme.zIndex.drawer}`};
-  }
-`;
-
 class JuiDownshift extends React.PureComponent<
-  JuiDownshiftProps,
-  JuiDownshiftStates
+JuiDownshiftProps,
+JuiDownshiftState
 > {
+  state: JuiDownshiftState = {
+    isComposition: false,
+  };
+
   handleChange = (item: SelectedItem) => {
     const { multiple } = this.props;
     let { selectedItems } = this.props;
+    if (this.state.isComposition) {
+      return;
+    }
 
     if (selectedItems.indexOf(item) === -1) {
       if (multiple) {
@@ -80,30 +70,26 @@ class JuiDownshift extends React.PureComponent<
       }
     }
     this.props.onSelectChange(selectedItems);
-  }
-  handleInputChange = (value: string) => {
-    this.props.onInputChange(value);
-  }
-  handleSelectChange = (items: SelectedItem[]) => {
-    this.props.onSelectChange(items);
-  }
+  };
+
+  handleComposition = (isComposition: boolean) => {
+    this.setState({ isComposition });
+  };
+
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
+
   render() {
     const {
+      inputValue,
+      selectedItems,
       automationId,
       suggestionItems,
       MenuItem,
-      inputLabel,
-      inputPlaceholder,
-      InputItem,
       minRowHeight,
-      autoSwitchEmail,
-      multiple,
       messageRef,
-      maxLength,
-      selectedItems,
-      inputValue,
-      onKeyDown,
+      inputPlaceholder: placeholder,
+      inputLabel: label,
+      ...textFieldProps
     } = this.props;
 
     return (
@@ -116,58 +102,33 @@ class JuiDownshift extends React.PureComponent<
         id="downshift-multiple"
       >
         {({
+          isOpen,
           getInputProps,
           getItemProps,
           getRootProps,
-          isOpen,
           highlightedIndex,
+          openMenu,
         }) => (
           <StyledDownshiftMultipleWrapper {...getRootProps()}>
             <JuiDownshiftTextField
               inputValue={inputValue}
+              label={label}
               selectedItems={selectedItems}
-              label={inputLabel}
-              placeholder={inputPlaceholder}
+              placeholder={placeholder}
               getInputProps={getInputProps}
-              onInputChange={this.handleInputChange}
-              onSelectChange={this.handleSelectChange}
-              InputItem={InputItem}
-              autoSwitchEmail={autoSwitchEmail}
-              multiple={multiple}
-              messageRef={messageRef}
-              maxLength={maxLength}
-              onKeyDown={onKeyDown}
+              onComposition={this.handleComposition}
+              openMenu={openMenu}
+              {...textFieldProps}
             />
-            {isOpen && suggestionItems.length ? (
-              <JuiAutoSizer>
-                {({ height }: Partial<Size>) => (
-                  <StyledPaper
-                    square={true}
-                    data-test-automation-id={automationId}
-                  >
-                    {/* {height ? ( */}
-                    <JuiVirtualizedList
-                      height={height as any} // need supported by new virtualized list update
-                      minRowHeight={minRowHeight}
-                    >
-                      {suggestionItems.map(
-                        (suggestionItem: SelectedItem, index) => {
-                          const isHighlighted = highlightedIndex === index;
-                          return (
-                            <MenuItem
-                              {...getItemProps({ item: suggestionItem })}
-                              itemId={suggestionItem.id}
-                              key={suggestionItem.id}
-                              isHighlighted={isHighlighted}
-                            />
-                          );
-                        },
-                      )}
-                    </JuiVirtualizedList>
-                    {/* ) : null} */}
-                  </StyledPaper>
-                )}
-              </JuiAutoSizer>
+            {isOpen && suggestionItems.length > 0 ? (
+              <JuiDownshiftSuggestionList
+                automationId={automationId}
+                suggestionItems={suggestionItems}
+                MenuItem={MenuItem}
+                minRowHeight={minRowHeight}
+                getItemProps={getItemProps}
+                highlightedIndex={highlightedIndex}
+              />
             ) : null}
           </StyledDownshiftMultipleWrapper>
         )}

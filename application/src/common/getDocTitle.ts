@@ -3,7 +3,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
-import { toTitleCase } from '@/utils/string';
 import { i18nP } from '@/utils/i18nT';
 
 //
@@ -19,13 +18,23 @@ function getMessagesTitle(messagePath?: string): string {
       messagePath,
     )
   ) {
-    return toTitleCase(messagePath);
+    return messagePath;
   }
   if (messagePath && /^\d+$/.test(messagePath)) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
   return i18nP('message.Messages');
+}
+
+function getPhoneTitle(subPath: string): string {
+  const baseTitle = i18nP('telephony.Phone');
+  const subTitleMap = new Map([
+    ['callhistory', i18nP('phone.tab.callHistory')],
+    ['voicemail', i18nP('phone.voicemail')],
+  ]);
+  const subTitle = subTitleMap.get(subPath);
+  return subTitle ? `${baseTitle} - ${subTitle}` : baseTitle;
 }
 
 function getSettingsTitle(settingPath: string): string {
@@ -49,7 +58,7 @@ function getSettingsTitle(settingPath: string): string {
 const DOC_TITLE = {
   messages: getMessagesTitle,
   dashboard: (): string => i18nP('dashboard.Dashboard'),
-  phone: (): string => i18nP('telephony.Phone'),
+  phone: getPhoneTitle,
   meetings: (): string => i18nP('meeting.Meetings'),
   contacts: (): string => i18nP('contact.Contacts'),
   calendar: (): string => i18nP('calendar.Calendar'),

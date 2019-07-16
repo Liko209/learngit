@@ -17,6 +17,7 @@ import {
   SETTING_SECTION__AUDIO_SOURCE,
   SETTING_ITEM__MICROPHONE_SOURCE,
   SETTING_ITEM__SPEAKER_SOURCE,
+  SETTING_ITEM__RINGER_SOURCE,
   SETTING_ITEM__VOLUME,
 } from './constant';
 import {
@@ -24,8 +25,7 @@ import {
   DEFAULT_AUDIO_OUTPUT_DEVICES,
 } from './audioSource/constant';
 
-const deviceIdExtractor = (device?: MediaDeviceInfo) =>
-  device ? device.deviceId : '';
+const deviceIdExtractor = (device?: MediaDeviceInfo) => (device ? device.deviceId : '');
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');
@@ -76,6 +76,17 @@ class NotificationSoundSettingManager {
               weight: 100,
             } as SelectSettingItem<MediaDeviceInfo>,
             {
+              id: SETTING_ITEM__RINGER_SOURCE,
+              automationId: 'ringerSource',
+              title: 'setting.audioSource.ringerSource.label',
+              description: 'setting.audioSource.ringerSource.description',
+              valueExtractor: deviceIdExtractor,
+              defaultSource: DEFAULT_AUDIO_OUTPUT_DEVICES,
+              sourceRenderer: MediaDeviceSourceItem,
+              type: SETTING_ITEM_TYPE.SELECT,
+              weight: 200,
+            } as SelectSettingItem<MediaDeviceInfo>,
+            {
               id: SETTING_ITEM__VOLUME,
               automationId: 'volume',
               title: 'setting.audioSource.volume.label',
@@ -86,7 +97,7 @@ class NotificationSoundSettingManager {
               tipRenderer: ({ value }) => `${Math.ceil(value * 100)}%`,
               min: 0,
               max: 1,
-              weight: 200,
+              weight: 300,
             } as SliderSettingItem,
           ],
         },

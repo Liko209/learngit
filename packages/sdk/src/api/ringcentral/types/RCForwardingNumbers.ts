@@ -5,6 +5,7 @@
  */
 
 import { IUriInfo, INavigationInfo, PagingInfo } from './common';
+
 type RCExtensionForwardingNumberRequest = {
   page?: string;
   perPage?: string;

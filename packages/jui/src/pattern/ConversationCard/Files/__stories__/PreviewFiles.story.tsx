@@ -16,9 +16,11 @@ import {
   JuiFileWithExpand,
   JuiFileWithPreview,
   JuiExpandImage,
-} from '../';
+} from '..';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 import { getThumbnailSize } from '../../../../foundation/utils/calculateImageSize';
+import download from '../../../../assets/jupiter-icon/icon-download.svg';
+import image from './contemplative-reptile.jpg';
 
 storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
   const fileName = text(
@@ -27,93 +29,82 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
   );
 
   const actions = [
-    <JuiIconButton key="download" variant="plain" tooltipTitle="download">
-      download
-    </JuiIconButton>,
+    <JuiIconButton
+      key="download"
+      variant="plain"
+      tooltipTitle="download"
+      symbol={download}
+    />,
   ];
 
   return (
     <div>
       <div>
-        {[1, 2, 3].map((id: number) => {
-          return (
-            <JuiPreviewImage
-              key={id}
-              url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-              width={360}
-              height={202}
-              fileName={fileName}
-              Actions={actions}
-            />
-          );
-        })}
+        {[1, 2, 3].map((id: number) => (
+          <JuiPreviewImage
+            key={id}
+            fileID={id}
+            url={image}
+            width={360}
+            height={202}
+            fileName={fileName}
+            Actions={actions}
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiFileWithPreview
-              key={id}
-              url="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-              fileName={fileName}
-              size="2.3Mb"
-              iconType={'pdf'}
-              Actions={actions}
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiFileWithPreview
+            key={id}
+            url={image}
+            fileName={fileName}
+            size="2.3Mb"
+            iconType={'pdf'}
+            Actions={actions}
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiFileWithExpand
-              icon="default_file"
-              key={id}
-              fileName={fileName}
-              Actions={
-                <JuiIconButton variant="plain" tooltipTitle="download">
-                  download
-                </JuiIconButton>
-              }
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiFileWithExpand
+            icon="default_file"
+            key={id}
+            fileName={fileName}
+            Actions={
+              <JuiIconButton
+                key="download"
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+            }
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiExpandImage
-              key={id}
-              icon="file"
-              fileName={fileName}
-              i18UnfoldLess="less"
-              i18UnfoldMore="more"
-              previewUrl="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
-              Actions={
-                <>
-                  <JuiIconButton variant="plain" tooltipTitle="download">
-                    download
-                  </JuiIconButton>
-                </>
-              }
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiExpandImage
+            key={id}
+            fileID={id}
+            icon="file"
+            fileName={fileName}
+            i18UnfoldLess="less"
+            i18UnfoldMore="more"
+            previewUrl={image}
+            Actions={
+              <JuiIconButton
+                key="download"
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+            }
+          />
+        ))}
       </div>
     </div>
   );
 });
-
-function randomColor(): string {
-  const colorList: string[] = [
-    '#8E2DE2',
-    '#4286f4',
-    '#f7797d',
-    '#7F7FD5',
-    '#0F2027',
-  ];
-  const index = Math.floor(Math.random() * colorList.length);
-  return colorList[index];
-}
 
 storiesOf('Pattern/ConversationCard', module).add(
   'PreviewFileThumbnail',
@@ -125,6 +116,7 @@ storiesOf('Pattern/ConversationCard', module).add(
       width: number;
       height: number;
       title: string;
+      color: string;
     };
 
     class Thumbnail extends PureComponent<ThumbnailProps> {
@@ -132,11 +124,11 @@ storiesOf('Pattern/ConversationCard', module).add(
       private _image: any;
 
       componentDidMount() {
-        const { width, height } = this.props;
+        const { width, height, color } = this.props;
         const { current } = this._canvas;
         if (current) {
           const ctx = current.getContext('2d');
-          ctx!.fillStyle = randomColor();
+          ctx!.fillStyle = color;
           ctx!.fillRect(0, 0, width, height);
           this._image = current.toDataURL('image/png');
           this.forceUpdate();
@@ -199,15 +191,20 @@ storiesOf('Pattern/ConversationCard', module).add(
     };
     return (
       <div style={wrapper}>
-        <Thumbnail title="case 1" width={175} height={70} />
-        <Thumbnail title="case 2" width={160} height={90} />
-        <Thumbnail title="case 2" width={160} height={300} />
-        <Thumbnail title="case 3" width={200} height={187} />
-        <Thumbnail title="case 4" width={400} height={700} />
-        <Thumbnail title="case 4" width={700} height={400} />
-        <Thumbnail title="case 5" width={700} height={10} />
-        <Thumbnail title="case 6" width={10} height={70} />
-        <Thumbnail title="dynamic" width={inputWidth} height={inputHeight} />
+        <Thumbnail title="case 1" width={175} height={70} color="#8E2DE2" />
+        <Thumbnail title="case 2" width={160} height={90} color="#4286f4" />
+        <Thumbnail title="case 2" width={160} height={300} color="#f7797d" />
+        <Thumbnail title="case 3" width={200} height={187} color="#7F7FD5" />
+        <Thumbnail title="case 4" width={400} height={700} color="#0F2027" />
+        <Thumbnail title="case 4" width={700} height={400} color="#8E2DE2" />
+        <Thumbnail title="case 5" width={700} height={10} color="#7F7FD5" />
+        <Thumbnail title="case 6" width={10} height={70} color="#0F2027" />
+        <Thumbnail
+          title="dynamic"
+          width={inputWidth}
+          height={inputHeight}
+          color=""
+        />
       </div>
     );
   },

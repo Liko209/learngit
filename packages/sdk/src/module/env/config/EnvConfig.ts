@@ -15,6 +15,10 @@ class EnvConfig extends CommonGlobalConfig {
   static setEnv(env: string) {
     this.put(CONFIG_KEYS.ENV, env);
   }
+
+  static getDisableLD() {
+    return this.get(CONFIG_KEYS.DISABLE_LD);
+  }
 }
 
 export { EnvConfig };

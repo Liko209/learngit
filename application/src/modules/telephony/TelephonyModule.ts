@@ -5,7 +5,7 @@
  */
 
 import { AbstractModule, inject, Jupiter } from 'framework';
-import { HomeService } from '@/modules/home/service/HomeService';
+import { IHomeService } from '@/modules/home/interface/IHomeService';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service/GlobalSearchService';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
@@ -33,8 +33,8 @@ class TelephonyModule extends AbstractModule {
   private _notificationManager: TelephonyNotificationManager;
   @inject(TelephonySettingManager)
   private _settingManager: TelephonySettingManager;
-  @inject(HomeService)
-  private _homeService: HomeService;
+  @IHomeService
+  private _homeService: IHomeService;
   @inject(GlobalSearchService)
   private _globalSearchService: GlobalSearchService;
 

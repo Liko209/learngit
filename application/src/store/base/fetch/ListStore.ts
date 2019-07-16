@@ -3,10 +3,13 @@
  * @Date: 2018-09-17 14:00:44
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import { observable, action, IObservableArray } from 'mobx';
 import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 import { mainLogger } from 'sdk';
+import { QUERY_DIRECTION } from '../../../../../packages/sdk/src/dao/constants';
+import { HasMore } from './types';
 
 export class ListStore<T> extends BaseNotificationSubscribe {
   _items: IObservableArray<T> = observable([], { deep: false });
@@ -14,9 +17,10 @@ export class ListStore<T> extends BaseNotificationSubscribe {
   protected _limit?: number;
 
   @observable
-  _hasMoreUp: boolean = false;
-  @observable
-  _hasMoreDown: boolean = false;
+  hasMore = {
+    older: false,
+    newer: false,
+  };
 
   constructor(limit?: number) {
     super();
@@ -101,12 +105,37 @@ export class ListStore<T> extends BaseNotificationSubscribe {
     mainLogger.info(`===> dump: ${JSON.stringify(this._items)}`, args);
   }
 
-  @action
-  setHasMore(value: boolean, up?: boolean) {
-    if (up) {
-      this._hasMoreUp = value;
-    } else {
-      this._hasMoreDown = value;
+  setHasMore(hasMore: boolean | HasMore, direction: QUERY_DIRECTION) {
+    switch (typeof hasMore) {
+      case 'boolean': {
+        this._setHasMore(hasMore, direction);
+        break;
+      }
+      case 'object': {
+        const _hasMore = {
+          older: false,
+          newer: false,
+          both: false,
+          ...hasMore,
+        };
+        if (direction === QUERY_DIRECTION.BOTH) {
+          this._setHasMore(
+            _hasMore[QUERY_DIRECTION.OLDER] || false,
+            QUERY_DIRECTION.OLDER,
+          );
+          this._setHasMore(
+            _hasMore[QUERY_DIRECTION.NEWER] || false,
+            QUERY_DIRECTION.NEWER,
+          );
+        } else {
+          this._setHasMore(_hasMore[direction], direction);
+        }
+      }
     }
+  }
+
+  @action
+  private _setHasMore(value: boolean, direction: QUERY_DIRECTION) {
+    this.hasMore[direction] = value;
   }
 }

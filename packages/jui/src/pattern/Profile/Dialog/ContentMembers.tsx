@@ -25,8 +25,7 @@ const JuiProfileDialogContentMembers = styled('div')<{ height?: number }>`
   flex: 1;
   height: ${props => (props.height ? height(props.height / 4) : '100%')};
   min-height: ${props => (props.height ? height(props.height / 4) : '100%')};
-  /* box-shadow: ${props => props.theme.shadows[2]}; */
-  /* box-shadow: ${({ theme }) => theme.boxShadow.val2}; */
+  max-height: ${height(66)};
 `;
 
 const JuiProfileDialogContentMemberHeader = styled('div')`
@@ -39,7 +38,7 @@ const JuiProfileDialogContentMemberHeader = styled('div')`
   flex-direction: column;
   justify-content: space-between;
   &.shadow {
-    box-shadow: ${({ theme }) => theme.boxShadow.val3};
+    box-shadow: ${({ theme }) => theme.shadows[3]};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
   }
 `;
@@ -79,9 +78,9 @@ const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
 type MemberListItemProps = {
   isHover: boolean;
 } & JuiListItemProps;
-const MemberListItem = ({ isHover, ...rest }: MemberListItemProps) => {
-  return <JuiListItem {...rest} />;
-};
+const MemberListItem = ({ isHover, ...rest }: MemberListItemProps) => (
+  <JuiListItem {...rest} />
+);
 
 const JuiProfileDialogContentMemberListItem = styled(MemberListItem)`
   && {
@@ -91,7 +90,7 @@ const JuiProfileDialogContentMemberListItem = styled(MemberListItem)`
     padding: ${spacing(0, 4, 0, 8)};
     cursor: pointer;
     background-color: ${({ isHover }) =>
-      isHover ? grey('100') : palette('common', 'white')};
+      (isHover ? grey('100') : palette('common', 'white'))};
     /* &:nth-last-child(1) {
       margin-bottom: ${spacing(10)};
     } */

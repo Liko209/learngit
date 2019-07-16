@@ -1,0 +1,12 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/UMI.ts",
+      "./fixtures/ConversationList/UmiWithGuest.ts",
+      "./fixtures/Setting/NotificationAndSounds/OtherNotificationSettings.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
