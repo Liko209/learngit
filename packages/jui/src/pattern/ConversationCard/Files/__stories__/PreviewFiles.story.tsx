@@ -30,9 +30,9 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
 
   const actions = [
     <JuiIconButton
-      key='download'
-      variant='plain'
-      tooltipTitle='download'
+      key="download"
+      variant="plain"
+      tooltipTitle="download"
       symbol={download}
     />,
   ];
@@ -40,75 +40,67 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
   return (
     <div>
       <div>
-        {[1, 2, 3].map((id: number) => {
-          return (
-            <JuiPreviewImage
-              key={id}
-              url={image}
-              width={360}
-              height={202}
-              fileName={fileName}
-              Actions={actions}
-            />
-          );
-        })}
+        {[1, 2, 3].map((id: number) => (
+          <JuiPreviewImage
+            key={id}
+            fileID={id}
+            url={image}
+            width={360}
+            height={202}
+            fileName={fileName}
+            Actions={actions}
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiFileWithPreview
-              key={id}
-              url={image}
-              fileName={fileName}
-              size='2.3Mb'
-              iconType={'pdf'}
-              Actions={actions}
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiFileWithPreview
+            key={id}
+            url={image}
+            fileName={fileName}
+            size="2.3Mb"
+            iconType={'pdf'}
+            Actions={actions}
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiFileWithExpand
-              icon='default_file'
-              key={id}
-              fileName={fileName}
-              Actions={
-                <JuiIconButton
-                  key='download'
-                  variant='plain'
-                  tooltipTitle='download'
-                  symbol={download}
-                />
-              }
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiFileWithExpand
+            icon="default_file"
+            key={id}
+            fileName={fileName}
+            Actions={
+              <JuiIconButton
+                key="download"
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+            }
+          />
+        ))}
       </div>
       <div>
-        {[1, 2, 3, 4].map((id: number) => {
-          return (
-            <JuiExpandImage
-              key={id}
-              icon='file'
-              fileName={fileName}
-              i18UnfoldLess='less'
-              i18UnfoldMore='more'
-              previewUrl={image}
-              Actions={
-                <>
-                  <JuiIconButton
-                    key='download'
-                    variant='plain'
-                    tooltipTitle='download'
-                    symbol={download}
-                  />
-                </>
-              }
-            />
-          );
-        })}
+        {[1, 2, 3, 4].map((id: number) => (
+          <JuiExpandImage
+            key={id}
+            fileID={id}
+            icon="file"
+            fileName={fileName}
+            i18UnfoldLess="less"
+            i18UnfoldMore="more"
+            previewUrl={image}
+            Actions={
+              <JuiIconButton
+                key="download"
+                variant="plain"
+                tooltipTitle="download"
+                symbol={download}
+              />
+            }
+          />
+        ))}
       </div>
     </div>
   );
@@ -199,19 +191,19 @@ storiesOf('Pattern/ConversationCard', module).add(
     };
     return (
       <div style={wrapper}>
-        <Thumbnail title='case 1' width={175} height={70} color='#8E2DE2' />
-        <Thumbnail title='case 2' width={160} height={90} color='#4286f4' />
-        <Thumbnail title='case 2' width={160} height={300} color='#f7797d' />
-        <Thumbnail title='case 3' width={200} height={187} color='#7F7FD5' />
-        <Thumbnail title='case 4' width={400} height={700} color='#0F2027' />
-        <Thumbnail title='case 4' width={700} height={400} color='#8E2DE2' />
-        <Thumbnail title='case 5' width={700} height={10} color='#7F7FD5' />
-        <Thumbnail title='case 6' width={10} height={70} color='#0F2027' />
+        <Thumbnail title="case 1" width={175} height={70} color="#8E2DE2" />
+        <Thumbnail title="case 2" width={160} height={90} color="#4286f4" />
+        <Thumbnail title="case 2" width={160} height={300} color="#f7797d" />
+        <Thumbnail title="case 3" width={200} height={187} color="#7F7FD5" />
+        <Thumbnail title="case 4" width={400} height={700} color="#0F2027" />
+        <Thumbnail title="case 4" width={700} height={400} color="#8E2DE2" />
+        <Thumbnail title="case 5" width={700} height={10} color="#7F7FD5" />
+        <Thumbnail title="case 6" width={10} height={70} color="#0F2027" />
         <Thumbnail
-          title='dynamic'
+          title="dynamic"
           width={inputWidth}
           height={inputHeight}
-          color=''
+          color=""
         />
       </div>
     );
