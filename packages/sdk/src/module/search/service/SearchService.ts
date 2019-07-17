@@ -13,7 +13,7 @@ import {
 } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
 import { Person } from '../../person/entity';
-import { SortableModel } from '../../../framework/model';
+import { SortableModel, IdModel } from '../../../framework/model';
 import { SearchUserConfig } from '../config/SearchUserConfig';
 import { IConfigHistory } from 'sdk/framework/config/IConfigHistory';
 import { ConfigChangeHistory } from 'sdk/framework/config/types';
@@ -96,6 +96,17 @@ class SearchService extends AbstractService
       sortableModels: SortableModel<Person>[];
     }> {
     return await this.searchPersonController.doFuzzySearchPersons(options);
+  }
+
+  async doFuzzySearchPersonsAndGroups(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+      terms: string[];
+      sortableModels: SortableModel<IdModel>[];
+    }> {
+    return await this.searchPersonController.doFuzzySearchPersonsAndGroups(
+      options,
+    );
   }
 
   async doFuzzySearchPhoneContacts(

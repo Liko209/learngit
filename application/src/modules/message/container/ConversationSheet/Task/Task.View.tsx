@@ -64,6 +64,7 @@ const FILE_COMPS = {
     return (
       !deactivated && (
         <JuiExpandImage
+          fileID={id}
           icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}

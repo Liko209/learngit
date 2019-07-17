@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile",
+      "./fixtures/Search",
+      "./fixtures/FileViewer",
+      "./fixtures/ImageViewer"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

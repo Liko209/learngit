@@ -25,6 +25,10 @@ class LaunchDarklyClient {
     return this._flags && !!this._flags[type];
   }
 
+  getFeatureFlag(type: UserPermissionType) {
+    return this._flags && this._flags[type];
+  }
+
   hasFlags() {
     return this._flags && Object.keys(this._flags).length > 0;
   }

@@ -5,10 +5,8 @@
  */
 
 import {
-  // JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
-import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -22,13 +20,13 @@ import {
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
 import { cacheEventFn } from '../types';
-import { USED_HEIGHT, MIN_HEIGHT_FIX } from '../ContentSearchResult/constants';
+
 import { PerformanceTracer } from 'sdk';
 import { GLOBAL_SEARCH_PERFORMANCE_KEYS } from '../../performanceKeys';
 import {
   MAX_COUNT,
   ITEM_HEIGHT,
-  FULLSCREEN_WIDTH,
+  MAX_HEIGHT,
   LOADING_DELAY,
 } from './config';
 
@@ -36,13 +34,8 @@ type Props = ItemListProps &
 ItemListViewProps &
 WithTranslation & { terms: string[] };
 
-type State = {
-  width?: number;
-  height?: number;
-};
-
 @observer
-class ItemListViewComponent extends Component<Props, State> {
+class ItemListViewComponent extends Component<Props> {
   private _infiniteListProps = {
     minRowHeight: ITEM_HEIGHT,
     loadingRenderer: () => <JuiRightRailContentLoading delay={LOADING_DELAY} />,
@@ -56,8 +49,6 @@ class ItemListViewComponent extends Component<Props, State> {
   JuiVirtualizedListHandles
   > = React.createRef();
   private _dataList = React.createRef<DataList>();
-
-  state: State = { width: 0, height: ITEM_HEIGHT * MAX_COUNT };
 
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
 
@@ -137,25 +128,6 @@ class ItemListViewComponent extends Component<Props, State> {
     );
   };
 
-  private _handleSizeUpdate = (size: Size) => {
-    const width = size.width;
-    let height = size.height;
-    if (size.width < FULLSCREEN_WIDTH) {
-      height = size.height - USED_HEIGHT;
-    } else {
-      height = Math.max(
-        Math.min(
-          ITEM_HEIGHT * Math.min(MAX_COUNT, this.props.ids.length),
-          size.height - USED_HEIGHT,
-        ),
-        MIN_HEIGHT_FIX,
-      );
-    }
-    if (height !== this.state.height || width !== this.state.width) {
-      this.setState({ height, width });
-    }
-  };
-
   componentDidUpdate() {
     this._performanceTracer.end({
       key: GLOBAL_SEARCH_PERFORMANCE_KEYS.UI_GLOBALSEARCH_TAB_RENDER,
@@ -188,14 +160,13 @@ class ItemListViewComponent extends Component<Props, State> {
           enter: this.onEnter,
         }}
       >
-        <JuiSizeDetector handleSizeChanged={this._handleSizeUpdate} />
         <DataList
           ref={this._dataList}
           initialDataCount={30}
           listHandler={listHandler}
           reverse
           InfiniteListProps={Object.assign(this._infiniteListProps, {
-            height: this.state.height,
+            height: MAX_HEIGHT,
             ref: this._listRef,
             overscan: 20,
             onVisibleRangeChange: setRangeIndex,

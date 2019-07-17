@@ -18,6 +18,7 @@ import { Reply } from '../Reply';
 import { Forward } from '../Forward';
 import { INCOMING_STATE } from '../../store';
 import { getDisplayName } from '../../helpers';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 const More = (props: CallActionsProps) => (
   <CallActions showLabel={false} {...props} shouldPersistBg />
@@ -58,7 +59,7 @@ class IncomingViewComponent extends Component<Props> {
       default:
         return (
           <JuiIncomingCall
-            name={getDisplayName(t, name)}
+            name={getDisplayName(t, CALL_DIRECTION.INBOUND, name)}
             phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
             Actions={Actions}
             Ignore={Ignore}

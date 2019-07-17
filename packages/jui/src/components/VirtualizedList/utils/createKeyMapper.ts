@@ -20,4 +20,11 @@ const createKeyMapper = (children: VirtualizedListChild[]) => (i: number) => {
   return result;
 };
 
-export { createKeyMapper };
+const createIndexMapper = (children: VirtualizedListChild[]) => (
+  key: React.Key,
+) => {
+  const index = children.findIndex(child => Boolean(child.key && child.key === key),);
+  return index;
+};
+
+export { createKeyMapper, createIndexMapper };

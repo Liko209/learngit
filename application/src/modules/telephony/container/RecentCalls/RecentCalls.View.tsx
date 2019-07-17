@@ -63,7 +63,7 @@ class RecentCallsComponent extends React.Component<Props, State> {
       <JuiEmptyPage
         data-test-automation-id="recentCallsEmptyPage"
         image={noCallLogImage}
-        message={t('telephony.noCallLogAvailable')}
+        message={t('phone.noCallLogAvailable')}
       />
     );
   }
@@ -90,14 +90,14 @@ class RecentCallsComponent extends React.Component<Props, State> {
   // }
 
   private _scrollToView = (fn: () => void) => {
-    const { dialerFocused } = this.props;
-    if (!dialerFocused) {
+    const { dialerInputFocused } = this.props;
+    if (!dialerInputFocused || !this._listRef.current) {
       return;
     }
     fn();
     const { focusIndex } = this.props;
 
-    const { startIndex, stopIndex } = this._listRef.current!.getVisibleRange();
+    const { startIndex, stopIndex } = this._listRef.current.getVisibleRange();
 
     if (focusIndex >= stopIndex) {
       this._dataList.current &&

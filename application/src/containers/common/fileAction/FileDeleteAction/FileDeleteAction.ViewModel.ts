@@ -14,6 +14,7 @@ import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
+import { mainLogger } from 'sdk';
 
 class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
@@ -45,7 +46,12 @@ class FileDeleteActionViewModel extends FileActionViewModel {
     server: 'message.prompt.deleteFileBackendError',
   })
   handleDeleteFile = async () => {
-    if (!this._currentItemVersion || this._currentItemVersion.deactivated) {
+    if (
+      !this._currentItemVersion ||
+      this._currentItemVersion.deactivated ||
+      !this.item.versions
+    ) {
+      mainLogger.warn('item data not exist', this.item);
       return;
     }
 
@@ -64,6 +70,11 @@ class FileDeleteActionViewModel extends FileActionViewModel {
 
   private get _currentItemVersion() {
     const fileInConversation = !!this.post;
+    if (!this.item.versions) {
+      mainLogger.warn('item.versions is undefined', this.item);
+      return 0;
+    }
+
     if (fileInConversation) {
       const versionIndex =
         this.item.versions.length - this.post!.fileItemVersion(this.item);

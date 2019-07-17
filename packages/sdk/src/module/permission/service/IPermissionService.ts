@@ -8,6 +8,7 @@ import UserPermissionType from '../types';
 
 interface IPermissionService {
   hasPermission(type: UserPermissionType): Promise<boolean>;
+  getFeatureFlag(type: UserPermissionType): number | string;
 }
 
 export { IPermissionService };
