@@ -1,4 +1,3 @@
-
 import { BaseWebComponent } from '../../BaseWebComponent';
 
 export class SendFeedBackDialog extends BaseWebComponent {
@@ -30,7 +29,7 @@ export class SendFeedBackDialog extends BaseWebComponent {
   }
 
   get describeTextarea() {
-    return this.content.nth(2).find('#Describe.your.problem.here');
+    return this.content.find('#Describe');
   }
 
   async clickCancelButton() {
