@@ -118,7 +118,7 @@ class VoicemailItem extends BaseWebComponent {
   }
 
   async hoverCallbackButton() {
-    await this.t.hover(this.callbackButton);
+    await this.t.hover(this.self).hover(this.callbackButton);
   }
 
   async ClickCallbackButton() {
