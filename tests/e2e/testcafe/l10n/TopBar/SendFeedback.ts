@@ -23,7 +23,7 @@ test(formalName('Send a feedback',['P2', 'TopBar', 'SendFeedback', 'V1.6', 'Hank
   const settingMenu = app.homePage.settingMenu;
   const topBarAvatar = app.homePage.topBarAvatar;
   const sendFeedBackDialog = app.homePage.sendFeedBackDialog;
-  await h(t).withLog('When I click "New actions" button', async() => {
+  await h(t).withLog('When I click "Send Feedback" button', async() => {
     await t.click(topBarAvatar);
     await settingMenu.clickSendFeedBackButton();
   });
