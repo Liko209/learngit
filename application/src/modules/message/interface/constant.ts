@@ -1,9 +1,5 @@
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 
-const MESSAGE_NOTIFICATION_MANAGER = 'MESSAGE_NOTIFICATION_MANAGER';
-
-const MESSAGE_SERVICE = 'MESSAGE_SERVICE';
-
 const MESSAGE_SETTING_SCOPE = Symbol('MessageSetting');
 
 enum MESSAGE_SETTING_ITEM {
@@ -15,9 +11,4 @@ enum MESSAGE_SETTING_ITEM {
   NEW_MESSAGE_BADGE_COUNT = SettingEntityIds.Notification_NewMessageBadgeCount,
 }
 
-export {
-  MESSAGE_NOTIFICATION_MANAGER,
-  MESSAGE_SERVICE,
-  MESSAGE_SETTING_SCOPE,
-  MESSAGE_SETTING_ITEM,
-};
+export { MESSAGE_SETTING_SCOPE, MESSAGE_SETTING_ITEM };

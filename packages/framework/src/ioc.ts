@@ -2,7 +2,6 @@ import {
   Container,
   ContainerModule,
   decorate,
-  inject,
   injectable,
   interfaces,
   METADATA_KEY,
@@ -28,15 +27,28 @@ const {
   lazyMultiInject,
 } = getDecorators(container, false);
 
-const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) => fluentProvide(identifier)
-  .inSingletonScope()
-  .done();
+const provideSingleton = (identifier: interfaces.ServiceIdentifier<any>) =>
+  fluentProvide(identifier)
+    .inSingletonScope()
+    .done();
 
-function createDecorator(serviceId: string): { (...args: any[]): void } {
-  const id: any = inject(serviceId);
-  id.toString = () => serviceId;
-  id[IS_DECORATOR] = true;
-  return id;
+type DecoratorFunction = (...args: any[]) => void;
+
+type Decorator = DecoratorFunction & {
+  multi: DecoratorFunction;
+  named: (named: string) => DecoratorFunction;
+  tagged: (key: string, value: any) => DecoratorFunction;
+};
+
+function createDecorator(serviceId: string): Decorator {
+  const decorator: any = lazyInject(serviceId);
+  decorator.multi = lazyMultiInject(serviceId);
+  decorator.named = (named: string) => lazyInjectNamed(serviceId, named);
+  decorator.tagged = (key: string, value: any) =>
+    lazyInjectTagged(serviceId, key, value);
+  decorator.toString = () => serviceId;
+  decorator[IS_DECORATOR] = true;
+  return decorator;
 }
 
 export {
@@ -50,9 +62,9 @@ export {
   provideSingleton,
   buildProviderModule,
   autoProvide,
-  inject,
-  METADATA_KEY,
   lazyInject,
+  lazyInject as inject,
+  METADATA_KEY,
   lazyInjectNamed,
   lazyInjectTagged,
   lazyMultiInject,

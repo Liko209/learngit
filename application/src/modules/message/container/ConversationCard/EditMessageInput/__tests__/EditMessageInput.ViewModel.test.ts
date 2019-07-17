@@ -23,15 +23,15 @@ import {
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import { container, decorate, injectable } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
 Notification.flashToast = jest.fn();
 
 decorate(injectable(), MessageService);
-container.bind(MESSAGE_SERVICE).to(MessageService);
+container.bind(IMessageService).to(MessageService);
 decorate(injectable(), MessageStore);
-container.bind(MessageStore).to(MessageStore);
+container.bind(IMessageStore).to(MessageStore);
 jest.mock('@/containers/Notification');
 
 const mockPostEntityData = {

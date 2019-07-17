@@ -20,7 +20,7 @@ type DataTracking = {
   optionTransform?: (value: any) => string;
 };
 
-type SettingItem = {
+type SettingItem = FormItem & {
   /**
    * The unique id
    */

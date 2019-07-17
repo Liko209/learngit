@@ -243,9 +243,9 @@ class CreateTeamComponent extends React.Component<Props, State> {
             onChange={handleNameChange}
           />
 
-          {
-            // temporary: ContactAndGroupSearch contain group and person
-            canMentionTeam ? <ContactAndGroupSearch
+          {// temporary: ContactAndGroupSearch contain group and person
+          canMentionTeam ? (
+            <ContactAndGroupSearch
               onSelectChange={handleSearchContactChange}
               label={t('people.team.Members')}
               placeholder={t('people.team.SearchContactPlaceholder')}
@@ -255,18 +255,20 @@ class CreateTeamComponent extends React.Component<Props, State> {
               isExcludeMe
               multiple
               autoSwitchEmail
-            /> : <ContactSearch
-                onSelectChange={handleSearchContactChange}
-                label={t('people.team.Members')}
-                placeholder={t('people.team.SearchContactPlaceholder')}
-                error={emailError}
-                helperText={emailError ? t(emailErrorMsg) : ''}
-                errorEmail={errorEmail}
-                isExcludeMe
-                multiple
-                autoSwitchEmail
-              />
-          }
+            />
+          ) : (
+            <ContactSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              isExcludeMe
+              multiple
+              autoSwitchEmail
+            />
+          )}
           <JuiTextarea
             id={t('people.team.teamDescription')}
             label={t('people.team.teamDescription')}
