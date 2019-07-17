@@ -8,7 +8,7 @@ enum RTC_ACCOUNT_STATE {
   REGISTERED = 'Registered',
   FAILED = 'Failed',
   UNREGISTERED = 'Unregistered',
-  IN_PROGRESS = 'InProgress',
+  IN_PROGRESS = 'InProgress'
 }
 
 type RTCCallInfo = {
@@ -35,6 +35,9 @@ enum RTC_CALL_STATE {
   CONNECTING = 'Connecting',
   CONNECTED = 'Connected',
   DISCONNECTED = 'Disconnected',
+  HOLDING = 'holding',
+  HOLDED = 'holded',
+  UNHOLDING = 'unholding'
 }
 
 enum RTC_CALL_ACTION {
@@ -51,12 +54,12 @@ enum RTC_CALL_ACTION {
   START_REPLY = 'startReply',
   REPLY_WITH_MSG = 'replyWithMessage',
   REPLY_WITH_PATTERN = 'replyWithPattern',
-  CALL_TIME_OUT = 'callTimeOut',
+  CALL_TIME_OUT = 'callTimeOut'
 }
 
 enum RTC_CALL_ACTION_ERROR_CODE {
   INVALID = -1,
-  OTHER_ACTION_IN_PROGRESS = -6,
+  OTHER_ACTION_IN_PROGRESS = -6
 }
 
 type RTCSipFlags = {
@@ -82,13 +85,13 @@ enum RTC_REPLY_MSG_PATTERN {
   IN_A_MEETING = 'InAMeeting',
   ON_MY_WAY = 'OnMyWay',
   ON_THE_OTHER_LINE = 'OnTheOtherLine',
-  CALL_ME_BACK_LATER = 'CallMeBackLater',
+  CALL_ME_BACK_LATER = 'CallMeBackLater'
 }
 
 enum RTC_REPLY_MSG_TIME_UNIT {
   MINUTE = 'Minute',
   HOUR = 'Hour',
-  DAY = 'Day',
+  DAY = 'Day'
 }
 
 enum RTC_MEDIA_ACTION {
@@ -96,14 +99,14 @@ enum RTC_MEDIA_ACTION {
   OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
   INPUT_DEVICE_LIST_CHANGED = 'inputDeviceListChanged',
   OUTPUT_DEVICE_LIST_CHANGED = 'outputDeviceListChanged',
-  VOLUME_CHANGED = 'VOLUME_CHANGED',
+  VOLUME_CHANGED = 'VOLUME_CHANGED'
 }
 
 enum RECORD_STATE {
   IDLE = 'idle',
   RECORDING = 'recording',
   START_RECORD_IN_PROGRESS = 'startRecordInProgress',
-  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
+  STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress'
 }
 
 export {
@@ -119,5 +122,5 @@ export {
   RTCCallActionSuccessOptions,
   RTCSipFlags,
   RTC_MEDIA_ACTION,
-  RECORD_STATE,
+  RECORD_STATE
 };

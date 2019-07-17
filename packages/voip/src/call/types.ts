@@ -10,18 +10,24 @@ enum CALL_SESSION_STATE {
   ERROR = 'callSessionError',
   PROGRESS = 'callSessionProgress',
   REINVITE_ACCEPTED = 'callSessionReinviteAccepted',
-  REINVITE_FAILED = 'callSessionReinviteFailed',
+  REINVITE_FAILED = 'callSessionReinviteFailed'
 }
 
 enum CALL_FSM_NOTIFY {
   ON_ANSWERING = 'onAnswering',
   ON_PENDING = 'onPending',
+  ON_HOLDING = 'onHolding',
+  ON_HOLDED = 'onHolded',
+  ON_UNHOLDING = 'onUnholding',
   ON_CONNECTING = 'onConnecting',
   ON_CONNECTED = 'onConnected',
   ON_DISCONNECTED = 'onDisconnected',
   ON_LEAVE_CONNECTED = 'onLeaveConnected',
   ENTER_ANSWERING = 'enterAnswering',
   ENTER_PENDING = 'enterPending',
+  ENTER_HOLDING = 'enterHolding',
+  ENTER_HOLDED = 'enterHolded',
+  ENTER_UNHOLDING = 'enterUnholding',
   ENTER_CONNECTING = 'enterConnecting',
   ENTER_CONNECTED = 'enterConnected',
   ENTER_DISCONNECTED = 'enterDisconnected',
@@ -42,11 +48,15 @@ enum CALL_FSM_NOTIFY {
   CALL_ACTION_FAILED = 'callActionFailed',
   HOLD_ACTION = 'holdAction',
   UNHOLD_ACTION = 'unholdAction',
+  HOLD_SUCCESS_ACTION = 'holdSuccessAction',
+  UNHOLD_SUCCESS_ACTION = 'unholdSuccessAction',
+  HOLD_FAILED_ACTION = 'holdFailedAction',
+  UNHOLD_FAILED_ACTION = 'unholdFailedAction',
   PARK_ACTION = 'parkAction',
   DTMF_ACTION = 'dtmfAction',
   START_REPLY_ACTION = 'startReplyAction',
   REPLY_WITH_PATTERN_ACTION = 'replyWithPatternAction',
-  REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction',
+  REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction'
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

@@ -13,7 +13,7 @@ import { defaultAudioID } from '../account/constants';
 const LOG_TAG = 'RTCMediaDeviceManager';
 enum RTC_MEDIA_DEVICE_KIND {
   AUDIO_OUTPUT = 'audiooutput',
-  AUDIO_INPUT = 'audioinput',
+  AUDIO_INPUT = 'audioinput'
 }
 
 class RTCMediaDeviceManager extends EventEmitter2 {
@@ -85,7 +85,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
       .enumerateDevices()
       .then((deviceInfos: MediaDeviceInfo[]) => {
         const { audioInputs, audioOutputs } = this._gotMediaDevices(
-          deviceInfos,
+          deviceInfos
         );
         this._delegate &&
           this._delegate.onMediaDevicesInitialed(audioOutputs, audioInputs);
@@ -144,36 +144,35 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     if (hasDefaultAudioInput) {
       rtcLogger.debug(
         LOG_TAG,
-        "Detect audio input devices has 'default' as deviceId",
+        "Detect audio input devices has 'default' as deviceId"
       );
       audioInputs = originalAudioInputs;
       this._updateAudioDevices(RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT, audioInputs);
     } else {
       rtcLogger.debug(
         LOG_TAG,
-        "Audio input devices has 'default' as deviceId NOT FOUND",
+        "Audio input devices has 'default' as deviceId NOT FOUND"
       );
     }
     if (hasDefaultAudioOutput) {
       rtcLogger.debug(
         LOG_TAG,
-        "Detect audio output devices has 'default' as deviceId",
+        "Detect audio output devices has 'default' as deviceId"
       );
       audioOutputs = originalAudioOutputs;
       this._updateAudioDevices(
         RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT,
-        audioOutputs,
+        audioOutputs
       );
     } else {
       rtcLogger.debug(
         LOG_TAG,
-        "Audio output devices has 'default' as deviceId NOT FOUND",
+        "Audio output devices has 'default' as deviceId NOT FOUND"
       );
     }
-
     return {
       audioInputs,
-      audioOutputs,
+      audioOutputs
     };
   }
 
@@ -193,7 +192,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     rtcLogger.debug(LOG_TAG, `default device label: ${label}`);
     const realDevice = devices.find(
       (device: MediaDeviceInfo): boolean =>
-        device.deviceId !== defaultAudioID && label.endsWith(device.label),
+        device.deviceId !== defaultAudioID && label.endsWith(device.label)
     );
     if (realDevice) {
       return realDevice.deviceId;
@@ -212,19 +211,19 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         const oldAudioInputs = this._audioInputs;
         const oldAudioOutputs = this._audioOutputs;
         const { audioInputs, audioOutputs } = this._gotMediaDevices(
-          deviceInfos,
+          deviceInfos
         );
         this._delegate &&
           (audioInputs.length !== 0 || audioOutputs.length !== 0) &&
           this._delegate.onMediaDevicesChanged(
             {
               devices: audioOutputs,
-              delta: this._getDevicesDelta(audioOutputs, oldAudioOutputs),
+              delta: this._getDevicesDelta(audioOutputs, oldAudioOutputs)
             },
             {
               devices: audioInputs,
-              delta: this._getDevicesDelta(audioInputs, oldAudioInputs),
-            },
+              delta: this._getDevicesDelta(audioInputs, oldAudioInputs)
+            }
           );
       })
       .catch((reason: any) => {
@@ -234,7 +233,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
 
   private _getDevicesDelta(
     newDevices: MediaDeviceInfo[],
-    oldDevices: MediaDeviceInfo[],
+    oldDevices: MediaDeviceInfo[]
   ) {
     const compareFunc = (l: MediaDeviceInfo, r: MediaDeviceInfo) =>
       l.deviceId === r.deviceId;
@@ -244,20 +243,20 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     return {
       hashChanged,
       added,
-      deleted,
+      deleted
     };
   }
 
   private _updateAudioDevices(
     kind: RTC_MEDIA_DEVICE_KIND,
-    newDevices: MediaDeviceInfo[],
+    newDevices: MediaDeviceInfo[]
   ) {
     if (
       !this._checkIfDeviceChanged(
         kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT
           ? this._audioInputs
           : this._audioOutputs,
-        newDevices,
+        newDevices
       )
     ) {
       return;
@@ -279,7 +278,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
 
   private _checkIfDeviceChanged(
     oldDevices: MediaDeviceInfo[],
-    newDevices: MediaDeviceInfo[],
+    newDevices: MediaDeviceInfo[]
   ): boolean {
     if (oldDevices.length !== newDevices.length) {
       return true;
@@ -296,7 +295,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     return _.reduce(
       devices,
       (acc, item) => acc + item.deviceId + item.label,
-      '',
+      ''
     );
   }
 }
