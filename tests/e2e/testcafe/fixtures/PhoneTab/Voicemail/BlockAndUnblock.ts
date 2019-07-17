@@ -12,7 +12,7 @@ import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
 import * as assert from 'assert';
-import { addOneVoicemailFromGuest } from './utils';
+import { addOneVoicemailFromAnotherUser } from './utils';
 
 fixture('Voicemail')
   .beforeEach(setupCase(BrandTire.RC_WITH_GUESS_DID))
@@ -68,7 +68,7 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton();
   }
 
-  await addOneVoicemailFromGuest(t, caller, callee, app);
+  await addOneVoicemailFromAnotherUser(t, caller, callee, app);
 
   const voicemailItem = voicemailPage.voicemailItemByNth(0);
   const voicemailId = await voicemailItem.id;
