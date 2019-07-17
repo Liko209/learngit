@@ -29,6 +29,7 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).glip(loginUser).setDefaultPhoneApp('glip');
   const anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
 
   let chat = <IGroup>{
@@ -96,6 +97,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click the hang up button', async () => {
+    await t.wait(2e3); // immediately click hangup button cannot hangup.
     await telephonyDialog.clickHangupButton();
   });
 
@@ -104,35 +106,37 @@ test.meta(<ITestMeta>{
   });
 
   // skip this entry due to testcafe cannot simulate force hover state
-  // await h(t).withLog('When I open profile dialog of the post sender', async () => {
-  //   await chatEntry.openMoreMenu();
-  //   await app.homePage.messageTab.moreMenu.profile.enter();
-  // });
+  await h(t).withLog('When I open profile dialog of the post sender', async () => {
+    await conversationPage.openMoreButtonOnHeader();
+    await conversationPage.headerMoreMenu.openProfile();
+  });
 
-  // const profileDialog = app.homePage.profileDialog;
-  // await h(t).withLog('And hover the extension area', async () => {
-  //   await t.hover(profileDialog.extensionArea); // TODO: extensionArea need automation Id
-  // })
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog('And hover the extension area', async () => {
+    profileDialog.ensureLoaded()
+    await t.hover(profileDialog.extensionArea); // TODO: extensionArea need automation Id
+  })
 
-  // await h(t).withLog('Then the call button should display', async () => {
-  //   await t.expect(profileDialog.telephonyButton.visible).ok();
-  // });
+  await h(t).withLog('Then the call button should display', async () => {
+    await t.expect(profileDialog.telephonyButton.visible).ok();
+  });
 
-  // await h(t).withLog('When I click the call button', async () => {
-  //   await profileDialog.makeCall();
-  // });
+  await h(t).withLog('When I click the call button', async () => {
+    await profileDialog.makeCall();
+  });
 
-  // await h(t).withLog('Then should start call and display call UI', async () => {
-  //   await telephonyDialog.ensureLoaded();
-  // });
+  await h(t).withLog('Then should start call and display call UI', async () => {
+    await telephonyDialog.ensureLoaded();
+  });
 
-  // await h(t).withLog('When I click the hang up button', async () => {
-  //   await telephonyDialog.clickHandUpButton();
-  // });
+  await h(t).withLog('When I click the hang up button', async () => {
+    await telephonyDialog.clickHangupButton();
+  });
 
-  // await h(t).withLog('Then telephony dialog dismiss', async () => {
-  //   await t.expect(telephonyDialog.exists).notOk();
-  // });
+  await h(t).withLog('Then telephony dialog dismiss', async () => {
+    await t.wait(2e3);
+    await t.expect(telephonyDialog.exists).notOk();
+  });
 
   //  search people
   const searchDialog = app.homePage.searchDialog;

@@ -11,7 +11,6 @@ import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/C
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
-import { toTitleCase } from '@/utils/string';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
@@ -41,7 +40,7 @@ class LeftRailViewComponent extends Component<
               data-test-automation-id='unreadOnlyToggler'
               checked={filter.value}
               key={filter.label}
-              label={toTitleCase(t(filter.label))}
+              label={t(filter.label)}
               onChange={filter.onChange}
             />,
           ])}
@@ -52,7 +51,7 @@ class LeftRailViewComponent extends Component<
             <JuiConversationListSectionHeader
               data-test-automation-id={entry.testId}
               key={entry.title}
-              title={toTitleCase(t(entry.title))}
+              title={t(entry.title)}
               icon={entry.icon}
               hideArrow={true}
               selected={entry.type === currentPostListType}

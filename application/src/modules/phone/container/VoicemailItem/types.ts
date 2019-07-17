@@ -24,7 +24,6 @@ type VoicemailViewProps = {
   onBeforeAction: (status: JuiAudioStatus) => void;
   updateStartTime: (timestamp: number) => void;
   isAudioActive: boolean | Audio | undefined;
-  shouldPause: boolean;
   createTime: string;
   direction: RCMessage['direction'];
   shouldShowCall: () => Promise<boolean>;

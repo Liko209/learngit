@@ -5,8 +5,6 @@
  */
 
 import * as firebase from 'firebase/app';
-// Add the Performance Monitoring library
-import 'firebase/performance';
 import { firebaseConfigProEnv } from './types';
 
 class FirebasePerformance {
@@ -24,6 +22,8 @@ class FirebasePerformance {
     // Initialize Firebase
     firebase.initializeApp(firebaseConfigProEnv);
     this._performance = firebase.performance();
+    // Add the Performance Monitoring library
+    import('firebase/performance');
   }
 
   getPerformance() {

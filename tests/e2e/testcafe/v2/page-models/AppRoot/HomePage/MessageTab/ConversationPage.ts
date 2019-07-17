@@ -1196,7 +1196,7 @@ class AudioConference extends BaseWebComponent {
 
   // only host can see
   get hostAccess() {
-    return this.self.find('div').withText('Host Access');
+    return this.self.find('div').withText('Host Access'); // todo i18n
   }
 
   // only host can see
@@ -1205,7 +1205,7 @@ class AudioConference extends BaseWebComponent {
   }
 
   get participantAccess() {
-    return this.self.find('div').withText('Participant Access');
+    return this.self.find('div').withText('Participant Access'); // todo i18n
   }
 
   get participantCode() {

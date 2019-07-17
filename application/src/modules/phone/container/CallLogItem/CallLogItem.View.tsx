@@ -54,6 +54,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
       t,
       id,
       isUnread,
+      isPseudo,
       caller,
       icon,
       callType,
@@ -106,6 +107,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
                 id={id}
                 caller={caller}
                 entity={ENTITY_TYPE.CALL_LOG}
+                isPseudo={isPseudo}
                 maxButtonCount={callLogResponsiveMap.buttonToShow}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}

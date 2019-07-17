@@ -9,15 +9,16 @@ import { IGroup } from "../../v2/models";
 fixture('ContentPanel/MiniProfile')
 .beforeEach(setupCase(BrandTire.RCOFFICE))
 .afterEach(teardownCase());
-test(formalName('Check mini profile is displayed correct', ['P2', 'Messages', 'ContentPanel', 'MiniProfile', 'V1.4', 'Lorna.Li']), async(t) => {
+test(formalName('Check mini profile is displayed correct', ['P2', 'Messages', 'ContentPanel', 'MiniProfile', 'V1.4', 'Lorna.Li']),
+async(t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
-  const team = <IGroup> {
+  let team = <IGroup>{
     name: uuid(),
     type: "Team",
     owner: loginUser,
-    members: [loginUser]
+    members:[loginUser]
   }
 
   let textPostId;

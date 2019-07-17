@@ -1,0 +1,18 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/*/.ts",
+      "./fixtures/Setting/*/.ts",
+      "./fixtures/SignInOut/*/.ts",
+      "./fixtures/Team/*/.ts",
+      "./fixtures/TeamSetting/*/.ts",
+      "./fixtures/Logout.ts",
+      "./fixtures/UnifiedLogin.ts",
+      "./telephony/phoneSetting/*.ts",
+      "./telephony/*.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

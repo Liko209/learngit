@@ -19,7 +19,7 @@ import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
@@ -199,6 +199,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       loading,
+      canMentionTeam,
       t,
     } = this.props;
     return (
@@ -241,17 +242,31 @@ class CreateTeamComponent extends React.Component<Props, State> {
             helperText={nameError && t(errorMsg)}
             onChange={handleNameChange}
           />
-          <ContactSearch
-            onSelectChange={handleSearchContactChange}
-            label={t('people.team.Members')}
-            placeholder={t('people.team.SearchContactPlaceholder')}
-            error={emailError}
-            helperText={emailError ? t(emailErrorMsg) : ''}
-            errorEmail={errorEmail}
-            isExcludeMe
-            multiple
-            autoSwitchEmail
-          />
+
+          {
+            // temporary: ContactAndGroupSearch contain group and person
+            canMentionTeam ? <ContactAndGroupSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              isExcludeMe
+              multiple
+              autoSwitchEmail
+            /> : <ContactSearch
+                onSelectChange={handleSearchContactChange}
+                label={t('people.team.Members')}
+                placeholder={t('people.team.SearchContactPlaceholder')}
+                error={emailError}
+                helperText={emailError ? t(emailErrorMsg) : ''}
+                errorEmail={errorEmail}
+                isExcludeMe
+                multiple
+                autoSwitchEmail
+              />
+          }
           <JuiTextarea
             id={t('people.team.teamDescription')}
             label={t('people.team.teamDescription')}

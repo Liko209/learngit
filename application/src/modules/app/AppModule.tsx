@@ -6,7 +6,9 @@
 import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import { Sdk, LogControlManager, service } from 'sdk';
+import {
+ sdk, LogControlManager, service, powerMonitor
+} from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -90,16 +92,12 @@ class AppModule extends AbstractModule {
     } as IApplicationInfo);
 
     const {
-      notificationCenter,
-      socketManager,
-      SOCKET,
-      SERVICE,
-      CONFIG,
-    } = service;
+ notificationCenter, SOCKET, SERVICE, CONFIG
+} = service;
 
     if (window.jupiterElectron) {
       window.jupiterElectron.onPowerMonitorEvent = (actionName: string) => {
-        socketManager.onPowerMonitorEvent(actionName);
+        powerMonitor.onPowerMonitorEvent(actionName);
       };
       window.jupiterElectron.handleNativeUpgrade = showUpgradeDialog;
     }
@@ -188,7 +186,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
-    await Sdk.init({
+    await sdk.init({
       api,
       db,
     });

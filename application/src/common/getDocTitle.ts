@@ -3,7 +3,6 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
-import { toTitleCase } from '@/utils/string';
 import { i18nP } from '@/utils/i18nT';
 
 //
@@ -19,7 +18,7 @@ function getMessagesTitle(messagePath?: string): string {
       messagePath,
     )
   ) {
-    return toTitleCase(messagePath);
+    return messagePath;
   }
   if (messagePath && /^\d+$/.test(messagePath)) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);

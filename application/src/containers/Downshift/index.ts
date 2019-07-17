@@ -5,3 +5,4 @@
  */
 export * from './ContactSearch';
 export * from './GroupSearch';
+export * from './ContactAndGroupSearch';
