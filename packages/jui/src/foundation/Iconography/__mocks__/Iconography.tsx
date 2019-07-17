@@ -3,8 +3,8 @@
  * @Date: 2019-07-15 09:35:31
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import styled from '../../styled-components';
 
-const JuiIconography = () => <span />;
+const JuiIconography = styled.span``;
 
 export { JuiIconography };
