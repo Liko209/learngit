@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseWebComponent } from "../../../BaseWebComponent";
+import sharedInstance from "jss";
 
 export class VoicemailPage extends BaseWebComponent {
   get self() {
@@ -92,6 +93,10 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('voicemail-more-button', this.self);
   }
 
+  async hoverMoreButton() {
+    await this.t.hover(this.self).hover(this.moreMenuButton);
+  }
+
   async openMoreMenu() {
     await this.t.hover(this.self).click(this.moreMenuButton);
   }
@@ -100,12 +105,20 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('voicemail-message-button', this.self);
   }
 
+  async hoverMessageButton() {
+    await this.t.hover(this.self).hover(this.messageButton);
+  }
+
   async ClickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
   }
 
   get callbackButton () {
     return this.getSelectorByAutomationId('voicemail-call-button', this.self);
+  }
+
+  async hoverCallbackButton() {
+    await this.t.hover(this.callbackButton);
   }
 
   async ClickCallbackButton() {
