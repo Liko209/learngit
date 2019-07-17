@@ -35,6 +35,10 @@ import { CALL_REPORT_PROPS, Establishment } from '../report/types';
 
 const LOG_TAG = 'RTCCall';
 
+enum SDH_DIRECTION {
+  SEND_ONLY = 'sendonly',
+  SEND_RECV = 'sendrecv'
+}
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
   private _callInfo: RTCCallInfo = {
@@ -230,7 +234,6 @@ class RTCCall {
   }
 
   hold(): void {
-    rtcLogger.info(LOG_TAG, 'this is tab hold');
     this._fsm.hold();
   }
 
@@ -348,11 +351,14 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
     });
-    this._callSession.on(CALL_SESSION_STATE.REINVITE_ACCEPTED, () => {
-      this._onSessionReinviteAccepted();
-    });
-    this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, () => {
-      this._onSessionReinviteFailed();
+    this._callSession.on(
+      CALL_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      }
+    );
+    this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -378,15 +384,6 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_PENDING, () => {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
-    });
-    this._fsm.on(CALL_FSM_NOTIFY.ENTER_HOLDING, () => {
-      this._onCallStateChange(RTC_CALL_STATE.HOLDING);
-    });
-    this._fsm.on(CALL_FSM_NOTIFY.ENTER_HOLDED, () => {
-      this._onCallStateChange(RTC_CALL_STATE.HOLDED);
-    });
-    this._fsm.on(CALL_FSM_NOTIFY.ENTER_UNHOLDING, () => {
-      this._onCallStateChange(RTC_CALL_STATE.UNHOLDING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTING, () => {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
@@ -518,7 +515,6 @@ class RTCCall {
         break;
     }
     if (this._delegate) {
-      rtcLogger.info(LOG_TAG, 'this is notify upper success');
       this._delegate.onCallActionSuccess(callAction, options);
     }
   }
@@ -531,6 +527,14 @@ class RTCCall {
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
         this._recordState = RECORD_STATE.RECORDING;
+        break;
+      }
+      case RTC_CALL_ACTION.HOLD: {
+        this._fsm.holdFailed();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._fsm.unholdFailed();
         break;
       }
       default:
@@ -577,22 +581,24 @@ class RTCCall {
     }
   }
 
-  private _onSessionReinviteAccepted() {
-    rtcLogger.info(LOG_TAG, 'this is holding entry');
-    if (this._callState === RTC_CALL_STATE.HOLDING) {
-      rtcLogger.info(LOG_TAG, 'this is holding success');
+  private _onSessionReinviteAccepted(session: any) {
+    if (
+      SDH_DIRECTION.SEND_ONLY ===
+      session.sessionDescriptionHandler.getDirection()
+    ) {
       this._fsm.holdSuccess();
-    }
-    if (this._callState === RTC_CALL_STATE.UNHOLDING) {
+    } else {
       this._fsm.unholdSuccess();
     }
   }
 
-  private _onSessionReinviteFailed() {
-    if (this._callState === RTC_CALL_STATE.HOLDING) {
+  private _onSessionReinviteFailed(session: any) {
+    if (
+      SDH_DIRECTION.SEND_ONLY ===
+      session.sessionDescriptionHandler.getDirection()
+    ) {
       this._fsm.holdFailed();
-    }
-    if (this._callState === RTC_CALL_STATE.UNHOLDING) {
+    } else {
       this._fsm.unholdFailed();
     }
   }

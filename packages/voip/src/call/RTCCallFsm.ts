@@ -63,15 +63,6 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_PENDING, () =>
       this._onEnterPending()
     );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_HOLDING, () =>
-      this._onEnterHolding()
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_HOLDED, () =>
-      this._onEnterHolded()
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_UNHOLDING, () =>
-      this._onEnterUnholding()
-    );
     this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTING, () =>
       this._onEnterConnecting()
     );
@@ -503,18 +494,6 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onEnterConnecting() {
     this.emit(CALL_FSM_NOTIFY.ENTER_CONNECTING);
-  }
-
-  private _onEnterHolding() {
-    this.emit(CALL_FSM_NOTIFY.ENTER_HOLDING);
-  }
-
-  private _onEnterUnholding() {
-    this.emit(CALL_FSM_NOTIFY.ENTER_UNHOLDING);
-  }
-
-  private _onEnterHolded() {
-    this.emit(CALL_FSM_NOTIFY.ENTER_HOLDED);
   }
 
   private _onEnterConnected() {
