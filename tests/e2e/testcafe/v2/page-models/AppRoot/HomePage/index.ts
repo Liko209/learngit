@@ -3,8 +3,6 @@ import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { CreateTeamModal, ConvertToTeamDialog } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
-import { SendFeedBackDialog } from './SendFeedBackDialog';
-import { AboutDialog } from './AboutDialog';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
@@ -109,14 +107,6 @@ export class HomePage extends BaseWebComponent {
 
   get profileDialog() {
     return this.getComponent(ProfileDialog);
-  }
-
-  get sendFeedBackDialog(){
-    return this.getComponent(SendFeedBackDialog);
-  }
-
-  get AboutRingCentralDialog(){
-    return this.getComponent(AboutDialog);
   }
 
   get topBarAvatar() {
