@@ -23,6 +23,7 @@ test(formalName('Send a feedback',['P2', 'TopBar', 'SendFeedback', 'V1.6', 'Hank
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
+
   await h(t).withLog('When I click "New actions" button', async() => {
     await t.click(topBarAvatar);
     await settingMenu.clickSendFeedBackButton();
@@ -31,7 +32,7 @@ test(formalName('Send a feedback',['P2', 'TopBar', 'SendFeedback', 'V1.6', 'Hank
   await h(t).withLog('Then "Send Feedback" dialog should be displayed' , async() => {
     await t.expect(aboutDialog.title.exists).ok();
   });
-  //await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_SendFeedbackDialog'});
+  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_SendFeedbackDialog'});
 
   await h(t).withLog("When I send a feedback", async() => {
     await sendFeedBackDialog.clickSendButton();
