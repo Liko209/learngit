@@ -163,6 +163,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return (entity && entity.value) || 'default';
   }
   async shouldEmitNotification(post: Post) {
+    const currentUser = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    if (post.creator_id === currentUser) {
+      return;
+    }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
