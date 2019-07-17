@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { BaseWebComponent } from "../../../BaseWebComponent";
-import sharedInstance from "jss";
 
 export class VoicemailPage extends BaseWebComponent {
   get self() {
