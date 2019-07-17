@@ -13,12 +13,12 @@ import {
   RTCCallActionSuccessOptions,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
-  RTC_MEDIA_ACTION,
+  RTC_MEDIA_ACTION
 } from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
-  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
+  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT
 } from './types';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
@@ -50,7 +50,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     super();
     this._uuid = uuid;
     this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
-      this._uuid,
+      this._uuid
     );
     this._mediaStatsManager = new RTCMediaStatsManager();
   }
@@ -66,12 +66,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     RTCMediaDeviceManager.instance().off(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._onInputDeviceChanged,
+      this._onInputDeviceChanged
     );
 
     RTCMediaDeviceManager.instance().off(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._onOutputDeviceChanged,
+      this._onOutputDeviceChanged
     );
 
     const sdh = this._session.sessionDescriptionHandler;
@@ -109,25 +109,25 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         WEBPHONE_SESSION_EVENT.ADD_TRACK,
         (e: RTCTrackEvent) => {
           this._onSessionTrackAdded(e);
-        },
+        }
       );
     });
     this._session.on(
       WEBPHONE_SESSION_STATE.REINVITE_ACCEPTED,
       (session: any) => {
         this._onSessionReinviteAccepted(session);
-      },
+      }
     );
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
     RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._onInputDeviceChanged,
+      this._onInputDeviceChanged
     );
     RTCMediaDeviceManager.instance().on(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._onOutputDeviceChanged,
+      this._onOutputDeviceChanged
     );
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
@@ -256,7 +256,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         break;
       case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_CONNECTED:
         CallReport.instance().updateEstablishment(
-          CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME,
+          CALL_REPORT_PROPS.MEDIA_CONNECTED_TIME
         );
         break;
       default:
@@ -287,7 +287,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       },
       () => {
         this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.FLIP);
-      },
+      }
     );
   }
 
@@ -296,12 +296,29 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       () => {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.TRANSFER,
+          RTC_CALL_ACTION.TRANSFER
         );
       },
       () => {
         this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.TRANSFER);
+      }
+    );
+  }
+
+  warmTransfer(targetSession: any) {
+    this._session.warmTransfer(targetSession).then(
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+          RTC_CALL_ACTION.WARM_TRANSFER
+        );
       },
+      () => {
+        this.emit(
+          CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+          RTC_CALL_ACTION.WARM_TRANSFER
+        );
+      }
     );
   }
 
@@ -320,17 +337,17 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.park().then(
       (parkOptions: any) => {
         const options: RTCCallActionSuccessOptions = {
-          parkExtension: `*${parkOptions['park extension']}`,
+          parkExtension: `*${parkOptions['park extension']}`
         };
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
           RTC_CALL_ACTION.PARK,
-          options,
+          options
         );
       },
       () => {
         this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.PARK);
-      },
+      }
     );
   }
 
@@ -339,7 +356,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       () => {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.START_RECORD,
+          RTC_CALL_ACTION.START_RECORD
         );
       },
       (data: any) => {
@@ -348,9 +365,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.START_RECORD,
-          code,
+          code
         );
-      },
+      }
     );
   }
 
@@ -359,7 +376,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       () => {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.STOP_RECORD,
+          RTC_CALL_ACTION.STOP_RECORD
         );
       },
       (data: any) => {
@@ -368,9 +385,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this.emit(
           CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
           RTC_CALL_ACTION.STOP_RECORD,
-          code,
+          code
         );
-      },
+      }
     );
   }
 
@@ -439,7 +456,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT
   ) {
     let index = 1;
     let dir = 0;
@@ -490,7 +507,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         replyType: index,
         callbackDirection: dir,
         timeUnits: units,
-        timeValue: time,
+        timeValue: time
       });
     }
   }
@@ -499,7 +516,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session) {
       this._session.replyWithMessage({
         replyType: 0,
-        replyText: msg,
+        replyText: msg
       });
     }
   }
@@ -542,7 +559,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     } else {
       rtcLogger.warn(
         LOG_TAG,
-        'Failed to set media stats callback. Session or Media Stream is null',
+        'Failed to set media stats callback. Session or Media Stream is null'
       );
     }
   }
@@ -559,10 +576,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       .getUserMedia({
         audio: {
           deviceId: {
-            exact: deviceID,
-          },
+            exact: deviceID
+          }
         },
-        video: false,
+        video: false
       })
       .then((stream: any) => {
         this._updatePeerConnection(stream);
@@ -570,7 +587,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       .catch((error: any) => {
         rtcLogger.warn(
           LOG_TAG,
-          `Cannot switch audio input device because : ${error.message}`,
+          `Cannot switch audio input device because : ${error.message}`
         );
       });
   }
@@ -608,7 +625,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     } catch (e) {
       rtcLogger.warn(
         LOG_TAG,
-        `Failed to get peer connection description: ${e.message}`,
+        `Failed to get peer connection description: ${e.message}`
       );
     }
   }
@@ -620,14 +637,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         LOG_TAG,
         `mediaElement: ${this._mediaElement} setSinkId: ${
           this._mediaElement.local.setSinkId
-        }`,
+        }`
       );
       this._mediaElement.local
         .setSinkId(deviceID)
         .then(() => {
           rtcLogger.debug(
             LOG_TAG,
-            `set local audio output device ${deviceID} success`,
+            `set local audio output device ${deviceID} success`
           );
         })
         .catch((error: any) => {
@@ -635,7 +652,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
             LOG_TAG,
             `set local audio output device ${deviceID} failed with: ${
               error.message
-            }`,
+            }`
           );
         });
 
@@ -644,7 +661,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         .then(() => {
           rtcLogger.debug(
             LOG_TAG,
-            `set remote audio output device ${deviceID} success`,
+            `set remote audio output device ${deviceID} success`
           );
         })
         .catch((error: any) => {
@@ -652,7 +669,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
             LOG_TAG,
             `set remote audio output device ${deviceID} failed with: ${
               error.message
-            }`,
+            }`
           );
         });
     }

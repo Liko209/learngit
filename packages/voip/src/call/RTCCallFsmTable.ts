@@ -7,7 +7,7 @@ import StateMachine from 'ts-javascript-state-machine';
 import {
   RTC_CALL_ACTION,
   RTC_REPLY_MSG_PATTERN,
-  RTC_REPLY_MSG_TIME_UNIT,
+  RTC_REPLY_MSG_TIME_UNIT
 } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
@@ -25,7 +25,7 @@ const CallFsmState = {
   HOLDING: 'holding',
   HOLDED: 'holded',
   UNHOLDING: 'unholding',
-  DISCONNECTED: 'disconnected',
+  DISCONNECTED: 'disconnected'
 };
 
 const CallFsmEvent = {
@@ -40,6 +40,7 @@ const CallFsmEvent = {
   MUTE: 'mute',
   UNMUTE: 'Unmute',
   TRANSFER: 'transfer',
+  WARM_TRANSFER: 'warmTransfer',
   FORWARD: 'forward',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
@@ -57,7 +58,7 @@ const CallFsmEvent = {
   HOLD_SUCCESS: 'holdSuccess',
   HOLD_FAILED: 'holdFailed',
   UNHOLD_SUCCESS: 'unholdSuccess',
-  UNHOLD_FAILED: 'unholdFailed',
+  UNHOLD_FAILED: 'unholdFailed'
 };
 
 interface IRTCCallFsmTableDependency {
@@ -68,6 +69,7 @@ interface IRTCCallFsmTableDependency {
   onHangupAction(): void;
   onFlipAction(target: number): void;
   onTransferAction(target: string): void;
+  onWarmTransferAction(targetSession: any): void;
   onForwardAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
@@ -83,7 +85,7 @@ interface IRTCCallFsmTableDependency {
   onReplyWithPatternAction(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT
   ): void;
 }
 
@@ -98,12 +100,12 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onCreateOutCallSession();
             return CallFsmState.CONNECTING;
-          },
+          }
         },
         {
           name: CallFsmEvent.ACCOUNT_NOT_READY,
           from: CallFsmState.IDLE,
-          to: CallFsmState.PENDING,
+          to: CallFsmState.PENDING
         },
         {
           name: CallFsmEvent.ANSWER,
@@ -111,7 +113,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onAnswerAction();
             return CallFsmState.ANSWERING;
-          },
+          }
         },
         {
           name: CallFsmEvent.REJECT,
@@ -119,12 +121,12 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onRejectAction();
             return CallFsmState.DISCONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.IGNORE,
           from: [CallFsmState.IDLE, CallFsmState.REPLYING],
-          to: CallFsmState.DISCONNECTED,
+          to: CallFsmState.DISCONNECTED
         },
         {
           name: CallFsmEvent.SEND_TO_VOICEMAIL,
@@ -132,7 +134,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onSendToVoicemailAction();
             return CallFsmState.DISCONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.START_REPLY,
@@ -140,7 +142,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onStartReplyAction();
             return CallFsmState.REPLYING;
-          },
+          }
         },
         {
           name: CallFsmEvent.START_REPLY,
@@ -153,12 +155,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
-            CallFsmState.REPLYING,
+            CallFsmState.REPLYING
           ],
           to: () => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_REPLY);
             return undefined;
-          },
+          }
         },
         {
           name: CallFsmEvent.REPLY_WITH_MESSAGE,
@@ -166,7 +168,7 @@ class RTCCallFsmTable extends StateMachine {
           to: (msg: string) => {
             dependency.onReplyWithMessageAction(msg);
             return CallFsmState.DISCONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.REPLY_WITH_MESSAGE,
@@ -179,12 +181,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: () => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
             return undefined;
-          },
+          }
         },
         {
           name: CallFsmEvent.REPLY_WITH_PATTERN,
@@ -192,11 +194,11 @@ class RTCCallFsmTable extends StateMachine {
           to: (
             pattern: RTC_REPLY_MSG_PATTERN,
             time: number,
-            timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+            timeUnit: RTC_REPLY_MSG_TIME_UNIT
           ) => {
             dependency.onReplyWithPatternAction(pattern, time, timeUnit);
             return CallFsmState.DISCONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.REPLY_WITH_PATTERN,
@@ -209,14 +211,14 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: () => {
             dependency.onReportCallActionFailed(
-              RTC_CALL_ACTION.REPLY_WITH_PATTERN,
+              RTC_CALL_ACTION.REPLY_WITH_PATTERN
             );
             return undefined;
-          },
+          }
         },
         {
           name: CallFsmEvent.HANGUP,
@@ -230,12 +232,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
-            CallFsmState.REPLYING,
+            CallFsmState.REPLYING
           ],
           to: () => {
             dependency.onHangupAction();
             return CallFsmState.DISCONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.FLIP,
@@ -243,7 +245,7 @@ class RTCCallFsmTable extends StateMachine {
           to: (target: number) => {
             dependency.onFlipAction(target);
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.MUTE,
@@ -251,7 +253,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onMuteAction();
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.UNMUTE,
@@ -259,7 +261,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onUnmuteAction();
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.TRANSFER,
@@ -267,7 +269,15 @@ class RTCCallFsmTable extends StateMachine {
           to: (target: string) => {
             dependency.onTransferAction(target);
             return CallFsmState.CONNECTED;
-          },
+          }
+        },
+        {
+          name: CallFsmEvent.WARM_TRANSFER,
+          from: CallFsmState.CONNECTED,
+          to: (targetSession: any) => {
+            dependency.onWarmTransferAction(targetSession);
+            return CallFsmState.CONNECTED;
+          }
         },
         {
           name: CallFsmEvent.FORWARD,
@@ -275,7 +285,7 @@ class RTCCallFsmTable extends StateMachine {
           to: (target: string) => {
             dependency.onForwardAction(target);
             return CallFsmState.FORWARDING;
-          },
+          }
         },
         {
           name: CallFsmEvent.PARK,
@@ -283,7 +293,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onParkAction();
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.PARK,
@@ -296,12 +306,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.TRANSFER,
@@ -314,12 +324,30 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
             return s;
-          },
+          }
+        },
+        {
+          name: CallFsmEvent.WARM_TRANSFER,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING
+          ],
+          to: (targetSession: any, s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER);
+            return s;
+          }
         },
         {
           name: CallFsmEvent.FORWARD,
@@ -332,12 +360,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FORWARD);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.FLIP,
@@ -350,12 +378,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (target: number, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.START_RECORD,
@@ -363,7 +391,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onStartRecordAction();
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.START_RECORD,
@@ -376,12 +404,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_RECORD);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.STOP_RECORD,
@@ -389,7 +417,7 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onStopRecordAction();
             return CallFsmState.CONNECTED;
-          },
+          }
         },
         {
           name: CallFsmEvent.STOP_RECORD,
@@ -402,12 +430,12 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.HOLD,
@@ -415,17 +443,17 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onHoldAction();
             return CallFsmState.HOLDING;
-          },
+          }
         },
         {
           name: CallFsmEvent.HOLD_SUCCESS,
           from: CallFsmState.HOLDING,
-          to: CallFsmState.HOLDED,
+          to: CallFsmState.HOLDED
         },
         {
           name: CallFsmEvent.HOLD_FAILED,
           from: CallFsmState.HOLDING,
-          to: CallFsmState.CONNECTED,
+          to: CallFsmState.CONNECTED
         },
         {
           name: CallFsmEvent.UNHOLD,
@@ -433,17 +461,17 @@ class RTCCallFsmTable extends StateMachine {
           to: () => {
             dependency.onUnholdAction();
             return CallFsmState.UNHOLDING;
-          },
+          }
         },
         {
           name: CallFsmEvent.UNHOLD_SUCCESS,
           from: CallFsmState.UNHOLDING,
-          to: CallFsmState.CONNECTED,
+          to: CallFsmState.CONNECTED
         },
         {
           name: CallFsmEvent.UNHOLD_FAILED,
           from: CallFsmState.UNHOLDING,
-          to: CallFsmState.HOLDED,
+          to: CallFsmState.HOLDED
         },
         {
           name: CallFsmEvent.DTMF,
@@ -454,22 +482,22 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
           to: (digits: string, s: any) => {
             dependency.onDtmfAction(digits);
             return s;
-          },
+          }
         },
         {
           name: CallFsmEvent.SESSION_ACCEPTED,
           from: CallFsmState.CONNECTING,
-          to: CallFsmState.CONNECTED,
+          to: CallFsmState.CONNECTED
         },
         {
           name: CallFsmEvent.SESSION_CONFIRMED,
           from: CallFsmState.ANSWERING,
-          to: CallFsmState.CONNECTED,
+          to: CallFsmState.CONNECTED
         },
         {
           name: CallFsmEvent.SESSION_DISCONNECTED,
@@ -482,9 +510,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
-          to: CallFsmState.DISCONNECTED,
+          to: CallFsmState.DISCONNECTED
         },
         {
           name: CallFsmEvent.SESSION_ERROR,
@@ -497,37 +525,37 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING,
+            CallFsmState.FORWARDING
           ],
-          to: CallFsmState.DISCONNECTED,
-        },
+          to: CallFsmState.DISCONNECTED
+        }
       ],
       methods: {
         onTransition(lifecycle) {
           CallReport.instance().updateFsmStatus(
-            lifecycle.to as FsmStatusCategory,
+            lifecycle.to as FsmStatusCategory
           );
           rtcLogger.debug(
             'RTC_Call_FSM',
             `Transition: ${lifecycle.transition} from: ${lifecycle.from} to: ${
               lifecycle.to
-            }`,
+            }`
           );
           return true;
         },
         onInvalidTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            `Invalid transition: ${transition} from: ${from} to: ${to}`,
+            `Invalid transition: ${transition} from: ${from} to: ${to}`
           );
         },
         onPendingTransition(transition: any, from: any, to: any) {
           rtcLogger.debug(
             'RTC_Call_FSM',
-            `Pending transition: ${transition} from: ${from} to: ${to}`,
+            `Pending transition: ${transition} from: ${from} to: ${to}`
           );
-        },
-      },
+        }
+      }
     });
   }
 }

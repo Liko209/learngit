@@ -10,10 +10,12 @@ import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
 interface IRTCCallSession extends EventEmitter2 {
   destroy(): void;
   setSession(session: any): void;
+  getSession(): any;
   getInviteResponse(): any;
   hangup(): void;
   flip(target: number): void;
   transfer(target: string): void;
+  warmTransfer(targetSession: any): void;
   forward(target: string): void;
   startRecord(): void;
   stopRecord(): void;
@@ -30,7 +32,7 @@ interface IRTCCallSession extends EventEmitter2 {
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT
   ): void;
   replyWithMessage(message: string): void;
   reconnectMedia(options: any): void;
