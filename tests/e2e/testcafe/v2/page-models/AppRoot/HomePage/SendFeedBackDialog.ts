@@ -12,7 +12,7 @@ export class SendFeedBackDialog extends BaseWebComponent {
   }
 
   get content() {
-    return this.getSelectorByAutomationId("DialogContent", this.self)
+    return this.getSelectorByAutomationId("DialogContent", this.self);
   }
 
   get cancelButton() {
