@@ -6,11 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import {
-  JuiHeaderContainer,
-  JuiHeader,
-  JuiContainer,
-} from 'jui/pattern/Dialer';
+import { JuiHeaderContainer, JuiHeader, JuiContainer } from 'jui/pattern/Dialer';
 import { End } from '../End';
 import { Mute } from '../Mute';
 import { Keypad } from '../Keypad';
@@ -31,37 +27,26 @@ class CallCtrlViewComponent extends React.Component<Props> {
   /* eslint-disable */
   private _Avatar = () => {
     const { uid } = this.props;
-    return (
-      <Avatar
-        uid={uid}
-        showDefaultAvatar={!uid}
-        imgProps={{ draggable: false }}
-        size='large'
-      />
-    );
+    return <Avatar uid={uid} showDefaultAvatar={!uid} imgProps={{ draggable: false }} size='large' />;
   };
 
   private callActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 
   render() {
-    const { isExt, phone, t, name } = this.props;
-    return (
-      <>
-        <JuiHeaderContainer>
-          <DialerTitleBar />
-          <JuiHeader
-            Avatar={this._Avatar}
-            name={getDisplayName(t, name)}
-            phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone}
-            showDialerInputField={false}
-          />
-        </JuiHeaderContainer>
-        <JuiContainer CallAction={End} KeypadActions={this.callActions} />
-      </>
-    );
+    const { isExt, phone, t, name, direction } = this.props;
+    if (direction) {
+      return (
+        <>
+          <JuiHeaderContainer>
+            <DialerTitleBar />
+            <JuiHeader Avatar={this._Avatar} name={getDisplayName(t, direction, name)} phone={isExt ? `${t('telephony.Ext')} ${phone}` : phone} showDialerInputField={false} />
+          </JuiHeaderContainer>
+          <JuiContainer CallAction={End} KeypadActions={this.callActions} />
+        </>
+      );
+    }
+    return null;
   }
 }
 
-export const CallCtrlPanelView = withTranslation('translations')(
-  CallCtrlViewComponent,
-);
+export const CallCtrlPanelView = withTranslation('translations')(CallCtrlViewComponent);

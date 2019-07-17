@@ -11,10 +11,9 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation';
-import {
-  PERMISSION_CONTROLLED_BY,
-  PERMISSION_PLATFORM,
-} from './PermissionControlledBy';
+import { PERMISSION_CONTROLLED_BY, PERMISSION_PLATFORM } from './PermissionControlledBy';
+
+const DEFAULT_FEATURE_FLAG = -1;
 
 class PermissionController {
   private splitIOController: SplitIOController;
@@ -36,12 +35,24 @@ class PermissionController {
     } else {
       const sp = await this.splitIOController.hasPermission(type);
       const ld = this.launchDarklyController.hasPermission(type);
-      mainLogger.log(
-        `hasPermission of ${type} launchDarkly:${ld} splitIO:${sp}`,
-      );
+      mainLogger.log(`hasPermission of ${type} launchDarkly:${ld} splitIO:${sp}`);
       result = ld || sp;
     }
     return result;
+  }
+
+  getFeatureFlag(type: UserPermissionType): number | string {
+    switch (PERMISSION_CONTROLLED_BY[type]) {
+      case PERMISSION_PLATFORM.LD: {
+        const ld = this.launchDarklyController.getFeatureFlag(type);
+        mainLogger.log(`hasFeatureFlag of ${type} launchDarkly:${ld}`);
+        return ld;
+      }
+
+      default: {
+        return DEFAULT_FEATURE_FLAG;
+      }
+    }
   }
 
   async getById(id: number): Promise<UserPermission> {
@@ -54,23 +65,15 @@ class PermissionController {
 
   // move to permissionController
   private _initControllers() {
-    this.splitIOController = new SplitIOController(
-      this._refreshPermissions.bind(this),
-    );
-    this.launchDarklyController = new LaunchDarklyController(
-      this._refreshPermissions.bind(this),
-    );
+    this.splitIOController = new SplitIOController(this._refreshPermissions.bind(this));
+    this.launchDarklyController = new LaunchDarklyController(this._refreshPermissions.bind(this));
   }
 
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
     const id = userConfig.getGlipUserId();
-    mainLogger.log(
-      `user:${id}, refreshPermissions:${JSON.stringify(permissions)}`,
-    );
+    mainLogger.log(`user:${id}, refreshPermissions:${JSON.stringify(permissions)}`);
     notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {
         id,

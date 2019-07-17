@@ -56,10 +56,6 @@ class ForwardViewModel extends StoreViewModel<Props> implements ViewProps {
   quitForward = () => {
     this._telephonyStore.backIncoming();
   };
-
-  dispose = () => {
-    this._telephonyStore.backIncoming();
-  };
 }
 
 export { ForwardViewModel };

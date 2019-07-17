@@ -40,7 +40,8 @@ class ProfileService extends EntityBaseService<Profile>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE),);
   }
 
   protected onStarted() {
@@ -79,7 +80,10 @@ class ProfileService extends EntityBaseService<Profile>
 
   getProfileController(): ProfileController {
     if (!this.profileController) {
-      this.profileController = new ProfileController(this.getEntitySource());
+      this.profileController = new ProfileController(
+        this.getEntitySource(),
+        this.getEntityCacheController(),
+      );
     }
     return this.profileController;
   }
@@ -156,7 +160,6 @@ class ProfileService extends EntityBaseService<Profile>
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(
         this,
-        ServiceLoader.getInstance(ServiceConfig.TELEPHONY_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.ACCOUNT_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.SETTING_SERVICE),
       );

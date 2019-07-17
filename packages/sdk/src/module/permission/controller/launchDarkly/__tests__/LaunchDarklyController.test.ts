@@ -18,15 +18,14 @@ LaunchDarklyClient.prototype.hasPermission = (type: UserPermissionType) => {
   return result;
 };
 
-LaunchDarklyClient.prototype.hasFlags = () => {
-  return true;
-};
+LaunchDarklyClient.prototype.hasFlags = () => true;
 
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
   jest.restoreAllMocks();
 }
+
 describe('LaunchDarklyController', () => {
   let controller: LaunchDarklyController;
   function setUp() {
@@ -36,24 +35,22 @@ describe('LaunchDarklyController', () => {
     clearMocks();
     setUp();
   });
+
   describe('constructor', () => {
     it('should call notificationCenter.on three times', () => {
       expect(notificationCenter.on).toHaveBeenCalledTimes(4);
     });
   });
+
   describe('hasPermission', () => {
     it('should return local default value when LaunchDarkly is not ready', () => {
       let permission = controller.hasPermission(
         UserPermissionType.JUPITER_CREATE_TEAM,
       );
       expect(permission).toBeTruthy();
-      permission = controller.hasPermission(
-        UserPermissionType.JUPITER_CAN_SAVE_LOG,
-      );
+      permission = controller.hasPermission(UserPermissionType.JUPITER_CAN_SAVE_LOG);
       expect(permission).toBeFalsy();
-      permission = controller.hasPermission(
-        UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
-      );
+      permission = controller.hasPermission(UserPermissionType.JUPITER_CAN_UPLOAD_LOG);
       expect(permission).toBeFalsy();
     });
     it('should return launchDarkly value when LaunchDarkly is  ready', () => {
@@ -61,16 +58,53 @@ describe('LaunchDarklyController', () => {
         isClientReady: true,
         launchDarklyClient: new LaunchDarklyClient({}),
       });
-      let result = controller.hasPermission(
-        UserPermissionType.JUPITER_CREATE_TEAM,
-      );
+      let result = controller.hasPermission(UserPermissionType.JUPITER_CREATE_TEAM);
       expect(result).toBeTruthy();
-      result = controller.hasPermission(
-        UserPermissionType.JUPITER_SEND_NEW_MESSAGE,
-      );
+      result = controller.hasPermission(UserPermissionType.JUPITER_SEND_NEW_MESSAGE);
       expect(result).toBeFalsy();
     });
   });
+
+  describe('getFeatureFlag', () => {
+    it('should return local default value when LaunchDarkly is not ready', () => {
+      const controller = new LaunchDarklyController(() => {});
+      const permission = controller.getFeatureFlag(UserPermissionType.JUPITER_CREATE_TEAM);
+      expect(permission).toBeTruthy();
+
+      const value = controller.getFeatureFlag(UserPermissionType.LEFT_RAIL_MAX_COUNT);
+      expect(value).toEqual(80);
+    });
+
+    it('should return default value when LaunchDarkly is ready but not set value in LaunchDarkly', () => {
+      const controller = new LaunchDarklyController(() => {});
+      Object.assign(controller, {
+        isClientReady: true,
+        launchDarklyClient: new LaunchDarklyClient({}),
+      });
+      const spy = jest.spyOn(controller, '_defaultFeatureFlag');
+      const result = controller.getFeatureFlag(UserPermissionType.LEFT_RAIL_MAX_COUNT);
+      expect(spy).toHaveBeenCalled();
+      expect(result).toEqual(80);
+    });
+
+    it('should return launchDarkly value when LaunchDarkly is ready and already set value in LaunchDarkly', () => {
+      const controller = new LaunchDarklyController(() => {});
+      Object.assign(controller, {
+        isClientReady: true,
+        launchDarklyClient: new LaunchDarklyClient({}),
+      });
+      jest.spyOn(controller['launchDarklyClient'], 'getFeatureFlag').mockImplementationOnce((type: UserPermissionType) => {
+        if (type === UserPermissionType.LEFT_RAIL_MAX_COUNT) {
+          return 100;
+        }
+        return 70;
+      });
+      const spy = jest.spyOn(controller, '_defaultFeatureFlag');
+      const result = controller.getFeatureFlag(UserPermissionType.LEFT_RAIL_MAX_COUNT);
+      expect(spy).not.toHaveBeenCalled();
+      expect(result).toEqual(100);
+    })
+  })
 
   describe('emit change', () => {
     it('should', (done: jest.DoneCallback) => {

@@ -28,19 +28,17 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     owner: anotherUser,
     members: [otherUser, anotherUser],
   };
-  const teamsNames = Array(3).fill(null).map(() => "h" + uuid())
-  const teams: IGroup[] = teamsNames.map(name => ({
-    name: name,
-    type: 'Team',
-    isPublic: true,
+  const teams = Array.from({ length: 3 }, (x, i) => <IGroup>{
+    name: `${i}-${uuid()}`,
+    type: "Team",
     owner: loginUser,
-    members: [loginUser, otherUser, anotherUser],
-  }));
+    members: [loginUser]
+  })
 
   await h(t).withLog('Given I have a team without me', async () => {
     await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
-  await h(t).withLog(`And I have three teams named"${teamsNames.join(",")}"`, async () => {
+  await h(t).withLog('And I have three teams', async () => {
     await h(t).scenarioHelper.createTeams(teams);
   });
   await h(t).withLog('And I have a group with three members', async () => {
@@ -58,7 +56,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const searchBox = searchDialog.recentPage.self;
     await t.expect(searchBox.exists).ok();
   });
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchBox' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchBox' });
 
   await h(t).withLog('When I search with "H"', async () => {
     await searchDialog.typeSearchKeyword("H");
@@ -67,7 +65,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const searchResult = searchDialog.instantPage.contentSearchHeader;
     await t.expect(searchResult.exists).ok();
   });
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchResult' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchResult' });
 
   const firstConversationResult = searchDialog.instantPage.nthConversation(0);
 
@@ -78,7 +76,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   await h(t).withLog('Then "message" button should be displayed', async () => {
     await t.expect(firstConversationResult.messageButton().exists).ok();
   });
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_MessageButton' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_MessageButton' });
 
   await h(t).withLog('When I hover "call" button', async () => {
     await t.hover(firstConversationResult.telephonyButton())
@@ -86,7 +84,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
   await h(t).withLog('Then "call" button should be displayed', async () => {
     await t.expect(firstConversationResult.telephonyButton().exists).ok();
   });
-  //await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_TopBar_CallButton' });
+  await h(t).log(`And I take screenshot`, { screenshotPath: 'Jupiter_TopBar_CallButton' });
 
   const theTeamWhichWithoutMe = searchDialog.instantPage.nthTeam(0)
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -96,7 +94,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     await t.click(theTeamWhichWithoutMe.self);
   });
 
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_JoinTeamPopup' });
 
   await h(t).withLog('When I click the "search" box again', async () => {
     const searchBar = app.homePage.header.searchBar;
@@ -107,13 +105,13 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const searchClearButton = app.homePage.searchDialog.recentPage.clearHistoryButton;
     await t.expect(searchClearButton.exists).ok();
   });
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchHistory' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_SearchHistory' });
 
   await h(t).withLog('When I search with "@!#$" and click "@!#$" in this conversation', async () => {
     await searchDialog.typeSearchKeyword("@!#$");
     await searchDialog.instantPage.clickContentSearchGlobalEntry();
   });
-  //await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_ContentSearch' });
+  await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_TopBar_ContentSearch' });
 
   await h(t).withLog(`When I set filter post by ${anotherUser.extension} and hover "Remove" button`, async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;
@@ -131,7 +129,7 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     const typeOption = searchDialog.fullSearchPage.messagesTab.typeOptionSelector;
     await t.expect(typeOption.exists).ok();
   });
-  //await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_TypeFilters' });
+  await h(t).log('And I take screenshot', { screenshotPath: 'Jupiter_TopBar_TypeFilters' });
 
   await h(t).withLog('When I click "Time posted" selector', async () => {
     const messagesTab = searchDialog.fullSearchPage.messagesTab;

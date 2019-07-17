@@ -46,6 +46,40 @@ const postViews: PostView[] = [
   },
 ];
 
+const unreadPosts: Post[] = [
+  postFactory.build({
+    id: 3752569593860,
+    text: '2',
+    group_id: 9163628546,
+    created_at: 1,
+  }),
+  postFactory.build({
+    id: 3752569593870,
+    group_id: 9163628546,
+    created_at: 3,
+  }),
+  postFactory.build({
+    id: 3752569593960,
+    group_id: 9163628546,
+    created_at: 4,
+  }),
+  postFactory.build({
+    id: 3752569593866,
+    group_id: 9163628546,
+    created_at: 2,
+  }),
+  postFactory.build({
+    id: 3752569594960,
+    group_id: 9163628546,
+    created_at: 5,
+  }),
+  postFactory.build({
+    id: 3752569693960,
+    group_id: 9163628546,
+    created_at: 6,
+  }),
+];
+
 const posts: Post[] = [
   postFactory.build({
     id: 3752569593860,
@@ -108,53 +142,29 @@ describe('PostViewDao', () => {
     it('should return directly when db has not posts', async () => {
       await postDao.clear();
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        1151236399108,
-        QUERY_DIRECTION.OLDER,
-        3,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 1151236399108, QUERY_DIRECTION.OLDER, 3);
       const spy = jest.spyOn(ArrayUtils, 'sliceIdArray');
       expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
+      expect(spy).not.toHaveBeenCalled();
     });
 
     it('should return older posts when direction is older and post id > 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        1151236399108,
-        QUERY_DIRECTION.OLDER,
-        3,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 1151236399108, QUERY_DIRECTION.OLDER, 3);
       expect(result).toHaveLength(3);
       expect(_.first(result).created_at).toBe(1);
     });
 
     it('should return newer posts when direction is newer and post id > 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[5]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569593860,
-        QUERY_DIRECTION.NEWER,
-        3,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 3752569593860, QUERY_DIRECTION.NEWER, 3);
       expect(result).toHaveLength(3);
       expect(_.first(result).created_at).toBe(2);
     });
 
     it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        1151236399108,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 1151236399108, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.first(result).created_at).toBe(2);
       expect(_.last(result).created_at).toBe(5);
@@ -162,13 +172,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit > 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[1]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569536516,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 3752569536516, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(4);
       expect(_.first(result).created_at).toBe(1);
@@ -176,13 +180,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit < 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        1151236554700,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 1151236554700, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(6);
       expect(_.first(result).created_at).toBe(3);
@@ -190,13 +188,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | endIndex < posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[1]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569536516,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 3752569536516, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.first(result).created_at).toBe(1);
       expect(_.last(result).created_at).toBe(4);
@@ -204,13 +196,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | endIndex === posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[3]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        1151236554756,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 1151236554756, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(4);
       expect(_.first(result).created_at).toBe(1);
@@ -218,13 +204,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | entIndex > posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569593860,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 3752569593860, QUERY_DIRECTION.BOTH, 4);
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(4);
       expect(_.first(result).created_at).toBe(1);
@@ -232,13 +212,7 @@ describe('PostViewDao', () => {
 
     it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit < 0 | entIndex > posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569536516,
-        QUERY_DIRECTION.BOTH,
-        8,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 3752569536516, QUERY_DIRECTION.BOTH, 8);
       expect(result).toHaveLength(6);
       expect(_.last(result).created_at).toBe(6);
       expect(_.first(result).created_at).toBe(1);
@@ -246,34 +220,22 @@ describe('PostViewDao', () => {
 
     it('should return older posts when direction is older and post id === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        0,
-        QUERY_DIRECTION.OLDER,
-        3,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 0, QUERY_DIRECTION.OLDER, 3);
       expect(result).toHaveLength(3);
     });
 
     it('should return empty when direction is newer and post id === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        0,
-        QUERY_DIRECTION.NEWER,
-        3,
-      );
+      const result = await postViewDao.queryPostsByGroupId(fetchPostsFunc, 9163628546, 0, QUERY_DIRECTION.NEWER, 3);
       expect(result).toHaveLength(3);
       expect(_.last(result).created_at).toBe(3);
     });
   });
 
-  describe('queryIntervalPostsByGroupId()', () => {
+  describe('queryUnreadPostsByGroupId()', () => {
     beforeAll(async () => {
       await postDao.clear();
-      await postDao.bulkPut(posts);
+      await postDao.bulkPut(unreadPosts);
     });
 
     beforeEach(() => {
@@ -286,134 +248,52 @@ describe('PostViewDao', () => {
       };
     });
 
-    it('should return [] if start post id is 0', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        { groupId: 9163628546, startPostId: 0, endPostId: 0, limit: 500 },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
+    it('should return posts which < endPostId if start post id is 0', async () => {
+      const result = await postViewDao.queryUnreadPostsByGroupId(fetchPostsFunc, {
+        groupId: 9163628546,
+        startPostId: 0,
+        endPostId: 3752569594960,
+        limit: 500,
+      });
+      expect(result).toHaveLength(5);
+      expect(_.first(result).created_at).toBe(1);
+      expect(_.last(result).created_at).toBe(5);
     });
 
-    it('should return [] if start post id is 0 but end post is in db', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 0,
-          endPostId: 1151236554700,
-          limit: 500,
-        },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
-    });
-
-    it('should return [] if start post not in db', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 5752569593860,
-          endPostId: 0,
-          limit: 500,
-        },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
-    });
-
-    it('should return [] if start post not in db but end post is in db', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 5752569593860,
-          endPostId: 1151236554701,
-          limit: 500,
-        },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
-    });
-
-    it('should return all newer than start post if start post in db and end post id is 0', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 3752569536516,
-          endPostId: 0,
-          limit: 500,
-        },
-      );
-      expect(result).toHaveLength(4);
-      expect(_.first(result).created_at).toBe(3);
-      expect(_.last(result).created_at).toBe(6);
-    });
-
-    it('should return all newer than start post if start post in db and end post is not in db', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 1151236554756,
-          endPostId: 6752569536516,
-          limit: 500,
-        },
-      );
+    it('should return interval post if start post in range', async () => {
+      const result = await postViewDao.queryUnreadPostsByGroupId(fetchPostsFunc, {
+        groupId: 9163628546,
+        startPostId: 3752569593870,
+        endPostId: 3752569693960,
+        limit: 500,
+      });
       expect(result).toHaveLength(5);
       expect(_.first(result).created_at).toBe(2);
       expect(_.last(result).created_at).toBe(6);
     });
 
-    it('should return interval posts if start post is in db and end post is in db', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 1151236554756,
-          endPostId: 1151236554700,
-          limit: 500,
-        },
-      );
-      expect(result).toHaveLength(3);
-      expect(_.first(result).created_at).toBe(2);
-      expect(_.last(result).created_at).toBe(4);
+    it('should return interval post if start post is deactivated', async () => {
+      const result = await postViewDao.queryUnreadPostsByGroupId(fetchPostsFunc, {
+        groupId: 9163628546,
+        startPostId: 3752569593962,
+        endPostId: 3752569594960,
+        limit: 500,
+      });
+      expect(result).toHaveLength(2);
+      expect(_.first(result).created_at).toBe(4);
+      expect(_.last(result).created_at).toBe(5);
     });
 
-    it('should return [] if start post is in db and end post is in db, but start post created_at > end post created_at', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 1151236554701,
-          endPostId: 3752569593860,
-          limit: 500,
-        },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
-    });
-
-    it('should return [] if start post is in db and end post is in db, but start post created_at === end post created_at', async () => {
-      const result = await postViewDao.queryIntervalPostsByGroupId(
-        fetchPostsFunc,
-        {
-          groupId: 9163628546,
-          startPostId: 1151236554701,
-          endPostId: 1151236554701,
-          limit: 500,
-        },
-      );
-      const spy = jest.spyOn(postViewDao, 'queryPostIdsByGroupId');
-      expect(result).toHaveLength(0);
-      expect(spy).not.toBeCalled();
+    it('should return all older than posts if start post is the first post in db', async () => {
+      const result = await postViewDao.queryUnreadPostsByGroupId(fetchPostsFunc, {
+        groupId: 9163628546,
+        startPostId: 3752569593860,
+        endPostId: 3752569594960,
+        limit: 500,
+      });
+      expect(result).toHaveLength(5);
+      expect(_.first(result).created_at).toBe(1);
+      expect(_.last(result).created_at).toBe(5);
     });
   });
 });

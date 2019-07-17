@@ -178,6 +178,7 @@ class PhoneParserUtility {
     const phoneData = await rcInfoService.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
+      this._notifyReadPhoneDataFinished(false);
       return false;
     }
 
@@ -198,7 +199,7 @@ class PhoneParserUtility {
         await rcInfoService.loadRegionInfo();
       }
 
-      PhoneParserUtility._notifyReadPhoneDataFinished(true);
+      PhoneParserUtility._notifyReadPhoneDataFinished(result);
       performanceTracer.end({
         key: PHONE_PARSER_PERFORMANCE_KEYS.INIT_PHONE_PARSER,
         infos: result,

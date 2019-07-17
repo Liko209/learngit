@@ -155,6 +155,7 @@ class FilesView extends React.Component<FilesViewProps> {
               <JuiDelayPlaceholder width={size.width} height={size.height} />
             );
             const props = {
+              fileID: id,
               width: size.width,
               height: size.height,
               forceSize: !singleImage,
@@ -175,9 +176,7 @@ class FilesView extends React.Component<FilesViewProps> {
             const future = (
               <JuiPreviewImage
                 key={id}
-                didLoad={(callback: Function) => this._handleImageDidLoad(id, callback)
-                }
-                placeholder={placeholder}
+                didLoad={(callback: Function) => this._handleImageDidLoad(id, callback)}
                 {...props}
               />
             );

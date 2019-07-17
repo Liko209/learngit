@@ -60,6 +60,11 @@ test(formalName('UMI should be added received messages count in conversations', 
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   await h(t).withLog('And I click a private chat', async () => {
@@ -152,6 +157,11 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const team = teamsSection.conversationEntryById(teamId);
@@ -211,6 +221,11 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
   await h(t).withLog('Then I can open the private chat', async () => {
     await pvtChat.enter();
@@ -237,155 +252,175 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   });
 });
 
-test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
-  ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
+test.meta(<ITestMeta>{
+  priority: ['P1', 'P2'],
+  caseIds: ['JPT-98', 'JPT-99'],
+  maintainers: ['potar.he'],
+  keywords: ['ConversationList', 'UMI']
+})('Should not display UMI when section is expended & Should display UMI when section is collapsed', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[2];
+  const otherUser = users[3];
+
+  const favChat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  const favTeam = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
+
+  const group1 = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [otherUser, otherUser, users[0]]
+  }
+
+  const group2 = <IGroup>{
+    type: 'Group',
+    owner: loginUser,
+    members: [otherUser, otherUser, users[1]]
+  }
+
+  const team1 = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
+  const team2 = <IGroup>{
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, otherUser],
+    name: uuid()
+  }
+
+  const conversations = [favChat, favTeam, group1, group2, team1, team2]
+
+  let meChatId;
+  await h(t).withLog('Given I have an extension and reset its profile and state', async () => {
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).resetProfileAndState();
-    const otherUser = users[5];
     await h(t).platform(otherUser).init();
+    meChatId = await h(t).glip(loginUser).getMeChatId();
+  });
 
-    const teamsSection = app.homePage.messageTab.teamsSection;
-    const favoritesSection = app.homePage.messageTab.favoritesSection;
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog('And this extension with some conversations', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(conversations);
+  });
 
-    let favPrivateChatId, favTeamId, groupId1, groupId2, groupId3, teamId1, teamId2;
-    await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
-      favPrivateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId],
-      });
-      favTeamId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `My Team ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId],
-      });
-      groupId1 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group',
-        members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-      });
-      groupId2 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group',
-        members: [loginUser.rcId, users[5].rcId, users[1].rcId],
-      });
-      groupId3 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group',
-        members: [loginUser.rcId, users[5].rcId, users[2].rcId],
-      });
-      teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `My Team ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId],
-      });
-      teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `My Team ${uuid()}`,
-        members: [loginUser.rcId, users[5].rcId],
-      });
-    });
+  await h(t).withLog('And favorite 2 conversations and mechat before login', async () => {
+    await h(t).glip(loginUser).favoriteGroups([favChat.glipId, favTeam.glipId, meChatId]);
+  });
 
-    await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).resetProfileAndState();
-    });
-
-    await h(t).withLog('And favorite 2 conversation before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected', async () => {
-      await directMessagesSection.conversationEntryById(groupId3).enter();
-    });
-
-
-    await h(t).withLog('When other user send normal posts to all other conversations', async () => {
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', favPrivateChatId);
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', favTeamId);
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', groupId1);
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', groupId2);
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', teamId1);
-      await h(t).platform(otherUser).sendTextPost('TestGroupUMI', teamId2);
-      await t.wait(3e3);
-    });
-
-    await h(t).withLog('Then there should not be any umi in header of favorite sections', async () => {
-      await favoritesSection.headerUmi.shouldBeNumber(0);
-    });
-
-    await h(t).withLog('and there should not be any umi in header of direct message sections', async () => {
-      await directMessagesSection.headerUmi.shouldBeNumber(0);
-    });
-
-    await h(t).withLog('and there should not be any umi in header of team sections', async () => {
-      await teamsSection.headerUmi.shouldBeNumber(0);
-    });
-
-    await h(t).withLog('When I fold the sections', async () => {
-      await favoritesSection.fold();
-      await directMessagesSection.fold();
-      await teamsSection.fold();
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
     })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
-    await h(t).withLog('Then there should be 1 umi in header of favorite sections', async () => {
-      await favoritesSection.headerUmi.shouldBeNumber(1);
-    });
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
 
-    await h(t).withLog('and there should be 2 umi in header of direct messages sections', async () => {
-      await directMessagesSection.headerUmi.shouldBeNumber(2);
-    });
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog('And I click meChat to make sure other conversations are not selected', async () => {
+    await favoritesSection.conversationEntryById(meChatId).enter();
+  });
 
-    await h(t).withLog('and there should not be any umi in header of team sections', async () => {
-      await teamsSection.headerUmi.shouldBeNumber(0);
-    });
+  await h(t).withLog('When I expand Favorite/Team/DirectMessage section', async () => {
+    await favoritesSection.expand();
+    await directMessagesSection.expand();
+    await teamsSection.expand();
+  });
 
-    await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
-      await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, favPrivateChatId);
-      await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, groupId1);
-      await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, teamId1);
-      await t.wait(3e3);
-    });
 
-    await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
-      await favoritesSection.headerUmi.shouldBeNumber(2);
-    });
+  await h(t).withLog('When other user send normal posts to all other conversations', async () => {
+    for (let conversation of conversations) {
+      await h(t).scenarioHelper.sendTextPost(uuid(), conversation, otherUser);
+    }
+  });
 
-    await h(t).withLog('and there should be 3 umi in header of direct messages sections', async () => {
-      await directMessagesSection.headerUmi.shouldBeNumber(3);
+  await h(t).withLog('Then there should not be any umi in header of favorite sections', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(0);
+  });
 
-    });
+  await h(t).withLog('and there should not be any umi in header of direct message sections', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
+  });
 
-    await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
-      await teamsSection.headerUmi.shouldBeNumber(1);
-    });
+  await h(t).withLog('and there should not be any umi in header of team sections', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
+  });
 
-    await h(t).withLog('When other user send normal posts to specified conversations', async () => {
-      await h(t).platform(otherUser).sendTextPost('test', favPrivateChatId);
-      await h(t).platform(otherUser).sendTextPost('test', favTeamId);
-      await h(t).platform(otherUser).sendTextPost('test', groupId1);
-      await h(t).platform(otherUser).sendTextPost('test', teamId1);
-      await t.wait(3e3);
-    });
+  await h(t).withLog('When I fold the sections', async () => {
+    await favoritesSection.fold();
+    await directMessagesSection.fold();
+    await teamsSection.fold();
+  })
 
-    await h(t).withLog('Then there should be 3 umi in header of favorite sections', async () => {
-      await favoritesSection.headerUmi.shouldBeNumber(3);
-    });
+  await h(t).withLog('Then there should be 1 umi in header of favorite sections', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(1);
+  });
 
-    await h(t).withLog('and there should be 4 umi in header of direct messages sections', async () => {
-      await directMessagesSection.headerUmi.shouldBeNumber(4);
-    });
+  await h(t).withLog('and there should be 2 umi in header of direct messages sections', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(2);
+  });
 
-    await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
-      await teamsSection.headerUmi.shouldBeNumber(1);
-    });
-  },
+  await h(t).withLog('and there should not be any umi in header of team sections', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(0);
+  });
+
+  await h(t).withLog('When other user send posts with mention to specified conversations', async () => {
+    for (let conversation of [favChat, group1, team1]) {
+      await h(t).scenarioHelper.sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, conversation, otherUser);
+    }
+  });
+
+  await h(t).withLog('Then there should be 2 umi in header of favorite sections', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(2);
+  });
+
+  await h(t).withLog('and there should be 3 umi in header of direct messages sections', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(3);
+
+  });
+
+  await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(1);
+  });
+
+  await h(t).withLog('When other user send normal posts to specified conversations', async () => {
+    for (let conversation of [favChat, favTeam, group1, team1]) {
+      await h(t).scenarioHelper.sendTextPost(uuid(), conversation, otherUser);
+    }
+  });
+
+  await h(t).withLog('Then there should be 3 umi in header of favorite sections', async () => {
+    await favoritesSection.headerUmi.shouldBeNumber(3);
+  });
+
+  await h(t).withLog('and there should be 4 umi in header of direct messages sections', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(4);
+  });
+
+  await h(t).withLog('and there should be 1 umi in header of team sections', async () => {
+    await teamsSection.headerUmi.shouldBeNumber(1);
+  });
+},
 );
 
 test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123', 'P1', 'ConversationList']), async (t: TestController) => {
@@ -436,13 +471,17 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
     },
   );
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
+
   const teamsSection = app.homePage.messageTab.teamsSection;
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected',
-    async () => {
-      await directMessagesSection.conversationEntryById(groupId3).enter();
-    },
+  await h(t).withLog('Then I click groupId3 to make sure other conversations are not selected', async () => {
+    await directMessagesSection.conversationEntryById(groupId3).enter();
+  },
   );
 
   await h(t).withLog('Send posts to conversations', async () => {
@@ -549,10 +588,16 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await app.homePage.ensureLoaded();
     });
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(group.glipId).enter();
       await conversationPage.waitUntilPostsBeLoaded();
+      await t.wait(2e3);
       await conversationPage.scrollToMiddle();
       await h(t).platform(otherUser).sendTextPost('test again', group.glipId);
     });
@@ -604,6 +649,11 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       await app.homePage.ensureLoaded();
     });
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
       await h(t).platform(otherUser).sendTextPost(postContent, pvtChatId);
@@ -643,6 +693,11 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
+    });
+
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
     });
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
@@ -695,6 +750,11 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
       },
     );
 
+    // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+    await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+      await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+    });
+
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).umi.shouldBeNumber(0);
@@ -702,7 +762,12 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['p1'],
+  caseIds: ['JPT-743'],
+  keywords: ['ConversationList', 'umi'],
+  maintainers: ['Mia.Cai']
+})('Should be unread when closed conversation received new unread', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -721,10 +786,18 @@ test(formalName('Should be unread when closed conversation received new unread',
   });
 
   const app = new AppRoot(t);
-  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`When I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+  });
+
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
   });
 
   await h(t).withLog('And the conversation received one unread post from other members', async () => {
@@ -735,12 +808,13 @@ test(formalName('Should be unread when closed conversation received new unread',
     await t.expect(h(t).href).notContains(chat.glipId);
   });
 
+  const conversation = app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId);
   await h(t).withLog('And the conversation should show in the conversation list', async () => {
-    await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).ok();
+    await conversation.ensureLoaded();
   });
 
   await h(t).withLog('And the conversation should be unread', async () => {
-    await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
+    await conversation.umi.shouldBeNumber(1);
   });
 });
 
@@ -774,6 +848,11 @@ test.meta(<ITestMeta>{
     })
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
+  });
+
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
   });
 
   await h(t).withLog('Then I can find 1 UMI in the left navigation panel Messages Entry', async () => {
@@ -835,6 +914,10 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  // this step should put before login step. Now here due to  https://jira.ringcentral.com/browse/FIJI-7434
+  await h(t).withLog('And I set new_message_badges is groups_and_mentions', async () => {
+    await h(t).glip(loginUser).setNewMessageBadges('groups_and_mentions');
+  });
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const moreMenu = app.homePage.messageTab.moreMenu;

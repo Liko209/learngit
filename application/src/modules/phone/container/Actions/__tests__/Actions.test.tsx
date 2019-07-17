@@ -524,4 +524,105 @@ describe('Action', () => {
       expect(<Comp />).toEqual(<Delete />);
     }
   }
+
+  @testable
+  class JPT2504 {
+    @test(
+      'should show Delete when item is real call log [JPT-2504]',
+    )
+    @mockEntity(
+      mockPhoneAndPerson({
+        person: {
+          userDisplayName: 'displayName',
+          phoneNumbers: [
+            {
+              type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+              phoneNumber: '+1234567890',
+            },
+          ],
+        },
+      }),
+    )
+    @mockService(RCInfoService, 'isNumberBlocked', false)
+    @mockService(PersonService, 'matchContactByPhoneNumber', { id: 1 })
+    async t1() {
+      const wrapper = await asyncMountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={3}
+          caller={mockCaller}
+          showCall={true}
+          canEditBlockNumbers={false}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      wrapper.update();
+      expect(wrapper.find(JuiIconButton)).toHaveLength(3);
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(2)
+          .props().children,
+      ).toBe('delete-call');
+    }
+
+    @test(
+      'should not show Delete when item is real call log [JPT-2504]',
+    )
+    @mockEntity(
+      mockPhoneAndPerson({
+        person: {
+          userDisplayName: 'displayName',
+          phoneNumbers: [
+            {
+              type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
+              phoneNumber: '+1234567890',
+            },
+          ],
+        },
+      }),
+    )
+    @mockService(RCInfoService, 'isNumberBlocked', false)
+    @mockService(PersonService, 'matchContactByPhoneNumber', { id: 1 })
+    async t2() {
+      const wrapper = await asyncMountWithTheme(
+        <Actions
+          id={1234}
+          maxButtonCount={3}
+          caller={mockCaller}
+          showCall={true}
+          canEditBlockNumbers={false}
+          isPseudo={true}
+          entity={ENTITY_TYPE.CALL_LOG}
+        />,
+      );
+      wrapper.update();
+      expect(wrapper.find(JuiIconButton)).toHaveLength(2);
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(0)
+          .props().children,
+      ).toBe('phone');
+      expect(
+        wrapper
+          .find(JuiIconButton)
+          .at(1)
+          .props().children,
+      ).toBe('chat_bubble');
+      expect(wrapper.find(Delete).exists()).toBeFalsy();
+    }
+  }
 });
