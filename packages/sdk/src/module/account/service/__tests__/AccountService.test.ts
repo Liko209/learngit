@@ -306,4 +306,23 @@ describe('AccountService', () => {
       expect(mockFunc).toBeCalled();
     });
   });
+
+  describe('isAccountReady()', () => {
+    it('should return true when GlipUserId exist', async () => {
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(11);
+
+      expect(accountService.isAccountReady()).toBeTruthy();
+    });
+    it('should return false when accountUserConfig error occur', async () => {
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error('not login')
+        });
+
+      expect(accountService.isAccountReady()).toBeFalsy();
+    });
+  });
 });

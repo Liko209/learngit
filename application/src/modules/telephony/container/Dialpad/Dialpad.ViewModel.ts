@@ -61,6 +61,11 @@ class DialpadViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get direction() {
+    return this._telephonyStore.activeCallDirection;
+  }
+
+  @computed
   private get _callState() {
     return this._telephonyStore.callState;
   }

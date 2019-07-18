@@ -54,11 +54,14 @@ class GenericDialerPanelViewComponent extends React.Component<
     this._focusInput();
   }
 
-  componentDidUpdate() {
-    const { enteredDialer } = this.props;
+  componentDidUpdate(prevProps: Props) {
+    const { enteredDialer, shouldDisplayRecentCalls } = this.props;
     const { shouldShowToolTip } = this.state;
     if (enteredDialer && shouldShowToolTip) {
       this._timer = setTimeout(this._handleCloseToolTip, CLOSE_TOOLTIP_TIME);
+    }
+    if (shouldDisplayRecentCalls !== prevProps.shouldDisplayRecentCalls) {
+      this._focusInput();
     }
   }
   componentWillUnmount() {

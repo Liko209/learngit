@@ -30,7 +30,7 @@ class Mention {
   private _options: Options = {
     onMention: () => {},
     mentionDenotationChars: ['@'],
-    allowedChars: /./,
+    allowedChars: /^[\s\S]*$/,
     minChars: 0,
     maxChars: 31,
     isolateCharacter: true,

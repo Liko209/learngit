@@ -46,6 +46,7 @@ const JuiRecentCallItem = styled(JuiListItem)`
 `;
 
 const StyledContactWrapper = styled.div`
+  min-width: 0;
   max-width: ${width(37)};
   flex: 1;
 `;

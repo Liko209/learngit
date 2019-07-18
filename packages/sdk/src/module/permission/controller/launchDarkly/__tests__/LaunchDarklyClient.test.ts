@@ -32,6 +32,18 @@ describe('LaunchDarklyClient', () => {
       expect(result).toBeTruthy();
     });
   });
+
+  describe('getFeatureFlag', () => {
+    it('should return flag value if key is in flags and has value', () => {
+      const client = new LaunchDarklyClient(null);
+      Object.assign(client, {
+        _flags: { LEFT_RAIL_MAX_COUNT: 70 },
+      });
+      const result = client.getFeatureFlag('LEFT_RAIL_MAX_COUNT');
+      expect(result).toEqual(70);
+    });
+  });
+
   describe('shutdown', () => {
     it('should call off twice when shutdown', () => {
       class MockClient {

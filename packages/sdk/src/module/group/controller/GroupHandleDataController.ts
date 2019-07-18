@@ -500,6 +500,7 @@ class GroupHandleDataController {
 
     // Find oldest unread group's time
     const unreadGroupIds = await this.getUnreadGroupIds(sortedGroups);
+    mainLogger.tags(LOG_TAG).info('fetch unread group ids done');
     const oldestUnreadGroupTime = sortedGroups
       .filter(group => unreadGroupIds.includes(group.id))
       .map(this.getGroupTime)

@@ -37,6 +37,10 @@ class PermissionService extends EntityBaseService<UserPermission>
     return this.permissionController.hasPermission(type);
   }
 
+  getFeatureFlag(type: UserPermissionType) {
+    return this.permissionController.getFeatureFlag(type);
+  }
+
   async getById(id: number): Promise<UserPermission> {
     return this.permissionController.getById(id);
   }

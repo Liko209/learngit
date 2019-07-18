@@ -1,6 +1,6 @@
 {
   "name": "rcui",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -80,8 +80,10 @@
     "@types/tinycolor2": "1.4.1",
     "awesome-typescript-loader": "5.2.1",
     "axios": "0.19.0-beta.1",
+    "babel-plugin-macros": "2.5.1",
     "babel-plugin-module-resolver": "3.2.0",
     "babel-plugin-preval": "2.0.1",
+    "babel-plugin-require-context-hook": "1.0.0",
     "chalk": "2.4.2",
     "clipboard-copy": "2.0.1",
     "clsx": "1.0.3",
@@ -107,6 +109,7 @@
     "react-docgen": "4.0.0",
     "react-docgen-typescript-loader": "3.1.0",
     "react-frame-component": "4.0.2",
+    "react-jss": "8.6.1",
     "react-redux": "6.0.1",
     "react-swipeable-views": "0.13.1",
     "react-test-renderer": "16.8.3",
@@ -137,10 +140,7 @@
     "typescript": "3.4.2",
     "webpack": "4.23.1",
     "webpack-bundle-analyzer": "3.0.4",
-    "winston": "3.2.1",
-    "babel-plugin-macros": "2.5.1",
-    "babel-plugin-require-context-hook": "1.0.0",
-    "react-jss": "8.6.1"
+    "winston": "3.2.1"
   },
   "husky": {
     "hooks": {

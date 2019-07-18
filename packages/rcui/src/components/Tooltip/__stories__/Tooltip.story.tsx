@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { select } from '@storybook/addon-knobs';
+import { select, text } from '@storybook/addon-knobs';
 import { RuiTooltip } from '../Tooltip';
 
 storiesOf('Tooltip', module).add('Tooltip', () => {
@@ -20,9 +20,10 @@ storiesOf('Tooltip', module).add('Tooltip', () => {
     },
     'bottom',
   );
+  const content = text('tooltip', 'I am arrow tip');
   return (
     <div>
-      <RuiTooltip open={true} title="I am arrow tip" placement={placement}>
+      <RuiTooltip open={true} title={content} placement={placement as any}>
         <button style={{ marginLeft: 120 }}>
           Arrow tool tip and some test
         </button>

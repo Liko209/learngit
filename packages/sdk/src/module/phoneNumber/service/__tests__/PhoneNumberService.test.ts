@@ -52,6 +52,15 @@ describe('PhoneNumberService', () => {
       expect(spy).toBeCalledWith('123');
     });
   });
+
+  describe('isShortNumber', () => {
+    it('should call controller to get number type', async () => {
+      const spy = jest.spyOn(phoneNumberController, 'isShortNumber');
+      await phoneNumberService.isShortNumber('123');
+      expect(spy).toBeCalledWith('123');
+    });
+  });
+
   describe('generateMatchedPhoneNumberList', () => {
     it('should call controller to get number list', async () => {
       const spy = jest.spyOn(
@@ -74,7 +83,9 @@ describe('PhoneNumberService', () => {
       const mockData = 'mockData' as any;
 
       await phoneNumberService['_handlePersonPayload'](mockData);
-      expect(phoneNumberController.handlePersonPayload).toBeCalledWith(mockData);
+      expect(phoneNumberController.handlePersonPayload).toBeCalledWith(
+        mockData,
+      );
     });
   });
 });

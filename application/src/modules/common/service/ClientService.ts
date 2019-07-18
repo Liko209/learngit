@@ -38,6 +38,7 @@ class ClientService implements IClientService {
       body.appendChild(appPortal);
     }
     if (!window.jupiterElectron) {
+      appPortal.setAttribute('src', urlScheme);
       return;
     }
     const isBound = await this._electronService.isURLSchemeBound(urlScheme);

@@ -83,6 +83,10 @@ describe('messageNotificationManager', () => {
       return { customEmoji: {} };
     },
   };
+  const settingItem = {value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}
+  function mockSettingItemValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
+    settingItem.value = value;
+  }
   beforeEach(() => {
     const userId = 123432;
     jest.clearAllMocks();
@@ -96,6 +100,8 @@ describe('messageNotificationManager', () => {
           return mockedGroupService;
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
+        case ServiceConfig.SETTING_SERVICE:
+          return { getById: () => (settingItem) }
         default:
           return { userConfig: { getGlipUserId: () => userId } };
       }
@@ -104,9 +110,6 @@ describe('messageNotificationManager', () => {
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      jest.spyOn(utils, 'getEntity').mockReturnValue({
-        value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
-      });
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
 
@@ -124,9 +127,7 @@ describe('messageNotificationManager', () => {
     });
     describe('when notification settings turned to off', () => {
       beforeEach(() => {
-        jest
-          .spyOn(utils, 'getEntity')
-          .mockReturnValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
+        mockSettingItemValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
       });
       it('should not show notification when post is from group', async () => {
         const result = await notificationManager.shouldEmitNotification(
@@ -305,8 +306,18 @@ describe('messageNotificationManager', () => {
 
     it(`should unescape for text lik "you'll get it"`, () => {
       expect(
-        notificationManager.handlePostContent({ text: `you'll get it` }),
+        notificationManager.handlePostContent({ text: `you'll get it` } as PostModel),
       ).toEqual(`you'll get it`);
+    });
+
+    it('should remove quote markup', () => {
+      expect(notificationManager.handlePostContent({ text: `> @Andy Hu wrote:
+> ddd
+> lll
+sfdasfasd` } as PostModel)).toEqual(` @Andy Hu wrote:
+ ddd
+ lll
+sfdasfasd`);
     });
   });
   describe('buildNotificationBodyAndTitle', () => {

@@ -9,16 +9,9 @@ import { DEFAULT_TRACK_ID } from '@/interface/media';
 
 describe('TrackManager', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      get() {
-        return () => {};
-      },
-    });
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
 
   afterEach(() => {

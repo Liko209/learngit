@@ -17,11 +17,11 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
-import { CompanyService } from '../../../../module/company';
-import { GROUP_QUERY_TYPE } from '../../../../service/constants';
+import { CompanyService } from 'sdk/module/company';
+import { GROUP_QUERY_TYPE } from 'sdk/service/constants';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
-import { TypeDictionary } from '../../../../utils';
+import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { PersonService } from '../../../person';
 import { Person } from '../../../person/entity';
 import { GroupDao } from '../../dao';
@@ -42,9 +42,9 @@ jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../module/account/config');
+jest.mock('sdk/module/account/config');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../../../module/company');
+jest.mock('sdk/module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
@@ -358,12 +358,12 @@ describe('GroupFetchDataController', () => {
       expect(result22).toEqual([{ id: 1, members: [1, 2, 3] }]);
     });
 
-    it('should return all groups if has show all group permission', async () => {
+    it('should return all groups if left rail max count in LD is -1', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 85; i++) {
         mock.push({ id: 1 });
       }
-      jest.spyOn(permissionService, 'hasPermission').mockResolvedValue(true);
+      jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(-1);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -381,13 +381,13 @@ describe('GroupFetchDataController', () => {
       expect(result3).toEqual(mock);
     });
 
-    it('should return limit groups if has not show all group permission', async () => {
+    it('should return limit groups if left rail max count is not -1 in LD', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 85; i++) {
         mock.push({ id: 1 });
       }
-      const spy = jest.spyOn(permissionService, 'hasPermission');
-      spy.mockResolvedValue(false);
+      const spy = jest.spyOn(permissionService, 'getFeatureFlag');
+      spy.mockReturnValueOnce(78);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -403,15 +403,15 @@ describe('GroupFetchDataController', () => {
         20,
       );
       expect(spy).toBeCalled();
-      expect(result3).toEqual(mock.slice(0, 80));
+      expect(result3).toEqual(mock.slice(0, 78));
     });
 
-    it('should not call has permission api if result count < 80', async () => {
+    it('should return all groups if result count < max count in LD', async () => {
       const mock: any[] = [];
       for (let i = 0; i < 20; i++) {
         mock.push({ id: 1 });
       }
-      const spy = jest.spyOn(permissionService, 'hasPermission');
+      jest.spyOn(permissionService, 'getFeatureFlag').mockReturnValueOnce(89);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,
         'filterGroups',
@@ -426,8 +426,7 @@ describe('GroupFetchDataController', () => {
         0,
         20,
       );
-      expect(spy).not.toBeCalled();
-      expect(result3).toEqual(mock.slice(0, 20));
+      expect(result3).toEqual(mock);
     });
   });
 
@@ -1010,7 +1009,7 @@ describe('GroupFetchDataController', () => {
       const res = await groupFetchDataController.getGroupEmail(group.id);
       expect(res).toBe(
         `${
-          group.email_friendly_abbreviation
+        group.email_friendly_abbreviation
         }@${companyReplyDomain}.${envDomain}`,
       );
     });
@@ -1281,6 +1280,63 @@ describe('GroupFetchDataController', () => {
       expect(res.visiblePersons.length).toBe(2);
       expect(res.invisiblePersons.length).toBe(1);
       expect(res.invisiblePersons[0]).toBe(3);
+    });
+  });
+
+  describe('getPersonIdsBySelectedItem', () => {
+    beforeEach(() => {
+      groupFetchDataController.getGroupsByIds = jest.fn();
+    });
+    it('should return empty array when ids have group id ', async () => {
+      const personIds = [1, 2];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      groupFetchDataController.getGroupsByIds = jest
+        .fn()
+        .mockReturnValue([{ members: [1, 2, 3] }, { members: [1, 2, 4] }]);
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem([
+        ...personIds,
+        3,
+        4,
+      ]);
+      expect(groupFetchDataController.getGroupsByIds).toBeCalled();
+      expect(result).toEqual([1, 2, 3, 4]);
+    });
+    it('should return empty array when ids have id is string ', async () => {
+      const personIds = [1, 2, '1'];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        personIds,
+      );
+      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(result).toEqual(personIds);
+    });
+    it('should return empty array when ids are all person id ', async () => {
+      const personIds = [1, 2];
+      GlipTypeUtil.isExpectedType = jest.fn().mockImplementation(id => {
+        return personIds.includes(id);
+      });
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        personIds,
+      );
+      expect(groupFetchDataController.getGroupsByIds).not.toBeCalled();
+      expect(result).toEqual(personIds);
+    });
+    it('should return empty array when has permission', async () => {
+      permissionService.hasPermission = jest.fn().mockReturnValue(false)
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        [1, 2],
+      );
+      expect(result).toEqual([1, 2]);
+    });
+    it('should return empty array when ids.length is 0', async () => {
+      const result = await groupFetchDataController.getPersonIdsBySelectedItem(
+        [],
+      );
+      expect(result).toEqual([]);
     });
   });
 });

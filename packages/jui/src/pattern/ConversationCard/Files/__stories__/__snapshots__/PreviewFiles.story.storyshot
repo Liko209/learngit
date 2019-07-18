@@ -393,9 +393,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 <div>
   <div>
+    
     <img
       className="c0"
-      onClick={[Function]}
       onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
@@ -405,9 +405,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         }
       }
     />
+    
     <img
       className="c0"
-      onClick={[Function]}
       onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
@@ -417,9 +417,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         }
       }
     />
+    
     <img
       className="c0"
-      onClick={[Function]}
       onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
@@ -1285,9 +1285,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
+            
             <img
               className="c0"
-              onClick={[Function]}
               onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
@@ -1435,9 +1435,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
+            
             <img
               className="c0"
-              onClick={[Function]}
               onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
@@ -1585,9 +1585,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
+            
             <img
               className="c0"
-              onClick={[Function]}
               onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
@@ -1735,9 +1735,9 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
+            
             <img
               className="c0"
-              onClick={[Function]}
               onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"

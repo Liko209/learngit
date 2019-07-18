@@ -15,6 +15,7 @@ import { Profile } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 
 class ProfileController {
   private profileActionController: ProfileActionController;
@@ -25,6 +26,7 @@ class ProfileController {
 
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
+    public entityCacheController: IEntityCacheController<Profile>,
   ) {}
 
   private get requestController(): IRequestController<Profile> {
@@ -61,6 +63,7 @@ class ProfileController {
     if (!this.profileDataController) {
       this.profileDataController = new ProfileDataController(
         this.entitySourceController,
+        this.entityCacheController,
       );
     }
     return this.profileDataController;

@@ -528,6 +528,26 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.title.textContent).eql(title);
   }
 
+  get attachFileIcon() {
+		return this.getSelectorByAutomationId('conversation-chatbar-attachment-button');
+	}
+
+	get attachFileFromComputer() {
+		return this.getSelectorByAutomationId('chatbar-attchment-selectfile');
+	}
+
+	async hoverAttachFileIcon() {
+		await this.t.hover(this.attachFileIcon);
+	}
+
+	async hoverAttachFileFromComputer() {
+		await this.t.hover(this.attachFileFromComputer);
+	}
+
+	async clickAttachFileIcon() {
+		await this.t.click(this.attachFileIcon);
+	}
+
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
   }
@@ -826,6 +846,22 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByIcon('bookmark_border', this.self);
   }
 
+  get getPinButtonByClass() {
+		return this.getSelector('.icon.unpin');
+	}
+
+	get getUnpinButtonByClass() {
+		return this.getSelector('.icon.pin');
+	}
+
+	async clickPinButtonByClass() {
+		await this.t.hover(this.self).click(this.getPinButtonByClass);
+	}
+
+	async hoverPinButtonByClass() {
+		await this.t.hover(this.self).hover(this.getPinButtonByClass);
+	}
+
   get pinToggle() {
     return this.self.find('button').withAttribute('data-name', 'actionBarPin');
   }
@@ -864,6 +900,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
+	async hoverMoreItemOnActionBar() {
+		await this.t.hover(this.self).hover(this.moreMenu);
+	}
+
   async clickMoreItemOnActionBar() {
     await this.t.hover(this.self).click(this.moreMenu);
   }
@@ -890,6 +930,10 @@ export class PostItem extends BaseWebComponent {
       assert.strictEqual(n, likes, `Like Number error: expect ${n}, but actual ${likes}`);
     }, maxRetry, interval);
   }
+
+	async hoverBookmarkToggle() {
+		await this.t.hover(this.self).hover(this.bookmarkToggle);
+	}
 
   async clickBookmarkToggle() {
     await this.t.hover(this.self).click(this.bookmarkToggle);
@@ -1152,7 +1196,7 @@ class AudioConference extends BaseWebComponent {
 
   // only host can see
   get hostAccess() {
-    return this.self.find('div').withText('Host Access');
+    return this.self.find('div').withText('Host Access'); // todo i18n
   }
 
   // only host can see
@@ -1161,7 +1205,7 @@ class AudioConference extends BaseWebComponent {
   }
 
   get participantAccess() {
-    return this.self.find('div').withText('Participant Access');
+    return this.self.find('div').withText('Participant Access'); // todo i18n
   }
 
   get participantCode() {

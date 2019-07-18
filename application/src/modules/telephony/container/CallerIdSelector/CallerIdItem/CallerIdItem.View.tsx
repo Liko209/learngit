@@ -14,6 +14,7 @@ import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 
 const style = {
   minWidth: 180,
+  maxWidth: 288,
 };
 
 @observer
