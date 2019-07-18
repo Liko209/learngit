@@ -39,13 +39,14 @@ fixture('Phone/VoicemailFromGuest')
   });
 
   const telephoneDialog = app.homePage.telephonyDialog;
+  const voicemailItemFromGuest = voicemailPage.voicemailItemByNth(0);
+
   if (await telephoneDialog.exists) {
     await telephoneDialog.clickMinimizeButton()
   };
 
   await addOneVoicemailFromGuest(t, caller, callee, app);
 
-  const voicemailItemFromGuest = voicemailPage.voicemailItemByNth(0);
 
   await h(t).withLog('When I open voicemail Menu and click "Block number" button', async () => {
     await voicemailItemFromGuest.hoverSelf();

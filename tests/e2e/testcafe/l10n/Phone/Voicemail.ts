@@ -14,7 +14,7 @@ fixture('Phone/Voicemail')
 
  test(formalName('Check the Voicemail page', ['P2', 'Phone', 'Voicemail', 'V1.6', 'Hank.Huang']), async (t) => {
   const callee = h(t).rcData.mainCompany.users[4];
-  const caller = h(t).rcData.mainCompany.users[4];
+  const caller = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
   await h(t).withLog(`Given I login Jupiter with ${callee.company.number}#${callee.extension}`, async (step) => {
