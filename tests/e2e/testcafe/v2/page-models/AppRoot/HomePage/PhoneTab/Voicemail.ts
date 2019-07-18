@@ -72,12 +72,36 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('audio-pause-btn', this.self);
   }
 
+  get voicemailFilter() {
+    return this.getSelectorByAutomationId('phoneFilter');
+  }
+
+  get voicemailFilterInput() {
+    return this.getSelectorByAutomationId('phoneFilter').find('input');
+  }
+
   async clickPlayButton() {
     return this.t.click(this.playButton);
   }
 
+  async hoverPlayButton() {
+    return this.t.hover(this.playButton);
+  }
+
   async clickPauseButton() {
     return this.t.click(this.pauseButton);
+  }
+
+  async hoverPauseButton() {
+    return this.t.hover(this.pauseButton);
+  }
+
+  async clickVoicemailFilter() {
+    await this.t.click(this.voicemailFilter);
+  }
+
+  async setVoicemailFilter(message: string) {
+    await this.clickAndTypeText(this.voicemailFilterInput, message, {replace: true});
   }
 
   get endTimeSpan() {
@@ -167,9 +191,12 @@ class VoicemailItem extends BaseWebComponent {
     return this.getSelectorByIcon('unblocked', this.blockToggle).parent('li');
   }
 
-
   async clickBlockButton() {
     return this.t.click(this.blockButton);
+  }
+
+  async hoverBlockButton() {
+    return this.t.hover(this.blockButton);
   }
 
   async clickUnblockButton() {
