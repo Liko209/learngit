@@ -6,7 +6,7 @@ import MuiDialogActions, {
 import { spacing } from '../../foundation/utils/styles';
 
 const nestedProp = {
-  disableActionSpacing: true,
+  disableSpacing: true,
 };
 
 const JuiDialogActions = styled(
