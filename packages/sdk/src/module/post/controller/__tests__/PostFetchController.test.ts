@@ -504,19 +504,21 @@ describe('PostFetchController()', () => {
     });
 
     it('should not change the default HAS_MORE value', async ()=>{
-        jest.spyOn(postFetchController, '_getPostsFromDb').mockResolvedValue({
-          limit: 20,
-          posts:[],
-          items:[],
-          hasMore: getMockHasMore({})
-        });
-        groupService.hasMorePostInRemote.mockReturnValueOnce(getMockHasMore({older: false}));
+      const mockData = {
+        limit: 20,
+        posts:[],
+        items:[],
+        hasMore: getMockHasMore({})
+      };
+        jest.spyOn(postFetchController, '_getPostsFromDb').mockResolvedValueOnce(_.cloneDeep(mockData));
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(getMockHasMore({older: false}));
         let result = await postFetchController.getPostsByGroupId({
           groupId: 1,
         });
         expect(result.hasMore).toEqual(getMockHasMore({older: false}));
 
-        groupService.hasMorePostInRemote.mockReturnValueOnce(getMockHasMore({newer: false}));
+        jest.spyOn(postFetchController, '_getPostsFromDb').mockResolvedValueOnce(_.cloneDeep(mockData));
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(getMockHasMore({newer: false}));
         result = await postFetchController.getPostsByGroupId({
           groupId: 1,
           direction: QUERY_DIRECTION.NEWER
