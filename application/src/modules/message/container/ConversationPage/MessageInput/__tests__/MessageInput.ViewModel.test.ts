@@ -15,7 +15,6 @@ import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
-import { sleep } from '../../../../../../../../packages/foundation/src';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -23,6 +22,7 @@ jest.mock('sdk/api');
 jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
 jest.mock('sdk/module/group');
+jest.mock('lodash/debounce', () => jest.fn(fn => fn));
 
 const postService = new PostService();
 const userId = 1232222;
@@ -91,13 +91,11 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel.contentChange('xx');
         expect(groupService.sendTypingEvent).toHaveBeenCalledWith(123, false);
       });
-      it('should call forceSaveDraft 1 second after being called', async () => {
+      it('should call forceSaveDraft 1 second after being called', () => {
         messageInputViewModel.forceSaveDraft = jest.fn();
         jest.spyOn(messageInputViewModel, '_handleDraftSave');
         messageInputViewModel.contentChange('123');
         expect(messageInputViewModel._handleDraftSave).toHaveBeenCalled();
-        expect(messageInputViewModel.forceSaveDraft).not.toHaveBeenCalled();
-        await sleep(1000);
         expect(messageInputViewModel.forceSaveDraft).toHaveBeenCalled();
       });
     });
