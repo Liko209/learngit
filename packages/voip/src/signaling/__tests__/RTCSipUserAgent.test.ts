@@ -7,7 +7,7 @@ import { RTCSipUserAgent } from '../RTCSipUserAgent';
 import { ProvisionDataOptions, UA_EVENT } from '../../signaling/types';
 import { RTCCallOptions } from '../../api/types';
 import { EventEmitter2 } from 'eventemitter2';
-import { opusModifier } from './../../utils/utils';
+import { opusModifier } from '../../utils/utils';
 
 class MockUserAgent extends EventEmitter2 {
   public transport: any;
@@ -26,7 +26,7 @@ class MockUserAgent extends EventEmitter2 {
       modifiers = mockOptions.modifiers;
     }
     this.configuration = {
-      sessionDescriptionHandlerFactoryOptions: { modifiers },
+      sessionDescriptionHandlerFactoryOptions: { modifiers }
     };
   }
   invite = jest.fn();
@@ -61,7 +61,7 @@ jest.mock('ringcentral-web-phone', () => {
   return {
     default: (provisionData: any, mockOptions: any) => {
       return new MockWebPhone(provisionData, mockOptions);
-    },
+    }
   };
 });
 
@@ -75,7 +75,7 @@ describe('RTCSipUserAgent', () => {
     userAgent._createWebPhone(provisionData, options);
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.emit('registered');
-    expect(eventReceiver.registerSuccess).toBeCalled();
+    expect(eventReceiver.registerSuccess).toHaveBeenCalled();
   });
 
   it('should emit registerFailed event with cause and response when webphone tells register is failed. [JPT-600]', () => {
@@ -85,9 +85,12 @@ describe('RTCSipUserAgent', () => {
     userAgent._webphone.userAgent.emit(
       'registrationFailed',
       { data: '500' },
-      500,
+      500
     );
-    expect(eventReceiver.registerFailed).toBeCalledWith({ data: '500' }, 500);
+    expect(eventReceiver.registerFailed).toHaveBeenCalledWith(
+      { data: '500' },
+      500
+    );
   });
 
   it('should emit switchBackProxy when webphone notify switchBackProxy in [1, 3] min. [JPT-2305]', () => {
@@ -97,7 +100,7 @@ describe('RTCSipUserAgent', () => {
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.transport.emit('switchBackProxy');
     jest.advanceTimersByTime(3 * 60 * 1000);
-    expect(eventReceiver.switchBackProxy).toBeCalled();
+    expect(eventReceiver.switchBackProxy).toHaveBeenCalled();
   });
 
   describe('reRegister()', () => {
@@ -111,7 +114,7 @@ describe('RTCSipUserAgent', () => {
   });
 
   describe('makeCall', () => {
-    let userAgent = null;
+    let userAgent: any = null;
     function setupMakeCall() {
       userAgent = new RTCSipUserAgent();
       userAgent._createWebPhone(provisionData, options);
@@ -124,7 +127,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { homeCountryId: '1' },
+        { homeCountryId: '1' }
       );
     });
 
@@ -134,7 +137,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { homeCountryId: '100' },
+        { homeCountryId: '100' }
       );
     });
 
@@ -144,7 +147,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { fromNumber: '100', homeCountryId: '1' },
+        { fromNumber: '100', homeCountryId: '1' }
       );
     });
 
@@ -153,8 +156,8 @@ describe('RTCSipUserAgent', () => {
       userAgent._createWebPhone(provisionData, options);
       expect(
         userAgent._webphone.userAgent.configuration.sessionDescriptionHandlerFactoryOptions.modifiers.find(
-          opusModifier,
-        ),
+          opusModifier
+        )
       ).not.toBeNull();
     });
 
@@ -168,7 +171,7 @@ describe('RTCSipUserAgent', () => {
           if (element == opusModifier) {
             count++;
           }
-        },
+        }
       );
       expect(count).toBe(1);
     });
@@ -185,6 +188,67 @@ describe('RTCSipUserAgent', () => {
       options.enableMidLinesInSDP = false;
       userAgent._createWebPhone(provisionData, options);
       expect(userAgent._webphone.Options.enableMidLinesInSDP).toBe(false);
+    });
+
+    describe('should Call webphone invite API without replace header if callId or fromTag or toTag is empty when make call [JPT-2505]', () => {
+      it('should Call webphone invite API without replace header if callId is empty when make call', () => {
+        setupMakeCall();
+        const options: RTCCallOptions = {
+          toTag: '100',
+          fromTag: '200'
+        };
+        userAgent.makeCall(phoneNumber, options);
+        expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+          phoneNumber,
+          { homeCountryId: '1' }
+        );
+      });
+
+      it('should Call webphone invite API without replace header if toTag is empty when make call', () => {
+        setupMakeCall();
+        const options: RTCCallOptions = {
+          callId: '100',
+          toTag: '200'
+        };
+        userAgent.makeCall(phoneNumber, options);
+        expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+          phoneNumber,
+          { homeCountryId: '1' }
+        );
+      });
+
+      it('should Call webphone invite API without replace header if fromTag is empty when make call', () => {
+        setupMakeCall();
+        const options: RTCCallOptions = {
+          fromTag: '100',
+          callId: '200'
+        };
+        userAgent.makeCall(phoneNumber, options);
+        expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+          phoneNumber,
+          { homeCountryId: '1' }
+        );
+      });
+    });
+
+    it('should Call webphone invite API with replace header if callId, toTag and fromTag is exist when make call [JPT-2506]', () => {
+      setupMakeCall();
+      const options: RTCCallOptions = {
+        fromTag: '300',
+        toTag: '100',
+        callId: '200'
+      };
+      userAgent.makeCall(phoneNumber, options);
+      expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
+        phoneNumber,
+        {
+          extraHeaders: [
+            'Replaces: 200;to-tag=300;from-tag=100',
+            'RC-call-type: replace'
+          ],
+          homeCountryId: '1'
+        }
+      );
     });
   });
 });
