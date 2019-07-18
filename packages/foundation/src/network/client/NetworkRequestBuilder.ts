@@ -9,7 +9,6 @@ import SocketRequest from './socket/SocketRequest';
 import { generateUUID, generateIncrementId } from '../util';
 import { config } from '../../config';
 import NetworkManager from '../NetworkManager';
-import BaseRequest from '../BaseRequest';
 import {
   IHandleType,
   REQUEST_PRIORITY,
@@ -39,6 +38,7 @@ class NetworkRequestBuilder implements IRequest {
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
   startTime: number = Date.now();
+  channel: string = '';
 
   options(options: IRequest) {
     const {
@@ -52,6 +52,7 @@ class NetworkRequestBuilder implements IRequest {
       authFree,
       requestConfig,
       HAPriority,
+      channel,
     } = options;
 
     this.headers = headers || {};
@@ -64,6 +65,7 @@ class NetworkRequestBuilder implements IRequest {
     this.data = data || {};
     this.requestConfig = requestConfig || {};
     this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
+    this.channel = channel || '';
     return this;
   }
 
@@ -200,12 +202,21 @@ class NetworkRequestBuilder implements IRequest {
     return this;
   }
 
+  /**
+   * Setter channel
+   * @param {string} value
+   */
+  public setChannel(value: string) {
+    this.channel = value;
+    return this;
+  }
+
   public setNetworkManager(networkManager: NetworkManager) {
     this.networkManager = networkManager;
     return this;
   }
 
-  build(requestVia?: NETWORK_VIA): BaseRequest {
+  build(requestVia?: NETWORK_VIA): IRequest {
     const via = requestVia === undefined ? this.via : requestVia;
     switch (via) {
       case NETWORK_VIA.SOCKET:

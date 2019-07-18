@@ -350,6 +350,14 @@ export class BaseConversationPage extends BaseWebComponent {
     return this.t.click(this.moreButtonOnHeader);
   }
 
+  get memberButton() {
+    return this.getSelectorByAutomationId('memberButton');
+  }
+
+  async clickMemberButton() {
+    return this.t.click(this.memberButton);
+  }
+
   get headerMoreMenu() {
     return this.getComponent(HeaderMoreMenu);
   }
@@ -413,12 +421,21 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.child().find('.ql-editor');
   }
 
+  get messageInputTips() {
+    this.warnFlakySelector();
+    return this.self.find('div').find('div').find('div');
+  }
+
   get markupTips() {
     return this.getSelectorByAutomationId('markupTips');
   }
 
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
+  }
+
+  async existBlankLine(index: number) {
+    await this.t.expect(this.messageInputArea.child('p').nth(index).child('br').exists).ok();
   }
 
   async elementShouldBeOnTheTop(sel: Selector) {
@@ -448,6 +465,16 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
+  }
+
+  async clearMessageInputField() {
+    await this.t.click(this.messageInputArea).selectText(this.messageInputArea).pressKey('delete');
+  }
+
+  async upArrowToEditLastMsg() {
+    await this.t
+      .click(this.messageInputArea)
+      .pressKey('up')
   }
 
   async typeAtSymbol() {
@@ -613,6 +640,10 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 
+  get emptyPage() {
+    return this.getSelectorByAutomationId('mentionsEmptyPage', this.self)
+  }
+
   get scrollDiv() {
     return this.stream.parent('div');
   }
@@ -626,6 +657,10 @@ export class MentionPage extends BaseConversationPage {
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  get emptyPage() {
+    return this.getSelectorByAutomationId('bookmarksEmptyPage', this.self)
   }
 
   get scrollDiv() {
@@ -682,6 +717,10 @@ export class PostItem extends BaseWebComponent {
   get img() {
     this.warnFlakySelector(); // todo: all specify item...
     return this.body.find('img');
+  }
+
+  get fileThumbnail() {
+    return this.getSelectorByAutomationId('fileCardMedia', this.self);
   }
 
   get editTextArea() {
@@ -997,6 +1036,11 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('conversation-item-cards-title');
   }
 
+  get footer() {
+    return this.self.find('footer');
+  }
+
+  /** event */
   get eventLocation() {
     return this.getSelectorByAutomationIdUnderSelf('event-location');
   }
@@ -1009,8 +1053,12 @@ class ConversationCardItem extends BaseWebComponent {
     return this.getSelectorByAutomationIdUnderSelf('event-description');
   }
 
-  get eventShowOld() {
+  get eventShowOrHideOld() {
     return this.getSelectorByAutomationIdUnderSelf('event-show-old');
+  }
+
+  get eventOldDue() {
+    return this.getSelectorByAutomationIdUnderSelf('event-old-time');
   }
 
   get eventOldLocation() {

@@ -72,42 +72,42 @@ const WrappedMuiCheckboxButton = ({
   />
 );
 const StyledCheckboxButton = styled<
-  CheckboxButtonProps & {
-    colorScope: keyof Palette;
-    colorName: string;
-  }
+CheckboxButtonProps & {
+  colorScope: keyof Palette;
+  colorName: string;
+}
 >(WrappedMuiCheckboxButton)`
   && {
     padding: 0;
-    width: ${({ size = 'medium', theme }) =>
-      width(iconSizes[size] * 2)({ theme })};
-    height: ${({ size = 'medium', theme }) =>
-      width(iconSizes[size] * 2)({ theme })};
+    width: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
+    height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
-    color: ${({ colorScope, colorName, theme, checked }) =>
-      checked ? palette(colorScope, colorName)({ theme }) : 'grey'};
-    font-size: ${({ size = 'medium', theme }) =>
-      width(iconSizes[size])({ theme })};
+    color: ${({
+    colorScope, colorName, theme, checked,
+  }) => (checked ? palette(colorScope, colorName)({ theme }) : 'grey')};
+    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
     &:hover {
-      background-color: ${({ theme, checked, colorScope, colorName }) =>
-        checked
-          ? tinycolor(palette(colorScope, colorName)({ theme }))
-              .setAlpha(theme.palette.action.hoverOpacity)
-              .toRgbString()
-          : tinycolor(grey('500')({ theme }))
-              .setAlpha(theme.palette.action.hoverOpacity)
-              .toRgbString()};
+      background-color: ${({
+    theme, checked, colorScope, colorName,
+  }) => (checked
+    ? tinycolor(palette(colorScope, colorName)({ theme }))
+      .setAlpha(theme.palette.action.hoverOpacity)
+      .toRgbString()
+    : tinycolor(grey('500')({ theme }))
+      .setAlpha(theme.palette.action.hoverOpacity)
+      .toRgbString())};
     }
     &:active {
-      color: ${({ theme, colorScope, colorName, checked }) =>
-        checked
-          ? palette(colorScope, colorName)({ theme })
-          : grey('500')({ theme })};
+      color: ${({
+    theme, colorScope, colorName, checked,
+  }) => (checked
+    ? palette(colorScope, colorName)({ theme })
+    : grey('500')({ theme }))};
     }
 
     &.disabled {
       ${StyledIcon} {
-        color: ${({ theme }) => palette('action', 'disabledBackground')};
+        color: ${() => palette('action', 'disabledBackground')};
       }
     }
 
@@ -126,10 +126,8 @@ const StyledCheckboxButton = styled<
 // Tooltip does not work on disabled CheckboxButton without this: https://github.com/mui-org/material-ui/issues/8416
 const WrapperForTooltip = styled('div')<{ size: CheckboxButtonProps['size'] }>`
   display: inline-block;
-  width: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size] * 2)({ theme })};
-  height: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size] * 2)({ theme })};
+  width: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
+  height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
   font-size: 0;
 `;
 

@@ -13,7 +13,7 @@ import {
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
 } from 'voip';
-import { TelephonyCallController } from '../controller/TelephonyCallController';
+import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
 import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
 import { telephonyLogger } from 'foundation';
@@ -34,13 +34,13 @@ import { EVENT_TYPES } from 'sdk/service';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
-  private _telephonyCallDelegate: TelephonyCallController;
   private _rtcAccount: RTCAccount;
   private _makeCallController: MakeCallController;
   private _isDisposing: boolean = false;
   private _logoutCallback: LogoutCallback;
   private _entityCacheController: IEntityCacheController<Call>;
   private _accountState: RTC_ACCOUNT_STATE;
+  private _callControllerList: Map<number, TelephonyCallController> = new Map();
 
   constructor(rtcEngine: RTCEngine) {
     this._rtcAccount = rtcEngine.createAccount(this);
@@ -57,11 +57,11 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       call.forEach((item: Call) => {
         if (item.call_state === CALL_STATE.DISCONNECTED) {
           this._processLogoutIfNeeded();
-          delete this._telephonyCallDelegate;
+          this._removeControllerFromList(item.id);
         }
       });
     }
-  }
+  };
 
   private _subscribeNotifications() {
     notificationCenter.on(ENTITY.CALL, this._handleCallStateChanged);
@@ -82,7 +82,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _checkVoipStatus(): MAKE_CALL_ERROR_CODE {
     let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const sipProvFlag = this._rtcAccount.getSipProvFlags();
-
+    /* eslint-disable */
     do {
       if (!sipProvFlag) {
         res = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
@@ -116,6 +116,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
+  getVoipState() {
+    return this._rtcAccount.state();
+  }
+
   setLastCalledNumber(num: string) {
     const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,
@@ -123,7 +127,18 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     telephonyConfig.setLastCalledNumber(num);
   }
 
-  async makeCall(toNumber: string, fromNum: string) {
+  private _addControllerToList(
+    callId: number,
+    controller: TelephonyCallController,
+  ) {
+    this._callControllerList.set(callId, controller);
+  }
+
+  private _removeControllerFromList(callId: number) {
+    this._callControllerList.delete(callId);
+  }
+
+  async makeCall(toNumber: string, fromNum?: string) {
     const phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
       ServiceConfig.PHONE_NUMBER_SERVICE,
     );
@@ -140,6 +155,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this.setLastCalledNumber(toNumber);
 
     let result: MAKE_CALL_ERROR_CODE = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    /* eslint-disable no-await-in-loop */
     do {
       result = this._checkVoipStatus();
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -150,16 +166,12 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-
       result = await this._makeCallController.tryMakeCall(e164ToNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
 
-      if (this._telephonyCallDelegate) {
-        return MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
-      }
-      this._telephonyCallDelegate = new TelephonyCallController(
+      const callController: TelephonyCallController = new TelephonyCallController(
         Date.now(),
         this._entityCacheController,
       );
@@ -173,30 +185,24 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         telephonyLogger.debug(
           `Place a call voip toNum: ${e164ToNumber} fromNum: ${e164FromNum}`,
         );
-        call = this._rtcAccount.makeCall(
-          e164ToNumber,
-          this._telephonyCallDelegate,
-          { fromNumber: e164FromNum },
-        );
+        call = this._rtcAccount.makeCall(e164ToNumber, callController, {
+          fromNumber: e164FromNum,
+        });
       } else {
         telephonyLogger.debug(`Place a call to voip toNum: ${e164ToNumber}`);
-        call = this._rtcAccount.makeCall(
-          e164ToNumber,
-          this._telephonyCallDelegate,
-        );
+        call = this._rtcAccount.makeCall(e164ToNumber, callController);
       }
 
       if (!call) {
         result = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
-        this._telephonyCallDelegate && delete this._telephonyCallDelegate;
         break;
       }
 
-      this._telephonyCallDelegate.setRtcCall(call);
+      this._setCall(callController, call);
 
       if (this._telephonyAccountDelegate) {
         this._telephonyAccountDelegate.onMadeOutgoingCall(
-          this._telephonyCallDelegate.getEntityId(),
+          callController.getEntityId(),
         );
       } else {
         telephonyLogger.warn(
@@ -208,100 +214,103 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return result;
   }
 
-  hangUp(callId: string) {
-    // So far only need to support one call. By design, we should get call controller according callID.
-    this._telephonyCallDelegate && this._telephonyCallDelegate.hangUp();
+  private _getCallControllerById(callId: number) {
+    const callController = this._callControllerList.get(callId);
+    if (callController) {
+      return callController;
+    }
+    telephonyLogger.warn(`No call controller found for call: ${callId}`);
+    return null;
   }
 
-  mute(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.mute();
+  hangUp(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.hangUp();
   }
 
-  unmute(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.unmute();
+  mute(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.mute();
   }
 
-  async hold(callId: string) {
-    return (
-      this._telephonyCallDelegate && (await this._telephonyCallDelegate.hold())
-    );
+  unmute(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.unmute();
   }
 
-  async unhold(callId: string) {
-    return (
-      this._telephonyCallDelegate &&
-      (await this._telephonyCallDelegate.unhold())
-    );
+  async hold(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.hold());
   }
 
-  async startRecord(callId: string) {
-    return (
-      this._telephonyCallDelegate &&
-      (await this._telephonyCallDelegate.startRecord())
-    );
+  async unhold(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.unhold());
   }
 
-  async stopRecord(callId: string) {
-    return (
-      this._telephonyCallDelegate &&
-      (await this._telephonyCallDelegate.stopRecord())
-    );
+  async startRecord(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.startRecord());
   }
 
-  dtmf(callId: string, digits: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.dtmf(digits);
+  async stopRecord(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.stopRecord());
   }
 
-  answer(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.answer();
+  dtmf(callId: number, digits: string) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.dtmf(digits);
   }
 
-  sendToVoiceMail(callId: string) {
-    this._telephonyCallDelegate &&
-      this._telephonyCallDelegate.sendToVoiceMail();
+  answer(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.answer();
   }
 
-  async park(callId: string) {
-    return (
-      this._telephonyCallDelegate && (await this._telephonyCallDelegate.park())
-    );
+  sendToVoiceMail(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.sendToVoiceMail();
   }
 
-  async flip(callId: string, flipNumber: number) {
-    return (
-      this._telephonyCallDelegate &&
-      (await this._telephonyCallDelegate.flip(flipNumber))
-    );
+  async park(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.park());
   }
 
-  async forward(callId: string, phoneNumber: string) {
-    return (
-      this._telephonyCallDelegate &&
-      (await this._telephonyCallDelegate.forward(phoneNumber))
-    );
+  async flip(callId: number, flipNumber: number) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.flip(flipNumber));
   }
 
-  ignore(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.ignore();
+  async forward(callId: number, phoneNumber: string) {
+    const callController = this._getCallControllerById(callId);
+    return callController && (await callController.forward(phoneNumber));
   }
 
-  startReply(callId: string) {
-    this._telephonyCallDelegate && this._telephonyCallDelegate.startReply();
+  ignore(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.ignore();
   }
 
-  replyWithMessage(callId: string, message: string) {
-    this._telephonyCallDelegate &&
-      this._telephonyCallDelegate.replyWithMessage(message);
+  startReply(callId: number) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.startReply();
+  }
+
+  replyWithMessage(callId: number, message: string) {
+    const callController = this._getCallControllerById(callId);
+    callController && callController.replyWithMessage(message);
   }
 
   replyWithPattern(
-    callId: string,
+    callId: number,
     pattern: RTC_REPLY_MSG_PATTERN,
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) {
-    this._telephonyCallDelegate &&
-      this._telephonyCallDelegate.replyWithPattern(pattern, time, timeUnit);
+    const callController = this._getCallControllerById(callId);
+    callController && callController.replyWithPattern(pattern, time, timeUnit);
   }
 
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -332,6 +341,12 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return showCall;
   }
 
+  private _setCall(callController: TelephonyCallController, call: RTCCall) {
+    callController.setRtcCall(call);
+    call.setCallDelegate(callController);
+    this._addControllerToList(callController.getEntityId(), callController);
+  }
+
   async onReceiveIncomingCall(call: RTCCall) {
     const showCall = await this._shouldShowIncomingCall();
     if (!showCall) {
@@ -341,16 +356,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return;
     }
-    this._telephonyCallDelegate = new TelephonyCallController(
+    const callController = new TelephonyCallController(
       Date.now(),
       this._entityCacheController,
     );
-    this._telephonyCallDelegate.setRtcCall(call);
 
-    call.setCallDelegate(this._telephonyCallDelegate);
+    this._setCall(callController, call);
+
     if (this._telephonyAccountDelegate) {
       this._telephonyAccountDelegate.onReceiveIncomingCall(
-        this._telephonyCallDelegate.getEntityId(),
+        callController.getEntityId(),
       );
     } else {
       telephonyLogger.warn(

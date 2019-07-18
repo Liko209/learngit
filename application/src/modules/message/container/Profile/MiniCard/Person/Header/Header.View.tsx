@@ -23,7 +23,7 @@ import { Favorite } from '@/containers/common';
 @observer
 class ProfileMiniCardPersonHeaderView extends Component<
   ProfileMiniCardPersonHeaderViewProps
-> {
+  > {
   render() {
     const { id, person } = this.props;
     const { userDisplayName, awayStatus, jobTitle } = person;

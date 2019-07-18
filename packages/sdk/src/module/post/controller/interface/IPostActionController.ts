@@ -5,6 +5,7 @@
  */
 import { Post } from '../../entity/Post';
 import { EditPostType } from '../../types';
+
 interface IPostActionController {
   likePost(
     postId: number,

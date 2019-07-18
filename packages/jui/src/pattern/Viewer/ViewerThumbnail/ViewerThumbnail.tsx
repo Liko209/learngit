@@ -54,6 +54,7 @@ const ViewerThumbnailContentWrap = styled.div`
     border-radius: ${({ theme }) => theme.radius.xl};
     min-height: ${viewerThumbnailMaxWidth /
       defaultThumbnailProportion['16/9']}px;
+    box-sizing: border-box;
   }
 `;
 
@@ -73,18 +74,17 @@ const ViewerThumbnailWrap = styled.div`
     max-width: ${viewerThumbnailMaxWidth}px;
     cursor: pointer;
     margin-bottom: ${spacing(2)};
+    outline: none;
 
     &&:hover {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) =>
-          fade(palette('primary', '600')({ theme }), theme.opacity['1'])};
+        background-color: ${({ theme }) => fade(palette('primary', '600')({ theme }), theme.opacity['1'])};
       }
     }
 
     &&:active {
       && ${ViewerThumbnailContentWrap} {
-        background-color: ${({ theme }) =>
-          fade(palette('primary', '600')({ theme }), theme.opacity['2'])};
+        background-color: ${({ theme }) => fade(palette('primary', '600')({ theme }), theme.opacity['2'])};
       }
     }
 
@@ -168,7 +168,11 @@ class JuiViewerThumbnail extends React.PureComponent<Props, States> {
       >
         <ViewerThumbnailContentWrap>{content}</ViewerThumbnailContentWrap>
         {showThumbnailNumber && (
-          <ThumbnailNumberWarp>{thumbnailNum}</ThumbnailNumberWarp>
+          <ThumbnailNumberWarp
+            data-test-automation-id={'viewerThumbnailNumber'}
+          >
+            {thumbnailNum}
+          </ThumbnailNumberWarp>
         )}
       </ViewerThumbnailWrap>
     );

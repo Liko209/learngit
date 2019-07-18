@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { ComponentType } from 'react';
+import React, { ReactNode } from 'react';
 import styled from '../../../foundation/styled-components';
 import { grey, typography } from '../../../foundation/utils/styles';
 import { JuiFade } from '../../../components/Animation';
@@ -12,14 +12,17 @@ import { JuiText } from '../../../components/Text';
 
 type InputFooterItemProps = {
   show: boolean;
-  content: ComponentType | string;
+  content: ReactNode | string;
   align: 'left' | 'right' | 'center';
 };
 
-const InputFooterItemWrapper = styled(JuiFade)<{
+type FadeProps = {
   align: InputFooterItemProps['align'];
-}>`
-  width: 100%;
+}
+const InputFooterItemWrapper = styled(JuiFade)<FadeProps>`
+  position: absolute;
+  left: 0;
+  right: 0;
   text-align: ${({ align }) => align};
 `;
 
@@ -39,8 +42,8 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
     this.setState({
       exited: true,
     });
-  }
-
+  };
+  /* eslint-disable react/no-did-update-set-state */
   componentDidUpdate({ show }: InputFooterItemProps) {
     if (!show && this.props.show) {
       this.setState({
@@ -50,7 +53,9 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
   }
 
   render() {
-    const { show, align, content, ...rest } = this.props;
+    const {
+      show, align, content, ...rest
+    } = this.props;
     const { exited } = this.state;
     return (
       !exited && (
@@ -59,7 +64,7 @@ class JuiInputFooterItem extends React.PureComponent<InputFooterItemProps> {
           show={show}
           duration="standard"
           easing="sharp"
-          appear={true}
+          appear
           onExited={this.onExited}
           {...rest}
         >

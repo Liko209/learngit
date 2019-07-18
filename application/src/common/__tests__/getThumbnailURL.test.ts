@@ -8,6 +8,7 @@ import {
   getThumbnailURL,
   getMaxThumbnailURLInfo,
   getThumbnailURLWithType,
+  getLargeRawImageURL,
   ImageInfo,
   IMAGE_TYPE,
   SQUARE_SIZE,
@@ -349,5 +350,62 @@ describe('getThumbnailURLWithType', () => {
     const result = await getThumbnailURLWithType(model, rule);
     expect(result.url).toEqual(modifyURL);
     expect(result.type).toEqual(IMAGE_TYPE.ORIGINAL_IMAGE);
+  });
+});
+
+describe.only('getLargeRawImageURL', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should get empty url when file item has no versions', () => {
+    const model = {
+      id: 1,
+      type: '',
+      versionUrl: '',
+      versions: [],
+    } as any;
+    expect(getThumbnailURL(model)).toBe('');
+  });
+
+  it('should get 2000*200 thumbnail url from file item', async () => {
+    const stored_file_id = 123;
+    const version0 = {
+      stored_file_id,
+      thumbs: {
+        [`${stored_file_id}size=1000x200`]: '1000*200',
+        [`${stored_file_id}size=2000x2000`]: '2000*2000',
+      },
+    };
+    const model = {
+      id: 1,
+      latestVersion: version0,
+    };
+    const result = await getLargeRawImageURL(model);
+    expect(result).toBe('2000*2000');
+  });
+
+  it('should generate 2000*200 thumbnail url when it is not exist', async () => {
+    const stored_file_id = 123;
+    const version0 = {
+      stored_file_id,
+      thumbs: {
+        [`${stored_file_id}size=1000x200`]: '1000*200',
+      },
+    };
+    const model = {
+      id: 1,
+      latestVersion: version0,
+    };
+    const modifiedURL = 'modifiedURL';
+
+    const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifiedURL);
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
+      getThumbsUrlWithSize,
+    }));
+
+    const result = await getLargeRawImageURL(model);
+    expect(getThumbsUrlWithSize).toBeCalled();
+    expect(result).toBe(modifiedURL);
   });
 });

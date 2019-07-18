@@ -3,7 +3,9 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
+import React, {
+  useState, memo, forwardRef, useRef, useCallback,
+} from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
@@ -12,6 +14,7 @@ import {
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange } from './types';
+import { useMountState } from './hooks';
 
 type JuiInfiniteListProps = {
   height?: number;
@@ -34,7 +37,6 @@ type JuiInfiniteListProps = {
   fallBackRenderer?: JSX.Element;
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
-  fixedWrapper?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
@@ -63,7 +65,6 @@ const JuiInfiniteList = (
     children,
     contentStyle,
     stickToLastPosition,
-    fixedWrapper,
     onBottomStatusChange,
   }: JuiInfiniteListProps,
   forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
@@ -73,18 +74,19 @@ const JuiInfiniteList = (
     ref = forwardRef;
   }
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+  const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
     async (direction: 'up' | 'down', count: number) => {
       enableStickToBottom(false);
       await loadMore(direction, count);
-      enableStickToBottom(true);
+      isMountedRef.current && enableStickToBottom(true);
     },
     [loadMore, enableStickToBottom],
   );
 
   if (!height) {
-    return loadingRenderer && loadingRenderer();
+    return null;
   }
 
   return (
@@ -156,7 +158,6 @@ const JuiInfiniteList = (
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
             stickToLastPosition={stickToLastPosition}
-            fixedWrapper={fixedWrapper}
             onBottomStatusChange={onBottomStatusChange}
           >
             {children}

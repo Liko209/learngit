@@ -35,5 +35,5 @@ export type TransformedState = {
   groupStates: GroupState[];
   myState?: State;
   isSelf?: boolean;
-  isFromIndexData?: boolean;
+  ignoreCursorValidate?: boolean;
 };

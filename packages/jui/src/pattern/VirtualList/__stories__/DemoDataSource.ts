@@ -42,7 +42,7 @@ abstract class AbstractDemoInfiniteDataSource<K, V>
   }
 
   isLoadingMore(direction: 'up' | 'down') {
-    if ('down' === direction) {
+    if (direction === 'down') {
       return this._loadingMoreDown;
     }
     return false;
@@ -113,7 +113,7 @@ class DemoInfiniteDataSource extends AbstractDemoInfiniteDataSource<
       setTimeout(() => {
         this._appendDemoData(15);
         resolve();
-      },         this._dataLoadTime);
+      }, this._dataLoadTime);
     });
   }
 
@@ -126,7 +126,7 @@ class DemoInfiniteDataSource extends AbstractDemoInfiniteDataSource<
         const actualStopIndex = Math.min(stopIndex, maxIndex);
         this._appendDemoData(actualStopIndex - startIndex + 1);
         resolve();
-      },         this._dataLoadTime);
+      }, this._dataLoadTime);
     });
   }
 

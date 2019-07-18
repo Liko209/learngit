@@ -3,12 +3,16 @@
  * @Date: 2019-05-24 07:28:07
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
 import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ActionButton } from 'jui/pattern/Phone/VoicemailItem';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { PHONE_ITEM_ACTIONS } from '@/AnalyticsCollector/constants';
 import { DeleteViewProps } from './types';
 import { ENTITY_TYPE } from '../../constants';
 
@@ -17,37 +21,35 @@ type Props = DeleteViewProps & WithTranslation;
 @observer
 class DeleteViewComponent extends Component<Props> {
   _handleClick = () => {
-    const { entity } = this.props;
+    const { entity, t, tabName, deleteVoicemail, deleteCallLog } = this.props;
+    const name =
+      entity === ENTITY_TYPE.VOICEMAIL ? 'deleteVoicemail' : 'deleteCallLog';
+    const title =
+      entity === ENTITY_TYPE.VOICEMAIL
+        ? t('voicemail.deleteVoicemail')
+        : t('calllog.deleteCallLog');
+    const content =
+      entity === ENTITY_TYPE.VOICEMAIL
+        ? t('voicemail.areYouSureYouWantToDeleteTheVoicemail')
+        : t('calllog.doYouWanttoDeleteThisCallLog');
+    const deleteItem =
+      entity === ENTITY_TYPE.VOICEMAIL ? deleteVoicemail : deleteCallLog;
 
-    switch (entity) {
-      case ENTITY_TYPE.VOICEMAIL:
-        return this._deleteVoicemail();
-      case ENTITY_TYPE.CALL_LOG:
-        return this._deleteCallLog();
-      default:
-        return;
-    }
-  }
+    analyticsCollector.phoneActions(tabName, PHONE_ITEM_ACTIONS.DELETE);
 
-  _deleteVoicemail = () => {
-    const { t } = this.props;
     const dialog = Dialog.confirm({
-      modalProps: { 'data-test-automation-id': 'deleteVoicemailConfirmDialog' },
-      okBtnProps: { 'data-test-automation-id': 'deleteVoicemailOkButton' },
-      cancelBtnProps: { 'data-test-automation-id': 'deleteVoicemailCancelButton' },
+      title,
+      modalProps: { 'data-test-automation-id': `${name}ConfirmDialog` },
+      okBtnProps: { 'data-test-automation-id': `${name}OkButton` },
+      cancelBtnProps: { 'data-test-automation-id': `${name}CancelButton` },
       size: 'small',
-      title: t('voicemail.deleteVoicemail'),
-      content: (
-        <JuiDialogContentText>
-          {t('voicemail.areYouSureYouWantToDeleteTheVoicemail')}
-        </JuiDialogContentText>
-      ),
+      content: <JuiDialogContentText>{content}</JuiDialogContentText>,
       okText: t('common.dialog.delete'),
       okType: 'negative',
       cancelText: t('common.dialog.cancel'),
       onOK: async () => {
         dialog.startLoading();
-        const result = await this.props.deleteVoicemail();
+        const result = await deleteItem();
         dialog.stopLoading();
         if (!result) {
           return false;
@@ -55,35 +57,7 @@ class DeleteViewComponent extends Component<Props> {
         return true;
       },
     });
-  }
-
-  _deleteCallLog = () => {
-    const { t } = this.props;
-    const dialog = Dialog.confirm({
-      modalProps: { 'data-test-automation-id': 'deleteCallLogConfirmDialog' },
-      okBtnProps: { 'data-test-automation-id': 'deleteCallLogOkButton' },
-      cancelBtnProps: { 'data-test-automation-id': 'deleteCallLogCancelButton' },
-      title: t('calllog.deleteCallLog'),
-      content: (
-        <JuiDialogContentText>
-          {t('calllog.doYouWanttoDeleteThisCallLog')}
-        </JuiDialogContentText>
-      ),
-      size: 'small',
-      okText: t('common.dialog.delete'),
-      okType: 'negative',
-      cancelText: t('common.dialog.cancel'),
-      onOK: async () => {
-        dialog.startLoading();
-        const result = await this.props.deleteCallLog();
-        dialog.stopLoading();
-        if (!result) {
-          return false;
-        }
-        return true;
-      },
-    });
-  }
+  };
 
   get _screenReader() {
     const { entity, t } = this.props;
@@ -103,7 +77,7 @@ class DeleteViewComponent extends Component<Props> {
     return (
       <ActionButton
         key={`${entity}-delete`}
-        icon="delete"
+        icon='delete-call'
         type={type}
         tooltip={t('common.delete')}
         onClick={this._handleClick}

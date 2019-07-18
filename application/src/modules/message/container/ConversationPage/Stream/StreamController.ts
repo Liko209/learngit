@@ -20,6 +20,7 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { HasMore } from '@/store/base/fetch/types';
 
 const BEFORE_ANCHOR_POSTS_COUNT = 20;
 
@@ -35,9 +36,9 @@ class StreamController {
   );
   private _orderListHandler: FetchSortableDataListHandler<Post>;
   private _streamListHandler: FetchSortableDataListHandler<
-    StreamItem,
-    number,
-    IStreamItemSortableModel
+  StreamItem,
+  number,
+  IStreamItemSortableModel
   >;
   private _newMessageSeparatorHandler: NewMessageSeparatorHandler;
   private _assemblyLine: StreamItemAssemblyLine;
@@ -164,6 +165,7 @@ class StreamController {
   replacePostList(posts: Post[]) {
     this._orderListHandler.replaceAll(posts);
   }
+
   hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }
@@ -191,7 +193,7 @@ class StreamController {
   }
 
   private _unreadPostsLoader = async () => {
-    let hasMore = true;
+    let hasMore: HasMore = { older: true, newer: true, both: true };
     let postsNewerThanAnchor: Post[] = [];
     let postsOlderThanAnchor: Post[] = [];
 

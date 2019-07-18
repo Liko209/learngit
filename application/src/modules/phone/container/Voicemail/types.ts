@@ -5,15 +5,23 @@
  */
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
+import { FetchDataOptions } from 'sdk/module/RCItems/types';
 import {
   ISortableModel,
   FetchSortableDataListHandler,
 } from '@/store/base/fetch';
+import { IJuiChangePhoneFilter } from 'jui/pattern/Phone/Filter';
 
 type VoicemailProps = {};
 
+type ActiveVoicemailId = number | null;
+
 type VoicemailViewProps = {
   isError: boolean;
+  filterFOCKey: string;
+  activeVoicemailId: ActiveVoicemailId;
+  onFilterChange: IJuiChangePhoneFilter;
+  onVoicemailPlay: (id: ActiveVoicemailId) => void;
   onErrorReload: () => void;
   listHandler: FetchSortableDataListHandler<Voicemail>;
 };
@@ -24,4 +32,15 @@ type FetchVoicemailData = (
   anchor?: ISortableModel,
 ) => Promise<{ data: Voicemail[]; hasMore: boolean }>;
 
-export { FetchVoicemailData, VoicemailProps, VoicemailViewProps };
+type VoicemailFilterOptions = FetchDataOptions<Voicemail>;
+
+type VoicemailFilterFunc = null | ((data: Voicemail) => boolean);
+
+export {
+  ActiveVoicemailId,
+  FetchVoicemailData,
+  VoicemailFilterFunc,
+  VoicemailFilterOptions,
+  VoicemailProps,
+  VoicemailViewProps,
+};

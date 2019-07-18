@@ -7,6 +7,9 @@
 import { IStateService, StateService } from './service';
 import { GroupBadge } from './types';
 import { GROUP_BADGE_TYPE } from './constants';
+
 export * from './entity';
 
-export { IStateService, StateService, GroupBadge, GROUP_BADGE_TYPE };
+export {
+  IStateService, StateService, GroupBadge, GROUP_BADGE_TYPE,
+};

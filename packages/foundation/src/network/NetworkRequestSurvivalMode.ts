@@ -31,7 +31,7 @@ class NetworkRequestSurvivalMode {
   setupTimer(interval: number) {
     this._timer = setTimeout(() => {
       this.healthChecking();
-    },                       interval);
+    }, interval);
   }
 
   clearTimer() {

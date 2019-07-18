@@ -2,6 +2,7 @@ import { ILogEntityDecorator, LogEntity } from '../types';
 import { logConfigFactory } from './factory';
 import { configManager } from '../config';
 import { LOG_LEVEL } from '../constants';
+
 class DummyLoader implements ILogEntityDecorator {
   options: object;
 

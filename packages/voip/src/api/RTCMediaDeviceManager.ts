@@ -3,13 +3,12 @@
  * @Date: 2019-02-27 14:15:09
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { EventEmitter2 } from 'eventemitter2';
+import _ from 'lodash';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 import { RTC_MEDIA_ACTION } from './types';
 import { defaultAudioID } from '../account/constants';
-import _ from 'lodash';
 
 const LOG_TAG = 'RTCMediaDeviceManager';
 enum RTC_MEDIA_DEVICE_KIND {
@@ -26,10 +25,6 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   private _audioOutputTimer: NodeJS.Timeout | null = null;
   private _inputDeviceId: string = '';
   private _outputDeviceId: string = '';
-
-  constructor() {
-    super();
-  }
 
   public static instance(): RTCMediaDeviceManager {
     if (!RTCMediaDeviceManager._singleton) {
@@ -58,7 +53,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     this._audioOutputTimer = setTimeout(() => {
       this._emitAudioOutputChanged(deviceId);
-    },                                  500);
+    }, 500);
   }
 
   public setAudioInputDevice(deviceId: string) {
@@ -70,7 +65,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     this._audioInputTimer = setTimeout(() => {
       this._emitAudioInputChanged(deviceId);
-    },                                 500);
+    }, 500);
   }
 
   public subscribeDeviceChange() {
@@ -183,11 +178,9 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     rtcLogger.debug(LOG_TAG, `default device label: ${label}`);
     const realDevice = devices.find(
-      (device: MediaDeviceInfo): boolean => {
-        return (
-          device.deviceId !== defaultAudioID && label.endsWith(device.label)
-        );
-      },
+      (device: MediaDeviceInfo): boolean => (
+        device.deviceId !== defaultAudioID && label.endsWith(device.label)
+      ),
     );
     if (realDevice) {
       return realDevice.deviceId;
@@ -231,8 +224,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     newDevices: MediaDeviceInfo[],
     oldDevices: MediaDeviceInfo[],
   ) {
-    const compareFunc = (l: MediaDeviceInfo, r: MediaDeviceInfo) =>
-      l.deviceId === r.deviceId;
+    const compareFunc = (l: MediaDeviceInfo, r: MediaDeviceInfo) => l.deviceId === r.deviceId;
     const deleted = _.differenceWith(oldDevices, newDevices, compareFunc);
     const added = _.differenceWith(newDevices, oldDevices, compareFunc);
     return {
@@ -288,9 +280,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
     }
     return _.reduce(
       devices,
-      (acc, item) => {
-        return acc + item.deviceId + item.label;
-      },
+      (acc, item) => acc + item.deviceId + item.label,
       '',
     );
   }

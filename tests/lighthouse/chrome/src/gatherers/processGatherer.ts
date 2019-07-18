@@ -51,12 +51,15 @@ class ProcessGatherer extends BaseGatherer {
     });
 
     this.intervalId = setInterval(async () => {
-      await driver.evaluateAsync(`(function() {
+      try {
+        await driver.evaluateAsync(`(function() {
                 if (chrome.runtime && chrome.runtime.sendMessage) {
                     chrome.runtime.sendMessage("${EXTENSION_ID}", {});
                 }
                 return true;
             })()`);
+      } catch (err) {
+      }
     }, 1000);
   }
   async _afterPass(passContext) {

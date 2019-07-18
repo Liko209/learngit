@@ -5,7 +5,9 @@
  */
 import React from 'react';
 import styled from '../../../foundation/styled-components';
-import { width, height, spacing, ellipsis } from '../../../foundation/utils';
+import {
+  width, height, spacing, ellipsis,
+} from '../../../foundation/utils';
 
 type AuthorProps = {
   author_name?: string;

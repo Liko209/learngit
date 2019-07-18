@@ -24,15 +24,15 @@ type Props = WithTranslation & {
   go: (type: OPERATION, index: number) => void;
   toggleBackPanel: (
     event:
-      | React.TouchEvent<Element>
-      | React.MouseEvent<HTMLElement>
-      | React.ChangeEvent<{}>,
+    | React.TouchEvent<Element>
+    | React.MouseEvent<HTMLElement>
+    | React.ChangeEvent<{}>,
   ) => void;
   toggleForwardPanel: (
     event:
-      | React.TouchEvent<Element>
-      | React.MouseEvent<HTMLElement>
-      | React.ChangeEvent<{}>,
+    | React.TouchEvent<Element>
+    | React.MouseEvent<HTMLElement>
+    | React.ChangeEvent<{}>,
   ) => void;
 };
 

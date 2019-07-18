@@ -3,15 +3,15 @@
  * @Date: 2019-05-27 10:38:10
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { action, computed } from 'mobx';
 import { BaseSettingItemViewModel } from '../Base/BaseSettingItem.ViewModel';
 import { SelectSettingItem } from '@/interface/setting';
+import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
 import { SelectSettingItemProps } from './types';
 
 class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
-  SelectSettingItemProps,
-  SelectSettingItem<T>
+SelectSettingItemProps,
+SelectSettingItem<T>
 > {
   @computed
   get source() {
@@ -39,14 +39,15 @@ class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
     const rawValue = source.find(
       sourceItem => this.extractValue(sourceItem) === newValue,
     );
-    const { beforeSaving } = this.settingItem;
+    const { beforeSaving, dataTracking } = this.settingItem;
     if (beforeSaving) {
       const beforeSavingReturn = await beforeSaving(newValue);
       if (beforeSavingReturn === false) {
         return;
       }
     }
-    return valueSetter && valueSetter(rawValue);
+    valueSetter && valueSetter(rawValue);
+    dataTracking && dataTrackingForSetting(dataTracking, rawValue);
   }
 
   extractValue = (sourceItem: T) => {

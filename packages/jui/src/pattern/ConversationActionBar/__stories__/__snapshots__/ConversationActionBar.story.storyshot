@@ -261,7 +261,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -301,7 +304,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -341,7 +347,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>
@@ -381,7 +390,10 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
             className="c4"
             role="img"
           >
-            <use />
+            <use
+              href="#undefined"
+              xlinkHref="#undefined"
+            />
           </svg>
         </span>
       </span>

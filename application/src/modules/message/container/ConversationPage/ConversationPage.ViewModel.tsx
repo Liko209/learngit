@@ -69,9 +69,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
       3000,
       { trailing: true, leading: false },
     ),
-    (func, groupId: number) => {
-      return func(groupId);
-    },
+    (func, groupId: number) => func(groupId),
   );
 
   @computed

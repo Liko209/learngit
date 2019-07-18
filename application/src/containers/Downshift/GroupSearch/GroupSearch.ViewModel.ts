@@ -43,7 +43,7 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
     this.inputValue = '';
     items[0] && this._setSelectedItems(items[0].id);
     return onSelectChange && onSelectChange(items);
-  }
+  };
 
   private _setSelectedItems(id: number) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
@@ -70,7 +70,7 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
     );
 
     return result.sortableModels;
-  }
+  };
 
   @action
   searchGroups = (value: string) => {
@@ -86,13 +86,9 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
         label: group.displayName,
         email: group.displayName,
       }));
-      this.suggestions = differenceBy(
-        groups.slice(0, 20),
-        this.selectedItems,
-        'id',
-      );
+      this.suggestions = differenceBy(groups, this.selectedItems, 'id');
     });
-  }
+  };
 }
 
 export { GroupSearchViewModel };

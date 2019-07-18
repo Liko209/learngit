@@ -5,22 +5,29 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
+import {
+  Post, IPostQuery, IPostResult, IRawPostResult,
+} from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
-import { PostDao } from '../../../module/post/dao';
+import { PostDao } from '../dao';
 import { mainLogger, PerformanceTracer } from 'foundation';
 import { ItemService } from '../../item';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { IGroupService } from '../../group/service/IGroupService';
 import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 const ADDITIONAL_UNREAD_POST_COUNT = 500;
+const DEFAULT_HAS_MORE = {
+  older: true,
+  newer: true,
+  both: true,
+};
 
 class PostFetchController {
   constructor(
@@ -48,7 +55,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: true,
+      hasMore: DEFAULT_HAS_MORE,
     };
     const performanceTracer = PerformanceTracer.start();
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
@@ -64,13 +71,18 @@ class PostFetchController {
         direction,
         limit,
       });
+      mainLogger.info(
+        LOG_FETCH_POST,
+        `groupId: ${groupId} localSize:${result.posts.length}`,
+      );
     }
 
     if (result.posts.length < limit) {
-      const shouldFetch = await this._groupService.hasMorePostInRemote(
+      const hasMorePostInRemote = await this._groupService.hasMorePostInRemote(
         groupId,
-        direction,
       );
+      result.hasMore = hasMorePostInRemote;
+      const shouldFetch = hasMorePostInRemote[direction];
       mainLogger.info(
         LOG_FETCH_POST,
         `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch} localSize:${
@@ -82,15 +94,16 @@ class PostFetchController {
           direction,
           result.posts,
         );
+        const fetchDirection =
+          shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+            ? QUERY_DIRECTION.OLDER
+            : direction;
         const serverResult = await this.getRemotePostsByGroupId({
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
-          direction:
-            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
-              ? QUERY_DIRECTION.OLDER
-              : direction,
+          direction: fetchDirection,
         });
         if (serverResult) {
           result.posts = this._handleDuplicatePosts(
@@ -102,10 +115,10 @@ class PostFetchController {
             `after handled duplicate, resultSize:${result.posts.length}`,
           );
           result.items.push(...serverResult.items);
-          result.hasMore = serverResult.hasMore;
+          result.hasMore[fetchDirection] = serverResult.hasMore;
         }
       } else {
-        result.hasMore = shouldFetch;
+        result.hasMore[direction] = shouldFetch;
       }
     }
     result.limit = limit;
@@ -127,7 +140,7 @@ class PostFetchController {
       limit: unreadCount,
       posts: [],
       items: [],
-      hasMore: true,
+      hasMore: DEFAULT_HAS_MORE,
     };
     mainLogger.info(
       LOG_FETCH_POST,
@@ -155,7 +168,7 @@ class PostFetchController {
       if (serverResult) {
         result.posts = serverResult.posts;
         result.items = serverResult.items;
-        result.hasMore = serverResult.hasMore;
+        result.hasMore[QUERY_DIRECTION.NEWER] = serverResult.hasMore;
       }
     }
     performanceTracer.end({
@@ -260,12 +273,10 @@ class PostFetchController {
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex((localPost: Post) => {
-            return (
-              localPost.unique_id !== undefined &&
+          const index = localPosts.findIndex((localPost: Post) => (
+            localPost.unique_id !== undefined &&
               localPost.unique_id === remotePost.unique_id
-            );
-          });
+          ));
           if (index !== -1) {
             localPosts.splice(index, 1);
           }
@@ -287,7 +298,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: true,
+      hasMore: DEFAULT_HAS_MORE,
     };
     mainLogger.info(
       LOG_FETCH_POST,
@@ -330,7 +341,7 @@ class PostFetchController {
       limit: unreadPostQuery.unreadCount,
       posts: [],
       items: [],
-      hasMore: true,
+      hasMore: DEFAULT_HAS_MORE,
     };
     const performanceTracer = PerformanceTracer.start();
     const postDao = daoManager.getDao(PostDao);

@@ -17,6 +17,7 @@ class ConfigWrapper {
   public defaultProtocolTimeout: number;
   public takeHeapSnapshot: boolean;
   public functionTimeout: number;
+  public debugMode: boolean;
   /* basic config */
 
   /* mock config */
@@ -74,6 +75,7 @@ class ConfigWrapper {
     this.defaultProtocolTimeout = parseInt(this.getValue("DEFAULT_PROTOCOL_TIMEOUT", "120000"));
     this.takeHeapSnapshot = this.getValue("TAKE_HEAP_SNAPSHOT", "false").toLowerCase() === 'true';
     this.functionTimeout = parseInt(this.getValue("FUNCTION_TIMEOUT", "500"));
+    this.debugMode = this.getValue("DEBUG_MODE", "false").toLowerCase() === 'true';
     /* basic config */
 
     /* mock config */

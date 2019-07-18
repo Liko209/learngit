@@ -20,27 +20,30 @@ type IndexConstraint = {
 
 type Delta = { x: number; y: number; z: number };
 
+type VirtualizedListChild = JSX.Element | { key: string | number; type?: any };
+
 type JuiVirtualizedListProps = {
+  height: number;
+  minRowHeight: number;
+  overscan?: number;
   initialScrollToIndex?: number;
+  stickToBottom?: boolean;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
-  before?: (() => React.ReactNode) | null;
-  after?: (() => React.ReactNode) | null;
-  height: number;
-  minRowHeight: number;
-  overscan?: number;
-  stickToBottom?: boolean;
-  children: JSX.Element[];
+  before?: (() => JSX.Element) | null;
+  after?: (() => JSX.Element) | null;
+  children: VirtualizedListChild[];
+  style?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
   stickToLastPosition?: boolean;
-  fixedWrapper?: boolean;
   onBottomStatusChange?: (atBottom: boolean) => void;
 };
 
 export {
   JuiVirtualizedListProps,
+  VirtualizedListChild,
   IndexRange,
   IndexConstraint,
   Direction,

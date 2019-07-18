@@ -18,7 +18,9 @@ export default class ItemModel extends Base<Item> {
 
   constructor(data: Item) {
     super(data);
-    const { type_id, modified_at, creator_id, name, created_at } = data;
+    const {
+      type_id, modified_at, creator_id, name, created_at,
+    } = data;
     this.typeId = type_id;
     this.modifiedAt = modified_at;
     this.creatorId = creator_id;

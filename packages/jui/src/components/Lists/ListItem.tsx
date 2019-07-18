@@ -41,13 +41,11 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
   }
 `;
 
-const JuiListItemComponent = (props: JuiListItemProps) => {
-  return (
-    <StyledListItem button={!props.disableButton && true} {...props}>
-      {props.children}
-    </StyledListItem>
-  );
-};
+const JuiListItemComponent = (props: JuiListItemProps) => (
+  <StyledListItem button={!props.disableButton && true} {...props}>
+    {props.children}
+  </StyledListItem>
+);
 
 JuiListItemComponent.defaultProps = {
   singleLine: false,

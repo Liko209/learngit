@@ -180,6 +180,21 @@ describe('CallLogHandleDataController', () => {
       expect(mockConfig.getPseudoCallLogInfo).not.toBeCalled();
     });
 
+    it('should not update when activeCalls is undefined', async () => {
+      controller['_isSelfCall'] = jest.fn();
+      mockConfig.getSyncToken.mockReturnValue('token');
+      const mockData = {} as any;
+      mockConfig.getPseudoCallLogInfo.mockReturnValue({
+        sessionId1: {},
+      });
+      controller['_saveDataAndNotify'] = jest.fn();
+
+      await controller.handleRCPresenceEvent(mockData);
+      expect(controller['_isSelfCall']).not.toBeCalled();
+      expect(mockConfig.getPseudoCallLogInfo).toBeCalled();
+      expect(controller['_saveDataAndNotify']).not.toBeCalled();
+    });
+
     it('should parse and save/notify pseudo data', async () => {
       controller['_isSelfCall'] = jest.fn().mockResolvedValue(false);
       mockConfig.getSyncToken.mockReturnValue('token');

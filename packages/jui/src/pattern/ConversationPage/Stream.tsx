@@ -18,7 +18,9 @@ type JuiStreamProps = {
 };
 
 const StyledDiv = styled.div`
-  min-height: 100%;
+  max-height: 100%;
+  height: 100%;
+
   & .un-scrollable {
     display: flex;
     flex-direction: column;
@@ -33,15 +35,13 @@ const StyledDiv = styled.div`
 `;
 
 const JuiStream = React.memo(
-  React.forwardRef((props: JuiStreamProps, forwardRef: RefType) => {
-    return (
+  React.forwardRef((props: JuiStreamProps, forwardRef: RefType) => (
       <StyledDiv
         ref={forwardRef}
         {...props}
         data-test-automation-id="jui-stream"
       />
-    );
-  }),
+  )),
 );
 
 export { JuiStream, JuiStreamProps };

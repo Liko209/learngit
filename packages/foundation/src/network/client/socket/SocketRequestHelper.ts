@@ -18,8 +18,8 @@ interface ISocketRequestManager {
 class SocketRequestHelper implements ISocketRequestManager {
   private emitter: EventEmitter2;
   private requestTimerMap: Map<
-    string,
-    { timerId: number; request: SocketRequest; reject: any }
+  string,
+  { timerId: number; request: SocketRequest; reject: any }
   >;
   constructor() {
     this.emitter = new EventEmitter2();
@@ -56,7 +56,7 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _setRequestTimer(request: SocketRequest, reject: any) {
     const timerId = window.setTimeout(() => {
       this._onRequestTimeout(request.id, reject);
-    },                                request.timeout);
+    }, request.timeout);
     this.requestTimerMap.set(request.id, { timerId, request, reject });
   }
 

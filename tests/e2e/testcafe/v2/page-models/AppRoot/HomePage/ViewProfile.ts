@@ -95,7 +95,7 @@ export class MiniProfile extends BaseWebComponent {
   }
 
   get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.footer).parent('button');
+    return this.getSelectorByIcon('chat', this.footer).parent('button');
   }
 
   async goToMessages() {
@@ -160,6 +160,14 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogContent');
   }
 
+  get membersAvatar() {
+    return this.visualList.find('[uid]').nth(0);
+  }
+
+  async clickMembersAvatar() {
+    await this.t.click(this.membersAvatar);
+  }
+
   get status() {
     return this.getSelectorByAutomationId('profileDialogSummaryStatus');
   }
@@ -185,7 +193,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get messageButton() {
-    return this.getSelectorByIcon('chat_bubble', this.summary);
+    return this.getSelectorByIcon('chat', this.summary);
   }
 
   async goToMessages() {

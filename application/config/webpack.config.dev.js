@@ -9,14 +9,12 @@ const fs = require('fs');
 const glob = require('glob');
 const path = require('path');
 const webpack = require('webpack');
-const resolve = require('resolve');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
-const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -27,8 +25,7 @@ const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
 const appPackage = require(paths.appPackageJson);
-const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
+const eslintRules = require('../../.eslintrc');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -187,6 +184,35 @@ module.exports = {
   module: {
     strictExportPresence: true,
     rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /\.test.(ts|tsx)$/,
+        enforce: 'pre',
+        include: [
+          paths.appSrc,
+          paths.foundationPkg,
+          paths.frameworkPkg,
+          paths.juiPkg,
+          paths.sdkPkg,
+          paths.voipPkg,
+        ],
+        use: [
+          {
+            options: {
+              formatter: require.resolve('react-dev-utils/eslintFormatter'),
+              baseConfig: {
+                extends: require.resolve('../../eslint-config'),
+              },
+              ignore: true,
+              failOnError: true,
+              cache: true,
+              emitError: true,
+              ...eslintRules,
+            },
+            loader: require.resolve('eslint-loader'),
+          },
+        ],
+      },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
 
@@ -275,40 +301,13 @@ module.exports = {
               },
             ],
           },
-          // country flag svg loader
           {
-            test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
+            test: /jui\/src\/assets\/.*\.svg$/,
             use: [
               {
                 loader: 'svg-sprite-loader',
                 options: {
-                  extract: true,
-                  spriteFilename: 'static/media/country-flag.[hash:6].svg',
-                  symbolId: 'country-flag-[name]',
-                },
-              },
-              {
-                loader: 'svgo-loader',
-                options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathData: true },
-                    { reusePaths: true },
-                  ],
-                },
-              },
-            ],
-          },
-          {
-            test: /jui\/src\/assets\/jupiter-icon\/(.+)\.svg$/,
-            use: [
-              {
-                loader: 'svg-sprite-loader',
-                options: {
-                  extract: true,
-                  spriteFilename: 'static/media/jupiter-icon.[hash:6].svg',
-                  symbolId: 'jupiter-[name]',
+                  symbolId: 'icon-[name]',
                 },
               },
               {
@@ -411,28 +410,6 @@ module.exports = {
     // You can remove this if you don't use Moment.js:
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     // Perform type checking and linting in a separate process to speed up compilation
-    new ForkTsCheckerWebpackPlugin({
-      typescript: resolve.sync('typescript', {
-        basedir: paths.appNodeModules,
-      }),
-      async: false, // in order to show tslint error. [improvement] Need to use pre loader
-      useTypescriptIncrementalApi: true,
-      checkSyntacticErrors: true,
-      tsconfig: paths.appTsConfig,
-      tslint: paths.appTsLint,
-      reportFiles: [
-        '**',
-        '!**/*.json',
-        '!**/__tests__/**',
-        '!**/?(*.)(spec|test).*',
-        '!**/src/setupProxy.*',
-        '!**/src/setupTests.*',
-      ],
-      watch: paths.appSrc,
-      silent: true,
-      // The formatter is invoked directly in WebpackDevServerUtils during development
-      formatter: typescriptFormatter,
-    }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
@@ -447,8 +424,6 @@ module.exports = {
       fileName: 'asset-manifest.json',
       publicPath: publicPath,
     }),
-    // svg sprite loader plugin
-    new SpriteLoaderPlugin(),
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(

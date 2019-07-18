@@ -3,7 +3,6 @@
  * @Date: 2019-05-29 23:30:11
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
@@ -22,7 +21,7 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler<
-  MediaDeviceInfo
+MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_MicrophoneSource;
 
@@ -45,10 +44,14 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
     );
   }
 
-  private _getEntityState = async () => {
+  private _getEntityState = async (devices: MediaDeviceInfo[]) => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    let state = ESettingItemState.ENABLE;
+    if (!devices.length) {
+      state = ESettingItemState.DISABLE;
+    }
     const isEnable =
       isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
@@ -58,12 +61,15 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.CONFERENCING,
         )));
-    return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
-  }
+    if (!isEnable) {
+      state = ESettingItemState.INVISIBLE;
+    }
+    return state;
+  };
 
   private _onPermissionChange = async () => {
     isChrome() && (await this.getUserSettingEntity());
-  }
+  };
 
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
@@ -72,11 +78,11 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
     ) {
       this.getUserSettingEntity();
     }
-  }
+  };
 
-  private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
+  private _onDevicesChange = async () => {
     await this.getUserSettingEntity();
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -99,10 +105,9 @@ export class MicrophoneSourceSettingHandler extends AbstractSettingEntityHandler
       id: SettingEntityIds.Phone_MicrophoneSource,
       source: devices,
       value: devices.find(
-        device =>
-          device.deviceId === TelephonyGlobalConfig.getCurrentMicrophone(),
+        device => device.deviceId === TelephonyGlobalConfig.getCurrentMicrophone(),
       ),
-      state: await this._getEntityState(),
+      state: await this._getEntityState(devices),
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;

@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity } from 'foundation';
+
 type PersistentLogEntity = {
   id: number;
   logs: LogEntity[];

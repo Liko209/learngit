@@ -10,7 +10,7 @@
  */
 import React, { ChangeEvent } from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiSearchInput } from '../';
+import { JuiSearchInput } from '..';
 import { boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/SearchBar', module).add('SearchInput', () => {
@@ -24,17 +24,17 @@ storiesOf('Pattern/SearchBar', module).add('SearchInput', () => {
       this.setState({
         value: e.target.value,
       });
-    }
+    };
     render() {
       return (
         <div>
           <JuiSearchInput
             focus={focus}
             value={this.state.value}
-            placeholder="search"
+            placeholder='search'
             onChange={this.onChange}
             onClear={() => {}}
-            showCloseBtn={true}
+            showCloseBtn
           />
         </div>
       );

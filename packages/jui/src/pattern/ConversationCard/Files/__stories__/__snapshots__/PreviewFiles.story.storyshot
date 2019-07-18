@@ -45,6 +45,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c12.c12 > *:nth-child(n + 2) {
@@ -247,7 +251,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c29.c29 .c14,
 .c29.c29 .c14 svg {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .c29.c29:hover .c14 {
@@ -259,23 +263,6 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 }
 
 .c29.c29.c29.c29.disabled .c14 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c30.c30 .c14,
-.c30.c30 .c14 svg {
-  font-size: 20px;
-}
-
-.c30.c30:hover .c14 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c30.c30:active .c14 {
-  color: #fff;
-}
-
-.c30.c30.c30.c30.disabled .c14 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -292,6 +279,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 .c2 {
   height: 200px;
+  cursor: default;
   background-color: #bfbfbf;
   opacity: 0.36;
 }
@@ -408,6 +396,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -419,6 +408,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -430,6 +420,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     <img
       className="c0"
       onClick={[Function]}
+      onError={[Function]}
       onLoad={[Function]}
       src="test-file-stub"
       style={
@@ -445,6 +436,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     >
       <div
         className="MuiCardMedia-root c2 "
+        data-test-automation-id="fileCardMedia"
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -527,7 +519,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -542,6 +537,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     >
       <div
         className="MuiCardMedia-root c2 "
+        data-test-automation-id="fileCardMedia"
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -624,7 +620,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -639,6 +638,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     >
       <div
         className="MuiCardMedia-root c2 "
+        data-test-automation-id="fileCardMedia"
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -721,7 +721,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -736,6 +739,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     >
       <div
         className="MuiCardMedia-root c2 "
+        data-test-automation-id="fileCardMedia"
         style={
           Object {
             "backgroundImage": "url(\\"test-file-stub\\")",
@@ -818,7 +822,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                       className="c15"
                       role="img"
                     >
-                      <use />
+                      <use
+                        href="#undefined"
+                        xlinkHref="#undefined"
+                      />
                     </svg>
                   </span>
                 </span>
@@ -896,7 +903,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -971,7 +981,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1046,7 +1059,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1121,7 +1137,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1198,7 +1217,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1266,6 +1288,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1344,7 +1367,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1412,6 +1438,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1490,7 +1517,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1558,6 +1588,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={
@@ -1636,7 +1667,10 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
                     className="c15"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1704,6 +1738,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <img
               className="c0"
               onClick={[Function]}
+              onError={[Function]}
               onLoad={[Function]}
               src="test-file-stub"
               style={

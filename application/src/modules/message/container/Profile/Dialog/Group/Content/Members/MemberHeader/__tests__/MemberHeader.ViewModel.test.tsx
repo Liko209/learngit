@@ -8,6 +8,7 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { MemberHeaderViewModel } from '../MemberHeader.ViewModel';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('@/store/utils');
 
 const mockGroup = {

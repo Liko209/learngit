@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from '../entity';
-import _ from 'lodash';
 import { Api } from '../../../api';
 import { PostActionController } from './implementation/PostActionController';
 import {
@@ -24,10 +23,11 @@ import { IPreInsertController } from '../../common/controller/interface/IPreInse
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
 import { ENTITY } from '../../../service/eventKey';
-import { PostSearchController } from './implementation/PostSearchController';
-import { IGroupService } from '../../../module/group/service/IGroupService';
+import { PostSearchManagerController } from './implementation/PostSearchManagerController';
+import { IGroupService } from '../../group/service/IGroupService';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PostItemController } from './implementation/PostItemController';
+import { IGroupConfigService } from 'sdk/module/groupConfig';
 
 class PostController {
   private _actionController: PostActionController;
@@ -36,9 +36,12 @@ class PostController {
   private _postFetchController: PostFetchController;
   private _discontinuousPostController: DiscontinuousPostController;
   private _postDataController: PostDataController;
-  private _postSearchController: PostSearchController;
+  private _postSearchController: PostSearchManagerController;
   private _postItemController: PostItemController;
-  constructor(private _groupService: IGroupService) {}
+  constructor(
+    private _groupService: IGroupService,
+    private _groupConfigService: IGroupConfigService,
+  ) {}
 
   getPostActionController(): PostActionController {
     if (!this._actionController) {
@@ -55,9 +58,7 @@ class PostController {
         {
           requestController,
           canSaveRemoteData: false,
-          canRequest: () => {
-            return true;
-          },
+          canRequest: () => true,
         },
       );
 
@@ -66,9 +67,9 @@ class PostController {
       );
 
       this._actionController = new PostActionController(
+        this.getPostDataController(),
         partialModifyController,
         requestController,
-        this._getPreInsertController(),
         entitySourceController,
       );
     }
@@ -80,6 +81,7 @@ class PostController {
       this._sendController = new SendPostController(
         this.getPostActionController(),
         this._getPreInsertController(),
+        this.getPostDataController(),
       );
     }
     return this._sendController;
@@ -130,6 +132,7 @@ class PostController {
 
       this._postDataController = new PostDataController(
         this._groupService,
+        this._groupConfigService,
         this._getPreInsertController(),
         entitySourceController,
       );
@@ -139,7 +142,7 @@ class PostController {
 
   getPostSearchController() {
     if (!this._postSearchController) {
-      this._postSearchController = new PostSearchController();
+      this._postSearchController = new PostSearchManagerController();
     }
 
     return this._postSearchController;
@@ -162,9 +165,7 @@ class PostController {
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
-        (entity: Post) => {
-          return `${ENTITY.POST}.${entity.group_id}`;
-        },
+        (entity: Post) => `${ENTITY.POST}.${entity.group_id}`,
       );
     }
     return this._preInsertController;

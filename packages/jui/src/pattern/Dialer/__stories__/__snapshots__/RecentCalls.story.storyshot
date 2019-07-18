@@ -127,9 +127,9 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
 }
 
 .c1.c1 {
-  background-color: #fff;
-  height: 396px;
-  box-sizing: border-box;
+  margin-top: 44px;
+  height: calc(100% - 44px);
+  overflow: hidden;
 }
 
 .c2.c2 {
@@ -138,6 +138,7 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   -ms-flex-pack: justify;
   justify-content: space-between;
   padding: 8px 16px;
+  cursor: pointer;
 }
 
 .c4 {
@@ -157,6 +158,8 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   line-height: 16px;
   color: #757575;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
   text-align: right;
   width: 68px;
@@ -174,8 +177,8 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
   className="c0"
   data-test-automation-id="dialer-container"
 >
-  <ul
-    className="MuiList-root MuiList-padding c1"
+  <div
+    className="c1"
   >
     <div
       className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button c2 c3"
@@ -402,6 +405,6 @@ exports[`Storyshots Pattern Recent Calls: Pattern Recent Calls 1`] = `
         className="MuiTouchRipple-root"
       />
     </div>
-  </ul>
+  </div>
 </div>
 `;

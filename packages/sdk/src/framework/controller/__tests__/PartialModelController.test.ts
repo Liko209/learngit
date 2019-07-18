@@ -63,9 +63,7 @@ describe('PartialModelController', () => {
         return updateEntity;
       };
 
-      jest
-        .spyOn(entitySourceController, 'bulkUpdate')
-        .mockImplementation(() => {});
+      jest.spyOn(entitySourceController, 'update').mockImplementation(() => {});
 
       jest
         .spyOn(notificationCenter, 'emitEntityUpdate')

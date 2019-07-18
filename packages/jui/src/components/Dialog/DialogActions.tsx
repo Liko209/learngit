@@ -5,16 +5,10 @@ import MuiDialogActions, {
 } from '@material-ui/core/DialogActions';
 import { spacing } from '../../foundation/utils/styles';
 
-const nestedProp = {
-  disableSpacing: true,
-};
-
 const JuiDialogActions = styled(
-  memo(({ ...props }: DialogActionsProps) => {
-    return (
-      <MuiDialogActions classes={{ root: 'root' }} {...nestedProp} {...props} />
-    );
-  }),
+  memo(({ ...props }: DialogActionsProps) => (
+    <MuiDialogActions {...props} classes={{ root: 'root' }} disableSpacing />
+  )),
 )`
   &.root {
     padding: ${spacing(2, 6, 6)};

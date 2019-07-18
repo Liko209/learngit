@@ -73,16 +73,18 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
   }
 
   render() {
-    const { items, onChange, listProps, listItemProps, ...rest } = this.props;
-
+    const {
+      items, onChange, listProps, listItemProps, ...rest
+    } = this.props;
+    /* eslint-disable react/jsx-no-bind */
     return (
-      <List dense={true} {...listProps} {...rest}>
+      <List dense {...listProps} {...rest}>
         {items.map(toggleItem => (
           <ListItem
             data-test-automation-id={toggleItem.automationId}
             {...listItemProps}
             key={toggleItem.text}
-            dense={true}
+            dense
           >
             <ListItemText>{toggleItem.text}</ListItemText>
             <ListItemSecondaryAction>

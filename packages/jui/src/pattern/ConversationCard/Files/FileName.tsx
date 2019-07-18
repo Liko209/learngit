@@ -3,7 +3,7 @@
  * @Date: 2018-11-02 12:52:05
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../../foundation/styled-components';
 import { ellipsis, palette, spacing } from '../../../foundation/utils/styles';
 import { Theme } from '../../../foundation/theme/theme';
@@ -13,16 +13,12 @@ type FileNameProps = {
   opacity?: number;
 };
 
-const FileNameWrapper = styled('div')<{
-  statusColor?: ({ theme }: { theme: Theme }) => any;
-  opacity?: number;
-}>`
+const FileNameWrapper = styled('div')<FileNameProps>`
   display: flex;
   min-width: 0;
   align-items: center;
   font-weight: 400;
-  color: ${({ statusColor }) =>
-    statusColor ? statusColor : palette('grey', '700')};
+  color: ${({ statusColor }) => (statusColor ? statusColor : palette('grey', '700'))};
   ${ellipsis()};
   opacity: ${({ opacity }) => opacity};
   font-size: 0;
@@ -35,7 +31,7 @@ const JuiFileNameLeft = styled.span`
   ${ellipsis()};
 `;
 
-class FileName extends React.Component<FileNameProps> {
+class FileName extends PureComponent<FileNameProps> {
   // truncation has been moved to FileNameParser in the postParser module
   render() {
     const { statusColor, opacity, ...rest } = this.props;

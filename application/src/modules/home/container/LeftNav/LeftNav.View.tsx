@@ -9,30 +9,18 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
 import { LeftNavViewProps } from './types';
 import { observable, computed } from 'mobx';
-import _ from 'lodash';
 import { observer } from 'mobx-react';
 
 type LeftNavProps = {
   isLeftNavOpen: boolean;
 } & LeftNavViewProps &
-  RouteComponentProps &
-  WithTranslation;
+RouteComponentProps &
+WithTranslation;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
   @observable
   selectedPath: string = window.location.pathname.split('/')[1];
-
-  @computed
-  get translatedIconGroups() {
-    const { iconGroups, t } = this.props;
-    return iconGroups.map(icons =>
-      icons.map(icon => ({
-        ...icon,
-        title: t(icon.title),
-      })),
-    );
-  }
 
   componentDidMount() {
     const { history } = this.props;
@@ -43,16 +31,24 @@ class LeftNav extends Component<LeftNavProps> {
       }
     });
   }
-
+  @computed
+  get translatedIconGroups() {
+    const { iconGroups, t } = this.props;
+    return iconGroups.map(icons => icons.map(icon => ({
+      ...icon,
+      title: t(icon.title),
+    })));
+  }
   onRouteChange = (url: string) => {
-    const { history, location } = this.props;
-    if (url === location.pathname) return;
-    if (new RegExp(`^${url}`).test(location.pathname)) {
+    const { history } = this.props;
+    const { pathname } = history.location;
+    if (url === pathname) return;
+    if (new RegExp(`^${url}`).test(pathname)) {
       // FIJI-3794
       return;
     }
     history.push(url);
-  }
+  };
 
   render() {
     const { isLeftNavOpen } = this.props;

@@ -48,8 +48,6 @@ type Props = {
   children: JSX.Element | null;
 };
 
-const JuiNotification = memo(({ onClick, children }: Props) => {
-  return <StyledBox onClick={onClick}>{children}</StyledBox>;
-});
+const JuiNotification = memo(({ onClick, children }: Props) => <StyledBox onClick={onClick}>{children}</StyledBox>);
 
 export { JuiNotification };

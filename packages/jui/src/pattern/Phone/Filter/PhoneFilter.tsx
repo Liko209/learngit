@@ -9,17 +9,20 @@ import {
   StyledIconRight,
   JuiOutlineTextField,
 } from '../../../components/Forms/OutlineTextField';
-import { spacing, grey, typography, width } from '../../../foundation/utils';
+import {
+  spacing, grey, typography, width,
+} from '../../../foundation/utils';
 import {
   IUseInput,
   IJuiPhoneFilter,
   JuiPhoneFilterProps,
+  IJuiChangePhoneFilter,
   IChangePhoneFilter,
   FilterIconState,
 } from './types';
 
 const StyledPhoneFilter = styled(JuiOutlineTextField)`
-  width: ${width(40)};
+  width: ${width(50)};
   padding: ${spacing(0, 3)};
   border-color: ${grey('300')};
 
@@ -49,7 +52,7 @@ const useInput: IUseInput = (initValue, callback) => {
 
   return [value, setInputValue];
 };
-
+/* eslint-disable react/prop-types */
 const PhoneFilter: IJuiPhoneFilter = ({
   clearButtonLabel,
   placeholder,
@@ -69,17 +72,18 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
   const iconState: FilterIconState = value
     ? {
-        iconName: ['filter', 'close'],
-        iconPosition: 'both',
-      }
+      iconName: ['filter', 'close'],
+      iconPosition: 'both',
+    }
     : {
-        iconName: 'filter',
-        iconPosition: 'left',
-      };
+      iconName: 'filter',
+      iconPosition: 'left',
+    };
 
   const iconRightProps = {
     tabIndex: 0,
     'aria-label': clearButtonLabel,
+    'data-test-automation-id': 'close',
   };
 
   const inputProps = {
@@ -99,6 +103,7 @@ const PhoneFilter: IJuiPhoneFilter = ({
       IconRightProps={iconRightProps}
       onChange={onFilterChange}
       onClickIconRight={onFilterClear}
+      data-test-automation-id="phoneFilter"
       {...iconState}
     />
   );
@@ -106,4 +111,4 @@ const PhoneFilter: IJuiPhoneFilter = ({
 
 const JuiPhoneFilter = memo(PhoneFilter);
 
-export { JuiPhoneFilter, JuiPhoneFilterProps };
+export { JuiPhoneFilter, JuiPhoneFilterProps, IJuiChangePhoneFilter };

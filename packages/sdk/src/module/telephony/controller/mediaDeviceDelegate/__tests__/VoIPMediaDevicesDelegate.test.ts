@@ -162,7 +162,7 @@ describe('VoIPMediaDevicesDelegate', () => {
       );
     });
 
-    it('should call ensureDevice when add/delete a device', () => {
+    it('should call ensureDevice when add/delete a device [JPT-2481]', () => {
       const deviceIds = ['a', 'b', 'c'];
       jest.spyOn(deviceDelegate['_speakerSyncManager'], 'ensureDevice');
       jest.spyOn(deviceDelegate['_microphoneSyncManager'], 'ensureDevice');

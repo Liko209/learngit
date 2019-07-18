@@ -1,8 +1,10 @@
-import { parseSocketMessage } from '../../utils';
+import { parseSocketData } from '../../utils';
 import { EventEmitter2 } from 'eventemitter2';
-import { SOCKET } from '../../service';
+import { SOCKET } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
+
 type Handler = (data: any) => any;
+
 class DataDispatcher extends EventEmitter2 {
   register(key: SOCKET, dataHandler: Handler) {
     this.on(key, dataHandler);
@@ -12,19 +14,17 @@ class DataDispatcher extends EventEmitter2 {
     this.off(key, dataHandler);
   }
 
-  onPresenceArrived(data: any) {
-    this.emitAsync(this._getEmitEvent('SOCKET', 'presence', false), data);
-  }
-
-  async onDataArrived(data: string, partial?: boolean) {
-    const entries = parseSocketMessage(data);
+  async onDataArrived(channel: string, data: string, partial?: boolean) {
+    const entries = parseSocketData(channel, data);
     if (!entries) {
       return;
     }
+
     return Promise.all(
-      Object.keys(entries).map((key: string) =>
-        this.emitAsync(this._getEmitEvent('SOCKET', key, partial), entries[key]),
-      ),
+      Object.keys(entries).map((key: string) => this.emitAsync(
+        this._getEmitEvent('SOCKET', key, partial),
+        entries[key],
+      )),
     );
   }
 
@@ -32,10 +32,11 @@ class DataDispatcher extends EventEmitter2 {
     const event = `${channel.toUpperCase()}${
       partial ? '.PARTIAL' : ''
     }.${eventKey.toUpperCase()}`;
-    if (event !== 'SOCKET.PRESENCE') {
+    if (event !== 'SOCKET.PRESENCE' && event !== 'SOCKET.TYPING') {
       mainLogger.info(`Data dispatched for event:${event}`);
     }
     return event;
   }
 }
-export default new DataDispatcher();
+const dataDispatcher = new DataDispatcher();
+export default dataDispatcher;

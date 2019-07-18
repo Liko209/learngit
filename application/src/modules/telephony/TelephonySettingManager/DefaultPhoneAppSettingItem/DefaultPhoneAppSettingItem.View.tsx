@@ -4,31 +4,20 @@
  * Copyright Â© RingCentral. All rights reserved.
  */
 import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
-import { withTranslation, WithTranslation } from 'react-i18next';
-import React, { SFC } from 'react';
-import JuiText from 'jui/components/Text/Text';
+import { i18nP } from '@/utils/i18nT';
 
 type DefaultPhoneAppSelectItemProps = {
   value: CALLING_OPTIONS;
 };
 
-const DefaultPhoneAppSelectItem: SFC<
-  DefaultPhoneAppSelectItemProps & WithTranslation
-> = ({ value, t }) => {
-  const options = {
-    [CALLING_OPTIONS.GLIP]: t(
-      'setting.phone.general.defaultPhoneApp.option.glip',
-    ),
-    [CALLING_OPTIONS.RINGCENTRAL]: t(
-      'setting.phone.general.defaultPhoneApp.option.ringcentral',
-    ),
-  };
-  return <JuiText>{options[value]}</JuiText>;
+const options = {
+  [CALLING_OPTIONS.GLIP]: 'setting.phone.general.defaultPhoneApp.option.glip',
+  [CALLING_OPTIONS.RINGCENTRAL]:
+    'setting.phone.general.defaultPhoneApp.option.ringcentral',
 };
 
-const withTranslationComp = withTranslation()(DefaultPhoneAppSelectItem);
+const DefaultPhoneAppSelectItem = ({
+  value,
+}: DefaultPhoneAppSelectItemProps) => i18nP(options[value]);
 
-export {
-  withTranslationComp as DefaultPhoneAppSelectItem,
-  DefaultPhoneAppSelectItemProps,
-};
+export { DefaultPhoneAppSelectItem, DefaultPhoneAppSelectItemProps };

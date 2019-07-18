@@ -3,9 +3,9 @@
  * @Date: 2018-12-29 16:08:34
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import async from 'async';
+import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { CALL_FSM_NOTIFY } from './types';
 import {
   RTC_REPLY_MSG_PATTERN,
@@ -57,24 +57,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
     // Observer FSM State
     // enter pending state will also report connecting for now
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_ANSWERING, () =>
-      this._onEnterAnswering(),
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_PENDING, () =>
-      this._onEnterPending(),
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTING, () =>
-      this._onEnterConnecting(),
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTED, () =>
-      this._onEnterConnected(),
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_DISCONNECTED, () =>
-      this._onEnterDisconnected(),
-    );
-    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_LEAVE_CONNECTED, () =>
-      this._onLeaveConnected(),
-    );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_ANSWERING, () => this._onEnterAnswering());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_PENDING, () => this._onEnterPending());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTING, () => this._onEnterConnecting());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_CONNECTED, () => this._onEnterConnected());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_DISCONNECTED, () => this._onEnterDisconnected());
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_LEAVE_CONNECTED, () => this._onLeaveConnected());
   }
 
   public state(): string {

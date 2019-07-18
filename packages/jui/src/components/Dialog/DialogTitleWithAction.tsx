@@ -23,9 +23,7 @@ const StyledDialogTitle = styled('div')`
 `;
 
 const JuiDialogTitleWithAction = memo(
-  (props: JuiDialogTitleWithActionProps) => {
-    return <StyledDialogTitle {...props} />;
-  },
+  (props: JuiDialogTitleWithActionProps) => <StyledDialogTitle {...props} />,
 );
 
 const JuiDialogTitleWithActionLeft = styled('div')`

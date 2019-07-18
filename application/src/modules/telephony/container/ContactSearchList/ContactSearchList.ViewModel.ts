@@ -31,7 +31,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { debounce } from 'lodash';
 import { mainLogger } from 'sdk';
 
-const INITIAL_PAGE_SIZE = 8;
+const INITIAL_PAGE_SIZE = 10;
 const ONE_FRAME = 1000 / 60;
 
 enum Direction {
@@ -110,26 +110,26 @@ export class ContactSearchListViewModel
     this._isSearchingDisposer();
     this._displayDisposer();
     super.dispose();
-  }
+  };
 
   @action
   increaseFocusIndex = () => {
     const next = this.focusIndex + 1;
     const maxIndex = this.searchResult.length - 1;
     this.focusIndex = next >= maxIndex ? maxIndex : next;
-  }
+  };
 
   @action
   decreaseFocusIndex = () => {
     const next = this.focusIndex - 1;
     const minimumIndex = 0;
     this.focusIndex = next <= minimumIndex ? minimumIndex : next;
-  }
+  };
 
   onClick = (focusIndex: number) => {
     this.focusIndex = focusIndex;
     this.onEnter();
-  }
+  };
 
   @action
   onEnter = () => {
@@ -154,37 +154,25 @@ export class ContactSearchListViewModel
       );
       phoneNumber = this.trimmedInputString;
     }
-    this._makeCall(phoneNumber);
-  }
-
-  // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
-  private _makeCall = async (val: string) => {
-    // make sure line 30 run before end()
-    if (!(await this._telephonyService.makeCall(val))) {
-      await new Promise(resolve => {
-        requestAnimationFrame(resolve);
-      });
-      this._telephonyStore.end();
-    }
-  }
+    this.props.onContactSelected(phoneNumber);
+  };
 
   @action
   private _setDefaultFocusIndex = async () => {
-    this.focusIndex = !!this.shouldDisplayPhoneNumberItem ? 0 : -1;
-  }
+    this.focusIndex = this.shouldDisplayPhoneNumberItem ? 0 : -1;
+  };
 
   private _searchReaction = debounce(
     async () => {
-      let trimmedInputString;
+      let trimmedInputString = '';
       runInAction(() => {
         trimmedInputString = this.trimmedInputString;
         if (!trimmedInputString.length) {
           this.searchResult = [];
-          return;
         }
       });
       const [currentSearchResult, parsedPhone] = await Promise.all([
-        this._searchContacts(),
+        this._searchContacts(trimmedInputString),
         this._telephonyService.isValidNumber(trimmedInputString),
       ]);
 
@@ -193,11 +181,11 @@ export class ContactSearchListViewModel
         this.isSearching = false;
         const res = this.shouldDisplayPhoneNumberItem
           ? [
-              {
-                id: CONTACT_SEARCH_PHONE_NUMBER_ID,
-                directDial: parsedPhone.parsed,
-              } as SearchItem,
-            ]
+            {
+              id: CONTACT_SEARCH_PHONE_NUMBER_ID,
+              directDial: parsedPhone.parsed,
+            } as SearchItem,
+          ]
           : [];
         this.searchResult = currentSearchResult
           ? [...res, ...currentSearchResult.phoneContacts]
@@ -220,28 +208,28 @@ export class ContactSearchListViewModel
     },
   );
 
-  private _searchContacts = async () => {
+  private _searchContacts = async (searchString: string) => {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
 
     return searchService.doFuzzySearchPhoneContacts({
-      searchKey: this._telephonyStore.inputString,
+      searchKey: searchString,
       fetchAllIfSearchKeyEmpty: false,
       recentFirst: true,
     });
-  }
+  };
 
   private _getIdx = (idx: number) => {
     const maxIdx = this.searchResultLength - 1;
     return idx >= maxIdx ? maxIdx : idx;
-  }
+  };
 
   // This method must be called after data being fetched
   loadInitialData = async () => {
     this.displayIdx = this._getIdx(INITIAL_PAGE_SIZE);
     this._setDefaultFocusIndex();
-  }
+  };
 
   loadMore = async (direction: Direction, count: number) => {
     runInAction(() => {
@@ -250,16 +238,14 @@ export class ContactSearchListViewModel
       }
       this.displayIdx = this._getIdx(this.displayIdx + count);
     });
-  }
+  };
 
   @action
-  hasMore = () => {
-    return this.displayIdx < this.searchResultLength - 1;
-  }
+  hasMore = () => this.displayIdx < this.searchResultLength - 1;
 
   @computed
   get trimmedInputString() {
-    return this._telephonyStore.inputString.trim();
+    return this._telephonyStore[this.props.inputStringProps].trim();
   }
 
   @computed

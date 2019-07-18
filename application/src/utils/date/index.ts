@@ -32,6 +32,11 @@ function getDateMessage(
   return m.format('l'); // 30/10/2018  2018/10/30
 }
 
+const DATE_FORMAT = {
+  short: 'short',
+  full: 'full',
+};
+
 const WEEKDAY = [
   'common.time.Sunday',
   'common.time.Monday',
@@ -45,9 +50,7 @@ const WEEKDAY = [
 type Moment = moment.Moment;
 
 const dateFormatter = {
-  localTime: (m: Moment): string => {
-    return m.format('LT');
-  },
+  localTime: (m: Moment): string => m.format('LT'),
   today: (): string => {
     const text: string = i18nP('common.time.today');
     return text;
@@ -60,6 +63,10 @@ const dateFormatter = {
     const text: string = i18nP(WEEKDAY[m.day()]);
     return text;
   },
+  abbreviatedWeekday: (m: Moment): string => {
+    const weekday: string = dateFormatter.weekday(m);
+    return `${weekday.slice(0, 3)}`;
+  },
   exactDate: (m: Moment): string => {
     const weekday: string = dateFormatter.weekday(m);
     return `${weekday.slice(0, 3)}, ${m.format('l')}`;
@@ -68,36 +75,18 @@ const dateFormatter = {
     const weekday: string = dateFormatter.weekday(m);
     return `${weekday.slice(0, 3)}, ${dateFormatter.localTime(m)}`;
   },
-  dateAndTime: (m: Moment): string => {
-    return `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`;
-  },
-  date: (timestamp: number): string => {
-    return moment(timestamp).format('l');
-  },
-  dateAndTimeWithoutWeekday: (m: Moment): string => {
-    return `${m.format('l')} ${dateFormatter.localTime(m)}`;
-  },
+  dateAndTime: (m: Moment): string => `${dateFormatter.exactDate(m)} ${dateFormatter.localTime(m)}`,
+  date: (timestamp: number): string => moment(timestamp).format('l'),
+  dateAndTimeWithoutWeekday: (m: Moment): string => `${m.format('l')} ${dateFormatter.localTime(m)}`,
 };
 
 const condition = {
-  isZero: (diff: number) => {
-    return diff === 0;
-  },
-  isOne: (diff: number) => {
-    return diff === 1;
-  },
-  fromTwoToSix: (diff: number) => {
-    return _.inRange(diff, 2, 7);
-  },
-  fromOneToSix: (diff: number) => {
-    return _.inRange(diff, 1, 7);
-  },
-  overSevenOrLessZero: (diff: number) => {
-    return 0 > diff || diff >= 7;
-  },
-  overOne: (diff: number) => {
-    return !_.inRange(diff, 0, 1);
-  },
+  isZero: (diff: number) => diff === 0,
+  isOne: (diff: number) => diff === 1,
+  fromTwoToSix: (diff: number) => _.inRange(diff, 2, 7),
+  fromOneToSix: (diff: number) => _.inRange(diff, 1, 7),
+  overSevenOrLessZero: (diff: number) => diff < 0 || diff >= 7,
+  overOne: (diff: number) => !_.inRange(diff, 0, 1),
 };
 
 function buildFormatter(
@@ -117,7 +106,7 @@ function buildFormatter(
       .millisecond(0);
     const diff = now.diff(m, 'days', true);
     let formatDate = '';
-    buildCondition.some((v, i) => {
+    buildCondition.some(v => {
       if (v.condition(diff)) {
         formatDate = v.formatter(mInit);
         return true;
@@ -174,6 +163,21 @@ const postTimestamp = buildFormatter([
   {
     condition: condition.overSevenOrLessZero,
     formatter: dateFormatter.dateAndTime,
+  },
+]);
+
+const dialerTimestamp = buildFormatter([
+  {
+    condition: condition.isZero,
+    formatter: dateFormatter.localTime,
+  },
+  {
+    condition: condition.fromOneToSix,
+    formatter: dateFormatter.abbreviatedWeekday,
+  },
+  {
+    condition: condition.overSevenOrLessZero,
+    formatter: dateFormatter.date,
   },
 ]);
 
@@ -234,6 +238,13 @@ function formatDuration(milliSeconds: number) {
   }
   return moment.utc(milliSeconds).format('mm:ss');
 }
+
+function getCreateTime(creationTime: string, dateFormat: string) {
+  if (dateFormat === DATE_FORMAT.short) {
+    return dialerTimestamp(creationTime);
+  }
+  return postTimestamp(creationTime);
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -245,6 +256,9 @@ export {
   formatSeconds,
   getHourMinuteSeconds,
   formatDuration,
+  getCreateTime,
+  dialerTimestamp,
+  DATE_FORMAT,
 };
 
 // 7 days inside

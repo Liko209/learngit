@@ -65,7 +65,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ItemNotification.getItemsNotifications,
     );
     return result;
-  }
+  };
 
   protected get itemServiceController() {
     if (!this._itemServiceController) {
@@ -156,6 +156,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     const fileItemsIds = itemIds.filter(
       id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
     );
+    /* eslint-disable no-await-in-loop */
     for (let i = 0; i < fileItemsIds.length; i++) {
       if (!(await this.fileService.hasValidItemFile(fileItemsIds[i]))) {
         return false;

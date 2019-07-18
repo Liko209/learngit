@@ -11,11 +11,11 @@ type StyledMainProps = {
 };
 
 const StyledMain = styled('div')`
+  position: relative;
   height: 100%;
   flex: 1 1 0%;
   overflow: hidden;
-  ${(props: StyledMainProps) =>
-    css`
+  ${(props: StyledMainProps) => css`
       min-width: ${props.minWidth}px;
     `};
 `;

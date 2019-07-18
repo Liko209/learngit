@@ -8,7 +8,9 @@ import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps, MEETING_STATUS, MEETING_TITLE } from './types';
+import {
+  Props, ViewProps, MEETING_STATUS, MEETING_TITLE,
+} from './types';
 import { Item } from 'sdk/module/item/module/base/entity';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import { formatDuration } from '@/utils/date/';
@@ -26,7 +28,7 @@ class MeetingViewModel extends StoreViewModel<Props> implements ViewProps {
     const { status } = this.meetingItem;
     const statusMap = {
       [MEETING_STATUS.ENDED]: MEETING_TITLE.VIDEO_CALL_ENDED,
-      [MEETING_STATUS.CANCELLED]:  MEETING_TITLE.VIDEO_CALL_CANCELLED,
+      [MEETING_STATUS.CANCELLED]: MEETING_TITLE.VIDEO_CALL_CANCELLED,
       [MEETING_STATUS.NOT_STARTED]: MEETING_TITLE.START_VIDEO_CALL,
       [MEETING_STATUS.EXPIRED]: MEETING_TITLE.VIDEO_CALL_ENDED,
       [MEETING_STATUS.LIVE]: MEETING_TITLE.VIDEO_CALL_IN_PROGRESS,

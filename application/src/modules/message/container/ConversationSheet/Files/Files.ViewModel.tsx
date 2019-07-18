@@ -62,9 +62,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     });
   }
 
-  isRecentlyUploaded = (id: number) => {
-    return UploadFileTracker.tracker().getMapID(id) !== id;
-  }
+  isRecentlyUploaded = (id: number) => UploadFileTracker.tracker().getMapID(id) !== id
 
   getCropImage = async () => {
     const images = this.files[FileType.image];

@@ -42,6 +42,8 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 
 import { SettingService } from '@/modules/setting/service/SettingService';
+import { Dialog } from '@/containers/Dialog';
+import { Notification } from '@/modules/message/container/ConversationPost/Notification';
 const mockedDelay = 10;
 const testProcedureWaitingTime = 100;
 
@@ -107,6 +109,8 @@ describe('TelephonyService', () => {
       getCallerIdList: jest.fn(),
       getForwardingNumberList: jest.fn(),
       isRCFeaturePermissionEnabled: jest.fn(),
+      isVoipCallingAvailable: jest.fn().mockReturnValue(true),
+      hasSetCallerId: jest.fn(),
     };
 
     jest.spyOn(utils, 'getSingleEntity').mockReturnValue(defaultPhoneApp);
@@ -245,7 +249,7 @@ describe('TelephonyService', () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
 
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       (telephonyService as TelephonyService).holdOrUnhold();
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
@@ -278,7 +282,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.hold).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -312,7 +316,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -338,7 +342,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
       ).toBe(true);
@@ -368,7 +372,7 @@ describe('TelephonyService', () => {
       );
 
       await (telephonyService as TelephonyService).hangUp();
-      call.holdState = HOLD_STATE.DISABLE;
+      call.holdState = HOLD_STATE.DISABLED;
 
       expect(
         (telephonyService as TelephonyService)._telephonyStore.holdDisabled,
@@ -380,7 +384,7 @@ describe('TelephonyService', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       await (telephonyService as TelephonyService).startOrStopRecording();
 
       expect(
@@ -396,6 +400,7 @@ describe('TelephonyService', () => {
     });
 
     it('Start recording if the call is connected [JPT-1600]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
       initializeCallerId();
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
@@ -413,7 +418,7 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.startRecord).toHaveBeenCalledTimes(1);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -449,7 +454,7 @@ describe('TelephonyService', () => {
       ).toBe(false);
 
       await (telephonyService as TelephonyService).hangUp();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -461,7 +466,7 @@ describe('TelephonyService', () => {
       await sleep(testProcedureWaitingTime);
       call.holdState = HOLD_STATE.IDLE;
       await (telephonyService as TelephonyService).holdOrUnhold();
-      call.recordState = RECORD_STATE.DISABLE;
+      call.recordState = RECORD_STATE.DISABLED;
       expect(
         (telephonyService as TelephonyService)._telephonyStore.recordDisabled,
       ).toBe(true);
@@ -507,6 +512,34 @@ describe('TelephonyService', () => {
       ).toBe(true);
 
       await (telephonyService as TelephonyService).hangUp();
+    });
+
+    it('Should prompt toast when recording disabled in service web [JPT-2427]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(false);
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastOnDemandRecording).toHaveBeenCalled();
+      expect(mockedServerTelephonyService.startRecord).not.toBeCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
+    });
+
+    it('Should prompt toast when auto recording in service web [JPT-2428]', async () => {
+      mockedRCInfoService.isRCFeaturePermissionEnabled.mockReturnValue(true);
+      mockedServerTelephonyService.startRecord = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(-8));
+      initializeCallerId();
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      expect(ToastCallError.toastAutoRecording).toHaveBeenCalled();
+      expect(
+        (telephonyService as TelephonyService)._telephonyStore.isRecording,
+      ).toBe(false);
     });
   });
 
@@ -650,7 +683,8 @@ describe('TelephonyService', () => {
     const original = Array(50)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
+    const fn = telephonyService.updateInputStringFactory('inputString');
+    fn(original);
     expect(telephonyService._telephonyStore.inputString.length).toBe(30);
   });
 
@@ -658,8 +692,11 @@ describe('TelephonyService', () => {
     const original = Array(30)
       .fill(1)
       .join('');
-    telephonyService.updateInputString(original);
-    telephonyService.concatInputString('2');
+    const updateFn = telephonyService.updateInputStringFactory('inputString');
+    const concatFn = telephonyService.concatInputStringFactory('inputString');
+
+    updateFn(original);
+    concatFn('2');
     expect(telephonyService._telephonyStore.inputString).toBe(original);
   });
 
@@ -703,7 +740,10 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.concatInputString('5');
+    const concatInputString = telephonyService.concatInputStringFactory(
+      'inputString',
+    );
+    concatInputString('5');
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('12345');
@@ -713,7 +753,7 @@ describe('TelephonyService', () => {
     telephonyService.maximize();
     const inputString = '1234';
     telephonyService._telephonyStore.inputString = inputString;
-    telephonyService.deleteInputString();
+    telephonyService.deleteInputString(false, 3, 3);
     expect(
       (telephonyService as TelephonyService)._telephonyStore.inputString,
     ).toBe('123');
@@ -796,6 +836,15 @@ describe('TelephonyService', () => {
     telephonyService._callId = undefined;
   });
 
+  it("Should Can't make outbound call when call permission is disabled [JPT-2381]", async () => {
+    initializeCallerId();
+    mockedRCInfoService.isVoipCallingAvailable = jest
+      .fn()
+      .mockReturnValue(false);
+    await (telephonyService as TelephonyService).makeCall(v4());
+    expect(ToastCallError.toastPermissionError).toHaveBeenCalled();
+  });
+
   describe(`onReceiveIncomingCall()`, () => {
     const params = {
       fromName: 'test',
@@ -833,31 +882,6 @@ describe('TelephonyService', () => {
         storeManager.getGlobalStore().get(GLOBAL_KEYS.INCOMING_CALL),
       ).toBeTruthy();
     });
-  });
-
-  describe(`makeRCPhoneCall()`, () => {
-    let testedFn;
-    beforeEach(() => {
-      jest.clearAllMocks();
-      const clientService = container.get(CLIENT_SERVICE);
-      testedFn = jest.spyOn(clientService, 'invokeApp').mockImplementation();
-    });
-    ['RC', 'ATT', 'TELUS'].forEach(i =>
-      it(`should build correct url for ${i}`, () => {
-        const RCPhoneCallURL = {
-          RC: 'rcmobile',
-          ATT: 'attvr20',
-          TELUS: 'rctelus',
-        };
-        jest
-          .spyOn(utils, 'getEntity')
-          .mockImplementation(() => ({ rcBrand: i }));
-        telephonyService.makeRCPhoneCall(666);
-        expect(testedFn).toBeCalledWith(
-          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
-        );
-      }),
-    );
   });
 
   describe('setCallerPhoneNumber', () => {
@@ -900,6 +924,124 @@ describe('TelephonyService', () => {
         await sleep(16);
         expect(window.HTMLMediaElement.prototype.play).not.toBeCalled();
       }
+    });
+  });
+  describe(`onReceiveIncomingCall()`, () => {
+    const params = {
+      fromName: 'test',
+      fromNum: '456',
+      callId: v4(),
+    };
+    beforeEach(() => {
+      defaultPhoneApp = CALLING_OPTIONS.GLIP;
+      jest
+        .spyOn(telephonyService._telephonyStore, 'incomingCall')
+        .mockImplementation();
+    });
+    it(`should not response when there's incoming call and default phone setting is RC phone`, async () => {
+      defaultPhoneApp = CALLING_OPTIONS.RINGCENTRAL;
+      mockedSettingService.getById = jest
+        .fn()
+        .mockResolvedValue({ value: defaultPhoneApp });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).not.toBeCalled();
+    });
+    it(`should show ui when there's incoming call and default phone setting is Ringcentral App`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(telephonyService._telephonyStore.incomingCall).toBeCalled();
+    });
+    it(`should set incoming call in global store if has incoming call [JPT-2222]`, async () => {
+      jest
+        .spyOn(mockedSettingService, 'getById')
+        .mockResolvedValue({ value: 'glip' });
+      await telephonyService._onReceiveIncomingCall(params);
+      expect(
+        storeManager.getGlobalStore().get(GLOBAL_KEYS.INCOMING_CALL),
+      ).toBeTruthy();
+    });
+  });
+  describe(`makeRCPhoneCall()`, () => {
+    let urlTester: Function;
+    let startLoading: Function;
+    let stopLoading: Function;
+    let url: string;
+    let clientService: ClientService;
+    beforeEach(() => {
+      urlTester = jest.fn();
+      startLoading = jest.fn();
+      stopLoading = jest.fn();
+      url = 'download';
+      jest
+        .spyOn(Dialog, 'confirm')
+        .mockReturnValue({ startLoading, stopLoading });
+      mockedRCInfoService.generateWebSettingUri = jest
+        .fn()
+        .mockResolvedValue(url);
+      Notification.flashToast = jest.fn().mockImplementation();
+      clientService = container.get(CLIENT_SERVICE);
+      jest
+        .spyOn(clientService, 'invokeApp')
+        .mockImplementation(
+          (url: string, { fallback }: { fallback: Function }) => {
+            urlTester(url);
+            fallback();
+          },
+        );
+      clientService.open = jest.fn().mockImplementation();
+    });
+    ['RC', 'ATT', 'TELUS'].forEach(i =>
+      it(`should build correct url for ${i}`, () => {
+        const RCPhoneCallURL = {
+          RC: 'rcmobile',
+          ATT: 'attvr20',
+          TELUS: 'rctelus',
+        };
+        jest
+          .spyOn(utils, 'getEntity')
+          .mockImplementation(() => ({ rcBrand: i }));
+        telephonyService.makeRCPhoneCall('666');
+        expect(urlTester).toHaveBeenCalledWith(
+          `${RCPhoneCallURL[i]}://call?number=${encodeURIComponent('666')}`,
+        );
+      }),
+    );
+    it('should show dialog when rc phone is uninstalled [JPT-2403]', async () => {
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockImplementation(() => ({ rcBrand: 'rcmobile' }));
+      await telephonyService.makeRCPhoneCall('666');
+      expect(clientService.invokeApp).toHaveBeenCalled();
+      setTimeout(async () => {
+        expect(Dialog.confirm).toHaveBeenCalled();
+        const dialogArgs = Dialog.confirm.mock.calls[0][0];
+        await dialogArgs.onOK();
+        expect(startLoading).toHaveBeenCalled();
+        expect(stopLoading).toHaveBeenCalled();
+        expect(mockedRCInfoService.generateWebSettingUri).toHaveBeenCalled();
+        expect(clientService.open).toHaveReturnedWith(url);
+      }, 0);
+    });
+    it('should show err toast when the request of Download RingCentral Phone is failed. [JPT-2407]', async () => {
+      jest
+        .spyOn(utils, 'getEntity')
+        .mockImplementation(() => ({ rcBrand: 'rcmobile' }));
+      mockedRCInfoService.generateWebSettingUri = jest
+        .fn()
+        .mockRejectedValue(url);
+      await telephonyService.makeRCPhoneCall('666');
+      setTimeout(async () => {
+        expect(Dialog.confirm).toHaveBeenCalled();
+        const dialogArgs = Dialog.confirm.mock.calls[0][0];
+        await dialogArgs.onOK();
+        expect(startLoading).toHaveBeenCalled();
+        expect(stopLoading).toHaveBeenCalled();
+        expect(mockedRCInfoService.generateWebSettingUri).toHaveBeenCalled();
+        expect(clientService.open).not.toHaveReturnedWith(url);
+        expect(Notification.flashToast).toHaveBeenCalled();
+      }, 0);
     });
   });
 });

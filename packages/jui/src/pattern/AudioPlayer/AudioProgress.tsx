@@ -7,18 +7,20 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { RuiSlider } from 'rcui/components/Forms';
 import styled from '../../foundation/styled-components';
-import { width, spacing, palette, typography } from '../../foundation/utils';
+import {
+  width, spacing, palette, typography,
+} from '../../foundation/utils';
 import { JuiAudioMode, JuiAudioStatus, JuiAudioProgressProps } from './types';
 
 const StyledClock = styled.span`
   ${typography('caption1')};
-  color: ${palette('grey', '500')};
+  color: ${palette('grey', '600')};
 `;
 
 const StyledSlider = styled(RuiSlider)`
   && {
-    margin: ${spacing(0, 4)};
-    width: ${width(30)};
+    margin: ${spacing(0, 2.5)};
+    width: ${width(22.5)};
   }
 
   > div > div {
@@ -26,11 +28,10 @@ const StyledSlider = styled(RuiSlider)`
   }
 `;
 
-const formatTime = (seconds: number): string =>
-  moment()
-    .minute(0)
-    .second(seconds)
-    .format('mm:ss');
+const formatTime = (seconds: number): string => moment()
+  .minute(0)
+  .second(seconds)
+  .format('mm:ss');
 
 const JuiAudioProgress = ({
   mode = JuiAudioMode.FULL,

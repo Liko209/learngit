@@ -10,7 +10,11 @@ import { JobSchedulerConfig } from './JobSchedulerConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { WINDOW, SERVICE } from '../../../service/eventKey';
 import { mainLogger } from 'foundation/src';
-import { SequenceProcessorHandler, IProcessor } from 'sdk/framework/processor';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+  SingletonSequenceProcessor,
+} from 'sdk/framework/processor';
 
 class ScheduleJobProcessor implements IProcessor {
   constructor(
@@ -39,7 +43,9 @@ class JobScheduler {
   constructor() {
     this._isOnline = true;
     this._jobMap = new Map<JOB_KEY, JobInfo>();
-    this._jobProcessor = new SequenceProcessorHandler(UTIL_NAME);
+    this._jobProcessor = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      { name: UTIL_NAME },
+    );
     notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
       this.onNetWorkChanged(onLine);
     });
@@ -202,7 +208,7 @@ class JobScheduler {
     mainLogger.tags(UTIL_NAME).debug(`_setTimer, ${info.key}, ${interval}`);
     return setTimeout(() => {
       this._addProcessor(info);
-    },                interval);
+    }, interval);
   }
 
   private _canExecute(info: JobInfo, lastSuccessTime: number): boolean {
@@ -244,19 +250,17 @@ class JobScheduler {
         } else {
           this.cancelJob(info.key, true);
         }
+      } else if (info.periodic) {
+        info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
       } else {
-        if (info.periodic) {
+        const haveRetryTime = info.retryTime && info.retryTime > 0;
+        if (info.retryForever || haveRetryTime) {
+          if (haveRetryTime) {
+            info.retryTime = info.retryTime! - 1;
+          }
           info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
         } else {
-          const haveRetryTime = info.retryTime && info.retryTime > 0;
-          if (info.retryForever || haveRetryTime) {
-            if (haveRetryTime) {
-              info.retryTime = info.retryTime! - 1;
-            }
-            info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
-          } else {
-            this.cancelJob(info.key, true);
-          }
+          this.cancelJob(info.key, true);
         }
       }
       if (info.callback) {

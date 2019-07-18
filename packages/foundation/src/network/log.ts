@@ -1,7 +1,6 @@
-import { networkLogger } from '../log';
-import { IResponse } from '.';
-import { IRequest } from './network';
 import _ from 'lodash';
+import { networkLogger } from '../log';
+import { IResponse, IRequest } from './network';
 
 export function doResponseLog(response: IResponse) {
   const request = response.request;

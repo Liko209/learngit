@@ -9,7 +9,7 @@ import {
   JuiIconography,
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
-import { JuiLineSelect } from '../../Selects/LineSelect';
+import { JuiLineSelect } from '.';
 import { JuiMenuItem } from '../../Menus';
 import { JuiListItemText } from '../../Lists';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
@@ -21,7 +21,7 @@ type JuiRegionSelectProps = {
   selectStyle?: React.CSSProperties;
   regionList: RegionType[];
   onChange?: React.ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >;
   automationId?: string;
 };
@@ -58,7 +58,9 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
     [],
   );
 
-  const { label, selectStyle, regionList = [], automationId } = props;
+  const {
+    label, selectStyle, regionList = [], automationId,
+  } = props;
 
   const renderValue = useCallback(
     (value: string) => {
@@ -71,8 +73,8 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
         value: '',
         regionIcon: {
           id: '',
-          url: '',
           viewBox: '',
+          content: '',
         },
         regionCode: '',
       };

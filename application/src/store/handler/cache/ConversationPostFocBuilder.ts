@@ -15,6 +15,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { HasMore } from '../../base/fetch/types';
 
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
   private _postService = ServiceLoader.getInstance<PostService>(
@@ -26,7 +27,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: ISortableModelWithData<Post>,
-  ): Promise<{ data: Post[]; hasMore: boolean }> {
+  ): Promise<{ data: Post[]; hasMore: HasMore }> {
     const { posts, hasMore, items } = await this._postService.getPostsByGroupId(
       {
         direction,
@@ -49,8 +50,7 @@ class ConversationPostFocBuilder {
     jump2PostId?: number,
     fetchDataCallback?: (delta: TDelta) => Promise<void>,
   ) {
-    const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-      dataModel.group_id === Number(groupId) && !dataModel.deactivated;
+    const isMatchedFunc = (groupId: number) => (dataModel: Post) => dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
     const options = {
       transformFunc: (dataModel: Post) => ({

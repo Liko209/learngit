@@ -1,8 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-12 20:06:23
+ * @Last Modified by: alessia.li
+ * @Last Modified time: 2019-07-04 12:06:27
  */
 
 import * as _ from 'lodash';
@@ -63,8 +63,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   }, true);
 
   await h(t).withLog('When the sender delete the new post', async () => {
-    await h(t).glip(otherUser).init();
-    await h(t).glip(otherUser).deletePost(newPostId, chat.glipId);
+    await h(t).platform(otherUser).deletePost(newPostId, chat.glipId);
   });
 
   await h(t).withLog('Then the last at mention post should not exist in mentions page', async () => {
@@ -327,7 +326,7 @@ test(formalName('Function on post card of mentions/bookmarks page should the sam
 
   const app = new AppRoot(t);
   const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-  const bookmarkEntry =app.homePage.messageTab.bookmarksEntry;
+  const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
   const conversationPage = app.homePage.messageTab.conversationPage;
   const postMentionPage = app.homePage.messageTab.mentionPage;
   const postBookmarkPage = app.homePage.messageTab.bookmarkPage;
@@ -370,20 +369,20 @@ test(formalName('Function on post card of mentions/bookmarks page should the sam
     await bookmarkPostCard.clickLikeOnActionBar();
     currentNumber = 0;
   });
-    await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
-      await t.hover(bookmarkPostCard.self);
-      await t.expect(bookmarkPostCard.likeIconOnActionBar.exists).ok();
-      await t.expect(bookmarkPostCard.likeButtonOnFooter.exists).notOk();
-      await bookmarkPostCard.likeShouldBe(currentNumber);
-    });
+  await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
+    await t.hover(bookmarkPostCard.self);
+    await t.expect(bookmarkPostCard.likeIconOnActionBar.exists).ok();
+    await t.expect(bookmarkPostCard.likeButtonOnFooter.exists).notOk();
+    await bookmarkPostCard.likeShouldBe(currentNumber);
+  });
 
-    await h(t).withLog('When I unbookmark the post in bookmark page', async () => {
-      await postBookmarkPage.postItemById(newPostId).clickBookmarkToggle();
-    });
+  await h(t).withLog('When I unbookmark the post in bookmark page', async () => {
+    await postBookmarkPage.postItemById(newPostId).clickBookmarkToggle();
+  });
 
-    await h(t).withLog('Then the post should not in bookmark page', async () => {
-      await t.expect(postBookmarkPage.postItemById(newPostId).exists).notOk();
-    });
+  await h(t).withLog('Then the post should not in bookmark page', async () => {
+    await t.expect(postBookmarkPage.postItemById(newPostId).exists).notOk();
+  });
 });
 
 test(formalName('Jump to post position when click jump to conversation button.[AtMention]', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
@@ -499,61 +498,110 @@ test(formalName('JPT-733 Can\'t show all received posts when open mentions page'
 
 
 test(formalName('Can like/unlike message in AtMentions list', ['P2', 'JPT-1146', 'Foden.lin', 'AtMentions']),
-async (t: TestController) => {
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser = users[7];
-  const otherUser = users[5];
+  async (t: TestController) => {
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[7];
+    const otherUser = users[5];
 
-  let chat = <IGroup>{
-    type: "DirectMessage",
-    owner: loginUser,
-    members: [loginUser, otherUser]
-  }
+    let chat = <IGroup>{
+      type: "DirectMessage",
+      owner: loginUser,
+      members: [loginUser, otherUser]
+    }
 
-  let atMentionPostId: string;
-  await h(t).withLog('Given I have an extension with 1 at-mention posts', async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-    atMentionPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, chat, otherUser);
-  });
-
-  const app = new AppRoot(t);
-
-  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-  const mentionPage = app.homePage.messageTab.mentionPage;
-
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('Then I can find 1 posts in the mentions page', async () => {
-    await mentionsEntry.enter();
-    await t.expect(mentionPage.postItemById(atMentionPostId).exists).ok();
-  }, true);
-
-  await h(t).withLog(`When I click "unlike" button`, async () => {
-    await mentionPage.postItemById(atMentionPostId).clickLikeOnActionBar();
-  });
-
-  const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
-
-  await h(t).withLog(`Then bookmarkPost action bar 'unlike' icon change to 'like', and bookmarkPost card footer appear "like" icon with number 1`, async () => {
-    await t.hover(atMentionPostCard.self);
-    await t.expect(atMentionPostCard.unlikeIconOnActionBar.exists).ok();
-    await t.expect(atMentionPostCard.unlikeIconOnFooter.exists).ok();
-    await atMentionPostCard.likeShouldBe(1);
-  });
-
-
-  await h(t).withLog(`When I click solid 'like' icon on action bar`, async () => {
-    await atMentionPostCard.clickLikeOnActionBar();
+    let atMentionPostId: string;
+    await h(t).withLog('Given I have an extension with 1 at-mention posts', async () => {
+      await h(t).scenarioHelper.createOrOpenChat(chat);
+      atMentionPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, chat, otherUser);
     });
 
-  await h(t).withLog(`Then Action bar solid "like" icon change to hollow "unlike" icon and like number should be 0 on message card `, async () => {
-    await t.hover(atMentionPostCard.self);
-    await t.expect(atMentionPostCard.likeIconOnActionBar.exists).ok();
-    await t.expect(atMentionPostCard.likeButtonOnFooter.exists).notOk();
-    await atMentionPostCard.likeShouldBe(0);
+    const app = new AppRoot(t);
+
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const mentionPage = app.homePage.messageTab.mentionPage;
+
+    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('Then I can find 1 posts in the mentions page', async () => {
+      await mentionsEntry.enter();
+      await t.expect(mentionPage.postItemById(atMentionPostId).exists).ok();
+    }, true);
+
+    await h(t).withLog(`When I click "unlike" button`, async () => {
+      await mentionPage.postItemById(atMentionPostId).clickLikeOnActionBar();
+    });
+
+    const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
+
+    await h(t).withLog(`Then bookmarkPost action bar 'unlike' icon change to 'like', and bookmarkPost card footer appear "like" icon with number 1`, async () => {
+      await t.hover(atMentionPostCard.self);
+      await t.expect(atMentionPostCard.unlikeIconOnActionBar.exists).ok();
+      await t.expect(atMentionPostCard.unlikeIconOnFooter.exists).ok();
+      await atMentionPostCard.likeShouldBe(1);
+    });
+
+
+    await h(t).withLog(`When I click solid 'like' icon on action bar`, async () => {
+      await atMentionPostCard.clickLikeOnActionBar();
+    });
+
+    await h(t).withLog(`Then Action bar solid "like" icon change to hollow "unlike" icon and like number should be 0 on message card `, async () => {
+      await t.hover(atMentionPostCard.self);
+      await t.expect(atMentionPostCard.likeIconOnActionBar.exists).ok();
+      await t.expect(atMentionPostCard.likeButtonOnFooter.exists).notOk();
+      await atMentionPostCard.likeShouldBe(0);
+    });
   });
-});
+
+test(formalName('Show empty page when there are no posts in AtMention list', ['P2', 'JPT-2486', 'Alessia.Li', 'AtMention']),
+  async (t: TestController) => {
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[7];
+    const otherUser = users[5];
+    await h(t).resetGlipAccount(loginUser);
+
+    const app = new AppRoot(t);
+    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+    const mentionPage = app.homePage.messageTab.mentionPage;
+    const emptyPage = mentionPage.emptyPage;
+
+    await h(t).withLog(`When I login Jupiter with this extension which has no AtMention posts: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog('Then I can see empty page in the mentions page', async () => {
+      await mentionsEntry.enter();
+      await t.expect(emptyPage.exists).ok();
+    }, true);
+
+    let chat = <IGroup>{
+      type: "DirectMessage",
+      owner: loginUser,
+      members: [loginUser, otherUser]
+    }
+    let atMentionPostId;
+    await h(t).withLog('And I receive an AtMention post', async () => {
+      await h(t).scenarioHelper.createOrOpenChat(chat);
+      await h(t).glip(otherUser).init();
+      atMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, chat.glipId);
+    });
+
+    await h(t).withLog('Then I can see this post instead of empty page in the mentions page', async () => {
+      await t.expect(emptyPage.exists).notOk();
+      const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
+      await t.expect(atMentionPostCard.exists).ok();
+    }, true);
+
+    await h(t).withLog('When this AtMention post is deleted', async () => {
+      await h(t).glip(otherUser).deletePost(atMentionPostId, chat.glipId);
+    });
+
+    await h(t).withLog('Then I can see empty page in the mentions page again', async () => {
+      await t.expect(emptyPage.exists).ok();
+    }, true);
+  });
 

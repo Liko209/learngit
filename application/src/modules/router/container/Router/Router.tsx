@@ -14,7 +14,7 @@ import { container } from 'framework';
 import history from '@/history';
 import { RouterStore } from '../../store/RouterStore';
 import { AuthRoute } from '../AuthRoute';
-
+/* eslint-disable */
 class Router extends React.Component {
   private readonly _routerStore: RouterStore = container.get(RouterStore);
 

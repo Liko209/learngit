@@ -132,9 +132,7 @@ class RCMessageBadgeController<T extends RCMessage> {
   private _registerBadge() {
     ServiceLoader.getInstance<BadgeService>(
       ServiceConfig.BADGE_SERVICE,
-    ).registerBadge(this.badgeId, () => {
-      return { id: this.badgeId, unreadCount: this._unreadCount };
-    });
+    ).registerBadge(this.badgeId, () => ({ id: this.badgeId, unreadCount: this._unreadCount }));
   }
 }
 

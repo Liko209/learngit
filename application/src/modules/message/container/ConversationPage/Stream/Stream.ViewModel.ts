@@ -17,7 +17,9 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType, StreamItem, STATUS } from './types';
+import {
+  StreamProps, StreamItemType, StreamItem, STATUS,
+} from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -167,26 +169,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._lastPostId);
   }
 
-  hasNewMessageSeparator = () => {
-    return this.findNewMessageSeparatorIndex() > -1;
-  }
+  hasNewMessageSeparator = () => this.findNewMessageSeparatorIndex() > -1
 
-  findNewMessageSeparatorIndex = () => {
-    return this.items.findIndex(
-      (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
-    );
-  }
+  findNewMessageSeparatorIndex = () => this.items.findIndex(
+    (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
+  )
 
-  findPostIndex = (postId?: number) => {
-    return postId
-      ? this.items.findIndex(
-          (item: StreamItem) =>
-            item.type === StreamItemType.POST &&
+  findPostIndex = (postId?: number) => (postId
+    ? this.items.findIndex(
+      (item: StreamItem) => item.type === StreamItemType.POST &&
             !!item.value &&
-            item.value.includes(postId),
-        )
-      : -1;
-  }
+            item.value === postId,
+    )
+    : -1)
 
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
@@ -273,7 +268,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     direction: QUERY_DIRECTION,
     limit?: number,
   ): Promise<Post[]> {
-    if (!this._streamController.hasMore(direction)) {
+    if (
+      direction !== QUERY_DIRECTION.BOTH &&
+      !this._streamController.hasMore(direction)
+    ) {
       return [];
     }
     return await this._streamController.fetchData(direction, limit);
@@ -291,10 +289,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
       this._streamController.replacePostList([post]);
-      await Promise.all([
-        this._loadPosts(QUERY_DIRECTION.OLDER),
-        this._loadPosts(QUERY_DIRECTION.NEWER),
-      ]);
+      await this._loadPosts(QUERY_DIRECTION.BOTH);
     } else {
       // TODO error handing
     }

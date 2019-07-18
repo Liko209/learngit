@@ -3,7 +3,7 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component, ComponentType } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
@@ -49,13 +49,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderPresence = () => {
     const { id } = this.props;
-    return <Presence uid={id} size="xlarge" borderSize="xlarge" />;
-  }
+    return <Presence uid={id} size='xlarge' borderSize='xlarge' />;
+  };
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
     return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
-  }
+  };
 
   renderMessage = () => {
     const { t, person } = this.props;
@@ -64,27 +64,27 @@ class ProfileDialogPersonContentViewComponent extends Component<
         tabIndex={0}
         aria-label={t(this.getAriaLabelKey(), { name: person.userDisplayName })}
       >
-        {this.renderIcon('chat_bubble')}
+        {this.renderIcon('chat')}
         {t('message.message')}
       </JuiProfileDialogContentSummaryButton>
     );
-  }
+  };
 
   renderIcon = (key: string) => {
-    return <JuiIconography iconSize="medium">{key}</JuiIconography>;
-  }
+    return <JuiIconography iconSize='medium'>{key}</JuiIconography>;
+  };
 
   renderIcons = (value: string, aria?: string, showCall?: boolean) => {
     const { t, id } = this.props;
     const copy = (
       <JuiIconButton
-        size="small"
+        size='small'
         onClick={this.onClickCopy.bind(this, value)}
         tooltipTitle={t('common.copy')}
         ariaLabel={t('common.ariaCopy', {
           value: aria || value,
         })}
-        key="copy phone number"
+        key='copy phone number'
       >
         copy
       </JuiIconButton>
@@ -95,9 +95,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <Comp
             key={`MESSAGE_PROFILE_CONTENT_EXTENSION_${Comp.displayName}`}
             phone={value}
-            size="small"
+            size='small'
             id={id}
-            analysisSource="profile"
+            analysisSource='profile'
           />
         ))
       : [];
@@ -105,11 +105,11 @@ class ProfileDialogPersonContentViewComponent extends Component<
     icons.push(copy);
 
     return <FormCopy>{icons}</FormCopy>;
-  }
+  };
 
   onClickCopy = (value: string) => {
     copy(value);
-  }
+  };
 
   renderFormGroup = ({
     icon,
@@ -130,7 +130,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
         {copyValue && this.renderIcons(copyValue, copyAria, showCall)}
       </FormGroup>
     );
-  }
+  };
 
   renderEmail(value: string) {
     const html = `<a href="mailto:${value}">${value}</a>`;
@@ -158,24 +158,24 @@ class ProfileDialogPersonContentViewComponent extends Component<
       <>
         <Summary
           emphasize={isMe}
-          data-test-automation-id="profileDialogSummary"
+          data-test-automation-id='profileDialogSummary'
         >
           <Left>
             <Avatar
               uid={id}
-              size="xlarge"
+              size='xlarge'
               presence={this.renderPresence()}
-              automationId="profileAvatar"
+              automationId='profileAvatar'
             />
           </Left>
           <Right>
-            <Name data-test-automation-id="profileDialogSummaryName">
+            <Name data-test-automation-id='profileDialogSummaryName'>
               {person.userDisplayName}
             </Name>
-            <Status data-test-automation-id="profileDialogSummaryStatus">
+            <Status data-test-automation-id='profileDialogSummaryStatus'>
               {person.awayStatus}
             </Status>
-            <Title data-test-automation-id="profileDialogSummaryTitle">
+            <Title data-test-automation-id='profileDialogSummaryTitle'>
               {person.jobTitle}
             </Title>
             <Buttons>
@@ -188,7 +188,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <Form data-test-automation-id="profileDialogForm">
+        <Form data-test-automation-id='profileDialogForm'>
           <Grid container={true}>
             <Grid item={true} xs={12} sm={6}>
               {company.name &&

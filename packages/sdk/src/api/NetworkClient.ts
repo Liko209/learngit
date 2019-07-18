@@ -36,6 +36,8 @@ export type IBaseQuery = {
   HAPriority?: HA_PRIORITY;
   timeout?: number;
   pathPrefix?: string;
+  channel?: string;
+  method?: NETWORK_METHOD;
 };
 
 export type IQuery = IBaseQuery & {
@@ -76,8 +78,8 @@ export default class NetworkClient {
   networkRequests: INetworkRequests;
   pathPrefix?: string;
   apiMap: Map<
-    string,
-    { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
+  string,
+  { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
   >;
   defaultVia: NETWORK_VIA;
   networkManager: NetworkManager;
@@ -131,6 +133,7 @@ export default class NetworkClient {
         );
       return await this.request(query, requestHolder);
     }
+    networkLogger.tags(LOG_TAG).info('request fail:', request);
     throw responseParser.parse(response);
   }
 
@@ -167,7 +170,6 @@ export default class NetworkClient {
 
       if (!isDuplicated) {
         this.networkManager.addApiRequest(request);
-
         if (requestHolder) {
           requestHolder.request = request;
         }
@@ -193,9 +195,10 @@ export default class NetworkClient {
       requestConfig,
       retryCount,
       priority = REQUEST_PRIORITY.NORMAL,
-      HAPriority,
+      HAPriority = HA_PRIORITY.BASIC,
       timeout,
       pathPrefix,
+      channel,
     } = query;
 
     const finalPathPrefix =
@@ -218,7 +221,8 @@ export default class NetworkClient {
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .setPriority(priority)
-      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
+      .setHAPriority(HAPriority)
+      .setChannel(channel || '');
   }
 
   http<T>(query: IQuery, requestHolder?: RequestHolder) {
@@ -277,6 +281,14 @@ export default class NetworkClient {
   delete<T>(baseQuery: IBaseQuery) {
     const query = _.extend(baseQuery, { method: NETWORK_METHOD.DELETE });
     return this.http<T>(query);
+  }
+
+  send<T>(baseQuery: IBaseQuery) {
+    return this.http<T>({
+      method: NETWORK_METHOD.GET, // this value is useless if channel is not request
+      ...baseQuery, // if baseQuery has method value it will override the former value
+      data: omitLocalProperties(baseQuery.data || {}),
+    });
   }
 
   private _needCheckDuplicated(method: NETWORK_METHOD) {

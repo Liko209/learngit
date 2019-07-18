@@ -203,24 +203,18 @@ class RegionInfoController {
     isoCode: string,
   ): Promise<UndefinedAble<DialingCountryInfo>> {
     const recordsInDialing = await this._getDialingPlanCountryRecords();
-    const record = recordsInDialing.find((x: DialingPlanCountryRecord) => {
-      return x.isoCode === isoCode;
-    });
+    const record = recordsInDialing.find((x: DialingPlanCountryRecord) => x.isoCode === isoCode);
     return record;
   }
 
   private _getDefaultCountryInfoByISOCode(isoCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => {
-      return info.isoCode === isoCode;
-    });
+    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.isoCode === isoCode);
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }
 
   private _getDefaultCountryInfoByCallingCode(callingCode: string) {
-    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => {
-      return info.callingCode === callingCode;
-    });
+    const index = SELLING_COUNTRY_LIST.findIndex((info: DialingCountryInfo) => info.callingCode === callingCode);
 
     return index !== -1 ? SELLING_COUNTRY_LIST[index] : undefined;
   }

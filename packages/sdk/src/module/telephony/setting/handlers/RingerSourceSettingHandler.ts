@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import _ from 'lodash';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import {
   AbstractSettingEntityHandler,
@@ -23,7 +22,7 @@ import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
 
 export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
-  MediaDeviceInfo
+MediaDeviceInfo
 > {
   id = SettingEntityIds.Phone_RingerSource;
 
@@ -43,10 +42,14 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
     );
   }
 
-  private _getEntityState = async () => {
+  private _getEntityState = async (devices: MediaDeviceInfo[]) => {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    let state = ESettingItemState.ENABLE;
+    if (!devices.length) {
+      state = ESettingItemState.DISABLE;
+    }
     const isEnable =
       isChrome() &&
       ((await this._telephonyService.getVoipCallPermission()) ||
@@ -56,12 +59,15 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
         (await rcInfoService.isRCFeaturePermissionEnabled(
           ERCServiceFeaturePermission.CONFERENCING,
         )));
-    return isEnable ? ESettingItemState.ENABLE : ESettingItemState.INVISIBLE;
-  }
+    if (!isEnable) {
+      state = ESettingItemState.INVISIBLE;
+    }
+    return state;
+  };
 
   private _onPermissionChange = async () => {
     isChrome() && (await this.getUserSettingEntity());
-  }
+  };
 
   private _onSelectedDeviceUpdate = (type: number, value: string) => {
     if (
@@ -71,11 +77,11 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
     ) {
       this.getUserSettingEntity();
     }
-  }
+  };
 
-  private _onDevicesChange = async (devices: MediaDeviceInfo[]) => {
+  private _onDevicesChange = async () => {
     await this.getUserSettingEntity();
-  }
+  };
 
   dispose() {
     super.dispose();
@@ -100,7 +106,7 @@ export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
       value: devices.find(
         device => device.deviceId === TelephonyGlobalConfig.getCurrentRinger(),
       ),
-      state: await this._getEntityState(),
+      state: await this._getEntityState(devices),
       valueSetter: value => this.updateValue(value),
     };
     return settingItem;

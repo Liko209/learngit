@@ -3,9 +3,8 @@
  * @Date: 2018-09-11 17:32:34
  * Copyright © RingCentral. All rights reserved.
  */
-
-import styled from '../../../foundation/styled-components';
 import MuiSwitch from '@material-ui/core/Switch';
+import styled from '../../../foundation/styled-components';
 import {
   width,
   spacing,
@@ -29,9 +28,8 @@ const ToggleButton = styled(MuiSwitch)`
       background: none;
     }
   }
-  ${props =>
-    !props.disabled
-      ? `
+  ${props => (!props.disabled
+    ? `
     &:hover {
       .custom-bar {
         opacity: ${1 - props.theme.palette.action.hoverOpacity} !important;
@@ -43,7 +41,7 @@ const ToggleButton = styled(MuiSwitch)`
       }
     }
   `
-      : null};
+    : null)};
 
   .custom-bar {
     opacity: 1;
@@ -83,8 +81,7 @@ const ToggleButton = styled(MuiSwitch)`
   }
 
   input {
-    transform: ${({ checked, theme }) =>
-      `translateX(${spacing(checked ? -2 : 2)({ theme })})`};
+    transform: ${({ checked, theme }) => `translateX(${spacing(checked ? -2 : 2)({ theme })})`};
   }
 `;
 

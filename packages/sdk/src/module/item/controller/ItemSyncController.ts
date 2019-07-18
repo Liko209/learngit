@@ -15,6 +15,7 @@ import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import {
   SequenceProcessorHandler,
   IProcessor,
+  SingletonSequenceProcessor,
 } from '../../../framework/processor';
 
 const AvailableSocketStatus = ['connected', 'connecting'];
@@ -70,11 +71,13 @@ class ItemSyncController {
   private _itemSequenceProcessor: SequenceProcessorHandler;
   private _itemSyncMaxProcessors: number = 10;
   constructor(private _itemService: IItemService) {
-    this._itemSequenceProcessor = new SequenceProcessorHandler(
-      'ItemSequenceProcessor',
-      this._addItemSyncStrategy,
-      this._itemSyncMaxProcessors,
-      this._onExceedMaxSize,
+    this._itemSequenceProcessor = SingletonSequenceProcessor.getSequenceProcessorHandler(
+      {
+        name: 'ItemSequenceProcessor',
+        addProcessorStrategy: this._addItemSyncStrategy,
+        maxSize: this._itemSyncMaxProcessors,
+        onExceedMaxSize: this._onExceedMaxSize,
+      },
     );
 
     notificationCenter.on(SERVICE.SOCKET_STATE_CHANGE, (state: string) => {
@@ -100,9 +103,7 @@ class ItemSyncController {
   ) => {
     let result: IProcessor[] = totalProcessors;
     if (existed) {
-      result = result.filter((item: IProcessor) => {
-        return item.name() !== newProcessor.name();
-      });
+      result = result.filter((item: IProcessor) => item.name() !== newProcessor.name());
     }
     result.unshift(newProcessor);
     return result;

@@ -34,8 +34,7 @@ const StyledCustomReply = styled(JuiTextarea)`
   }
 ` as React.ComponentType<JuiCustomReplyProps>;
 
-const JuiCustomReply = React.memo((props: JuiCustomReplyProps) => {
-  return (
+const JuiCustomReply = React.memo((props: JuiCustomReplyProps) => (
     <StyledCustomReply
       InputLabelProps={{
         classes: {
@@ -44,7 +43,6 @@ const JuiCustomReply = React.memo((props: JuiCustomReplyProps) => {
       }}
       {...props}
     />
-  );
-});
+));
 
 export { JuiCustomReply };

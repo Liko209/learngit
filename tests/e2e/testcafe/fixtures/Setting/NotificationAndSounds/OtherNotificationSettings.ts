@@ -6,7 +6,7 @@
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
-import { h } from '../../../v2/helpers';
+import { h, H } from '../../../v2/helpers';
 import { teardownCase, setupCase } from '../../../init';
 import { BrandTire, SITE_URL } from '../../../config';
 import { IGroup, ITestMeta } from '../../../v2/models';
@@ -97,7 +97,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then check UMI in Messages UMI=1+1+0=2 ', async () => {
-    await t.expect(await app.homePage.leftPanel.messagesEntry.getUmi()).eql(2);
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(2);
   });
 
   await h(t).withLog(`And I click new message badge count DropDown`, async () => {
@@ -109,6 +109,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then check UMI in Messages UMI=1+1+1=3 ', async () => {
-    await t.expect(await app.homePage.leftPanel.messagesEntry.getUmi()).eql(3);
+    await app.homePage.leftPanel.messagesEntry.umi.shouldBeNumber(3);
   });
 });

@@ -3,6 +3,9 @@
  * @Date: 2019-06-03 13:42:21
  * Copyright © RingCentral. All rights reserved.
  */
+
+/* eslint-disable */
+
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -17,7 +20,7 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-
+import { HoverControllerBaseProps } from '../HoverController';
 import {
   VOICE_MAIL_ITEM_HEIGHT,
   INITIAL_COUNT,
@@ -25,8 +28,9 @@ import {
   LOADING_DELAY,
 } from '../Voicemail/config';
 import noCallLogImage from '../images/no-call.svg';
+import noResultImage from '../images/no-result.svg';
 
-type Props = WithTranslation & AllCallsViewProps;
+type Props = WithTranslation & AllCallsViewProps & HoverControllerBaseProps;
 
 @observer
 class AllCallsViewComponent extends Component<Props> {
@@ -44,29 +48,40 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   private get _noRowsRenderer() {
-    const { t } = this.props;
+    const { t, filterFOCKey } = this.props;
+
+    const message = filterFOCKey
+      ? t('phone.noMatchesFound')
+      : t('phone.noCallLogAvailable');
+
+    const image = filterFOCKey ? noResultImage : noCallLogImage;
 
     return (
       <JuiEmptyPage
         data-test-automation-id="callHistoryEmptyPage"
-        image={noCallLogImage}
-        message={t('phone.noCallLogAvailable')}
+        image={image}
+        message={message}
         height={this._height}
       />
     );
   }
 
   private _renderItems() {
-    const { listHandler } = this.props;
-    return listHandler.sortableListStore.getIds.map((itemId: string) => {
-      return (
+    const { listHandler, resetSelectIndex, width, isHover } = this.props;
+
+    return listHandler.sortableListStore.getIds.map(
+      (itemId: string, cellIndex: number) => (
         <CallLogItem
           didOpenMiniProfile={this._didOpenMiniProfile}
           id={itemId}
           key={itemId}
+          onMouseLeave={resetSelectIndex}
+          isHover={isHover(cellIndex)}
+          onMouseOver={this.props.selectIndexChange(cellIndex)}
+          width={width}
         />
-      );
-    });
+      ),
+    );
   }
 
   private _didOpenMiniProfile = () => {
@@ -75,7 +90,7 @@ class AllCallsViewComponent extends Component<Props> {
         ? CallLogSourceType.All
         : CallLogSourceType.Missed;
     analyticsCollector.openMiniProfile(source);
-  }
+  };
 
   componentDidMount() {
     if (this.props.type === CallLogType.All) {
@@ -86,10 +101,10 @@ class AllCallsViewComponent extends Component<Props> {
   }
 
   render() {
-    const { listHandler, isError, onErrorReload } = this.props;
+    const { listHandler, isError, onErrorReload, type } = this.props;
 
     return (
-      <PhoneWrapper height={this._height}>
+      <PhoneWrapper pageHeight={this._height} data-type={type}>
         {isError ? (
           <ErrorPage onReload={onErrorReload} height={this._height} />
         ) : (

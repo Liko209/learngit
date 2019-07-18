@@ -15,9 +15,7 @@ import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { SYNC_SOURCE } from '../../../../sync';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-import { MyStateConfig } from '../../../config';
 import { notificationCenter } from 'sdk/service';
-import { StateService } from 'sdk/module/state/service';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
@@ -60,6 +58,7 @@ describe('StateDataHandleController', () => {
         if (config === ServiceConfig.STATE_SERVICE) {
           return mockStateService;
         }
+        return;
       });
   });
 
@@ -72,6 +71,7 @@ describe('StateDataHandleController', () => {
         {
           type: TASK_DATA_TYPE.STATE,
           data: states,
+          ignoreCursorValidate: true,
         },
         SYNC_SOURCE.INDEX,
         undefined,
@@ -95,10 +95,11 @@ describe('StateDataHandleController', () => {
     it('should start handle task when array only has one task', async () => {
       const groups: Partial<Group>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleGroupCursor(groups);
+      await stateDataHandleController.handleGroupCursor(groups, true);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
         type: TASK_DATA_TYPE.GROUP_CURSOR,
         data: groups,
+        ignoreCursorValidate: true,
       });
     });
 
@@ -118,7 +119,9 @@ describe('StateDataHandleController', () => {
   describe('_startDataHandleTask', () => {
     it('should handle state task and stop the queue', async () => {
       const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
-      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController[
+        '_transformStateData'
+      ] = jest.fn().mockReturnValue({});
       stateDataHandleController['_transformGroupData'] = jest.fn();
       // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
@@ -147,7 +150,9 @@ describe('StateDataHandleController', () => {
         data: [],
       };
       stateDataHandleController['_transformStateData'] = jest.fn();
-      stateDataHandleController['_transformGroupData'] = jest.fn();
+      stateDataHandleController[
+        '_transformGroupData'
+      ] = jest.fn().mockReturnValue({});
       // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
@@ -181,7 +186,7 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_taskArray'] = [task, task2];
       stateDataHandleController['_transformStateData'] = jest.fn();
       // prettier-ignore
-      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation();
+      stateDataHandleController['_transformGroupData'] = jest.fn().mockReturnValue({});
       // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
@@ -293,6 +298,7 @@ describe('StateDataHandleController', () => {
             read_through: 7,
             unread_deactivated_count: 1,
             unread_mentions_count: 6,
+            last_author_id: 56,
           },
           {
             id: 2,
@@ -312,8 +318,9 @@ describe('StateDataHandleController', () => {
           },
           {
             id: 4,
-            marked_as_unread: true,
+            marked_as_unread: false,
             last_author_id: 5684,
+            post_cursor: 8,
           },
         ],
         isSelf: false,
@@ -332,6 +339,7 @@ describe('StateDataHandleController', () => {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             unread_count: 0,
+            last_author_id: 88,
           },
           {
             id: 2,
@@ -346,8 +354,9 @@ describe('StateDataHandleController', () => {
           },
           {
             id: 4,
-            marked_as_unread: false,
+            marked_as_unread: true,
             last_author_id: 56,
+            post_cursor: 688,
           },
         ]);
 
@@ -369,6 +378,7 @@ describe('StateDataHandleController', () => {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             unread_count: 5,
+            last_author_id: 56,
           },
           {
             group_post_cursor: 15,
@@ -390,12 +400,6 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 5,
             unread_count: 0,
           },
-          {
-            id: 4,
-            marked_as_unread: true,
-            last_author_id: 5684,
-            unread_count: 0,
-          },
         ],
         myState: undefined,
       });
@@ -409,6 +413,7 @@ describe('StateDataHandleController', () => {
             group_post_cursor: 18,
           },
         ],
+        ignoreCursorValidate: true,
         isSelf: true,
       };
 
@@ -418,7 +423,7 @@ describe('StateDataHandleController', () => {
           {
             id: 1,
             marked_as_unread: true,
-            group_post_cursor: 17,
+            group_post_cursor: 19,
             post_cursor: 16,
             read_through: 7,
             unread_deactivated_count: 0,
@@ -513,11 +518,7 @@ describe('StateDataHandleController', () => {
         group_post_drp_cursor: 5,
       } as any;
       expect(
-        stateDataHandleController['_hasInvalidCursor'](
-          updateState,
-          localState,
-          false,
-        ),
+        stateDataHandleController['_hasInvalidCursor'](updateState, localState),
       ).toBeTruthy();
     });
 
@@ -529,11 +530,7 @@ describe('StateDataHandleController', () => {
         group_post_cursor: 5,
       } as any;
       expect(
-        stateDataHandleController['_hasInvalidCursor'](
-          updateState,
-          localState,
-          false,
-        ),
+        stateDataHandleController['_hasInvalidCursor'](updateState, localState),
       ).toBeTruthy();
     });
 
@@ -545,11 +542,7 @@ describe('StateDataHandleController', () => {
         group_post_drp_cursor: 5,
       } as any;
       expect(
-        stateDataHandleController['_hasInvalidCursor'](
-          updateState,
-          localState,
-          false,
-        ),
+        stateDataHandleController['_hasInvalidCursor'](updateState, localState),
       ).toBeTruthy();
     });
 
@@ -562,11 +555,7 @@ describe('StateDataHandleController', () => {
         post_cursor: 5,
       } as any;
       expect(
-        stateDataHandleController['_hasInvalidCursor'](
-          updateState,
-          localState,
-          false,
-        ),
+        stateDataHandleController['_hasInvalidCursor'](updateState, localState),
       ).toBeTruthy();
     });
   });

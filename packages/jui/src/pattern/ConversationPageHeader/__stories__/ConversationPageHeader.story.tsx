@@ -24,27 +24,29 @@ storiesOf('Pattern', module).add('ConversationPageHeader', () => {
       SubTitle={
         <JuiButtonBar overlapSize={2}>
           <JuiCheckboxButton
-            tooltipTitle="This is a public team"
-            checkedIconName="lock"
-            color="grey.500"
-            iconName="lock_open"
+            tooltipTitle='This is a public team'
+            checkedIconName='lock'
+            color='grey.500'
+            iconName='lock_open'
           />
           <JuiCheckboxButton
-            tooltipTitle="Add to Favorite"
-            color="accent.gold"
-            checkedIconName="star"
-            iconName="star_border"
+            tooltipTitle='Add to Favorite'
+            color='accent.gold'
+            checkedIconName='star'
+            iconName='star_border'
           />
-        </JuiButtonBar>}
+        </JuiButtonBar>
+      }
       Right={
         <JuiButtonBar overlapSize={1}>
-          <JuiIconButton tooltipTitle="Start Conference Call" symbol={phone} />
-          <JuiIconButton tooltipTitle="Start Video Call" symbol={meetings} />
+          <JuiIconButton tooltipTitle='Start Conference Call' symbol={phone} />
+          <JuiIconButton tooltipTitle='Start Video Call' symbol={meetings} />
           <JuiIconButton
-            tooltipTitle="Conversation Settings"
+            tooltipTitle='Conversation Settings'
             symbol={setting}
           />
-        </JuiButtonBar>}
+        </JuiButtonBar>
+      }
     />
   );
 });

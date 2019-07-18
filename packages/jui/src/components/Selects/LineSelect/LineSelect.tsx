@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { JuiTextField } from '../../../components/Forms';
+import { JuiTextField } from '../../Forms';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { grey, typography } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
@@ -45,7 +45,7 @@ const JuiLineSelect = React.memo((props: JuiLineSelectProps) => {
     <StyledSelect
       label={label}
       data-test-automation-id={automationId}
-      select={true}
+      select
       SelectProps={{
         renderValue,
         MenuProps: menuProps,

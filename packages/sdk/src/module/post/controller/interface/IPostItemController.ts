@@ -9,6 +9,7 @@ import {
   PostItemsReadyCallback,
   SendPostItemsUpdateCallback,
 } from '../../types';
+
 interface IPostItemController {
   buildItemVersionMap(
     groupId: number,

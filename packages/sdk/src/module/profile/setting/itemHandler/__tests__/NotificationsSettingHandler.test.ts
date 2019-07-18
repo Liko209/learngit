@@ -190,5 +190,22 @@ describe('NotificationsSettingHandler ', () => {
       });
       expect(profileService.updateSettingOptions).not.toBeCalled();
     });
+
+    it('should call updateSettingOptions when browserPermission is granted and local wantNotifications is undefined', async () => {
+      Pal.instance.getNotificationPermission = jest.fn().mockReturnValue({
+        isGranted: true,
+      });
+      profileService.getProfile = jest.fn().mockResolvedValue(undefined);
+      await notificationsSettingHandler.updateValue({
+        browserPermission: PERMISSION.GRANTED,
+        desktopNotifications: true,
+      });
+      expect(profileService.updateSettingOptions).toBeCalledWith([
+        {
+          value: true,
+          key: SETTING_KEYS.DESKTOP_NOTIFICATION,
+        },
+      ]);
+    });
   });
 });

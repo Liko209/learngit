@@ -12,10 +12,8 @@ import {
 import { RCInfoService } from '../../rcInfo';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PhoneNumberService } from 'sdk/module/phoneNumber';
-
+/* eslint-disable */
 class MakeCallController {
-  constructor() {}
-
   private _checkInternetConnection() {
     if (!window.navigator.onLine) {
       return MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION;

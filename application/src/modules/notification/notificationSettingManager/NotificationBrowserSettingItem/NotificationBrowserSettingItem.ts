@@ -7,8 +7,9 @@ import { buildContainer } from '@/base';
 import { NotificationBrowserSettingItemView } from './NotificationBrowserSettingItem.View';
 import { NotificationBrowserSettingItemViewModel } from './NotificationBrowserSettingItem.ViewModel';
 import { NotificationBrowserSettingItemProps } from './types';
+
 const NotificationBrowserSettingItem = buildContainer<
-  NotificationBrowserSettingItemProps
+NotificationBrowserSettingItemProps
 >({
   View: NotificationBrowserSettingItemView,
   ViewModel: NotificationBrowserSettingItemViewModel,

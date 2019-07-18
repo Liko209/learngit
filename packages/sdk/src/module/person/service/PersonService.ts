@@ -25,7 +25,6 @@ import {
   PhoneNumberModel,
   SanitizedExtensionModel,
 } from '../entity';
-import { ContactType } from '../types';
 import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
@@ -42,13 +41,11 @@ class PersonService extends EntityBaseService<Person>
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.PERSON]: this.handleIncomingData,
+        [SOCKET.PERSON]: this.handleSocketIOData,
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => {
-      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON);
-    });
+    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON));
   }
 
   protected buildEntityCacheController() {
@@ -77,6 +74,13 @@ class PersonService extends EntityBaseService<Person>
     return persons;
   }
 
+  handleSocketIOData = async (persons: Raw<Person>[]): Promise<void> => {
+    await this.getPersonController().handleIncomingData(
+      persons,
+      SYNC_SOURCE.SOCKET,
+    );
+  };
+
   handleIncomingData = async (
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
@@ -87,7 +91,7 @@ class PersonService extends EntityBaseService<Person>
       source,
       changeMap,
     );
-  }
+  };
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
     return await this.getPersonController().getPersonsByIds(ids);
@@ -147,11 +151,9 @@ class PersonService extends EntityBaseService<Person>
 
   async matchContactByPhoneNumber(
     phoneNumber: string,
-    contactType: ContactType,
   ): Promise<Person | null> {
     return await this.getPersonController().matchContactByPhoneNumber(
       phoneNumber,
-      contactType,
     );
   }
 

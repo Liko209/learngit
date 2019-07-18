@@ -3,7 +3,9 @@
  * @Date: 2019-04-01 13:12:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { UndefinedAble, IndexRange, Delta, IndexConstraint } from '../types';
+import {
+  UndefinedAble, IndexRange, Delta, IndexConstraint,
+} from '../types';
 
 type LoadMoreStrategyParams = Readonly<{
   visibleRange: Readonly<IndexRange>;

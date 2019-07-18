@@ -29,22 +29,27 @@ import { telephonyLogger } from 'foundation';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import _ from 'lodash';
 import { ToggleController, ToggleRequest } from './ToggleController';
+import { CALL_ACTION_ERROR_CODE } from '../types';
+
+type CallActionResult = string | CALL_ACTION_ERROR_CODE;
 
 interface IResultResolveFn {
-  (value: string | PromiseLike<string>): void;
+  (value: CallActionResult | PromiseLike<CallActionResult>): void;
 }
 
 interface IResultRejectFn {
-  (value: string | PromiseLike<string>): void;
+  (value: CallActionResult | PromiseLike<CallActionResult>): void;
 }
+
+const ACR_ON = -8;
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _rtcCall: RTCCall;
   private _entityId: number;
   private _entityCacheController: IEntityCacheController<Call>;
   private _callActionCallbackMap: Map<
-    string,
-    { resolve: IResultResolveFn; reject: IResultRejectFn }
+  string,
+  { resolve: IResultResolveFn; reject: IResultRejectFn }
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
@@ -68,8 +73,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       from_num: '',
       call_id: '',
       call_state: CALL_STATE.IDLE,
-      hold_state: HOLD_STATE.DISABLE,
-      record_state: RECORD_STATE.DISABLE,
+      hold_state: HOLD_STATE.DISABLED,
+      record_state: RECORD_STATE.DISABLED,
       startTime: Date.now(),
       connectTime: 0,
       disconnectTime: 0,
@@ -108,7 +113,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-
+  /* eslint-disable */
   private _handleCallStateChanged(state: RTC_CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {
@@ -155,37 +160,57 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _handleUnHoldAction(isSuccess: boolean) {
     if (!isSuccess) {
       this._updateCallHoldState(HOLD_STATE.HELD);
-      this._updateCallRecordState(RECORD_STATE.DISABLE);
+      this._updateCallRecordState(RECORD_STATE.DISABLED);
     }
+  }
+
+  private _transformCallActionErrorCode(code: number) {
+    let res = CALL_ACTION_ERROR_CODE.OTHERS;
+    switch (code) {
+      case RTC_CALL_ACTION_ERROR_CODE.INVALID:
+        res = CALL_ACTION_ERROR_CODE.INVALID;
+        break;
+      case RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS:
+        res = CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS;
+        break;
+      case ACR_ON:
+        res = CALL_ACTION_ERROR_CODE.ACR_ON;
+        break;
+    }
+    return res;
   }
 
   private _handleStartRecordAction(
     isSuccess: boolean,
     options: RTCCallActionSuccessOptions | number,
   ) {
+    let res = CALL_ACTION_ERROR_CODE.NO_ERROR;
     if (!isSuccess) {
       this._updateCallRecordState(RECORD_STATE.IDLE);
+      res =
+        options && typeof options === 'number'
+          ? this._transformCallActionErrorCode(options)
+          : CALL_ACTION_ERROR_CODE.OTHERS;
     }
 
-    return options &&
-      typeof options === 'number' &&
-      options !== RTC_CALL_ACTION_ERROR_CODE.INVALID
-      ? options.toString()
-      : '';
+    return res;
   }
 
   private _handleStopRecordAction(
     isSuccess: boolean,
     options: RTCCallActionSuccessOptions | number,
   ) {
+    let res = CALL_ACTION_ERROR_CODE.NO_ERROR;
+
     if (!isSuccess) {
       this._updateCallRecordState(RECORD_STATE.RECORDING);
+      res =
+        options && typeof options === 'number'
+          ? this._transformCallActionErrorCode(options)
+          : CALL_ACTION_ERROR_CODE.OTHERS;
     }
-    return options &&
-      typeof options === 'number' &&
-      options !== RTC_CALL_ACTION_ERROR_CODE.INVALID
-      ? options.toString()
-      : '';
+
+    return res;
   }
 
   private _handleToggleState(callAction: RTC_CALL_ACTION, isSuccess: boolean) {
@@ -222,7 +247,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     isSuccess: boolean,
     options: RTCCallActionSuccessOptions | number,
   ) {
-    let res: string = '';
+    let res: string | CALL_ACTION_ERROR_CODE = '';
 
     switch (callAction) {
       case RTC_CALL_ACTION.HOLD:
@@ -250,7 +275,7 @@ class TelephonyCallController implements IRTCCallDelegate {
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
   ) {
-    const res: string = this._handleActionResult(callAction, true, options);
+    const res = this._handleActionResult(callAction, true, options);
     this._handleCallActionCallback(callAction, true, res);
   }
 
@@ -306,7 +331,12 @@ class TelephonyCallController implements IRTCCallDelegate {
 
   hold() {
     this._updateCallHoldState(HOLD_STATE.HELD);
-    this._updateCallRecordState(RECORD_STATE.DISABLE);
+    const state = this._rtcCall.getRecordState();
+    this._updateCallRecordState(
+      state === RTC_RECORD_STATE.IDLE
+        ? RECORD_STATE.DISABLED
+        : RECORD_STATE.RECORDING_DISABLED,
+    );
     return new Promise((resolve, reject) => {
       this._saveCallActionCallback(RTC_CALL_ACTION.HOLD, resolve, reject);
       const request: ToggleRequest = {
@@ -440,7 +470,7 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _handleCallActionCallback(
     callAction: RTC_CALL_ACTION,
     isSuccess: boolean,
-    result: string,
+    result: string | CALL_ACTION_ERROR_CODE,
   ) {
     const promiseResolvers = this._callActionCallbackMap.get(callAction);
     if (promiseResolvers) {

@@ -12,11 +12,10 @@ import { DownloadViewProps } from './types';
 import { accelerateURL } from '@/common/accelerateURL';
 
 const Download = observer(
-  ({ url, variant = 'plain', t }: DownloadViewProps & WithTranslation) => {
-    return (
+  ({ url, variant = 'plain', t }: DownloadViewProps & WithTranslation) => (
       <JuiIconButton
         component="a"
-        download={true}
+        download
         href={accelerateURL(url)}
         variant={variant}
         aria-label={t('common.download')}
@@ -24,8 +23,7 @@ const Download = observer(
       >
         download
       </JuiIconButton>
-    );
-  },
+  ),
 );
 
 const DownloadView = withTranslation('translations')(Download);

@@ -75,12 +75,12 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._audio.onplaying = this._onPlaying;
     this._audio.ontimeupdate = this._onTimeUpdate;
     this._audio.onloadeddata = this._onLoadeddata;
-  }
+  };
 
   // safari must be set currentTime after loaded
   private _onLoadeddata = () => {
     this._audio.currentTime = this.state.timestamp;
-  }
+  };
 
   private _onPlaying = () => {
     const { status } = this.state;
@@ -91,7 +91,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     if (status === JuiAudioStatus.LOADING) {
       this.setState({ status: JuiAudioStatus.PAUSE });
     }
-  }
+  };
 
   private _onError = () => {
     if (this._loadingTimer) {
@@ -102,7 +102,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._currentSrc = '';
     onError && onError();
     this.setState({ status: JuiAudioStatus.RELOAD });
-  }
+  };
 
   private _onEnded = () => {
     const { onEnded, duration, onTimeUpdate } = this.props;
@@ -116,14 +116,14 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
           timestamp: START,
         });
         onTimeUpdate && onTimeUpdate(START);
-      },         DELAY_START_TIME);
+      }, DELAY_START_TIME);
     });
     onEnded && onEnded();
-  }
+  };
 
   private _onDragStart = () => {
     this.setState({ timestampLock: true });
-  }
+  };
 
   private _onDragEnd = () => {
     const { timestamp } = this.state;
@@ -133,17 +133,17 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
 
     this._audio.currentTime = timestamp;
     onTimeUpdate && onTimeUpdate(timestamp);
-  }
+  };
 
   private _onTimestampChange: IJuiAudioProgressChange = (event, timestamp) => {
     this.setState({ timestamp });
-  }
+  };
 
   private _onAction: IJuiAudioAction = async (status: JuiAudioStatus) => {
     const { onBeforeAction } = this.props;
     onBeforeAction && (await onBeforeAction(status));
     this[status]();
-  }
+  };
 
   private _onTimeUpdate = () => {
     const { timestampLock } = this.state;
@@ -155,15 +155,15 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
 
       onTimeUpdate && onTimeUpdate(timestamp);
     }
-  }
+  };
 
   private _onPlay = () => {
     this._loadingTimer = setTimeout(() => {
       this.setState({ status: JuiAudioStatus.LOADING });
-    },                              LOADING_TIME);
+    }, LOADING_TIME);
 
     this.setState({ status: JuiAudioStatus.PAUSE });
-  }
+  };
 
   play = () => {
     const { src, onBeforePlay } = this.props;
@@ -176,18 +176,20 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     if (this._currentSrc !== src && src !== '') {
       this._audio.src = src;
       this._currentSrc = src;
+
+      this._audio.currentTime = this.state.timestamp;
     }
 
     if (this._audio.src) {
       this._audio.play();
     }
-  }
+  };
 
   pause = () => {
     this._audio.pause();
 
     this.setState({ status: JuiAudioStatus.PLAY });
-  }
+  };
 
   reload = () => {
     const { timestamp } = this.state;
@@ -197,7 +199,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
     this._audio.currentTime = timestamp;
 
     this.play();
-  }
+  };
 
   private _dispose() {
     this._audio.onerror = null;

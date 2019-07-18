@@ -8,16 +8,16 @@ export class MoreActionOnFile extends BaseWebComponent{
     return this.getSelectorByAutomationId('fileActionMore');
   }
 
-  get more(){
-    return this.getSelectorByAutomationId('fileActionMore');
-  }
-
   get renameFileMenu(){
-    return this.getSelectorByAutomationId('fileNameEditItem');
+    return this.getSelectorByAutomationId('fileNameEditItem', this.fileActionMenuList);
   }
 
   get deleteFileMenu() {
-    return this.getSelectorByAutomationId('fileDeleteItem');
+    return this.getSelectorByAutomationId('fileDeleteItem', this.fileActionMenuList);
+  }
+
+  get viewInPostMenu() {
+    return this.getSelectorByAutomationId('viewInPost', this.fileActionMenuList);
   }
 
   get fileActionMenuList(){
@@ -38,7 +38,7 @@ export class MoreActionOnFile extends BaseWebComponent{
   }
 
   async clickMore(){
-    await this.t.click(this.more);
+    await this.t.click(this.self);
   }
 
   async clickRenameFileMenu(){
@@ -49,12 +49,21 @@ export class MoreActionOnFile extends BaseWebComponent{
     await this.t.click(this.deleteFileMenu);
   }
 
+  async clickViewInPost(){
+    await this.t.click(this.viewInPostMenu);
+  }
+
   async renameFileMenuAtTop(menu:string){
     await this.t.expect(this.fileActionMenuList.nth(0).withText(menu).exists).ok();
   }
 
 }
 
+export class MoreActionOnViewer extends MoreActionOnFile{
+  get self(){
+    return this.getSelectorByAutomationId('fileActionMore',this.getSelectorByAutomationId('ViewerHeader'));
+  }
+}
 export class RenameFileDialog extends BaseWebComponent{
 
     get self(){

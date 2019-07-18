@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+/* eslint-disable */
 import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 // import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
+import { Loading } from 'jui/hoc/withLoading';
 // import {
 //   JuiListToggleButton,
 //   JuiListToggleItemProps,
@@ -35,14 +36,6 @@ const NAME_INPUT_PROPS = {
 //   'data-test-automation-id': 'ConvertToTeamTeamDescription',
 //   maxLength: 1000,
 // };
-
-const createTeamLoading = () => (
-  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
-);
-const Loading = withLoading(
-  (props: any) => <>{props.children}</>,
-  createTeamLoading,
-);
 
 // Please do not delete the commented code.
 // Now convert to team does not support permission settings.
@@ -120,7 +113,7 @@ class ConvertToTeam extends Component<Props, State> {
       if (node) {
         node.select();
       }
-    },                           300);
+    }, 300);
   }
 
   componentWillUnmount() {
@@ -129,7 +122,7 @@ class ConvertToTeam extends Component<Props, State> {
 
   private _handleClose = () => {
     portalManager.dismissLast();
-  }
+  };
 
   private _handleOk = async () => {
     // const { items } = this.state;
@@ -164,7 +157,7 @@ class ConvertToTeam extends Component<Props, State> {
         dismissible: false,
       });
     }
-  }
+  };
 
   // private _handleSwitchChange = (
   //   item: JuiListToggleItemProps,
@@ -205,7 +198,7 @@ class ConvertToTeam extends Component<Props, State> {
     return (
       <JuiModal
         open={true}
-        size="medium"
+        size='medium'
         title={t('people.team.convertToTeam')}
         onCancel={this._handleClose}
         onOK={this._handleOk}

@@ -23,15 +23,15 @@ describe('VoicemailDataProvider', () => {
       'should be call fetchVoicemails not anchor when use fetchData [JPT-2145]',
     )
     @mockService(calllogService, 'fetchCallLogs', true)
+    @mockService.resolve(calllogService, 'buildFilterFunc', {})
     async t1() {
       const vm = new AllCallsViewModel({ type: CallLogType.All, height: 800 });
       const ret = await vm._fetchData(QUERY_DIRECTION.OLDER, 1);
-      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith(
-        CALL_LOG_SOURCE.ALL,
-        undefined,
-        1,
-        QUERY_DIRECTION.NEWER,
-      );
+      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith({
+        callLogSource: CALL_LOG_SOURCE.ALL,
+        limit: 1,
+        direction: QUERY_DIRECTION.NEWER,
+      });
       expect(ret).toBeTruthy();
     }
 
@@ -39,6 +39,7 @@ describe('VoicemailDataProvider', () => {
       'should be call fetchVoicemails with anchor when use fetchData [JPT-2145]',
     )
     @mockService(calllogService, 'fetchCallLogs', true)
+    @mockService.resolve(calllogService, 'buildFilterFunc', {})
     async t2() {
       const vm = new AllCallsViewModel({
         type: CallLogType.MissedCall,
@@ -48,19 +49,18 @@ describe('VoicemailDataProvider', () => {
         id: '1',
         sortValue: 1,
       });
-      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith(
-        CALL_LOG_SOURCE.MISSED,
-        '1',
-        1,
-        QUERY_DIRECTION.OLDER,
-      );
+      expect(calllogService.fetchCallLogs).toHaveBeenCalledWith({
+        callLogSource: CALL_LOG_SOURCE.MISSED,
+        limit: 1,
+        anchorId: '1',
+        direction: QUERY_DIRECTION.OLDER,
+      });
       expect(ret).toBeTruthy();
     }
 
     @test('should show error page when fetch data error [JPT-2361] [JPT-2370]')
-    @mockService(calllogService, 'fetchCallLogs', () => {
-      throw new Error('error');
-    })
+    @mockService.reject(calllogService, 'fetchCallLogs', 'error')
+    @mockService.resolve(calllogService, 'buildFilterFunc', {})
     async t3() {
       const vm = new AllCallsViewModel();
       expect(vm.isError).toBeFalsy();

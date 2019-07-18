@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import {
-  palette,
-} from '../../foundation/utils/styles';
+import { palette } from '../../foundation/utils/styles';
+
 const JuiConversationNumberLink = styled.a`
   color: ${palette('primary', 'light')};
   &:hover {

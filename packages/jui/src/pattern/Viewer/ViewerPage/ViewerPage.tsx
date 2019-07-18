@@ -9,6 +9,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 import { applyTransform, applyInverseTransform } from '../ui_utils';
 
+/* eslint-disable */
 const DEFAULT_SCALE = 1;
 const ViewerPageWrap = styled.div`
   && {
@@ -127,13 +128,13 @@ class JuiViewerPage extends React.Component<Props, States> {
       scale: this.state.currentScale,
       rotation: 0,
     });
-  }
+  };
 
   private _initialScale = () => {
     const { scale } = this.props;
     const _scale = scale ? (scale > 0 ? scale : DEFAULT_SCALE) : DEFAULT_SCALE;
     this._updateByScale(_scale);
-  }
+  };
 
   private _updateByScale(scale: ScaleType) {
     this.viewport = this.viewport.clone({
@@ -193,7 +194,7 @@ class JuiViewerPage extends React.Component<Props, States> {
       contentWrapEl.style.width = `${Math.floor(viewport.width)}px`;
       contentWrapEl.style.height = `${Math.floor(viewport.height)}px`;
     }
-  }
+  };
 
   private _getRenderParams = (): RenderParamsType => {
     const { getViewport } = this.props;
@@ -230,7 +231,7 @@ class JuiViewerPage extends React.Component<Props, States> {
       height: 0,
       selfScale: false,
     };
-  }
+  };
 
   get childContext() {
     const { currentScale } = this.state;
@@ -277,13 +278,13 @@ class JuiViewerPage extends React.Component<Props, States> {
     }
     return (
       <ViewerPageWrap
-        className="ViewerPage"
+        className='ViewerPage'
         data-page-index={pageNumber}
         ref={this.container as any}
         {...rest}
       >
         <ViewerPageContentWrap
-          className="ViewerPageContentWrap"
+          className='ViewerPageContentWrap'
           ref={this.contentWrap as any}
         >
           {content}

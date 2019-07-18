@@ -3,6 +3,7 @@
  * @Date: 2019-05-27 17:47:36
  * Copyright © RingCentral. All rights reserved.
  */
+/* eslint-disable */
 import React, { Component } from 'react';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { FileDeleteActionViewProps } from './types';
@@ -17,15 +18,15 @@ class FileDeleteActionViewComponent extends Component<
   FileDeleteActionViewProps
 > {
   deleteFile = () => {
-    const { t, fileName, handleDeleteFile } = this.props;
+    const { t, fileName, handleDeleteFile, beforeDelete } = this.props;
     const { startLoading, stopLoading } = Dialog.confirm({
       title: t('message.prompt.deleteFileTitle'),
       content: (
         <JuiDialogContentText>
           <Trans
-            i18nKey="message.prompt.deleteFileContent"
+            i18nKey='message.prompt.deleteFileContent'
             values={{ fileName }}
-            components={[<strong key="0" />]}
+            components={[<strong key='0' />]}
           />
         </JuiDialogContentText>
       ),
@@ -34,16 +35,17 @@ class FileDeleteActionViewComponent extends Component<
       cancelText: t('common.dialog.cancel'),
       modalProps: { 'data-test-automation-id': 'confirmDeleteDialog' },
       async onOK() {
+        beforeDelete && beforeDelete();
         startLoading();
         const result = await handleDeleteFile();
         stopLoading();
         return !!result;
       },
     });
-  }
+  };
 
   iconCom = (
-    <JuiIconography iconColor={['grey', '500']} iconSize="small">
+    <JuiIconography iconColor={['grey', '500']} iconSize='small'>
       delete
     </JuiIconography>
   );

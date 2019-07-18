@@ -22,17 +22,15 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
 
   makeCall = () => {
     if (!this._telephonyStore.inputString) {
-      this._telephonyStore.enterFirstLetterThroughKeypad();
-      return this._telephonyService.updateInputString(
-        this._telephonyService.lastCalledNumber,
-      );
+      this._telephonyStore.enterFirstLetterThroughKeypadForInputString();
+      return this._updateInputString(this._telephonyService.lastCalledNumber);
     }
     /**
      * TODO: move this call making & state changing logic down to SDK
      */
     this._makeCall(this._telephonyStore.inputString);
     this._trackCall(ANALYTICS_SOURCE);
-  }
+  };
 
   // FIXME: remove this logic by exposing the phone parser from SDK to view-model layer
   private _makeCall = async (val: string) => {
@@ -41,13 +39,17 @@ class DialBtnViewModel extends StoreViewModel<DialBtnProps>
       await new Promise(resolve => {
         requestAnimationFrame(resolve);
       });
-      this._telephonyStore.end();
+      this._telephonyService.hangUp();
     }
-  }
+  };
 
   private _trackCall = (analysisSource: string) => {
     analyticsCollector.makeOutboundCall(analysisSource);
-  }
+  };
+
+  private _updateInputString = this._telephonyService.updateInputStringFactory(
+    'inputString',
+  );
 }
 
 export { DialBtnViewModel };

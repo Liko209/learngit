@@ -29,7 +29,7 @@ describe('CodeSnippetItem.View', () => {
     it('should call copy when called', () => {
       const codeSnippet = new CodeSnippetView(props);
       codeSnippet.handleCopy();
-      expect(copy).toBeCalledWith(token);
+      expect(copy).toHaveBeenCalledWith(token);
     });
   });
 

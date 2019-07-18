@@ -19,8 +19,8 @@ class ItemNotification {
     data: Item[],
   ): { eventKey: string; entities: Item[] }[] {
     const itemGroupMap: Map<
-      string,
-      { eventKey: string; entities: Item[] }
+    string,
+    { eventKey: string; entities: Item[] }
     > = new Map();
     data.forEach((item: Item) => {
       if (item) {

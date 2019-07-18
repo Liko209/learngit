@@ -3,9 +3,10 @@
  * @Date: 2019-01-08 14:24:54
  * Copyright © RingCentral. All rights reserved.
  */
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { container } from 'framework';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -23,10 +24,17 @@ import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import FileItemModel from '@/store/models/FileItem';
 import { postParser } from '@/common/postParser';
 
 @observer
 class FileItemView extends Component<FileItemViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
+
+  private _handleFileClick = ({ id }: FileItemModel) => () => {
+    this._viewerService.open({ groupId: this.props.groupId, itemId: id });
+  };
   private _renderItem = () => {
     const { file, personName, modifiedTime, downloadUrl, id } = this.props;
     const fileInfo = file || {};
@@ -39,7 +47,15 @@ class FileItemView extends Component<FileItemViewProps> {
           <JuiLeftRailListItemIcon
             disabled={supportFileViewer && !fileReadyForViewer}
           >
-            <Thumbnail id={id} type="file" />
+            <Thumbnail
+              id={id}
+              type='file'
+              onClick={
+                supportFileViewer && fileReadyForViewer
+                  ? this._handleFileClick(file)
+                  : undefined
+              }
+            />
           </JuiLeftRailListItemIcon>
           <JuiListItemText
             primary={
@@ -62,13 +78,13 @@ class FileItemView extends Component<FileItemViewProps> {
         </>
       );
     };
-  }
+  };
 
   render() {
     return (
       <JuiListItemWithHover
         render={this._renderItem()}
-        data-test-automation-id="rightRail-file-item"
+        data-test-automation-id='rightRail-file-item'
       />
     );
   }

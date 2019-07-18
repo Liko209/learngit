@@ -31,6 +31,9 @@ import { Download } from '@/containers/common/Download';
 import { accelerateURL } from '@/common/accelerateURL';
 import moize from 'moize';
 import { FileActionMenu } from '@/containers/common/fileAction';
+import { container } from 'framework';
+import { IViewerService, VIEWER_SERVICE } from '@/modules/viewer/interface';
+import FileItemModel from '@/store/models/FileItem';
 import {
   postParser,
   SearchHighlightContext,
@@ -42,6 +45,7 @@ const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
+  _viewerService: IViewerService = container.get(VIEWER_SERVICE);
   static contextType = SearchHighlightContext;
   context: HighlightContextInfo;
   componentWillUnmount() {
@@ -79,7 +83,7 @@ class FilesView extends React.Component<FilesViewProps> {
         future={future}
       />
     );
-  }
+  };
 
   private _getImageEl(ev: React.MouseEvent<HTMLElement>) {
     if (!ev.currentTarget) {
@@ -93,7 +97,7 @@ class FilesView extends React.Component<FilesViewProps> {
     thumbnailSrc: string,
     origWidth: number,
     origHeight: number,
-  ) => async (ev: React.MouseEvent<HTMLElement>, loaded?: boolean) => {
+  ) => async (ev: React.MouseEvent<HTMLElement>) => {
     const { groupId, postId, mode } = this.props;
     if (postId < 0) return;
     const target = this._getImageEl(ev);
@@ -110,33 +114,39 @@ class FilesView extends React.Component<FilesViewProps> {
       mode,
       postId,
     );
-  }
+  };
+
+  _handleFileClick = (item: FileItemModel) => () => {
+    this._viewerService.open({ groupId: this.props.groupId, itemId: item.id });
+  };
 
   private _handleImageDidLoad = (id: number, callback: Function) => {
     UploadFileTracker.tracker().clear(this.props.ids);
     callback();
-  }
+  };
 
   handleFileMoreIconClicked = () => {};
 
   private _getActions = moize(
-    (downloadUrl: string, fileId: number, postId: number) => {
-      return [
+    (downloadUrl: string, fileId: number, postId: number) => [
         <Download key="download-action" url={downloadUrl} />,
         <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
-      ];
-    },
+    ],
   );
 
   render() {
-    const { files, progresses, urlMap, postId } = this.props;
+    const {
+      files, progresses, urlMap, postId,
+    } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
         <JuiFileSection>
           {files[FileType.image].map((file: ExtendFileItem) => {
             const { item } = file;
-            const { origHeight, id, origWidth, name, downloadUrl } = item;
+            const {
+              origHeight, id, origWidth, name, downloadUrl,
+            } = item;
             let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
             if (singleImage) {
               size = getThumbnailSize(origWidth, origHeight);
@@ -165,8 +175,7 @@ class FilesView extends React.Component<FilesViewProps> {
             const future = (
               <JuiPreviewImage
                 key={id}
-                didLoad={(callback: Function) =>
-                  this._handleImageDidLoad(id, callback)
+                didLoad={(callback: Function) => this._handleImageDidLoad(id, callback)
                 }
                 placeholder={placeholder}
                 {...props}
@@ -195,7 +204,9 @@ class FilesView extends React.Component<FilesViewProps> {
         <JuiFileSection>
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
-            const { size, type, id, name, downloadUrl } = item;
+            const {
+              size, type, id, name, downloadUrl,
+            } = item;
             const status = item.latestVersion && item.latestVersion.status;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
@@ -213,6 +224,11 @@ class FilesView extends React.Component<FilesViewProps> {
                 size={`${getFileSize(size)}`}
                 url={accelerateURL(previewUrl)!}
                 iconType={iconType}
+                handleFileClick={
+                  supportFileViewer && fileReadyForViewer
+                    ? this._handleFileClick(item)
+                    : undefined
+                }
                 disabled={supportFileViewer && !fileReadyForViewer}
                 Actions={this._getActions(downloadUrl, id, postId)}
               />
@@ -222,7 +238,9 @@ class FilesView extends React.Component<FilesViewProps> {
         <JuiFileSection>
           {files[FileType.others].map((file: ExtendFileItem) => {
             const { item } = file;
-            const { size, type, name, downloadUrl, id } = item;
+            const {
+              size, type, name, downloadUrl, id,
+            } = item;
             const iconType = getFileIcon(type);
             if (id < 0) {
               return this._renderItem(id, progresses, name);

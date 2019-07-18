@@ -7,7 +7,6 @@ interface IResponseParser {
 }
 
 export class ResponseParser implements IResponseParser {
-
   readonly name = 'ResponseParser';
   private _parsers: IResponseParser[] = [];
 

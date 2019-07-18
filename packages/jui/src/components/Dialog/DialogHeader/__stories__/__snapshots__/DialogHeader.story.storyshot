@@ -34,6 +34,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c3.c3 > *:nth-child(n + 2) {
@@ -180,13 +184,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c1.c1.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c2 {
@@ -275,7 +274,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
                 className="c7"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -323,6 +325,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c3.c3 > *:nth-child(n + 2) {
@@ -510,13 +516,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c1.c1.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c2 {
@@ -613,7 +614,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                 className="c7"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -654,7 +658,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                 className="c7"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -701,7 +708,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                     className="c7"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -744,7 +754,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
                 className="c7"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -828,6 +841,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
   flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c8.c8 > *:nth-child(n + 2) {
@@ -1015,13 +1032,8 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c6.c6.vertical h2 * {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .c7 {
@@ -1067,6 +1079,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -ms-flex-align: center;
   align-items: center;
   margin-right: 16px;
+  width: 200px;
 }
 
 .c4 {
@@ -1098,6 +1111,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
 .c3 {
   margin-left: 8px;
   max-width: 160px;
+}
+
+@media screen and (max-width:640px) {
+  .c1 {
+    width: auto;
+  }
 }
 
 @media screen and (max-width:640px) {
@@ -1201,7 +1220,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -1242,7 +1264,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -1289,7 +1314,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                     className="c12"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1332,7 +1360,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -1436,7 +1467,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -1477,7 +1511,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
@@ -1524,7 +1561,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                     className="c12"
                     role="img"
                   >
-                    <use />
+                    <use
+                      href="#undefined"
+                      xlinkHref="#undefined"
+                    />
                   </svg>
                 </span>
               </span>
@@ -1567,7 +1607,10 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
                 className="c12"
                 role="img"
               >
-                <use />
+                <use
+                  href="#undefined"
+                  xlinkHref="#undefined"
+                />
               </svg>
             </span>
           </span>
