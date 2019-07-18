@@ -158,7 +158,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       hasPrevious,
       hasNext,
     } = this.props;
-    const padding = theme.spacing.unit.unit * 8;
+    const padding = theme.spacing(8);
     return (
       <ViewerContext.Consumer>
         {value => (

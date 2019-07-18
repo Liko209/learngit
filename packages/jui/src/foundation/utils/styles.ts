@@ -2,6 +2,7 @@ import tinycolor from 'tinycolor2';
 import { keyframes } from 'styled-components';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
+import { spacing } from 'rcui/foundation/shared/theme';
 
 /** ******************************************
  *               Dimensions                 *

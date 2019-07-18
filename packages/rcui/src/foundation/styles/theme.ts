@@ -52,7 +52,6 @@ export interface Typography
 
 export type Opacity = typeof opacity;
 export type Radius = typeof radius;
-export type Spacing = { unit: typeof spacing } & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
 
 export { Transitions, Shadows };
@@ -62,7 +61,6 @@ export type Theme = {
   typography: Typography;
   opacity: Opacity;
   radius: Radius;
-  spacing: Spacing;
   zIndex: ZIndex;
 } & MuiTheme;
 
