@@ -5,7 +5,12 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
-import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
+import {
+  UA_EVENT,
+  ProvisionDataOptions,
+  WEBPHONE_LOG_LEVEL,
+  InviteOptions
+} from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
@@ -21,7 +26,6 @@ import {
   kSwitchBackProxyMaxInterval,
   kSwitchBackProxyMinInterval
 } from './constants';
-import { InviteOptions } from 'ringcentral-web-phone/src/userAgent';
 
 const WebPhone = require('ringcentral-web-phone');
 
