@@ -8,7 +8,7 @@ import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import Fab, { FabProps as MuiFabProps } from '@material-ui/core/Fab';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { RuiCircularProgress } from 'rcui/components/Progress';
-
+import RootRef from '@material-ui/core/RootRef';
 import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
 import {
@@ -54,6 +54,8 @@ type JuiFabProps = Omit<
 type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   colorName: string;
   colorScope: keyof Palette;
+  ref?: React.Ref<any>;
+  children: React.ReactNode;
 };
 
 type Size = 'small' | 'medium' | 'large' | 'moreLarge';
@@ -85,12 +87,6 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 
-const StyledMuiFab = styled(Fab)`
-  && {
-    min-height: 0;
-  }
-`;
-
 const WrappedMuiFab = (props: StyledFabButtonProps) => {
   const {
     color,
@@ -102,12 +98,9 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
     ...restProps
   } = props;
   return (
-    <StyledMuiFab
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...restProps}
-    >
+    <Fab TouchRippleProps={{ classes: touchRippleClasses }} {...restProps}>
       {loading ? <RuiCircularProgress size={20} /> : children}
-    </StyledMuiFab>
+    </Fab>
   );
 };
 
@@ -115,6 +108,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
   ({ showShadow, ...rest }) => <WrappedMuiFab {...rest} />,
 )`
   && {
+    min-height: 0;
     background-color: ${({ theme, colorScope, colorName }) =>
       palette(colorScope, colorName)({ theme })};
     width: ${({ size = 'large', theme }) =>
@@ -152,6 +146,16 @@ const StyledFabButton = styled<StyledFabButtonProps>(
   }
 `;
 
+const StyledFabButtonWithRef = React.forwardRef(
+  (props: StyledFabButtonProps, ref) => {
+    const FabButton = <StyledFabButton {...props} />;
+    if (ref) {
+      return <RootRef rootRef={ref}>{FabButton}</RootRef>;
+    }
+    return FabButton;
+  },
+);
+
 const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   props: JuiFabProps,
 ) => {
@@ -183,22 +187,20 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   if (!disabled && !disableToolTip && tooltipTitle) {
     return (
       <RuiTooltip title={tooltipTitle} placement={tooltipPlacement}>
-        {
-          <StyledFabButton
-            colorScope={colorScope}
-            colorName={colorName}
-            size={size}
-            {...rest}
+        <StyledFabButtonWithRef
+          colorScope={colorScope}
+          colorName={colorName}
+          size={size}
+          {...rest}
+        >
+          <JuiIconography
+            symbol={icon}
+            iconColor={iconColor}
+            iconSize={iconSizesMap[size]}
           >
-            <JuiIconography
-              symbol={icon}
-              iconColor={iconColor}
-              iconSize={iconSizesMap[size]}
-            >
-              {iconName}
-            </JuiIconography>
-          </StyledFabButton>
-        }
+            {iconName}
+          </JuiIconography>
+        </StyledFabButtonWithRef>
       </RuiTooltip>
     );
   }

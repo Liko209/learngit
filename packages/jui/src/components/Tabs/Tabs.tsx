@@ -59,6 +59,18 @@ const STYLE: CSSProperties = {
   right: 0,
 };
 
+const MoreIcon = ({
+  title,
+  tooltipForceHide,
+}: {
+  title?: string;
+  tooltipForceHide?: boolean;
+}) => (
+  <RuiTooltip title={title} tooltipForceHide={tooltipForceHide}>
+    <JuiIconography>more_horiz</JuiIconography>
+  </RuiTooltip>
+);
+
 class JuiTabs extends PureComponent<Props, States> {
   // not include more tab
   private _tabTitles: (string | JSX.Element)[] = [];
@@ -282,11 +294,7 @@ class JuiTabs extends PureComponent<Props, States> {
     const { tag, moreText } = this.props;
     return this._renderStyledTab({
       value: MORE,
-      icon: (
-        <RuiTooltip title={moreText} tooltipForceHide={tooltipForceHide}>
-          <JuiIconography>more_horiz</JuiIconography>
-        </RuiTooltip>
-      ),
+      icon: <MoreIcon title={moreText} tooltipForceHide={tooltipForceHide} />,
       onClick: this._showMenuList,
       style: STYLE,
       ref: this._moreRef,

@@ -80,25 +80,31 @@ type StyledIconButtonProps = JuiIconButtonProps & {
   colorName: string;
   colorScope: keyof Palette;
 };
-const WrappedMuiIconButton = ({
-  invisible,
-  awake,
-  color,
-  colorName,
-  colorScope,
-  alwaysEnableTooltip,
-  tooltipForceHide,
-  tooltipPlacement,
-  stretchIcon,
-  shouldPersistBg,
-  size,
-  ...rest
-}: StyledIconButtonProps) => (
-  <MuiIconButton
-    {...rest}
-    classes={{ disabled: 'disabled' }}
-    TouchRippleProps={{ classes: touchRippleClasses }}
-  />
+const WrappedMuiIconButton = React.forwardRef(
+  (
+    {
+      invisible,
+      awake,
+      color,
+      colorName,
+      colorScope,
+      alwaysEnableTooltip,
+      tooltipForceHide,
+      tooltipPlacement,
+      stretchIcon,
+      shouldPersistBg,
+      size,
+      ...rest
+    }: StyledIconButtonProps,
+    ref,
+  ) => (
+    <MuiIconButton
+      {...rest}
+      ref={ref as any}
+      classes={{ disabled: 'disabled' }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
+    />
+  ),
 );
 
 const StyledIconButton = styled(WrappedMuiIconButton)`

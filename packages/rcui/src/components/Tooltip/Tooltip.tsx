@@ -174,6 +174,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
       placement = 'bottom',
       color = ['grey', 700] as Color,
       open: propOpen,
+      tooltipForceHide,
       ...rest
     } = this.props;
     const { arrowRef, open: stateOpen } = this.state;

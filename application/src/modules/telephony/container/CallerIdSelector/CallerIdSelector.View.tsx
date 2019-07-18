@@ -188,12 +188,13 @@ class RawCallerIdSelector extends PureComponent<
 }
 
 const CallerIdSelectorWithLazyFormat = CallerIdContainer(
-  (props: CallerIdSelectorProps) => (
+  React.forwardRef((props: CallerIdSelectorProps, ref) => (
     <RawCallerIdSelector
       {...props}
+      ref={ref as any}
       renderValue={(i: any) => <LazyFormatPhone value={i} />}
     />
-  ),
+  )),
 );
 
 const CallerIdSelector = withTranslation('translations')(

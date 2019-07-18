@@ -74,6 +74,7 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
 
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
   props: JuiIconographyProps,
+  ref,
 ) => {
   const {
     children,
@@ -90,9 +91,9 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
   const useHref = symbol ? symbol.url : `#icon-${iconName}`;
   const _className = `${className || ''} ${children || ''} icon`;
   return useLoading ? (
-    <RuiCircularProgress size={loadingSize} />
+    <RuiCircularProgress size={loadingSize} ref={ref as any} />
   ) : (
-    <StyledSpan className={_className} {...rest}>
+    <StyledSpan className={_className} {...rest} ref={ref as any}>
       <StyledSvg role="img" iconColor={iconColor} size={iconSize}>
         {!!desc && <title>{desc}</title>}
         <use xlinkHref={useHref} href={useHref} />
@@ -103,5 +104,5 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
 
 JuiIconographyComponent.displayName = 'JuiIconography';
 
-const JuiIconography = React.memo(JuiIconographyComponent);
+const JuiIconography = React.memo(React.forwardRef(JuiIconographyComponent));
 export { JuiIconographyProps, JuiIconography, SvgSymbol };
