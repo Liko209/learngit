@@ -62,23 +62,24 @@ class MemberList extends React.Component<
     } = this.props;
     return (
       <JuiProfileDialogContentMemberList>
-        {showEmpty && (
+        {showEmpty ? (
           <EmptyView
             image={empty}
             subText={t('people.team.noMatchesFound')}
             delay={100}
           />
+        ) : (
+          <InfiniteList
+            loadInitialData={loadInitialData}
+            loadMore={loadMore}
+            hasMore={hasMore}
+            minRowHeight={ITEM_HEIGHT}
+            onScroll={this.onScroll}
+            data-test-automation-id='profileDialogMemberList'
+          >
+            {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
+          </InfiniteList>
         )}
-        <InfiniteList
-          loadInitialData={loadInitialData}
-          loadMore={loadMore}
-          hasMore={hasMore}
-          minRowHeight={ITEM_HEIGHT}
-          onScroll={this.onScroll}
-          data-test-automation-id='profileDialogMemberList'
-        >
-          {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
-        </InfiniteList>
       </JuiProfileDialogContentMemberList>
     );
   }
