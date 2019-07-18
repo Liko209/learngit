@@ -97,4 +97,30 @@ describe('PermissionController', () => {
       expect(result).toBeFalsy();
     });
   });
+
+  describe('getFeatureFlag', () => {
+    const splitIOController = new SplitIOController(() => {});
+    const launchDarklyController = new LaunchDarklyController(() => {});
+    let permissionController: PermissionController;
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+      permissionController = new PermissionController();
+      Object.assign(permissionController, {
+        splitIOController,
+        launchDarklyController,
+      });
+    });
+
+    it('should only read permission from LD for LEFT_RAIL_MAX_COUNT', async () => {
+      launchDarklyController.getFeatureFlag = jest
+        .fn()
+        .mockReturnValueOnce(100);
+      splitIOController.getFeatureFlag = jest.fn().mockReturnValueOnce(90);
+      const result = await permissionController.getFeatureFlag(
+        UserPermissionType.LEFT_RAIL_MAX_COUNT,
+      );
+      expect(result).toEqual(100);
+    });
+  });
 });

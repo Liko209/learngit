@@ -19,10 +19,12 @@ import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
+    public entityCacheController: IEntityCacheController<Profile>,
   ) {}
 
   async profileHandleData(
@@ -46,6 +48,16 @@ class ProfileDataController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     return userConfig.getCurrentUserProfileId();
+  }
+
+  async getLocalProfile(): Promise<Nullable<Profile>> {
+    const profileId = this.getCurrentProfileId();
+    if (!profileId) {
+      return null;
+    }
+
+    const profile = await this.entityCacheController.get(profileId);
+    return profile;
   }
 
   async getProfile(): Promise<Nullable<Profile>> {
@@ -88,7 +100,7 @@ class ProfileDataController {
   ): Promise<Profile | null> {
     try {
       if (profile) {
-        const local = await this.getProfile();
+        const local = await this.getLocalProfile();
         if (local && local.modified_at >= profile.modified_at) {
           return local;
         }

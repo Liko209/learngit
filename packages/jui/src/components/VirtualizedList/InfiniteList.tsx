@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, {
-  useState, memo, forwardRef, useRef, useCallback,
+ useState, memo, forwardRef, useRef, useCallback
 } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
@@ -73,16 +73,18 @@ const JuiInfiniteList = (
   if (forwardRef) {
     ref = forwardRef;
   }
-  const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+  const [isStickToBottomEnabled, setStickToBottom] = useState(true);
   const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
     async (direction: 'up' | 'down', count: number) => {
-      enableStickToBottom(false);
+      if (direction === 'down') {
+        setStickToBottom(false);
+      }
       await loadMore(direction, count);
-      isMountedRef.current && enableStickToBottom(true);
+      isMountedRef.current && setStickToBottom(true);
     },
-    [loadMore, enableStickToBottom],
+    [loadMore, setStickToBottom],
   );
 
   if (!height) {

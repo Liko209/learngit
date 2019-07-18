@@ -28,19 +28,17 @@ test(formalName('Check "Search" bar', ['P2', 'TopBar', 'Search', 'V1.4', 'Hank.H
     owner: anotherUser,
     members: [otherUser, anotherUser],
   };
-  const teamsNames = Array(3).fill(null).map(() => "h" + uuid())
-  const teams: IGroup[] = teamsNames.map(name => ({
-    name: name,
-    type: 'Team',
-    isPublic: true,
+  const teams = Array.from({ length: 3 }, (x, i) => <IGroup>{
+    name: `${i}-${uuid()}`,
+    type: "Team",
     owner: loginUser,
-    members: [loginUser, otherUser, anotherUser],
-  }));
+    members: [loginUser]
+  })
 
   await h(t).withLog('Given I have a team without me', async () => {
     await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
-  await h(t).withLog(`And I have three teams named"${teamsNames.join(",")}"`, async () => {
+  await h(t).withLog('And I have three teams', async () => {
     await h(t).scenarioHelper.createTeams(teams);
   });
   await h(t).withLog('And I have a group with three members', async () => {

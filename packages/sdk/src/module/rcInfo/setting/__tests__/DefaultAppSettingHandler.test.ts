@@ -13,9 +13,6 @@ import {
 } from 'sdk/module/setting';
 import { SettingModuleIds } from 'sdk/module/setting/constants';
 import { DefaultAppSettingHandler } from '../DefaultAppSettingHandler';
-import 'sdk/module/profile/service/ProfileService';
-import 'sdk/module/telephony/service/TelephonyService';
-import { spyOnTarget } from 'sdk/__tests__/utils';
 import { ProfileService } from 'sdk/module/profile/service/ProfileService';
 import { TelephonyService } from 'sdk/module/telephony/service/TelephonyService';
 import { AccountService } from 'sdk/module/account';
@@ -23,6 +20,12 @@ import { AccountService } from 'sdk/module/account';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { CALLING_OPTIONS, SETTING_KEYS } from 'sdk/module/profile';
 import { Profile } from 'sdk/module/profile/entity';
+import { GLIP_LOGIN_STATUS } from 'sdk/framework';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+jest.mock('sdk/dao');
+jest.mock('sdk/module/profile/service/ProfileService');
+jest.mock('sdk/module/account');
+jest.mock('sdk/module/telephony/service/TelephonyService');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -41,15 +44,17 @@ describe('DefaultAppSettingHandler', () => {
     jest.spyOn(notificationCenter, 'on');
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
-    profileService = {
-      getProfile: jest.fn().mockReturnValue({
-        id: mockUserId,
-      }),
-      updateSettingOptions: jest.fn().mockResolvedValue(''),
-    } as any;
-    telephonyService = {
-      getVoipCallPermission: jest.fn().mockResolvedValue(true),
-    } as any;
+    profileService = new ProfileService();
+    telephonyService = new TelephonyService();
+    accountService = new AccountService(null);
+    profileService.getProfile = jest.fn().mockReturnValue({
+      id: mockUserId,
+    });
+    profileService.updateSettingOptions = jest.fn().mockResolvedValue('');
+    telephonyService.getVoipCallPermission = jest.fn().mockResolvedValue(true);
+    accountService.userConfig = jest.fn();
+    accountService.userConfig.getCurrentUserProfileId = jest.fn().mockReturnValue(mockUserId);
+    accountService.getGlipLoginStatus = jest.fn().mockReturnValue(GLIP_LOGIN_STATUS.SUCCESS);
     mockDefaultSettingItem = {
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
       valueType: 3,
@@ -59,27 +64,27 @@ describe('DefaultAppSettingHandler', () => {
       value: CALLING_OPTIONS.GLIP,
       state: 0,
     };
-    accountService = {
-      userConfig: {
-        getCurrentUserProfileId: jest.fn().mockReturnValue(mockUserId),
-      },
-    } as any;
-    settingHandler = new DefaultAppSettingHandler(
-      accountService,
-      profileService,
-      telephonyService,
-    );
-    spyOnTarget(settingHandler);
-    settingHandler.notifyUserSettingEntityUpdate.mockImplementation(() => {});
+    settingHandler = new DefaultAppSettingHandler();
+    ServiceLoader.getInstance = jest.fn().mockImplementation((config:string) => {
+      if(config === ServiceConfig.PROFILE_SERVICE) {
+        return profileService;
+      }
+      if(config === ServiceConfig.TELEPHONY_SERVICE) {
+        return telephonyService;
+      }
+      if(config === ServiceConfig.ACCOUNT_SERVICE) {
+        return accountService;
+      }
+    })
   }
 
   function cleanUp() {
     settingHandler.dispose();
-    clearMocks();
   }
 
   describe('constructor', () => {
     beforeEach(() => {
+      clearMocks();
       setUp();
     });
 
@@ -175,6 +180,26 @@ describe('DefaultAppSettingHandler', () => {
     });
   });
 
+  describe('handle GLIP_LOGIN change', () => {
+    beforeEach(() => {
+      setUp();
+    });
+
+    afterEach(() => {
+      cleanUp();
+    });
+    it('should emit update when GLIP_LOGIN change', (done: jest.DoneCallback) => {
+      settingHandler['userSettingEntityCache'] = mockDefaultSettingItem;
+      settingHandler.getUserSettingEntity = jest.fn().mockResolvedValue({});
+
+      notificationCenter.emit(SERVICE.GLIP_LOGIN);
+      setTimeout(() => {
+        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        done();
+      });
+    });
+  });
+
   describe('fetchUserSettingEntity()', () => {
     beforeEach(() => {
       setUp();
@@ -213,6 +238,14 @@ describe('DefaultAppSettingHandler', () => {
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res.value).toEqual(CALLING_OPTIONS.RINGCENTRAL);
     });
+    it('should return glip when glip login failed', async () => {
+      accountService.getGlipLoginStatus = jest.fn().mockReturnValue(GLIP_LOGIN_STATUS.PROCESS);
+      telephonyService.getVoipCallPermission.mockResolvedValue(false);
+
+      const res = await settingHandler.fetchUserSettingEntity();
+      expect(res.value).toEqual(CALLING_OPTIONS.GLIP);
+    });
+
     it('should return entity', async () => {
       const mockProfile = {
         id: mockUserId,

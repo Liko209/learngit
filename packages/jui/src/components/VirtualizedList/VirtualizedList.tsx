@@ -32,7 +32,11 @@ import {
   ScrollPosition,
 } from './hooks';
 import {
-  createKeyMapper, createRange, getChildren, isRangeIn,
+  createKeyMapper,
+  createRange,
+  getChildren,
+  isRangeIn,
+  createIndexMapper,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
@@ -51,8 +55,8 @@ type JuiVirtualizedListHandles = {
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
-JuiVirtualizedListHandles,
-JuiVirtualizedListProps
+  JuiVirtualizedListHandles,
+  JuiVirtualizedListProps
 > = (
   {
     height,
@@ -204,7 +208,8 @@ JuiVirtualizedListProps
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
-  const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
+  const shouldUpdateRange = () =>
+    !isRangeIn(renderedRange, computeVisibleRange());
 
   const updateRange = () => {
     if (ref.current) {
@@ -212,7 +217,6 @@ JuiVirtualizedListProps
       const visibleRange = computeVisibleRange();
       const startIndex = visibleRange.startIndex;
       const offset = scrollTop - rowManager.getRowOffsetTop(startIndex);
-
       const index = visibleRange.startIndex;
       rememberScrollPosition({
         index,
@@ -230,6 +234,7 @@ JuiVirtualizedListProps
   };
 
   const keyMapper = createKeyMapper(children);
+  const indexMapper = createIndexMapper(children);
   const childrenCount = children.length;
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
@@ -296,6 +301,8 @@ JuiVirtualizedListProps
   );
   const renderedRange = computeRenderedRange(visibleRange);
   const { startIndex, stopIndex } = renderedRange;
+  const startKey = keyMapper(startIndex);
+  const stopKey = keyMapper(Math.min(stopIndex, maxIndex));
 
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
@@ -328,15 +335,19 @@ JuiVirtualizedListProps
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const result = { diff: 0 };
       if (el.offsetParent) {
+        const startIndex = indexMapper(startKey);
         const diff = rowManager.computeDiff(startIndex + i, el.offsetHeight);
         if (shouldUseNativeImplementation) {
           rowManager.setRowHeight(startIndex + i, el.offsetHeight);
-          if (shouldScrollToBottom()) {
-            scrollToBottom();
-          } else {
-            const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-            if (diff !== 0 && beforeFirstVisibleRow && stickToLastPosition) {
-              scrollToPosition(scrollPosition);
+          if (diff !== 0) {
+            if (shouldScrollToBottom()) {
+              scrollToBottom();
+            } else {
+              const beforeFirstVisibleRow =
+                i + startIndex < scrollPosition.index;
+              if (beforeFirstVisibleRow && stickToLastPosition) {
+                scrollToPosition(scrollPosition);
+              }
             }
           }
         } else {
@@ -388,7 +399,7 @@ JuiVirtualizedListProps
       });
       observers = undefined;
     };
-  }, [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
+  }, [startKey, stopKey, indexMapper]);
 
   //
   // Scroll to last remembered position,
@@ -552,9 +563,9 @@ JuiVirtualizedListProps
 const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
-React.ForwardRefExoticComponent<
-JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
->
+  React.ForwardRefExoticComponent<
+    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
+  >
 >;
 
 export {

@@ -19,7 +19,6 @@ import {
 } from 'jui/pattern/LeftRail/LeftRail';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
-import { toTitleCase } from '@/utils/string';
 import { SettingLeftRailViewProps } from './types';
 import { observable } from 'mobx';
 
@@ -33,8 +32,8 @@ const StyledList = styled(JuiList)`
 `;
 
 type Props = SettingLeftRailViewProps &
-WithTranslation &
-RouteComponentProps<{ subPath: string }>;
+  WithTranslation &
+  RouteComponentProps<{ subPath: string }>;
 
 @observer
 class SettingLeftRailViewComponent extends Component<Props> {
@@ -54,19 +53,19 @@ class SettingLeftRailViewComponent extends Component<Props> {
     const { t, pages, goToSettingPage } = this.props;
 
     return pages.map(page => (
-        <JuiListNavItem
-          data-name="sub-setting"
-          data-test-automation-id={`entry-${page.automationId}`}
-          selected={page.path === this.selectedPath}
-          classes={{ selected: 'selected' }}
-          onClick={() => goToSettingPage(page.id)}
-          key={page.id}
-        >
-          <JuiListNavItemIconographyLeft iconSize="small">
-            {page.icon}
-          </JuiListNavItemIconographyLeft>
-          <JuiListNavItemText>{toTitleCase(t(page.title))}</JuiListNavItemText>
-        </JuiListNavItem>
+      <JuiListNavItem
+        data-name="sub-setting"
+        data-test-automation-id={`entry-${page.automationId}`}
+        selected={page.path === this.selectedPath}
+        classes={{ selected: 'selected' }}
+        onClick={() => goToSettingPage(page.id)}
+        key={page.id}
+      >
+        <JuiListNavItemIconographyLeft iconSize="small">
+          {page.icon}
+        </JuiListNavItemIconographyLeft>
+        <JuiListNavItemText>{t(page.title)}</JuiListNavItemText>
+      </JuiListNavItem>
     ));
   }
   render() {

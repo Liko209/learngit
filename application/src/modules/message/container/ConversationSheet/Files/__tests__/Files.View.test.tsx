@@ -10,10 +10,10 @@ import { container, Jupiter } from 'framework';
 import { FilesView } from '../Files.View';
 import {
   JuiPreviewImage,
-  StyledImg,
   JuiFileWithPreview,
   FileCardMedia,
 } from 'jui/pattern/ConversationCard/Files';
+import { ImageCard } from 'jui/pattern/ConversationCard/Files/style';
 import { config } from '@/modules/viewer/module.config';
 import * as Viewer from '@/modules/viewer/container/Viewer';
 import { ViewerService } from '@/modules/viewer/service';
@@ -50,7 +50,7 @@ describe('FilesView', () => {
     getShowDialogPermission: () => true,
   };
 
-  @testable
+  @testable.skip
   class _handleImageClick {
     beforeEach() {
       jest.spyOn(Viewer, 'showImageViewer').mockImplementationOnce(() => {});
@@ -65,7 +65,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find(StyledImg)
+        .find(ImageCard)
         .simulate('click', mockEvent);
 
       setTimeout(() => {
@@ -85,7 +85,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find(StyledImg)
+        .find(ImageCard)
         .simulate('click', mockEvent);
 
       setTimeout(() => {

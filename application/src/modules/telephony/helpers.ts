@@ -1,4 +1,5 @@
 import { isFunction } from 'lodash';
+import { CALL_DIRECTION } from 'sdk/module/RCItems';
 
 /**
  * Moves the caret (cursor) position to the end of the specified text field.
@@ -25,11 +26,18 @@ export const focusCampo = (inputField: HTMLInputElement | any) => {
   });
 };
 
-export const getDisplayName = (t: Function, name?: string): string => (typeof name !== 'string'
+export const getDisplayName = (
+  t: Function,
+  direction: CALL_DIRECTION,
+  name?: string,
+): string => (typeof name !== 'string'
   ? ''
   : name.length
     ? name
-    : t('telephony.unknownCaller'));
+    : direction === CALL_DIRECTION.INBOUND
+      ? t('telephony.unknownCaller')
+      : t('telephony.unknownCallee')
+);
 
 export function sleep(timeout: number = 0) {
   let timer: any;

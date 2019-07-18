@@ -14,7 +14,12 @@ jest.mock('../../../../module/config');
 jest.mock('../../../../dao');
 jest.mock('../../../post/dao');
 
-function getController() {
+function getController(gValue: any = '') {
+  ServiceLoader.getInstance = jest.fn().mockReturnValue({
+    setUserId: jest.fn(),
+    get: jest.fn().mockReturnValue(gValue),
+    put: jest.fn(),
+  });
   const postDao = new PostDao(null);
   daoManager.getDao.mockReturnValue(postDao);
   const controller = new PreInsertIdController(postDao.modelName);
@@ -22,13 +27,7 @@ function getController() {
 }
 
 describe('PreInsertIdController()', () => {
-  beforeEach(() => {
-    ServiceLoader.getInstance = jest.fn().mockReturnValue({
-      setUserId: jest.fn(),
-      get: jest.fn(),
-      put: jest.fn(),
-    });
-  });
+  beforeEach(() => {});
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -44,12 +43,7 @@ describe('PreInsertIdController()', () => {
       });
     });
     it('should clear old invalid data without error when they existed', () => {
-      ServiceLoader.getInstance = jest.fn().mockReturnValue({
-        setUserId: jest.fn(),
-        get: jest.fn().mockReturnValueOnce(['-61480964']),
-        put: jest.fn(),
-      });
-      const controller = getController();
+      const controller = getController(['-61480964']);
       expect(controller.getAll()).toEqual({
         uniqueIds: [],
         ids: [],

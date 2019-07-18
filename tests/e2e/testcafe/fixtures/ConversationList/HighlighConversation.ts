@@ -66,7 +66,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-143'],
   keywords: ['ConversationList'],
   maintainers: ['potar.he']
-})('Open last conversation when login and group show in the top of conversation list', async (t: TestController) => {
+})('Highlight conversations should be kept when do anything except open any conversations', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
 
@@ -76,6 +76,12 @@ test.meta(<ITestMeta>{
     type: 'DirectMessage',
     owner: loginUser,
     members: [loginUser, users[0]]
+  }
+  const highLightColor = 'rgb(6, 132, 189)';
+
+  async function checkHighLight() {
+    const textStyle = await firstConversation.self.find('p').style;
+    assert.ok(textStyle.color == highLightColor, 'it was not highlighted');
   }
 
   await h(t).withLog('Given I have an extension with a chat', async () => {
@@ -95,11 +101,11 @@ test.meta(<ITestMeta>{
   const firstConversation = directMessagesSection.nthConversationEntry(0);
   await h(t).withLog('When I enter the first conversation of direct message section', async () => {
     await firstConversation.enter();
+    await t.wait(3e3); //  send last_group_id to backend after open a conversation and 2s.
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
-    const textStyle = await firstConversation.self.find('p').style;
-    assert.ok(textStyle.color == 'rgb(6, 132, 189)', 'it was not highlighted');
+    await checkHighLight();
   });
 
   await h(t).withLog('When I move mouse focus elsewhere', async () => {
@@ -107,8 +113,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
-    const textStyle = await firstConversation.self.find('p').style;
-    assert.ok(textStyle.color == 'rgb(6, 132, 189)', 'it was not highlighted');
+    await checkHighLight();
   });
 
   const leftRail = app.homePage.messageTab.leftRail;
@@ -119,8 +124,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
-    const textStyle = await firstConversation.self.find('p').style;
-    assert.ok(textStyle.color == 'rgb(6, 132, 189)', 'it was not highlighted');
+    await checkHighLight();
   });
 
   await h(t).withLog('When I collapse then Expand Fav/DM/Teams section', async () => {
@@ -129,8 +133,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
-    const textStyle = await firstConversation.self.find('p').style;
-    assert.ok(textStyle.color == 'rgb(6, 132, 189)', 'it was not highlighted');
+    await checkHighLight();
   });
 
   await h(t).withLog('When I Tap another app page (e.g. Tasks/Phone...) and then come back', async () => {
@@ -139,7 +142,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And the group is highlighted', async () => {
-    const textStyle = await firstConversation.self.find('p').style;
-    assert.ok(textStyle.color == 'rgb(6, 132, 189)', 'it was not highlighted');
+    await checkHighLight();
   });
 });

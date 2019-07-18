@@ -22,7 +22,7 @@ import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 
 export class MessageBadgeSettingHandler extends AbstractSettingEntityHandler<
-NEW_MESSAGE_BADGES_OPTIONS
+  NEW_MESSAGE_BADGES_OPTIONS
 > {
   id = SettingEntityIds.Notification_NewMessageBadgeCount;
 
@@ -32,7 +32,8 @@ NEW_MESSAGE_BADGES_OPTIONS
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
+      this.onProfileEntityUpdate(payload),);
   }
 
   async updateValue(value: NEW_MESSAGE_BADGES_OPTIONS) {

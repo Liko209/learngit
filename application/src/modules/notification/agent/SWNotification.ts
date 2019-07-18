@@ -90,11 +90,11 @@ export class SWNotification extends AbstractNotification<NotificationAction[]> {
   }
 
   async clear() {
-    // todo
-    const notifications = await this.getNotifications();
-    for (const notification of notifications) {
-      notification.close();
-    }
+    // FIJI-7475 temporarily disable
+    // const notifications = await this.getNotifications();
+    // for (const notification of notifications) {
+    //   notification.close();
+    // }
   }
 
   async getNotifications() {

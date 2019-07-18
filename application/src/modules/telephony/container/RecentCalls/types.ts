@@ -19,7 +19,7 @@ type ViewProps = {
   decreaseFocusIndex: () => void;
   focusIndex: number;
   makeCall: (focusIndex?: number) => void;
-  dialerFocused: boolean;
+  dialerInputFocused: boolean;
 } & Props;
 
 export { Props, ViewProps };

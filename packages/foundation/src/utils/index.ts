@@ -4,23 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { BuildUtils } from './BuildUtils';
-import { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
-import { HeartBeatCheck } from './checker/HeartBeatCheck';
-import { sleepModeDetector } from './checker/SleepModeDetector';
-import { DateFormatter } from './DateFormatter';
-import {
+export { BuildUtils } from './BuildUtils';
+export { uniqueArray, getCurrentTime } from './jsUtils/jsUtils';
+export { HeartBeatCheck } from './checker/HeartBeatCheck';
+export { sleepModeDetector } from './checker/SleepModeDetector';
+export { powerMonitor, PowerMonitor } from './checker/PowerMonitor';
+export { DateFormatter } from './DateFormatter';
+export {
   SPARTA_TIME_RANGE,
   getSpartaRandomTime,
 } from './algorithm/SpartaRandomTime';
-
-export {
-  BuildUtils,
-  uniqueArray,
-  getCurrentTime,
-  HeartBeatCheck,
-  sleepModeDetector,
-  DateFormatter,
-  SPARTA_TIME_RANGE,
-  getSpartaRandomTime,
-};
