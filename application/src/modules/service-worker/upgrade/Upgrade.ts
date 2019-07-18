@@ -27,7 +27,9 @@ class Upgrade {
   private _lastRouterChangeTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
-  constructor(public queryInterval = DEFAULT_UPDATE_INTERVAL) {
+  queryInterval = DEFAULT_UPDATE_INTERVAL;
+
+  constructor() {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );

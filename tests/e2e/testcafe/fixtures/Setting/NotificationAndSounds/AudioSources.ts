@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-06-05 00:34:07 
- * @Last Modified by:   Potar.He 
- * @Last Modified time: 2019-06-05 00:34:07 
+ * @Author: Potar.He
+ * @Date: 2019-06-05 00:34:07
+ * @Last Modified by:   Potar.He
+ * @Last Modified time: 2019-06-05 00:34:07
  */
 
 import { v4 as uuid } from 'uuid';
@@ -164,6 +164,70 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
+  caseIds: ['JPT-2422'],
+  maintainers: ['looper.wang'],
+  keywords: ['AudioSources']
+})(`Ringer source should be from the selected settings`, async (t) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[0];
+
+  const app = new AppRoot(t);
+
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const notificationAndSoundsPage = settingTab.notificationAndSoundPage;
+
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Notifications and Sounds tab`, async () => {
+    await settingTab.notificationAndSoundsEntry.enter();
+  });
+
+  const defaultDeviceId = 'default';
+  const deviceInfos: deviceInfo[] = await getDeviceInfos();
+  const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
+
+  for (let i = 0; i < audioOutputs.length + 2; i++) {
+    await h(t).withLog(`When I click ringer source selectorBox`, async () => {
+      await notificationAndSoundsPage.clickRingerSourceSelectBox();
+    });
+
+    await h(t).withLog(`Then ringer source should have {length} items and default device`, async (step) => {
+      step.setMetadata('length', audioOutputs.length.toString())
+      await t.expect(notificationAndSoundsPage.ringerSourceItems.count).eql(audioOutputs.length + 2);
+      await t.expect(notificationAndSoundsPage.ringerSourceById(defaultDeviceId).exists).ok();
+    });
+
+    let label = '', deviceId = '';
+    await h(t).withLog(`When I select the No.{index} ringer source `, async (step) => {
+      step.initMetadata({ 'index': (i + 1).toString() });
+      label = await notificationAndSoundsPage.ringerSourceItems.nth(i).textContent;
+      deviceId = await notificationAndSoundsPage.getRingerSourceIdByNth(i)
+      await notificationAndSoundsPage.selectRingerSourceByNth(i);
+    });
+
+    await h(t).withLog(`Then I can see "{label}" in ringer source selectorBox of audio sources section`, async (step) => {
+      step.setMetadata('label', label);
+      await notificationAndSoundsPage.currentRingerSourceLabelToBe(label);
+      await notificationAndSoundsPage.currentRingerSourceIdToBe(deviceId);
+    });
+  }
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
   caseIds: ['JPT-2113'],
   maintainers: ['potar.he'],
   keywords: ['AudioSources']
@@ -300,11 +364,123 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['JPT-2266', 'JPT-2267'],
-  maintainers: ['potar.he'],
+  caseIds: ['JPT-2431'],
+  maintainers: ['looper.wang'],
   keywords: ['AudioSources']
-})(`The Microphone/Speaker source should be from the default when no last used device and the currently used device is removed 
-& The Microphone/Speaker source should be from the last selected settings when the currently used device is removed`, async (t) => {
+})(`The ringer source should be from the last selected settings when the currently used device is removed`, async (t) => {
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[0];
+  const caller = users[1];
+
+  const app = new AppRoot(t);
+
+  const settingsEntry = app.homePage.leftPanel.settingsEntry;
+  const settingTab = app.homePage.settingTab;
+  const notificationAndSoundsPage = settingTab.notificationAndSoundPage;
+
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    })
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  let callerWebPhoneSession: WebphoneSession;
+  await h(t).withLog(`And login webphone with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: caller.company.number,
+      extension: caller.extension,
+    })
+    callerWebPhoneSession = await h(t).newWebphoneSession(caller);
+  });
+
+  await h(t).withLog(`When I click Setting entry`, async () => {
+    await settingsEntry.enter();
+  });
+
+  await h(t).withLog(`And I click Notifications and Sounds tab`, async () => {
+    await settingTab.notificationAndSoundsEntry.enter();
+  });
+
+  const deviceInfos: deviceInfo[] = await getDeviceInfos();
+  const audioOutputs = _.filter(deviceInfos, { kind: "audiooutput" });
+  const itemsLabel = [ 'All audio sources', 'Off', 'Use system default']
+
+
+  for (let i = 0; i < itemsLabel.length; i++) {
+    await h(t).withLog(`When I click ringer source selectorBox`, async () => {
+      await notificationAndSoundsPage.clickRingerSourceSelectBox();
+    });
+
+    const newAudioOutput = <deviceInfo>{
+      deviceId: uuid(),
+      kind: "audiooutput",
+      label: "new Audio output",
+      groupId: uuid()
+    }
+
+    await h(t).withLog(`When I insert new audio output device`, async () => {
+      deviceInfos.push(newAudioOutput);
+      audioOutputs.push(newAudioOutput);
+      await mockDeviceInfos(deviceInfos);
+    });
+
+    await h(t).withLog(`And ringer source should have {label} with {id}`, async (step) => {
+      step.initMetadata({
+        'label': newAudioOutput.label,
+        id: newAudioOutput.deviceId
+      });
+      await t.expect(notificationAndSoundsPage.ringerSourceByLabel(newAudioOutput.label).exists).ok();
+      await t.expect(notificationAndSoundsPage.ringerSourceById(newAudioOutput.deviceId).exists).ok();
+    });
+
+    await h(t).withLog(`When I remove the new ringer device`, async () => {
+      deviceInfos.pop();
+      audioOutputs.pop();
+      await mockDeviceInfos(deviceInfos);
+    });
+
+    await h(t).withLog(`When I select the ringer source {lastBabel}`, async (step) => {
+      step.initMetadata({ 'lastBabel': itemsLabel[i] });
+      await notificationAndSoundsPage.selectRingerSourceByLabel(itemsLabel[i]);
+    });
+  }
+
+  await h(t).withLog(`When I click ringer source selectorBox`, async () => {
+    await notificationAndSoundsPage.clickRingerSourceSelectBox();
+  });
+
+  const newAudioOutput = <deviceInfo>{
+    deviceId: uuid(),
+    kind: "audiooutput",
+    label: "new Audio output",
+    groupId: uuid()
+  }
+
+  await h(t).withLog(`When I insert new audio output device`, async () => {
+    deviceInfos.push(newAudioOutput);
+    audioOutputs.push(newAudioOutput);
+    await mockDeviceInfos(deviceInfos);
+  });
+
+  const deviceId = await notificationAndSoundsPage.getRingerSourceIdByLabel(newAudioOutput.label);
+
+  await h(t).withLog(`Then I can see "{label}" in ringer source selectorBox of audio sources section`, async (step) => {
+    step.setMetadata('label', newAudioOutput.label);
+    await notificationAndSoundsPage.currentRingerSourceLabelToBe(newAudioOutput.label);
+    await notificationAndSoundsPage.currentRingerSourceIdToBe(deviceId);
+  });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-2266', 'JPT-2267', 'JPT-2429', 'JPT-2430'],
+  maintainers: ['potar.he', 'looper.wang'],
+  keywords: ['AudioSources']
+})(`The Microphone/Speaker/Ringer source should be from the default when no last used device and the currently used device is removed
+& The Microphone/Speaker/Ringer source should be from the last selected settings when the currently used device is removed`, async (t) => {
     const users = h(t).rcData.mainCompany.users
     const loginUser = users[0];
     await h(t).scenarioHelper.resetProfile(loginUser);
@@ -468,127 +644,133 @@ test.meta(<ITestMeta>{
       await notificationAndSoundsPage.quitByPressEsc();
     });
 
-    /** insert output */
-    await h(t).withLog(`When I click speaker source selectorBox`, async () => {
-      await notificationAndSoundsPage.clickSpeakerSourceSelectBox();
-    });
+    const sourceArray = [
+      ['Speaker', 'speaker'],
+      ['Ringer', 'ringer']
+    ]
 
-    await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioInputs.length.toString())
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioInputs.length);
-    });
-
-    const lastAudioOutput = <deviceInfo>{
-      deviceId: uuid(),
-      kind: "audiooutput",
-      label: "last-Audio-Output",
-      groupId: uuid()
-    }
-
-    const newAudioOutput = <deviceInfo>{
-      deviceId: uuid(),
-      kind: "audiooutput",
-      label: "new-Audio-Output",
-      groupId: uuid()
-    }
-
-    await h(t).withLog(`When I insert new audio output device`, async () => {
-      deviceInfos.push(lastAudioOutput, newAudioOutput);
-      audioOutputs.push(lastAudioOutput, newAudioOutput);
-      await mockDeviceInfos(deviceInfos);
-    });
-
-    await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioOutputs.length.toString())
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
-    });
-
-    await h(t).withLog(`And speaker source should have {lastLabel} and {newLabel}`, async (step) => {
-      step.initMetadata({
-        lastLabel: lastAudioOutput.label,
-        newLabel: newAudioOutput.label
+    for (let i = 0; i < sourceArray.length; i++) {
+        /** insert output */
+      await h(t).withLog(`When I click ${sourceArray[i][1]} source selectorBox`, async () => {
+        await notificationAndSoundsPage[`click${sourceArray[i][0]}SourceSelectBox`]();
       });
-      await t.expect(notificationAndSoundsPage.speakerSourceByLabel(lastAudioOutput.label).exists).ok();
-      await t.expect(notificationAndSoundsPage.speakerSourceByLabel(newAudioOutput.label).exists).ok();
-    });
 
-    await h(t).withLog(`When I select the speaker source {lastBabel}`, async (step) => {
-      step.initMetadata({ 'lastBabel': lastAudioOutput.label });
-      await notificationAndSoundsPage.selectSpeakerSourceByLabel(lastAudioOutput.label);
-    });
+      await h(t).withLog(`Then ${sourceArray[i][1]} source should have {length} items`, async (step) => {
+        step.setMetadata('length', audioInputs.length.toString())
+        await t.expect(notificationAndSoundsPage[`${sourceArray[i][1]}SourceItems`].count).eql(audioInputs.length + (i ? 2 : 0));
+      });
 
-    await h(t).withLog(`Then I can see "{lastBabel}" in speaker source selectorBox of audio sources section`, async (step) => {
-      step.setMetadata('lastBabel', lastAudioOutput.label);
-      await notificationAndSoundsPage.currentSpeakerSourceLabelToBe(lastAudioOutput.label);
-    });
+      const lastAudioOutput = <deviceInfo>{
+        deviceId: uuid(),
+        kind: "audiooutput",
+        label: "last-Audio-Output",
+        groupId: uuid()
+      }
 
-    await h(t).withLog(`When I click speaker source selectorBox`, async () => {
-      await notificationAndSoundsPage.clickSpeakerSourceSelectBox();
-    })
+      const newAudioOutput = <deviceInfo>{
+        deviceId: uuid(),
+        kind: "audiooutput",
+        label: "new-Audio-Output",
+        groupId: uuid()
+      }
 
-    await h(t).withLog(`and I select the speaker source {newLabel}`, async (step) => {
-      step.initMetadata({ 'newLabel': newAudioOutput.label });
-      await notificationAndSoundsPage.selectSpeakerSourceByLabel(newAudioOutput.label);
-    });
+      await h(t).withLog(`When I insert new audio output device`, async () => {
+        deviceInfos.push(lastAudioOutput, newAudioOutput);
+        audioOutputs.push(lastAudioOutput, newAudioOutput);
+        await mockDeviceInfos(deviceInfos);
+      });
 
-    await h(t).withLog(`Then I can see "{newLabel}" in speaker source selectorBox of audio sources section`, async (step) => {
-      step.setMetadata('newLabel', newAudioOutput.label);
-      await notificationAndSoundsPage.currentSpeakerSourceLabelToBe(newAudioOutput.label);
-    });
+      await h(t).withLog(`Then ${sourceArray[i][1]} source should have {length} items`, async (step) => {
+        step.setMetadata('length', audioOutputs.length.toString())
+        await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length + (i ? 2 : 0));
+      });
 
-    /** remove output */
-    await h(t).withLog(`When I remove the new speaker device`, async () => {
-      deviceInfos.pop();
-      audioOutputs.pop();
-      await mockDeviceInfos(deviceInfos);
-    });
+      await h(t).withLog(`And ${sourceArray[i][1]} source should have {lastLabel} and {newLabel}`, async (step) => {
+        step.initMetadata({
+          lastLabel: lastAudioOutput.label,
+          newLabel: newAudioOutput.label
+        });
+        await t.expect(notificationAndSoundsPage[`${sourceArray[i][1]}SourceByLabel`](lastAudioOutput.label).exists).ok();
+        await t.expect(notificationAndSoundsPage[`${sourceArray[i][1]}SourceByLabel`](newAudioOutput.label).exists).ok();
+      });
 
-    await h(t).withLog(`Then I can see "{lastBabel}" in speaker source selectorBox of audio sources section`, async (step) => {
-      step.setMetadata('lastBabel', lastAudioOutput.label);
-      await notificationAndSoundsPage.currentSpeakerSourceLabelToBe(lastAudioOutput.label);
-    });
+      await h(t).withLog(`When I select the ${sourceArray[i][1]} source {lastBabel}`, async (step) => {
+        step.initMetadata({ 'lastBabel': lastAudioOutput.label });
+        await notificationAndSoundsPage[`select${sourceArray[i][0]}SourceByLabel`](lastAudioOutput.label);
+      });
 
-    await h(t).withLog(`When I click speaker source selectorBox`, async () => {
-      await notificationAndSoundsPage.clickSpeakerSourceSelectBox();
-    });
+      await h(t).withLog(`Then I can see "{lastBabel}" in ${sourceArray[i][1]} source selectorBox of audio sources section`, async (step) => {
+        step.setMetadata('lastBabel', lastAudioOutput.label);
+        await notificationAndSoundsPage[`current${sourceArray[i][0]}SourceLabelToBe`](lastAudioOutput.label);
+      });
 
-    await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioOutputs.length.toString())
+      await h(t).withLog(`When I click ${sourceArray[i][1]} source selectorBox`, async () => {
+        await notificationAndSoundsPage[`click${sourceArray[i][0]}SourceSelectBox`]();
+      })
 
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
-    });
+      await h(t).withLog(`and I select the ${sourceArray[i][1]} source {newLabel}`, async (step) => {
+        step.initMetadata({ 'newLabel': newAudioOutput.label });
+        await notificationAndSoundsPage[`select${sourceArray[i][0]}SourceByLabel`](newAudioOutput.label);
+      });
 
-    await h(t).withLog(`And {newLabel} dismiss in drop down list`, async (step) => {
-      step.setMetadata('newLabel', newAudioOutput.label);
-      await t.expect(notificationAndSoundsPage.speakerSourceByLabel(newAudioOutput.label).exists).notOk();
-      await notificationAndSoundsPage.quitByPressEsc();
-    });
+      await h(t).withLog(`Then I can see "{newLabel}" in ${sourceArray[i][1]} source selectorBox of audio sources section`, async (step) => {
+        step.setMetadata('newLabel', newAudioOutput.label);
+        await notificationAndSoundsPage[`current${sourceArray[i][0]}SourceLabelToBe`](newAudioOutput.label);
+      });
 
-    await h(t).withLog(`When I remove the last speaker device`, async () => {
-      deviceInfos.pop();
-      audioOutputs.pop();
-      await mockDeviceInfos(deviceInfos);
-    });
+      /** remove output */
+      await h(t).withLog(`When I remove the new ${sourceArray[i][1]} device`, async () => {
+        deviceInfos.pop();
+        audioOutputs.pop();
+        await mockDeviceInfos(deviceInfos);
+      });
 
-    await h(t).withLog(`Then I can see "{default}" in speaker source selectorBox of audio sources section`, async (step) => {
-      step.setMetadata('default', defaultDeviceLabel);
-      await notificationAndSoundsPage.currentSpeakerSourceLabelToBe(defaultDeviceLabel);
-    });
+      await h(t).withLog(`Then I can see "{lastBabel}" in ${sourceArray[i][1]} source selectorBox of audio sources section`, async (step) => {
+        step.setMetadata('lastBabel', lastAudioOutput.label);
+        await notificationAndSoundsPage[`current${sourceArray[i][0]}SourceLabelToBe`](lastAudioOutput.label);
+      });
 
-    await h(t).withLog(`When I click speaker source selectorBox`, async () => {
-      await notificationAndSoundsPage.clickSpeakerSourceSelectBox();
-    });
+      await h(t).withLog(`When I click ${sourceArray[i][1]} source selectorBox`, async () => {
+        await notificationAndSoundsPage[`click${sourceArray[i][0]}SourceSelectBox`]();
+      });
 
-    await h(t).withLog(`Then speaker source should have {length} items`, async (step) => {
-      step.setMetadata('length', audioOutputs.length.toString());
-      await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length);
-    });
+      await h(t).withLog(`Then ${sourceArray[i][1]} source should have {length} items`, async (step) => {
+        step.setMetadata('length', audioOutputs.length.toString())
+        await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length + (i ? 2 : 0));
+      });
 
-    await h(t).withLog(`And {lastLabel} dismiss in drop down list`, async (step) => {
-      step.setMetadata('lastLabel', lastAudioOutput.label)
-      await t.expect(notificationAndSoundsPage.speakerSourceByLabel(lastAudioOutput.label).exists).notOk();
-      await notificationAndSoundsPage.quitByPressEsc();
-    });
+      await h(t).withLog(`And {newLabel} dismiss in drop down list`, async (step) => {
+        step.setMetadata('newLabel', newAudioOutput.label);
+        await t.expect(notificationAndSoundsPage[`${sourceArray[i][1]}SourceByLabel`](newAudioOutput.label).exists).notOk();
+        await notificationAndSoundsPage.quitByPressEsc();
+      });
+
+      await h(t).withLog(`When I remove the last ${sourceArray[i][1]} device`, async () => {
+        deviceInfos.pop();
+        audioOutputs.pop();
+        await mockDeviceInfos(deviceInfos);
+      });
+
+      await h(t).withLog(`Then I can see "{default}" in ${sourceArray[i][1]} source selectorBox of audio sources section`, async (step) => {
+        step.setMetadata('default', defaultDeviceLabel);
+        await notificationAndSoundsPage[`current${sourceArray[i][0]}SourceLabelToBe`](defaultDeviceLabel);
+      });
+
+      await h(t).withLog(`When I click ${sourceArray[i][1]} source selectorBox`, async () => {
+        await notificationAndSoundsPage[`click${sourceArray[i][0]}SourceSelectBox`]();
+      });
+
+      await h(t).withLog(`Then ${sourceArray[i][1]} source should have {length} items`, async (step) => {
+        step.setMetadata('length', audioOutputs.length.toString());
+        await t.expect(notificationAndSoundsPage.speakerSourceItems.count).eql(audioOutputs.length + (i ? 2 : 0));
+      });
+
+      await h(t).withLog(`And {lastLabel} dismiss in drop down list`, async (step) => {
+        step.setMetadata('lastLabel', lastAudioOutput.label)
+        await t.expect(notificationAndSoundsPage[`${sourceArray[i][1]}SourceByLabel`](lastAudioOutput.label).exists).notOk();
+        await notificationAndSoundsPage.quitByPressEsc();
+      });
+    }
 
   });
 

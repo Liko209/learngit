@@ -4,35 +4,49 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FirebasePerformanceController } from '../FirebasePerformanceController';
-import { FirebasePerformance } from '../../../../packages/foundation';
+import {
+  FirebasePerformance,
+  KVStorageManager,
+} from '../../../../packages/foundation/src';
 import config from '@/config';
 
 jest.mock('@/config', () => ({
-  isProductionAccount: jest.fn(() => {
-    return true;
-  }),
+  isProductionAccount: jest.fn(() => true),
 }));
 
 describe('FirebasePerformanceController', () => {
+  const firebasePerformance = FirebasePerformance.getInstance();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+
+    firebasePerformance.initialize = jest.fn();
+  });
+
   describe('initialize', () => {
     it('should initialize firebase performance for production account', () => {
-      const firebasePerformance = FirebasePerformance.getInstance();
       jest.spyOn(config, 'isProductionAccount').mockReturnValue(true);
-      const spy = jest.spyOn(firebasePerformance, 'initialize');
-      spy.mockReturnValue();
       const firebase = new FirebasePerformanceController();
       firebase.initialize();
-      expect(spy).toHaveBeenCalled();
+      expect(firebasePerformance.initialize).toHaveBeenCalled();
     });
 
     it('should not initialize firebase performance for non-production account', () => {
-      const firebasePerformance = FirebasePerformance.getInstance();
       jest.spyOn(config, 'isProductionAccount').mockReturnValue(false);
-      const spy = jest.spyOn(firebasePerformance, 'initialize');
-      spy.mockReturnValue();
       const firebase = new FirebasePerformanceController();
       firebase.initialize();
-      expect(spy).toHaveBeenCalled();
+      expect(firebasePerformance.initialize).not.toHaveBeenCalled();
+    });
+
+    it('should not initialize firebase performance when browser is not support storage', () => {
+      KVStorageManager.prototype.isLocalStorageSupported = jest
+        .fn()
+        .mockReturnValue(false);
+      jest.spyOn(config, 'isProductionAccount').mockReturnValue(false);
+      const firebase = new FirebasePerformanceController();
+      firebase.initialize();
+      expect(firebasePerformance.initialize).not.toHaveBeenCalled();
     });
   });
 });

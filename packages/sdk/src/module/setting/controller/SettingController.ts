@@ -23,12 +23,14 @@ class SettingController {
   registerModuleSetting(moduleSetting: IModuleSetting) {
     moduleSetting.init();
     this._moduleSettings.push(moduleSetting);
-    const requestsCanBeHandled = this._requestPool.filter(r => moduleSetting.has(r.id));
+    const requestsCanBeHandled = this._requestPool.filter(r =>
+      moduleSetting.has(r.id),);
     this._requestPool = this._requestPool.filter(r => !moduleSetting.has(r.id));
 
-    requestsCanBeHandled.map(r => moduleSetting.getById(r.id).then(result => {
-      result ? r.resolve(result) : r.reject(result);
-    }));
+    requestsCanBeHandled.map(r =>
+      moduleSetting.getById(r.id).then(result => {
+        result ? r.resolve(result) : r.reject(result);
+      }),);
   }
 
   unRegisterModuleSetting(moduleSetting: IModuleSetting) {

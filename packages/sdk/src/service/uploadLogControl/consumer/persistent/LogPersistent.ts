@@ -9,7 +9,7 @@ import {
   IDatabase,
   IDatabaseCollection,
   KVStorageManager,
-  PerformanceTracer,
+  PerformanceTracer
 } from 'foundation';
 import { configManager } from '../../config';
 import schema, { TABLE_LOG } from './schema';
@@ -28,16 +28,17 @@ export class LogPersistent implements ILogPersistent {
       this._isInit = true;
       this._kvStorageManager = new KVStorageManager();
       this._dbManager = new DBManager();
-      const dbType = this._kvStorageManager.isLocalStorageSupported()
-        ? DatabaseType.DexieDB
-        : DatabaseType.LokiDB;
+      const dbType =
+        window.indexedDB && this._kvStorageManager.isLocalStorageSupported()
+          ? DatabaseType.DexieDB
+          : DatabaseType.LokiDB;
       this._dbManager.initDatabase(schema, dbType);
       this._db = this._dbManager.getDatabase();
       this._collection = this._db.getCollection<PersistentLogEntity, number>(
-        TABLE_LOG,
+        TABLE_LOG
       );
       await this.cleanPersistentWhenReachLimit(
-        configManager.getConfig().persistentLimit,
+        configManager.getConfig().persistentLimit
       );
     }
   };
@@ -67,15 +68,15 @@ export class LogPersistent implements ILogPersistent {
     limit !== undefined &&
       criteria.push({
         name: 'limit',
-        value: limit,
+        value: limit
       });
     criteria.push({
       name: 'orderBy',
       value: 'startTime',
-      desc: false,
+      desc: false
     });
     const array = await this._collection.getAll({
-      criteria,
+      criteria
     });
     return array;
   };
@@ -90,7 +91,7 @@ export class LogPersistent implements ILogPersistent {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkDelete(
-      array.map((item: PersistentLogEntity) => item.id),
+      array.map((item: PersistentLogEntity) => item.id)
     );
   };
 
@@ -104,7 +105,7 @@ export class LogPersistent implements ILogPersistent {
     const performanceTracer = PerformanceTracer.start();
     const logs = await this.getAll();
     performanceTracer.end({
-      key: UPLOAD_LOG_PERFORMANCE_KEYS.GET_ALL_LOGS_FROM_DB,
+      key: UPLOAD_LOG_PERFORMANCE_KEYS.GET_ALL_LOGS_FROM_DB
     });
     if (!logs) return;
     let size = 0;

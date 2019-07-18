@@ -29,7 +29,7 @@ type Props = {
   Back?: React.ComponentType;
   HoverActions?: React.ComponentType;
   Avatar?: React.ComponentType;
-  RecentCallBtn?: React.ComponentType;
+  RecentCallBtn?: React.ComponentType<any>;
   name?: string;
   phone?: string;
   placeholder?: string;
@@ -355,6 +355,15 @@ class JuiHeader extends PureComponent<Props, State> {
   private _handleMouseDownOnInput = (e: React.MouseEvent<any>) => {
     // prevent drag & drop
     e.stopPropagation();
+  };
+
+  _onFocus = (e: MouseEvent) => {
+    const { onFocus } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onFocus && onFocus();
   };
 
   private _renderDialerInput() {

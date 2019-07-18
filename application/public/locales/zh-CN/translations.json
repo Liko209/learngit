@@ -1,0 +1,968 @@
+{
+  "common": {
+    "button": {
+      "ariaToggleOn": "开启，点击以关闭",
+      "ariaToggleOff": "关闭，点击以开启",
+      "tryAgain": "重试"
+    },
+    "dialog": {
+      "OK": "确定",
+      "cancel": "取消",
+      "update": "更新",
+      "create": "创建",
+      "done": "完成",
+      "save": "保存",
+      "send": "发送",
+      "delete": "删除",
+      "close": "关闭",
+      "deleteAll": "全部删除"
+    },
+    "prompt": {
+      "NoInternetConnection": "无互联网连接",
+      "Network Error": "网络连接已断开。请在网络恢复后再试一次。",
+      "tryAgain": "请重试。",
+      "tryAgainLater": "请稍后重试。",
+      "thenTryAgain": "然后重试。",
+      "loadError": "糟糕！出现问题，请重试。"
+    },
+    "preposition": {
+      "in": "在"
+    },
+    "time": {
+      "at": "于",
+      "today": "今天",
+      "yesterday": "昨天",
+      "tomorrow": "明天",
+      "Monday": "星期一",
+      "Tuesday": "星期二",
+      "Wednesday": "星期三",
+      "Thursday": "星期四",
+      "Friday": "星期五",
+      "Saturday": "星期六",
+      "Sunday": "星期日",
+      "hour": "小时",
+      "min": "分钟",
+      "sec": "秒"
+    },
+    "verb": {
+      "like": "个赞",
+      "likes": "个赞"
+    },
+    "pronoun": {
+      "this": "此条"
+    },
+    "conj": {
+      "and": "和"
+    },
+    "delete": "删除",
+    "more": "更多",
+    "copy": "复制",
+    "remove": "移除",
+    "pin": "固定",
+    "ariaCopy": "复制这个 {{value}}",
+    "call": "呼叫",
+    "ariaCall": "呼叫 {{value}}",
+    "download": "下载",
+    "expand": "展开",
+    "collapse": "折叠",
+    "back": "上一步",
+    "forward": "下一步",
+    "You": "您",
+    "Connecting": "正在连接",
+    "deactivatedUsers": "已停用的用户",
+    "team": "团队",
+    "play": "播放",
+    "pause": "暂停",
+    "reload": "重新加载",
+    "goToConversation": "转到对话"
+  },
+  "auth": {
+    "signIn": "登录",
+    "signOut": "退出",
+    "signInFailedTitle": "登录失败",
+    "signInFailedContent": "登录时出现问题。请稍后重试。"
+  },
+  "home": {
+    "menu": "菜单",
+    "search": "搜索",
+    "showMore": "显示更多",
+    "ClearHistory": "清除历史记录",
+    "RecentSearches": "最近的搜索",
+    "newActions": "新操作",
+    "viewYourProfile": "查看您的个人资料",
+    "aboutRingCentral": "关于 RingCentral",
+    "sendFeedback": "发送反馈",
+    "version": "版本",
+    "lastCommit": "最后提交",
+    "deployedTime": "日期",
+    "allRightsReserved": "保留所有权利",
+    "dialer": "拨号盘",
+    "openDialer": "打开拨号盘"
+  },
+  "globalSearch": {
+    "search": "搜索",
+    "showMore": "显示更多",
+    "ClearHistory": "清除历史记录",
+    "clear": "清除",
+    "RecentSearches": "最近的搜索",
+    "contentSearch": "内容搜索",
+    "inThisConversation": "在此对话中",
+    "Messages": "消息",
+    "people": "联系人",
+    "groups": "群组",
+    "team": "团队",
+    "postedBy": "发布者：",
+    "postedIn": "发布于：",
+    "postedByPlaceholder": "名称或电子邮件",
+    "postedInPlaceholder": "团队或对话",
+    "filters": "筛选器",
+    "People": "联系人",
+    "Groups": "群组",
+    "Teams": "团队",
+    "All": "全部",
+    "Events": "事件",
+    "Files": "文件",
+    "Links": "链接",
+    "Notes": "备忘",
+    "Tasks": "任务",
+    "Type": "类型",
+    "TimePosted": "发布时间",
+    "Anytime": "任何时候",
+    "ThisWeek": "本周",
+    "ThisMonth": "本月",
+    "ThisYear": "今年",
+    "prompt": {
+      "contentSearchNetworkError": "无法完成此次搜索。请检查网络连接并重试。",
+      "contentSearchServiceError": "抱歉，我们这边出现了问题，无法完成此次搜索。请稍后重试。"
+    },
+    "Results": "结果 ({{count}})",
+    "NoMatchesFound": "未找到匹配项",
+    "SearchForContactsAndKeywords": "搜索联系人和关键字"
+  },
+  "dashboard": {
+    "Dashboard": "仪表板"
+  },
+  "message": {
+    "showUnreads": "显示未读",
+    "meGroup": "我",
+    "mentionPosts": "提及",
+    "bookmarkPosts": "书签",
+    "@mentionsTitle": "@提及",
+    "bookmarksTitle": "书签",
+    "noMentionPosts": "当前没有帖子直接@提及您。",
+    "noBookmarkPosts": "您当前没有书签。将鼠标指针悬停在某个帖子上并点击“书签”图标，可标记并保存该帖子以供将来参考。",
+    "loadingError": "糟糕！出现问题，请重试。",
+    "favoriteGroups": "个人收藏",
+    "directGroups": "私信",
+    "teamGroups": "团队",
+    "messageTypeNameSMS": "短信",
+    "jumpToConversation": "跳转到对话",
+    "emoji": {
+      "i18n": {
+        "search": "搜索",
+        "clear": "清除",
+        "notfound": "未找到表情符号",
+        "skintext": "选择您的默认肤色",
+        "categories": {
+          "search": "搜索结果",
+          "recent": "最常使用",
+          "people": "笑脸与人物",
+          "nature": "动物与自然",
+          "foods": "餐饮",
+          "activity": "活动",
+          "places": "旅行与风光",
+          "objects": "对象",
+          "symbols": "符号",
+          "flags": "旗帜",
+          "custom": "自定义"
+        },
+        "categorieslabel": "表情符号类别",
+        "skintones": {
+          "default": "默认肤色",
+          "light": "淡肤色",
+          "mediumLight": "中等偏淡肤色",
+          "medium": "中等肤色",
+          "mediumDark": "中等偏深肤色",
+          "dark": "深肤色"
+        }
+      },
+      "emojiTooltip": "表情符号",
+      "emojiDefaultTitle": "选择表情符号",
+      "toggleButtonLabel": "保持打开",
+      "emojiMatching": "表情符号匹配"
+    },
+    "sharedItems": "已共享项目",
+    "initialPost": {
+      "directMessageDescription": "这是您的私信历史记录的开始，对象是： {{displayName}}",
+      "createATeam": "创建团队",
+      "on": "于",
+      "postInitialTitle": "开始使用",
+      "shareFile": "共享文件",
+      "createTask": "创建任务",
+      "integrateApps": "集成应用程序"
+    },
+    "action": {
+      "like": "点赞",
+      "unlike": "取消点赞",
+      "bookmark": "书签",
+      "removeBookmark": "移除书签",
+      "quote": "引用",
+      "pin": "固定",
+      "unpin": "取消固定",
+      "editPost": "编辑帖子",
+      "deletePost": "删除帖子",
+      "resendPost": "重新发送帖子",
+      "attachFile": "附加文件",
+      "typeNewMessage": "输入新消息",
+      "sendNewMessage": "发送新消息"
+    },
+    "inputMenus": {
+      "uploadFileMenuTitle": "文件上传自",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "计算机"
+    },
+    "stream": {
+      "addedToTeam": "{{inviter}}已将{{newUser}}添加到团队",
+      "changeTeamName": "{{changer}}已将团队名称从{{oldValue}}更改为{{value}}",
+      "joinTheTeam": "{{newUser}}已加入团队",
+      "newMessages": "新消息",
+      "newMessagesDivider": "新消息"
+    },
+    "teamMembers": "团队成员",
+    "suggestedPeople": "推荐人员",
+    "conversationDetails": "对话详细信息",
+    "conversationDetailsShow": "显示详细信息",
+    "conversationDetailsHide": "隐藏详细信息",
+    "prompt": {
+      "deletePostFailedForServerIssue": "抱歉，我们这边出现了问题，无法删除这个帖子。请稍后重试。",
+      "deletePostFailedForNetworkIssue": "无法删除这个帖子。请检查网络连接并重试。",
+      "editPostFailedForServerIssue": "抱歉，我们这边出现了问题，无法编辑这个帖子。请稍后重试。",
+      "editPostFailedForNetworkIssue": "无法编辑这个帖子。请检查网络连接并重试。",
+      "viewInPostFailedWithServerIssue": "抱歉，我们这边出现了问题，无法跳转到帖子。请稍后重试。",
+      "viewInPostFailedWithNetworkIssue": "抱歉，无法跳转到帖子。请检查网络连接并重试。",
+      "contentLength": "最多可以发送 10000 个字符",
+      "contentIllegal": "不允许使用 Javascript",
+      "deletePostTitle": "删除帖子？",
+      "deleteFileTitle": "删除文件？",
+      "deletePostContent": "确定要删除此帖子？",
+      "deleteFileContent": "确定要删除此文件<0>{{fileName}}</0>？",
+      "SorryWeWereNotAbleToSendTheMessage": "抱歉，无法发送消息。请重试。",
+      "notAbleToUnlikeForNetworkIssue": "无法对此消息取消点赞。请检查网络连接并重试。",
+      "notAbleToUnlikeForServerIssue": "抱歉，我们这边出现了问题，无法对此消息取消点赞。请稍后重试。",
+      "notAbleToLikeThisMessageForNetworkIssue": "无法对此消息点赞。请检查网络连接并重试。",
+      "notAbleToLikeThisMessageForServerIssue": "抱歉，我们这边出现了问题，无法对此消息点赞。请稍后重试。",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "抱歉，由于网络连接不佳，无法移除您的书签。请重试。",
+      "notAbleToRemoveYourBookmarkForServerIssue": "抱歉，我们这边出现了问题，无法移除您的书签。请稍后重试。",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "抱歉，由于网络连接不佳，无法将此消息添加到书签中。请检查您的网络连接并重试。",
+      "notAbleToBookmarkThisMessageForServerIssue": "抱歉，我们这边出现了问题，无法将此消息添加到书签中。请稍后重试。",
+      "notAbleToUnpinForNetworkIssue": "无法取消固定此消息。请检查网络连接并重试。",
+      "notAbleToUnpinForServerIssue": "抱歉，我们这边出现了问题，无法取消固定此消息。请稍后重试。",
+      "notAbleToPinForNetworkIssue": "无法固定此消息。请检查网络连接并重试。",
+      "notAbleToPinForServerIssue": "抱歉，我们这边出现了问题，无法固定此消息。请稍后重试。",
+      "notAbleToLoadOlderMessagesForNetworkIssue": "无法加载旧的消息。请检查网络连接并重试。",
+      "notAbleToLoadOlderMessagesForServerIssue": "抱歉，我们这边出现了问题，无法加载旧的消息。请稍后重试。",
+      "SorryWeWereNotAbleToLoadNewerMessages": "抱歉，无法加载新的消息。请重试。",
+      "MessageLoadingErrorTip": "无法打开此对话。",
+      "MessageLoadingErrorTipForNetworkIssue": "无法打开此对话。请检查您的网络连接， ",
+      "MessageLoadingErrorTipForServerIssue": "抱歉，我们这边出现了问题，无法打开此对话。 ",
+      "NewMessage": "新消息",
+      "newMessageTip": "与一个或多个特定的人对话非常适合非正式聊天。但对于项目、部门，甚至基于主题的讨论，您应该 ",
+      "newMessageTipLink": "创建一个团队。",
+      "NewMessageError": "创建这条新消息时出现问题。请稍后重试。",
+      "disabledText": "此团队当前为只读状态",
+      "changeDefaultPhoneAppTitle": "更改默认电话应用程序",
+      "changeDefaultPhoneAppContent": "您即将选择 RingCentral Phone 作为默认电话应用程序。安装 RingCentral Phone 应用程序，然后再继续。确定要将默认电话应用程序更改为 RingCentral Phone？",
+      "editFileNameTitle": "重命名文件",
+      "editFileNameInputLabel": "文件名",
+      "editFileNameBackendError": "抱歉，我们这边出现了问题，无法保存编辑。请稍后重试。",
+      "editFileNameNetworkError": "无法保存编辑。请检查网络连接并重试。",
+      "deleteFileBackendError": "抱歉，我们这边出现了问题，无法删除此文件。请稍后重试。",
+      "deleteFileNetworkError": "无法删除此文件。请检查网络连接并重试。"
+    },
+    "fileAction": {
+      "deleteFile": "删除文件",
+      "editFileName": "编辑文件名",
+      "viewInPost": "在帖子中查看"
+    },
+    "Messages": "消息",
+    "message": "消息",
+    "atMentionAllTeam": "团队",
+    "atMentionAllAdmin": "管理员",
+    "markupTips": "*斜体* **粗体** __下划线__ ~~删除线~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0>正在输入...",
+      "twoTyping": "<0>{{personA}}</0>和<0>{{personB}}</0>正在输入...",
+      "moreTyping": "<0>{{personA}}</0>、<0>{{personB}}</0>和其他人正在输入..."
+    }
+  },
+  "item": {
+    "activity": {
+      "created a task": "已创建任务",
+      "assigned task": "已分配任务",
+      "reassigned task": "已重新分配任务",
+      "completed task": "已完成任务",
+      "completed {{count}}% of task": "已完成任务的 {{count}}%",
+      "marked task incomplete": "已将任务标记为未完成",
+      "marked task incomplete for {{user}}": "已为{{user}}将任务标记为未完成",
+      "completed task for {{user}}": "已为{{user}}完成任务",
+      "created a event": "已创建事件",
+      "updated a event": "已更新事件",
+      "updated event": "已更新事件",
+      "shared a note": "已共享备忘",
+      "shared a file": "已共享文件",
+      "shared {{count}} file": "已共享 {{count}} 个文件",
+      "uploaded version {{number}}": "已上传版本 {{number}}",
+      "shared a link": "已共享链接",
+      "shared {{count}} link": "已共享 {{count}} 个链接",
+      "shared a snippet": "已共享代码片段",
+      "shared items": "已共享项目",
+      "started a audio conference": "已启动音频会议",
+      "started a video chat": "已启动视频聊天",
+      "replied": "已回复",
+      "via": "通过"
+    },
+    "meeting": {
+      "videoCallInProgress": "正在视频通话中",
+      "videoCallEnded": "视频通话已结束",
+      "videoCallCancelled": "视频通话已取消",
+      "videoCallDuration": "时长",
+      "startVideoCall": "正在启动视频通话...",
+      "meetingUrl": "会议网址",
+      "meetingId": "会议 ID",
+      "duration": "时长",
+      "help": "帮助",
+      "installProblems": "安装遇到问题？",
+      "readThis": "阅读本文"
+    },
+    "dialInNumber": "拨入号码",
+    "avatarNamesWithOthers": "以及其他 {{count}} 人",
+    "attachments": "附件",
+    "assignee": "执行者",
+    "due": "截止时间",
+    "section": "部分",
+    "descriptionNotes": "描述",
+    "hideEventHistory": "隐藏",
+    "showEventHistory": "显示旧的",
+    "locationTitle": "位置",
+    "repeatingEveryDay": "每天重复",
+    "repeatingEveryWeekday": "每个工作日重复",
+    "repeatingEveryWeek": "每周重复",
+    "repeatingEveryMonth": "每月重复",
+    "repeatingEveryYear": "每年重复",
+    "forDayTimes": "持续 {{count}} 天",
+    "forDayTimes_interval": "(1){for one day};",
+    "forWeekTimes": "持续 {{count}} 周",
+    "forWeekTimes_interval": "(1){for one week};",
+    "forWeekdailyTimes": "持续 {{count}} 个工作日",
+    "forWeekdailyTimes_interval": "(1){for one weekday};",
+    "forMonthlyTimes": "持续 {{count}} 个月",
+    "forMonthlyTimes_interval": "(1){for one month};",
+    "forYearlyTimes": "持续 {{count}} 年",
+    "forYearlyTimes_interval": "(1){for one year};",
+    "until": "直至",
+    "updateFiles": "更新文件？",
+    "theFollowingFilesAlreadyExist": "以下文件已存在。",
+    "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "您要更新现有文件还是创建新文件？",
+    "audioConferenceTitle": "音频会议",
+    "or": "或",
+    "globalNumber": "全球电话号码",
+    "hostCode": "主持人访问码",
+    "participantCode": "参与者访问码",
+    "downloadToSeeTheRestLine": "下载查看剩余的 {{restLines}} 行",
+    "downloadToSeeTheRestLine_plural": "下载查看剩余的 {{restLines}} 行",
+    "expandLines": "展开（{{lineNumber}} 行）",
+    "pinned": "已固定",
+    "files": "文件",
+    "images": "图片",
+    "links": "链接",
+    "tasks": "任务",
+    "notes": "备忘",
+    "events": "事件",
+    "integrations": "集成",
+    "pinnedListSubheader": "已固定的帖子",
+    "fileListSubheader": "文件",
+    "taskListSubheader": "任务",
+    "noteListSubheader": "备忘",
+    "linkListSubheader": "链接",
+    "eventListSubheader": "事件",
+    "imageListSubheader": "图片",
+    "youHaveNothingPinnedYet": "您还没有固定任何项目",
+    "noFilesSharedYet": "尚未共享文件",
+    "noImagesSharedYet": "尚未共享图片",
+    "noTasksYet": "尚无任务",
+    "noLinksSharedYet": "尚未共享链接",
+    "noNotesCreatedYet": "尚未创建备忘",
+    "noEventsCreatedYet": "尚未创建事件",
+    "noIntegrationInstallationYet": "尚未安装集成",
+    "noPinSubText": "您固定的项目都会显示在这里，供以后参考。",
+    "noFileSubText": "对话中共享的文件会自动显示在这里。",
+    "noImageSubText": "对话中共享的图片会自动显示在这里。",
+    "noTaskSubText": "在这里跟踪您分配给自己或分配给您的任务。",
+    "noLinkSubText": "对话中共享的链接会自动显示在这里。",
+    "noNoteSubText": "对话中共享的备忘会自动显示在这里。",
+    "noEventSubText": "日历上的事件将自动显示在这里。",
+    "noIntegrationSubText": "目前还没有安装集成。一旦您安装了集成，将就会显示在这里。",
+    "networkErrorPinnedPrompt": "抱歉，无法加载更多帖子。",
+    "networkErrorFilesPrompt": "抱歉，无法加载更多文件。",
+    "networkErrorImagesPrompt": "抱歉，无法加载更多图片。",
+    "networkErrorLinksPrompt": "抱歉，无法加载更多链接。",
+    "networkErrorTasksPrompt": "抱歉，无法加载更多任务。",
+    "networkErrorEventsPrompt": "抱歉，无法加载更多事件。",
+    "networkErrorNotesPrompt": "抱歉，无法加载更多备忘。",
+    "networkErrorIntegrationsPrompt": "抱歉，无法加载更多活动的集成。",
+    "pinnedMore": "还有 {{num}} 个",
+    "prompt": {
+      "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "上传失败。有一个文件正在上传。请等待上传完成。",
+      "fileNoLongerExists": "抱歉，无法上传文件，因为该文件已不存在。",
+      "notAbleToCancelUpload": "抱歉，无法取消上传。",
+      "notAbleToCancelUploadTryAgain": "抱歉，无法取消上传。请重试。"
+    }
+  },
+  "people": {
+    "profile": {
+      "checkMoreTeamOption": "确认该团队的更多选项",
+      "copyEmail": "复制电子邮件",
+      "copyUrl": "复制网址",
+      "guest": "访客",
+      "admin": "管理员",
+      "company": "公司",
+      "location": "位置",
+      "extensionNumber": "分机号码",
+      "ariaExtensionNumber": "分机号码",
+      "directNumber": "直拨号码",
+      "ariaDirectNumber": "电话号码",
+      "email": "电子邮件",
+      "ariaEmail": "电子邮件地址",
+      "linkedIn": "LinkedIn",
+      "webpage": "网页",
+      "ariaWebpage": "网页",
+      "ariaGoToMe": "转到您自己的工作站",
+      "ariaGoToOther": "转到对话，对象是： {{name}}"
+    },
+    "team": {
+      "Members": "成员",
+      "SearchContactPlaceholder": "输入名称或电子邮件地址",
+      "CreateTeam": "创建团队",
+      "Create": "创建",
+      "SetAsPublicTeam": "公开团队（对所有同事可见）",
+      "MembersMayPostMessages": "允许成员发布消息",
+      "MembersMayAddOtherMembers": "允许成员添加其他成员",
+      "MembersMayPinPosts": "允许成员固定帖子",
+      "teamName": "团队名称",
+      "teamNamePlaceholder": "输入团队名称",
+      "teamDescription": "团队描述",
+      "allowTeamMembersTo": "允许团队成员",
+      "addTeamMembers": "添加团队成员",
+      "postMessages": "发布消息",
+      "pinPosts": "固定帖子",
+      "leaveTeam": "离开团队",
+      "leaveTeamConfirmTitle": "离开团队",
+      "leaveTeamConfirmContent": "一旦退出<0>{{teamName}}</0>，您将不再能够访问内容。",
+      "leaveTeamConfirmOk": "离开",
+      "deleteTeam": "删除团队",
+      "deleteTeamToolTip": "永久删除一个团队。",
+      "deleteTeamConfirmTitle": "删除团队？",
+      "deleteTeamConfirmContent": "您确定要永久删除<0>{{teamName}}</0>团队吗？",
+      "deleteTeamConfirmOk": "删除",
+      "deleteTeamSuccessMsg": "团队删除成功。",
+      "archiveTeam": "归档团队",
+      "archiveTeamToolTip": "归档团队，这样它就不会出现在您的活动对话中。该团队仍然会出现在您的团队列表中，并且可以恢复。",
+      "archiveTeamConfirmTitle": "归档团队？",
+      "archiveTeamConfirmContent": "归档团队仍然可以在团队页面的底部找到，但是不会出现在您的活动对话中。",
+      "archiveTeamConfirmOk": "归档",
+      "archiveTeamSuccessMsg": "团队归档成功。",
+      "changeToPublic": "更改为公共团队",
+      "changeToPrivate": "更改为私密团队",
+      "publicTeam": "这是公共团队",
+      "privateTeam": "这是私密团队",
+      "teamMembers": "团队成员",
+      "groupMembers": "群组成员",
+      "searchMembers": "搜索成员",
+      "makeTeamAdmin": "任命团队管理员",
+      "revokeTeamAdmin": "撤销团队管理员",
+      "addTeamMemberSubmit": "添加",
+      "AddTeamMembers": "添加团队成员",
+      "AddTeamMembersTitle": "添加团队成员",
+      "removeFromTeam": "从团队移除",
+      "joinButtonTitle": "加入",
+      "joinTeam": "加入团队",
+      "ariaJoinTeam": "加入{{name}}团队",
+      "joinTeamTitle": "加入团队？",
+      "joinTeamContent": "您目前不是<0>{{teamName}}</0>团队的成员。您想加入这个团队吗？",
+      "joinTeamSubmit": "加入",
+      "joinedStatus": "已加入",
+      "ariaGoToTeam": "转到团队{{name}}的对话",
+      "ariaGoToGroup": "转到群组对话",
+      "favorite": "个人收藏",
+      "addToFavorites": "添加到个人收藏",
+      "removeFromFavorites": "从个人收藏中移除",
+      "profile": "个人资料",
+      "teamDetails": "团队详情",
+      "close": "关闭",
+      "markAsRead": "标记为已读",
+      "markAsUnread": "标记为未读",
+      "convertToTeam": "转换为团队",
+      "convertToTeamNamePrefix": "团队： ",
+      "convertToTeamPreviousMessageHandle": "通过将此对话转换为团队，新邀请加入团队的任何成员都可查看之前发布的全部消息和文件。",
+      "noMatchesFound": "未找到匹配项",
+      "archivedSuffix": "- 已归档",
+      "adminActions": "管理员操作"
+    },
+    "company": {},
+    "prompt": {
+      "noLongerAMemberOfThisTeam": "抱歉，您不再是此团队的成员。要加入，请与团队管理员联系。",
+      "closeConfirmDialogHeader": "关闭对话？",
+      "closeConfirmDialogContent": "关闭对话后，将从左侧窗格中移除对话，但不会删除内容。",
+      "closeConfirmDialogDontAskMeAgain": "不再询问我",
+      "notAbleToCloseTheConversationForServerIssue": "抱歉，我们这边出现了问题，无法关闭此对话。请稍后重试。",
+      "notAbleToCloseTheConversationForNetworkIssue": "无法关闭此对话。请检查网络连接并重试。",
+      "SorryWeWereNotAbleToOpenThisProfile": "抱歉，无法打开该个人资料。请重试。",
+      "JoinTeamErrorForAuthIssue": "这个团队现在是私密团队。要加入，请与团队管理员联系。",
+      "JoinTeamErrorForNetworkIssue": "您无法加入这个团队。请检查网络连接并重试。",
+      "JoinTeamErrorForServerIssue": "抱歉，我们这边出现了问题，您无法加入这个团队。请稍后重试。",
+      "alreadyTaken": "此名称已被使用，请另选一个。",
+      "CreateTeamError": "创建此团队时出现问题。请稍后重试。",
+      "SaveTeamUpdateErrorForNetworkIssue": "无法保存更新。请检查网络连接并重试。",
+      "SaveTeamUpdateErrorForServerIssue": "抱歉，我们这边出现了问题，无法保存更新。请稍后重试。",
+      "YouAreAnAdminToThisTeam": "您是这个团队的管理员。",
+      "LearnAboutTeamAdministration": "学习团队管理。",
+      "WeWerentAbleToCreateTheTeamTryAgain": "无法创建团队。请重试。",
+      "changeTeamPrivateTypeErrorForNetworkIssue": "无法更改团队类型。请检查网络连接并重试。",
+      "changeTeamPrivateTypeErrorForServerIssue": "抱歉，我们这边出现了问题，无法更改团队类型。请稍后重试。",
+      "notAbleToUnFavoriteForNetworkIssue": "无法将此对话从个人收藏中移除。请检查网络连接并重试。",
+      "notAbleToUnFavoriteForServerIssue": "抱歉，我们这边出现了问题，无法将此对话从个人收藏中移除。请稍后重试。",
+      "notAbleToFavoriteThisMessageForNetworkIssue": "抱歉，无法收藏此对话。请检查网络连接并重试。",
+      "notAbleToFavoriteThisMessageForServerIssue": "抱歉，我们这边出现了问题，无法收藏此对话。请稍后重试。",
+      "leaveTeamServerErrorContent": "抱歉，我们这边出现了问题，您无法退出此团队。请稍后重试。",
+      "leaveTeamNetworkErrorContent": "我们这边的网络连接出现问题，因此您无法退出此团队。请检查您的网络连接并重试。",
+      "deleteTeamServerErrorContent": "抱歉，我们这边出现了问题，无法删除此团队。请稍后重试。",
+      "deleteTeamNetworkErrorContent": "抱歉，无法删除此团队。请检查网络连接并重试。",
+      "archiveTeamServerErrorContent": "抱歉，我们这边出现了问题，无法归档此团队。请稍后重试。",
+      "archiveTeamNetworkErrorContent": "抱歉，无法归档此团队。请检查网络连接并重试。",
+      "AddTeamMembersBackendError": "抱歉，我们这边出现了问题，无法添加团队成员。请稍后重试。",
+      "AddTeamMembersNetworkError": "无法添加团队成员。请检查网络连接并重试。",
+      "removeMemberNetworkError": "无法移除此团队成员。请检查网络连接并重试。",
+      "removeMemberBackendError": "抱歉，我们这边出现了问题，无法移除此团队成员。请稍后重试。",
+      "makeTeamAdminNetworkError": "无法将此成员任命为团队管理员。请检查网络连接并重试。",
+      "makeTeamAdminBackendError": "抱歉，我们这边出现了问题，无法将此成员任命为团队管理员。请稍后重试。",
+      "revokeTeamAdminBackendError": "抱歉，我们这边出现了问题，无法撤销此成员的团队管理员权限。请稍后重试。",
+      "revokeTeamAdminNetworkError": "无法撤销此成员的团队管理员权限。请检查网络连接并重试。",
+      "InvalidEmail": "电子邮件无效",
+      "markAsRead": "无法将此对话标记为已读。请稍后重试。",
+      "markAsUnread": "无法将此对话标记为未读。请稍后重试。",
+      "FailedToConvertThisConversationToTeam": "无法将此对话转换为团队。请稍后重试。",
+      "conversationDeleted": "团队已删除。要了解更多，请与团队管理员联系。",
+      "conversationArchived": "此团队已归档。要了解更多，请与团队管理员联系。",
+      "conversationPrivate": "抱歉，您并非此团队的成员。要加入，请与团队管理员联系。"
+    }
+  },
+  "contact": {
+    "Contacts": "联系人"
+  },
+  "calendar": {
+    "Calendar": "日历"
+  },
+  "telephony": {
+    "Phone": "电话",
+    "Ext": "分机号码",
+    "action": {
+      "minimize": "最小化",
+      "detach": "分离",
+      "attach": "附加",
+      "mute": "静音",
+      "unmute": "取消静音",
+      "keypad": "拨号盘",
+      "hold": "保持",
+      "unhold": "解除保持",
+      "add": "添加",
+      "record": "录制",
+      "stopRecord": "停止",
+      "callActions": "呼叫操作",
+      "reply": "回复",
+      "park": "寄存",
+      "end": "结束通话",
+      "Answer": "接听",
+      "back": "上一步",
+      "forward": "下一步",
+      "customForward": "自定义...",
+      "flip": "切换",
+      "recentCall": "最近通话",
+      "backToDialer": "返回拨号盘"
+    },
+    "customReplyMessagePlaceholder": "输入自定义消息",
+    "customReplyLabel": "自定义消息",
+    "predefinedMessage": {
+      "inMeeting": "正在开会",
+      "onMyWay": "在路上",
+      "callMeBack": "在下列时间内回电给我：",
+      "willCallBack": "将在下列时间内回电给您："
+    },
+    "predefinedTime": {
+      "5min": "5 分钟",
+      "10min": "10 分钟",
+      "30min": "30 分钟",
+      "1hour": "1 小时"
+    },
+    "countText": "回复时间： ",
+    "countdownUnit": "秒",
+    "ignoreTheCall": "忽略通话",
+    "sendToVoicemail": "发送到语音信箱",
+    "moreOptions": "更多选项",
+    "answerTheCall": "接听来电",
+    "unknownCaller": "未知主叫者",
+    "prompt": {
+      "RCPhoneGetDownloadError": "抱歉，我们这边出现了问题，无法打开页面。请稍后重试。",
+      "RCPhoneIsNotInstalledTitle": "未安装 RingCentral Phone",
+      "RCPhoneIsNotInstalledBody": "无法拨打电话，因为尚未安装 RingCentral Phone。请先安装 RingCentral Phone。",
+      "RCPhoneIsNotInstalledOK": "下载 RingCentral Phone",
+      "NoNetwork": "抱歉，无法连接到服务器，无法拨打电话。请稍后重试。",
+      "CallFailed": "抱歉，拨打此电话时出现问题，请稍后重试。",
+      "CallTimeout": "抱歉，无法拨打电话。请稍后重试。",
+      "LogoutTitle": "注销？",
+      "LogoutContent": "如果注销，您的通话将被断开。您要注销并结束通话吗？",
+      "LogoutOk": "注销",
+      "FailedToHold": "抱歉，我们这边出现了问题，无法保持通话",
+      "FailedToResume": "抱歉，我们这边出现了问题，无法恢复通话",
+      "FailedToRecord": "抱歉，无法录制通话。请稍后重试。",
+      "FailedToStopRecording": "抱歉，无法停止录制通话。请稍后重试。",
+      "LackOfRecordingPermission": "抱歉，您的帐户没有录制通话功能。要启用此功能，请与帐户管理员联系。",
+      "RecordOnServiceWeb": "抱歉，您的帐户已禁用录制通话功能。要启用此功能，请与帐户管理员联系。",
+      "RecordAutomatically": "无法开始录制通话。",
+      "InvalidNumber": "输入的电话号码无效。检查号码并重试。",
+      "ParkErrorStopRecording": "抱歉，正在保存您的录制通话。请稍后再尝试寄存通话。",
+      "ParkError": "抱歉，我们这边出现了问题，无法寄存通话。请稍后重试。",
+      "ParkOk": "您的通话寄存位置为",
+      "ReplyCustomMessageEmpty": "抱歉，您不能发送空消息。",
+      "ReplyMessageSuccess": "语音消息已发送。",
+      "ForwardBackendError": "抱歉，我们这边出现了问题，无法转接通话。",
+      "ForwardCallSuccess": "您的通话已转接成功。",
+      "FlipBackendError": "抱歉，无法切换通话。请稍后重试。",
+      "FlipSuccess": "通话已切换",
+      "OnDemandRecording": "抱歉，您的帐户已禁用录制通话功能。要启用此功能，请与帐户管理员联系。",
+      "AutoRecording": "无法开始录制通话。"
+    },
+    "notification": {
+      "incomingCall": "来电",
+      "answer": "接听",
+      "unknownCaller": "未知主叫者"
+    },
+    "accessibility": {
+      "hold": "保持通话",
+      "resume": "恢复通话",
+      "record": "录制通话",
+      "stopRecord": "停止录制",
+      "minimize": "最小化对话框",
+      "callActions": "呼叫操作"
+    },
+    "dialerPlaceholder": "输入名称或号码",
+    "delete": "删除",
+    "callFrom": "呼叫来自：",
+    "phoneNumberType": {
+      "directNumber": "直拨号码",
+      "mainCompanyNumber": "主要公司号码",
+      "blocked": "已阻止",
+      "nickName": "昵称",
+      "companyNumber": "公司号码",
+      "companyFaxNumber": "公司传真号码"
+    },
+    "callerIdSelector": {
+      "tooltip": "您可以在设置中更改此默认主叫显示号码。"
+    },
+    "direction": {
+      "inboundcall": "呼入电话",
+      "outboundcall": "呼出电话"
+    },
+    "result": {
+      "missedcall": "未接来电"
+    },
+    "nocalllogs": "无通话记录",
+    "dial": "拨号：",
+    "noMatch": "无匹配的记录",
+    "searching": "正在搜索...",
+    "forwardCall": "转接通话",
+    "noCallLogAvailable": "当前没有通话记录"
+  },
+  "phone": {
+    "tab": {
+      "callHistory": "通话历史记录"
+    },
+    "callBack": "回拨",
+    "AllCalls": "所有呼叫",
+    "MissedCalls": "未接来电",
+    "callhistory": "通话历史记录",
+    "voicemail": "语音邮件",
+    "block": "阻止",
+    "blockNumber": "阻止号码",
+    "unblockNumber": "取消阻止号码",
+    "blockThisNumber": "阻止此号码",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "阻止后，该号码将无法与您通话。是否阻止该号码？",
+    "faxes": "传真",
+    "unknownCaller": "未知主叫者",
+    "unknown": "未知",
+    "recordings": "录制",
+    "noMatchesFound": "未找到匹配项",
+    "noCallLogAvailable": "无通话记录",
+    "noVoicemailAvailable": "无语音邮件记录",
+    "prompt": {
+      "numberHasBeenBlocked": "该号码已被阻止",
+      "numberHasBeenUnblocked": "该号码已被取消阻止",
+      "notAbleToUnblockForNetworkIssue": "抱歉，无法取消阻止此号码。请检查网络连接并重试。",
+      "notAbleToUnblockForServerIssue": "抱歉，我们这边出现了问题，无法取消阻止此号码。请稍后重试。",
+      "notAbleToBlockForNetworkIssue": "抱歉，无法阻止此号码。请检查网络连接并重试。",
+      "notAbleToBlockForServerIssue": "抱歉，我们这边出现了问题，无法阻止此号码。请稍后重试。",
+      "notAbleToLoadVoicemailsForNetworkIssue": "无法加载语音邮件。请检查您的网络连接。",
+      "notAbleToLoadVoicemailsForServerIssue": "无法加载语音邮件。请稍后重试。",
+      "notAbleToLoadCallLogsForNetworkIssue": "无法加载通话记录。请检查您的网络连接。",
+      "notAbleToLoadCallLogsForServerIssue": "无法加载通话记录。请稍后重试。",
+      "playVoicemailLoadError": "抱歉，由于网络连接不佳，无法播放/加载语音邮件。请重试。"
+    }
+  },
+  "calllog": {
+    "inputFilter": "筛选通话历史记录",
+    "clearFilter": "清除通话历史记录筛选条件",
+    "deleteCallLog": "删除通话记录",
+    "deleteCallHistory": "删除通话历史记录",
+    "deleteAllCallHistory": "删除所有通话历史记录",
+    "doYouWanttoDeleteThisCallLog": "是否从列表中删除此通话记录？",
+    "doYouWanttoDeleteAllCallLog": "确定要永久删除所有通话记录？请注意：通话记录无法找回。",
+    "prompt": {
+      "notAbleToDeleteCallLogForNetworkIssue": "抱歉，无法删除此记录。请检查网络连接并重试。",
+      "notAbleToDeleteAllCallLogForNetworkIssue": "抱歉，无法删除通话历史记录。请检查网络连接并重试。",
+      "notAbleToDeleteCallLogForServerIssue": "抱歉，我们这边出现了问题，无法删除记录。请稍后重试。",
+      "notAbleToDeleteAllCallLogForServerIssue": "抱歉，我们这边出现了问题，无法删除通话历史记录。请稍后重试。"
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "播放语音邮件",
+      "pause": "暂停播放语音邮件",
+      "reload": "重新加载语音邮件"
+    },
+    "inputFilter": "筛选语音邮件",
+    "clearFilter": "清除语音邮件筛选条件",
+    "downloadVoicemail": "下载语音邮件",
+    "markUnread": "标记为未读",
+    "markRead": "标记为已读",
+    "deleteVoicemail": "删除语音邮件",
+    "areYouSureYouWantToDeleteTheVoicemail": "确定要删除此语音邮件？",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "抱歉，由于网络连接不佳，无法将语音邮件标记为未读。请重试。",
+      "notAbleToUnreadVoicemalForServerIssue": "抱歉，我们这边出现了问题，无法将语音邮件标记为未读。请稍后重试。",
+      "notAbleToReadVoicemailForNetworkIssue": "抱歉，由于网络连接不佳，无法将语音邮件标记为已读。请重试。",
+      "notAbleToReadVoicemailForServerIssue": "抱歉，我们这边出现了问题，无法将语音邮件标记为已读。请稍后重试。",
+      "notAbleToDeleteVoicemailForNetworkIssue": "抱歉，由于网络连接不佳，无法删除语音邮件。请重试。",
+      "notAbleToDeleteVoicemailForServerIssue": "抱歉，我们这边出现了问题，无法删除语音邮件。请稍后重试。"
+    }
+  },
+  "meeting": {
+    "Meetings": "会议"
+  },
+  "integration": "",
+  "setting": {
+    "errorText": {
+      "server": "抱歉，我们这边出现了问题，无法保存您的设置。请稍后重试。",
+      "network": "无法保存您的设置。请检查网络连接并重试。",
+      "forLink": "抱歉，我们这边出现了问题，无法打开页面。请稍后重试。"
+    },
+    "Settings": "设置",
+    "teamSettings": "设置",
+    "general": "通用",
+    "notificationAndSounds": {
+      "title": "通知和声音",
+      "otherNotificationSettings": {
+        "title": "其他通知设置",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "仅私信或提及",
+            "all": "所有新消息"
+          },
+          "description": "选择应用程序图标中新消息计数的方式",
+          "label": "新消息图标计数"
+        }
+      },
+      "desktopNotifications": {
+        "title": "桌面通知",
+        "notificationsForBrowser": {
+          "label": "用于浏览器的桌面通知",
+          "description": "打开/关闭网页浏览器的桌面通知。桌面通知需要浏览器许可。"
+        },
+        "newMessages": {
+          "label": "新消息",
+          "description": "选择新消息的桌面通知首选项",
+          "options": {
+            "always": "所有新消息",
+            "mentions_or_dms": "私信和提及",
+            "never": "关闭"
+          }
+        },
+        "incomingCalls": {
+          "label": "来电",
+          "description": "选择来电的桌面通知首选项"
+        },
+        "callsAndVoicemails": {
+          "label": "未接来电和新语音邮件",
+          "description": "选择未接来电和新语音邮件的桌面通知首选项"
+        }
+      },
+      "emailNotifications": {
+        "title": "电子邮件通知",
+        "directMessages": {
+          "label": "私信",
+          "description": "接收私信的电子邮件通知"
+        },
+        "mentions": {
+          "label": "提及",
+          "description": "接收提及我的电子邮件通知"
+        },
+        "teams": {
+          "label": "团队",
+          "description": "选择团队消息的电子邮件通知首选项"
+        },
+        "dailyDigest": {
+          "label": "每日提要",
+          "description": "接收内含每日任务和团队事件的 Glip 每日提要电子邮件"
+        },
+        "options": {
+          "0": "关闭",
+          "900000": "每 15 分钟",
+          "3600000": "每小时"
+        }
+      }
+    },
+    "sounds": "声音",
+    "messages": "消息",
+    "meetings": "会议",
+    "calendar": "日历",
+    "update": "更新",
+    "edit": "编辑",
+    "phone": {
+      "title": "电话",
+      "general": {
+        "title": "通用",
+        "defaultPhoneApp": {
+          "label": "接打电话的默认电话应用程序",
+          "description": "选择接打电话时的应用程序",
+          "option": {
+            "glip": "使用 RingCentral 应用程序（当前应用程序）",
+            "ringcentral": "使用 RingCentral Phone"
+          }
+        },
+        "callerID": {
+          "label": "主叫显示号码",
+          "Blocked": "已阻止",
+          "description": "选择使用 RingCentral Phone 拨打电话时的默认主叫显示号码"
+        },
+        "extensions": {
+          "label": "分机设置",
+          "description": "自定义您的 RingCentral 分机设置（呼叫路由、语音邮件的语音提示等）"
+        },
+        "regionSetting": {
+          "label": "地区",
+          "region": "地区",
+          "country": "国家/地区",
+          "areaCode": "区号",
+          "areaCodeErrorText": "无效区号",
+          "saveSuccessText": "您的地区已成功更新。",
+          "regionChangeDesc": "为您的地区设置国家代码和区号。这将用于本地和紧急拨号以及电话号码格式化。"
+        }
+      }
+    },
+    "audioSource": {
+      "title": "音频源",
+      "microphoneSource": {
+        "label": "麦克风源",
+        "description": "更新用于 RingCentral 语音通话的麦克风源"
+      },
+      "speakerSource": {
+        "label": "扬声器源",
+        "description": "更新用于 RingCentral 语音通话的扬声器源"
+      },
+      "ringerSource": {
+        "label": "振铃器源",
+        "description": "更新用于 RingCentral 语音通话的振铃器源"
+      },
+      "volume": {
+        "label": "音量控制",
+        "description": "更新音量"
+      }
+    },
+    "useDefault": "使用系统默认设置",
+    "speaker": "扬声器",
+    "noDevices": "无设备",
+    "allDevices": "所有音频源",
+    "off": "关闭",
+    "microphone": "麦克风",
+    "builtInMicrophone": "内置麦克风",
+    "builtInSpeaker": "内置扬声器",
+    "prompt": {
+      "updateRegionalSettingsBackendError": "抱歉，我们这边出现了问题，无法保存您的区域设置。请稍后重试。",
+      "updateRegionalSettingsNetworkError": "抱歉，由于网络连接不佳，无法保存您的区域设置。请重试。"
+    }
+  },
+  "viewer": {
+    "ZoomIn": "放大文件",
+    "ZoomOut": "缩小文件",
+    "ZoomReset": "重置缩放",
+    "PreviousFile": "查看上一个文件",
+    "NextFile": "查看下一个文件",
+    "ImageDeleted": "抱歉，您浏览的图片已被删除。",
+    "FileDeleted": "文件已删除。",
+    "TeamDeleted": "团队已删除。要了解更多，请与团队管理员联系。",
+    "TeamArchived": "此团队已归档。要了解更多，请与团队管理员联系。",
+    "ConversationClosed": "您移除了对话。"
+  },
+  "notification": {
+    "mentionedOne2One": "{{person}}提及了您",
+    "group": "{{person}}在{{conversation}}中发布的",
+    "mentioned": "{{person}}在{{conversation}}中提及了您",
+    "notificationEnabled": "通知现已启用。",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral 需要您的许可才能启用桌面通知。",
+      "enablePermissionAction": "启用通知",
+      "blockedPermissionMessage": "RingCentral 通知被阻止。请转至浏览器设置以允许 RingCentral 发送通知。"
+    },
+    "notificationBlockedDialog": {
+      "title": "通知未获允许",
+      "content": "RingCentral 的桌面通知当前为关闭状态。请更新浏览器设置以允许桌面通知。",
+      "button": "确定"
+    }
+  },
+  "feedback": {
+    "name": "反馈",
+    "uploading": "正在上传",
+    "uploadRecentLogsDialogHeader": "发送反馈",
+    "uploadRecentLogsDialogContent": "上传最近的日志到 Jupiter 反馈电子邮件。",
+    "submit": "发送",
+    "describeYourProblemHere": "请在此处描述您的问题",
+    "uploadLogSuccess": "日志上传成功。",
+    "uploadLogFailed": "抱歉，无法发送反馈。请稍后重试。",
+    "openEmailFailed": "打开电子邮件失败。",
+    "sendFeedbackSuccess": "反馈发送成功。",
+    "sendFeedbackFailed": "抱歉，无法发送反馈。请稍后重试。",
+    "title": "看来我们遇到了一些问题。",
+    "issueTitle": "摘要",
+    "issueDescription": "发生了什么？",
+    "sendingInBackground": "正在发送反馈..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "您的桌面应用程序不是最新状态",
+      "dialogMessage": "要拥有最好的用户体验，请升级到最新版本。升级之前，有些功能可能无法正常使用。",
+      "ignoreOnce": "忽略一次",
+      "upgrade": "升级",
+      "notNow": "以后再说",
+      "ignore": "忽略",
+      "noUpgradeDialogTitle": "不需要升级",
+      "noUpgradeDialogMessage": "您的桌面应用程序已经是最新版本。",
+      "noUpgradeDialogOk": "确定",
+      "topBannerWarning": "您的桌面应用程序不是最新状态。请立即升级。"
+    }
+  },
+  "dialer": {
+    "newCall": "新呼叫"
+  }
+}

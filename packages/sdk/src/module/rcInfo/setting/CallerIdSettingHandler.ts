@@ -20,8 +20,8 @@ import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
 import { RC_INFO_KEYS } from 'sdk/module/rcInfo/config/constants';
 
 export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
-  PhoneNumberModel
-  > {
+PhoneNumberModel
+> {
   id = SettingEntityIds.Phone_CallerId;
 
   constructor() {
@@ -64,7 +64,6 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     );
     const model = await settingService.getById<CALLING_OPTIONS>(
       SettingEntityIds.Phone_DefaultApp,
-      0
     );
     const callingOptions = model && model.value;
     const callerList = await rcInfoService.getCallerIdList();

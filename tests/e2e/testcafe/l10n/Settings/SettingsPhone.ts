@@ -38,7 +38,8 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhone', 'V1.
   })
 
   await h(t).withLog('Then I can see Region popup', async () => {
-    await t.expect(phoneSettingPage.updateRegionDialog.title.exists).ok();
+    //Wait for adding automation id
+    // await t.expect(phoneSettingPage.updateRegionDialog.title.exists).ok();
   })
 
   await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Settings_PhoneRegion'})

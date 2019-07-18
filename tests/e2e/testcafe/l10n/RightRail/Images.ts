@@ -35,6 +35,9 @@ test(formalName('Image files display on the right rail', ['P2', 'Messages', 'Rig
 
   await h(t).withLog('When I open a team and click Images Tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
     await rightRail.imagesEntry.enter();
   });
 

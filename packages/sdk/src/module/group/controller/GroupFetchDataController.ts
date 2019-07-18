@@ -49,7 +49,6 @@ const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
 const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-const MAX_LEFT_RAIL_GROUP: number = 80;
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -81,7 +80,7 @@ export class GroupFetchDataController {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
-    mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
+    mainLogger.tags(LOG_TAG).info(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
     if (groupType === GROUP_QUERY_TYPE.FAVORITE) {
       result = await this._getFavoriteGroups();
@@ -97,6 +96,7 @@ export class GroupFetchDataController {
       const hiddenIds = profile
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
+        mainLogger.tags(LOG_TAG).info(`check hiddenIds`);
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
@@ -110,24 +110,29 @@ export class GroupFetchDataController {
           (userId ? item.members.includes(userId) : true) &&
           (isTeam ? item.is_team === isTeam : !item.is_team),
       );
+      mainLogger.tags(LOG_TAG).info(`fetched from entity source done`);
       if (offset !== 0) {
         result = result.slice(offset + 1, result.length);
       }
       result = await this.groupHandleDataController.filterGroups(result, limit);
     }
     let count = result.length;
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    const maxCount = (permissionService.getFeatureFlag(
+      UserPermissionType.LEFT_RAIL_MAX_COUNT,
+    )) as number;
     mainLogger
       .tags(LOG_TAG)
-      .info('getGroupsByType() result origin count:', count);
-    if (count > MAX_LEFT_RAIL_GROUP) {
-      const permissionService = ServiceLoader.getInstance<PermissionService>(
-        ServiceConfig.PERMISSION_SERVICE,
+      .info(
+        groupType,
+        'getGroupsByType() result origin count:',
+        count,
+        'maxCount:',
+        maxCount,
       );
-      const canShowAll = await permissionService.hasPermission(
-        UserPermissionType.CAN_SHOW_ALL_GROUP,
-      );
-      count = canShowAll ? count : MAX_LEFT_RAIL_GROUP;
-    }
+    count = maxCount !== -1 && count > maxCount ? maxCount : count;
     return groupType === GROUP_QUERY_TYPE.FAVORITE
       ? result
       : result.slice(0, count);

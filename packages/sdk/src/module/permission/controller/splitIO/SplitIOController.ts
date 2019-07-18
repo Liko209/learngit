@@ -26,9 +26,11 @@ class SplitIOController {
   }
 
   async hasPermission(type: UserPermissionType): Promise<boolean> {
-    return this.isClientReady
-      ? this.splitIOClient.hasPermission(type)
-      : this._defaultPermission(type);
+    return this.isClientReady ? this.splitIOClient.hasPermission(type) : this._defaultPermission(type);
+  }
+
+  async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
+    return (this.isClientReady && this.splitIOClient.getFeatureFlag(type)) || this._defaultFeatureFlag(type);
   }
 
   private _subscribeNotifications() {
@@ -56,29 +58,29 @@ class SplitIOController {
     return !!SplitIODefaultPermissions[type];
   }
 
+  private _defaultFeatureFlag(type: UserPermissionType) {
+    return SplitIODefaultPermissions[type];
+  }
+
   private async _initClient() {
     if (this.isIniting || this.isClientReady || EnvConfig.getDisableSplitIo()) {
       return;
     }
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
+    const userConfig = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE).userConfig;
     const userId: number = userConfig.getGlipUserId();
     if (!userId) {
       return;
     }
     this.isIniting = true;
 
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
+    const personService = ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE);
     const person = await personService.getById(userId);
     const params = {
       userId: userId.toString(),
       attributes: {
         companyId: (person && person['company_id']) || '',
         name: (person && person['display_name']) || '',
-        email: (person && person['email']) || '',
+        email: (person && person['email']) || ''
       },
       authKey: Api.httpConfig.splitio.clientSecret,
       permissions: Object.keys(SplitIODefaultPermissions),
@@ -90,7 +92,7 @@ class SplitIOController {
       splitIOUpdate: (): void => {
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
         mainLogger.log('incoming event splitIOUpdate');
-      },
+      }
     };
     const { clientSecret } = Api.httpConfig.splitio;
     const disableLD = EnvConfig.getDisableLD();

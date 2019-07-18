@@ -32,7 +32,11 @@ import {
   ScrollPosition,
 } from './hooks';
 import {
-  createKeyMapper, createRange, getChildren, isRangeIn, createIndexMapper,
+  createKeyMapper,
+  createRange,
+  getChildren,
+  isRangeIn,
+  createIndexMapper,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 import { debounce, compact } from 'lodash';
@@ -51,8 +55,8 @@ type JuiVirtualizedListHandles = {
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
-JuiVirtualizedListHandles,
-JuiVirtualizedListProps
+  JuiVirtualizedListHandles,
+  JuiVirtualizedListProps
 > = (
   {
     height,
@@ -201,16 +205,11 @@ JuiVirtualizedListProps
   const scrollToBottom = () => {
     if (ref.current) {
       // JIRA FIJI-5392 scroll to bottom should be more strict because the height detacted is not precise and lagged
-      ref.current.scrollTop = 9999;
-      prevAtBottomRef.current = true;
-      window.requestAnimationFrame(() => {
-        if (ref.current) {
-          ref.current.scrollTop = 9999;
-        }
-      });
+      ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
-  const shouldUpdateRange = () => !isRangeIn(renderedRange, computeVisibleRange());
+  const shouldUpdateRange = () =>
+    !isRangeIn(renderedRange, computeVisibleRange());
 
   const updateRange = () => {
     if (ref.current) {
@@ -218,7 +217,6 @@ JuiVirtualizedListProps
       const visibleRange = computeVisibleRange();
       const startIndex = visibleRange.startIndex;
       const offset = scrollTop - rowManager.getRowOffsetTop(startIndex);
-
       const index = visibleRange.startIndex;
       rememberScrollPosition({
         index,
@@ -240,7 +238,6 @@ JuiVirtualizedListProps
   const childrenCount = children.length;
   const minIndex = 0;
   const maxIndex = childrenCount - 1;
-
 
   //
   // Forward ref
@@ -342,12 +339,15 @@ JuiVirtualizedListProps
         const diff = rowManager.computeDiff(startIndex + i, el.offsetHeight);
         if (shouldUseNativeImplementation) {
           rowManager.setRowHeight(startIndex + i, el.offsetHeight);
-          if (shouldScrollToBottom()) {
-            scrollToBottom();
-          } else {
-            const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-            if (diff !== 0 && beforeFirstVisibleRow && stickToLastPosition) {
-              scrollToPosition(scrollPosition);
+          if (diff !== 0) {
+            if (shouldScrollToBottom()) {
+              scrollToBottom();
+            } else {
+              const beforeFirstVisibleRow =
+                i + startIndex < scrollPosition.index;
+              if (beforeFirstVisibleRow && stickToLastPosition) {
+                scrollToPosition(scrollPosition);
+              }
             }
           }
         } else {
@@ -563,9 +563,9 @@ JuiVirtualizedListProps
 const MemoList = memo(
   forwardRef(JuiVirtualizedList),
 ) as React.MemoExoticComponent<
-React.ForwardRefExoticComponent<
-JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
->
+  React.ForwardRefExoticComponent<
+    JuiVirtualizedListProps & React.RefAttributes<JuiVirtualizedListHandles>
+  >
 >;
 
 export {

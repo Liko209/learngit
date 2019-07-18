@@ -306,8 +306,18 @@ describe('messageNotificationManager', () => {
 
     it(`should unescape for text lik "you'll get it"`, () => {
       expect(
-        notificationManager.handlePostContent({ text: `you'll get it` }),
+        notificationManager.handlePostContent({ text: `you'll get it` } as PostModel),
       ).toEqual(`you'll get it`);
+    });
+
+    it('should remove quote markup', () => {
+      expect(notificationManager.handlePostContent({ text: `> @Andy Hu wrote:
+> ddd
+> lll
+sfdasfasd` } as PostModel)).toEqual(` @Andy Hu wrote:
+ ddd
+ lll
+sfdasfasd`);
     });
   });
   describe('buildNotificationBodyAndTitle', () => {
