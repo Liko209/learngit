@@ -162,6 +162,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('And The text content should be removed and other items should remain unchanged.', async () => {
     await t.expect(post.exists).ok();
     await t.expect(post.editTextArea.exists).notOk();
-    await t.expect(post.postImg).ok();
+    await t.expect(post.images).ok();
   });
 });
