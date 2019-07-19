@@ -25,7 +25,9 @@ module.exports = {
     'import/named': 'off',
     'import/export': 'off',
     'import/prefer-default-export': 'off',
-    'import/no-unresolved': [0, { caseSensitive: false }],
+    'import/no-unresolved': [0, {
+      caseSensitive: false
+    }],
     'import/no-extraneous-dependencies': 'off',
     'import/order': 'off',
     'import/first': 'error',
@@ -69,9 +71,11 @@ module.exports = {
     'class-methods-use-this': 'off',
     'operator-assignment': 'off',
     'operator-linebreak': 'off',
-    'comma-dangle': 'off',
+    "comma-dangle": ["error", "only-multiline"],
     'no-unexpected-multiline': 'off',
-    'max-len': ['off', { code: 80 }],
+    'max-len': ['off', {
+      code: 80
+    }],
     'implicit-arrow-linebreak': 'off',
   },
   settings: {
