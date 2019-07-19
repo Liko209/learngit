@@ -5,17 +5,13 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
-import {
-  RTC_REPLY_MSG_PATTERN,
-  RTC_REPLY_MSG_TIME_UNIT,
-  RTCCallInfo
-} from '../api/types';
+import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
 
 interface IRTCCallSession extends EventEmitter2 {
   destroy(): void;
   setSession(session: any): void;
+  getSession(): any;
   getInviteResponse(): any;
-  setSipInfoIntoCallInfo(callInfo: RTCCallInfo): void;
   hangup(): void;
   flip(target: number): void;
   transfer(target: string): void;
