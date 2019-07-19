@@ -45,7 +45,7 @@ fixture('Phone/VoicemailFromGuest')
 
   await h(t).withLog('Add a voicemail from guest', async() => {
     await addOneVoicemailFromGuest(t, caller, callee, app);
-  })
+  });
 
   await h(t).withLog('When I open voicemail menu and click "Block number" button', async () => {
     await voicemailItemFromGuest.hoverSelf();
