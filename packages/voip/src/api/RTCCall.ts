@@ -10,7 +10,7 @@ import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
   kRTCAnonymous,
-  kRTCHangupInvalidCallInterval
+  kRTCHangupInvalidCallInterval,
 } from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
