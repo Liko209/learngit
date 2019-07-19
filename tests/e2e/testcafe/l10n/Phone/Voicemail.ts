@@ -44,7 +44,7 @@ fixture('Phone/Voicemail')
     };
   });
 
-  await h(t).withLog('And determine if I need to delete already exists voicemail', async() => {
+  await h(t).withLog('And determine if already exists voicemail and delete it', async() => {
     while(1){
       if (await voicemailItemFromExt.exists) {
         await voicemailItemFromExt.openMoreMenu();
