@@ -18,7 +18,8 @@ import {
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
-  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT
+  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
+  RC_REFER_EVENT
 } from './types';
 import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
@@ -306,12 +307,21 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   warmTransfer(targetSession: any) {
+    targetSession.dialog.remoteTarget.parameters = null;
     this._session.warmTransfer(targetSession).then(
-      () => {
-        this.emit(
-          CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
-          RTC_CALL_ACTION.WARM_TRANSFER
-        );
+      (referClientContext: any) => {
+        referClientContext.on(RC_REFER_EVENT.REFER_REQUEST_ACCEPTED, () => {
+          this.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
+            RTC_CALL_ACTION.WARM_TRANSFER
+          );
+        });
+        referClientContext.on(RC_REFER_EVENT.REFER_REQUEST_REJECTED, () => {
+          this.emit(
+            CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
+            RTC_CALL_ACTION.WARM_TRANSFER
+          );
+        });
       },
       () => {
         this.emit(

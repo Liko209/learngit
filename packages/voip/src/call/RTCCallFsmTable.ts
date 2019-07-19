@@ -273,7 +273,12 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.WARM_TRANSFER,
-          from: CallFsmState.CONNECTED,
+          from: [
+            CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING
+          ],
           to: (targetSession: any) => {
             dependency.onWarmTransferAction(targetSession);
             return CallFsmState.CONNECTED;
@@ -339,10 +344,8 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.CONNECTING,
             CallFsmState.DISCONNECTED,
             CallFsmState.PENDING,
-            CallFsmState.HOLDING,
-            CallFsmState.HOLDED,
-            CallFsmState.UNHOLDING,
-            CallFsmState.FORWARDING
+            CallFsmState.FORWARDING,
+            CallFsmState.REPLYING
           ],
           to: (targetSession: any, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER);
