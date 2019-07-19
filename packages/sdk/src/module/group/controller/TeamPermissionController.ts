@@ -63,9 +63,18 @@ class TeamPermissionController {
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
-        return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADD_MEMBER;
+        return (
+          MAX_PERMISSION_LEVEL -
+          PERMISSION_ENUM.TEAM_ADD_MEMBER -
+          PERMISSION_ENUM.TEAM_MENTION
+        );
       }
-      return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
+      return (
+        MAX_PERMISSION_LEVEL -
+        PERMISSION_ENUM.TEAM_ADMIN -
+        PERMISSION_ENUM.TEAM_ADD_MEMBER -
+        PERMISSION_ENUM.TEAM_MENTION
+      );
     }
 
     const guestPermissionLevel = this.mergePermissionFlagsWithLevel(
@@ -98,6 +107,7 @@ class TeamPermissionController {
     type: PERMISSION_ENUM,
     teamPermissionParams: TeamPermissionParams,
   ): boolean {
+    // handle default permission
     if (
       !teamPermissionParams.members &&
       !teamPermissionParams.guest_user_company_ids &&

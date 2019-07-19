@@ -29,7 +29,8 @@ import { GroupActionController } from '../GroupActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
-import { PERMISSION_ENUM, ENTITY } from '../../../../service';
+import { ENTITY } from '../../../../service';
+import { PERMISSION_ENUM } from '../../../../module/group';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountService } from '../../../account';
 
