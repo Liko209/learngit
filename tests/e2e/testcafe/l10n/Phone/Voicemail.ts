@@ -17,11 +17,10 @@ fixture('Phone/Voicemail')
   const caller = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
-  await h(t).withLog(`Given I login Jupiter with ${callee.company.number}#${callee.extension}`, async (step) => {
-    step.initMetadata({
-      number: callee.company.number,
-      extension: callee.extension,
-    });
+  await h(t).withLog(`Given I login Jupiter with ${callee.company.number}#${callee.extension}`, async () => {
+    await h(t).glip(callee).init();
+    await h(t).glip(callee).setDefaultPhoneApp('glip');
+    await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
     await h(t).directLoginWithUser(SITE_URL, callee);
     await app.homePage.ensureLoaded();
   });
@@ -35,25 +34,40 @@ fixture('Phone/Voicemail')
     await voicemailEntry.enter();
   });
 
+  const voicemailItemFromExt = voicemailPage.voicemailItemByNth(0);
   const telephoneDialog = app.homePage.telephonyDialog;
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  };
+  const deleteVoicemailDialog = app.homePage.deleteVoicemailDialog;
+
+  await h(t).withLog('Then determine if I need to minimize the telephone dialog', async() => {
+    if (await telephoneDialog.exists) {
+      await telephoneDialog.clickMinimizeButton()
+    };
+  });
+
+  await h(t).withLog('And determine if I need to delete already exists voicemail', async() => {
+    while(1){
+      if (await voicemailItemFromExt.exists) {
+        await voicemailItemFromExt.openMoreMenu();
+        await voicemailItemFromExt.clickDeleteButton();
+        await deleteVoicemailDialog.clickDeleteButton();
+      }
+      else{
+        break;
+      };
+    };
+  });
 
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailPage' });
 
-  await h(t).withLog('Given I have a voicemail', async () => {
+  await h(t).withLog('When I have a voicemail', async () => {
     await addOneVoicemailFromExt(t, caller, callee, app);
   });
 
-  const voicemailItemFromExt = voicemailPage.voicemailItemByNth(0);
-  const deleteVoicemailDialog = app.homePage.deleteVoicemailDialog;
-
-  await h(t).withLog('When I hover the "more" button', async() => {
+  await h(t).withLog('Then I hover the "more" button', async() => {
     await voicemailItemFromExt.hoverMoreButton();
   });
 
-  await h(t).withLog('More button should be displayed' , async() => {
+  await h(t).withLog('And more button should be displayed' , async() => {
     await t.expect(voicemailItemFromExt.moreMenuButton.exists).ok;
   });
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailMoreButton'});
@@ -81,11 +95,10 @@ fixture('Phone/Voicemail')
     await voicemailItemFromExt.clickDeleteButton();
   });
 
-  await h(t).withLog('Delete dialog should be displayed' , async() => {
+  await h(t).withLog('Then delete dialog should be displayed' , async() => {
     await t.expect(deleteVoicemailDialog.exists).ok;
   });
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_DeleteVoicemailDialog'});
-
 
   await h(t).withLog('When I hover the "message" button', async() => {
     await deleteVoicemailDialog.clickCancelButton();
@@ -97,16 +110,18 @@ fixture('Phone/Voicemail')
   await h(t).withLog('When I hover the "callback" button', async() => {
     await voicemailItemFromExt.hoverCallbackButton();
   });
+
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailCallbackButton'});
 
   await h(t).withLog('When I hover the "Play" button', async() => {
     await voicemailItemFromExt.hoverPlayButton();
   });
+
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailPlayButton'});
 
   await h(t).withLog('When I set filter and check the search result'  , async() => {
     await voicemailItemFromExt.setVoicemailFilter("xxxxxxxxxxxxx");
   });
-  await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailNoMatchesFound'});
 
+  await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailNoMatchesFound'});
 });

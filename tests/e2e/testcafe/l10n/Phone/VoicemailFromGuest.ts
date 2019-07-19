@@ -17,11 +17,7 @@ fixture('Phone/VoicemailFromGuest')
   const caller = h(t).rcData.guestCompany.users[0];
   const app = new AppRoot(t);
 
-  await h(t).withLog(`Given I login Jupiter with ${callee.company.number}#${callee.extension}`, async (step) => {
-    step.initMetadata({
-      number: callee.company.number,
-      extension: callee.extension,
-    });
+  await h(t).withLog(`Given I login Jupiter with ${callee.company.number}#${callee.extension}`, async () => {
     await h(t).glip(callee).init();
     await h(t).glip(callee).setDefaultPhoneApp('glip');
     await h(t).platform(callee).deleteALlBlockOrAllowPhoneNumber();
@@ -41,22 +37,25 @@ fixture('Phone/VoicemailFromGuest')
   const telephoneDialog = app.homePage.telephonyDialog;
   const voicemailItemFromGuest = voicemailPage.voicemailItemByNth(0);
 
-  if (await telephoneDialog.exists) {
-    await telephoneDialog.clickMinimizeButton()
-  };
+  await h(t).withLog('Determine if you need to minimize the telephone  dialog', async() => {
+    if (await telephoneDialog.exists) {
+      await telephoneDialog.clickMinimizeButton()
+    };
+  });
 
-  await addOneVoicemailFromGuest(t, caller, callee, app);
+  await h(t).withLog('Add a voicemail from guest', async() => {
+    await addOneVoicemailFromGuest(t, caller, callee, app);
+  })
 
-
-  await h(t).withLog('When I open voicemail Menu and click "Block number" button', async () => {
+  await h(t).withLog('When I open voicemail menu and click "Block number" button', async () => {
     await voicemailItemFromGuest.hoverSelf();
     await voicemailItemFromGuest.openMoreMenu();
   });
 
   const BlockNumberDialog = app.homePage.blockNumberDialog;
 
-  await h(t).withLog('Then text "Block number" should be displayed', async () =>{
-    await t.expect(voicemailItemFromGuest.blockButton.exists).ok
+  await h(t).withLog('Then the text "Block number" should be displayed', async () => {
+    await t.expect(voicemailItemFromGuest.blockButton.exists).ok;
   });
 
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailBlockNumber'} );
@@ -78,11 +77,12 @@ fixture('Phone/VoicemailFromGuest')
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailBlockSuccessToast'} );
 
   await h(t).withLog('When I check the text "Block number"', async () => {
+    await t.wait(5000);
     await voicemailItemFromGuest.openMoreMenu();
   });
 
-  await h(t).withLog('Then text "Block number" should be displayed', async () =>{
-    await t.expect(voicemailItemFromGuest.unblockButton.exists).ok
+  await h(t).withLog('Then the text "Block number" should be displayed', async () => {
+    await t.expect(voicemailItemFromGuest.unblockButton.exists).ok;
   });
 
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailUnblockNumber'} );
@@ -91,7 +91,7 @@ fixture('Phone/VoicemailFromGuest')
     await voicemailItemFromGuest.clickUnblockButton();
   });
 
-  await h(t).withLog('Then text "Unblock Number" should be displayed', async () => {
+  await h(t).withLog('Then the text "Unblock Number" should be displayed', async () => {
     await t.expect(voicemailItemFromGuest.unblockButton.exists).ok;
   });
 
