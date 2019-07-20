@@ -174,6 +174,7 @@ class TeamPermissionController {
       // in dthor, when disabled TEAM_POST, disabled TEAM_ADD_INTEGRATIONS, TEAM_PIN_POST too
       result.permissionFlags!.TEAM_ADD_INTEGRATIONS = false;
       result.permissionFlags!.TEAM_PIN_POST = false;
+      result.permissionFlags!.TEAM_MENTION = false;
     }
     return result;
   }

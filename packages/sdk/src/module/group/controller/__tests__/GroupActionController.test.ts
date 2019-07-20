@@ -693,6 +693,51 @@ describe('GroupFetchDataController', () => {
         ),
       );
     });
+    it('should toggle TEAM_MENTION correctly.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [1],
+            level: DEFAULT_ADMIN_PERMISSION_LEVEL,
+          },
+          user: {
+            uids: [2],
+            level: PERMISSION_ENUM.TEAM_POST,
+          },
+        },
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await groupActionController.updateTeamSetting(mockTeam.id, {
+        name: 'team name',
+        description: 'team desc',
+        isPublic: true,
+        permissionFlags: {
+          TEAM_MENTION: true,
+        },
+      });
+      expect(testTeamRequestController.put).toBeCalledWith(
+        _.mergeWith(
+          {},
+          mockTeam,
+          {
+            set_abbreviation: 'team name',
+            description: 'team desc',
+            privacy: 'protected',
+            permissions: {
+              user: {
+                level:
+                  mockTeam.permissions.user.level |
+                  PERMISSION_ENUM.TEAM_MENTION,
+              },
+            },
+          },
+          replaceArray,
+        ),
+      );
+    });
     it('should call requestController.put when permissions change', async () => {
       const mockTeam = groupFactory.build({
         is_team: true,
