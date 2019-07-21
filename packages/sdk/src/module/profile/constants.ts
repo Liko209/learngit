@@ -72,6 +72,7 @@ enum SOUNDS_LIST {
   Whoosh = 'Whoosh',
   Whoosh_Double = 'Whoosh 2',
   Off = 'Off',
+  Default = 'Default',
 }
 
 enum SETTING_KEYS {
