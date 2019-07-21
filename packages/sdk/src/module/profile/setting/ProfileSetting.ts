@@ -20,7 +20,24 @@ import {
   SETTING_KEYS,
   EMAIL_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
+  SOUNDS_LIST,
 } from '../constants';
+
+const soundsList = [
+  SOUNDS_LIST.Double_Beeps,
+  SOUNDS_LIST.Triple_Beeps,
+  SOUNDS_LIST.Alert,
+  SOUNDS_LIST.Alert_Double,
+  SOUNDS_LIST.Alert_Triple,
+  SOUNDS_LIST.Bing_Bong,
+  SOUNDS_LIST.Ching,
+  SOUNDS_LIST.Log_Drum,
+  SOUNDS_LIST.Snap,
+  SOUNDS_LIST.Squirt,
+  SOUNDS_LIST.Whoosh,
+  SOUNDS_LIST.Whoosh_Double,
+  SOUNDS_LIST.Off,
+];
 
 type HandlerMap = {
   [SettingEntityIds.Notification_NewMessageBadgeCount]: MessageBadgeSettingHandler;
@@ -39,6 +56,9 @@ type HandlerMap = {
   >;
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
     NOTIFICATION_OPTIONS
+  >;
+  [SettingEntityIds.Audio_TeamMessages]: ProfileSubscribeEntityHandler<
+    SOUNDS_LIST
   >;
 };
 
@@ -118,7 +138,18 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           id: SettingEntityIds.Notification_DailyDigest,
           setting_key: SETTING_KEYS.EMAIL_TODAY,
         },
-      )
+      ),
+      [SettingEntityIds.Audio_TeamMessages]:
+        // prettier-ignore
+        new ProfileSubscribeEntityHandler<SOUNDS_LIST>(
+          this._profileService,
+          {
+            id: SettingEntityIds.Audio_TeamMessages,
+            setting_key: SETTING_KEYS.AUDIO_TEAM_MESSAGES,
+            source: soundsList,
+            defaultValue: SOUNDS_LIST.Log_Drum,
+          },
+        ),
     };
   }
 }

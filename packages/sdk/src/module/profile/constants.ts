@@ -36,6 +36,44 @@ enum DESKTOP_MESSAGE_NOTIFICATION_OPTIONS {
   OFF = 'never',
 }
 
+enum RINGS_LIST {
+  Phone_Ring = 'Phone Ring',
+  Air_Raid = 'Air Raid',
+  Allusive = 'Allusive',
+  Attention = 'Attention',
+  Blub_Blub = 'Blub Blub',
+  Buzzy = 'Buzzy',
+  Channel_Open = 'Channel Open',
+  Disco = 'Disco',
+  Door_Bell = 'Door Bell',
+  Fairy = 'Fairy',
+  Fast_Bells = 'Fast Bells',
+  High_Gong = 'High Gong',
+  Indeed = 'Indeed',
+  Nice = 'Nice',
+  Ringing_Bells = 'Ringing Bells',
+  Ring = 'Ring',
+  Simple = 'Simple',
+  Soothing = 'Soothing',
+  Off = 'Off',
+}
+
+enum SOUNDS_LIST {
+  Double_Beeps = '2 Beeps',
+  Triple_Beeps = '3 Beeps',
+  Alert = 'Alert',
+  Alert_Double = 'Alert 2',
+  Alert_Triple = 'Alert 3',
+  Bing_Bong = 'Bing Bong',
+  Ching = 'Ching',
+  Log_Drum = 'Log Drum',
+  Snap = 'Snap',
+  Squirt = 'Squirt',
+  Whoosh = 'Whoosh',
+  Whoosh_Double = 'Whoosh 2',
+  Off = 'Off',
+}
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -64,6 +102,13 @@ enum SETTING_KEYS {
   // conversation settings
   MAX_LEFTRAIL_GROUP = 'max_leftrail_group_tabs2',
   NEW_MESSAGE_BADGES = 'new_message_badges',
+
+  // sound settings
+  AUDIO_TEAM_MESSAGES = 'want_audio_notifications',
+  AUDIO_DIRECT_MESSAGES = 'one_on_one_audio_notifications',
+  AUDIO_MENTIONS = 'at_mention_audio_notifications',
+  AUDIO_INCOMING_CALLS = 'phone_audio_notifications',
+  AUDIO_NEW_VOICEMAIL = 'meeting_audio_notifications',
 }
 type DesktopNotificationsSettingModel = {
   browserPermission: NotificationPermission;
@@ -80,4 +125,6 @@ export {
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
   DesktopNotificationsSettingModel,
+  RINGS_LIST,
+  SOUNDS_LIST,
 };
