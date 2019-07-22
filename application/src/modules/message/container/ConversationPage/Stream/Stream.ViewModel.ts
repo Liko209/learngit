@@ -247,7 +247,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @action
   markAsRead() {
-    false &&
       this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 

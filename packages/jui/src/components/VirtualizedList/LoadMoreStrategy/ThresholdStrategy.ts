@@ -6,11 +6,11 @@
 import {
   ILoadMoreStrategy,
   LoadMoreStrategyParams,
-  LoadMoreInfo
+  LoadMoreInfo,
 } from './ILoadMoreStrategy';
 
 import { UndefinedAble } from '../types';
-import { DIRECTION } from 'jui/components/Lists';
+import { DIRECTION } from '../../Lists';
 
 const PRELOAD_COUNT_LIMIT = 50;
 const DEFAULT_PAGE_SIZE = 20;
@@ -23,12 +23,12 @@ class ThresholdStrategy implements ILoadMoreStrategy {
   constructor(
     {
       threshold,
-      minBatchCount
+      minBatchCount,
     }: {
       threshold: number;
       minBatchCount: number;
     },
-    preloadInfo?: LoadMoreInfo
+    preloadInfo?: LoadMoreInfo,
   ) {
     this._threshold = threshold;
     this._minBatchCount = minBatchCount;
@@ -39,7 +39,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     indexConstraint: { minIndex, maxIndex },
     visibleRange: { startIndex, stopIndex },
     prevVisibleRange,
-    delta
+    delta,
   }: Readonly<LoadMoreStrategyParams>): LoadMoreInfo {
     const deltaY = delta ? delta.y : 0;
 
@@ -51,7 +51,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     if (unloadCountUp >= this._minBatchCount && isUpwards) {
       return {
         direction: DIRECTION.UP,
-        count: unloadCountUp
+        count: unloadCountUp,
       };
     }
 
@@ -63,7 +63,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     if (unloadCountDown >= this._minBatchCount && isDownwards) {
       return {
         direction: DIRECTION.DOWN,
-        count: unloadCountDown
+        count: unloadCountDown,
       };
     }
 
