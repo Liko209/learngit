@@ -7,7 +7,7 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
-import { JuiIconButton } from '../../components/Buttons';
+import { JuiIconButton } from '../Buttons';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { JuiAudioStatus, JuiAudioActionProps } from './types';
 
