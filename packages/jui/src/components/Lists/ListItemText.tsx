@@ -5,14 +5,14 @@
  */
 import React, { memo } from 'react';
 import MuiListItemText, {
-  ListItemTextProps as MuiListItemTextProps,
+  ListItemTextProps as MuiListItemTextProps
 } from '@material-ui/core/ListItemText';
 import styled from '../../foundation/styled-components';
 import {
   typography,
   ellipsis,
   grey,
-  getAccentColor,
+  getAccentColor
 } from '../../foundation/utils';
 import { Palette } from '../../foundation/theme/theme';
 
@@ -43,13 +43,15 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
       ${typography('caption1')};
       ${ellipsis()};
     }
+
+    &.multiline {
+      margin: 0;
+    }
   }
 `;
 
 const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
-  const {
-    primary, primaryColor, secondary, ...rest
-  } = props;
+  const { primary, primaryColor, secondary, ...rest } = props;
   return (
     <StyledListItemText
       primaryColor={primaryColor}
@@ -58,6 +60,7 @@ const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
       classes={{
         primary: 'list-item-primary',
         secondary: 'list-item-secondary',
+        multiline: 'multiline'
       }}
       {...rest}
     />

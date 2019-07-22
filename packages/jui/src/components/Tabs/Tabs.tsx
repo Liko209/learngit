@@ -46,10 +46,6 @@ type Props = {
 
 const CLASSES = {
   tabs: { root: 'root' },
-  tab: {
-    root: 'root',
-    selected: 'selected',
-  },
 };
 
 const MORE = 10000; // more tab mui auto add child index
@@ -330,7 +326,6 @@ class JuiTabs extends PureComponent<Props, States> {
         label={label}
         icon={icon}
         onClick={onClick}
-        classes={CLASSES.tab}
         style={style}
         ref={ref}
       />

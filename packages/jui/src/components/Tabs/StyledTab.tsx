@@ -15,7 +15,7 @@ import {
   typography,
   grey,
   primary,
-  spacing,
+  spacing
 } from '../../foundation/utils';
 
 type StyledTabProps = MuiTabProps & {
@@ -30,10 +30,13 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
     min-height: ${height(8)};
     text-transform: none;
     padding: ${({ icon, theme }) => (icon ? '0' : spacing(0, 2)({ theme }))};
-    ${ellipsis()}
     box-sizing: border-box;
-    ${typography('body1')}
-    color: ${grey('900')}
+    ${typography('body1')};
+    color: ${grey('900')};
+    .wrapper {
+      ${ellipsis()}
+      display: inline;
+    }
   }
   &.selected {
     ${typography('body2')};
@@ -43,12 +46,19 @@ const StyledMuiTab = styled<MuiTabProps>(MuiTab)`
 
 const StyledTab = React.forwardRef(
   ({ children, ...rest }: StyledTabProps, ref: React.RefObject<any>) => {
-    const Tab = <StyledMuiTab {...rest}>{children}</StyledMuiTab>;
+    const Tab = (
+      <StyledMuiTab
+        classes={{ root: 'root', selected: 'selected', wrapper: 'wrapper' }}
+        {...rest}
+      >
+        {children}
+      </StyledMuiTab>
+    );
     if (ref) {
       return <RootRef rootRef={ref}>{Tab}</RootRef>;
     }
     return Tab;
-  },
+  }
 );
 
 export { StyledTab, StyledTabProps };

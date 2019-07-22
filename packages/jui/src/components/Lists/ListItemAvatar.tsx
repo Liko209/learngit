@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiListItemAvatar, {
-  ListItemAvatarProps as MuiListItemAvatarProps,
+  ListItemAvatarProps as MuiListItemAvatarProps
 } from '@material-ui/core/ListItemAvatar';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
@@ -12,7 +12,10 @@ import { spacing } from '../../foundation/utils';
 type JuiListItemAvatarProps = MuiListItemAvatarProps;
 
 const JuiListItemAvatar = styled(MuiListItemAvatar)`
-  margin-right: ${spacing(2)};
+  && {
+    margin-right: ${spacing(2)};
+    min-width: 0;
+  }
 `;
 
 JuiListItemAvatar.displayName = 'JuiListItemAvatar';
