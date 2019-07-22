@@ -13,6 +13,8 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupService } from '../../../group';
 import { AccountService } from '../../../account/service';
 import { PostItemController } from '../../controller/implementation/PostItemController';
+import { PostActionController } from '../../controller/implementation/PostActionController';
+import { SendPostController } from '../../controller/implementation/SendPostController';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -32,6 +34,8 @@ jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchManagerController');
 jest.mock('../../controller/implementation/PostItemController');
+jest.mock('../../controller/implementation/PostActionController');
+jest.mock('../../controller/implementation/SendPostController');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
 jest.mock('../../../profile');
@@ -117,17 +121,17 @@ describe('PostService', () => {
       notificationController['onReceivedNotification'] = jest.fn();
       await postService.handleSexioData(rawPost);
 
-      expect(postDataController.transformData).toBeCalledWith(rawPost);
-      expect(postDataController.handleSexioPosts).toBeCalledWith(post);
-      expect(notificationController.onReceivedNotification).toBeCalledWith(
-        post,
-      );
+      expect(postDataController.transformData).toHaveBeenCalledWith(rawPost);
+      expect(postDataController.handleSexioPosts).toHaveBeenCalledWith(post);
+      expect(
+        notificationController.onReceivedNotification,
+      ).toHaveBeenCalledWith(post);
     });
 
     it('should call post data controller', async () => {
       const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
       await postService.handleIndexData(rawPost, true);
-      expect(postDataController.handleIndexPosts).toBeCalledWith(
+      expect(postDataController.handleIndexPosts).toHaveBeenCalledWith(
         rawPost,
         true,
         undefined,
@@ -153,24 +157,24 @@ describe('PostService', () => {
     it('searchPosts', async () => {
       const params = { q: '11' };
       await postService.searchPosts(params);
-      expect(postSearchController.startSearch).toBeCalledWith(params);
+      expect(postSearchController.startSearch).toHaveBeenCalledWith(params);
     });
 
     it('scrollSearchPosts', async () => {
       await postService.scrollSearchPosts('key');
-      expect(postSearchController.scrollSearch).toBeCalledWith('key');
+      expect(postSearchController.scrollSearch).toHaveBeenCalledWith('key');
     });
 
     it('endPostSearch', async () => {
       await postService.endPostSearch('key');
-      expect(postSearchController.endSearch).toBeCalledWith('key');
+      expect(postSearchController.endSearch).toHaveBeenCalledWith('key');
     });
   });
 
   describe('bookmarkPost', () => {
     it('bookmarkPost', async () => {
       await postService.bookmarkPost(1, true);
-      expect(profileService.putFavoritePost).toBeCalledWith(1, true);
+      expect(profileService.putFavoritePost).toHaveBeenCalledWith(1, true);
     });
   });
   describe('PostItemController', () => {
@@ -190,7 +194,10 @@ describe('PostService', () => {
 
     it('getLatestPostIdByItem', async () => {
       await postService.getLatestPostIdByItem(1, 1);
-      expect(postItemController.getLatestPostIdByItem).toBeCalledWith(1, 1);
+      expect(postItemController.getLatestPostIdByItem).toHaveBeenCalledWith(
+        1,
+        1,
+      );
     });
   });
   describe('getById', () => {
@@ -200,6 +207,57 @@ describe('PostService', () => {
       } catch (e) {
         expect(e).toBeNull();
       }
+    });
+  });
+
+  describe('editSuccessPost', () => {
+    let postActionController: PostActionController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      postActionController = new PostActionController(
+        null as any,
+        null as any,
+        null as any,
+      );
+
+      postController.getPostActionController = jest
+        .fn()
+        .mockImplementation(() => {
+          return postActionController;
+        });
+      postService.postController = postController;
+    });
+
+    it('should call PostActionController editSuccessPost api', async () => {
+      const spy = jest.spyOn(postActionController, 'editSuccessPost');
+      postService.editSuccessPost({ postId: 1, groupId: 1, text: '111' });
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('editFailedPost', () => {
+    let sendPostController: SendPostController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      sendPostController = new SendPostController(
+        null as any,
+        null as any,
+        null as any,
+      );
+      postController.getSendPostController = jest
+        .fn()
+        .mockImplementation(() => {
+          return sendPostController;
+        });
+      postService.postController = postController;
+    });
+
+    it('should call SendPostController editFailedPost api', async () => {
+      const spy = jest.spyOn(sendPostController, 'editFailedPost');
+      postService.editFailedPost({ postId: -1, groupId: 1, text: '111' });
+      expect(spy).toHaveBeenCalled();
     });
   });
 });

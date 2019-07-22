@@ -1,4 +1,4 @@
-/// <reference path="../../../../../__tests__/types.d.ts" />
+// / <reference path="../../../../../__tests__/types.d.ts" />
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-01-15 11:17:32
@@ -75,11 +75,12 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 describe('SendPostController', () => {
   let sendPostController: SendPostController;
   let postDataController: PostDataController;
+  let postActionController: PostActionController;
   const groupConfigService: GroupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
   beforeEach(() => {
-    const actionController = new PostActionController(
+    postActionController = new PostActionController(
       null,
       null,
       null,
@@ -99,7 +100,7 @@ describe('SendPostController', () => {
         }
       });
     sendPostController = new SendPostController(
-      actionController,
+      postActionController,
       preInsertController,
       postDataController,
     );
@@ -152,6 +153,18 @@ describe('SendPostController', () => {
     });
   });
 
+  describe('editFailedPost', () => {
+    it('should call PostActionController editFailedPost api when edit failed post', async () => {
+      const spy = jest.spyOn(postActionController, 'editFailedPost');
+      await sendPostController.editFailedPost({
+        postId: -1,
+        groupId: 1,
+        text: '123',
+      });
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('innerSendPost', () => {
     it('should not call buildItemVersionMap when is resend or has not item_ids', async () => {
       jest
@@ -163,11 +176,11 @@ describe('SendPostController', () => {
         _postItemController: { waiting4ItemsReady: () => {} },
       });
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(0);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(0);
 
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, true);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(0);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(0);
     });
     it('should call buildItemVersionMap when it is not resend and has item_ids', async () => {
       jest
@@ -182,7 +195,7 @@ describe('SendPostController', () => {
         },
       });
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(1);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(1);
     });
     it('should send post to sever when post is valid and call back success', async () => {
       Object.assign(sendPostController, {
@@ -200,7 +213,7 @@ describe('SendPostController', () => {
       data['text'] = '2323';
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController.sendPostToServer).toBeCalledTimes(1);
+      expect(sendPostController.sendPostToServer).toHaveBeenCalledTimes(1);
     });
     it('should delete post when post is invalid', async () => {
       let shouldBeCalled = false;
@@ -237,7 +250,7 @@ describe('SendPostController', () => {
       data['text'] = '2323';
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController.handleSendPostFail).toBeCalledTimes(1);
+      expect(sendPostController.handleSendPostFail).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -261,9 +274,9 @@ describe('SendPostController', () => {
         'post',
       );
       const result = await sendPostController.sendPostToServer(data);
-      expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      expect(result).toEqual(serverPostJson4UnitTest);
       delete data.id;
-      expect(spy).toBeCalledWith(data, {
+      expect(spy).toHaveBeenCalledWith(data, {
         priority: REQUEST_PRIORITY.HIGH,
         retryCount: DEFAULT_RETRY_COUNT,
       });
@@ -285,7 +298,7 @@ describe('SendPostController', () => {
       const data = _.cloneDeep(localPostJson4UnitTest);
       data['id'] = -999;
       const result = await sendPostController.sendPostToServer(data);
-      expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      expect(result).toEqual(serverPostJson4UnitTest);
       expect(retryCount).toEqual(3);
     });
     it('should throw error when send post failed', async () => {
@@ -315,7 +328,7 @@ describe('SendPostController', () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       await sendPostController.handleSendPostSuccess(data, { id: -999 });
       expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
-      expect(postDataController.deletePreInsertPosts).toBeCalledWith([
+      expect(postDataController.deletePreInsertPosts).toHaveBeenCalledWith([
         {
           id: -999,
         },
@@ -328,7 +341,7 @@ describe('SendPostController', () => {
       groupConfigService.addPostId.mockResolvedValueOnce(null);
       const result = await sendPostController.handleSendPostFail(-1, 2);
       expect(result.length).toBe(0);
-      expect(groupConfigService.addPostId).toBeCalledTimes(1);
+      expect(groupConfigService.addPostId).toHaveBeenCalledTimes(1);
     });
   });
 });

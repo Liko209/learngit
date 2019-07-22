@@ -62,7 +62,7 @@ jest.mock('@/store/utils', () => ({
 }));
 
 const postService = {
-  editPost: jest.fn(),
+  editSuccessPost: jest.fn(),
 };
 ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
@@ -118,7 +118,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
-      expect(postService.editPost).toBeCalled();
+      expect(postService.editSuccessPost).toBeCalled();
     });
     it('should edit post failure when content and itemIds is empty', () => {
       const markdownFromDeltaRes = {
@@ -130,7 +130,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       handler();
-      expect(postService.editPost).not.toBeCalled();
+      expect(postService.editSuccessPost).not.toBeCalled();
     });
     it('should edit post failure when content is illegal', () => {
       const markdownFromDeltaRes = {
@@ -143,7 +143,7 @@ describe('EditMessageInputViewModel', () => {
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
-      expect(postService.editPost).not.toBeCalled();
+      expect(postService.editSuccessPost).not.toBeCalled();
     });
     it('should edit post failure when content is over length', () => {
       const markdownFromDeltaRes = {
@@ -156,10 +156,10 @@ describe('EditMessageInputViewModel', () => {
       const handler = enterHandler.bind(that);
       handler();
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
-      expect(postService.editPost).not.toBeCalled();
+      expect(postService.editSuccessPost).not.toBeCalled();
     });
     it('should edit post failure when service error', () => {
-      postService.editPost = jest
+      postService.editSuccessPost = jest
         .fn()
         .mockRejectedValueOnce(new Error('error'));
       const content = 'text';
@@ -169,7 +169,7 @@ describe('EditMessageInputViewModel', () => {
       expect(result).toBeUndefined();
     });
     it('Failed to edit post due to network disconnection. [JPT-1824]', async () => {
-      postService.editPost = jest.fn().mockImplementationOnce(() => {
+      postService.editSuccessPost = jest.fn().mockImplementationOnce(() => {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
       });
 
@@ -182,7 +182,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       await handler();
-      expect(postService.editPost).toBeCalled();
+      expect(postService.editSuccessPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'message.prompt.editPostFailedForNetworkIssue',
@@ -190,7 +190,7 @@ describe('EditMessageInputViewModel', () => {
       );
     });
     it('Failed to edit post due to unexpected backend issue. [JPT-1823]', async () => {
-      postService.editPost = jest.fn().mockImplementationOnce(() => {
+      postService.editSuccessPost = jest.fn().mockImplementationOnce(() => {
         throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
       });
 
@@ -203,7 +203,7 @@ describe('EditMessageInputViewModel', () => {
       markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
       const handler = enterHandler.bind(that);
       await handler();
-      expect(postService.editPost).toBeCalled();
+      expect(postService.editSuccessPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'message.prompt.editPostFailedForServerIssue',
