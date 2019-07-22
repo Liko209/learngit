@@ -6,12 +6,13 @@
 import React from 'react';
 import FormLabel, { FormLabelProps } from '@material-ui/core/FormLabel';
 import styled from '../../foundation/styled-components';
-import { palette } from '../../foundation/shared/theme';
+import { typography, palette } from '../../foundation/shared/theme';
 
 type RuiFormLabelProps = FormLabelProps;
 
 const StyledFormLabel = styled(FormLabel)`
   && {
+    ${typography('subheading2')}
     color: ${palette('text', 'primary')};
   }
 `;
