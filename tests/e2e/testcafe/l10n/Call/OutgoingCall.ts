@@ -8,11 +8,11 @@ import { IGroup } from '../../v2/models';
 import { WebphoneSession } from 'webphone-client';
 ;
 
-fixture('Phone/OutgoingCall')
+fixture('Call/OutgoingCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Make a call from a conversation', ['P2', 'Phone', 'OutgoingCall', 'V1.4', 'Jenny.Cai']), async (t) => {
+test(formalName('Make a call from a conversation', ['P2', 'Call', 'OutgoingCall', 'V1.4', 'Jenny.Cai']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);

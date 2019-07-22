@@ -8,8 +8,10 @@ type MediaOptions = {
   src: string | string[];
   trackId?: string;
   id?: string;
-  volume?: number;
   muted?: boolean;
+  volume?: number;
+  loop?: boolean;
+  autoplay?: boolean;
   outputDevices?: MediaDeviceType[] | 'all';
 };
 
@@ -49,7 +51,7 @@ enum MediaEventType {
 type MediaEvents = {
   name: MediaEventName;
   type: MediaEventType.ON | MediaEventType.OFF;
-  handler: () => void;
+  handler: (event: Event) => void;
 };
 
 type MediaDeviceType = MediaDeviceInfo['deviceId'];

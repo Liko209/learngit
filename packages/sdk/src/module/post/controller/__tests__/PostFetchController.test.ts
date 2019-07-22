@@ -16,7 +16,7 @@ import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
 import { ServiceLoader } from '../../../serviceLoader';
-
+import _ from 'lodash';
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
@@ -84,7 +84,7 @@ describe('PostFetchController()', () => {
     newer?: boolean;
     both?: boolean;
   }) {
-    return { older, newer, both };
+    return _.cloneDeep({ older, newer, both });
   }
 
   afterAll(() => {
@@ -501,6 +501,30 @@ describe('PostFetchController()', () => {
         posts: [],
         limit: 20,
       });
+    });
+
+    it('should not change the default HAS_MORE value', async ()=>{
+      const mockData = {
+        limit: 20,
+        posts:[],
+        items:[],
+        hasMore: getMockHasMore({})
+      };
+        jest.spyOn(postFetchController, '_getPostsFromDb').mockResolvedValueOnce(_.cloneDeep(mockData));
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(getMockHasMore({older: false}));
+        let result = await postFetchController.getPostsByGroupId({
+          groupId: 1,
+        });
+        expect(result.hasMore).toEqual(getMockHasMore({older: false}));
+
+        jest.spyOn(postFetchController, '_getPostsFromDb').mockResolvedValueOnce(_.cloneDeep(mockData));
+        groupService.hasMorePostInRemote.mockResolvedValueOnce(getMockHasMore({newer: false}));
+        result = await postFetchController.getPostsByGroupId({
+          groupId: 1,
+          direction: QUERY_DIRECTION.NEWER
+        });
+        // older should be true
+        expect(result.hasMore).toEqual(getMockHasMore({newer: false}));
     });
   });
 

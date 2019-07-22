@@ -4,6 +4,7 @@
   "prettier.eslintIntegration": true,
   "typescript.surveys.enabled": false,
   "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
   "[handlebars]": {

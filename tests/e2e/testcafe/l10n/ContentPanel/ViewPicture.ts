@@ -44,8 +44,8 @@ test(formalName('Open team conversation and shared a picture then view it', ['P2
     await t.pressKey('enter');
     await conversationPage.uploadFilesToMessageAttachment(file2)
     await t.pressKey('enter')
-    await t.expect(posts.nth(0).find('img').exists).ok();
-    await t.click(posts.nth(0).find('img'));
+    await t.expect(posts.nth(0).find('[data-test-automation-class="image"]').exists).ok();
+    await t.click(posts.nth(0).find('[data-test-automation-class="image"]'));
   });
   await h(t).withLog('And I hover the image and hover "Scale file Down"', async () => {
     await imagePreviewer.hoverZoomOutButton();

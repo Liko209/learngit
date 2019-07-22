@@ -11,13 +11,13 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor } from 'react-dnd';
 import {
   JuiConversationPage,
-  JuiStreamWrapper,
+  JuiStreamWrapper
 } from 'jui/pattern/ConversationPage';
 import { StreamDropZoneClasses } from 'jui/pattern/ConversationPage/StreamWrapper';
 import { MessageInputDropZoneClasses } from 'jui/pattern/MessageInput/MessageInput';
 import {
   JuiDropZone,
-  withDragDropContext,
+  withDragDropContext
 } from 'jui/pattern/MessageInput/DropZone';
 import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 
@@ -43,6 +43,7 @@ import { jumpToPost } from '@/common/jumpToPost';
 import { StreamItemType } from '@/modules/message/container/ConversationPage/Stream/types';
 import { IMessageService } from '@/modules/message/interface';
 import { isEditable } from '../ConversationCard/utils/index';
+import { isMultipleLine } from './MessageInput/helper';
 
 const STREAM = 'stream';
 const INPUT = 'input';
@@ -106,14 +107,16 @@ class ConversationPageViewComponent extends Component<
     this._folderDetectMap[INPUT] = true;
   };
 
-  private _editLastPost = () => {
+  private _editLastPost = (content:string) => {
+    if (isMultipleLine(content)){
+      return;
+    }
     const stream = this._streamRef.current;
     if (!stream) {
       return;
     }
     const { items } = stream.props;
     const uid = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
     const lastPostIndex = findLastIndex(items, (item: StreamItem) => {
       const { value: id, type } = item;
       if (!id || type !== StreamItemType.POST) {
@@ -134,13 +137,19 @@ class ConversationPageViewComponent extends Component<
     }
   };
 
+  private _hasDroppedFolder = () => this._folderDetectMap[STREAM];
+
+  private _clearFolderDetection = () => { 
+    delete this._folderDetectMap[STREAM]
+  }
+
   private get messageInput() {
     const { t, groupId, canPost, loadingStatus } = this.props;
 
     if (!canPost) {
       return (
         <JuiDisabledInput
-          data-test-automation-id='disabled-message-input'
+          data-test-automation-id="disabled-message-input"
           text={t('message.prompt.disabledText')}
         />
       );
@@ -154,8 +163,8 @@ class ConversationPageViewComponent extends Component<
         onDrop={this._handleDropFileInMessageInput}
         dropzoneClass={MessageInputDropZoneClasses}
         detectedFolderDrop={this._preventInputFolderDrop}
-        hasDroppedFolder={() => this._folderDetectMap[INPUT]}
-        clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
+        hasDroppedFolder={this._hasDroppedFolder}
+        clearFolderDetection={this._clearFolderDetection}
       >
         <MessageInput
           viewRef={this._messageInputRef}
@@ -165,6 +174,10 @@ class ConversationPageViewComponent extends Component<
         />
       </JuiDropZone>
     );
+  }
+
+  componentWillUnmount() {
+    delete this._clearFolderDetection;
   }
 
   render() {
@@ -181,14 +194,14 @@ class ConversationPageViewComponent extends Component<
           }
           updateConversationStatus={updateStatus}
         />
-        <div id='jumpToFirstUnreadButtonRoot' />
+        <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>
     );
     return groupId ? (
       <JuiConversationPage
-        className='conversation-page'
+        className="conversation-page"
         data-group-id={groupId}
-        data-test-automation-id='messagePanel'
+        data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
         <JuiDropZone
@@ -197,8 +210,8 @@ class ConversationPageViewComponent extends Component<
           onDrop={this._handleDropFileInStream}
           dropzoneClass={StreamDropZoneClasses}
           detectedFolderDrop={this._preventStreamFolderDrop}
-          hasDroppedFolder={() => this._folderDetectMap[STREAM]}
-          clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
+          hasDroppedFolder={this._hasDroppedFolder}
+          clearFolderDetection={this._clearFolderDetection}
         >
           {streamNode}
         </JuiDropZone>
@@ -214,7 +227,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  withRouter(withTranslation('translations')(ConversationPageViewComponent)),
+  withRouter(withTranslation('translations')(ConversationPageViewComponent))
 );
 
 export { ConversationPageView };

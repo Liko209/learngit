@@ -12,13 +12,21 @@ const logger = LogUtils.getLogger(__filename);
  **/
 class JupiterUtils {
 
-  private static async login(redirectUrl: string, browser) {
+  private static async login(redirectUrl: string, browser, username?: string, pin?: string) {
+    if (!username) {
+      username = Config.jupiterUser;
+    }
+
+    if (!pin) {
+      pin = Config.jupiterPin;
+    }
+
     let start = Date.now();
     let url = new URL(redirectUrl);
     const redirectUri = url.origin;
     const body = {
       state: `/?env=${Config.jupiterEnv}`,
-      username: Config.jupiterUser,
+      username: username,
       password: Config.jupiterPassword,
       autoLogin: false,
       ibb: "",
@@ -31,7 +39,7 @@ class JupiterUtils {
       responseHint: "",
       glipAuth: true,
       localeId: "en_US",
-      extension: Config.jupiterPin
+      extension: pin
     };
 
     let headers = {};
@@ -49,8 +57,8 @@ class JupiterUtils {
     return response.data;
   }
 
-  static async getAuthUrl(redirectUrl: string, browser): Promise<string> {
-    let data = await JupiterUtils.login(redirectUrl, browser);
+  static async getAuthUrl(redirectUrl: string, browser, username?: string, pin?: string): Promise<string> {
+    let data = await JupiterUtils.login(redirectUrl, browser, username, pin);
 
     return data.redirectUri;
   }

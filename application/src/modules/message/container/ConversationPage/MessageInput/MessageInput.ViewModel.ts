@@ -73,21 +73,21 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   get items() {
     return this._itemService.getUploadItems(this.props.id);
   }
-
+  private _rawDraft :string
   private _oldId: number;
   private _debounceFactor: number = 3e2;
   @observable
   error: string = '';
 
   private _upHandler = debounce(
-    this.props.onUpArrowPressed,
+    ()=>this.props.onUpArrowPressed(this._rawDraft),
     this._debounceFactor,
     {
       leading: true,
     },
   );
 
-  keyboardEventHandler = {
+  keyboardEventHandler: any = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
@@ -95,7 +95,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     up: {
       key: 38,
       empty: true,
-      handler: this._upHandler,
+      handler: this._upHandler
     },
   };
 
@@ -146,6 +146,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       'beforeunload',
       this._handleBeforeUnload,
     );
+
+    this.keyboardEventHandler.up.handler.cancel();
+
+    this.keyboardEventHandler = {
+      enter: {
+        key: 13,
+        handler: _.noop,
+      },
+      up: {
+        key: 38,
+        empty: true,
+        handler: (_.noop as any),
+      },
+    };
   }
 
   @action
@@ -201,6 +215,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   contentChange = (draft: string) => {
+    this._rawDraft = draft;
     if ((isEmpty(draft) && isEmpty(this.draft)) || draft === this.draft) {
       return;
     }
