@@ -161,16 +161,6 @@ describe('EditMessageInputViewModel', () => {
       expect(postService.editPost).not.toBeCalled();
     });
 
-    it('should edit post failure when service error', () => {
-      markdownFromDelta.mockReturnValue({
-        content: 'text',
-        mentionsIds: [],
-      });
-      postService.editPost.mockRejectedValueOnce(new Error('error'));
-      const result = editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
-      expect(result).toBeUndefined();
-    });
-
     it('Failed to edit post due to network disconnection. [JPT-1824]',  () => {
       postService.editPost.mockImplementationOnce(() => {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');

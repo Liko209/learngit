@@ -124,9 +124,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     };
   }
 
-  private _buildEscHandler = () => {
-    return this._exitEditMode;
-  }
+  private _buildEscHandler = () => this._exitEditMode;
 
   @action
   private _exitEditMode() {
