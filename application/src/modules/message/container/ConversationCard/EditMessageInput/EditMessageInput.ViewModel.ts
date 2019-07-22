@@ -3,6 +3,7 @@
  * @Date: 2018-12-08 21:00:26
  * Copyright © RingCentral. All rights reserved.
  */
+import Quill from 'quill';
 import { IMessageService } from '@/modules/message/interface';
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
@@ -31,14 +32,13 @@ enum ERROR_TYPES {
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
   @IMessageService private _messageService: IMessageService;
-
   private _postService: PostService;
-  @computed
-  get id() {
+  @observable error: string = '';
+
+  @computed get id() {
     return this.props.id;
   }
-  @observable
-  error: string = '';
+
   keyboardEventHandler: {
     enter: {
       key: number;
@@ -63,11 +63,11 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this.keyboardEventHandler = {
       enter: {
         key: Keys.ENTER,
-        handler: this._enterHandler(this),
+        handler: this._buildEnterHandler(),
       },
       escape: {
         key: Keys.ESCAPE,
-        handler: this._escHandler(),
+        handler: this._buildEscHandler(),
       },
     };
   }
@@ -101,30 +101,30 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   }
 
   @action
-  private _enterHandler(vm: EditMessageInputViewModel) {
-    return () => {
-      // @ts-ignore
-      const quill = (this as any).quill;
+  private _buildEnterHandler = () => {
+    const self = this;
+    return function (this: any) {
+      const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
-        vm.error = ERROR_TYPES.CONTENT_LENGTH;
+        self.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
       }
       if (content.includes(CONTENT_ILLEGAL)) {
-        vm.error = ERROR_TYPES.CONTENT_ILLEGAL;
+        self.error = ERROR_TYPES.CONTENT_ILLEGAL;
         return;
       }
-      vm.error = '';
-      if (content.trim() || vm._post.itemIds.length) {
-        vm._editPost(content, mentionIds);
+      self.error = '';
+      if (content.trim() || self._post.itemIds.length) {
+        self._editPost(content, mentionIds);
       } else {
-        vm._handleDelete();
+        self._handleDelete();
       }
-      vm.removeDraft();
+      self.removeDraft();
     };
   }
 
-  private _escHandler() {
+  private _buildEscHandler = () => {
     return this._exitEditMode;
   }
 

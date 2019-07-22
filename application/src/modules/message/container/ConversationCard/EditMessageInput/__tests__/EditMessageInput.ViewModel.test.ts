@@ -11,7 +11,6 @@ import {
   CONTENT_LENGTH,
 } from '../EditMessageInput.ViewModel';
 import _ from 'lodash';
-import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -22,17 +21,18 @@ import {
   ERROR_CODES_SERVER,
 } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
-import { container, decorate, injectable } from 'framework';
+import { jupiter} from 'framework';
 import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
-Notification.flashToast = jest.fn();
+import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 
-decorate(injectable(), MessageService);
-container.bind(IMessageService).to(MessageService);
-decorate(injectable(), MessageStore);
-container.bind(IMessageStore).to(MessageStore);
 jest.mock('@/containers/Notification');
+jest.mock('jui/pattern/MessageInput/markdown');
+
+Notification.flashToast = jest.fn();
+jupiter.registerService(IMessageService, MessageService);
+jupiter.registerService(IMessageStore, MessageStore);
 
 const mockPostEntityData = {
   id: 1,
@@ -58,7 +58,7 @@ const mockEntity = {
 };
 
 jest.mock('@/store/utils', () => ({
-  getEntity: jest.fn(name => mockEntity[name]),
+  getEntity: name => mockEntity[name],
 }));
 
 const postService = {
@@ -68,10 +68,17 @@ ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
 let editMessageInputViewModel: EditMessageInputViewModel;
 let enterHandler: () => void;
+
 beforeEach(() => {
+  ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   editMessageInputViewModel = new EditMessageInputViewModel({ id: 1 });
   enterHandler = editMessageInputViewModel.keyboardEventHandler.enter.handler;
+});
+
+afterEach(() => {
   jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('EditMessageInputViewModel', () => {
@@ -109,79 +116,72 @@ describe('EditMessageInputViewModel', () => {
       return that;
     };
 
+    const element = {
+      quill: {
+        getText: jest.fn(),
+        getContents: jest.fn(),
+      },
+    }
+
     it('should edit post success', () => {
-      const markdownFromDeltaRes = {
-        content: 'text',
+      markdownFromDelta.mockReturnValue({
+        content: 'Text',
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      handler();
+      });
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
       expect(postService.editPost).toBeCalled();
     });
+
     it('should edit post failure when content and itemIds is empty', () => {
-      const markdownFromDeltaRes = {
+      markdownFromDelta.mockReturnValue({
         content: '',
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      handler();
+      });
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
       expect(postService.editPost).not.toBeCalled();
     });
+
     it('should edit post failure when content is illegal', () => {
-      const markdownFromDeltaRes = {
+      markdownFromDelta.mockReturnValue({
         content: CONTENT_ILLEGAL,
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      handler();
+      });
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_ILLEGAL);
       expect(postService.editPost).not.toBeCalled();
     });
+
     it('should edit post failure when content is over length', () => {
-      const markdownFromDeltaRes = {
+      markdownFromDelta.mockReturnValue({
         content: _.pad('test', CONTENT_LENGTH + 1),
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      handler();
+      });
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
       expect(editMessageInputViewModel.error).toBe(ERROR_TYPES.CONTENT_LENGTH);
       expect(postService.editPost).not.toBeCalled();
     });
-    it('should edit post failure when service error', () => {
-      postService.editPost = jest
-        .fn()
-        .mockRejectedValueOnce(new Error('error'));
-      const content = 'text';
-      const that = mockThis(content);
-      const handler = enterHandler.bind(that);
-      const result = handler();
-      expect(result).toBeUndefined();
-    });
-    it('Failed to edit post due to network disconnection. [JPT-1824]', async () => {
-      postService.editPost = jest.fn().mockImplementationOnce(() => {
-        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
-      });
 
-      const markdownFromDeltaRes = {
+    it('should edit post failure when service error', () => {
+      markdownFromDelta.mockReturnValue({
         content: 'text',
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      await handler();
+      });
+      postService.editPost.mockRejectedValueOnce(new Error('error'));
+      const result = editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
+      expect(result).toBeUndefined();
+    });
+
+    it('Failed to edit post due to network disconnection. [JPT-1824]',  () => {
+      postService.editPost.mockImplementationOnce(() => {
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
+      });
+      markdownFromDelta.mockReturnValue({
+        content: 'text',
+        mentionsIds: [],
+      });
+
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
+
       expect(postService.editPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -189,20 +189,17 @@ describe('EditMessageInputViewModel', () => {
         }),
       );
     });
+
     it('Failed to edit post due to unexpected backend issue. [JPT-1823]', async () => {
-      postService.editPost = jest.fn().mockImplementationOnce(() => {
+      postService.editPost.mockImplementationOnce(() => {
         throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
       });
-
-      const markdownFromDeltaRes = {
+      markdownFromDelta.mockReturnValue({
         content: 'text',
         mentionsIds: [],
-      };
-      const that = mockThis(markdownFromDeltaRes);
-      // @ts-ignore
-      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
-      const handler = enterHandler.bind(that);
-      await handler();
+      });
+      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
+      
       expect(postService.editPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -213,10 +210,10 @@ describe('EditMessageInputViewModel', () => {
   });
 
   describe('_escHandler()', () => {
-    it('should call _exitEditMode', () => {
-      editMessageInputViewModel._exitEditMode = jest.fn();
-      editMessageInputViewModel._escHandler()();
-      expect(editMessageInputViewModel._exitEditMode).toBeCalled();
+    it('should removeDraft', () => {
+      jest.spyOn(editMessageInputViewModel, 'removeDraft');
+      editMessageInputViewModel.keyboardEventHandler.escape.handler();
+      expect(editMessageInputViewModel.removeDraft).toBeCalled();
     });
   });
 
