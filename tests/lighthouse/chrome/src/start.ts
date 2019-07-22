@@ -99,7 +99,11 @@ const logger = LogUtils.getLogger(__filename);
     if (!skipRun) {
       await DashboardService.buildReport();
       // generate report index.html
-      await FileService.generateReportIndex();
+      try {
+        await FileService.generateReportIndex();
+      } catch (err) {
+        logger.error(err);
+      }
     }
 
     // release resources
