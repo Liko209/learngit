@@ -13,7 +13,6 @@ import {
   RuiFormControl,
   RuiFormLabel,
 } from '../../Forms';
-import { alignCenterDecorator } from '../../../storybook/decorators';
 
 storiesOf('CheckBox', module)
   // .addDecorator(alignCenterDecorator)
