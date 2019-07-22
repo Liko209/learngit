@@ -100,4 +100,4 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
   }
 }
 
-export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem };
+export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem, StyledMuiListItemIcon };

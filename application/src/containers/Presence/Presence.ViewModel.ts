@@ -17,14 +17,6 @@ import PersonModel from '@/store/models/Person';
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {
   @computed
-  get size() {
-    return this.props.size;
-  }
-  @computed
-  get borderSize() {
-    return this.props.borderSize;
-  }
-  @computed
   get presence() {
     if (this.props.uid !== 0) {
       const person = getEntity<Person, PersonModel>(
