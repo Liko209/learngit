@@ -59,11 +59,11 @@ type JuiTeamSettingSubSectionListItemProps = ListItemProps & {
 const JuiTeamSettingSubSectionListItem = React.memo(
   ({ label, children, ...rest }: JuiTeamSettingSubSectionListItemProps) => (
     // @ts-ignore
-    <StyledListItem dense={true} {...rest}>
+    <StyledListItem dense {...rest}>
       <StyledListItemText>{label}</StyledListItemText>
       <StyledListItemSecondaryAction>{children}</StyledListItemSecondaryAction>
     </StyledListItem>
-  ),
+  )
 );
 
 export {
@@ -72,5 +72,5 @@ export {
   JuiTeamSettingSubSectionList,
   JuiTeamSettingSubSectionListProps,
   JuiTeamSettingSubSectionListItem,
-  JuiTeamSettingSubSectionListItemProps,
+  JuiTeamSettingSubSectionListItemProps
 };
