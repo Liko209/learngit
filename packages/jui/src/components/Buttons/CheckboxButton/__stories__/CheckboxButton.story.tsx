@@ -26,18 +26,17 @@ function getKnobs() {
     'size',
     {
       small: 'small',
-      medium: 'medium',
-      large: 'large',
+      medium: 'medium'
     },
-    'large',
+    'medium'
   );
   const color = select<JuiCheckboxButtonProps['color']>(
     'color',
     {
       primary: 'primary',
-      secondary: 'secondary',
+      secondary: 'secondary'
     },
-    'primary',
+    'primary'
   );
   const disabled = boolean('disabled', false);
   const awake = boolean('awake', true);
@@ -50,7 +49,7 @@ function getKnobs() {
     disabled,
     awake,
     invisible,
-    checked,
+    checked
   };
 }
 
@@ -61,18 +60,18 @@ storiesOf('Components/CheckboxButton', module)
     return (
       <Wrapper>
         <JuiCheckboxButton
-          className='checkboxButtonWrapper'
+          className="checkboxButtonWrapper"
           icon={starBorder}
           checkedIcon={star}
-          tooltipTitle='like'
+          tooltipTitle="like"
           checked
           {...rest}
         />
         <JuiCheckboxButton
-          className='checkboxButtonWrapper'
+          className="checkboxButtonWrapper"
           icon={unlock}
           checkedIcon={lock}
-          tooltipTitle='lock'
+          tooltipTitle="lock"
           {...rest}
         />
       </Wrapper>

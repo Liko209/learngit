@@ -18,9 +18,9 @@ type CheckboxButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium';
   color?: string;
-} & Omit<CheckboxProps, 'color'>;
+} & Omit<CheckboxProps, 'color' | 'size'>;
 
 type JuiCheckboxButtonProps = CheckboxButtonProps & {
   iconName: string;
@@ -30,9 +30,8 @@ type JuiCheckboxButtonProps = CheckboxButtonProps & {
 };
 
 const iconSizes = {
-  large: 6,
   medium: 5,
-  small: 4,
+  small: 4
 };
 
 const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`
@@ -46,7 +45,7 @@ const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`
   }
 `;
 const touchRippleClasses = {
-  rippleVisible: 'rippleVisible',
+  rippleVisible: 'rippleVisible'
 };
 
 const StyledIcon = styled(JuiIconography)``;
@@ -72,37 +71,37 @@ const WrappedMuiCheckboxButton = ({
   />
 );
 const StyledCheckboxButton = styled<
-CheckboxButtonProps & {
-  colorScope: keyof Palette;
-  colorName: string;
-}
+  CheckboxButtonProps & {
+    colorScope: keyof Palette;
+    colorName: string;
+  }
 >(WrappedMuiCheckboxButton)`
   && {
     padding: 0;
-    width: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
-    height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
+    width: ${({ size = 'medium', theme }) =>
+      width(iconSizes[size] * 2)({ theme })};
+    height: ${({ size = 'medium', theme }) =>
+      width(iconSizes[size] * 2)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
-    color: ${({
-    colorScope, colorName, theme, checked,
-  }) => (checked ? palette(colorScope, colorName)({ theme }) : 'grey')};
-    font-size: ${({ size = 'medium', theme }) => width(iconSizes[size])({ theme })};
+    color: ${({ colorScope, colorName, theme, checked }) =>
+      checked ? palette(colorScope, colorName)({ theme }) : 'grey'};
+    font-size: ${({ size = 'medium', theme }) =>
+      width(iconSizes[size])({ theme })};
     &:hover {
-      background-color: ${({
-    theme, checked, colorScope, colorName,
-  }) => (checked
-    ? tinycolor(palette(colorScope, colorName)({ theme }))
-      .setAlpha(theme.palette.action.hoverOpacity)
-      .toRgbString()
-    : tinycolor(grey('500')({ theme }))
-      .setAlpha(theme.palette.action.hoverOpacity)
-      .toRgbString())};
+      background-color: ${({ theme, checked, colorScope, colorName }) =>
+        checked
+          ? tinycolor(palette(colorScope, colorName)({ theme }))
+              .setAlpha(theme.palette.action.hoverOpacity)
+              .toRgbString()
+          : tinycolor(grey('500')({ theme }))
+              .setAlpha(theme.palette.action.hoverOpacity)
+              .toRgbString()};
     }
     &:active {
-      color: ${({
-    theme, colorScope, colorName, checked,
-  }) => (checked
-    ? palette(colorScope, colorName)({ theme })
-    : grey('500')({ theme }))};
+      color: ${({ theme, colorScope, colorName, checked }) =>
+        checked
+          ? palette(colorScope, colorName)({ theme })
+          : grey('500')({ theme })};
     }
 
     &.disabled {
@@ -126,8 +125,10 @@ CheckboxButtonProps & {
 // Tooltip does not work on disabled CheckboxButton without this: https://github.com/mui-org/material-ui/issues/8416
 const WrapperForTooltip = styled('div')<{ size: CheckboxButtonProps['size'] }>`
   display: inline-block;
-  width: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
-  height: ${({ size = 'medium', theme }) => width(iconSizes[size] * 2)({ theme })};
+  width: ${({ size = 'medium', theme }) =>
+    width(iconSizes[size] * 2)({ theme })};
+  height: ${({ size = 'medium', theme }) =>
+    width(iconSizes[size] * 2)({ theme })};
   font-size: 0;
 `;
 
@@ -138,20 +139,20 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
     invisible: false,
     tooltipTitle: '',
     iconName: 'check_box_outline_blank',
-    checkedIconName: 'check_box',
+    checkedIconName: 'check_box'
   };
   static dependencies = [MuiCheckbox, JuiIconography, RuiTooltip];
   state = {
-    checked: false,
+    checked: false
   };
 
   changeHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean,
+    checked: boolean
   ) => {
     this.setState({ checked });
     this.props.onChange && this.props.onChange(event, checked);
-  }
+  };
 
   render() {
     const {
@@ -191,7 +192,8 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
             colorScope={colorScope}
             colorName={colorName}
             checkedIcon={
-              <StyledIcon symbol={checkedIcon}>{checkedIconName}</StyledIcon>}
+              <StyledIcon symbol={checkedIcon}>{checkedIconName}</StyledIcon>
+            }
             size={size}
             {...rest}
           />

@@ -8,11 +8,15 @@ import styled from '../../foundation/styled-components';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import { spacing, height } from '../../foundation/utils/styles';
 
+type MenuItemPropsFixed = MenuItemProps & {
+  button?: boolean;
+};
+
 type TJuiSearchItemProps = {
   children: React.ReactNode;
-} & MenuItemProps;
+} & MenuItemPropsFixed;
 
-const StyledMenuItem = styled(MenuItem)`
+const StyledMenuItem = styled<MenuItemPropsFixed>(MenuItem)`
   && {
     padding: 0 ${spacing(4)};
     height: ${height(11)};
@@ -29,7 +33,7 @@ const JuiSearchItem: React.SFC<TJuiSearchItemProps> = memo(
   (props: TJuiSearchItemProps) => {
     const { children, innerRef, ...rest } = props;
     return <StyledMenuItem {...rest}>{children}</StyledMenuItem>;
-  },
+  }
 );
 
 export { JuiSearchItem };
