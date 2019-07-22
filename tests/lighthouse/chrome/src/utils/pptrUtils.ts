@@ -84,7 +84,7 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;
@@ -107,7 +107,7 @@ class PptrUtils {
     selector: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;
@@ -133,7 +133,7 @@ class PptrUtils {
     xpath: string,
     options = {}
   ): Promise<boolean> {
-    let opt = Object.assign({ visible: true, timeout: 30000 }, options);
+    let opt = Object.assign({ visible: true, timeout: 10000 }, options);
 
     let cnt = MAX_TRY_COUNT;
     opt["timeout"] = opt["timeout"] / cnt;

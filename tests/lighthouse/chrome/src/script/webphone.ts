@@ -36,7 +36,7 @@ const getSession = async (index) => {
 
 (async () => {
 
-  const readCount = 0, unreadCount = 400, toVoiceMail = true;
+  const readCount = 0, unreadCount = 400000, toVoiceMail = true;
 
   const browser = await PptrUtils.launch();
 
