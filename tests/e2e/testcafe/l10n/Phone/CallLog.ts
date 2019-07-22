@@ -4,9 +4,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ensuredOneCallLog } from '../../fixtures/PhoneTab/CallHistory/utils';
 import { WebphoneSession } from 'webphone-client';
-import { IGroup } from '../../v2/models';
 
 fixture('Phone/CallLog')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -28,7 +26,7 @@ fixture('Phone/CallLog')
     const telephoneDialog = app.homePage.telephonyDialog;
     const deleteAllCallDialog = app.homePage.deleteAllCalllDialog;
 
-    await h(t).withLog('When I click Phone entry of leftPanel and click call history entry', async () => {
+    await h(t).withLog('And I click Phone entry of leftPanel and click call history entry', async () => {
       await app.homePage.leftPanel.phoneEntry.enter();
       await app.homePage.phoneTab.callHistoryEntry.enter();
       await callHistoryPage.ensureLoaded();
@@ -52,21 +50,20 @@ fixture('Phone/CallLog')
     const telephonyDialog = app.homePage.telephonyDialog;
 
      // Inbound call
-
-    await h(t).withLog(`Given another user login webphone:  ${otherUser.company.number}#${otherUser.extension}`, async () => {
+    await h(t).withLog(`When another user login webphone:  ${otherUser.company.number}#${otherUser.extension}`, async () => {
       callerSession = await h(t).newWebphoneSession(otherUser);
     });
 
-    await h(t).withLog('When anotherUser make call to this loginUser', async () => {
+    await h(t).withLog('And anotherUser make call to this loginUser', async () => {
       await callerSession.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     });
 
-    await h(t).withLog('Then loginUser answer the call', async () => {
+    await h(t).withLog('And loginUser answer the call', async () => {
       await telephonyDialog.ensureLoaded();
       await telephonyDialog.clickAnswerButton();
     });
 
-    await h(t).withLog(`And webphone session status should be 'accepted'`, async () => {
+    await h(t).withLog(`Then webphone session status should be 'accepted'`, async () => {
       await callerSession.waitForStatus('accepted');
     });
 
@@ -82,8 +79,9 @@ fixture('Phone/CallLog')
     await h(t).withLog('And anotherUser webphone session status is "terminated"', async () => {
       await callerSession.waitForStatus('terminated');
     });
+
     // Outbound call
-    await h(t).withLog('When I login webphone with {number}#{extension}', async () => {
+    await h(t).withLog(`When I login webphone with ${loginUser.company.number}#${loginUser.extension}`, async () => {
       callerSession = await h(t).newWebphoneSession(loginUser);
     });
 
@@ -91,38 +89,33 @@ fixture('Phone/CallLog')
       await callerSession.makeCall(`${otherUser.company.number}#${otherUser.extension}`);
     });
 
-    await h(t).withLog('And caller wait {time} seconds and hangup the call', async () => {
+    await h(t).withLog('And caller wait 30s and hangup the call', async () => {
       await t.wait(3e4);
       await callerSession.hangup();
       await callerSession.waitForStatus('terminated');
     });
 
     // Missed call
-    await h(t).withLog('When I login webphone with {number}#{extension}', async () => {
+    await h(t).withLog(`When I login webphone with ${otherUser.company.number}#${otherUser.extension}`, async () => {
       callerSession = await h(t).newWebphoneSession(otherUser);
     });
 
-    await h(t).withLog('and caller session makeCall to callee', async () => {
+    await h(t).withLog('And caller session makeCall to callee', async () => {
       await callerSession.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
     });
 
-    await h(t).withLog('and caller wait {time} seconds and hangup the call', async () => {
+    await h(t).withLog('And caller wait 30s seconds and hangup the call', async () => {
       await t.wait(3e4);
       await callerSession.hangup();
       await callerSession.waitForStatus('terminated');
     });
 
-    await h(t).withLog('And refresh page', async () => {
-      await t.wait(5e3);
-      await h(t).reload();
-      await app.homePage.ensureLoaded();
-    });
-
     await h(t).withLog('And refresh the page' ,async()=>{
+      await t.wait(5e3);
       await h(t).reload();
       await callHistoryPage.ensureLoaded();
     })
 
-    await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_1111' });
+    await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Phone_CallLogs' });
 
 });
