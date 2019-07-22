@@ -13,8 +13,6 @@ type PresenceProps = {
 
 type PresenceViewProps = {
   presence: PRESENCE;
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
-  borderSize?: 'small' | 'medium' | 'large' | 'xlarge';
 };
 
 export { PresenceProps, PresenceViewProps };

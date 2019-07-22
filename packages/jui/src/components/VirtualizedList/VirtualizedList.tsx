@@ -195,7 +195,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     let result = false;
     if (ref.current) {
       result =
-        height >=
+        ref.current.clientHeight >=
         rowManager.getRowOffsetTop(childrenCount) -
           Math.ceil(ref.current.scrollTop);
     }

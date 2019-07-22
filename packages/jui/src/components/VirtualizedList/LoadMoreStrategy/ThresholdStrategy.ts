@@ -3,9 +3,14 @@
  * @Date: 2019-04-01 13:14:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILoadMoreStrategy, LoadMoreStrategyParams, LoadMoreInfo } from './ILoadMoreStrategy';
+import {
+  ILoadMoreStrategy,
+  LoadMoreStrategyParams,
+  LoadMoreInfo
+} from './ILoadMoreStrategy';
 
 import { UndefinedAble } from '../types';
+import { DIRECTION } from 'jui/components/Lists';
 
 const PRELOAD_COUNT_LIMIT = 50;
 const DEFAULT_PAGE_SIZE = 20;
@@ -18,12 +23,12 @@ class ThresholdStrategy implements ILoadMoreStrategy {
   constructor(
     {
       threshold,
-      minBatchCount,
+      minBatchCount
     }: {
       threshold: number;
       minBatchCount: number;
     },
-    preloadInfo?: LoadMoreInfo,
+    preloadInfo?: LoadMoreInfo
   ) {
     this._threshold = threshold;
     this._minBatchCount = minBatchCount;
@@ -31,7 +36,10 @@ class ThresholdStrategy implements ILoadMoreStrategy {
   }
 
   getLoadMoreInfo({
-    indexConstraint: { minIndex, maxIndex }, visibleRange: { startIndex, stopIndex }, prevVisibleRange, delta
+    indexConstraint: { minIndex, maxIndex },
+    visibleRange: { startIndex, stopIndex },
+    prevVisibleRange,
+    delta
   }: Readonly<LoadMoreStrategyParams>): LoadMoreInfo {
     const deltaY = delta ? delta.y : 0;
 
@@ -42,8 +50,8 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     const isUpwards = Math.floor(startIndexDiff) < 0 || deltaY < 0;
     if (unloadCountUp >= this._minBatchCount && isUpwards) {
       return {
-        direction: 'up',
-        count: unloadCountUp,
+        direction: DIRECTION.UP,
+        count: unloadCountUp
       };
     }
 
@@ -54,8 +62,8 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     const isDownwards = Math.floor(stopIndexDiff) > 0 || deltaY > 0;
     if (unloadCountDown >= this._minBatchCount && isDownwards) {
       return {
-        direction: 'down',
-        count: unloadCountDown,
+        direction: DIRECTION.DOWN,
+        count: unloadCountDown
       };
     }
 

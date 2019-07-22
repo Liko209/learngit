@@ -2,20 +2,28 @@
 
 exports[`Storyshots Components/Buttons Lozenge Button: Components/Buttons Lozenge Button 1`] = `
 .c2 {
-  border: 4px solid transparent;
-  border-bottom-color: white;
-  top: -2px;
-  position: relative;
-  margin: 4px 4px 4px 8px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
   display: inline-block;
-  vertical-align: middle;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 12px;
 }
 
 .c0 {
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
+  line-height: 16px;
   padding: 8px 20px;
   height: 32px;
   line-height: 0;
@@ -36,14 +44,18 @@ exports[`Storyshots Components/Buttons Lozenge Button: Components/Buttons Lozeng
   pointer-events: none;
 }
 
-.c0.lozengeButtonLoading .c3 {
+.c0.lozengeButtonLoading .c4 {
   margin-left: 4px;
+}
+
+.c0 .c1 {
+  margin-left: 8px;
 }
 
 .c0.lozengeButtonLoading .c1,
 .c0.lozengeButtonWithArrow .c1,
-.c0.lozengeButtonLoading .c3,
-.c0.lozengeButtonWithArrow .c3,
+.c0.lozengeButtonLoading .c4,
+.c0.lozengeButtonWithArrow .c4,
 .c0.lozengeButtonLoading span,
 .c0.lozengeButtonWithArrow span {
   vertical-align: middle;
@@ -63,9 +75,19 @@ exports[`Storyshots Components/Buttons Lozenge Button: Components/Buttons Lozeng
       2 new messages
     </span>
     <span
-      className="c1 c2"
-      direction="up"
-    />
+      className="c1  icon c2"
+    >
+      <svg
+        className="c3"
+        role="img"
+        size="extraSmall"
+      >
+        <use
+          href="#undefined"
+          xlinkHref="#undefined"
+        />
+      </svg>
+    </span>
   </button>
 </div>
 `;

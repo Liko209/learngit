@@ -1,6 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect 1`] = `
+.c5 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c5.c5 {
+  padding: 0;
+}
+
+.c5.c5 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c5.c5 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c3 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -72,40 +106,6 @@ exports[`Storyshots Components/Selects LineSelect: Components/Selects LineSelect
 
 .c1 .underline:after {
   border-bottom-color: #0684bd;
-}
-
-.c5 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c5.c5 {
-  padding: 0;
-}
-
-.c5.c5 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c5.c5 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
 }
 
 .c0.c0 {

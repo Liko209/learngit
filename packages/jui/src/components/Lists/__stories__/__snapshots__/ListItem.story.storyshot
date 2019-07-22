@@ -1,6 +1,63 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and controls: Components/Lists/ListItem Single-line item with Avatar and controls 1`] = `
+.c0.c0 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 16px;
+}
+
+.c1 {
+  margin-right: 8px;
+}
+
+.c4.c4 {
+  margin: 0px 8px;
+}
+
+.c4.c4 a,
+.c4.c4 button {
+  margin-right: 0;
+}
+
+.c3 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c3.c3 {
+  padding: 0;
+}
+
+.c3.c3 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c3.c3 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c2.c2 {
   width: 24px;
   height: 24px;
@@ -106,63 +163,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
   transform: translateX(8px);
 }
 
-.c0.c0 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 16px;
-}
-
-.c1 {
-  margin-right: 8px;
-}
-
-.c4.c4 {
-  margin: 0px 8px;
-}
-
-.c4.c4 a,
-.c4.c4 button {
-  margin-right: 0;
-}
-
-.c3 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c3.c3 {
-  padding: 0;
-}
-
-.c3.c3 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c3.c3 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
 <ul
   className="MuiList-root MuiList-padding "
 >
@@ -247,6 +247,71 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 `;
 
 exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Components/Lists/ListItem Single-line item with icon 1`] = `
+.c0.c0 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 16px;
+}
+
+.c1.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+  background-color: #f5f6fb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.c6 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c6.c6 {
+  padding: 0;
+}
+
+.c6.c6 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c6.c6 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -374,71 +439,6 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
   color: rgba(0,0,0,0.12);
 }
 
-.c0.c0 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 16px;
-}
-
-.c1.c1 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-right: 8px;
-  background-color: #f5f6fb;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.c6 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c6.c6 {
-  padding: 0;
-}
-
-.c6.c6 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c6.c6 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
 <ul
   className="MuiList-root MuiList-padding "
 >
@@ -520,6 +520,80 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 `;
 
 exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/ListItem Two-line item 1`] = `
+.c0.c0 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 8px;
+}
+
+.c1.c1 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 8px;
+  background-color: #f5f6fb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.c5.c5 {
+  margin: 0px 8px;
+}
+
+.c5.c5 a,
+.c5.c5 button {
+  margin-right: 0;
+}
+
+.c4 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c4.c4 {
+  padding: 0;
+}
+
+.c4.c4 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c4.c4 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c2 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -656,80 +730,6 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 
 .c12.c12.c12.c12.disabled .c7 {
   color: rgba(0,0,0,0.12);
-}
-
-.c0.c0 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 8px;
-}
-
-.c1.c1 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-right: 8px;
-  background-color: #f5f6fb;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.c5.c5 {
-  margin: 0px 8px;
-}
-
-.c5.c5 a,
-.c5.c5 button {
-  margin-right: 0;
-}
-
-.c4 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c4.c4 {
-  padding: 0;
-}
-
-.c4.c4 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c4.c4 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
 }
 
 <ul

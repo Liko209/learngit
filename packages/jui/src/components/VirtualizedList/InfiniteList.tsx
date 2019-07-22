@@ -22,7 +22,7 @@ type JuiInfiniteListProps = {
   loadMoreStrategy?: ILoadMoreStrategy;
   hasMore: (direction: DIRECTION) => boolean;
   loadInitialData: () => Promise<void>;
-  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  loadMore: (direction: DIRECTION, count: number) => Promise<void>;
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
@@ -129,7 +129,7 @@ const JuiInfiniteList = (
         }
 
         if (children.length === 0) {
-          const isEmpty = !hasMore('up') && !hasMore('down');
+          const isEmpty = !hasMore(DIRECTION.UP) && !hasMore(DIRECTION.DOWN);
           if (isEmpty) {
             return noRowsRenderer;
           }

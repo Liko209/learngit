@@ -2,7 +2,25 @@
 
 exports[`Storyshots Pattern ConversationCard: Pattern ConversationCard 1`] = `
 Array [
-  .c2.c2 {
+  .c16 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c17 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c2.c2 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -36,24 +54,6 @@ Array [
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c16 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-.c17 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 24px;
 }
 
 .c18.c18 .c15,
@@ -510,7 +510,25 @@ Array [
       </div>
     </div>
   </div>,
-  .c2.c2 {
+  .c16 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c17 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c2.c2 {
   width: 32px;
   height: 32px;
   font-size: 1rem;
@@ -544,24 +562,6 @@ Array [
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c16 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-.c17 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 24px;
 }
 
 .c18.c18 .c15,

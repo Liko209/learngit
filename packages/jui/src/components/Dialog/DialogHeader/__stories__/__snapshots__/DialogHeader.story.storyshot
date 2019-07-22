@@ -772,6 +772,24 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and information: Components/Dialog/DialogHeader Title with avatar and information 1`] = `
+.c11 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c12 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
 .c2.c2 {
   width: 32px;
   height: 32px;
@@ -806,24 +824,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-}
-
-.c11 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-.c12 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 24px;
 }
 
 .c8 {

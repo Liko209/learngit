@@ -1,6 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Lists List Controls: Components/Lists List Controls 1`] = `
+.c0.c0 {
+  padding: 8px;
+  width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  padding-left: 8px;
+}
+
+.c2.c2 {
+  margin: 0px 8px;
+}
+
+.c2.c2 a,
+.c2.c2 button {
+  margin-right: 0;
+}
+
+.c1 {
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+
+.c1.c1 {
+  padding: 0;
+}
+
+.c1.c1 .list-item-primary {
+  color: #212121;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c1.c1 .list-item-secondary {
+  color: #757575;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
 .c5 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -143,59 +196,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c0.c0 {
-  padding: 8px;
-  width: 100%;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  padding-left: 8px;
-}
-
-.c2.c2 {
-  margin: 0px 8px;
-}
-
-.c2.c2 a,
-.c2.c2 button {
-  margin-right: 0;
-}
-
-.c1 {
-  -webkit-flex: 1 1 auto;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-}
-
-.c1.c1 {
-  padding: 0;
-}
-
-.c1.c1 .list-item-primary {
-  color: #212121;
-  font-size: 0.875rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-}
-
-.c1.c1 .list-item-secondary {
-  color: #757575;
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
 }
 
 <div>
@@ -519,28 +519,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
 `;
 
 exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1`] = `
-.c2 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-.c3 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 24px;
-}
-
-.c5.c5 {
-  background-color: #e0e0e0;
-}
-
 .c0.c0 {
   padding: 8px;
   width: 100%;
@@ -604,6 +582,28 @@ exports[`Storyshots Components/Lists Simple List: Components/Lists Simple List 1
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
+}
+
+.c2 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c3 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+.c5.c5 {
+  background-color: #e0e0e0;
 }
 
 <div>

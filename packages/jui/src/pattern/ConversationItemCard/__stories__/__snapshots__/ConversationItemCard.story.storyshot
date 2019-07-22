@@ -791,10 +791,10 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 }
 
 .c17 {
-  font-size: 0.875rem;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 20px;
+  line-height: 16px;
   padding: 8px 20px;
   height: 32px;
   line-height: 0;
@@ -817,6 +817,10 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c17.lozengeButtonLoading .c28 {
   margin-left: 4px;
+}
+
+.c17 .c29 {
+  margin-left: 8px;
 }
 
 .c17.lozengeButtonLoading .c29,
