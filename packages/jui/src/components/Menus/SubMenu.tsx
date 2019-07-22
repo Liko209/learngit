@@ -24,7 +24,10 @@ const StyledSubMenuItem = styled(StyledMenuItem)`
   }
 `;
 
-const StyledTitle = styled.div``;
+const StyledTitle = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   const [anchorEl, setAnchorEl] = useState<EventTarget & Element | null>(null);
