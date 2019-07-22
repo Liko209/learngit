@@ -3,25 +3,24 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
- useState, memo, forwardRef, useRef, useCallback
-} from 'react';
+import React, { useState, memo, forwardRef, useRef, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
   JuiVirtualizedList,
-  JuiVirtualizedListHandles,
+  JuiVirtualizedListHandles
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange } from './types';
 import { useMountState } from './hooks';
+import { DIRECTION } from '../Lists';
 
 type JuiInfiniteListProps = {
   height?: number;
   minRowHeight: number;
   overscan?: number;
   loadMoreStrategy?: ILoadMoreStrategy;
-  hasMore: (direction: 'up' | 'down') => boolean;
+  hasMore: (direction: DIRECTION) => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
   initialScrollToIndex?: number;
@@ -47,7 +46,7 @@ const JuiInfiniteList = (
     overscan,
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
-      minBatchCount: 10,
+      minBatchCount: 10
     }),
     hasMore,
     loadInitialData,
@@ -65,9 +64,9 @@ const JuiInfiniteList = (
     children,
     contentStyle,
     stickToLastPosition,
-    onBottomStatusChange,
+    onBottomStatusChange
   }: JuiInfiniteListProps,
-  forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
+  forwardRef: React.RefObject<JuiVirtualizedListHandles> | null
 ) => {
   let ref = useRef<JuiVirtualizedListHandles>(null);
   if (forwardRef) {
@@ -84,7 +83,7 @@ const JuiInfiniteList = (
       await loadMore(direction, count);
       isMountedRef.current && setStickToBottom(true);
     },
-    [loadMore, setStickToBottom],
+    [loadMore, setStickToBottom]
   );
 
   if (!height) {
@@ -103,7 +102,7 @@ const JuiInfiniteList = (
         loadingUp,
         loadingDown,
         loadingInitialFailed,
-        onScroll: handleScroll,
+        onScroll: handleScroll
       }) => {
         const _handleScroll = (delta?: { x: number; y: number; z: number }) => {
           if (ref.current) {
@@ -114,9 +113,9 @@ const JuiInfiniteList = (
               prevVisibleRange,
               {
                 minIndex: 0,
-                maxIndex: children.length - 1,
+                maxIndex: children.length - 1
               },
-              delta,
+              delta
             );
           }
         };
