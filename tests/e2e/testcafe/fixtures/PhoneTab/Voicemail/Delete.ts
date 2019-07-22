@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-06-06 09:53:59
- * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2019-06-26 09:12:52
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-07-17 13:29:59
  */
 
 import { BrandTire, SITE_URL } from '../../../config';
@@ -10,8 +10,6 @@ import { setupCase, teardownCase } from '../../../init';
 import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
-import { WebphoneSession } from 'webphone-client';
-
 
 import * as assert from 'assert'
 import { ensuredOneVoicemail } from './utils';
@@ -19,7 +17,6 @@ import { ensuredOneVoicemail } from './utils';
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
-
 
 test.meta(<ITestMeta>{
   priority: ['P1'],

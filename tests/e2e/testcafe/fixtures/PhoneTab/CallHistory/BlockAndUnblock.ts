@@ -12,7 +12,7 @@ import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
 import * as assert from 'assert';
-import { addOneCallLogFromGuest } from './utils';
+import { addOneMissCallLogFromAnotherUser } from './utils';
 
 fixture('call history')
   .beforeEach(setupCase(BrandTire.RC_WITH_GUESS_DID))
@@ -69,7 +69,7 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton();
   }
 
-  await addOneCallLogFromGuest(t, caller, callee, app);
+  await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 
   const callhistoryItem = CallHistoryPage.callHistoryItemByNth(0);
   const callhistoryId = await callhistoryItem.id;
