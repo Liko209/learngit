@@ -1,0 +1,968 @@
+{
+  "common": {
+    "button": {
+      "ariaToggleOn": "Ein, zum Ausschalten anklicken",
+      "ariaToggleOff": "Aus, zum Einschalten anklicken",
+      "tryAgain": "Wiederholen"
+    },
+    "dialog": {
+      "OK": "OK",
+      "cancel": "Abbrechen",
+      "update": "Aktualisieren",
+      "create": "Erstellen",
+      "done": "Fertig",
+      "save": "Speichern",
+      "send": "Senden",
+      "delete": "Löschen",
+      "close": "Schließen",
+      "deleteAll": "Alle löschen"
+    },
+    "prompt": {
+      "NoInternetConnection": "Keine Internetverbindung",
+      "Network Error": "Netzwerk getrennt. Bitte versuchen Sie es erneut, wenn das Netzwerk wieder funktioniert.",
+      "tryAgain": "Versuchen Sie es erneut.",
+      "tryAgainLater": "Versuchen Sie es später erneut.",
+      "thenTryAgain": "versuchen Sie es dann erneut.",
+      "loadError": "Hoppla Etwas ist schief gelaufen, bitte versuchen Sie es erneut."
+    },
+    "preposition": {
+      "in": "in"
+    },
+    "time": {
+      "at": "um",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "tomorrow": "Morgen",
+      "Monday": "Montag",
+      "Tuesday": "Dienstag",
+      "Wednesday": "Mittwoch",
+      "Thursday": "Donnerstag",
+      "Friday": "Freitag",
+      "Saturday": "Samstag",
+      "Sunday": "Sonntag",
+      "hour": "Stunde",
+      "min": "Min.",
+      "sec": "Sek."
+    },
+    "verb": {
+      "like": "Gefällt mir",
+      "likes": "„Gefällt mir“"
+    },
+    "pronoun": {
+      "this": "das"
+    },
+    "conj": {
+      "and": "und"
+    },
+    "delete": "Löschen",
+    "more": "Mehr",
+    "copy": "Kopieren",
+    "remove": "Entfernen",
+    "pin": "Anheften",
+    "ariaCopy": "Dieses kopieren {{value}}",
+    "call": "Anrufen",
+    "ariaCall": " {{value}}anrufen",
+    "download": "Herunterladen",
+    "expand": "Erweitern",
+    "collapse": "Reduzieren",
+    "back": "Zurück",
+    "forward": "Vor",
+    "You": "Ihnen",
+    "Connecting": "Verbindung wird hergestellt",
+    "deactivatedUsers": "Deaktivierte Benutzer",
+    "team": "Team",
+    "play": "Wiedergabe",
+    "pause": "Anhalten",
+    "reload": "Neu laden",
+    "goToConversation": "Zum Gespräch springen"
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signOut": "Abmelden",
+    "signInFailedTitle": "Anmelden fehlgeschlagen",
+    "signInFailedContent": "Beim Anmelden ist ein Problem aufgetreten. Bitte versuchen Sie es später noch einmal."
+  },
+  "home": {
+    "menu": "Menü",
+    "search": "Suchen",
+    "showMore": "Mehr anzeigen",
+    "ClearHistory": "Verlauf löschen",
+    "RecentSearches": "Letzte Suchvorgänge",
+    "newActions": "Neue Aktionen",
+    "viewYourProfile": "Ihr Profil anzeigen",
+    "aboutRingCentral": "Über RingCentral",
+    "sendFeedback": "Feedback senden",
+    "version": "Version",
+    "lastCommit": "Letzte Übertragung",
+    "deployedTime": "Datum",
+    "allRightsReserved": "Alle Rechte vorbehalten",
+    "dialer": "Dialer",
+    "openDialer": "Den Dialer öffnen"
+  },
+  "globalSearch": {
+    "search": "Suchen",
+    "showMore": "Mehr anzeigen",
+    "ClearHistory": "Verlauf löschen",
+    "clear": "Löschen",
+    "RecentSearches": "Letzte Suchvorgänge",
+    "contentSearch": "Inhaltssuche",
+    "inThisConversation": "in diesem Gespräch",
+    "Messages": "Nachrichten",
+    "people": "Personen",
+    "groups": "Gruppen",
+    "team": "Team",
+    "postedBy": "Geschrieben von",
+    "postedIn": "Geschrieben in",
+    "postedByPlaceholder": "Name oder E-Mail",
+    "postedInPlaceholder": "Team oder Gespräch",
+    "filters": "Filter",
+    "People": "Personen",
+    "Groups": "Gruppen",
+    "Teams": "Teams",
+    "All": "Alle",
+    "Events": "Ereignisse",
+    "Files": "Dateien",
+    "Links": "Links",
+    "Notes": "Notizen",
+    "Tasks": "Aufgaben",
+    "Type": "Typ",
+    "TimePosted": "Zeit der Veröffentlichung",
+    "Anytime": "Jederzeit",
+    "ThisWeek": "Diese Woche",
+    "ThisMonth": "Diesen Monat",
+    "ThisYear": "Dieses Jahr",
+    "prompt": {
+      "contentSearchNetworkError": "Wir sind nicht in der Lage, diese Suche abzuschließen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "contentSearchServiceError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Suche abzuschließen. Versuchen Sie es später erneut."
+    },
+    "Results": "Ergebnisse ({{count}})",
+    "NoMatchesFound": "Keine Treffer gefunden",
+    "SearchForContactsAndKeywords": "Suche nach Kontakten und Schlüsselwörtern"
+  },
+  "dashboard": {
+    "Dashboard": "Dashboard"
+  },
+  "message": {
+    "showUnreads": "Ungelesene anzeigen",
+    "meGroup": "ich",
+    "mentionPosts": "Erwähnungen",
+    "bookmarkPosts": "Lesezeichen",
+    "@mentionsTitle": "@Erwähnungen",
+    "bookmarksTitle": "Lesezeichen",
+    "noMentionPosts": "Es gibt derzeit keine Beiträge, die Sie direkt @erwähnen.",
+    "noBookmarkPosts": "Sie haben noch keine Lesezeichen. Bewegen Sie den Mauszeiger über einen Beitrag und klicken Sie auf das Lesezeichen-Symbol, um ihn zu markieren und für eine spätere Referenz zu speichern.",
+    "loadingError": "Hoppla Etwas ist schief gelaufen, bitte versuchen Sie es erneut.",
+    "favoriteGroups": "Favoriten",
+    "directGroups": "Direktnachrichten",
+    "teamGroups": "Teams",
+    "messageTypeNameSMS": "Textnachricht",
+    "jumpToConversation": "Zum Gespräch springen",
+    "emoji": {
+      "i18n": {
+        "search": "Suchen",
+        "clear": "Löschen",
+        "notfound": "Kein Emoji gefunden",
+        "skintext": "Wählen Sie Ihre Standardfarbe aus",
+        "categories": {
+          "search": "Suchergebnisse",
+          "recent": "Oft benutzt",
+          "people": "Smileys und Personen",
+          "nature": "Tiere und Natur",
+          "foods": "Essen und Trinken",
+          "activity": "Aktivität",
+          "places": "Reisen und Orte",
+          "objects": "Objekte",
+          "symbols": "Symbole",
+          "flags": "Flaggen",
+          "custom": "Benutzerdefiniert"
+        },
+        "categorieslabel": "Emoji-Kategorien",
+        "skintones": {
+          "default": "Standard-Oberflächenton",
+          "light": "Heller Oberflächenton",
+          "mediumLight": "Mittelheller Oberflächenton",
+          "medium": "Mittlerer Oberflächenton",
+          "mediumDark": "Mitteldunkler Oberflächenton",
+          "dark": "Dunkler Oberflächenton"
+        }
+      },
+      "emojiTooltip": "Emoji",
+      "emojiDefaultTitle": "Wählen Sie Ihr Emoji",
+      "toggleButtonLabel": "Offen halten",
+      "emojiMatching": "Übereinstimmende Emojis"
+    },
+    "sharedItems": "gemeinsame Elemente",
+    "initialPost": {
+      "directMessageDescription": "Dies ist der Anfang Ihres direkten Nachrichtenverlaufs mit {{displayName}}",
+      "createATeam": "hat ein Team erstellt",
+      "on": "am",
+      "postInitialTitle": "Erste Schritte",
+      "shareFile": "Eine Datei freigeben",
+      "createTask": "Eine Aufgabe erstellen",
+      "integrateApps": "Apps integrieren"
+    },
+    "action": {
+      "like": "Gefällt mir",
+      "unlike": "Gefällt mir nicht",
+      "bookmark": "Lesezeichen",
+      "removeBookmark": "Lesezeichen entfernen",
+      "quote": "Zitat",
+      "pin": "Anheften",
+      "unpin": "Lösen",
+      "editPost": "Beitrag bearbeiten",
+      "deletePost": "Beitrag löschen",
+      "resendPost": "Beitrag neu senden",
+      "attachFile": "Datei anhängen",
+      "typeNewMessage": "Neue Nachricht eingeben",
+      "sendNewMessage": "Neue Nachricht senden"
+    },
+    "inputMenus": {
+      "uploadFileMenuTitle": "Dateien hochladen von",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "box": "Box",
+      "evernote": "Evernote",
+      "onedrive": "OneDrive",
+      "computer": "Computer"
+    },
+    "stream": {
+      "addedToTeam": "{{inviter}} hat {{newUser}} zum Team hinzugefügt.",
+      "changeTeamName": "{{changer}} hat den Teamnamen von {{oldValue}} in {{value}}geändert",
+      "joinTheTeam": "{{newUser}} ist dem Team beigetreten",
+      "newMessages": "neue Nachrichten",
+      "newMessagesDivider": "Neue Nachrichten"
+    },
+    "teamMembers": "Teammitglieder",
+    "suggestedPeople": "vorgeschlagene Personen",
+    "conversationDetails": "Details des Gesprächs",
+    "conversationDetailsShow": "Details anzeigen",
+    "conversationDetailsHide": "Details ausblenden",
+    "prompt": {
+      "deletePostFailedForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diesen Beitrag zu löschen. Versuchen Sie es später erneut.",
+      "deletePostFailedForNetworkIssue": "Wir sind nicht in der Lage, diesen Beitrag zu löschen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "editPostFailedForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, Änderungen an diesem Beitrag vorzunehmen. Versuchen Sie es später erneut.",
+      "editPostFailedForNetworkIssue": "Wir sind nicht in der Lage, Änderungen an diesem Beitrag vorzunehmen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "viewInPostFailedWithServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, zum Beitrag zu springen. Versuchen Sie es später erneut.",
+      "viewInPostFailedWithNetworkIssue": "Leider konnten wir nicht zum Beitrag springen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "contentLength": "Es können maximal 10.000 Zeichen gesendet werden.",
+      "contentIllegal": "Javascript nicht zulässig",
+      "deletePostTitle": "Beitrag löschen?",
+      "deleteFileTitle": "Datei löschen?",
+      "deletePostContent": "Möchten Sie diesen Beitrag wirklich löschen?",
+      "deleteFileContent": "Soll diese Datei <0>{{fileName}}</0>wirklich gelöscht werden?",
+      "SorryWeWereNotAbleToSendTheMessage": "Leider konnten wir die Nachricht nicht versenden. Versuchen Sie es erneut.",
+      "notAbleToUnlikeForNetworkIssue": "Wir sind nicht in der Lage, bei dieser Nachricht „Gefällt mir nicht“ zu markieren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToUnlikeForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, bei dieser Nachricht „Gefällt mir nicht“ zu markieren. Versuchen Sie es später erneut.",
+      "notAbleToLikeThisMessageForNetworkIssue": "Wir sind nicht in der Lage, bei dieser Nachricht „Gefällt mir“ zu markieren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToLikeThisMessageForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, bei dieser Nachricht „Gefällt mir“ zu markieren. Versuchen Sie es später erneut.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Leider konnten wir Ihr Lesezeichen aufgrund einer schlechten Netzwerkverbindung nicht entfernen. Versuchen Sie es erneut.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, Ihr Lesezeichen zu entfernen. Versuchen Sie es später erneut.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "Wir konnten diese Nachricht aufgrund einer schlechten Netzwerkverbindung nicht mit einem Lesezeichen versehen. Überprüfen Sie die Verbindung und versuchen Sie es erneut.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir konnten diese Nachricht nicht mit einem Lesezeichen versehen. Versuchen Sie es später erneut.",
+      "notAbleToUnpinForNetworkIssue": "Wir sind nicht in der Lage, diese Nachricht abzuheften. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToUnpinForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Nachricht abzuheften. Versuchen Sie es später erneut.",
+      "notAbleToPinForNetworkIssue": "Wir sind nicht in der Lage, diese Nachricht anzuheften. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToPinForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Nachricht anzuheften. Versuchen Sie es später erneut.",
+      "notAbleToLoadOlderMessagesForNetworkIssue": "Wir konnten keine älteren Nachrichten laden. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToLoadOlderMessagesForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir konnten keine älteren Nachrichten laden. Versuchen Sie es später erneut.",
+      "SorryWeWereNotAbleToLoadNewerMessages": "Leider konnten wir keine neueren Nachrichten laden. Versuchen Sie es erneut.",
+      "MessageLoadingErrorTip": "Wir konnten dieses Gespräch nicht öffnen.",
+      "MessageLoadingErrorTipForNetworkIssue": "Wir konnten dieses Gespräch nicht öffnen. Prüfen Sie die Netzwerkverbindung, ",
+      "MessageLoadingErrorTipForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Gespräch zu öffnen. ",
+      "NewMessage": "Neue Nachricht",
+      "newMessageTip": "Gespräche mit einer oder mehreren bestimmten Personen sind ideal für informelle Chats. Für Projekte, Abteilungen oder auch themenbezogene Diskussionen sollten Sie ",
+      "newMessageTipLink": "stattdessen ein Team erstellen.",
+      "NewMessageError": "Wir haben Probleme beim Erstellen dieser neuen Nachricht. Bitte versuchen Sie es später noch einmal.",
+      "disabledText": "Dieses Team ist schreibgeschützt.",
+      "changeDefaultPhoneAppTitle": "Standard-Telefonanwendung ändern",
+      "changeDefaultPhoneAppContent": "Sie sind dabei, RingCentral Phone für Ihre Standard-Telefonfunktionen zu wählen. Installieren Sie die RingCentral Phone App, bevor Sie fortfahren. Sind Sie sicher, dass Sie Ihren Standard auf RingCentral Phone ändern möchten?",
+      "editFileNameTitle": "Datei umbenennen",
+      "editFileNameInputLabel": "Dateiname",
+      "editFileNameBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, die Bearbeitung zu speichern. Versuchen Sie es später erneut.",
+      "editFileNameNetworkError": "Wir können die Bearbeitung nicht speichern. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "deleteFileBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Datei zu löschen. Versuchen Sie es später erneut.",
+      "deleteFileNetworkError": "Wir konnten diese Datei nicht löschen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut."
+    },
+    "fileAction": {
+      "deleteFile": "Datei löschen",
+      "editFileName": "Dateinamen bearbeiten",
+      "viewInPost": "Im Beitrag ansehen"
+    },
+    "Messages": "Nachrichten",
+    "message": "Nachricht",
+    "atMentionAllTeam": "Team",
+    "atMentionAllAdmin": "Administrator",
+    "markupTips": "*italics* **bold** __underline__ ~~strikethrough~~",
+    "typingIndicator": {
+      "oneTyping": "<0>{{personA}}</0> schreibt gerade…",
+      "twoTyping": "<0>{{personA}}</0> und <0>{{personB}}</0> schreiben gerade...",
+      "moreTyping": "<0>{{personA}}</0>, <0>{{personB}}</0> und weitere schreiben gerade..."
+    }
+  },
+  "item": {
+    "activity": {
+      "created a task": "haben eine Aufgabe erstellt.",
+      "assigned task": "zugewiesene Aufgabe",
+      "reassigned task": "neu zugewiesene Aufgabe",
+      "completed task": "abgeschlossene Aufgabe",
+      "completed {{count}}% of task": " {{count}}% der Aufgabe abgeschlossen.",
+      "marked task incomplete": "markierte Aufgabe nicht abgeschlossen",
+      "marked task incomplete for {{user}}": "markierte Aufgabe für {{user}}nicht abgeschlossen",
+      "completed task for {{user}}": "abgeschlossene Aufgabe für {{user}}",
+      "created a event": "hat ein Ereignis erstellt",
+      "updated a event": "hat ein Ereignis aktualisiert.",
+      "updated event": "Ereignis aktualisiert",
+      "shared a note": "hat eine Anmerkung geteilt",
+      "shared a file": "hat eine Datei geteilt",
+      "shared {{count}} file": "hat {{count}} Dateien geteilt",
+      "uploaded version {{number}}": "hat Version {{number}}hochgeladen",
+      "shared a link": "hat einen Link geteilt",
+      "shared {{count}} link": "hat {{count}} Links geteilt",
+      "shared a snippet": "hat ein Snippet geteilt",
+      "shared items": "gemeinsame Elemente",
+      "started a audio conference": "hat eine Audiokonferenz gestartet",
+      "started a video chat": "hat einen Videochat gestartet",
+      "replied": "geantwortet",
+      "via": "über"
+    },
+    "meeting": {
+      "videoCallInProgress": "Videoanruf läuft",
+      "videoCallEnded": "Videoanruf beendet",
+      "videoCallCancelled": "Videoanruf abgebrochen",
+      "videoCallDuration": "Dauer",
+      "startVideoCall": "Videoanruf startet ...",
+      "meetingUrl": "Besprechungs-URL",
+      "meetingId": "Besprechungs-ID",
+      "duration": "Dauer",
+      "help": "Hilfe",
+      "installProblems": "Probleme bei der Installation?",
+      "readThis": "Lesen Sie dies"
+    },
+    "dialInNumber": "Einwahlnummer",
+    "avatarNamesWithOthers": " und {{count}} weitere Personen",
+    "attachments": "Anhänge",
+    "assignee": "Beauftragter",
+    "due": "Fällig",
+    "section": "Abschnitt",
+    "descriptionNotes": "Beschreibung",
+    "hideEventHistory": "Ausblenden",
+    "showEventHistory": "Alte zeigen",
+    "locationTitle": "Standort",
+    "repeatingEveryDay": "jeden Tag wiederkehrend",
+    "repeatingEveryWeekday": "jeden Wochentag wiederkehrend",
+    "repeatingEveryWeek": "jede Woche wiederkehrend",
+    "repeatingEveryMonth": "jeden Monat wiederkehrend",
+    "repeatingEveryYear": "jedes Jahr wiederkehrend",
+    "forDayTimes": "für {{count}} Tage",
+    "forDayTimes_interval": "(1){for one day};",
+    "forWeekTimes": "für {{count}} Wochen",
+    "forWeekTimes_interval": "(1){for one week};",
+    "forWeekdailyTimes": "für {{count}} Wochentage",
+    "forWeekdailyTimes_interval": "(1){for one weekday};",
+    "forMonthlyTimes": "für {{count}} Monate",
+    "forMonthlyTimes_interval": "(1){for one month};",
+    "forYearlyTimes": "für {{count}} Jahre",
+    "forYearlyTimes_interval": "(1){for one year};",
+    "until": "bis",
+    "updateFiles": "Datei(en) aktualisieren?",
+    "theFollowingFilesAlreadyExist": "Die folgende(n) Datei(en) sind bereits vorhanden.",
+    "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Möchten Sie die bestehende(n) Datei(en) aktualisieren oder eine neue erstellen?",
+    "audioConferenceTitle": "Audiokonferenz",
+    "or": "oder",
+    "globalNumber": "Globale Nummer",
+    "hostCode": "Hostzugang",
+    "participantCode": "Teilnehmerzugang",
+    "downloadToSeeTheRestLine": "Herunterladen, um den Rest {{restLines}} Zeile zu sehen.",
+    "downloadToSeeTheRestLine_plural": "Herunterladen, um den Rest {{restLines}} Zeilen zu sehen.",
+    "expandLines": "Erweitern ({{lineNumber}} Zeilen)",
+    "pinned": "Angeheftet",
+    "files": "Dateien",
+    "images": "Bilder",
+    "links": "Links",
+    "tasks": "Aufgaben",
+    "notes": "Notizen",
+    "events": "Ereignisse",
+    "integrations": "Integrationen",
+    "pinnedListSubheader": "Angeheftete Beiträge",
+    "fileListSubheader": "Dateien",
+    "taskListSubheader": "Aufgaben",
+    "noteListSubheader": "Notizen",
+    "linkListSubheader": "Links",
+    "eventListSubheader": "Ereignisse",
+    "imageListSubheader": "Bilder",
+    "youHaveNothingPinnedYet": "Sie haben noch nichts angeheftet",
+    "noFilesSharedYet": "Noch keine Dateien freigegeben",
+    "noImagesSharedYet": "Noch keine Bilder freigegeben",
+    "noTasksYet": "Noch keine Aufgaben",
+    "noLinksSharedYet": "Noch keine Links geteilt",
+    "noNotesCreatedYet": "Noch keine Notizen erstellt",
+    "noEventsCreatedYet": "Noch keine Ereignisse erstellt",
+    "noIntegrationInstallationYet": "Noch keine Integrationsinstallation",
+    "noPinSubText": "Alles, was Sie anheften, erscheint hier, damit Sie es später nachlesen können.",
+    "noFileSubText": "Dateien, die in Ihrem Gespräch geteilt werden, werden hier automatisch angezeigt.",
+    "noImageSubText": "Bilder, die in Ihrem Gespräch geteilt werden, werden hier automatisch angezeigt.",
+    "noTaskSubText": "Verfolgen Sie Aufgaben, die Sie sich selbst zuweisen oder die Ihnen hier zugewiesen werden.",
+    "noLinkSubText": "Links, die in Ihrem Gespräch geteilt werden, werden hier automatisch angezeigt.",
+    "noNoteSubText": "Notizen, die in Ihrem Gespräch erstellt werden, werden hier automatisch angezeigt.",
+    "noEventSubText": "Ereignisse in Ihrem Kalender werden hier automatisch angezeigt.",
+    "noIntegrationSubText": "Es sind derzeit keine Integrationen installiert. Sobald Sie eine Integration installiert haben, wird sie hier angezeigt.",
+    "networkErrorPinnedPrompt": "Leider konnten wir nicht mehr Beiträge laden.",
+    "networkErrorFilesPrompt": "Leider konnten wir nicht mehr Dateien laden.",
+    "networkErrorImagesPrompt": "Leider konnten wir nicht mehr Bilder laden.",
+    "networkErrorLinksPrompt": "Leider konnten wir nicht mehr Links laden.",
+    "networkErrorTasksPrompt": "Leider konnten wir nicht mehr Aufgaben laden.",
+    "networkErrorEventsPrompt": "Leider konnten wir nicht mehr Ereignisse laden.",
+    "networkErrorNotesPrompt": "Leider konnten wir nicht mehr Notizen laden.",
+    "networkErrorIntegrationsPrompt": "Leider konnten wir nicht mehr aktive Integrationen laden.",
+    "pinnedMore": "und {{num}} weitere",
+    "prompt": {
+      "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Das Hochladen ist fehlgeschlagen. Es wird bereits eine Datei hochgeladen. Bitte warten Sie, bis dies abgeschlossen ist.",
+      "fileNoLongerExists": "Leider konnten wir die Datei nicht hochladen, da sie nicht mehr existiert.",
+      "notAbleToCancelUpload": "Leider konnten wir das Hochladen nicht abbrechen.",
+      "notAbleToCancelUploadTryAgain": "Leider konnten wir das Hochladen nicht abbrechen. Versuchen Sie es erneut."
+    }
+  },
+  "people": {
+    "profile": {
+      "checkMoreTeamOption": "Überprüfen Sie weitere Optionen, die Sie mit diesem Team haben",
+      "copyEmail": "E-Mail kopieren",
+      "copyUrl": "URL kopieren",
+      "guest": "Gast",
+      "admin": "Administrator",
+      "company": "Unternehmen",
+      "location": "Standort",
+      "extensionNumber": "Durchw.",
+      "ariaExtensionNumber": "Durchwahlnummer",
+      "directNumber": "Durchwahlnummer",
+      "ariaDirectNumber": "Telefonnummer",
+      "email": "E-Mail",
+      "ariaEmail": "E-Mail-Adresse",
+      "linkedIn": "LinkedIn",
+      "webpage": "Webseite",
+      "ariaWebpage": "Webseite",
+      "ariaGoToMe": "Gehen Sie zu Ihrem eigenen Computer",
+      "ariaGoToOther": "Gehen Sie zum Gespräch mit {{name}}"
+    },
+    "team": {
+      "Members": "Mitglieder",
+      "SearchContactPlaceholder": "Geben Sie Namen oder E-Mail-Adressen ein",
+      "CreateTeam": "Team erstellen",
+      "Create": "Erstellen",
+      "SetAsPublicTeam": "Öffentliches Team (sichtbar für alle Mitarbeiter)",
+      "MembersMayPostMessages": "Mitgliedern erlauben, Nachrichten zu veröffentlichen",
+      "MembersMayAddOtherMembers": "Mitgliedern erlauben, weitere Mitglieder hinzuzufügen",
+      "MembersMayPinPosts": "Mitgliedern erlauben, Nachrichten anzuheften",
+      "teamName": "Teamname",
+      "teamNamePlaceholder": "Teamnamen eingeben",
+      "teamDescription": "Teambeschreibung",
+      "allowTeamMembersTo": "Den Teammitgliedern Folgendes erlauben:",
+      "addTeamMembers": "Teammitglieder hinzufügen",
+      "postMessages": "Nachrichten veröffentlichen",
+      "pinPosts": "Beiträge anheften",
+      "leaveTeam": "Team verlassen",
+      "leaveTeamConfirmTitle": "Team verlassen",
+      "leaveTeamConfirmContent": "Sobald Sie <0>{{teamName}}</0>verlassen, haben Sie keinen Zugriff mehr auf die Inhalte.",
+      "leaveTeamConfirmOk": "verlassen",
+      "deleteTeam": "Team löschen",
+      "deleteTeamToolTip": "Team dauerhaft löschen",
+      "deleteTeamConfirmTitle": "Team löschen?",
+      "deleteTeamConfirmContent": "Soll das Team <0>{{teamName}}</0> wirklich gelöscht werden?",
+      "deleteTeamConfirmOk": "löschen",
+      "deleteTeamSuccessMsg": "Team erfolgreich gelöscht.",
+      "archiveTeam": "Team archivieren",
+      "archiveTeamToolTip": "Archivieren Sie ein Team, damit es nicht in Ihren aktiven Gesprächen auftaucht. Das Team erscheint immer noch in Ihrer Teamliste und kann wiederhergestellt werden.",
+      "archiveTeamConfirmTitle": "Team archivieren?",
+      "archiveTeamConfirmContent": "Archivierte Teams sind immer noch unten auf der Teamseite verfügbar, werden aber nicht in Ihren aktiven Gesprächen angezeigt.",
+      "archiveTeamConfirmOk": "archivieren",
+      "archiveTeamSuccessMsg": "Team erfolgreich archiviert.",
+      "changeToPublic": "Wechseln zu öffentlichem Team",
+      "changeToPrivate": "Wechseln zu privatem Team",
+      "publicTeam": "Dieses Team ist ein öffentliches Team",
+      "privateTeam": "Dieses Team ist ein privates Team",
+      "teamMembers": "Teammitglieder",
+      "groupMembers": "Gruppenmitglieder",
+      "searchMembers": "Mitglieder suchen",
+      "makeTeamAdmin": "Team-Administrator einrichten",
+      "revokeTeamAdmin": "Team-Administrator zurücknehmen",
+      "addTeamMemberSubmit": "Hinzufügen",
+      "AddTeamMembers": "Teammitglieder hinzufügen",
+      "AddTeamMembersTitle": "Teammitglieder hinzufügen",
+      "removeFromTeam": "Aus Team entfernen",
+      "joinButtonTitle": "Beitreten",
+      "joinTeam": "Team beitreten",
+      "ariaJoinTeam": "Dem {{name}} Team beitreten",
+      "joinTeamTitle": "Dem Team beitreten?",
+      "joinTeamContent": "Sie sind derzeit kein Mitglied des Teams <0>{{teamName}}</0>. Möchten Sie dem Team beitreten?",
+      "joinTeamSubmit": "Beitreten",
+      "joinedStatus": "Beigetreten",
+      "ariaGoToTeam": "Zum Gespräch mit Team {{name}}gehen",
+      "ariaGoToGroup": "Zum Gespräch mit Gruppe gehen",
+      "favorite": "Favorit",
+      "addToFavorites": "Zu Favoriten hinzufügen",
+      "removeFromFavorites": "Aus Favoriten entfernen",
+      "profile": "Profil",
+      "teamDetails": "Teamdetails",
+      "close": "Schließen",
+      "markAsRead": "Als gelesen markieren",
+      "markAsUnread": "Als ungelesen markieren",
+      "convertToTeam": "In ein Team umwandeln",
+      "convertToTeamNamePrefix": "Team: ",
+      "convertToTeamPreviousMessageHandle": "Wenn Sie dieses Gespräch in ein Team umwandeln, sind alle zuvor veröffentlichten Nachrichten und Dateien für jeden, der neu in das Team eingeladen wird, sichtbar.",
+      "noMatchesFound": "Keine Treffer gefunden",
+      "archivedSuffix": " – Archiviert",
+      "adminActions": "Administratoroptionen"
+    },
+    "company": {},
+    "prompt": {
+      "noLongerAMemberOfThisTeam": "Leider sind Sie nicht mehr Mitglied dieses Teams. Um beizutreten, wenden Sie sich an den Teamadministrator.",
+      "closeConfirmDialogHeader": "Gespräch schließen?",
+      "closeConfirmDialogContent": "Wenn Sie ein Gespräch schließen, wird es aus dem linken Bereich entfernt, aber der Inhalt wird nicht gelöscht.",
+      "closeConfirmDialogDontAskMeAgain": "Mich nicht nochmals fragen",
+      "notAbleToCloseTheConversationForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Gespräch zu schließen. Versuchen Sie es später erneut.",
+      "notAbleToCloseTheConversationForNetworkIssue": "Wir konnten dieses Gespräch nicht schließen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "SorryWeWereNotAbleToOpenThisProfile": "Leider konnten wir dieses Profil nicht öffnen. Versuchen Sie es erneut.",
+      "JoinTeamErrorForAuthIssue": "Dieses Team ist jetzt privat. Um beizutreten, wenden Sie sich an den Teamadministrator.",
+      "JoinTeamErrorForNetworkIssue": "Sie konnten dem Team nicht beitreten. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "JoinTeamErrorForServerIssue": "Leider ist bei uns etwas schief gelaufen und Sie konnten dem Team nicht beitreten. Versuchen Sie es später erneut.",
+      "alreadyTaken": "Dieser Name ist bereits vergeben. Wählen Sie einen anderen Namen.",
+      "CreateTeamError": "Beim Erstellen dieses Teams ist ein Problem aufgetreten. Bitte versuchen Sie es später noch einmal.",
+      "SaveTeamUpdateErrorForNetworkIssue": "Wir konnten das Update nicht speichern. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "SaveTeamUpdateErrorForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, das Update zu speichern. Versuchen Sie es später erneut.",
+      "YouAreAnAdminToThisTeam": "Sie sind ein Administrator dieses Teams.",
+      "LearnAboutTeamAdministration": "Erfahren Sie mehr über die Teamadministration.",
+      "WeWerentAbleToCreateTheTeamTryAgain": "Wir konnten das Team nicht erstellen. Versuchen Sie es erneut.",
+      "changeTeamPrivateTypeErrorForNetworkIssue": "Wir konnten den Teamtyp nicht ändern. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "changeTeamPrivateTypeErrorForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Teamtyp zu ändern. Versuchen Sie es später erneut.",
+      "notAbleToUnFavoriteForNetworkIssue": "Wir konnten dieses Gespräch nicht aus den Favoriten entfernen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToUnFavoriteForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Gespräch aus den Favoriten zu entfernen. Versuchen Sie es später erneut.",
+      "notAbleToFavoriteThisMessageForNetworkIssue": "Leider konnten wir dieses Gespräch nicht favorisieren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToFavoriteThisMessageForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Gespräch zu favorisieren. Versuchen Sie es später erneut.",
+      "leaveTeamServerErrorContent": "Leider ist bei uns etwas schief gelaufen und Sie konnten das Team nicht verlassen. Versuchen Sie es später erneut.",
+      "leaveTeamNetworkErrorContent": "Wir haben ein Problem beim Erreichen Ihrer Netzwerkverbindung, so dass Sie das Team nicht verlassen konnten. Überprüfen Sie die Verbindung und versuchen Sie es erneut.",
+      "deleteTeamServerErrorContent": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Team zu löschen. Versuchen Sie es später erneut.",
+      "deleteTeamNetworkErrorContent": "Leider konnten wir dieses Team nicht löschen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "archiveTeamServerErrorContent": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Team zu archivieren. Versuchen Sie es später erneut.",
+      "archiveTeamNetworkErrorContent": "Leider konnten wir dieses Team nicht archivieren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "AddTeamMembersBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, Teammitglieder hinzuzufügen. Versuchen Sie es später erneut.",
+      "AddTeamMembersNetworkError": "Leider konnten wir keine Teammitglieder hinzufügen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "removeMemberNetworkError": "Wir konnten dieses Teammitglied nicht entfernen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "removeMemberBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Teammitglied zu entfernen. Versuchen Sie es später erneut.",
+      "makeTeamAdminNetworkError": "Wir konnten dieses Mitglied nicht zum Teamadministrator machen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "makeTeamAdminBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, dieses Mitglied zum Teamadministrator zu machen. Versuchen Sie es später erneut.",
+      "revokeTeamAdminBackendError": "Leider ist bei uns etwas schief gelaufen und wir konnten diesem Teammitglied die Berechtigungen für die Team-Administration nicht entziehen. Versuchen Sie es später erneut.",
+      "revokeTeamAdminNetworkError": "Wir konnten diesem Mitglied die Berechtigungen für die Team-Administration nicht entziehen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "InvalidEmail": "Ungültige E-Mail",
+      "markAsRead": "Dieses Gespräch konnte nicht als gelesen markiert werden. Versuchen Sie es später erneut.",
+      "markAsUnread": "Dieses Gespräch konnte nicht als ungelesen markiert werden. Versuchen Sie es später erneut.",
+      "FailedToConvertThisConversationToTeam": "Dieses Gespräch konnte nicht in ein Team umgewandelt werden. Versuchen Sie es später erneut.",
+      "conversationDeleted": "Das Team wurde gelöscht. Um mehr zu erfahren, wenden Sie sich an den Teamadministrator.",
+      "conversationArchived": "Dieses Team wurde archiviert. Um mehr zu erfahren, wenden Sie sich an den Teamadministrator.",
+      "conversationPrivate": "Leider sind Sie kein Mitglied dieses Teams. Um beizutreten, wenden Sie sich an den Teamadministrator."
+    }
+  },
+  "contact": {
+    "Contacts": "Kontakte"
+  },
+  "calendar": {
+    "Calendar": "Kalender"
+  },
+  "telephony": {
+    "Phone": "Telefon",
+    "Ext": "Durchw.",
+    "action": {
+      "minimize": "Minimieren",
+      "detach": "Lösen",
+      "attach": "Anhängen",
+      "mute": "Stummschalten",
+      "unmute": "Stummschaltung aufheben",
+      "keypad": "Wählfeld",
+      "hold": "Halten",
+      "unhold": "Halten aufheben",
+      "add": "Hinzufügen",
+      "record": "Aufzeichnen",
+      "stopRecord": "Stoppen",
+      "callActions": "Anrufaktionen",
+      "reply": "Antworten",
+      "park": "Parken",
+      "end": "Anruf beenden",
+      "Answer": "Antworten",
+      "back": "Zurück",
+      "forward": "Vor",
+      "customForward": "Benutzerdefiniert ...",
+      "flip": "Umlegen",
+      "recentCall": "Letzte Anrufe",
+      "backToDialer": "Zurück zum Dialer"
+    },
+    "customReplyMessagePlaceholder": "Benutzerdefinierte Nachricht eingeben",
+    "customReplyLabel": "Benutzerdefinierte Nachricht",
+    "predefinedMessage": {
+      "inMeeting": "In einer Besprechung",
+      "onMyWay": "Bin unterwegs",
+      "callMeBack": "Bitte zurückrufen in ...",
+      "willCallBack": "Rufe zurück in ..."
+    },
+    "predefinedTime": {
+      "5min": "5 Min.",
+      "10min": "10 Min.",
+      "30min": "30 Min.",
+      "1hour": "1 Std."
+    },
+    "countText": "Antworten in ",
+    "countdownUnit": "s",
+    "ignoreTheCall": "Den Anruf ignorieren",
+    "sendToVoicemail": "An Voicemail senden",
+    "moreOptions": "Weitere Optionen",
+    "answerTheCall": "Anruf beantworten",
+    "unknownCaller": "Unbekannter Anrufer",
+    "prompt": {
+      "RCPhoneGetDownloadError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, die Seite zu öffnen. Versuchen Sie es später erneut.",
+      "RCPhoneIsNotInstalledTitle": "RingCentral Phone nicht installiert",
+      "RCPhoneIsNotInstalledBody": "Sie konnten keine Anrufe tätigen, da RingCentral Phone nicht installiert ist. Installieren Sie zuerst RingCentral Phone.",
+      "RCPhoneIsNotInstalledOK": "Laden Sie RingCentral Phone herunter",
+      "NoNetwork": "Leider konnten wir diesen Anruf nicht tätigen, da keine Verbindung zum Server besteht. Versuchen Sie es später erneut.",
+      "CallFailed": "Leider haben wir Schwierigkeiten, diesen Anruf zu tätigen. Versuchen Sie es später noch einmal.",
+      "CallTimeout": "Leider konnten wir diesen Anruf nicht tätigen. Versuchen Sie es später erneut.",
+      "LogoutTitle": "Abmelden?",
+      "LogoutContent": "Ihr Anruf wird getrennt, wenn Sie sich abmelden. Möchten Sie sich abmelden und das Gespräch beenden?",
+      "LogoutOk": "Abmelden",
+      "FailedToHold": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Anruf zu halten",
+      "FailedToResume": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Anruf fortzusetzen",
+      "FailedToRecord": "Leider konnten wir diesen Anruf nicht aufzeichnen. Versuchen Sie es später erneut.",
+      "FailedToStopRecording": "Leider konnten wir das Aufzeichnen des Anrufs nicht beenden. Versuchen Sie es später erneut.",
+      "LackOfRecordingPermission": "Leider verfügt Ihr Konto nicht über die Funktion zum Aufzeichnen von Anrufen. Um die Funktion zu aktivieren, wenden Sie sich an Ihren Kontoadministrator.",
+      "RecordOnServiceWeb": "Leider ist die Anrufaufzeichnung für Ihr Konto deaktiviert. Um die Funktion zu aktivieren, wenden Sie sich an Ihren Kontoadministrator.",
+      "RecordAutomatically": "Anrufaufzeichnung kann nicht begonnen werden.",
+      "InvalidNumber": "Die eingegebene Telefonnummer ist ungültig. Prüfen Sie die Nummer und versuchen Sie es erneut.",
+      "ParkErrorStopRecording": "Leider wird Ihre Anrufaufzeichnung gespeichert. Versuchen Sie, den Anruf später zu parken.",
+      "ParkError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Anruf zu parken. Versuchen Sie es später erneut.",
+      "ParkOk": "Ihr Anruf ist geparkt am Standort",
+      "ReplyCustomMessageEmpty": "Sie können leider keine leere Nachricht senden.",
+      "ReplyMessageSuccess": "Sprachnachricht gesendet.",
+      "ForwardBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Anruf weiterzuleiten.",
+      "ForwardCallSuccess": "Ihr Anruf wurde erfolgreich weitergeleitet.",
+      "FlipBackendError": "Leider konnten wir diesen Anruf nicht umlegen. Versuchen Sie es später erneut.",
+      "FlipSuccess": "Anruf umgelegt",
+      "OnDemandRecording": "Leider ist die Anrufaufzeichnung für Ihr Konto deaktiviert. Um die Funktion zu aktivieren, wenden Sie sich an Ihren Kontoadministrator.",
+      "AutoRecording": "Anrufaufzeichnung kann nicht begonnen werden."
+    },
+    "notification": {
+      "incomingCall": "Eingehender Anruf",
+      "answer": "Antworten",
+      "unknownCaller": "Unbekannter Anrufer"
+    },
+    "accessibility": {
+      "hold": "Anruf halten",
+      "resume": "Anruf fortsetzen",
+      "record": "Anruf aufzeichnen",
+      "stopRecord": "Aufzeichnung beenden",
+      "minimize": "Den Dialog minimieren",
+      "callActions": "Anrufaktionen"
+    },
+    "dialerPlaceholder": "Name oder Nummer eingeben",
+    "delete": "Löschen",
+    "callFrom": "Anruf von:",
+    "phoneNumberType": {
+      "directNumber": "Durchwahlnummer",
+      "mainCompanyNumber": "Hauptfirmennummer",
+      "blocked": "Gesperrt",
+      "nickName": "Spitzname",
+      "companyNumber": "Firmennummer",
+      "companyFaxNumber": "Firmenfaxnummer"
+    },
+    "callerIdSelector": {
+      "tooltip": "Sie können diese Standard-Rufnummernanzeige in den Einstellungen ändern."
+    },
+    "direction": {
+      "inboundcall": "Eingehender Anruf",
+      "outboundcall": "Ausgehender Anruf"
+    },
+    "result": {
+      "missedcall": "Verpasster Anruf"
+    },
+    "nocalllogs": "Keine Anrufprotokolle",
+    "dial": "Wählen:",
+    "noMatch": "Keine übereinstimmenden Einträge",
+    "searching": "Suchen...",
+    "forwardCall": "Anruf weiterleiten",
+    "noCallLogAvailable": "Es gibt noch keine Anrufliste"
+  },
+  "phone": {
+    "tab": {
+      "callHistory": "Anrufverlauf"
+    },
+    "callBack": "Rückrufen",
+    "AllCalls": "Alle Anrufe",
+    "MissedCalls": "Verpasste Anrufe",
+    "callhistory": "Anrufverlauf",
+    "voicemail": "Voicemail",
+    "block": "Blockieren",
+    "blockNumber": "Nummer sperren",
+    "unblockNumber": "Nummer entsperren",
+    "blockThisNumber": "Diese Nummer sperren",
+    "numberWillNotBeAbletoReachYouIfBlockedDoYouWanttoBlockIt": "Diese Nummer kann Sie im Falle einer Sperrung nicht erreichen. Möchten Sie sie sperren?",
+    "faxes": "Fax",
+    "unknownCaller": "Unbekannter Anrufer",
+    "unknown": "Unbekannt",
+    "recordings": "Aufnahmen",
+    "noMatchesFound": "Keine Treffer gefunden",
+    "noCallLogAvailable": "Kein Anrufprotokoll",
+    "noVoicemailAvailable": "Keine Voicemail-Aufzeichnungen",
+    "prompt": {
+      "numberHasBeenBlocked": "Die Nummer wurde gesperrt.",
+      "numberHasBeenUnblocked": "Die Nummer wurde entsperrt.",
+      "notAbleToUnblockForNetworkIssue": "Leider konnten wir diese Nummer nicht entsperren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToUnblockForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Nummer zu entsperren. Versuchen Sie es später erneut.",
+      "notAbleToBlockForNetworkIssue": "Leider konnten wir diese Nummer nicht sperren. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToBlockForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, diese Nummer zu sperren. Versuchen Sie es später erneut.",
+      "notAbleToLoadVoicemailsForNetworkIssue": "Wir konnten keine Voicemails laden. Prüfen Sie die Netzwerkverbindung.",
+      "notAbleToLoadVoicemailsForServerIssue": "Wir konnten keine Voicemails laden. Versuchen Sie es später erneut.",
+      "notAbleToLoadCallLogsForNetworkIssue": "Wir konnten keine Anrufprotokolle laden. Prüfen Sie die Netzwerkverbindung.",
+      "notAbleToLoadCallLogsForServerIssue": "Wir konnten keine Anrufprotokolle laden. Versuchen Sie es später erneut.",
+      "playVoicemailLoadError": "Leider konnten wir die Voicemail aufgrund einer schlechten Netzwerkverbindung nicht wiedergeben/laden. Versuchen Sie es erneut."
+    }
+  },
+  "calllog": {
+    "inputFilter": "Anrufverlauf filtern",
+    "clearFilter": "Filter für Anrufverlauf löschen",
+    "deleteCallLog": "Anrufprotokoll löschen",
+    "deleteCallHistory": "Anrufverlauf löschen",
+    "deleteAllCallHistory": "Gesamten Anrufverlauf löschen",
+    "doYouWanttoDeleteThisCallLog": "Möchten Sie dieses Anrufprotokoll aus der Liste löschen?",
+    "doYouWanttoDeleteAllCallLog": " Sollen wirklich alle Anrufprotokolle permanent gelöscht werden? Hinweis: Anrufprotokolle können nicht von überall abgerufen werden.",
+    "prompt": {
+      "notAbleToDeleteCallLogForNetworkIssue": "Leider konnten wir das Protokoll nicht löschen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToDeleteAllCallLogForNetworkIssue": "Leider konnten wir den Anrufverlauf nicht löschen. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "notAbleToDeleteCallLogForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Verlauf zu löschen. Versuchen Sie es später erneut.",
+      "notAbleToDeleteAllCallLogForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, den Anrufverlauf zu löschen. Versuchen Sie es später erneut."
+    }
+  },
+  "voicemail": {
+    "labels": {
+      "play": "Voicemail wiedergeben",
+      "pause": "Voicemail anhalten",
+      "reload": "Voicemail neu laden"
+    },
+    "inputFilter": "Voicemail filtern",
+    "clearFilter": "Voicemail-Filter löschen",
+    "downloadVoicemail": "Voicemail herunterladen",
+    "markUnread": "Als ungelesen markieren",
+    "markRead": "Als gelesen markieren",
+    "deleteVoicemail": "Voicemail löschen",
+    "areYouSureYouWantToDeleteTheVoicemail": "Soll diese Voicemail wirklich gelöscht werden?",
+    "prompt": {
+      "notAbleToUnreadVoicemalForNetworkIssue": "Leider konnten wir die Voicemail aufgrund einer schlechten Netzwerkverbindung nicht als ungelesen markieren. Versuchen Sie es erneut.",
+      "notAbleToUnreadVoicemalForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir konnten die Voicemail nicht als ungelesen markieren. Versuchen Sie es später erneut.",
+      "notAbleToReadVoicemailForNetworkIssue": "Leider konnten wir die Voicemail aufgrund einer schlechten Netzwerkverbindung nicht als gelesen markieren. Versuchen Sie es erneut.",
+      "notAbleToReadVoicemailForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir konnten die Voicemail nicht als gelesen markieren. Versuchen Sie es später erneut.",
+      "notAbleToDeleteVoicemailForNetworkIssue": "Leider konnten wir die Voicemail aufgrund einer schlechten Netzwerkverbindung nicht löschen. Versuchen Sie es erneut.",
+      "notAbleToDeleteVoicemailForServerIssue": "Leider ist bei uns etwas schief gelaufen und wir konnten die Voicemail nicht löschen. Versuchen Sie es später erneut."
+    }
+  },
+  "meeting": {
+    "Meetings": "Besprechungen"
+  },
+  "integration": "",
+  "setting": {
+    "errorText": {
+      "server": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, Ihre Einstellungen zu speichern. Versuchen Sie es später erneut.",
+      "network": "Wir konnten Ihre Einstellungen nicht speichern. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
+      "forLink": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, die Seite zu öffnen. Versuchen Sie es später erneut."
+    },
+    "Settings": "Einstellungen",
+    "teamSettings": "Einstellungen",
+    "general": "Allgemein",
+    "notificationAndSounds": {
+      "title": "Benachrichtigung und Töne",
+      "otherNotificationSettings": {
+        "title": "Andere Benachrichtigungseinstellungen",
+        "newMessageBadgeCount": {
+          "options": {
+            "groups_and_mentions": "Nur direkte Nachrichten und Erwähnungen",
+            "all": "Alle neuen Nachrichten"
+          },
+          "description": "Wählen Sie, wie die Anwendung neue Nachrichten in der Anzahl der App-Badges zählen soll.",
+          "label": "dies ist eine neue Zählung der Nachrichten-Badges"
+        }
+      },
+      "desktopNotifications": {
+        "title": "Desktop-Benachrichtigungen",
+        "notificationsForBrowser": {
+          "label": "Desktop-Benachrichtigungen für Browser",
+          "description": "Aktivieren/deaktivieren von Desktop-Benachrichtigungen in Ihrem Webbrowser. Für Desktop-Benachrichtigungen ist eine Browser-Berechtigung erforderlich."
+        },
+        "newMessages": {
+          "label": "Neue Nachrichten",
+          "description": "Wählen Sie Ihre Präferenz für Desktop-Benachrichtigungen für neue Nachrichten.",
+          "options": {
+            "always": "Alle neuen Nachrichten",
+            "mentions_or_dms": "Direktnachrichten und Erwähnungen",
+            "never": "Aus"
+          }
+        },
+        "incomingCalls": {
+          "label": "Eingehende Anrufe",
+          "description": "Wählen Sie Ihre Präferenz für Desktop-Benachrichtigungen für eingehende Anrufe."
+        },
+        "callsAndVoicemails": {
+          "label": "Verpasste Anrufe und neue Voicemails",
+          "description": "Wählen Sie Ihre Präferenz für Desktop-Benachrichtigungen für verpasste Anrufe und neue Voicemails"
+        }
+      },
+      "emailNotifications": {
+        "title": "E-Mail-Benachrichtigungen",
+        "directMessages": {
+          "label": "Direktnachrichten",
+          "description": "E-Mail-Benachrichtigungen für Direktnachrichten erhalten"
+        },
+        "mentions": {
+          "label": "Erwähnungen",
+          "description": "E-Mail-Benachrichtigungen erhalten, wenn Sie erwähnt werden."
+        },
+        "teams": {
+          "label": "Teams",
+          "description": "Wählen Sie Ihre Präferenz für Desktop-Benachrichtigungen für Team-Nachrichten."
+        },
+        "dailyDigest": {
+          "label": "Tägliche Auswahl",
+          "description": "Erhalten Sie tägliche Glip-E-Mails mit einer Zusammenfassung der täglichen Aufgaben und Team-Events."
+        },
+        "options": {
+          "0": "Aus",
+          "900000": "Alle 15 Minuten",
+          "3600000": "Jede Stunde"
+        }
+      }
+    },
+    "sounds": "Klänge",
+    "messages": "Nachrichten",
+    "meetings": "Besprechungen",
+    "calendar": "Kalender",
+    "update": "Aktualisieren",
+    "edit": "Bearbeiten",
+    "phone": {
+      "title": "Telefon",
+      "general": {
+        "title": "Allgemein",
+        "defaultPhoneApp": {
+          "label": "Standard-Telefonanwendung für Anrufe",
+          "description": "Wählen Sie die Anwendung, mit der Sie Anrufe tätigen möchten.",
+          "option": {
+            "glip": "RingCentral-App (diese App) verwenden",
+            "ringcentral": "RingCentral Phone verwenden"
+          }
+        },
+        "callerID": {
+          "label": "Rufnummernanzeige",
+          "Blocked": "Gesperrt",
+          "description": "Wählen Sie Ihre Standard-Rufnummernanzeige für RingCentral-Telefonate."
+        },
+        "extensions": {
+          "label": "Durchwahleinstellungen",
+          "description": "Passen Sie Ihre RingCentral-Durchwahleinstellungen an (Anrufweiterleitung, Voicemail-Ansagen und mehr)."
+        },
+        "regionSetting": {
+          "label": "Region",
+          "region": "Region",
+          "country": "Land",
+          "areaCode": "Vorwahl",
+          "areaCodeErrorText": "Ungültige Vorwahl",
+          "saveSuccessText": "Ihre Region wurde erfolgreich aktualisiert.",
+          "regionChangeDesc": "Legen Sie das Land und die Vorwahl Ihrer Region fest. Dies wird für lokale und Notrufnummern sowie für die Formatierung von Telefonnummern verwendet."
+        }
+      }
+    },
+    "audioSource": {
+      "title": "Audioquellen",
+      "microphoneSource": {
+        "label": "Mikrofonquelle",
+        "description": "Aktualisieren Sie Ihre Mikrofonquelle für RingCentral-Sprachverbindungen"
+      },
+      "speakerSource": {
+        "label": "Lautsprecherquelle",
+        "description": "Aktualisieren Sie Ihre Lautsprecherquelle für RingCentral-Sprachverbindungen"
+      },
+      "ringerSource": {
+        "label": "Klingeltonquelle",
+        "description": "Aktualisieren Sie Ihre Klingeltonquelle für RingCentral-Sprachverbindungen"
+      },
+      "volume": {
+        "label": "Lautstärkeregelung",
+        "description": "Aktualisieren des Volumes"
+      }
+    },
+    "useDefault": "Systemstandard verwenden",
+    "speaker": "Lautsprecher",
+    "noDevices": "Keine Geräte",
+    "allDevices": "Alle Audioquellen",
+    "off": "Aus",
+    "microphone": "Mikrofon",
+    "builtInMicrophone": "Eingebautes Mikrofon",
+    "builtInSpeaker": "Eingebauter Lautsprecher",
+    "prompt": {
+      "updateRegionalSettingsBackendError": "Leider ist bei uns etwas schief gelaufen und wir sind nicht in der Lage, Ihre regionalen Einstellungen zu speichern. Versuchen Sie es später erneut.",
+      "updateRegionalSettingsNetworkError": "Leider konnten wir Ihre regionalen Einstellungen aufgrund einer schlechten Netzwerkverbindung nicht speichern. Versuchen Sie es erneut."
+    }
+  },
+  "viewer": {
+    "ZoomIn": "Datei hochskalieren",
+    "ZoomOut": "Datei herunterskalieren",
+    "ZoomReset": "Zoom zurücksetzen",
+    "PreviousFile": "Vorherige Datei anzeigen",
+    "NextFile": "Nächste Datei anzeigen",
+    "ImageDeleted": "Leider wurde das Bild, das Sie sich angesehen haben, gelöscht.",
+    "FileDeleted": "Die Datei wurde gelöscht.",
+    "TeamDeleted": "Das Team wurde gelöscht. Um mehr zu erfahren, wenden Sie sich an den Teamadministrator.",
+    "TeamArchived": "Dieses Team wurde archiviert. Um mehr zu erfahren, wenden Sie sich an den Teamadministrator.",
+    "ConversationClosed": "Sie haben das Gespräch entfernt."
+  },
+  "notification": {
+    "mentionedOne2One": "{{person}} hat Sie erwähnt:",
+    "group": "{{person}} hat in {{conversation}}geschrieben",
+    "mentioned": "{{person}} hat Sie in {{conversation}}erwähnt:",
+    "notificationEnabled": "Benachrichtigungen sind nun aktiviert.",
+    "topBanner": {
+      "enablePermissionMessage": "RingCentral benötigt Ihre Zustimmung, um Desktop-Benachrichtigungen zu aktivieren.",
+      "enablePermissionAction": "Benachrichtigungen aktivieren",
+      "blockedPermissionMessage": "RingCentral-Benachrichtigungen sind gesperrt. Gehen Sie zu Ihren Browsereinstellungen und erlauben Sie RingCentral, Benachrichtigungen zu senden."
+    },
+    "notificationBlockedDialog": {
+      "title": "Benachrichtigungen nicht erlaubt",
+      "content": "Sie haben derzeit Desktop-Benachrichtigungen für RingCentral deaktiviert. Aktualisieren Sie Ihre Browsereinstellungen, um Desktop-Benachrichtigungen zuzulassen.",
+      "button": "OK"
+    }
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "wird hochgeladen",
+    "uploadRecentLogsDialogHeader": "Feedback senden",
+    "uploadRecentLogsDialogContent": "Aktuelle Protokolle in eine Jupiter-Feedback-E-Mail hochladen.",
+    "submit": "Senden",
+    "describeYourProblemHere": "Beschreiben Sie Ihr Problem hier",
+    "uploadLogSuccess": "Protokoll erfolgreich hochladen.",
+    "uploadLogFailed": "Leider konnten wir das Feedback nicht senden. Versuchen Sie es später erneut.",
+    "openEmailFailed": "Öffnen der E-Mail fehlgeschlagen.",
+    "sendFeedbackSuccess": "Feedback erfolgreich gesendet.",
+    "sendFeedbackFailed": "Leider konnten wir das Feedback nicht senden. Versuchen Sie es später erneut.",
+    "title": "Es sieht so aus, als hätten wir Probleme.",
+    "issueTitle": "Zusammenfassung",
+    "issueDescription": "Was ist passiert?",
+    "sendingInBackground": "Feedback senden ..."
+  },
+  "electron": {
+    "upgrade": {
+      "dialogTitle": "Ihre Desktop-App ist veraltet",
+      "dialogMessage": " Um die bestmögliche Benutzerfreundlichkeit zu gewährleisten, sollten Sie auf die neueste Version aktualisieren. Bis zum Aktualisieren funktionieren einige Funktionen möglicherweise nicht wie erwartet.",
+      "ignoreOnce": "Einmal ignorieren",
+      "upgrade": "Aktualisieren",
+      "notNow": "Nicht jetzt",
+      "ignore": "Ignorieren",
+      "noUpgradeDialogTitle": "Kein Aktualisieren erforderlich",
+      "noUpgradeDialogMessage": "Ihre Desktop-App ist auf dem neuesten Stand.",
+      "noUpgradeDialogOk": "OK",
+      "topBannerWarning": "Ihre Desktop-App ist veraltet. Bitte aktualisieren Sie sofort."
+    }
+  },
+  "dialer": {
+    "newCall": "Neuer Anruf"
+  }
+}
