@@ -23,30 +23,37 @@ type State = {
 @observer
 class MessageComponent extends Component<Props, State> {
   accountService = ServiceLoader.getInstance<AccountService>(
-    ServiceConfig.ACCOUNT_SERVICE,
+    ServiceConfig.ACCOUNT_SERVICE
   );
 
   state = {
     initializing:
       this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.PROCESS,
     success:
-      this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS,
+      this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS
+  };
+
+  private _handleGlipLogin = (success: boolean) => {
+    this.setState({
+      success,
+      initializing: false
+    });
   };
 
   constructor(props: Props) {
     super(props);
     const { notificationCenter, SERVICE } = service;
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      this.setState({
-        success,
-        initializing: false,
-      });
-    });
+    notificationCenter.on(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
+  }
+
+  componentWillUnmount() {
+    const { notificationCenter, SERVICE } = service;
+    notificationCenter.off(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
   }
 
   tryAgain = () => {
     this.setState({
-      initializing: true,
+      initializing: true
     });
 
     this.accountService.startLoginGlip();
@@ -68,7 +75,7 @@ class MessageComponent extends Component<Props, State> {
         tip={t(
           initializing
             ? 'message.initialization.initializing'
-            : 'message.initialization.failure',
+            : 'message.initialization.failure'
         )}
         linkText={initializing ? '' : t('message.initialization.tryAgain')}
         showTip

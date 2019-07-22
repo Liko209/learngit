@@ -87,12 +87,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     },
   );
 
-  keyboardEventHandler = {
+  keyboardEventHandler: any = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
     },
-    ups: {
+    up: {
       key: 38,
       empty: true,
       handler: this._upHandler
@@ -146,6 +146,20 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       'beforeunload',
       this._handleBeforeUnload,
     );
+
+    this.keyboardEventHandler.up.handler.cancel();
+
+    this.keyboardEventHandler = {
+      enter: {
+        key: 13,
+        handler: _.noop,
+      },
+      up: {
+        key: 38,
+        empty: true,
+        handler: (_.noop as any),
+      },
+    };
   }
 
   @action

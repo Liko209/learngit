@@ -7,7 +7,7 @@ import { container } from 'framework';
 import historyStack from '@/common/HistoryStack';
 import history from '@/history';
 import { StoreViewModel } from '@/store/ViewModel';
-import { Action, Location } from 'history';
+import { Action, Location, UnregisterCallback } from 'history';
 import { action, observable, computed } from 'mobx';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 
@@ -15,8 +15,10 @@ class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
   private _globalSearchStore: GlobalSearchStore = container.get(
-    GlobalSearchStore,
+    GlobalSearchStore
   );
+
+  private _unListen: UnregisterCallback;
 
   constructor() {
     super();
@@ -29,7 +31,7 @@ class HomeViewModel extends StoreViewModel {
   }
 
   private _initHistoryListen() {
-    history.listen((location: Location, action: Action) => {
+    this._unListen = history.listen((location: Location, action: Action) => {
       historyStack.updateStackNCursor();
       const { state, pathname } = location;
       if (state && state.navByBackNForward) {
@@ -47,6 +49,10 @@ class HomeViewModel extends StoreViewModel {
   @computed
   get showGlobalSearch() {
     return this._globalSearchStore.open;
+  }
+
+  dispose() {
+    this._unListen();
   }
 }
 export { HomeViewModel };
