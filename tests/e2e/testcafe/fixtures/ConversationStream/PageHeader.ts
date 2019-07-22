@@ -116,7 +116,15 @@ test.meta(<ITestMeta>{
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('When I enter the group conversation and click Click the member count icon(with count) on page header ', async () => {
+  await h(t).withLog('When I enter the group conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
+  }, true);
+
+  await h(t).withLog('And close the right rail', async () => {
+    app.homePage.messageTab.rightRail.fold();
+  }, true);
+
+  await h(t).withLog('And click the member count icon(with count) on page header ', async () => {
     await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
     await conversationPage.clickMemberCountIcon();
   }, true);
