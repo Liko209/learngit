@@ -12,11 +12,11 @@ import {
   JuiHeader,
   JuiContainer,
   ContactSearchContainer,
-  RecentCallContainer,
+  RecentCallContainer
 } from 'jui/pattern/Dialer';
 import {
   GenericDialerPanelViewProps,
-  GenericDialerPanelViewState,
+  GenericDialerPanelViewState
 } from './types';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -36,18 +36,18 @@ type Props = WithTranslation & GenericDialerPanelViewProps;
 class GenericDialerPanelViewComponent extends React.Component<
   Props,
   GenericDialerPanelViewState
-  > {
+> {
   private _dialerHeaderRef: RefObject<any> = createRef();
   private _timer: NodeJS.Timeout;
   private _shouldShowToolTip =
-  !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
+    !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
 
   state = {
-    shouldShowToolTip: true,
+    shouldShowToolTip: true
   };
   private _focusCampo = debounce(focusCampo, 30, {
     leading: false,
-    trailing: true,
+    trailing: true
   });
   componentDidMount() {
     this.props.onAfterDialerOpen && this.props.onAfterDialerOpen();
@@ -58,6 +58,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     const { enteredDialer, shouldDisplayRecentCalls } = this.props;
     const { shouldShowToolTip } = this.state;
     if (enteredDialer && shouldShowToolTip) {
+      clearTimeout(this._timer);
       this._timer = setTimeout(this._handleCloseToolTip, CLOSE_TOOLTIP_TIME);
     }
     if (shouldDisplayRecentCalls !== prevProps.shouldDisplayRecentCalls) {
@@ -77,7 +78,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     const { enteredDialer } = this.props;
     enteredDialer &&
       this.setState({
-        shouldShowToolTip: false,
+        shouldShowToolTip: false
       });
   };
 
@@ -95,7 +96,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     }
     /* eslint-disable react/no-find-dom-node */
     const input = (ReactDOM.findDOMNode(
-      this._dialerHeaderRef.current,
+      this._dialerHeaderRef.current
     ) as HTMLDivElement).querySelector('input');
 
     this._focusCampo(input);
@@ -106,7 +107,7 @@ class GenericDialerPanelViewComponent extends React.Component<
       callerPhoneNumberList,
       chosenCallerPhoneNumber,
       shouldCloseToolTip,
-      enteredDialer,
+      enteredDialer
     } = this.props;
 
     const { shouldShowToolTip } = this.state;
@@ -116,7 +117,7 @@ class GenericDialerPanelViewComponent extends React.Component<
         value: chosenCallerPhoneNumber,
         menu: callerPhoneNumberList,
         disabled: false,
-        onChange: this._onChange,
+        onChange: this._onChange
       },
       tooltipProps: {
         open:
@@ -124,8 +125,8 @@ class GenericDialerPanelViewComponent extends React.Component<
           enteredDialer &&
           shouldShowToolTip &&
           !shouldCloseToolTip,
-        tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip,
-      },
+        tooltipForceHide: this._shouldShowToolTip || shouldCloseToolTip
+      }
     };
   };
 
@@ -152,7 +153,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     const {
       onContactSelected,
       inputStringProps,
-      displayCallerIdSelector,
+      displayCallerIdSelector
     } = this.props;
     return (
       <>
@@ -170,7 +171,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     <RecentCallContainer>
       <RecentCalls />
     </RecentCallContainer>
-  )
+  );
 
   private _renderKeypadActions = () => {
     const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;
@@ -201,7 +202,7 @@ class GenericDialerPanelViewComponent extends React.Component<
       displayCallerIdSelector,
       shouldDisplayRecentCalls,
       CallActionBtn,
-      Back,
+      Back
     } = this.props;
 
     const callActionBtn =
@@ -248,7 +249,7 @@ class GenericDialerPanelViewComponent extends React.Component<
 }
 
 const GenericDialerPanelView = withTranslation('translations')(
-  GenericDialerPanelViewComponent,
+  GenericDialerPanelViewComponent
 );
 
 export { GenericDialerPanelView, DialPad };
