@@ -24,9 +24,9 @@ type RTCCallInfo = {
 type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
-  callId?: string;
-  fromTag?: string;
-  toTag?: string;
+  replacesCallId?: string;
+  replacesFromTag?: string;
+  replacesToTag?: string;
 };
 
 type RTCCallActionSuccessOptions = {
