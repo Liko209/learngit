@@ -88,7 +88,7 @@ const buildExpect = (
       expect(handleVisibleRangeChange).toBeCalledWith({
         startIndex,
         stopIndex,
-      });
+      }, {"clientHeight": 100, "scrollHeight": 200, "scrollTop": 0});
       expect(handleRenderedRangeChange).toBeCalledWith({
         startIndex,
         stopIndex,

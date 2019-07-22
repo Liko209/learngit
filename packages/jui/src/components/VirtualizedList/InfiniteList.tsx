@@ -8,10 +8,10 @@ import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import {
   JuiVirtualizedList,
-  JuiVirtualizedListHandles
+  JuiVirtualizedListHandles,
 } from './VirtualizedList';
 import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
-import { IndexRange } from './types';
+import { IndexRange, ScrollInfo } from './types';
 import { useMountState } from './hooks';
 import { DIRECTION } from '../Lists';
 
@@ -26,7 +26,7 @@ type JuiInfiniteListProps = {
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
-  onVisibleRangeChange?: (range: IndexRange) => void;
+  onVisibleRangeChange?: (range: IndexRange, info: ScrollInfo) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
   loadingRenderer?: (() => JSX.Element) | null;
@@ -46,7 +46,7 @@ const JuiInfiniteList = (
     overscan,
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
-      minBatchCount: 10
+      minBatchCount: 10,
     }),
     hasMore,
     loadInitialData,
@@ -64,9 +64,9 @@ const JuiInfiniteList = (
     children,
     contentStyle,
     stickToLastPosition,
-    onBottomStatusChange
+    onBottomStatusChange,
   }: JuiInfiniteListProps,
-  forwardRef: React.RefObject<JuiVirtualizedListHandles> | null
+  forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
 ) => {
   let ref = useRef<JuiVirtualizedListHandles>(null);
   if (forwardRef) {
@@ -76,14 +76,14 @@ const JuiInfiniteList = (
   const isMountedRef = useMountState();
 
   const _loadMore = useCallback(
-    async (direction: 'up' | 'down', count: number) => {
-      if (direction === 'down') {
+    async (direction: DIRECTION, count: number) => {
+      if (direction === DIRECTION.DOWN) {
         setStickToBottom(false);
       }
       await loadMore(direction, count);
       isMountedRef.current && setStickToBottom(true);
     },
-    [loadMore, setStickToBottom]
+    [loadMore, setStickToBottom],
   );
 
   if (!height) {
@@ -102,7 +102,7 @@ const JuiInfiniteList = (
         loadingUp,
         loadingDown,
         loadingInitialFailed,
-        onScroll: handleScroll
+        onScroll: handleScroll,
       }) => {
         const _handleScroll = (delta?: { x: number; y: number; z: number }) => {
           if (ref.current) {
@@ -113,9 +113,9 @@ const JuiInfiniteList = (
               prevVisibleRange,
               {
                 minIndex: 0,
-                maxIndex: children.length - 1
+                maxIndex: children.length - 1,
               },
-              delta
+              delta,
             );
           }
         };
