@@ -50,8 +50,8 @@ const CONTAINER_IDS = {
 };
 
 class TriggerButtonComponent extends React.Component<
-TriggerButtonProps,
-TriggerButtonState
+  TriggerButtonProps,
+  TriggerButtonState
 > {
   private _messageStore: MessageStore = container.get(MessageStore);
   private _getTooltipKey = () => {
@@ -82,18 +82,22 @@ TriggerButtonState
   }
 
   componentDidMount() {
-    this._messageStore.setIsRightRailOpen(this.props.isOpen);
+    this._onIsOpenUpdated();
   }
 
-  componentDidUpdate(prevProps: TriggerButtonProps) {
-    if (prevProps.isOpen !== this.props.isOpen) {
-      this._messageStore.setIsRightRailOpen(this.props.isOpen);
-    }
+  componentDidUpdate() {
+    this._onIsOpenUpdated();
   }
 
   componentWillUnmount() {
     if (this._timerId) {
       clearTimeout(this._timerId);
+    }
+  }
+
+  _onIsOpenUpdated() {
+    if (this._messageStore.isRightRailOpen !== this.props.isOpen) {
+      this._messageStore.setIsRightRailOpen(this.props.isOpen);
     }
   }
 
