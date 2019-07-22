@@ -13,7 +13,7 @@ import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
-import { PRESENCE } from 'jui/components/Presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 type Props = ViewProps & WithTranslation;
 
