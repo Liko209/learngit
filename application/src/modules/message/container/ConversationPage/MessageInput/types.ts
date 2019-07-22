@@ -11,7 +11,7 @@ type MessageInputProps = {
   id: number; // group id
   onPost?: () => void;
   viewRef: React.RefObject<any>;
-  onUpArrowPressed: () => void;
+  onUpArrowPressed: (content: string) => void;
 };
 
 type MessageInputViewProps = {

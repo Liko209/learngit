@@ -130,7 +130,7 @@ test.meta(<ITestMeta>{
   postItem = app.homePage.messageTab.conversationPage.nthPostItem(-1);
   const viewerDialog = app.homePage.viewerDialog;
   await h(t).withLog('When I open image viewer (Entry3:file viewer)', async () => {
-        await t.click(postItem.img);
+        await t.click(postItem.images);
         await viewerDialog.ensureLoaded();
   })
 
@@ -146,7 +146,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('Then viewer should be closed and the image should be deleted', async () => {
     await t.expect(confirmDeleteDialog.exists).notOk({timeout:1e3})
     await t.expect(viewerDialog.exists).notOk();
-    await t.expect(postItem.img.exists).notOk();
+    await t.expect(postItem.images.exists).notOk();
   })
 });
 
@@ -198,7 +198,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I hover click the more button of the file(Entry1: conversation history)`, async() => {
-    await t.hover(conversationPage.nthPostItem(-1).img)
+    await t.hover(conversationPage.nthPostItem(-1).images)
     await moreActionOnFile.clickMore();
   });
 
@@ -239,7 +239,7 @@ test.meta(<ITestMeta>{
   const postItem = conversationPage.nthPostItem(-1);
   const viewerDialog = app.homePage.viewerDialog;
   await h(t).withLog(`When I open the image in file viewer (Entry3: file viewer)`, async() => {
-        await t.click(postItem.img);
+        await t.click(postItem.images);
         await viewerDialog.ensureLoaded();
   });
 
