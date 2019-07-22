@@ -28,10 +28,6 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     stateService = ServiceLoader.getInstance(ServiceConfig.STATE_SERVICE);
   });
 
-  afterAll(async () => {
-    await sdk.cleanUp();
-  });
-
   describe('PostService', () => {
     beforeEach(() => {
       jest.clearAllMocks();

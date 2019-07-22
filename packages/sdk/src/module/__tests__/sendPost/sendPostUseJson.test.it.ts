@@ -24,10 +24,6 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     postService = ServiceLoader.getInstance(ServiceConfig.POST_SERVICE);
   });
 
-  afterAll(async () => {
-    // await sdk.cleanUp();
-  });
-
   describe('PostService', () => {
     beforeEach(() => {
       helper.clearMocks()

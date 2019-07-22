@@ -9,7 +9,6 @@ import { itForSdk } from 'shield/sdk';
 import { IApiContract, IRequestResponse } from 'shield/sdk/types';
 import { readJson } from 'shield/sdk/utils';
 import { IGlipTeamPost } from 'shield/sdk/mocks/server/glip/api/team/team.post.contract';
-import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
 
 itForSdk('Group Integration test', ({ helper, sdk, template }) => {
   let groupService: GroupService;
