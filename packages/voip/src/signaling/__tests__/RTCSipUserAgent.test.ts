@@ -26,7 +26,7 @@ class MockUserAgent extends EventEmitter2 {
       modifiers = mockOptions.modifiers;
     }
     this.configuration = {
-      sessionDescriptionHandlerFactoryOptions: { modifiers }
+      sessionDescriptionHandlerFactoryOptions: { modifiers },
     };
   }
   invite = jest.fn();
@@ -61,7 +61,7 @@ jest.mock('ringcentral-web-phone', () => {
   return {
     default: (provisionData: any, mockOptions: any) => {
       return new MockWebPhone(provisionData, mockOptions);
-    }
+    },
   };
 });
 
@@ -85,11 +85,11 @@ describe('RTCSipUserAgent', () => {
     userAgent._webphone.userAgent.emit(
       'registrationFailed',
       { data: '500' },
-      500
+      500,
     );
     expect(eventReceiver.registerFailed).toHaveBeenCalledWith(
       { data: '500' },
-      500
+      500,
     );
   });
 
@@ -127,7 +127,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { homeCountryId: '1' }
+        { homeCountryId: '1' },
       );
     });
 
@@ -137,7 +137,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { homeCountryId: '100' }
+        { homeCountryId: '100' },
       );
     });
 
@@ -147,7 +147,7 @@ describe('RTCSipUserAgent', () => {
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
         phoneNumber,
-        { fromNumber: '100', homeCountryId: '1' }
+        { fromNumber: '100', homeCountryId: '1' },
       );
     });
 
@@ -156,8 +156,8 @@ describe('RTCSipUserAgent', () => {
       userAgent._createWebPhone(provisionData, options);
       expect(
         userAgent._webphone.userAgent.configuration.sessionDescriptionHandlerFactoryOptions.modifiers.find(
-          opusModifier
-        )
+          opusModifier,
+        ),
       ).not.toBeNull();
     });
 
@@ -171,7 +171,7 @@ describe('RTCSipUserAgent', () => {
           if (element == opusModifier) {
             count++;
           }
-        }
+        },
       );
       expect(count).toBe(1);
     });
@@ -195,12 +195,12 @@ describe('RTCSipUserAgent', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
           toTag: '100',
-          fromTag: '200'
+          fromTag: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
           phoneNumber,
-          { homeCountryId: '1' }
+          { homeCountryId: '1' },
         );
       });
 
@@ -208,12 +208,12 @@ describe('RTCSipUserAgent', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
           callId: '100',
-          toTag: '200'
+          toTag: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
           phoneNumber,
-          { homeCountryId: '1' }
+          { homeCountryId: '1' },
         );
       });
 
@@ -221,12 +221,12 @@ describe('RTCSipUserAgent', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
           fromTag: '100',
-          callId: '200'
+          callId: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
           phoneNumber,
-          { homeCountryId: '1' }
+          { homeCountryId: '1' },
         );
       });
     });
@@ -236,7 +236,7 @@ describe('RTCSipUserAgent', () => {
       const options: RTCCallOptions = {
         fromTag: '300',
         toTag: '100',
-        callId: '200'
+        callId: '200',
       };
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
@@ -244,10 +244,10 @@ describe('RTCSipUserAgent', () => {
         {
           extraHeaders: [
             'Replaces: 200;to-tag=300;from-tag=100',
-            'RC-call-type: replace'
+            'RC-call-type: replace',
           ],
-          homeCountryId: '1'
-        }
+          homeCountryId: '1',
+        },
       );
     });
   });

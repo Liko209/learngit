@@ -122,11 +122,15 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       inviteOptions.fromNumber = options.fromNumber;
     }
 
-    if (options.replacesCallId && options.replacesFromTag && options.replacesToTag) {
+    if (
+      options.replacesCallId &&
+      options.replacesFromTag &&
+      options.replacesToTag
+    ) {
       inviteOptions.extraHeaders = [
-        `Replaces: ${options.replacesCallId};to-tag=${options.replacesFromTag};from-tag=${
-          options.replacesToTag
-        }`,
+        `Replaces: ${options.replacesCallId};to-tag=${
+          options.replacesFromTag
+        };from-tag=${options.replacesToTag}`,
         'RC-call-type: replace',
       ];
       rtcLogger.info(
