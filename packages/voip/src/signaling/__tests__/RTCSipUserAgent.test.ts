@@ -190,12 +190,12 @@ describe('RTCSipUserAgent', () => {
       expect(userAgent._webphone.Options.enableMidLinesInSDP).toBe(false);
     });
 
-    describe('should Call webphone invite API without replace header if callId or fromTag or toTag is empty when make call [JPT-2505]', () => {
-      it('should Call webphone invite API without replace header if callId is empty when make call', () => {
+    describe('should Call webphone invite API without replace header if replacesCallId or replacesFromTag or replacesToTag is empty when make call [JPT-2505]', () => {
+      it('should Call webphone invite API without replace header if replacesCallId is empty when make call', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
-          toTag: '100',
-          fromTag: '200',
+          replacesToTag: '100',
+          replacesFromTag: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
@@ -204,11 +204,11 @@ describe('RTCSipUserAgent', () => {
         );
       });
 
-      it('should Call webphone invite API without replace header if toTag is empty when make call', () => {
+      it('should Call webphone invite API without replace header if replacesToTag is empty when make call', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
-          callId: '100',
-          toTag: '200',
+          replacesCallId: '100',
+          replacesToTag: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
@@ -217,11 +217,11 @@ describe('RTCSipUserAgent', () => {
         );
       });
 
-      it('should Call webphone invite API without replace header if fromTag is empty when make call', () => {
+      it('should Call webphone invite API without replace header if replacesFromTag is empty when make call', () => {
         setupMakeCall();
         const options: RTCCallOptions = {
-          fromTag: '100',
-          callId: '200',
+          replacesFromTag: '100',
+          replacesCallId: '200',
         };
         userAgent.makeCall(phoneNumber, options);
         expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
@@ -231,12 +231,12 @@ describe('RTCSipUserAgent', () => {
       });
     });
 
-    it('should Call webphone invite API with replace header if callId, toTag and fromTag is exist when make call [JPT-2506]', () => {
+    it('should Call webphone invite API with replace header if replacesCallId, replacesToTag and replacesFromTag is exist when make call [JPT-2506]', () => {
       setupMakeCall();
       const options: RTCCallOptions = {
-        fromTag: '300',
-        toTag: '100',
-        callId: '200',
+        replacesFromTag: '300',
+        replacesToTag: '100',
+        replacesCallId: '200',
       };
       userAgent.makeCall(phoneNumber, options);
       expect(userAgent._webphone.userAgent.invite).toHaveBeenCalledWith(
