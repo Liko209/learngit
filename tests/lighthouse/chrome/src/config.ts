@@ -96,7 +96,7 @@ class ConfigWrapper {
     this.jupiterDevelopHost = this.getValue("JUPITER_DEVELOP_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterAppKey = this.getValue("JUPITER_APP_KEY", "YCWFuqW8T7-GtSTb6KBS6g");
     this.jupiterAppSecret = this.getValue("JUPITER_APP_SECRET", "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA");
-    this.webPhoneUrl = this.getValue("WEBPHONE_URL", "http://xia01-i01-stg01.lab.rcch.ringcentral.com");
+    this.webPhoneUrl = this.getValue("WEBPHONE_URL", "https://jupiter-webphone.lab.rcch.ringcentral.com");
     this.webPhoneEnv = this.getValue("WEBPHONE_ENV", "xmnup");
     /* jupiter config */
 
