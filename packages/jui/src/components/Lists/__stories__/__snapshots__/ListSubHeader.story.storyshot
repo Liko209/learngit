@@ -18,7 +18,7 @@ exports[`Storyshots Components/Lists JuiListSubheader: Components/Lists JuiListS
 
 <div>
   <li
-    className="MuiListSubheader-root MuiListSubheader-sticky MuiListSubheader-gutters c0"
+    className="MuiListSubheader-root c0 MuiListSubheader-sticky MuiListSubheader-gutters"
   >
     Pinned Posts (24)
   </li>

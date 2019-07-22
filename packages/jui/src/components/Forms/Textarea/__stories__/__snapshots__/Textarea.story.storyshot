@@ -44,11 +44,17 @@ exports[`Storyshots Components/Forms Textarea: Components/Forms Textarea 1`] = `
 }
 
 <div
-  className="MuiFormControl-root MuiFormControl-fullWidth c0"
+  className="MuiFormControl-root MuiTextField-root c0 MuiFormControl-fullWidth"
   onKeyDown={[Function]}
 >
   <label
-    className="MuiFormLabel-root form-label-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+    FormLabelClasses={
+      Object {
+        "focused": "form-label-focus",
+        "root": "form-label-root",
+      }
+    }
+    className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
     data-shrink={true}
     htmlFor="New Message"
   >

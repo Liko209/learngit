@@ -158,23 +158,6 @@ Array [
   color: rgba(0,0,0,0.12);
 }
 
-.c24.c24 .c15,
-.c24.c24 .c15 svg {
-  font-size: 20px;
-}
-
-.c24.c24:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c24.c24:active .c15 {
-  color: #0684bd;
-}
-
-.c24.c24.c24.c24.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c14.c14 {
   padding: 0;
   width: 16px;
@@ -396,7 +379,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -469,7 +452,7 @@ Array [
             data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -479,8 +462,7 @@ Array [
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="small"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="plain"
           >
@@ -666,23 +648,6 @@ Array [
   color: rgba(0,0,0,0.12);
 }
 
-.c24.c24 .c15,
-.c24.c24 .c15 svg {
-  font-size: 20px;
-}
-
-.c24.c24:hover .c15 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c24.c24:active .c15 {
-  color: #0684bd;
-}
-
-.c24.c24.c24.c24.disabled .c15 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c14.c14 {
   padding: 0;
   width: 16px;
@@ -904,7 +869,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -977,7 +942,7 @@ Array [
             data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -987,8 +952,7 @@ Array [
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="small"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="plain"
           >

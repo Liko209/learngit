@@ -109,9 +109,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
         title={null}
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary c2"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorPrimary c2 MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -121,7 +122,6 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
           tabIndex={null}
         >
           <span
@@ -142,7 +142,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
             </span>
             <input
               checked={false}
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-108"
               data-indeterminate={false}
               onChange={[Function]}
               type="checkbox"
@@ -164,9 +164,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
         title={null}
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary c2"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorPrimary c2 MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -176,7 +177,6 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
           tabIndex={null}
         >
           <span
@@ -197,7 +197,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
             </span>
             <input
               checked={false}
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-108"
               data-indeterminate={false}
               onChange={[Function]}
               type="checkbox"
@@ -219,9 +219,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
         title={null}
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary c2"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorPrimary c2 MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -231,7 +232,6 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
           tabIndex={null}
         >
           <span
@@ -252,7 +252,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
             </span>
             <input
               checked={false}
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-108"
               data-indeterminate={false}
               onChange={[Function]}
               type="checkbox"
@@ -274,9 +274,10 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
         title={null}
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary c2"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorPrimary c2 MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -286,7 +287,6 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
           tabIndex={null}
         >
           <span
@@ -307,7 +307,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
             </span>
             <input
               checked={false}
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-108"
               data-indeterminate={false}
               onChange={[Function]}
               type="checkbox"
@@ -426,7 +426,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -437,8 +437,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -467,7 +466,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -478,8 +477,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -508,7 +506,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -519,8 +517,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -549,7 +546,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -560,8 +557,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -710,7 +706,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -721,8 +717,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -754,7 +749,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -765,8 +760,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -798,7 +792,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -809,8 +803,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"
@@ -842,7 +835,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -853,8 +846,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="round"

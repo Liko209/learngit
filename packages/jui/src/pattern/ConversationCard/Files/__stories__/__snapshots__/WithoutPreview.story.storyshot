@@ -183,7 +183,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c15.c15 .c8,
 .c15.c15 .c8 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c15.c15:hover .c8 {
@@ -204,11 +204,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 }
 
 .c16.c16:hover .c8 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c16.c16:active .c8 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c16.c16.c16.c16.disabled .c8 {
@@ -217,15 +217,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c17.c17 .c8,
 .c17.c17 .c8 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c17.c17:hover .c8 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c17.c17:active .c8 {
-  color: #fff;
+  color: #212121;
 }
 
 .c17.c17.c17.c17.disabled .c8 {
@@ -234,35 +234,18 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c18.c18 .c8,
 .c18.c18 .c8 svg {
-  font-size: 32px;
-}
-
-.c18.c18:hover .c8 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c18.c18:active .c8 {
-  color: #212121;
-}
-
-.c18.c18.c18.c18.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c8,
-.c19.c19 .c8 svg {
   font-size: 20px;
 }
 
-.c19.c19:hover .c8 {
+.c18.c18:hover .c8 {
   color: rgba(255,255,255,0.88);
 }
 
-.c19.c19:active .c8 {
+.c18.c18:active .c8 {
   color: #fff;
 }
 
-.c19.c19.c19.c19.disabled .c8 {
+.c18.c18.c18.c18.disabled .c8 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -355,7 +338,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 <div>
   <li
-    className="MuiListItem-root MuiListItem-default c0"
+    className="MuiListItem-root c0"
     disabled={false}
   >
     <span
@@ -373,10 +356,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       </svg>
     </span>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c3 MuiListItemText-multiline"
     >
       <span
-        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+        className="MuiTypography-root MuiListItemText-primary file-item-primary MuiTypography-body1"
       >
         <div
           className="c4"
@@ -386,7 +369,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         </div>
       </span>
       <div
-        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+        className="MuiTypography-root MuiListItemText-secondary file-item-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
       >
         <span
           data-test-automation-id="file-no-preview-size"
@@ -407,7 +390,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -418,8 +401,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"
@@ -447,7 +429,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
     </span>
   </li>
   <li
-    className="MuiListItem-root MuiListItem-default c0"
+    className="MuiListItem-root c0"
     disabled={false}
   >
     <span
@@ -465,10 +447,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       </svg>
     </span>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c3 MuiListItemText-multiline"
     >
       <span
-        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+        className="MuiTypography-root MuiListItemText-primary file-item-primary MuiTypography-body1"
       >
         <div
           className="c4"
@@ -478,7 +460,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         </div>
       </span>
       <div
-        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+        className="MuiTypography-root MuiListItemText-secondary file-item-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
       >
         <span
           data-test-automation-id="file-no-preview-size"
@@ -499,7 +481,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -510,8 +492,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"
@@ -539,7 +520,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
     </span>
   </li>
   <li
-    className="MuiListItem-root MuiListItem-default c0"
+    className="MuiListItem-root c0"
     disabled={false}
   >
     <span
@@ -557,10 +538,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       </svg>
     </span>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c3 MuiListItemText-multiline"
     >
       <span
-        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+        className="MuiTypography-root MuiListItemText-primary file-item-primary MuiTypography-body1"
       >
         <div
           className="c4"
@@ -570,7 +551,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         </div>
       </span>
       <div
-        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+        className="MuiTypography-root MuiListItemText-secondary file-item-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
       >
         <span
           data-test-automation-id="file-no-preview-size"
@@ -591,7 +572,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -602,8 +583,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"
@@ -631,7 +611,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
     </span>
   </li>
   <li
-    className="MuiListItem-root MuiListItem-default c0"
+    className="MuiListItem-root c0"
     disabled={false}
   >
     <span
@@ -649,10 +629,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       </svg>
     </span>
     <div
-      className="MuiListItemText-root c3"
+      className="MuiListItemText-root c3 MuiListItemText-multiline"
     >
       <span
-        className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary file-item-primary"
+        className="MuiTypography-root MuiListItemText-primary file-item-primary MuiTypography-body1"
       >
         <div
           className="c4"
@@ -662,7 +642,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
         </div>
       </span>
       <div
-        className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary file-item-secondary"
+        className="MuiTypography-root MuiListItemText-secondary file-item-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
       >
         <span
           data-test-automation-id="file-no-preview-size"
@@ -683,7 +663,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -694,8 +674,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"

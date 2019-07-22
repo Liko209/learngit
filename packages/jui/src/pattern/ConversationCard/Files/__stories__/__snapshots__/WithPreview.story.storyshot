@@ -183,7 +183,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c20.c20 .c13,
 .c20.c20 .c13 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c20.c20:hover .c13 {
@@ -204,11 +204,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 }
 
 .c21.c21:hover .c13 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c21.c21:active .c13 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c21.c21.c21.c21.disabled .c13 {
@@ -217,15 +217,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c22.c22 .c13,
 .c22.c22 .c13 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c22.c22:hover .c13 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c22.c22:active .c13 {
-  color: #fff;
+  color: #212121;
 }
 
 .c22.c22.c22.c22.disabled .c13 {
@@ -234,35 +234,18 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 .c23.c23 .c13,
 .c23.c23 .c13 svg {
-  font-size: 32px;
-}
-
-.c23.c23:hover .c13 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c23.c23:active .c13 {
-  color: #212121;
-}
-
-.c23.c23.c23.c23.disabled .c13 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c13,
-.c24.c24 .c13 svg {
   font-size: 20px;
 }
 
-.c24.c24:hover .c13 {
+.c23.c23:hover .c13 {
   color: rgba(255,255,255,0.88);
 }
 
-.c24.c24:active .c13 {
+.c23.c23:active .c13 {
   color: #fff;
 }
 
-.c24.c24.c24.c24.disabled .c13 {
+.c23.c23.c23.c23.disabled .c13 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -353,7 +336,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 <div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
   >
     <div
       className="MuiCardMedia-root c1 "
@@ -378,7 +361,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
         </div>
       </div>
       <div
-        className="MuiTypography-root MuiTypography-body2 c5"
+        className="MuiTypography-root c5 MuiTypography-body1"
       >
         <div
           className="c6"
@@ -401,10 +384,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           2.3Mb
         </div>
         <div
-          className="MuiCardActions-root c10"
+          className="MuiCardActions-root c10 MuiCardActions-spacing"
         >
           <div
-            className="MuiCardActions-action c11"
+            className="c11"
             direction="horizontal"
           >
             <button
@@ -412,7 +395,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -423,8 +406,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -454,7 +436,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
   >
     <div
       className="MuiCardMedia-root c1 "
@@ -479,7 +461,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
         </div>
       </div>
       <div
-        className="MuiTypography-root MuiTypography-body2 c5"
+        className="MuiTypography-root c5 MuiTypography-body1"
       >
         <div
           className="c6"
@@ -502,10 +484,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           2.3Mb
         </div>
         <div
-          className="MuiCardActions-root c10"
+          className="MuiCardActions-root c10 MuiCardActions-spacing"
         >
           <div
-            className="MuiCardActions-action c11"
+            className="c11"
             direction="horizontal"
           >
             <button
@@ -513,7 +495,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -524,8 +506,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -555,7 +536,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
   >
     <div
       className="MuiCardMedia-root c1 "
@@ -580,7 +561,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
         </div>
       </div>
       <div
-        className="MuiTypography-root MuiTypography-body2 c5"
+        className="MuiTypography-root c5 MuiTypography-body1"
       >
         <div
           className="c6"
@@ -603,10 +584,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           2.3Mb
         </div>
         <div
-          className="MuiCardActions-root c10"
+          className="MuiCardActions-root c10 MuiCardActions-spacing"
         >
           <div
-            className="MuiCardActions-action c11"
+            className="c11"
             direction="horizontal"
           >
             <button
@@ -614,7 +595,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -625,8 +606,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
@@ -656,7 +636,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
   >
     <div
       className="MuiCardMedia-root c1 "
@@ -681,7 +661,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
         </div>
       </div>
       <div
-        className="MuiTypography-root MuiTypography-body2 c5"
+        className="MuiTypography-root c5 MuiTypography-body1"
       >
         <div
           className="c6"
@@ -704,10 +684,10 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           2.3Mb
         </div>
         <div
-          className="MuiCardActions-root c10"
+          className="MuiCardActions-root c10 MuiCardActions-spacing"
         >
           <div
-            className="MuiCardActions-action c11"
+            className="c11"
             direction="horizontal"
           >
             <button
@@ -715,7 +695,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
-              onContextMenu={[Function]}
+              onDragLeave={[Function]}
               onFocus={[Function]}
               onKeyDown={[Function]}
               onKeyUp={[Function]}
@@ -726,8 +706,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
               onTouchEnd={[Function]}
               onTouchMove={[Function]}
               onTouchStart={[Function]}
-              size="medium"
-              tabIndex="0"
+              tabIndex={0}
               title={null}
               type="button"
               variant="plain"
