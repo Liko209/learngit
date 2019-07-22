@@ -162,6 +162,10 @@ export class PhoneSettingPage extends BaseWebComponent {
     await this.t.click(this.defaultAppSelectBox);
   }
 
+  async hoverRingCentralPhone() {
+    await this.t.hover(this.ringCentralPhoneItem);
+  }
+
   async clickRingCentralPhone() {
     await this.t.click(this.ringCentralPhoneItem);
   }

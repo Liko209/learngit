@@ -86,6 +86,14 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.microphoneSourceItems.nth(n).getAttribute('data-test-automation-value');
   }
 
+  get microphoneSourceDefaultItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-microphoneSource-default');
+  }
+
+  get ringerSourceAllAudioSourcesItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-ringerSource-all');
+  }
+
   async clickMicrophoneSourceSelectBox() {
     await this.t.click(this.microphoneSourceSelectBox);
   }
@@ -214,6 +222,10 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemToggleButton-notificationBrowser');
   }
 
+  get DialogOKButton() {
+    return this.getSelectorByAutomationId('DialogOKButton');
+  }
+
   // New Message
   get newMessageItem() {
     return this.getSelectorByAutomationId('settingItem-newMessages')
@@ -233,6 +245,10 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   get newMessageItemSelectBox() {
     return this.getSelectorByAutomationId('settingItemSelectBox-newMessages');
+  }
+
+  get newMessageItemSelectOff() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessages-never');
   }
 
   get newMessageDropDownItems() {
@@ -322,5 +338,31 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   async clickNewMessageBadgeCountDropDown() {
     await this.t.click(this.newMessageBadgeCountDropDown);
+  }
+
+  /// Direct messages
+  get directMessagesSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-notificationDirectMessages');
+  }
+
+  async clickDirectMessagesSelectBox() {
+    await this.t.click(this.directMessagesSelectBox);
+  }
+
+  get directMessagesOffItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-notificationDirectMessages-0');
+  }
+
+  /// Other notification settings
+  get newMessageBadgeCountSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
+  }
+
+  async clickNewMessageBadgeCountSelectBox() {
+    await this.t.click(this.newMessageBadgeCountSelectBox);
+  }
+
+  get directMessagesAndMentionsOnlyItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessageBadgeCount-groups_and_mentions');
   }
 }
