@@ -12,7 +12,7 @@ fixture('Phone/CallLog')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-  test(formalName('Check empty call history', ['P2', 'Phone', 'CallLog', 'V1.6', 'Sean.Zhuang']), async (t) => {
+  test(formalName('Check three kind of call logs', ['P2', 'Phone', 'CallLog', 'V1.6', 'Sean.Zhuang']), async (t) => {
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[5];
     const otherUser = users[6];
