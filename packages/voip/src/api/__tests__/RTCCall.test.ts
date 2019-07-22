@@ -2014,7 +2014,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should set call sip info into callInfo when call enter connected state [JPT-110]', done => {
+    it('should set call sip info into callInfo when call enter connected state [JPT-2555]', done => {
       setup();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
