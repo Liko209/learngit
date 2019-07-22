@@ -73,13 +73,13 @@ describe('MemberViewModel', () => {
       });
     });
 
-    it('should be show when type is team', () => {
+    it('should not be show when type is team', () => {
       const vm = new MemberViewModel(vmPropsFactory(TYPES.TEAM));
 
       expect(vm.showMembersCount).toBeFalsy();
     });
 
-    it('should be show when type is group', () => {
+    it('should not be show when type is group', () => {
       const vm = new MemberViewModel(vmPropsFactory(TYPES.NORMAL_GROUP));
 
       expect(vm.showMembersCount).toBeFalsy();
