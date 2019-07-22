@@ -44,7 +44,7 @@ test(formalName('Open team conversation and shared a file then update it', ['P2'
   await h(t).withLog('And I upload a duplicate picture as attachment and send it', async () => {
     const posts = conversationPage.posts;
     const file2 = '../../sources/files1/1.jpg';
-    await t.expect(posts.nth(0).find('img').exists).ok();
+    await t.expect(posts.nth(0).find('[data-test-automation-class="image"]').exists).ok();
     await conversationPage.uploadFilesToMessageAttachment(file2);
   });
   await h(t).withLog('Then "update files" page should be displayed', async () => {

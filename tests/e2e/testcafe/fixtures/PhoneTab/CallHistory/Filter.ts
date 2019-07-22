@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as _ from 'lodash';
-import { setupCase, teardownCase } from './../../../init';
-import { BrandTire, SITE_URL } from './../../../config';
-import { ITestMeta } from './../../../v2/models';
-import { h } from './../../../v2/helpers';
-import { AppRoot } from './../../../v2/page-models/AppRoot';
+import { setupCase, teardownCase } from '../../../init';
+import { BrandTire, SITE_URL } from '../../../config';
+import { ITestMeta } from '../../../v2/models';
+import { h } from '../../../v2/helpers';
+import { AppRoot } from '../../../v2/page-models/AppRoot';
 
 fixture('PhoneTab/CallHistory/Filter')
   .beforeEach(setupCase(BrandTire.CALL_LOG_READ_ONLY))

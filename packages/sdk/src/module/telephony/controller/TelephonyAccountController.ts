@@ -39,7 +39,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _isDisposing: boolean = false;
   private _logoutCallback: LogoutCallback;
   private _entityCacheController: IEntityCacheController<Call>;
-  private _accountState: RTC_ACCOUNT_STATE;
   private _callControllerList: Map<number, TelephonyCallController> = new Map();
 
   constructor(rtcEngine: RTCEngine) {
@@ -106,16 +105,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return res;
   }
 
-  private _checkAccountState() {
-    if (this._accountState !== RTC_ACCOUNT_STATE.REGISTERED) {
-      telephonyLogger.warn(
-        `voip account is not registered. current state: ${this._accountState}`,
-      );
-      return MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
-    }
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
   getVoipState() {
     return this._rtcAccount.state();
   }
@@ -162,10 +151,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
         break;
       }
 
-      result = this._checkAccountState();
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
       result = await this._makeCallController.tryMakeCall(e164ToNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
@@ -313,9 +298,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     callController && callController.replyWithPattern(pattern, time, timeUnit);
   }
 
-  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
-    this._accountState = state;
-  }
+  onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
 
   private async _shouldShowIncomingCall() {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(

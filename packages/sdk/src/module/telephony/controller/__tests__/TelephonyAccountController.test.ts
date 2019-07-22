@@ -131,17 +131,6 @@ describe('TelephonyAccountController', () => {
       expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
     });
 
-    it('should return error when voip is not registered [JPT-2383]', async () => {
-      const spy = jest.spyOn(accountController, '_checkAccountState');
-      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
-        voipCountryBlocked: false,
-        voipFeatureEnabled: true,
-      });
-      const res = await accountController.makeCall(toNum, fromNum);
-      expect(spy).toBeCalled();
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
-    });
-
     it('should return error when tryMakecall failed', async () => {
       const spy = jest.spyOn(mockCall, 'onCallStateChange');
       rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
