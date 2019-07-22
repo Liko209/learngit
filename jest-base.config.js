@@ -27,7 +27,7 @@ module.exports = {
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
     '^@/(.*)$': '<rootDir>/application/src/$1',
-    '^foundation/(.*)$': '<rootDir>/packages/foundation/src/$1',
+    '^foundation/(?!src)(.*)$': '<rootDir>/packages/foundation/src/$1',
     '^sdk/(.*)$': '<rootDir>/packages/sdk/src/$1',
     '^jui/(.*)$': '<rootDir>/packages/jui/src/$1',
     '^rcui/(.*)$': '<rootDir>/packages/rcui/src/$1',
