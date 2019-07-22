@@ -3,7 +3,7 @@
  * @Date: 2019-07-22 11:11:47
  * Copyright © RingCentral. All rights reserved.
  */
-import * as React from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { select } from '@storybook/addon-knobs';
 import { RuiCheckbox } from '../Checkbox';
