@@ -5,6 +5,7 @@
  */
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { UnregisterCallback } from 'history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiLeftNav } from 'jui/pattern/LeftNav';
 import { LeftNavViewProps } from './types';
@@ -14,30 +15,39 @@ import { observer } from 'mobx-react';
 type LeftNavProps = {
   isLeftNavOpen: boolean;
 } & LeftNavViewProps &
-RouteComponentProps &
-WithTranslation;
+  RouteComponentProps &
+  WithTranslation;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
   @observable
   selectedPath: string = window.location.pathname.split('/')[1];
 
+  private _unListen: UnregisterCallback;
+
   componentDidMount() {
     const { history } = this.props;
-    history.listen(() => {
+    this._unListen = history.listen(() => {
       const newSelectedPath = window.location.pathname.split('/')[1];
       if (this.selectedPath !== newSelectedPath) {
         this.selectedPath = newSelectedPath;
       }
     });
   }
+
+  componentWillUnmount() {
+    this._unListen();
+  }
+
   @computed
   get translatedIconGroups() {
     const { iconGroups, t } = this.props;
-    return iconGroups.map(icons => icons.map(icon => ({
-      ...icon,
-      title: t(icon.title),
-    })));
+    return iconGroups.map(icons =>
+      icons.map(icon => ({
+        ...icon,
+        title: t(icon.title)
+      }))
+    );
   }
   onRouteChange = (url: string) => {
     const { history } = this.props;

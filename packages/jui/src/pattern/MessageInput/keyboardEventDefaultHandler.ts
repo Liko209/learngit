@@ -35,8 +35,8 @@ const keyboardEventDefaultHandler = {
   defaultEnter: {
     key: 13,
     ctrlKey: true,
-    handler: handleEnter,
-  },
+    handler: handleEnter
+  }
 };
 
 export default keyboardEventDefaultHandler;
