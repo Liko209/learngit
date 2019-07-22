@@ -6,7 +6,7 @@
 import {
   IMediaService,
   MediaOptions,
-  MediaDeviceType,
+  MediaDeviceType
 } from '@/interface/media';
 import { mediaManager } from '../MediaManager';
 import { computed, autorun } from 'mobx';
@@ -15,6 +15,7 @@ import SettingModel from '@/store/models/UserSetting';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
+import { trackManager } from '../TrackManager';
 
 const SETTING_ITEM__VOLUME = SettingEntityIds.Phone_Volume;
 const SETTING_ITEM__SPEAKER_SOURCE = SettingEntityIds.Phone_SpeakerSource;
@@ -41,6 +42,15 @@ class MediaService implements IMediaService {
     return mediaManager.createMedia(mediaOptions);
   }
 
+  pauseTrack(trackId: string) {
+    const track = trackManager.getTrack(trackId);
+    track && track.playing && track.pause();
+  }
+
+  getMedia(mediaId: string) {
+    return mediaManager.getMedia(mediaId);
+  }
+
   canPlayType(mimeType: string) {
     mediaManager.canPlayType(mimeType);
     return true;
@@ -50,7 +60,7 @@ class MediaService implements IMediaService {
   get volumeEntity() {
     return getEntity<UserSettingEntity, SettingModel>(
       ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__VOLUME,
+      SETTING_ITEM__VOLUME
     );
   }
 
@@ -63,7 +73,7 @@ class MediaService implements IMediaService {
   get outputDeviceEntity() {
     return getEntity<UserSettingEntity, SettingModel>(
       ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__SPEAKER_SOURCE,
+      SETTING_ITEM__SPEAKER_SOURCE
     );
   }
 
@@ -74,7 +84,8 @@ class MediaService implements IMediaService {
     if (Array.isArray(devices) && devices.length !== 0) {
       deviceIds = devices
         .filter(
-          device => !this._isDefaultDevice(device) && !this._isVirtualDevice(device),
+          device =>
+            !this._isDefaultDevice(device) && !this._isVirtualDevice(device)
         )
         .map(device => device.deviceId);
     }
