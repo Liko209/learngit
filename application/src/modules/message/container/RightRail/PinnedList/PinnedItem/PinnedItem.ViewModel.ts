@@ -16,6 +16,7 @@ import TaskItemModel from '@/store/models/TaskItem';
 import NoteItemModel from '@/store/models/NoteItem';
 import EventItemModel from '@/store/models/EventItem';
 import LinkItemModel from '@/store/models/LinkItem';
+import CodeItemModel from '@/store/models/CodeItem';
 
 import { ITEM_ICON_MAP, ITEM_MODEL_TYPES, ITEM_TEXT_MAP } from './config';
 import { ENTITY_NAME } from '@/store';
@@ -48,6 +49,10 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
       }
       case TypeDictionary.TYPE_ID_LINK: {
         item = getEntity<Item, LinkItemModel>(ENTITY_NAME.ITEM, this._id);
+        break;
+      }
+      case TypeDictionary.TYPE_ID_CODE: {
+        item = getEntity<Item, CodeItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       default:

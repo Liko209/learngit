@@ -59,8 +59,8 @@ class BaseTeamSetting extends BaseWebComponent {
     return faker.random.alphaNumeric(length);
   }
 
-  async typeRandomTeamName(length: number) {
-    await this.typeTeamName(this.randomString(length));
+  async typeRandomTeamName(length: number, options: TypeActionOptions = { replace: true }) {
+    await this.typeTeamName(this.randomString(length), options);
   }
 
   async typeRandomTeamDescription(length: number) {

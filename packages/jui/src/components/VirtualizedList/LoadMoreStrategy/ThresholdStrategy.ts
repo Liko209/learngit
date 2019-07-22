@@ -3,15 +3,12 @@
  * @Date: 2019-04-01 13:14:44
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  ILoadMoreStrategy,
-  LoadMoreStrategyParams,
-  LoadMoreInfo,
-} from './ILoadMoreStrategy';
+import { ILoadMoreStrategy, LoadMoreStrategyParams, LoadMoreInfo } from './ILoadMoreStrategy';
 
 import { UndefinedAble } from '../types';
 
 const PRELOAD_COUNT_LIMIT = 50;
+const DEFAULT_PAGE_SIZE = 20;
 
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
@@ -34,10 +31,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
   }
 
   getLoadMoreInfo({
-    indexConstraint: { minIndex, maxIndex },
-    visibleRange: { startIndex, stopIndex },
-    prevVisibleRange,
-    delta,
+    indexConstraint: { minIndex, maxIndex }, visibleRange: { startIndex, stopIndex }, prevVisibleRange, delta
   }: Readonly<LoadMoreStrategyParams>): LoadMoreInfo {
     const deltaY = delta ? delta.y : 0;
 
@@ -75,8 +69,14 @@ class ThresholdStrategy implements ILoadMoreStrategy {
 
   updatePreloadCount(count: number) {
     if (this._preloadInfo) {
-      this._preloadInfo.count =
-        count > PRELOAD_COUNT_LIMIT ? PRELOAD_COUNT_LIMIT : count;
+      const preloadCount = count - DEFAULT_PAGE_SIZE + 1;
+      if (preloadCount >= PRELOAD_COUNT_LIMIT) {
+        this._preloadInfo.count = PRELOAD_COUNT_LIMIT;
+      } else if (preloadCount <= DEFAULT_PAGE_SIZE) {
+        this._preloadInfo.count = DEFAULT_PAGE_SIZE;
+      } else {
+        this._preloadInfo.count = preloadCount;
+      }
     }
   }
 }

@@ -277,6 +277,7 @@ storiesOf('Pattern/ConversationItemCard', module)
             <JuiLabelWithContent label={'files'}>
               <JuiFileWrapper>
                 <JuiExpandImage
+                  fileID={123}
                   Actions={<div />}
                   previewUrl=''
                   icon={'doc'}

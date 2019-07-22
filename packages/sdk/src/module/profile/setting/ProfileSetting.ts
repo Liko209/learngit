@@ -13,9 +13,7 @@ import { NotificationsSettingHandler } from './itemHandler/NotificationsSettingH
 import { NewMessagesSettingHandler } from './itemHandler/NewMessagesSettingHandler';
 import { IncomingCallsSettingHandler } from './itemHandler/IncomingCallsSettingHandler';
 import { NewVoicemailsSettingHandler } from './itemHandler/NewVoicemailsSettingHandler';
-import { TelephonyService } from 'sdk/module/telephony';
 import { AccountService } from 'sdk/module/account';
-import { DefaultAppSettingHandler } from './itemHandler/DefaultAppSettingHandler';
 import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
 import { ProfileSubscribeEntityHandler } from './itemHandler/ProfileSubscribeEntityHandler';
 import {
@@ -25,30 +23,28 @@ import {
 } from '../constants';
 
 type HandlerMap = {
-  [SettingEntityIds.Phone_DefaultApp]: DefaultAppSettingHandler;
   [SettingEntityIds.Notification_NewMessageBadgeCount]: MessageBadgeSettingHandler;
   [SettingEntityIds.Notification_Browser]: NotificationsSettingHandler;
   [SettingEntityIds.Notification_NewMessages]: NewMessagesSettingHandler;
   [SettingEntityIds.Notification_IncomingCalls]: IncomingCallsSettingHandler;
   [SettingEntityIds.Notification_MissCallAndNewVoiceMails]: NewVoicemailsSettingHandler;
   [SettingEntityIds.Notification_DirectMessages]: ProfileSubscribeEntityHandler<
-  EMAIL_NOTIFICATION_OPTIONS
+    EMAIL_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_Mentions]: ProfileSubscribeEntityHandler<
-  NOTIFICATION_OPTIONS
+    NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_Teams]: ProfileSubscribeEntityHandler<
-  EMAIL_NOTIFICATION_OPTIONS
+    EMAIL_NOTIFICATION_OPTIONS
   >;
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
-  NOTIFICATION_OPTIONS
+    NOTIFICATION_OPTIONS
   >;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
   constructor(
     private _profileService: IProfileService,
-    private _telephonyService: TelephonyService,
     private _accountService: AccountService,
     private _settingService: SettingService,
   ) {
@@ -57,11 +53,6 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
 
   getHandlerMap() {
     return {
-      [SettingEntityIds.Phone_DefaultApp]: new DefaultAppSettingHandler(
-        this._accountService,
-        this._profileService,
-        this._telephonyService,
-      ),
       [SettingEntityIds.Notification_NewMessageBadgeCount]: new MessageBadgeSettingHandler(
         this._profileService,
       ),

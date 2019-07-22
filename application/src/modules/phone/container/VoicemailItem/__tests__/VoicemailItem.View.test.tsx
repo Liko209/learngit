@@ -18,9 +18,13 @@ describe('VoicemailItem.View', () => {
   @testable
   class componentWillUnmount {
     // switch tab should be pause
-    @test('should be pause if unmount component [JPT-2219]')
+    @test('should be paused before unmount if selected [JPT-2219]')
     t1() {
-      const props = { voiceMailResponsiveMap: { dateFormat: 'full' } };
+      const props = {
+        selected: true,
+        onVoicemailPlay: () => {},
+        voiceMailResponsiveMap: { dateFormat: 'full' },
+      };
       const wrapper = shallow(<VoicemailItemView {...props} />, {
         disableLifecycleMethods: true,
       });
@@ -29,113 +33,51 @@ describe('VoicemailItem.View', () => {
       wrapper.unmount();
       expect(audioPlayer.current.pause).toHaveBeenCalled();
     }
+
+    @test(
+      'should clear play record before unmount if selected [JPT-2503] [JPT-2502]',
+    )
+    t2() {
+      const props = {
+        selected: true,
+        onVoicemailPlay: jest.fn(),
+        voiceMailResponsiveMap: { dateFormat: 'full' },
+      };
+      const wrapper = shallow(<VoicemailItemView {...props} />, {
+        disableLifecycleMethods: true,
+      });
+      wrapper.unmount();
+      expect(props.onVoicemailPlay).toHaveBeenCalledWith(null);
+    }
   }
 
   @testable
   class componentDidUpdate {
-    @test('should not be called if selected is true [JPT-2222]')
+    @test(
+      'should only manual pause audio when selected status change from true to false [JPT-2222]',
+    )
     t1() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-        {
-          disableLifecycleMethods: true,
-        },
-      );
-      wrapper.setProps({
-        selected: true,
-      });
-      expect(audioPlayer.current.pause).not.toHaveBeenCalled();
-    }
-
-    @test('should not be called if shouldPause is false [JPT-2222]')
-    t2() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-        {
-          disableLifecycleMethods: true,
-        },
-      );
-      wrapper.setProps({
+      const props = {
+        dateFormat: 'full',
         selected: false,
-      });
-      expect(audioPlayer.current.pause).not.toHaveBeenCalled();
-    }
-
-    @test(
-      'should not be called if shouldPause is false && selected is true [JPT-2222]',
-    )
-    t3() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-        {
-          disableLifecycleMethods: true,
-        },
-      );
-      wrapper.setProps({
-        selected: true,
-        shouldPause: false,
-      });
-      expect(audioPlayer.current.pause).not.toHaveBeenCalled();
-    }
-
-    @test(
-      'should not be called if shouldPause is true && selected is false [JPT-2222]',
-    )
-    t4() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-        {
-          disableLifecycleMethods: true,
-        },
-      );
-      wrapper.setProps({
-        selected: false,
-        shouldPause: true,
-      });
-      expect(audioPlayer.current.pause).not.toHaveBeenCalled();
-    }
-
-    @test('should not be called if current is null [JPT-2222]')
-    t5() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-        {
-          disableLifecycleMethods: true,
-        },
-      );
-      const inst = wrapper.instance();
-      inst._AudioPlayer = {
-        current: null,
+        isHover: false,
+        isUnread: false,
       };
-      wrapper.setProps({
-        shouldPause: true,
-      });
+
+      const wrapper = shallow(
+        <VoicemailItemView voiceMailResponsiveMap={props} />,
+      );
+
+      const instance = wrapper.instance();
+      instance._AudioPlayer = audioPlayer;
+
+      wrapper.setProps({ selected: true });
       expect(audioPlayer.current.pause).not.toHaveBeenCalled();
-    }
 
-    @test('should be called if shouldPause is true && has current [JPT-2222]')
-    t6() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-      );
-      const inst = wrapper.instance();
-      inst._AudioPlayer = audioPlayer;
-      wrapper.setProps({
-        shouldPause: true,
-      });
-      expect(audioPlayer.current.pause).toHaveBeenCalled();
-    }
+      wrapper.setProps({ isHover: true, isUnread: true });
+      expect(audioPlayer.current.pause).not.toHaveBeenCalled();
 
-    @test('should be called if selected is false && has current [JPT-2222]')
-    t7() {
-      const wrapper = shallow(
-        <VoicemailItemView voiceMailResponsiveMap={{ dateFormat: 'full' }} />,
-      );
-      const inst = wrapper.instance();
-      inst._AudioPlayer = audioPlayer;
-      wrapper.setProps({
-        selected: false,
-      });
+      wrapper.setProps({ selected: false });
       expect(audioPlayer.current.pause).toHaveBeenCalled();
     }
   }

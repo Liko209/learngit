@@ -4,20 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import JSZip from 'jszip';
-import { ZipItem } from './types';
 
-enum ZIP_LEVEL {
-  LOW = 3,
-  MIDDLE = 6,
-  HEIGH = 9,
-}
-
-export async function zip(zipItems: ZipItem[]) {
+let ZIP_LEVEL;
+(function (ZIP_LEVEL) {
+  ZIP_LEVEL[(ZIP_LEVEL['LOW'] = 3)] = 'LOW';
+  ZIP_LEVEL[(ZIP_LEVEL['MIDDLE'] = 6)] = 'MIDDLE';
+  ZIP_LEVEL[(ZIP_LEVEL['HEIGH'] = 9)] = 'HEIGH';
+}(ZIP_LEVEL || (ZIP_LEVEL = {})));
+export function zip(zipItems) {
   const zip = new JSZip();
-  const nameMap = new Map<string, number>();
+  const nameMap = new Map();
   zipItems.forEach(zipItem => {
     if (nameMap.has(zipItem.name)) {
-      nameMap.set(zipItem.name, nameMap.get(zipItem.name)! + 1);
+      nameMap.set(zipItem.name, nameMap.get(zipItem.name) + 1);
       const fileName = `${zipItem.name}-${nameMap.get(zipItem.name)}${
         zipItem.type
       }`;
@@ -32,7 +31,7 @@ export async function zip(zipItems: ZipItem[]) {
         : zip.file(fileName, zipItem.content);
     }
   });
-  return await zip.generateAsync({
+  return zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: {

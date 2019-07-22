@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Setting/NotificationAndSounds/*.ts",
+      "./fixtures/Logout.ts"
+    ],
+    "exclude_tags": [
+      "JPT-2110"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

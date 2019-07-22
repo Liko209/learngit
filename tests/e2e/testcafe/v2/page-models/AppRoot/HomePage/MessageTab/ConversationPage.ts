@@ -66,6 +66,9 @@ class HeaderMoreMenu extends BaseWebComponent {
   get adminActions() {
     return this.self.find('li').withText('Admin actions');
   }
+  get adminActionsByClass() {
+    return this.self.find('*[class=" arrow_right icon sc-htpNat dQnPez"]');
+  }
 
   async enterAdminActions() {
     return await this.t.hover(this.adminActions);
@@ -1196,7 +1199,7 @@ class AudioConference extends BaseWebComponent {
 
   // only host can see
   get hostAccess() {
-    return this.self.find('div').withText('Host Access');
+    return this.self.find('div').withText('Host Access'); // todo i18n
   }
 
   // only host can see
@@ -1205,7 +1208,7 @@ class AudioConference extends BaseWebComponent {
   }
 
   get participantAccess() {
-    return this.self.find('div').withText('Participant Access');
+    return this.self.find('div').withText('Participant Access'); // todo i18n
   }
 
   get participantCode() {

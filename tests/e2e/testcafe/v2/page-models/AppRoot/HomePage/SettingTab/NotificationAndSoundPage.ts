@@ -54,6 +54,22 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
   }
 
+  get ringerSourceSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-ringerSource');
+  }
+
+  get ringerSourceItems() {
+    return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  get ringerSourceLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-ringerSource');
+  }
+
+  get ringerSourceDescription() {
+    return this.getSelectorByAutomationId('settingItemDescription-ringerSource');
+  }
+
   microphoneSourceById(value: string) {
     return this.microphoneSourceItems.filter(`[data-test-automation-value="${value}"]`);
   }
@@ -94,6 +110,19 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     await this.t.expect(this.speakerSourceSelectBox.getAttribute('data-test-automation-value')).eql(value);
   }
 
+  async clickRingerSourceSelectBox() {
+    await this.t.click(this.ringerSourceSelectBox);
+  }
+
+  async currentRingerSourceLabelToBe(babel: string) {
+    await this.t.expect(this.ringerSourceSelectBox.textContent).eql(babel);
+  }
+
+  async currentRingerSourceIdToBe(value: string) {
+    await this.t.expect(this.ringerSourceSelectBox.getAttribute('data-test-automation-value')).eql(value);
+  }
+
+
   speakerSourceById(value: string) {
     return this.speakerSourceItems.filter(`[data-test-automation-value="${value}"]`);
   }
@@ -108,6 +137,22 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   getSpeakerSourceIdByNth(n: number) {
     return this.speakerSourceItems.nth(n).getAttribute('data-test-automation-value');
+  }
+
+  ringerSourceById(value: string) {
+    return this.ringerSourceItems.filter(`[data-test-automation-value="${value}"]`);
+  }
+
+  ringerSourceByLabel(label: string) {
+    return this.ringerSourceItems.withExactText(label);
+  }
+
+  getRingerSourceIdByLabel(label: string) {
+    return this.microphoneSourceByLabel(label).getAttribute('data-test-automation-value');
+  }
+
+  getRingerSourceIdByNth(n: number) {
+    return this.ringerSourceItems.nth(n).getAttribute('data-test-automation-value');
   }
 
   async selectMicrophoneSourceByLabel(label: string) {
@@ -132,6 +177,18 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   async selectSpeakerSourceByNth(n: number) {
     await this.t.click(this.speakerSourceItems.nth(n));
+  }
+
+  async selectRingerSourceByLabel(label: string) {
+    await this.t.click(this.ringerSourceByLabel(label));
+  }
+
+  async selectRingerSourceById(value: string) {
+    await this.t.click(this.ringerSourceById(value));
+  }
+
+  async selectRingerSourceByNth(n: number) {
+    await this.t.click(this.ringerSourceItems.nth(n));
   }
 
   /** desktop notification */

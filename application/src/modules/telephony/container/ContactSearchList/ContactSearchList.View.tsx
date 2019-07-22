@@ -73,8 +73,8 @@ class ContactSearchListViewComponent extends Component<
     }
   }
   private _scrollToView = (f: () => void) => () => {
-    const { dialerFocused } = this.props;
-    if (!dialerFocused) {
+    const { dialerInputFocused } = this.props;
+    if (!dialerInputFocused) {
       return;
     }
     f();

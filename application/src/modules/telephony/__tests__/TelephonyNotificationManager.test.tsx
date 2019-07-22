@@ -49,6 +49,8 @@ function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
     callId: '1',
     callState: CALL_STATE.IDLE,
     direction: null,
+    fromName: 'alex',
+    fromNum: '+44(650)-234-560',
   });
   (getEntity as jest.Mock).mockImplementation(entityName => {
     if (entityName === ENTITY_NAME.USER_SETTING) {
@@ -69,8 +71,6 @@ function setUpMock(incomingCallsValue: NOTIFICATION_OPTIONS) {
   telephonyNotificationManager._disposer = jest.fn();
   telephonyStore = jupiter.get(TelephonyStore);
   Object.assign(telephonyStore, {
-    phoneNumber: '+44(650)-234-560',
-    callerName: 'alex',
     uid: 1,
   });
 }
@@ -88,9 +88,7 @@ describe('TelephonyNotificationManager', () => {
       return translation[i] || i;
     });
 
-    formatPhoneNumber.mockImplementation(() => {
-      return '(650)-234-560';
-    });
+    formatPhoneNumber.mockImplementation(() => '(650)-234-560');
   });
 
   afterEach(() => {
@@ -166,6 +164,7 @@ describe('TelephonyNotificationManager', () => {
       },
     );
     it('should call show() with body contains "belle" when the call is from a caller which has a match in contacts', async () => {
+      call.direction = CALL_DIRECTION.INBOUND;
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 
@@ -186,6 +185,7 @@ describe('TelephonyNotificationManager', () => {
 
     it('should call show() with body contains "alex" when the call is from a caller which does not have a match in contacts but has a callerName', async () => {
       telephonyStore.uid = null;
+      call.direction = CALL_DIRECTION.INBOUND;
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 
@@ -206,7 +206,8 @@ describe('TelephonyNotificationManager', () => {
 
     it('should call show() with body contains "Unknown Caller" when the call is from a caller which does not have a match in contacts and number was blocked', async () => {
       telephonyStore.uid = null;
-      telephonyStore.callerName = ANONYMOUS;
+      call.direction = CALL_DIRECTION.INBOUND;
+      call.fromName = ANONYMOUS;
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 
@@ -226,7 +227,8 @@ describe('TelephonyNotificationManager', () => {
     });
     it('should call show() with body contains "Unknown Caller" when the call is from a caller which does not have a match in contacts and name is empty', async () => {
       telephonyStore.uid = null;
-      telephonyStore.callerName = '';
+      call.direction = CALL_DIRECTION.INBOUND;
+      call.fromName = '';
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       await telephonyNotificationManager._showNotification();
 

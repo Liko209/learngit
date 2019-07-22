@@ -94,16 +94,20 @@ class AccountService extends AbstractService
   }
 
   isAccountReady(): boolean {
-    return this.userConfig.getGlipUserId() ? true : false;
+    try {
+      return this.userConfig.getGlipUserId() ? true : false;
+    } catch {
+      return false;
+    }
   }
 
   async getCurrentUserInfo(): Promise<Nullable<Person>> {
-    const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PERSON_SERVICE,
-    );
     if (!this.isAccountReady()) {
       return null;
     }
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const userId = this.userConfig.getGlipUserId();
     try {
       return await personService.getById(userId);
