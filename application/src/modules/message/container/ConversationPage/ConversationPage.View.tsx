@@ -138,6 +138,12 @@ class ConversationPageViewComponent extends Component<
     }
   };
 
+  private _hasDroppedFolder = () => this._folderDetectMap[STREAM];
+
+  private _clearFolderDetection = () => { 
+    delete this._folderDetectMap[STREAM]
+  }
+
   private get messageInput() {
     const { t, groupId, canPost, loadingStatus } = this.props;
 
@@ -158,8 +164,8 @@ class ConversationPageViewComponent extends Component<
         onDrop={this._handleDropFileInMessageInput}
         dropzoneClass={MessageInputDropZoneClasses}
         detectedFolderDrop={this._preventInputFolderDrop}
-        hasDroppedFolder={() => this._folderDetectMap[INPUT]}
-        clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
+        hasDroppedFolder={this._hasDroppedFolder}
+        clearFolderDetection={this._clearFolderDetection}
       >
         <MessageInput
           viewRef={this._messageInputRef}
@@ -169,6 +175,10 @@ class ConversationPageViewComponent extends Component<
         />
       </JuiDropZone>
     );
+  }
+
+  componentWillUnmount() {
+    delete this._clearFolderDetection;
   }
 
   render() {
@@ -201,8 +211,8 @@ class ConversationPageViewComponent extends Component<
           onDrop={this._handleDropFileInStream}
           dropzoneClass={StreamDropZoneClasses}
           detectedFolderDrop={this._preventStreamFolderDrop}
-          hasDroppedFolder={() => this._folderDetectMap[STREAM]}
-          clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
+          hasDroppedFolder={this._hasDroppedFolder}
+          clearFolderDetection={this._clearFolderDetection}
         >
           {streamNode}
         </JuiDropZone>
