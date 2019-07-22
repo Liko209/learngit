@@ -734,9 +734,8 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[href]`)
   }
 
-  get img() {
-    this.warnFlakySelector(); // todo: all specify item...
-    return this.body.find('img');
+  get images() {
+    return this.getSelectorByAutomationClass('image', this.body);
   }
 
   get fileThumbnail() {
@@ -745,10 +744,6 @@ export class PostItem extends BaseWebComponent {
 
   get editTextArea() {
     return this.self.find('.ql-editor');
-  }
-
-  get postImg() {
-    return this.self.find('img');
   }
 
   async editMessage(message: string, options?: TypeActionOptions) {
@@ -964,8 +959,8 @@ export class PostItem extends BaseWebComponent {
   }
 
   async waitImageVisible(timeout = 10e3) {
-    await this.t.expect(this.self.find('img').clientHeight).gt(0, { timeout });
-    await this.t.expect(this.self.find('img').clientWidth).gt(0, { timeout });
+    await this.t.expect(this.images.exists).ok({ timeout });
+    await this.t.expect(this.images.visible).ok({ timeout });
   }
 
   get fileNames() {

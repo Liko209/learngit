@@ -5,9 +5,7 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import {
-  Post, IPostQuery, IPostResult, IRawPostResult,
-} from '../entity';
+import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
 import { PostDao } from '../dao';
@@ -55,7 +53,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     const performanceTracer = PerformanceTracer.start();
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
@@ -81,7 +79,6 @@ class PostFetchController {
       const hasMorePostInRemote = await this._groupService.hasMorePostInRemote(
         groupId,
       );
-      result.hasMore = hasMorePostInRemote;
       const shouldFetch = hasMorePostInRemote[direction];
       mainLogger.info(
         LOG_FETCH_POST,
@@ -90,6 +87,8 @@ class PostFetchController {
         }`,
       );
       if (!shouldSaveToDb || shouldFetch) {
+        result.hasMore[direction] = hasMorePostInRemote[direction];
+
         const validAnchorPostId = this._findValidAnchorPostId(
           direction,
           result.posts,
@@ -140,7 +139,7 @@ class PostFetchController {
       limit: unreadCount,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     mainLogger.info(
       LOG_FETCH_POST,
@@ -314,10 +313,11 @@ class PostFetchController {
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex((localPost: Post) => (
-            localPost.unique_id !== undefined &&
-              localPost.unique_id === remotePost.unique_id
-          ));
+          const index = localPosts.findIndex(
+            (localPost: Post) =>
+              localPost.unique_id !== undefined &&
+              localPost.unique_id === remotePost.unique_id,
+          );
           if (index !== -1) {
             localPosts.splice(index, 1);
           }
@@ -339,7 +339,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     mainLogger.info(
       LOG_FETCH_POST,
@@ -382,7 +382,7 @@ class PostFetchController {
       limit: unreadPostQuery.unreadCount,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     const performanceTracer = PerformanceTracer.start();
     const postDao = daoManager.getDao(PostDao);

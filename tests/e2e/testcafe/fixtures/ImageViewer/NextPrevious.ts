@@ -65,7 +65,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog(`When I click the first image `, async () => {
-    await t.click(conversationPage.postItemById(imagePostId).img.nth(0));
+    await t.click(conversationPage.postItemById(imagePostId).images.nth(0));
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {
@@ -170,7 +170,7 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   const viewerDialog = app.homePage.fileAndImagePreviewer;
   await h(t).withLog(`When I click the last image `, async () => {
-    await t.click(conversationPage.postItemById(imagePostId).img.nth(-1));
+    await t.click(conversationPage.postItemById(imagePostId).images.nth(-1));
   });
 
   await h(t).withLog(`Then the image viewer should be popup`, async () => {

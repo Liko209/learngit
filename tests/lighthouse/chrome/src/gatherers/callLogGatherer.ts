@@ -10,20 +10,22 @@ import * as bluebird from 'bluebird';
 
 class CallLogGatherer extends DebugGatherer {
   private metricKeys: Array<string> = [
-    "init_call_log_badge",
     "fetch_call_log",
     "fetch_call_log_from_db",
     // "clear_all_call_log",
     // "clear_all_call_log_from_server",
-    // "delete_call_log",
-    // "delete_call_log_from_server",
+    "delete_call_log",
+    "delete_call_log_from_server",
     "fetch_voicemails",
     "fetch_voicemails_from_db",
     // "clear_all_voicemails",
     // "clear_all_voicemails_from_server",
     "init_rc_message_badge",
-    "delete_rc_message",
-    "delete_rc_message_from_server",
+    // "delete_rc_message",
+    // "delete_rc_message_from_server",
+    "filter_and_sort_call_log",
+    "filter_and_sort_voicemail",
+    "fetch_recent_call_logs"
   ];
 
   constructor() {
@@ -47,30 +49,33 @@ class CallLogGatherer extends DebugGatherer {
         cnt = 20;
         this.clearTmpGatherer(this.metricKeys);
 
-        length = this.tmpConsoleMetrics['delete_rc_message'].length;
+        // length = this.tmpConsoleMetrics['delete_rc_message'].length;
 
         authUrl = await JupiterUtils.getAuthUrl(url, browser);
 
         page = await phonePage.newPage();
 
         await page.goto(authUrl);
-
         await phonePage.waitForCompleted();
+
+        await phonePage.lookupRecentCallLog();
+
+        await phonePage.createCallLog();
+        await phonePage.deleteCallLog();
 
         await phonePage.enterVoiceMailTab();
 
         await phonePage.createVoiceMail();
+        // await phonePage.deleteVoiceMail();
 
-        await phonePage.deleteVoiceMail();
+        // while (cnt-- > 0) {
+        //   if (length >= this.tmpConsoleMetrics['delete_rc_message'].length) {
+        //     await bluebird.delay(2000);
+        //     continue;
+        //   }
 
-        while (cnt-- > 0) {
-          if (length >= this.tmpConsoleMetrics['delete_rc_message'].length) {
-            await bluebird.delay(2000);
-            continue;
-          }
-
-          break;
-        }
+        //   break;
+        // }
 
         this.pushGatherer(this.metricKeys);
 
@@ -95,6 +100,7 @@ class CallLogGatherer extends DebugGatherer {
         ui: []
       };
     }
+    console.log(JSON.stringify(result));
     return result;
   }
 }
