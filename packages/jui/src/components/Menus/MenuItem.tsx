@@ -18,10 +18,12 @@ import {
   grey,
   palette,
 } from '../../foundation/utils';
+import { ListItemSecondaryAction } from '@material-ui/core';
 
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
+  secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
 } & MuiMenuItemProps;
@@ -33,7 +35,6 @@ const StyledMuiListItemIcon = styled(MuiListItemIcon)`
     color: ${grey('700')};
   }
 `;
-
 const WrappedMenuItem = ({
   icon,
   avatar,
@@ -51,6 +52,9 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
     padding: ${spacing(1, 4)};
     box-sizing: border-box;
+    &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+      padding-right: ${spacing(12)};
+    }
 
     &:hover {
       background-color: ${palette('grey', '500', 1)};
@@ -58,31 +62,40 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 
     &:active {
       background-color: ${palette('primary', 'main')};
-      color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+      color: ${({ theme }) =>
+        theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       ${StyledMuiListItemIcon} {
-        color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+        color: ${({ theme }) =>
+          theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       }
     }
   }
 `;
+const StyledSecondaryAction = styled(ListItemSecondaryAction)`
+  && {
+    right: ${spacing(2)};
+  }
+`;
 
-class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
-  render() {
-    const {
-      icon,
-      children,
-      disabled,
-      avatar,
-      automationId,
-      maxWidth,
-      ...rest
-    } = this.props;
+const JuiMenuItem = React.memo(
+  ({
+    icon,
+    children,
+    disabled,
+    avatar,
+    automationId,
+    maxWidth,
+    secondaryAction,
+    classes,
+    ...rest
+  }: JuiMenuItemProps) => {
     let iconElement: any;
     if (typeof icon !== 'string') {
       iconElement = icon;
     } else {
       iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
     }
+
     return (
       <StyledMenuItem
         tabIndex={0}
@@ -95,9 +108,12 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
         {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
         {children}
+        {secondaryAction && (
+          <StyledSecondaryAction>{secondaryAction}</StyledSecondaryAction>
+        )}
       </StyledMenuItem>
     );
-  }
-}
+  },
+);
 
 export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem };
