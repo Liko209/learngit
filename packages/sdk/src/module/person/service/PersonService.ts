@@ -29,7 +29,8 @@ import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer, mainLogger } from 'foundation';
+import { EditablePersonInfo, HeadShotInfo } from '../types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -45,7 +46,9 @@ class PersonService extends EntityBaseService<Person>
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON),
+    );
   }
 
   protected buildEntityCacheController() {
@@ -149,9 +152,7 @@ class PersonService extends EntityBaseService<Person>
     );
   }
 
-  async matchContactByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Person | null> {
+  async matchContactByPhoneNumber(phoneNumber: string): Promise<Person | null> {
     return await this.getPersonController().matchContactByPhoneNumber(
       phoneNumber,
     );
@@ -182,6 +183,14 @@ class PersonService extends EntityBaseService<Person>
       ServiceConfig.SYNC_SERVICE,
     ).getUserConfig() as SyncUserConfig;
     return syncConfig && syncConfig.getFetchedRemaining();
+  }
+
+  async editPersonalInfo(
+    info: EditablePersonInfo,
+    headshotInfo?: HeadShotInfo,
+  ) {
+    mainLogger.error('no implementation', { info, headshotInfo });
+    return undefined;
   }
 }
 
