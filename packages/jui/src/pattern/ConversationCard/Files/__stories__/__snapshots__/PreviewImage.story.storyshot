@@ -1,24 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/ConversationCard JuiPreviewImage 1`] = `
-.c3 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-}
-
-.c4 {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  pointer-events: none;
-  font-size: 36px;
-}
-
 .c1.c1 {
   cursor: pointer;
   float: left;
@@ -42,7 +24,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   box-shadow: none;
 }
 
-.c1:hover .c5 {
+.c1:hover .c3 {
   -webkit-transform: translate(0,0);
   -ms-transform: translate(0,0);
   transform: translate(0,0);
@@ -127,22 +109,7 @@ exports[`Storyshots Pattern/ConversationCard JuiPreviewImage: Pattern/Conversati
   >
     <div
       className="c2"
-    >
-      <span
-        className=" image_preview icon c3"
-      >
-        <svg
-          className="c4"
-          role="img"
-          size="extraLarge"
-        >
-          <use
-            href="#icon-image-preview"
-            xlinkHref="#icon-image-preview"
-          />
-        </svg>
-      </span>
-    </div>
+    />
   </div>
 </div>
 `;
