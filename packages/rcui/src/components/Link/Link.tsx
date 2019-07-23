@@ -29,6 +29,7 @@ const StyledComponent = styled('span')<RuiLinkProps>`
         .setAlpha(1 - theme.palette.action.hoverOpacity * 2)
         .toRgbString()};
   }
+  pointer-events: auto;
 `;
 
 type ILink = React.ComponentType<RuiLinkProps>;

@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container } from 'framework';
-import { HomeStore } from '@/modules/home/store';
+import { HomeStore } from '@/modules/home/store'; // TELEPHONY_SERVICE
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
@@ -22,15 +24,25 @@ import { ModalPortal } from '@/containers/Dialog';
 import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AboutView } from '@/containers/About';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { RuiLink } from 'rcui/components/Link';
+
+type Props = WithTranslation & HomeViewProps;
 
 @observer
-class HomeView extends Component<HomeViewProps> {
+class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
+  );
 
-  constructor(props: HomeViewProps) {
-    super(props);
-  }
   componentDidMount() {
+    const { t } = this.props;
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -39,6 +51,20 @@ class HomeView extends Component<HomeViewProps> {
     if (window.jupiterElectron && window.jupiterElectron.onCheckNativeUpgrade) {
       window.jupiterElectron.onCheckNativeUpgrade();
     }
+
+    Notification.flagToast({
+      message: (
+        <div>
+          {t('home.confirmEmergencyAddress')}
+          <RuiLink>Confirm address now.</RuiLink>
+        </div>
+      ),
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: true,
+    });
+    this._telephonyService.openE911();
   }
 
   componentWillUnmount() {
@@ -88,5 +114,7 @@ class HomeView extends Component<HomeViewProps> {
     );
   }
 }
+
+const HomeView = withTranslation('translations')(HomeViewComponent);
 
 export { HomeView };

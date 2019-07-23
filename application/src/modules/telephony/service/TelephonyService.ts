@@ -50,6 +50,8 @@ import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/consta
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+// import { Dialog } from '@/containers/Dialog';
+import { OpenE911 } from '../container/E911';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -975,6 +977,11 @@ class TelephonyService {
       this._currentSoundTrackForBeep = cursor;
     }
   };
+
+  openE911 = () => {
+    // Dialog.simple(<E911 />)
+    OpenE911();
+  }
 }
 
 export { TelephonyService };

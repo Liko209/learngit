@@ -74,7 +74,12 @@
     "play": "Play",
     "pause": "Pause",
     "reload": "Reload",
-    "goToConversation": "Go to conversation"
+    "goToConversation": "Go to conversation",
+    "country": "Country",
+    "city": "City",
+    "cityPlaceholder": "e.g.Alabaster",
+    "zipCode": "Zip Code",
+    "zipCodePlaceholder": "e.g.35007"
   },
   "auth": {
     "signIn": "Sign in",
@@ -97,7 +102,8 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
-    "openDialer": "Open the dialer"
+    "openDialer": "Open the dialer",
+    "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address."
   },
   "globalSearch": {
     "search": "Search",
@@ -694,7 +700,16 @@
     "dial": "Dial:",
     "noMatch": "No matched records",
     "searching": "Searching...",
-    "forwardCall": "Forward Call"
+    "forwardCall": "Forward Call",
+    "e911": {
+      "customerName": "Customer Name",
+      "customerNamePlaceholder": "e.g.John Doe",
+      "streetAddress": "Street Address",
+      "streetAddressPlaceholder": "e.g.120 1st St SW",
+      "additionalAddress": "Additional Address",
+      "additionalAddressPlaceholder": "e.g. Suite 500 or Building A, Floor 3",
+      "stateProvince": "State/Province"
+    }
   },
   "phone": {
     "tab": {
