@@ -1,8 +1,8 @@
-import * as React from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
 import alignCenterDecorator from '../../../storybook/decorators/alignCenterDecorator';
-import { RuiLink } from '../';
+import { RuiLink } from "..";
 
 function getKnobs() {
   const content = text('content', 'Button');
