@@ -33,11 +33,11 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c2.c2.containedButtonStyle {
   color: #fff;
-  box-shadow: unset;
   background-color: #0684bd;
 }
 
@@ -48,10 +48,6 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
 .c2.c2.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: #fff;
-}
-
-.c2.c2.containedButtonStyle:active {
-  box-shadow: unset;
 }
 
 .c2.c2.textButtonStyle.disabled {
@@ -138,9 +134,10 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
   className="c0"
 >
   <span
-    className="MuiButtonBase-root MuiButton-root MuiButton-contained containedButtonStyle MuiButton-raised MuiButton-sizeLarge c1 c2"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiButton-root c1 c2 MuiButton-contained containedButtonStyle MuiButton-sizeLarge"
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -151,7 +148,7 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="button"
-    tabIndex="0"
+    tabIndex={0}
   >
     <span
       className="MuiButton-label"
@@ -176,9 +173,6 @@ exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
         hello  hello  hello  hello  hello  hello  hello  hello  hello  hello  
       </span>
     </span>
-    <span
-      className="MuiTouchRipple-root"
-    />
   </span>
 </div>
 `;
