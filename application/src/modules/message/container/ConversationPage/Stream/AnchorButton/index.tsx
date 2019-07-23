@@ -11,10 +11,10 @@ type Props = {
   historyViewed: boolean | null;
   jumpToFirstUnreadLoading: boolean;
   jumpToLatest: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
   jumpToFirstUnread: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
   hasMore: (direction: DIRECTION) => boolean;
   isAboveScrollToLatestCheckPoint: boolean;
@@ -30,7 +30,7 @@ const AnchorButton = React.memo(
     jumpToFirstUnread,
     jumpToLatest,
     isAboveScrollToLatestCheckPoint,
-    hasMore
+    hasMore,
   }: Props) => {
     let props;
     let text;
@@ -39,7 +39,6 @@ const AnchorButton = React.memo(
       hasHistoryUnread &&
       historyUnreadCount > 1 &&
       (!firstHistoryUnreadInPage || historyViewed === false);
-
     if (shouldHaveJumpToUnreadButton) {
       text = `${
         historyUnreadCount > 99 ? '99+' : String(historyUnreadCount)
@@ -47,23 +46,24 @@ const AnchorButton = React.memo(
       props = {
         onClick: jumpToFirstUnread,
         loading: jumpToFirstUnreadLoading,
-        arrowDirection: DIRECTION.UP
+        arrowDirection: DIRECTION.UP,
       };
     } else if (isAboveScrollToLatestCheckPoint || hasMore(DIRECTION.DOWN)) {
       text = `${t('message.stream.jumpToLatest')}`;
       props = {
         onClick: jumpToLatest,
-        arrowDirection: DIRECTION.DOWN
+        arrowDirection: DIRECTION.DOWN,
       };
     } else {
       return null;
     }
+    console.log(shouldHaveJumpToUnreadButton);
     return (
       <AnchorButtonWrapper>
         <JuiLozengeButton {...props}>{text}</JuiLozengeButton>
       </AnchorButtonWrapper>
     );
-  }
+  },
 );
 
 export { AnchorButton };
