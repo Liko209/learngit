@@ -38,8 +38,8 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
         id && !this._media && this._getMedia(id);
       },
       {
-        fireImmediately: true
-      }
+        fireImmediately: true,
+      },
     );
     const disposeCreateMediaReaction = this.reaction(
       () => this.props.src,
@@ -47,8 +47,8 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
         src && src !== this._currentSrc && !this._media && this._createMedia();
       },
       {
-        fireImmediately: true
-      }
+        fireImmediately: true,
+      },
     );
 
     this.reaction(
@@ -60,7 +60,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
           }
           if (this.props.trackId) {
             console.warn(
-              '[AudioPlayer] media is created outside, trackId is not working.'
+              '[AudioPlayer] media is created outside, trackId is not working.',
             );
           }
           if (this._media === media) {
@@ -76,8 +76,8 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
         }
       },
       {
-        fireImmediately: true
-      }
+        fireImmediately: true,
+      },
     );
   }
 
@@ -90,7 +90,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     return {
       id,
       src: src || '',
-      trackId
+      trackId,
     };
   }
 
@@ -254,7 +254,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
       this._currentTime || (typeof startTime !== 'undefined' && startTime) || 0;
 
     this._media.play({
-      startTime: startTimestamp
+      startTime: startTimestamp,
     });
     onPlay && onPlay();
   };
@@ -338,7 +338,6 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
 
   @action
   private _onTimeUpdate = () => {
-    // 当media被切换的时候，也会触发这个，这个时候的 currentTime 设置为 0
     const { onTimeUpdate } = this.props;
     const currentTime = (this._media && this._media.currentTime) || 0;
     this._currentTime = currentTime;

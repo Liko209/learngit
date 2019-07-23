@@ -31,8 +31,19 @@ const JuiAudioAction = ({
   onAction,
   tooltip,
   label,
+  actionIcon,
 }: JuiAudioActionProps) => {
-  if (status === JuiAudioStatus.LOADING) {
+  let iconTitle = '';
+
+  if (Object.is(status, JuiAudioStatus.PLAY)) {
+    iconTitle =
+      (actionIcon && actionIcon[JuiAudioStatus.PLAY]) || JuiAudioStatus.PLAY;
+  } else if (Object.is(status, JuiAudioStatus.PAUSE)) {
+    iconTitle =
+      (actionIcon && actionIcon[JuiAudioStatus.PAUSE]) || JuiAudioStatus.PAUSE;
+  } else if (Object.is(status, JuiAudioStatus.RELOAD)) {
+    iconTitle = (actionIcon && actionIcon[JuiAudioStatus.RELOAD]) || 'refresh';
+  } else if (Object.is(status, JuiAudioStatus.LOADING)) {
     return (
       <StyledPlayerLoading
         data-test-automation-id="audio-loading-btn"
@@ -40,9 +51,6 @@ const JuiAudioAction = ({
       />
     );
   }
-
-  const isReload = Object.is(status, JuiAudioStatus.RELOAD);
-  const iconTitle = isReload ? 'refresh' : status;
 
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation();

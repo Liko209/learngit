@@ -83,17 +83,17 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
 
     switch (status) {
       case JuiAudioStatus.PLAY: {
-        const playHandler = actions[JuiAudioStatus.PLAY].handler;
+        const playHandler = actions[JuiAudioStatus.PLAY]!.handler;
         playHandler && playHandler();
         break;
       }
       case JuiAudioStatus.PAUSE: {
-        const pauseHandler = actions[JuiAudioStatus.PAUSE].handler;
+        const pauseHandler = actions[JuiAudioStatus.PAUSE]!.handler;
         pauseHandler && pauseHandler();
         break;
       }
       case JuiAudioStatus.RELOAD: {
-        const reloadHandler = actions[JuiAudioStatus.RELOAD].handler;
+        const reloadHandler = actions[JuiAudioStatus.RELOAD]!.handler;
         reloadHandler && reloadHandler();
         break;
       }
@@ -105,9 +105,10 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
 
   render() {
     const {
-      duration,
+      duration = 0,
       status,
       actions,
+      actionIcon,
       mode = JuiAudioMode.FULL,
       isHighlight = false,
     } = this.props;
@@ -122,6 +123,7 @@ class JuiAudioPlayer extends React.PureComponent<JuiAudioPlayerProps, State> {
           tooltip={action && action.tooltip}
           label={action && action.label}
           onAction={this._onAction}
+          actionIcon={actionIcon}
         />
         <JuiAudioProgress
           status={status}
