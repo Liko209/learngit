@@ -11,7 +11,7 @@ import {
   height,
   width,
   grey,
-  typography
+  typography,
 } from '../../foundation/utils/styles';
 
 type Props = {
@@ -89,14 +89,14 @@ class JuiContainer extends PureComponent<Props> {
   static defaultProps = {
     removeMargin: true,
     removePadding: false,
-    keypadFullSize: false
+    keypadFullSize: false,
   };
 
   componentDidMount() {
     if (this._containerRef.current) {
       this._containerRef.current.addEventListener(
         ANIMIATION_END_EVT,
-        this._onFocus
+        this._onFocus,
       );
     }
   }
@@ -107,7 +107,7 @@ class JuiContainer extends PureComponent<Props> {
     }
     this._containerRef.current.removeEventListener(
       ANIMIATION_END_EVT,
-      this._onFocus
+      this._onFocus,
     );
   }
   _onFocus = (e: any) => {
@@ -126,7 +126,7 @@ class JuiContainer extends PureComponent<Props> {
       removeMargin,
       removePadding,
       keypadFullSize,
-      CallerIdSelector
+      CallerIdSelector,
     } = this.props;
 
     const keypadActions = Array.isArray(KeypadActions)
@@ -250,5 +250,5 @@ export {
   KeypadHeaderContainer,
   ContactSearchContainer,
   ContactSearchItemContent,
-  CallerIdContainer
+  CallerIdContainer,
 };

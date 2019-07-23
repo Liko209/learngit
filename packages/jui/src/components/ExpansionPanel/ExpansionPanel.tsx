@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import ExpansionPanel, {
-  ExpansionPanelProps
+  ExpansionPanelProps,
 } from '@material-ui/core/ExpansionPanel';
 import styled from '../../foundation/styled-components';
 
@@ -28,7 +28,7 @@ const JuiExpansionPanel = React.memo((props: JuiExpansionPanelProps) => (
   <StyledExpansionPanel
     classes={{
       root: 'root',
-      expanded: 'expanded'
+      expanded: 'expanded',
     }}
     {...props}
   />

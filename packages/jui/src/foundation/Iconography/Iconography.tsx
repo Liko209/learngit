@@ -59,7 +59,8 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: ${({ size = 'large' }) => (size !== 'inherit' ? width(sizes[size]) : 'inherit')};
+  font-size: ${({ size = 'large' }) =>
+    size !== 'inherit' ? width(sizes[size]) : 'inherit'};
   ${({ theme, iconColor }) => {
     if (!iconColor) {
       return;

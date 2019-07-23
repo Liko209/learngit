@@ -28,8 +28,9 @@ const ToggleButton = styled(MuiSwitch)`
       background: none;
     }
   }
-  ${props => (!props.disabled
-    ? `
+  ${props =>
+    !props.disabled
+      ? `
     &:hover {
       .custom-bar {
         opacity: ${1 - props.theme.palette.action.hoverOpacity} !important;
@@ -41,7 +42,7 @@ const ToggleButton = styled(MuiSwitch)`
       }
     }
   `
-    : null)};
+      : null};
 
   .custom-bar {
     opacity: 1;
@@ -81,7 +82,8 @@ const ToggleButton = styled(MuiSwitch)`
   }
 
   input {
-    transform: ${({ checked, theme }) => `translateX(${spacing(checked ? -2 : 2)({ theme })})`};
+    transform: ${({ checked, theme }) =>
+      `translateX(${spacing(checked ? -2 : 2)({ theme })})`};
   }
 `;
 

@@ -25,22 +25,22 @@ const knobs = {
       {
         small: 'small',
         medium: 'medium',
-        large: 'large'
+        large: 'large',
       },
-      'medium'
+      'medium',
     ),
   color: () =>
     select(
       'color',
       {
         primary: 'primary',
-        secondary: 'secondary'
+        secondary: 'secondary',
       },
-      'primary'
+      'primary',
     ),
   invisible: () => boolean('invisible', false),
   awake: () => boolean('awake', true),
-  disabled: () => boolean('disabled', false)
+  disabled: () => boolean('disabled', false),
 };
 storiesOf('Components/Buttons/IconButtons', module)
   .addDecorator(alignCenterDecorator)

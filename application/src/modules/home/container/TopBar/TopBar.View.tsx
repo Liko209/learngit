@@ -56,9 +56,7 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const {
-      openGlobalSearch, searchKey, onClear, t,
-    } = this.props;
+    const { openGlobalSearch, searchKey, onClear, t } = this.props;
 
     return (
       <JuiTopBar

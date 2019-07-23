@@ -26,17 +26,17 @@ function getKnobs() {
     'size',
     {
       small: 'small',
-      medium: 'medium'
+      medium: 'medium',
     },
-    'medium'
+    'medium',
   );
   const color = select<JuiCheckboxButtonProps['color']>(
     'color',
     {
       primary: 'primary',
-      secondary: 'secondary'
+      secondary: 'secondary',
     },
-    'primary'
+    'primary',
   );
   const disabled = boolean('disabled', false);
   const awake = boolean('awake', true);
@@ -49,7 +49,7 @@ function getKnobs() {
     disabled,
     awake,
     invisible,
-    checked
+    checked,
   };
 }
 

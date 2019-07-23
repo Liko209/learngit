@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 
 import MuiMenuItem, {
-  MenuItemProps as MuiMenuItemProps
+  MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
@@ -88,7 +88,7 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
       ${({ theme }) =>
         theme.transitions.create('background-color', {
           duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeInOut
+          easing: theme.transitions.easing.easeInOut,
         })};
   }
   &&&& {
@@ -165,7 +165,7 @@ type IConversationListItem = {
 
 const touchRippleClasses = {
   child: 'child',
-  rippleVisible: 'rippleVisible'
+  rippleVisible: 'rippleVisible',
 };
 
 const JuiConversationListItem: IConversationListItem = memo(
@@ -221,7 +221,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {children}
       </StyledListItem>
     );
-  }
+  },
 );
 
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
@@ -230,5 +230,5 @@ export default JuiConversationListItem;
 export {
   JuiConversationListItemProps,
   JuiConversationListItem,
-  JuiMenuContain
+  JuiMenuContain,
 };

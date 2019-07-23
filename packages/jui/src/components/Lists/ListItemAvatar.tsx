@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiListItemAvatar, {
-  ListItemAvatarProps as MuiListItemAvatarProps
+  ListItemAvatarProps as MuiListItemAvatarProps,
 } from '@material-ui/core/ListItemAvatar';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';

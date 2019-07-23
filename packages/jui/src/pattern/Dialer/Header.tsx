@@ -9,7 +9,7 @@ import React, {
   KeyboardEvent,
   MouseEvent,
   createRef,
-  RefObject
+  RefObject,
 } from 'react';
 import styled from '../../foundation/styled-components';
 import {
@@ -17,7 +17,7 @@ import {
   typography,
   palette,
   height,
-  ellipsis
+  ellipsis,
 } from '../../foundation/utils/styles';
 import { JuiTextField } from '../../components/Forms';
 import { Theme } from '../../foundation/theme/theme';
@@ -133,7 +133,7 @@ const StyledInputContainer = styled('div')`
 const colorTransition = ({ theme }: { theme: Theme }) =>
   theme.transitions.create(['color'], {
     easing: theme.transitions.easing.easeInOut,
-    duration: theme.transitions.duration.standard
+    duration: theme.transitions.duration.standard,
   });
 
 const SearchInput = styled(JuiTextField)<any>`
@@ -185,7 +185,7 @@ class JuiHeader extends PureComponent<Props, State> {
   private _inputRef: RefObject<any> = createRef();
 
   state = {
-    showHoverActions: false
+    showHoverActions: false,
   };
   /* eslint-disable react/sort-comp */
   private _handleMouseEvent = () => {
@@ -196,7 +196,7 @@ class JuiHeader extends PureComponent<Props, State> {
     const { showHoverActions } = this.state;
     if (HoverActions) {
       this.setState({
-        showHoverActions: !showHoverActions
+        showHoverActions: !showHoverActions,
       });
     }
   };
@@ -262,7 +262,7 @@ class JuiHeader extends PureComponent<Props, State> {
     const input =
       this._inputRef.current &&
       (ReactDOM.findDOMNode(
-        this._inputRef.current
+        this._inputRef.current,
       ) as HTMLDivElement).querySelector('input');
 
     if (!input) {
@@ -290,7 +290,7 @@ class JuiHeader extends PureComponent<Props, State> {
       ) {
         const [min, max] = [
           input.selectionStart as number,
-          input.selectionEnd as number
+          input.selectionEnd as number,
         ];
         this.props.deleteInputString(min, max - 1);
         this._moveCaretToPos(input, input.selectionStart);
@@ -308,7 +308,7 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _moveCaretToPos = debounce(moveCaretToPos, 17, {
     leading: false,
-    trailing: true
+    trailing: true,
   });
 
   private _doGetCaretPosition() {
@@ -316,7 +316,7 @@ class JuiHeader extends PureComponent<Props, State> {
       return 0;
     }
     const inputField = (ReactDOM.findDOMNode(
-      this._inputRef.current
+      this._inputRef.current,
     ) as HTMLDivElement).querySelector('input') as HTMLInputElement;
     // Initialize
     let iCaretPos = 0;
@@ -376,7 +376,7 @@ class JuiHeader extends PureComponent<Props, State> {
       placeholder,
       ariaLabelForDelete,
       onKeyDown,
-      Back
+      Back,
     } = this.props;
     const fakeFunc = () => {};
 
@@ -401,10 +401,10 @@ class JuiHeader extends PureComponent<Props, State> {
           inputProps={{
             placeholder,
             className: DIALER_CLASS_NAME,
-            maxLength: 30
+            maxLength: 30,
           }}
           InputProps={{
-            disableUnderline: true
+            disableUnderline: true,
           }}
           onKeyDown={onKeyDown || fakeFunc}
           autoFocus

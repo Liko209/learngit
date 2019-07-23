@@ -31,7 +31,7 @@ type JuiCheckboxButtonProps = CheckboxButtonProps & {
 
 const iconSizes = {
   medium: 5,
-  small: 4
+  small: 4,
 };
 
 const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`
@@ -45,7 +45,7 @@ const rippleEnter = ({ theme }: { theme: Theme }) => keyframes`
   }
 `;
 const touchRippleClasses = {
-  rippleVisible: 'rippleVisible'
+  rippleVisible: 'rippleVisible',
 };
 
 const StyledIcon = styled(JuiIconography)``;
@@ -139,16 +139,16 @@ class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
     invisible: false,
     tooltipTitle: '',
     iconName: 'check_box_outline_blank',
-    checkedIconName: 'check_box'
+    checkedIconName: 'check_box',
   };
   static dependencies = [MuiCheckbox, JuiIconography, RuiTooltip];
   state = {
-    checked: false
+    checked: false,
   };
 
   changeHandler = (
     event: React.ChangeEvent<HTMLInputElement>,
-    checked: boolean
+    checked: boolean,
   ) => {
     this.setState({ checked });
     this.props.onChange && this.props.onChange(event, checked);

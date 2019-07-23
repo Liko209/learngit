@@ -11,17 +11,17 @@ import { createMuiTheme } from '@material-ui/core/styles';
 const rawTheme = {
   breakpoints: {
     keys: ['xs', 'sm', 'md', 'lg', 'xl'],
-    values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 }
+    values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
   },
   direction: 'ltr',
   mixins: {
     toolbar: {
       minHeight: 56,
       '@media (min-width:0px) and (orientation: landscape)': {
-        minHeight: 48
+        minHeight: 48,
       },
-      '@media (min-width:600px)': { minHeight: 64 }
-    }
+      '@media (min-width:600px)': { minHeight: 64 },
+    },
   },
   overrides: {},
   palette: {
@@ -42,7 +42,7 @@ const rawTheme = {
       light: '#18a4de',
       main: '#0684bd',
       dark: '#005488',
-      contrastText: '#fff'
+      contrastText: '#fff',
     },
     secondary: {
       50: '#fff3e0',
@@ -58,13 +58,13 @@ const rawTheme = {
       light: '#ffa424',
       main: '#ff8800',
       dark: '#f36703',
-      contrastText: 'rgba(0, 0, 0, 0.87)'
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     error: {
       light: '#e57373',
       main: '#f44336',
       dark: '#d32f2f',
-      contrastText: '#fff'
+      contrastText: '#fff',
     },
     grey: {
       50: '#fafafa',
@@ -80,7 +80,7 @@ const rawTheme = {
       A100: '#d5d5d5',
       A200: '#aaaaaa',
       A400: '#303030',
-      A700: '#616161'
+      A700: '#616161',
     },
     contrastThreshold: 3,
     tonalOffset: 0.2,
@@ -88,13 +88,13 @@ const rawTheme = {
       primary: 'rgba(0, 0, 0, 0.87)',
       secondary: 'rgba(0, 0, 0, 0.54)',
       disabled: 'rgba(0, 0, 0, 0.38)',
-      hint: 'rgba(0, 0, 0, 0.38)'
+      hint: 'rgba(0, 0, 0, 0.38)',
     },
     divider: 'rgba(0, 0, 0, 0.12)',
     background: {
       paper: '#fff',
       default: '#fafafa',
-      disabled: 'rgba(255,55,55,.05)'
+      disabled: 'rgba(255,55,55,.05)',
     },
     action: {
       active: '#EBF6FA',
@@ -102,13 +102,13 @@ const rawTheme = {
       hoverOpacity: 0.12,
       selected: 'rgba(0, 0, 0, 0.14)',
       disabled: 'rgba(0, 0, 0, 0.26)',
-      disabledBackground: 'rgba(0, 0, 0, 0.12)'
+      disabledBackground: 'rgba(0, 0, 0, 0.12)',
     },
     semantic: {
       negative: '#f44336',
       positive: '#26a304',
       critical: '#f6ad16',
-      neutral: '#616161'
+      neutral: '#616161',
     },
     accent: {
       ash: '#bfbfbf',
@@ -122,7 +122,7 @@ const rawTheme = {
       tomato: '#ff3737',
       indigo: '#4a1e8c',
       purple: '#ea80fc',
-      persimmon: '#ff793d'
+      persimmon: '#ff793d',
     },
     tooltip: { dark: '#616161' },
     avatar: {
@@ -135,8 +135,8 @@ const rawTheme = {
       persimmon: '#FF8800',
       pear: '#5FB95C',
       brass: '#CC9922',
-      lake: '#6FAFEB'
-    }
+      lake: '#6FAFEB',
+    },
   },
   props: {},
   shadows: [
@@ -164,7 +164,7 @@ const rawTheme = {
     '0px 10px 13px -6px rgba(0, 0, 0, 0.2),0px 21px 33px 3px rgba(0, 0, 0, 0.14),0px 8px 40px 7px rgba(0, 0, 0, 0.12)',
     '0px 10px 14px -6px rgba(0, 0, 0, 0.2),0px 22px 35px 3px rgba(0, 0, 0, 0.14),0px 8px 42px 7px rgba(0, 0, 0, 0.12)',
     '0px 11px 14px -7px rgba(0, 0, 0, 0.2),0px 23px 36px 3px rgba(0, 0, 0, 0.14),0px 9px 44px 8px rgba(0, 0, 0, 0.12)',
-    '0px 11px 15px -7px rgba(0, 0, 0, 0.2),0px 24px 38px 3px rgba(0, 0, 0, 0.14),0px 9px 46px 8px rgba(0, 0, 0, 0.12)'
+    '0px 11px 15px -7px rgba(0, 0, 0, 0.2),0px 24px 38px 3px rgba(0, 0, 0, 0.14),0px 9px 46px 8px rgba(0, 0, 0, 0.12)',
   ],
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -179,7 +179,7 @@ const rawTheme = {
       letterSpacing: '-.04em',
       lineHeight: '112px',
       marginLeft: '-.04em',
-      color: 'rgba(0, 0, 0, 0.54)'
+      color: 'rgba(0, 0, 0, 0.54)',
     },
     display3: {
       fontSize: '3.5rem',
@@ -188,7 +188,7 @@ const rawTheme = {
       letterSpacing: '-.02em',
       lineHeight: '72px',
       marginLeft: '-.02em',
-      color: 'rgba(0, 0, 0, 0.54)'
+      color: 'rgba(0, 0, 0, 0.54)',
     },
     display2: {
       fontSize: '2.8125rem',
@@ -196,56 +196,56 @@ const rawTheme = {
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       lineHeight: '56px',
       marginLeft: '-.02em',
-      color: 'rgba(0, 0, 0, 0.54)'
+      color: 'rgba(0, 0, 0, 0.54)',
     },
     display1: {
       fontSize: '2.125rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       lineHeight: '40px',
-      color: 'rgba(0, 0, 0, 0.54)'
+      color: 'rgba(0, 0, 0, 0.54)',
     },
     headline: {
       fontSize: '1.5rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       lineHeight: '28px',
-      color: 'rgba(0, 0, 0, 0.87)'
+      color: 'rgba(0, 0, 0, 0.87)',
     },
     title: {
       fontSize: '1.3125rem',
       fontWeight: 500,
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       lineHeight: '1.16667em',
-      color: 'rgba(0, 0, 0, 0.87)'
+      color: 'rgba(0, 0, 0, 0.87)',
     },
     subheading: {
       fontSize: '1rem',
       fontWeight: 400,
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       lineHeight: '1.5em',
-      color: 'rgba(0, 0, 0, 0.87)'
+      color: 'rgba(0, 0, 0, 0.87)',
     },
     body2: {
       fontSize: '0.875rem',
       fontWeight: 500,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       lineHeight: '20px',
-      color: 'rgba(0, 0, 0, 0.87)'
+      color: 'rgba(0, 0, 0, 0.87)',
     },
     body1: {
       fontSize: '0.875rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       lineHeight: '20px',
-      color: 'rgba(0, 0, 0, 0.87)'
+      color: 'rgba(0, 0, 0, 0.87)',
     },
     caption: {
       fontSize: '0.75rem',
       fontWeight: 400,
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
       lineHeight: '1.375em',
-      color: 'rgba(0, 0, 0, 0.54)'
+      color: 'rgba(0, 0, 0, 0.54)',
     },
     button: {
       fontSize: '0.875rem',
@@ -253,51 +253,51 @@ const rawTheme = {
       fontWeight: 500,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
       color: 'rgba(0, 0, 0, 0.87)',
-      lineHeight: '16px'
+      lineHeight: '16px',
     },
     title2: {
       fontSize: '1.25rem',
       fontWeight: 500,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '24px'
+      lineHeight: '24px',
     },
     title1: {
       fontSize: '1.25rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '24px'
+      lineHeight: '24px',
     },
     subheading2: {
       fontSize: '1rem',
       fontWeight: 500,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '22px'
+      lineHeight: '22px',
     },
     subheading1: {
       fontSize: '1rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '22px'
+      lineHeight: '22px',
     },
     caption2: {
       fontSize: '0.75rem',
       fontWeight: 500,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '16px'
+      lineHeight: '16px',
     },
     caption1: {
       fontSize: '0.75rem',
       fontWeight: 400,
       fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
-      lineHeight: '16px'
-    }
+      lineHeight: '16px',
+    },
   },
   shape: {
     borderRadius: 4,
     border1: '1px solid rgba(255,55,55,.1)',
     border2: '1px solid #dbdbdb',
     border3: '1px solid rgba(0, 0, 0, 0.36)',
-    border4: '1px solid #eee'
+    border4: '1px solid #eee',
   },
   spacing: 4,
   transitions: {
@@ -306,7 +306,7 @@ const rawTheme = {
       easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
       easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
       easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
-      sharp: 'cubic-bezier(0.4, 0, 0.6, 1)'
+      sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
     },
     duration: {
       shortest: 150,
@@ -315,8 +315,8 @@ const rawTheme = {
       standard: 300,
       complex: 375,
       enteringScreen: 225,
-      leavingScreen: 195
-    }
+      leavingScreen: 195,
+    },
   },
   zIndex: {
     mobileStepper: 1000,
@@ -334,14 +334,14 @@ const rawTheme = {
     memberListHeader: 100,
     floatButton: 10,
     makeZIndexStackingContext: 1,
-    codeEditor: 0
+    codeEditor: 0,
   },
   size: { width: 4, height: 4 },
   boxShadow: {
     val1:
       '0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.12), 0 0 2px 0 rgba(0, 0, 0, 0.14)',
     val2: '0 -2px 4px -2px rgba(0, 0, 0, 0.14)',
-    val3: '0 3px 1px -2px rgba(0, 0, 0, 0.14)'
+    val3: '0 3px 1px -2px rgba(0, 0, 0, 0.14)',
   },
   maxHeight: { dialog: '72vh' },
   opacity: [0.1, 0.2],
@@ -352,8 +352,8 @@ const rawTheme = {
     md: '3px',
     lg: '4px',
     xl: '8px',
-    xxl: '16px'
-  }
+    xxl: '16px',
+  },
 };
 
 const theme = createMuiTheme(rawTheme as any);

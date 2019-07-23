@@ -13,13 +13,13 @@ jest.mock('@/store/utils');
 const mockItem = {
   id: 1,
   title: 'this is title',
-  body: 'this is body'
+  body: 'this is body',
 };
 
 describe('IntegrationItem', () => {
   beforeEach(() => {
     (getEntity as jest.Mock).mockImplementation(
-      (name: string, id: number) => mockItem
+      (name: string, id: number) => mockItem,
     );
   });
   it.each(['title', 'body'])(
@@ -29,7 +29,7 @@ describe('IntegrationItem', () => {
       const view = mountWithTheme(<IntegrationItem ids={ids} />);
       const wrapper = view.find({ 'data-test-automation-id': key });
       expect(wrapper.at(0).text()).toEqual(mockItem[key]);
-    }
+    },
   );
 
   it.each(['title', 'body'])(
@@ -37,25 +37,25 @@ describe('IntegrationItem', () => {
     (key: string) => {
       (getEntity as jest.Mock).mockReturnValueOnce({
         [key]: `***${mockItem[key]}***`,
-        id: mockItem.id
+        id: mockItem.id,
       });
       const ids: number[] = [1];
       const view = mountWithTheme(<IntegrationItem ids={ids} />);
       const wrapper = view.find({ 'data-test-automation-id': key });
       expect(wrapper.at(0).text()).toEqual(mockItem[key]);
-    }
+    },
   );
 
   it.each(['title', 'body'])(
     'should not render %s when no title JPT-1842~JPT-1874, JPT-1814, JPT-1835, JPT-1837, JPT-1838, JPT-1840, JPT-1841',
     (key: string) => {
       (getEntity as jest.Mock).mockReturnValueOnce({
-        id: mockItem.id
+        id: mockItem.id,
       });
       const ids: number[] = [1];
       const view = mountWithTheme(<IntegrationItem ids={ids} />);
       const wrapper = view.find({ 'data-test-automation-id': key });
       expect(wrapper).toEqual({});
-    }
+    },
   );
 });

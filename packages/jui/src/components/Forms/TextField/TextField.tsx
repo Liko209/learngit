@@ -90,9 +90,9 @@ class JuiTextField extends React.PureComponent<Props> {
           classes: isOutlinedTextFieldProps(this.props)
             ? inputPropsClasses
             : {
-              underline: 'underline',
-              ...inputPropsClasses,
-            },
+                underline: 'underline',
+                ...inputPropsClasses,
+              },
           ...inputPropsRest,
         }}
       />

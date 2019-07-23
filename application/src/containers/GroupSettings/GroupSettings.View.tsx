@@ -55,11 +55,11 @@ class GroupSettingsComponent extends Component<Props> {
         <ButtonList>
           <JuiDivider />
           <ButtonListItem
-            data-test-automation-id='groupSettingsConvertToTeam'
-            color='primary'
+            data-test-automation-id="groupSettingsConvertToTeam"
+            color="primary"
             onClick={this._openConvertToTeam}
           >
-            <ButtonListItemText color='primary'>
+            <ButtonListItemText color="primary">
               {t('people.team.convertToTeam')}
             </ButtonListItemText>
           </ButtonListItem>

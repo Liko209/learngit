@@ -8,7 +8,7 @@ import { ElectronUpgradeDialogComponent } from '../ElectronUpgradeDialog.View';
 import { mountWithTheme } from 'shield/utils';
 
 const baseProps = {
-  t: (str: string) => str
+  t: (str: string) => str,
 };
 // skip due to MUI upgrade, ticket number FIJI-7745
 describe.skip('ElectronUpgradeDialog.View', () => {
@@ -17,7 +17,7 @@ describe.skip('ElectronUpgradeDialog.View', () => {
       const props = { ...baseProps };
 
       const wrapper = mountWithTheme(
-        <ElectronUpgradeDialogComponent {...props} />
+        <ElectronUpgradeDialogComponent {...props} />,
       );
 
       expect(wrapper.contains('electron.upgrade.dialogTitle')).toBe(true);

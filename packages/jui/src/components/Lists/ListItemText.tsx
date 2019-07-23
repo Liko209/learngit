@@ -5,14 +5,14 @@
  */
 import React, { memo } from 'react';
 import MuiListItemText, {
-  ListItemTextProps as MuiListItemTextProps
+  ListItemTextProps as MuiListItemTextProps,
 } from '@material-ui/core/ListItemText';
 import styled from '../../foundation/styled-components';
 import {
   typography,
   ellipsis,
   grey,
-  getAccentColor
+  getAccentColor,
 } from '../../foundation/utils';
 import { Palette } from '../../foundation/theme/theme';
 
@@ -60,7 +60,7 @@ const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
       classes={{
         primary: 'list-item-primary',
         secondary: 'list-item-secondary',
-        multiline: 'multiline'
+        multiline: 'multiline',
       }}
       {...rest}
     />

@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import MuiButton, {
-  ButtonProps as MuiButtonProps
+  ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { Palette, Theme } from '../../../foundation/theme/theme';
@@ -18,7 +18,7 @@ import {
   rippleEnter,
   height,
   grey,
-  primary
+  primary,
 } from '../../../foundation/utils/styles';
 import { Omit } from '../../../foundation/utils/typeHelper';
 
@@ -39,11 +39,11 @@ const ColorMap: {
 } = {
   primary: ['primary', 'main'],
   secondary: ['secondary', 'main'],
-  negative: ['semantic', 'negative']
+  negative: ['semantic', 'negative'],
 };
 
 const touchRippleClasses = {
-  rippleVisible: 'rippleVisible'
+  rippleVisible: 'rippleVisible',
 };
 
 const WrappedMuiButton = (props: JuiButtonProps) => {
@@ -54,7 +54,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
         disabled: 'disabled',
         contained: 'containedButtonStyle',
         text: 'textButtonStyle',
-        outlined: 'outlineButtonStyle'
+        outlined: 'outlineButtonStyle',
       }}
       TouchRippleProps={{ classes: touchRippleClasses }}
       variant={variant}
@@ -67,13 +67,13 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
 
 const ButtonColor = ({
   theme,
-  color = 'primary'
+  color = 'primary',
 }: {
   theme: Theme;
   color: JuiButtonColor;
 }) =>
   theme.palette.getContrastText(
-    palette(ColorMap[color][0], ColorMap[color][1])({ theme })
+    palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
   );
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
@@ -140,14 +140,14 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 `;
 
 const JuiButtonComponent: React.StatelessComponent<JuiButtonProps> = (
-  props: JuiButtonProps
+  props: JuiButtonProps,
 ) => <StyledButton {...props} />;
 
 JuiButtonComponent.defaultProps = {
   size: 'large',
   color: 'primary',
   variant: 'contained',
-  disabled: false
+  disabled: false,
 };
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;

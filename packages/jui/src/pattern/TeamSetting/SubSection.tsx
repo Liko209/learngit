@@ -63,7 +63,7 @@ const JuiTeamSettingSubSectionListItem = React.memo(
       <StyledListItemText>{label}</StyledListItemText>
       <StyledListItemSecondaryAction>{children}</StyledListItemSecondaryAction>
     </StyledListItem>
-  )
+  ),
 );
 
 export {
@@ -72,5 +72,5 @@ export {
   JuiTeamSettingSubSectionList,
   JuiTeamSettingSubSectionListProps,
   JuiTeamSettingSubSectionListItem,
-  JuiTeamSettingSubSectionListItemProps
+  JuiTeamSettingSubSectionListItemProps,
 };

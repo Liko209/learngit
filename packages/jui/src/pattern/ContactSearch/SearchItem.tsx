@@ -33,7 +33,7 @@ const JuiSearchItem: React.SFC<TJuiSearchItemProps> = memo(
   (props: TJuiSearchItemProps) => {
     const { children, innerRef, ...rest } = props;
     return <StyledMenuItem {...rest}>{children}</StyledMenuItem>;
-  }
+  },
 );
 
 export { JuiSearchItem };

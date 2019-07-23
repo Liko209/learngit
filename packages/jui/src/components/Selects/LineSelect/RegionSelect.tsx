@@ -21,7 +21,7 @@ type JuiRegionSelectProps = {
   selectStyle?: React.CSSProperties;
   regionList: RegionType[];
   onChange?: React.ChangeEventHandler<
-  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >;
   automationId?: string;
 };
@@ -58,9 +58,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
     [],
   );
 
-  const {
-    label, selectStyle, regionList = [], automationId,
-  } = props;
+  const { label, selectStyle, regionList = [], automationId } = props;
 
   const renderValue = useCallback(
     (value: string) => {

@@ -23,8 +23,8 @@ type JuiDialogHeaderTitleProps = MuiDialogTitleProps & {
 };
 
 class WrappedDialogTitle extends React.PureComponent<
-JuiDialogHeaderTitleProps,
-{ overflow: boolean }
+  JuiDialogHeaderTitleProps,
+  { overflow: boolean }
 > {
   state = {
     overflow: false,
@@ -82,9 +82,7 @@ JuiDialogHeaderTitleProps,
   };
 
   render() {
-    const {
-      variant, className, children, ...rest
-    } = this.props;
+    const { variant, className, children, ...rest } = this.props;
     const classNames = this.state.overflow
       ? `${className} vertical`
       : className;
@@ -107,11 +105,13 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
     min-width: 0;
     h6 {
       color: ${palette('grey', '900')};
-      text-align: ${({ variant }) => (variant === 'responsive' ? 'center' : 'left')};
+      text-align: ${({ variant }) =>
+        variant === 'responsive' ? 'center' : 'left'};
       ${ellipsis()}
-      ${({ variant }) => (variant === 'responsive'
-    ? typography('subheading1')
-    : typography('title2'))};
+      ${({ variant }) =>
+        variant === 'responsive'
+          ? typography('subheading1')
+          : typography('title2')};
     }
 
     &.vertical h6 {

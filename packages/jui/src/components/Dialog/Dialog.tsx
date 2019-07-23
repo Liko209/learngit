@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import MuiDialog, {
-  DialogProps as MuiDialogProps
+  DialogProps as MuiDialogProps,
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import styled from 'styled-components';
@@ -39,11 +39,11 @@ const StyledDialog = styled(
     const initClasses = {
       ...classes,
       paper: `paper ${(classes && classes.paper) || ''}`,
-      root: `root ${(classes && classes.root) || ''}`
+      root: `root ${(classes && classes.root) || ''}`,
     };
 
     return <MuiDialog classes={initClasses} {...restProps} />;
-  })
+  }),
 )`
   & .paper {
     width: 100%;
@@ -64,7 +64,7 @@ const WrapDialog = (props: JuiDialogProps) => {
   return enableEscapeCloseHotKey ? (
     <HotKeys
       keyMap={{
-        esc: event => onClose && onClose(event)
+        esc: event => onClose && onClose(event),
       }}
     >
       <StyledDialog {...rest} onClose={onClose} />
@@ -75,6 +75,6 @@ const WrapDialog = (props: JuiDialogProps) => {
 };
 
 const JuiDialog = withMobileDialog<JuiDialogProps>({ breakpoint: 'xs' })(
-  WrapDialog
+  WrapDialog,
 );
 export { JuiDialog, JuiDialogProps };
