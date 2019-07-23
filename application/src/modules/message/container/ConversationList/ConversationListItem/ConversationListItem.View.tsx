@@ -27,12 +27,12 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   menuAnchorEl: HTMLElement | null = null;
 
   private _requiredShownPresenceConversationTypes = [
-    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE
+    CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
     // CONVERSATION_TYPES.ME
   ];
 
   state = {
-    isHover: false
+    isHover: false,
   };
 
   constructor(props: Props) {
@@ -43,7 +43,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   }
 
   private _umi = () => {
-    return this.props.umiHint ? (
+    return this.props.umiHint && !this.state.isHover ? (
       <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
     ) : (
       undefined
@@ -67,7 +67,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     e.stopPropagation();
     e.preventDefault();
     this.setState({
-      isHover: true
+      isHover: true,
     });
   };
 
@@ -76,7 +76,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     e.preventDefault();
     this.menuAnchorEl = null;
     this.setState({
-      isHover: false
+      isHover: false,
     });
   };
 
@@ -131,7 +131,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
 }
 
 const ConversationListItemView = withTranslation('translations')(
-  ConversationListItemViewComponent
+  ConversationListItemViewComponent,
 );
 
 export { ConversationListItemView };

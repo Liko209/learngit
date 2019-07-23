@@ -13,19 +13,19 @@ import {
 } from 'jui/pattern/ConversationList/Indicator';
 
 const IndicatorView = observer((props: IndicatorViewProps) => {
-  let tag;
+  const tags = [];
   if (props.canPost) {
-    if (props.hasDraft) {
-      tag = <JuiIndicatorDraft />; // '[Draft]'
-    }
     if (props.sendFailurePostIds.length > 0) {
-      tag = <JuiIndicatorFailure />; // '[Failure]'; // only show one
+      tags.push(<JuiIndicatorFailure />); // '[Failure]'; // show all
+    }
+    if (props.hasDraft) {
+      tags.push(<JuiIndicatorDraft />); // '[Draft]'
     }
   }
-  if (!tag) {
+  if (!tags.length) {
     return null;
   }
-  return tag;
+  return <>{...tags}</>;
 });
 
 export { IndicatorView };

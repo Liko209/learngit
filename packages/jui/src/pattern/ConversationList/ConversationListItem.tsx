@@ -6,7 +6,7 @@
 import React, { memo } from 'react';
 
 import MuiMenuItem, {
-  MenuItemProps as MuiMenuItemProps
+  MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
@@ -19,13 +19,16 @@ import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton, JuiIconButtonProps } from '../../components/Buttons';
 
 const StyledRightWrapper = styled.div`
-  width: ${width(5)};
   height: ${height(5)};
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
   outline: none;
+
+  & > span + span {
+    margin-left: ${spacing(2)};
+  }
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -77,7 +80,7 @@ const StyledListItem = styled(WrapperListItem)`
       ${({ theme }) =>
         theme.transitions.create('background-color', {
           duration: theme.transitions.duration.shortest,
-          easing: theme.transitions.easing.easeInOut
+          easing: theme.transitions.easing.easeInOut,
         })};
   }
   &&&& {
@@ -155,7 +158,7 @@ type IConversationListItem = {
 
 const touchRippleClasses = {
   child: 'child',
-  rippleVisible: 'rippleVisible'
+  rippleVisible: 'rippleVisible',
 };
 
 const JuiConversationListItem: IConversationListItem = memo(
@@ -195,9 +198,9 @@ const JuiConversationListItem: IConversationListItem = memo(
           <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
         )}
         <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi && umi()}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
+          {umi && umi()}
           <StyledIconButtonMore
             size="medium"
             variant="plain"
@@ -211,7 +214,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {children}
       </StyledListItem>
     );
-  }
+  },
 );
 
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
@@ -220,5 +223,5 @@ export default JuiConversationListItem;
 export {
   JuiConversationListItemProps,
   JuiConversationListItem,
-  JuiMenuContain
+  JuiMenuContain,
 };
