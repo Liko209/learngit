@@ -11,7 +11,7 @@ import { JuiTypography } from 'jui/foundation/Typography';
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';
 import { InstantSearchView } from '@/modules/GlobalSearch/container/InstantSearch/InstantSearch.View';
 import { JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { SearchItemTypes } from '../types';
 import { config } from '../../../module.config';
 
@@ -45,7 +45,7 @@ function setup(type?: TAB_TYPE | 'ALL') {
             ? [1, 2, 3, 4, 5]
             : [1, 2, 3],
         hasMore: type === TAB_TYPE.PEOPLE || type === 'ALL',
-        type: SearchItemTypes.PEOPLE,
+        type: SearchItemTypes.PEOPLE
       },
       {
         ids:
@@ -53,7 +53,7 @@ function setup(type?: TAB_TYPE | 'ALL') {
             ? [1, 2, 3, 4, 5]
             : [1, 2, 3],
         hasMore: type === TAB_TYPE.GROUPS || type === 'ALL',
-        type: SearchItemTypes.GROUP,
+        type: SearchItemTypes.GROUP
       },
       {
         ids:
@@ -61,9 +61,9 @@ function setup(type?: TAB_TYPE | 'ALL') {
             ? [1, 2, 3, 4, 5]
             : [1, 2, 3],
         hasMore: type === TAB_TYPE.TEAM || type === 'ALL',
-        type: SearchItemTypes.TEAM,
-      },
-    ],
+        type: SearchItemTypes.TEAM
+      }
+    ]
   };
 }
 
@@ -77,42 +77,42 @@ describe('InstantSearchView', () => {
           .find(JuiSearchTitle)
           .at(0)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.People');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(0)
           .find('span')
-          .text(),
+          .text()
       ).toBe('globalSearch.showMore');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(1)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.Groups');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(1)
           .find('span')
-          .text(),
+          .text()
       ).toBe('globalSearch.showMore');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(2)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.Teams');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(2)
           .find('span')
-          .text(),
+          .text()
       ).toBe('globalSearch.showMore');
     });
     it('result item <= 3', () => {
@@ -123,39 +123,39 @@ describe('InstantSearchView', () => {
           .find(JuiSearchTitle)
           .at(0)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.People');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(0)
-          .find('span'),
+          .find('span')
       ).toHaveLength(0);
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(1)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.Groups');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(1)
-          .find('span'),
+          .find('span')
       ).toHaveLength(0);
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(2)
           .find(JuiTypography)
-          .text(),
+          .text()
       ).toBe('globalSearch.Teams');
       expect(
         wrapper
           .find(JuiSearchTitle)
           .at(2)
-          .find('span'),
+          .find('span')
       ).toHaveLength(0);
     });
   });

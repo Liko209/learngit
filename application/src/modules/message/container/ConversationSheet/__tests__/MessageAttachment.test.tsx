@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { getEntity } from '@/store/utils';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { MessageAttachment } from '../MessageAttachment';
 import { MessageAttachmentView } from '../MessageAttachment/MessageAttachment.View';
 import {
@@ -16,7 +16,7 @@ import {
   Field,
   ImageView,
   ThumbImageView,
-  Footer,
+  Footer
 } from 'jui/pattern/ConversationItemCard/MessageAttachment';
 
 jest.mock('@/store/utils');
@@ -36,8 +36,8 @@ describe('MessageAttachmentViewModel', () => {
       {
         title: 'Issue',
         value:
-          'Very Long long Long long Long long Long long Long long Long long',
-      },
+          'Very Long long Long long Long long Long long Long long Long long'
+      }
     ],
     footer: 'Glip Api',
     footer_icon:
@@ -48,7 +48,7 @@ describe('MessageAttachmentViewModel', () => {
     title: 'The Further Adventures of Slackbot',
     title_link: 'https://groove.hq/path/to/ticket/1943',
     text: 'This is some sample Text',
-    ts: 1496881204783,
+    ts: 1496881204783
   };
   const defaultMessage = {
     created_at: 1504835374770,
@@ -68,12 +68,12 @@ describe('MessageAttachmentViewModel', () => {
     title: 'Jeff is having a Maple Bacon Coffee Porter',
     activity: 'Beer consumed',
     integration_id: 260522011,
-    deactivated: false,
+    deactivated: false
   };
   beforeAll(() => {
     (getEntity as jest.Mock).mockImplementation((name: string, id: number) => ({
       ...defaultMessage,
-      id,
+      id
     }));
   });
 
@@ -87,7 +87,7 @@ describe('MessageAttachmentViewModel', () => {
     const wrapper = mountWithTheme(<MessageAttachment ids={ids} />);
     const result = wrapper.find(JuiMessageAttachment);
     expect(result.length).toEqual(
-      defaultMessage.attachments.length * ids.length,
+      defaultMessage.attachments.length * ids.length
     );
   });
 
@@ -158,7 +158,7 @@ describe('MessageAttachmentViewModel', () => {
 
   it('should increase coverage for MessageAttachmentView', () => {
     const wrapper = mountWithTheme(
-      <MessageAttachmentView items={[{ ...defaultItem, id: 1 }]} />,
+      <MessageAttachmentView items={[{ ...defaultItem, id: 1 }]} />
     );
     wrapper.render();
     expect(wrapper).toBeTruthy();

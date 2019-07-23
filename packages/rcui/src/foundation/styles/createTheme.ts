@@ -27,7 +27,7 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
     opacity: opacityInput = {},
     radius: radiusInput = {},
     zIndex: zIndexInput = {},
-    breakpoints: breakpointsInput = {},
+    breakpoints: breakpointsInput = {}
   } = options;
 
   // suppress material-ui warning
@@ -42,9 +42,9 @@ function createTheme(options: Partial<ThemeOptions> = {}) {
       radius: deepmerge(radius, radiusInput),
       spacing: 4,
       zIndex: deepmerge(zIndex, zIndexInput),
-      breakpoints: deepmerge(breakpoints, breakpointsInput),
+      breakpoints: deepmerge(breakpoints, breakpointsInput)
     },
-    options,
+    options
   );
 
   return createMuiTheme(theme as any) as Theme;

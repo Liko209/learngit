@@ -10,7 +10,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import PersonModel from '@/store/models/Person';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../../../../../__tests__/utils';
+import {theme} from 'shield/utils'
 
 describe('ConversationInitialPostView', () => {
   describe('render()', () => {

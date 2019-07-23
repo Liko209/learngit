@@ -13,7 +13,7 @@ import { getEntity, getGlobalValue } from '@/store/utils';
 import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { WithPostLikeComponentProps } from '../withPostLike/types';
-import { theme } from '@/__tests__/utils';
+import { theme } from 'shield/utils';
 import { withPostLike } from '../withPostLike';
 
 jest.mock('@/containers/Notification');

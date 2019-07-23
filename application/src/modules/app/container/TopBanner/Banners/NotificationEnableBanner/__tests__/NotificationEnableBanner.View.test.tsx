@@ -7,7 +7,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { NotificationEnableBannerView } from '../NotificationEnableBanner.View';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '@/__tests__/utils';
+import { theme } from 'shield/utils';
 import { Jupiter, container } from 'framework';
 import { config } from '@/modules/notification/module.config';
 
@@ -17,7 +17,7 @@ jupiter.registerModule(config);
 const baseProps = {
   t: (key: string) => key,
   isBlocked: false,
-  handleClose: () => {},
+  handleClose: () => {}
 };
 
 describe('NotificationEnableBannerView', () => {
@@ -28,7 +28,7 @@ describe('NotificationEnableBannerView', () => {
     it('should not render view if isShow is false', () => {
       const props = {
         ...baseProps,
-        isShow: false,
+        isShow: false
       };
       const wrapper = shallow(<NotificationEnableBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').length).toBe(0);
@@ -37,31 +37,31 @@ describe('NotificationEnableBannerView', () => {
       const props = {
         ...baseProps,
         isShow: true,
-        isBlocked: false,
+        isBlocked: false
       };
       const wrapper = shallow(<NotificationEnableBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').prop('message')).toEqual(
-        'notification.topBanner.enablePermissionMessage',
+        'notification.topBanner.enablePermissionMessage'
       );
       expect(wrapper.find('JuiSnackbarContent').prop('action')[0]).not.toEqual(
-        null,
+        null
       );
     });
     it('should call Notification.requestPermission when click "Enable notifications" [JPT-2085] 2', () => {
       global.Notification = {
         requestPermission: jest.fn(),
-        permission: 'default',
+        permission: 'default'
       };
 
       const props = {
         ...baseProps,
         isShow: true,
-        isBlocked: false,
+        isBlocked: false
       };
       const wrapper = mount(
         <ThemeProvider theme={theme}>
           <NotificationEnableBannerView {...props} />
-        </ThemeProvider>,
+        </ThemeProvider>
       );
       wrapper
         .find('button')
@@ -73,14 +73,14 @@ describe('NotificationEnableBannerView', () => {
       const props = {
         ...baseProps,
         isShow: true,
-        isBlocked: true,
+        isBlocked: true
       };
       const wrapper = shallow(<NotificationEnableBannerView {...props} />);
       expect(wrapper.find('JuiSnackbarContent').prop('message')).toEqual(
-        'notification.topBanner.blockedPermissionMessage',
+        'notification.topBanner.blockedPermissionMessage'
       );
       expect(wrapper.find('JuiSnackbarContent').prop('action')[0]).toEqual(
-        null,
+        null
       );
     });
   });
