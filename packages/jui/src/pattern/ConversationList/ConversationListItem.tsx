@@ -25,10 +25,6 @@ const StyledRightWrapper = styled.div`
   justify-content: center;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
   outline: none;
-
-  & > span + span {
-    margin-left: ${spacing(2)};
-  }
 `;
 const rippleEnter = (theme: Theme) => keyframes`
   from {
@@ -141,7 +137,6 @@ const StyledPresenceWrapper = styled.div`
 type JuiConversationListItemProps = {
   title: string;
   presence?: () => JSX.Element | null;
-  umi?: () => JSX.Element | undefined;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
@@ -167,7 +162,6 @@ const JuiConversationListItem: IConversationListItem = memo(
       title,
       indicator,
       presence,
-      umi,
       onClick,
       onMoreClick,
       component,
@@ -200,7 +194,6 @@ const JuiConversationListItem: IConversationListItem = memo(
         <ItemText style={{ fontWeight }}>{title}</ItemText>
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
-          {umi && umi()}
           <StyledIconButtonMore
             size="medium"
             variant="plain"

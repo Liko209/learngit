@@ -6,7 +6,6 @@
 /* eslint-disable */
 import React, { MouseEvent } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { Indicator } from '../Indicator';
 import { Presence } from '@/containers/Presence';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -42,13 +41,9 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this._closeMenu = this._closeMenu.bind(this);
   }
 
-  private _umi = () => {
-    return this.props.umiHint && !this.state.isHover ? (
-      <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
-    ) : (
-      undefined
-    );
-  };
+  private get _showUmi() {
+    return !!(this.props.umiHint && !this.state.isHover);
+  }
 
   private _presence = () => {
     const { groupType } = this.props;
@@ -60,7 +55,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     if (this.props.selected) {
       return null;
     }
-    return <Indicator id={this.props.groupId} />;
+    return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
   private _handleMouseOver = (e: React.MouseEvent<HTMLElement>) => {
@@ -91,7 +86,6 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}
           presence={this._presence}
-          umi={this._umi}
           umiHint={this.props.umiHint}
           indicator={this._indicator}
           onMoreClick={this._handleMoreClick}
