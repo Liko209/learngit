@@ -38,13 +38,13 @@ fixture('Phone/Voicemail')
   const telephoneDialog = app.homePage.telephonyDialog;
   const deleteVoicemailDialog = app.homePage.deleteVoicemailDialog;
 
-  await h(t).withLog('Then determine if I need to minimize the telephone dialog', async() => {
+  await h(t).withLog('Then I minimize the telephone dialog', async() => {
     if (await telephoneDialog.exists) {
       await telephoneDialog.clickMinimizeButton()
     };
   });
 
-  await h(t).withLog('And determine if already exists voicemail and delete it', async() => {
+  await h(t).withLog('And delete exists voicemail', async() => {
     while(1){
       if (await voicemailItemFromExt.exists) {
         await voicemailItemFromExt.openMoreMenu();

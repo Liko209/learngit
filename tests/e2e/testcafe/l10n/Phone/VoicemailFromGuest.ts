@@ -37,13 +37,13 @@ fixture('Phone/VoicemailFromGuest')
   const telephoneDialog = app.homePage.telephonyDialog;
   const voicemailItemFromGuest = voicemailPage.voicemailItemByNth(0);
 
-  await h(t).withLog('Determine if you need to minimize the telephone  dialog', async() => {
+  await h(t).withLog('Then I minimize the telephone  dialog', async() => {
     if (await telephoneDialog.exists) {
       await telephoneDialog.clickMinimizeButton()
     };
   });
 
-  await h(t).withLog('Add a voicemail from guest', async() => {
+  await h(t).withLog('And I add a voicemail from guest', async() => {
     await addOneVoicemailFromGuest(t, caller, callee, app);
   });
 
@@ -70,18 +70,18 @@ fixture('Phone/VoicemailFromGuest')
 
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailBlockNumberDialog'} );
 
-  await h(t).withLog('When I click voicemail "Block Number" button and check notification', async () => {
+  await h(t).withLog('When I click voicemail "Block Number" button', async () => {
     await BlockNumberDialog.clickBlockButton();
   });
 
   await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailBlockSuccessToast'} );
 
-  await h(t).withLog('When I check the text "Block number"', async () => {
+  await h(t).withLog('When I open voicemail menu', async () => {
     await t.wait(5000);
     await voicemailItemFromGuest.openMoreMenu();
   });
 
-  await h(t).withLog('Then the text "Block number" should be displayed', async () => {
+  await h(t).withLog('Then the text "Unblock number" should be displayed', async () => {
     await t.expect(voicemailItemFromGuest.unblockButton.exists).ok;
   });
 
@@ -91,10 +91,6 @@ fixture('Phone/VoicemailFromGuest')
     await voicemailItemFromGuest.clickUnblockButton();
   });
 
-  await h(t).withLog('Then the text "Unblock Number" should be displayed', async () => {
-    await t.expect(voicemailItemFromGuest.unblockButton.exists).ok;
-  });
-
-  await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailUnblockSuccessToast'} );
+  await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailUnblockSuccessToast'} );
 
 });
