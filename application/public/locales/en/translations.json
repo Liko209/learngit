@@ -806,6 +806,48 @@
           "label": "New message badge count"
         }
       },
+      "sounds": {
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Choose sound for new direct messages"
+        },
+
+        "options": {
+          "2 Beeps": "2 Beeps",
+          "3 Beeps": "3 Beeps",
+          "Alert": "Alert",
+          "Alert 2": "Alert 2",
+          "Alert 3": "Alert 3",
+          "Bing Bong": "Bing Bong",
+          "Ching": "Ching",
+          "Log Drum": "Log Drum",
+          "Snap": "Snap",
+          "Squirt": "Squirt",
+          "Whoosh": "Whoosh",
+          "Whoosh 2": "Whoosh 2",
+          "Default": "Default",
+          "Phone Ring": "Phone Ring",
+          "Air Raid": "Air Raid",
+          "Allusive": "Allusive",
+          "Attention": "Attention",
+          "Blub Blub": "Blub Blub",
+          "Buzzy": "Buzzy",
+          "Channel Open": "Channel Open",
+          "Disco": "Disco",
+          "Door Bell": "Door Bell",
+          "Fairy": "Fairy",
+          "Fast Bells": "Fast Bells",
+          "High Gong": "High Gong",
+          "Indeed": "Indeed",
+          "Nice": "Nice",
+          "Ringing Bells": "Ringing Bells",
+          "Ring": "Ring",
+          "Simple": "Simple",
+          "Soothing": "Soothing",
+          "Off": "Off"
+        }
+      },
+
       "desktopNotifications": {
         "title": "Desktop notifications",
         "notificationsForBrowser": {

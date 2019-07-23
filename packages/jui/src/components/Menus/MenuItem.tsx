@@ -18,7 +18,6 @@ import {
   grey,
   palette,
 } from '../../foundation/utils';
-import { ListItemSecondaryAction } from '@material-ui/core';
 
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
@@ -26,6 +25,7 @@ type JuiMenuItemProps = {
   secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
+  hasSecondaryAction: boolean;
 } & MuiMenuItemProps;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -51,6 +51,8 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     min-width: ${width(28)};
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
     padding: ${spacing(1, 4)};
+    padding-right: ${({ hasSecondaryAction }) =>
+      hasSecondaryAction ? spacing(0) : 'initial'}
     box-sizing: border-box;
     &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
       padding-right: ${spacing(12)};
@@ -71,11 +73,6 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     }
   }
 `;
-const StyledSecondaryAction = styled(ListItemSecondaryAction)`
-  && {
-    right: ${spacing(2)};
-  }
-`;
 
 const JuiMenuItem = React.memo(
   ({
@@ -85,7 +82,6 @@ const JuiMenuItem = React.memo(
     avatar,
     automationId,
     maxWidth,
-    secondaryAction,
     classes,
     ...rest
   }: JuiMenuItemProps) => {
@@ -108,9 +104,6 @@ const JuiMenuItem = React.memo(
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
         {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
         {children}
-        {secondaryAction && (
-          <StyledSecondaryAction>{secondaryAction}</StyledSecondaryAction>
-        )}
       </StyledMenuItem>
     );
   },
