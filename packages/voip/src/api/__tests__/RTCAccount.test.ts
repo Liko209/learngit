@@ -136,6 +136,14 @@ class MockSession extends EventEmitter2 {
   mute = jest.fn();
   unmute = jest.fn();
   terminate = jest.fn();
+
+  dialog = {
+    id: {
+      callId: '100',
+      remoteTag: '200',
+      localTag: '300',
+    }
+  }
 }
 
 class MockLocalStorage implements ITelephonyDaoDelegate {
