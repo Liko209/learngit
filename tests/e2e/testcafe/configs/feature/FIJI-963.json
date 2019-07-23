@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile",
+      "./fixtures/ConversationStream/PageHeader.ts",
+      "./telephony/Forward.ts",
+      "./telephony/Dialer.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}
