@@ -14,6 +14,7 @@ import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { sleep } from '../util';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 import { FsmStatus, FsmStatusCategory } from '../types';
+
 const UA =
   '(Macintosh; Intel Mac OS X 10_13_6) Chrome/73.0.3683.103 Safari/537.36';
 
@@ -146,6 +147,7 @@ describe('Check all the report parameters if has call [JPT-1937]', () => {
       userAgent: UA,
     });
 
+    jest.spyOn(call, '_setSipInfoIntoCallInfo').mockImplementation();
     call.setCallSession(session);
     call.onAccountReady();
     session.mockSignal('accepted');
@@ -226,6 +228,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     const call = new RTCCall(true, '123', session, account, account);
     await sleep(10);
     call.startReply();
+    jest.spyOn(call, '_setSipInfoIntoCallInfo').mockImplementation();
 
     session.hold.mockResolvedValue(null);
     session.unhold.mockResolvedValue(null);
@@ -269,6 +272,7 @@ describe('Check call FSM state timestamp [JPT-1938]', () => {
     const account = new MockAccountAndCallObserver();
     const session = new MockSession();
     const call = new RTCCall(false, '123', null, account, account);
+    jest.spyOn(call, '_setSipInfoIntoCallInfo').mockImplementation();
     call.setCallSession(session);
     call.onAccountNotReady();
     await sleep(10);
@@ -351,7 +355,7 @@ describe('check upload call and media report after call is terminated', () => {
     const call = new RTCCall(false, '123', null, account, account, undefined, {
       userAgent: UA,
     });
-
+    jest.spyOn(call, '_setSipInfoIntoCallInfo').mockImplementation();
     call.setCallSession(session);
     call.onAccountReady();
     session.mockSignal('accepted');

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -14,6 +13,7 @@ import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 type Props = ViewProps & WithTranslation;
 
@@ -32,7 +32,26 @@ class AvatarActionsComponent extends React.Component<Props> {
   private get _presence() {
     const { currentUserId } = this.props;
 
-    return <Presence uid={currentUserId} size='large' borderSize='large' />;
+    return <Presence uid={currentUserId} size="large" borderSize="large" />;
+  }
+
+  private get _tooltip() {
+    const { t, presence } = this.props
+    switch (presence) {
+      case PRESENCE.AVAILABLE:
+        return t('presence.available');
+      case PRESENCE.DND:
+        return t('presence.doMotDisturb');
+      case PRESENCE.INMEETING:
+        return t('presence.inMeeting');
+      case PRESENCE.ONCALL:
+        return t('presence.onCall');
+      case PRESENCE.UNAVAILABLE:
+      case PRESENCE.NOTREADY:
+        return t('presence.offline');
+      default:
+        return t('presence.offline');
+    }
   }
 
   private _Anchor() {
@@ -41,8 +60,9 @@ class AvatarActionsComponent extends React.Component<Props> {
       <Avatar
         uid={currentUserId}
         presence={this._presence}
-        size='large'
-        automationId='topBarAvatar'
+        size="large"
+        automationId="topBarAvatar"
+        tooltip={this._tooltip}
       />
     );
   }
@@ -66,11 +86,11 @@ class AvatarActionsComponent extends React.Component<Props> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList data-test-automation-id='avatarMenu'>
+        <JuiMenuList data-test-automation-id="avatarMenu">
           <OpenProfileDialog id={currentUserId}>
             <JuiMenuItem
               aria-label={t('home.viewYourProfile')}
-              data-test-automation-id='viewYourProfile'
+              data-test-automation-id="viewYourProfile"
             >
               {t('people.team.profile')}
             </JuiMenuItem>
@@ -78,21 +98,21 @@ class AvatarActionsComponent extends React.Component<Props> {
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}
-            data-test-automation-id='aboutPage'
+            data-test-automation-id="aboutPage"
           >
             {t('home.aboutRingCentral')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={this.handleSendFeedback}
             aria-label={t('home.sendFeedback')}
-            data-test-automation-id='sendFeedback'
+            data-test-automation-id="sendFeedback"
           >
             {t('home.sendFeedback')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={handleSignOut}
             aria-label={t('auth.signOut')}
-            data-test-automation-id='signOut'
+            data-test-automation-id="signOut"
           >
             {t('auth.signOut')}
           </JuiMenuItem>

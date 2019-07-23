@@ -19,6 +19,13 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
+import { Presence } from 'sdk/module/presence/entity';
+import PresenceModel from '@/store/models/Presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -101,6 +108,28 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   handleSendFeedback = () => {
     UploadRecentLogs.show();
   };
+
+
+  @computed
+  get presence() {
+    if (this.currentUserId === 0) {
+      return PRESENCE.NOTREADY;
+    }
+
+    const person = getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
+    );
+
+    if (person.deactivated) {
+      return PRESENCE.NOTREADY;
+    }
+
+    return (
+      getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.currentUserId)
+        .presence || PRESENCE.NOTREADY
+    );
+  }
 }
 
 export { AvatarActionsViewModel };
