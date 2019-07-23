@@ -9,6 +9,7 @@ import { SplitFactory } from '@splitsoftware/splitio';
 import { mainLogger } from 'sdk';
 
 type SplitIOClientParams = {
+  prefix: string;
   authKey: string;
   userId: string;
   attributes: Object;
@@ -46,7 +47,7 @@ class SplitIOClient {
       },
       storage: {
         type: 'LOCALSTORAGE', // hard configuration
-        prefix: params.userId,
+        prefix: params.prefix,
       },
     };
     this.client = SplitFactory(settings).client();

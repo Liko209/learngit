@@ -16,11 +16,17 @@ import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
 import { mainLogger } from 'sdk';
 import { EnvConfig } from 'sdk/src/module/env/config';
+import { AccountGlobalConfig } from 'sdk/src/module/account/config';
 
 class SplitIOController extends AbstractPermissionController
   implements IPermissionController {
   private splitIOClient: SplitIOClient;
   private splitIOUpdateCallback: any = undefined;
+
+  setCallback(callback: () => void) {
+    this.splitIOUpdateCallback = callback;
+  }
+
   shutdownClient() {
     this.splitIOClient && this.splitIOClient.shutdown();
   }
@@ -32,12 +38,14 @@ class SplitIOController extends AbstractPermissionController
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     const userId: number = userConfig.getGlipUserId();
+    const prefix = AccountGlobalConfig.getUserDictionary();
     if (!userId) {
       return;
     }
     this.isIniting = true;
 
     const params = {
+      prefix,
       userId: userId.toString(),
       attributes: {},
       authKey: Api.httpConfig.splitio.clientSecret,

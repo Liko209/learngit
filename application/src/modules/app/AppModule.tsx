@@ -39,6 +39,9 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
+import { PermissionService } from 'sdk/src/module/permission';
+import { LaunchDarklyController } from '@/permissions/Launchdarkly/LaunchDarklyController';
+import { SplitIOController } from '@/permissions/SplitIO/SplitIOController';
 
 /**
  * The root module, we call it AppModule,
@@ -190,6 +193,12 @@ class AppModule extends AbstractModule {
       api,
       db,
     });
+
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
+    permissionService.injectControllers(new LaunchDarklyController());
+    permissionService.injectControllers(new SplitIOController());
   }
 }
 

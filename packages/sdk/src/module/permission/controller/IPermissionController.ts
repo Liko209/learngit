@@ -10,6 +10,7 @@ interface IPermissionController {
   hasPermission(type: UserPermissionType): Promise<boolean>;
   getFeatureFlag(type: UserPermissionType): Promise<number | string>;
   isFlagSupported(type: UserPermissionType): boolean;
+  setCallback(callback: () => void): void;
 }
 
 export { IPermissionController };

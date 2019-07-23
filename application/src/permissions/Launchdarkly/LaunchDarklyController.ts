@@ -25,6 +25,10 @@ class LaunchDarklyController extends AbstractPermissionController
     super();
   }
 
+  setCallback(callback: () => void) {
+    this.launchDarklyCallback = callback;
+  }
+
   async initClient() {
     if (this.isIniting || this.isClientReady) {
       return;
