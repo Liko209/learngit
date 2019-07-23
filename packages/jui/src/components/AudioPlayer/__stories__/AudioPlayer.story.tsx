@@ -106,11 +106,12 @@ const AudioPlayer = (props: any) => {
       onReload={props.onReload}
       onTimeStampChanged={timestampHandler}
       onProcessDragged={processDragHandler}
+      actionIcon={props.actionIcon}
     />
   );
 };
 
-storiesOf('Pattern', module).add('AudioPlayer', () => (
+storiesOf('Components/AudioPlayer', module).add('AudioPlayer', () => (
   <dl>
     <dt>mode tiny</dt>
     <dd>
@@ -144,6 +145,17 @@ storiesOf('Pattern', module).add('AudioPlayer', () => (
         audio={new Audio('example.mp3')}
         duration={188}
         timestamp={90}
+      />
+    </dd>
+    <dt>custom icon</dt>
+    <dd>
+      <AudioPlayer
+        audio={new Audio(mediaUrl)}
+        duration={188}
+        timestamp={90}
+        actionIcon={{
+          [JuiAudioStatus.PLAY]: 'speaker',
+        }}
       />
     </dd>
   </dl>

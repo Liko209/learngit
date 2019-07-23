@@ -29,57 +29,69 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
 
   private _currentSrc: MediaOptions['src'] = '';
 
+  private _disposeGetMediaReaction: () => void;
+  private _disposeCreateMediaReaction: () => void;
+
   constructor(props: AudioPlayerProps) {
     super(props);
 
-    const disposeGetMediaReaction = this.reaction(
+    this._disposeGetMediaReaction = this.reaction(
       () => this.props.id,
-      id => {
-        id && !this._media && this._getMedia(id);
-      },
+      this._propIdReaction,
       {
         fireImmediately: true,
       },
     );
-    const disposeCreateMediaReaction = this.reaction(
+    this._disposeCreateMediaReaction = this.reaction(
       () => this.props.src,
-      src => {
-        src && src !== this._currentSrc && !this._media && this._createMedia();
-      },
+      this._propSrcReaction,
       {
         fireImmediately: true,
       },
     );
 
-    this.reaction(
-      () => this.props.media,
-      media => {
-        if (media) {
-          if (!(media instanceof Media)) {
-            throw new Error('[AudioPlayer] please check media props');
-          }
-          if (this.props.trackId) {
-            console.warn(
-              '[AudioPlayer] media is created outside, trackId is not working.',
-            );
-          }
-          if (this._media === media) {
-            return;
-          }
-          this._media = media;
-          if (this._media) {
-            disposeCreateMediaReaction();
-            disposeGetMediaReaction();
-            this._currentSrc = this._media.src;
-            this._bindMediaEvent();
-          }
-        }
-      },
-      {
-        fireImmediately: true,
-      },
-    );
+    this.reaction(() => this.props.media, this._propMediaReaction, {
+      fireImmediately: true,
+    });
   }
+
+  private _propIdReaction = (id: AudioPlayerProps['id']) => {
+    id && !this._media && this._getMedia(id);
+  };
+
+  private _propSrcReaction = (src: AudioPlayerProps['src']) => {
+    if (src && src !== this._currentSrc) {
+      if (this._media) {
+        this._disposeMedia();
+        this._resetAudioPlayer();
+      }
+      !this._media && this._createMedia();
+    }
+  };
+
+  private _propMediaReaction = (media: AudioPlayerProps['media']) => {
+    if (media) {
+      if (!(media instanceof Media)) {
+        throw new Error('[AudioPlayer] please check media props');
+      }
+      if (this.props.trackId) {
+        console.warn(
+          '[AudioPlayer] media is created outside, trackId is not working.',
+        );
+      }
+      if (this._media === media) {
+        return;
+      }
+      this._media = media;
+      if (this._media) {
+        this._disposeCreateMediaReaction();
+        this._disposeGetMediaReaction();
+
+        this._currentSrc = this._media.src;
+        this._bindMediaEvent();
+      }
+    }
+  };
 
   private get _mediaService() {
     return jupiter.get<IMediaService>(IMediaService);
@@ -110,7 +122,6 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
 
   @action
   private _createMedia = () => {
-    this._disposeMedia();
     this._currentSrc = this.props.src || '';
 
     this._media = this._mediaService.createMedia(this._mediaOptions);
@@ -123,15 +134,6 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
       }
     }
     return this._media;
-  };
-
-  @action
-  private _disposeMedia = () => {
-    if (this._media) {
-      this._media.stop();
-      this._unbindMediaEvent();
-      this._media = null;
-    }
   };
 
   playHandler = () => {
@@ -156,39 +158,23 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     const hasMediaDuration = !!(this._media && this._media.duration);
     const mediaDuration = (this._media && this._media.duration) as number;
 
-    const hasPropDuration = typeof duration !== 'undefined';
     const propDuration = duration as number;
 
     const isOutDuration = (timestamp: number, duration: number) => {
-      return timestamp < 0 || Math.round(timestamp) >= duration;
+      return timestamp < 0 || Math.round(timestamp * 100) / 100 >= duration;
     };
 
-    const isInDuration = (timestamp: number, duration: number) => {
-      return Math.round(timestamp) >= 0 && Math.round(timestamp) < duration;
-    };
-
-    if (hasMedia && hasMediaDuration) {
-      if (isOutDuration(timestamp, mediaDuration)) {
-        media.stop();
-        this._updateTime(0);
-      } else if (isInDuration(timestamp, mediaDuration)) {
-        media.setCurrentTime(timestamp, this._isPlayingBefore);
-        this._updateTime(timestamp);
-      }
-    } else if (hasMedia && !hasMediaDuration && hasPropDuration) {
-      if (isOutDuration(timestamp, propDuration)) {
-        media.stop();
-        this._updateTime(0);
-      } else if (isInDuration(timestamp, propDuration)) {
-        media.setCurrentTime(timestamp, false);
-        this._updateTime(timestamp);
-      }
-    } else if (!hasMedia && hasPropDuration) {
-      if (isOutDuration(timestamp, propDuration)) {
-        this._updateTime(0);
-      } else if (isInDuration(timestamp, propDuration)) {
-        this._updateTime(timestamp);
-      }
+    const _duration = mediaDuration || propDuration;
+    if (!_duration) {
+      return;
+    }
+    if (isOutDuration(timestamp, _duration)) {
+      hasMedia && media.stop();
+      this._updateTime(0);
+    } else {
+      const shouldContinue = hasMediaDuration && this._isPlayingBefore;
+      hasMedia && media.setCurrentTime(timestamp, shouldContinue);
+      this._updateTime(timestamp);
     }
   };
 
@@ -222,10 +208,28 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
     super.dispose();
     const { autoDispose = true } = this.props;
     this._unbindMediaEvent();
-    if (this._media && autoDispose) {
-      this._media.pause();
-      this._media.dispose();
+    if (autoDispose) {
+      this._disposeMedia();
+      this._resetAudioPlayer();
+    }
+  }
+
+  @action
+  private _disposeMedia = () => {
+    if (this._media) {
+      this._media.stop();
+      this._unbindMediaEvent();
+    }
+  };
+
+  @action
+  private _resetAudioPlayer() {
+    if (this._media) {
       this._media = null;
+      this._currentTime = 0;
+      this._currentDuration = 0;
+      this._isPlayingBefore = false;
+      this._currentSrc = '';
     }
   }
 
