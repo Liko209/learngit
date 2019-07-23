@@ -1,6 +1,6 @@
 /*
  * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
- * @Date: 2019-05-28 16:45:30
+ * @Date: 2019-07-21 15:47:50
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -17,10 +17,12 @@ import { ESettingItemState } from 'sdk/framework/model/setting';
 import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 import { AccountService } from 'sdk/module/account';
-import { SettingValue } from '../../types';
+import { SettingValue, SettingItemConfig } from '../../types';
 import { UndefinedAble } from 'sdk/types';
+import { CALLING_OPTIONS } from '../../constants';
+import { SettingService } from '../../../setting';
 
-class ProfileSubscribeEntityHandler<
+class AudioPhoneSoundsSettingHandler<
   T extends SettingValue
 > extends AbstractSettingEntityHandler<T> {
   id: SettingEntityIds;
@@ -29,12 +31,7 @@ class ProfileSubscribeEntityHandler<
   defaultValue?: T;
   constructor(
     private _profileService: IProfileService,
-    settingEntity: {
-      id: SettingEntityIds;
-      setting_key: SETTING_KEYS;
-      source?: T[];
-      defaultValue?: T;
-    },
+    settingEntity: SettingItemConfig<T>,
   ) {
     super();
     this.id = settingEntity.id;
@@ -56,22 +53,37 @@ class ProfileSubscribeEntityHandler<
     ]);
   }
   async fetchUserSettingEntity() {
+    const settingItem: UserSettingEntity<T> = {
+      weight: 1,
+      valueType: 1,
+      parentModelId: 1,
+      id: this.id,
+      source: this.source,
+      value: await this._getValue(),
+      state: await this._getState(),
+      valueSetter: value => this.updateValue(value),
+    };
+    return settingItem;
+  }
+  private async _getState() {
+    const settingService = ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    );
+    const model = await settingService.getById<CALLING_OPTIONS>(
+      SettingEntityIds.Phone_DefaultApp,
+    );
+    return model && model.value === CALLING_OPTIONS.RINGCENTRAL
+      ? ESettingItemState.INVISIBLE
+      : ESettingItemState.ENABLE;
+  }
+
+  private async _getValue() {
     const profile = await this._profileService.getProfile();
     let value: UndefinedAble<T> = profile && profile[this.setting_key];
     if (value === undefined) {
       value = this.defaultValue;
     }
-    const settingItem: UserSettingEntity<T> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
-      source: this.source,
-      value,
-      id: this.id,
-      state: ESettingItemState.ENABLE,
-      valueSetter: value => this.updateValue(value),
-    };
-    return settingItem;
+    return value;
   }
 
   async onProfileEntityUpdate(
@@ -90,4 +102,4 @@ class ProfileSubscribeEntityHandler<
     }
   }
 }
-export { ProfileSubscribeEntityHandler };
+export { AudioPhoneSoundsSettingHandler };
