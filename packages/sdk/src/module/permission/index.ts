@@ -5,5 +5,6 @@
  */
 import { PermissionService } from './service/PermissionService';
 import UserPermissionType from './types';
+import { IPermissionController } from './controller/IPermissionController';
 
-export { PermissionService, UserPermissionType };
+export { PermissionService, UserPermissionType, IPermissionController };
