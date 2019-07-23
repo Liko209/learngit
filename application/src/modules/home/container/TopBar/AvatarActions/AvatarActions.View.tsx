@@ -14,6 +14,7 @@ import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { PresenceMenu } from '../PresenceMenu';
 
 type Props = ViewProps & WithTranslation;
 
@@ -72,7 +73,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   handleSendFeedback = () => this.props.handleSendFeedback();
 
   render() {
-    const { handleSignOut, currentUserId, t } = this.props;
+    const { handleSignOut, currentUserId, t, presence } = this.props;
 
     return (
       <JuiAvatarActions
@@ -95,6 +96,7 @@ class AvatarActionsComponent extends React.Component<Props> {
               {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
+          <PresenceMenu presence={presence} title={this._tooltip} />
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}

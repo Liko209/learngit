@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useState, useCallback } from 'react';
-import { StyledMenuItem } from './MenuItem';
+import { StyledMenuItem, StyledMuiListItemIcon } from './MenuItem';
 import { JuiMenuList } from './MenuList';
 import { MenuItemProps as MuiMenuItemProps } from '@material-ui/core/MenuItem';
 import { JuiPopperMenu } from '../../pattern/PopperMenu';
@@ -14,6 +14,7 @@ import styled from '../../foundation/styled-components';
 type JuiSubMenuProps = {
   title: string;
   children: React.ReactNode;
+  titleIcon?: React.ReactElement;
 } & MuiMenuItemProps;
 
 const StyledSubMenuItem = styled(StyledMenuItem)`
@@ -21,6 +22,11 @@ const StyledSubMenuItem = styled(StyledMenuItem)`
     display: flex;
     justify-content: space-between;
   }
+`;
+
+const StyledTitle = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
@@ -36,15 +42,24 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   const closePopper = () => {
     setAnchorEl(null);
   };
-  const { title, disabled, ...rest } = props;
+  const { title, titleIcon, disabled, ...rest } = props;
+
+  const titleItem = titleIcon
+    ? (
+      <StyledTitle>
+        <StyledMuiListItemIcon>{titleIcon}</StyledMuiListItemIcon>
+        {title}
+      </StyledTitle>
+    )
+    : title;
 
   const Anchor = useCallback(() => {
     if (disabled) {
-      return <StyledMenuItem disabled>{title}</StyledMenuItem>;
+      return <StyledMenuItem disabled>{titleItem}</StyledMenuItem>;
     }
     return (
       <StyledSubMenuItem {...rest}>
-        {title}
+        {titleItem}
         <JuiIconography iconSize="medium" iconColor={['grey', '600']}>
           arrow_right
         </JuiIconography>
@@ -70,4 +85,4 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   );
 });
 
-export { JuiSubMenu };
+export { JuiSubMenu, StyledSubMenuItem };
