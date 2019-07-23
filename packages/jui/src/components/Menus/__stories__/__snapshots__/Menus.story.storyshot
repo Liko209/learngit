@@ -256,6 +256,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
     }
   }
 >
+  Sub Menu
   <div
     onMouseEnter={[Function]}
     onMouseLeave={[Function]}

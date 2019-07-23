@@ -6,10 +6,13 @@
 import { PRESENCE } from 'sdk/module/presence/constant';
 
 type PresenceMenuViewProps = {
+  isFreyja: boolean;
+  setPresence: (toPresence: PRESENCE) => void;
+};
+
+type PresenceMenuProps = {
   title: string;
   presence: PRESENCE;
 };
-
-type PresenceMenuProps = PresenceMenuViewProps & {};
 
 export { PresenceMenuProps, PresenceMenuViewProps };

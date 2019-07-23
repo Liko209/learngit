@@ -10,26 +10,14 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSubMenu, JuiMenuItem } from 'jui/components/Menus';
 import JuiPresence from 'jui/components/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { catchError } from '@/common/catchError';
-import { PresenceMenuViewProps } from './types';
+import { PresenceMenuProps, PresenceMenuViewProps } from './types';
 
-type Props = PresenceMenuViewProps & WithTranslation;
+type Props = PresenceMenuViewProps & PresenceMenuProps & WithTranslation;
 
 @observer
 class PresenceMenuViewComponent extends Component<Props> {
-  @catchError.flash({
-    network: 'presence.prompt.updatePresenceFailedForNetworkIssue',
-    server: 'presence.prompt.updatePresenceFailedForServerIssue',
-  })
-  _handleMenuItemClick = (toPresence: PRESENCE) => {
-    const { presence } = this.props;
-    if (presence === toPresence) {
-      return;
-    }
-  }
-
   render() {
-    const { t, presence, title } = this.props;
+    const { t, presence, title, setPresence, isFreyja } = this.props;
 
     return (
       <JuiSubMenu
@@ -39,25 +27,27 @@ class PresenceMenuViewComponent extends Component<Props> {
       >
         <JuiMenuItem
           automationId="presence-submenu-available"
-          onClick={() => this._handleMenuItemClick(PRESENCE.AVAILABLE)}
+          onClick={() => setPresence(PRESENCE.AVAILABLE)}
           icon={<JuiPresence presence={PRESENCE.AVAILABLE} size="medium" borderSize="small" />}
         >
           {t('presence.available')}
         </JuiMenuItem>
         <JuiMenuItem
           automationId="presence-submenu-invisible"
-          onClick={() => this._handleMenuItemClick(PRESENCE.UNAVAILABLE)}
+          onClick={() => setPresence(PRESENCE.UNAVAILABLE)}
           icon={<JuiPresence presence={PRESENCE.UNAVAILABLE} size="medium" borderSize="small" />}
         >
           {t('presence.invisible')}
         </JuiMenuItem>
-        <JuiMenuItem
-          automationId="presence-submenu-dnd"
-          onClick={() => this._handleMenuItemClick(PRESENCE.DND)}
-          icon={<JuiPresence presence={PRESENCE.DND} size="medium" borderSize="small" />}
-        >
-          {t('presence.doMotDisturb')}
-        </JuiMenuItem>
+        {!isFreyja && (
+          <JuiMenuItem
+            automationId="presence-submenu-dnd"
+            onClick={() => setPresence(PRESENCE.DND)}
+            icon={<JuiPresence presence={PRESENCE.DND} size="medium" borderSize="small" />}
+          >
+            {t('presence.doNotDisturb')}
+          </JuiMenuItem>
+        )}
       </JuiSubMenu>
     );
   }

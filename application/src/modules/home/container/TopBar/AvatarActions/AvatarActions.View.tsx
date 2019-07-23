@@ -42,14 +42,29 @@ class AvatarActionsComponent extends React.Component<Props> {
       case PRESENCE.AVAILABLE:
         return t('presence.available');
       case PRESENCE.DND:
-        return t('presence.doMotDisturb');
+        return t('presence.doNotDisturb');
+      case PRESENCE.INMEETING:
+        return t('presence.inMeeting');
+      case PRESENCE.ONCALL:
+        return t('presence.onCall');
+      default:
+        return t('presence.offline');
+    }
+  }
+
+  private get title() {
+    const { t, presence } = this.props
+    switch (presence) {
+      case PRESENCE.AVAILABLE:
+        return t('presence.available');
+      case PRESENCE.DND:
+        return t('presence.doNotDisturb');
       case PRESENCE.INMEETING:
         return t('presence.inMeeting');
       case PRESENCE.ONCALL:
         return t('presence.onCall');
       case PRESENCE.UNAVAILABLE:
-      case PRESENCE.NOTREADY:
-        return t('presence.offline');
+        return t('presence.invisible');
       default:
         return t('presence.offline');
     }
@@ -96,7 +111,7 @@ class AvatarActionsComponent extends React.Component<Props> {
               {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
-          <PresenceMenu presence={presence} title={this._tooltip} />
+          <PresenceMenu presence={presence} title={this.title} />
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}

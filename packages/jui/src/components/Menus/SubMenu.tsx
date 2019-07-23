@@ -42,6 +42,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
   const closePopper = () => {
     setAnchorEl(null);
   };
+
   const { title, titleIcon, disabled, ...rest } = props;
 
   const titleItem = titleIcon
@@ -65,7 +66,7 @@ const JuiSubMenu = React.memo((props: JuiSubMenuProps) => {
         </JuiIconography>
       </StyledSubMenuItem>
     );
-  }, [disabled]);
+  }, [disabled, title]);
 
   const open = Boolean(anchorEl);
 

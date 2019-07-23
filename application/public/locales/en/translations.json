@@ -78,7 +78,7 @@
   },
   "presence": {
     "available": "Available",
-    "doMotDisturb": "Do not disturb",
+    "doNotDisturb": "Do not disturb",
     "inMeeting": "In a meeting",
     "onCall": "On a call",
     "offline": "Offline",
