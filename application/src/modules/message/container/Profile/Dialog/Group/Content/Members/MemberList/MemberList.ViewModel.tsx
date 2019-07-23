@@ -20,6 +20,7 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
       (flag: boolean) => this.props.setShowEmpty(flag),
     );
   }
+
   @action
   onScrollEvent = (event: React.UIEvent<HTMLElement>) => {
     const scrollTop = event.currentTarget.scrollTop;
@@ -28,7 +29,7 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
       GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW,
       scrollTop > 20 ? true : false,
     );
-  }
+  };
 
   @computed
   get group() {

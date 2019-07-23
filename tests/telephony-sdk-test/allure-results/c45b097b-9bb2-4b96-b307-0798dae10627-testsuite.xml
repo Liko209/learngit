@@ -1,0 +1,201 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563768623327' stop='1563769016690'>
+    <name>telephony HA</name>
+    <title>telephony HA</title>
+    <test-cases>
+        <test-case start='1563768624476' status='failed' stop='1563769016652'>
+            <name>[JPT-2301][P1][Jayson Zhang] Switch to backup proxy after 10 times connectionFailed on main proxy</name>
+            <title>[JPT-2301][P1][Jayson Zhang] Switch to backup proxy after 10 times connectionFailed on main proxy</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563768644815' status='passed' stop='1563768644815'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563768644816' status='passed' stop='1563768644956'>
+                    <name>Given pageCaller is registered</name>
+                    <title>Given pageCaller is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563768646012' status='passed' stop='1563768646076'>
+                    <name>When pageCaller click NewProvision button</name>
+                    <title>When pageCaller click NewProvision button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563768946076' status='passed' stop='1563768952334'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='d87165a1-e985-4e5c-9b6f-fca0e82cddde-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768952335' status='passed' stop='1563768958353'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='2b7f1585-acb9-4e66-b1af-da81fd62f254-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768958353' status='passed' stop='1563768964486'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='c9203453-6e6a-4e3c-bb1d-01759d4b6616-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768964486' status='passed' stop='1563768970857'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='38eb4f1c-524b-45f7-9dc4-5647232246ac-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768970858' status='passed' stop='1563768977038'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='64cc7daa-c99d-4708-9801-fd88d1fcfbbf-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768977038' status='passed' stop='1563768983048'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='edf14477-cbb4-4b4e-bafc-d0265d37f6dc-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768983049' status='passed' stop='1563768989216'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='da537642-ea55-4242-b443-64cb98b2c504-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768989217' status='passed' stop='1563768995433'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='59403153-4495-43ca-b466-fde659dea8ba-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563768995434' status='passed' stop='1563769001584'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='bf0513fe-a00d-4353-b715-af0f5e5d2506-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563769001586' status='passed' stop='1563769007985'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='e1d71c0f-4d89-4604-8e65-06e49112c32f-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563769007986' status='failed' stop='1563769014544'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='7b7fac3a-c209-4f93-aae1-808ba4540114-attachment.txt' type='text/plain' size='111742'/>
+                        <attachment title='pageCaller-e2e2e804-f952-367e-ac75-aa0265da2b78.txt' source='74a6681b-cbf7-4b30-afb1-c84b133233d4-attachment.txt' type='text/plain' size='111742'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false</message>
+                <stack-trace>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false
+                    at StepHelper.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:816:22)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:37:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:18:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:9:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>telephony HA</description>
+        </test-case>
+        <test-case start='1563769016652' status='undefined' stop='1563769016652'>
+            <name>[JPT-2302][P1][Jayson Zhang] switch to backup proxy immediately when register failed and response error code on main proxy</name>
+            <title>[JPT-2302][P1][Jayson Zhang] switch to backup proxy immediately when register failed and response error code on main proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563769016652' status='undefined' stop='1563769016652'>
+            <name>[JPT-2479][P2][Jayson Zhang] register on main proxy when register failed unMatchedErrorCode on main proxy</name>
+            <title>[JPT-2479][P2][Jayson Zhang] register on main proxy when register failed unMatchedErrorCode on main proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563769016652' status='undefined' stop='1563769016652'>
+            <name>[JPT-2303][P1][Jayson Zhang] switch to main proxy after app reaching SwitchBackInterval on backup proxy</name>
+            <title>[JPT-2303][P1][Jayson Zhang] switch to main proxy after app reaching SwitchBackInterval on backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563769016652' status='undefined' stop='1563769016652'>
+            <name>[JPT-2417][P2][Jayson Zhang] Begin a new loop accord to scheduled interval after 20 times failure on main and backup proxy</name>
+            <title>[JPT-2417][P2][Jayson Zhang] Begin a new loop accord to scheduled interval after 20 times failure on main and backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563769016652' status='undefined' stop='1563769016652'>
+            <name>[JPT-2421][P2][Jayson Zhang] Begin a new register loop accord to scheduled interval when register failed with matched error code on main and backup proxy</name>
+            <title>[JPT-2421][P2][Jayson Zhang] Begin a new register loop accord to scheduled interval when register failed with matched error code on main and backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

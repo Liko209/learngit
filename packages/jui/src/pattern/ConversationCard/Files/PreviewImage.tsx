@@ -228,7 +228,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps, State> {
             height={height}
             onClick={this._handleImageClick}
           >
-            <StyledImg style={imageStyle} src={url} />
+            <StyledImg data-test-automation-class="image" style={imageStyle} src={url} />
             <Jui.ImageFileInfo
               width={width}
               height={height}

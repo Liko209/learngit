@@ -31,6 +31,10 @@ class PresenceController {
     return this._subscribeController;
   }
 
+  updatePresence(presence: Presence): void {
+    this._caches.set(presence.id, presence);
+  }
+
   saveToMemory(presences: Presence[]): void {
     presences.forEach((presence: Presence) => {
       this._caches.set(presence.id, presence);

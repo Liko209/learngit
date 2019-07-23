@@ -1,0 +1,117 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563851614260' stop='1563851651588'>
+    <name>Ignore incoming call</name>
+    <title>Ignore incoming call</title>
+    <test-cases>
+        <test-case start='1563851640944' status='failed' stop='1563851651515'>
+            <name>[JPT-1471][P1][Jimmy Xu] should call enter disconnected after ignore incoming call.</name>
+            <title>[JPT-1471][P1][Jimmy Xu] should call enter disconnected after ignore incoming call.</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563851640945' status='passed' stop='1563851640945'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851640947' status='passed' stop='1563851641220'>
+                    <name>Given pageCaller is registered</name>
+                    <title>Given pageCaller is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851641220' status='passed' stop='1563851641223'>
+                    <name>Given pageCallee is registered</name>
+                    <title>Given pageCallee is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851643227' status='passed' stop='1563851643331'>
+                    <name>When make call from pageCaller to pageCallee</name>
+                    <title>When make call from pageCaller to pageCallee</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851643331' status='passed' stop='1563851644015'>
+                    <name>Then pageCaller enter connected state</name>
+                    <title>Then pageCaller enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851644015' status='passed' stop='1563851644299'>
+                    <name>Then pageCallee receive incoming call</name>
+                    <title>Then pageCallee receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851644299' status='passed' stop='1563851645307'>
+                    <name>Then pageCaller start local recording</name>
+                    <title>Then pageCaller start local recording</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851646311' status='passed' stop='1563851646349'>
+                    <name>When pageCallee ignore call</name>
+                    <title>When pageCallee ignore call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851646349' status='passed' stop='1563851646356'>
+                    <name>Then pageCallee enter disconnected state</name>
+                    <title>Then pageCallee enter disconnected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851646356' status='passed' stop='1563851646359'>
+                    <name>Then pageCaller enter connected state</name>
+                    <title>Then pageCaller enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851649364' status='passed' stop='1563851650370'>
+                    <name>When pageCaller stop local recording</name>
+                    <title>When pageCaller stop local recording</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851650371' status='passed' stop='1563851650436'>
+                    <name>When pageCaller end call</name>
+                    <title>When pageCaller end call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851650436' status='passed' stop='1563851650450'>
+                    <name>Then pageCaller enter disconnected state</name>
+                    <title>Then pageCaller enter disconnected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563851651454' status='failed' stop='1563851651493'>
+                    <name>check pageCaller audio file</name>
+                    <title>check pageCaller audio file</title>
+                    <attachments>
+                        <attachment title='pageCaller-9af0de29-fb0b-3ba5-a6bb-33da3f1c2c04.txt' source='72659c8a-22e1-4b6c-a9d7-30d6a04adaf0-attachment.txt' type='text/plain' size='93589'/>
+                        <attachment title='pageCallee-62975b0d-6e93-3fb9-baeb-10d5f534c42c.txt' source='3b31718f-2dfd-4d1f-a738-f907e592437a-attachment.txt' type='text/plain' size='72149'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: /bin/sh: venv/bin/activate: No such file or directory
+                </message>
+                <stack-trace>Error: /bin/sh: venv/bin/activate: No such file or directory
+                
+                    at AudioFileHelper.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/AudioFileHelper.ts:218:11)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/AudioFileHelper.ts:32:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/AudioFileHelper.ts:13:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/AudioFileHelper.ts:4:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>Ignore incoming call</description>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

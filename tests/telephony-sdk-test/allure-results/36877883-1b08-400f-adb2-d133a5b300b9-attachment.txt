@@ -1,0 +1,137 @@
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  6
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563852859777
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  75
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563852884853
+[debug]: MAIN  [1563852887910] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS pbboc0evlnff.invalid;branch=z9hG4bK2122258
+Max-Forwards: 70
+To: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=f3jprnisq0
+Call-ID: qhj6isilruog0iiv7or136
+CSeq: 8556 REGISTER
+Authorization: Digest algorithm=MD5, username="803961839004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaAa102fz9d8hw8OIyV4l3XPqfkbhU9", uri="sip:sip-xmnup.lab.nordigy.ru", response="9b7c755d2335dbdd63ec6758c2039aed"
+P-rc-endpoint-id: b4e7cf84-504d-47c4-8a78-3562436fc790
+Client-id:undefined
+Contact: <sip:tloosr5q@pbboc0evlnff.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563852887914] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS pbboc0evlnff.invalid;branch=z9hG4bK2122258;received=10.32.58.61
+To: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=`Xc7`c_l1BT
+From: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=f3jprnisq0
+Call-ID: qhj6isilruog0iiv7or136
+CSeq: 8556 REGISTER
+Contact: <sip:tloosr5q@pbboc0evlnff.invalid;transport=ws>;expires=59
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563852887915] RTC_ACCOUNT_FSM: Transition: regSuccess from: ready to: ready
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  4
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563852909857
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  40
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563852934899
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563852943917] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS pbboc0evlnff.invalid;branch=z9hG4bK7641460
+Max-Forwards: 70
+To: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=f3jprnisq0
+Call-ID: qhj6isilruog0iiv7or136
+CSeq: 8557 REGISTER
+Authorization: Digest algorithm=MD5, username="803961839004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaAa102fz9d8hw8OIyV4l3XPqfkbhU9", uri="sip:sip-xmnup.lab.nordigy.ru", response="9b7c755d2335dbdd63ec6758c2039aed"
+P-rc-endpoint-id: b4e7cf84-504d-47c4-8a78-3562436fc790
+Client-id:undefined
+Contact: <sip:tloosr5q@pbboc0evlnff.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563852944248] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS pbboc0evlnff.invalid;branch=z9hG4bK7641460;received=10.32.58.61
+To: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=.O1nf0'9P6W
+From: <sip:18002305764*704@sip-xmnup.lab.nordigy.ru>;tag=f3jprnisq0
+Call-ID: qhj6isilruog0iiv7or136
+CSeq: 8557 REGISTER
+Contact: <sip:tloosr5q@pbboc0evlnff.invalid;transport=ws>;expires=59
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563852944250] RTC_ACCOUNT_FSM: Transition: regSuccess from: ready to: ready
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  4
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563852959904
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object

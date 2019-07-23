@@ -1,0 +1,97 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563764755026' stop='1563764912916'>
+    <name>multiple callee receive incoming call</name>
+    <title>multiple callee receive incoming call</title>
+    <test-cases>
+        <test-case start='1563764892307' status='failed' stop='1563764912704'>
+            <name>[JPT-1593][P2][Jimmy Xu] Receive call after register on multiple endpoints</name>
+            <title>[JPT-1593][P2][Jimmy Xu] Receive call after register on multiple endpoints</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563764892309' status='passed' stop='1563764892310'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764892312' status='passed' stop='1563764892399'>
+                    <name>Given caller is registered</name>
+                    <title>Given caller is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764892399' status='passed' stop='1563764892403'>
+                    <name>Given callee1 is registered</name>
+                    <title>Given callee1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764892403' status='passed' stop='1563764892407'>
+                    <name>Given callee2 is registered</name>
+                    <title>Given callee2 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764894411' status='passed' stop='1563764894534'>
+                    <name>When make call from caller to callee1</name>
+                    <title>When make call from caller to callee1</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764894534' status='passed' stop='1563764895439'>
+                    <name>Then caller enter connected state</name>
+                    <title>Then caller enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563764895439' status='failed' stop='1563764912555'>
+                    <name>Then callee1 receive incoming call</name>
+                    <title>Then callee1 receive incoming call</title>
+                    <attachments>
+                        <attachment title='browser: browserCallee1, page: callee1' source='293ad1da-fdce-484a-9391-506712f0c4c7-attachment.png' type='image/png' size='113151'/>
+                        <attachment title='browser: browserCallee1, page: callee1' source='9310a4b8-6b1f-4be1-aedd-8b6ade3d58db-attachment.png' type='image/png' size='113220'/>
+                        <attachment title='browser: browserCallee1, page: callee1' source='421444a7-0a8f-4e07-99fe-8ba6942cd89d-attachment.png' type='image/png' size='113234'/>
+                        <attachment title='browser: browserCallee1, page: callee1' source='175e7140-8786-41f9-be87-68cfecbc69da-attachment.png' type='image/png' size='113206'/>
+                        <attachment title='caller-46bf0664-565d-33c7-8434-c9d212d2e58e.txt' source='233b7e65-9397-4eff-9556-aed938c45a7b-attachment.txt' type='text/plain' size='203234'/>
+                        <attachment title='callee1-52a0df43-a427-3b87-bef8-cea15b6c14f4.txt' source='6b7344eb-2438-47d4-a91d-1aace56a6711-attachment.txt' type='text/plain' size='61504'/>
+                        <attachment title='callee2-8db84d34-ce0c-36cb-a2f8-91ca71c77267.txt' source='b8bae69f-5bb7-42f5-bc5d-7142f4347cef-attachment.txt' type='text/plain' size='96941'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>assert.equal(received, expected) or assert(received) 
+                
+                Expected value to be equal to:
+                  true
+                Received:
+                  false
+                    at Controller.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:679:18)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:32:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:13:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:4:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</message>
+                <stack-trace>Error: assert.equal(received, expected) or assert(received) 
+                
+                Expected value to be equal to:
+                  true
+                Received:
+                  false
+                    at Controller.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:679:18)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:32:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:13:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/controller/Controller.ts:4:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)
+                    at Env.fail (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:775:61)
+                    at Function.next.fail (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/queueRunner.js:38:22)
+                    at returnValue.then.error (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:118:18)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>multiple callee receive incoming call</description>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

@@ -8,6 +8,8 @@ type Props = {
 
 const Wrapper = styled.div<Props>`
   max-height: ${height(68)};
+  display: flex;
+  flex-direction: column;
 `;
 
 class JuiMentionPanelSection extends PureComponent<Props> {

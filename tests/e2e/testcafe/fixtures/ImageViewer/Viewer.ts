@@ -81,7 +81,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When I scroll to the image post and click the second image on the post', async () => {
     await t.wait(1e3); // wait conversation stream stage.
     await conversationPage.postItemById(postId).waitImageVisible();
-    await t.click(conversationPage.postItemById(postId).img.nth(1));
+    await t.click(conversationPage.postItemById(postId).images.nth(1));
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;
@@ -200,7 +200,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await t.wait(1e3); // wait conversation stream stage.
     await conversationPage.postItemById(postId).scrollIntoView();
     scrollTop = await conversationPage.scrollDiv.scrollTop;
-    await t.click(conversationPage.postItemById(postId).img);
+    await t.click(conversationPage.postItemById(postId).images);
   });
 
   const previewer = app.homePage.fileAndImagePreviewer;
@@ -226,7 +226,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('When I click the image on the post', async () => {
-    await t.click(conversationPage.postItemById(postId).img);
+    await t.click(conversationPage.postItemById(postId).images);
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -251,7 +251,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await app.homePage.messageTab.bookmarksEntry.enter();
     await bookmarkPage.postItemById(postId).scrollIntoView();
     scrollTop = await bookmarkPage.scrollDiv.scrollTop;
-    await t.click(bookmarkPage.postItemById(postId).img.nth(1));
+    await t.click(bookmarkPage.postItemById(postId).images.nth(1));
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -276,7 +276,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('When I click the image on the post', async () => {
-    await t.click(bookmarkPage.postItemById(postId).img);
+    await t.click(bookmarkPage.postItemById(postId).images);
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -300,7 +300,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('When I enter atMentionPage and click the image on the post', async () => {
     await app.homePage.messageTab.mentionsEntry.enter();
     await atMentionPage.postItemById(postId).scrollIntoView();
-    await t.click(atMentionPage.postItemById(postId).img);
+    await t.click(atMentionPage.postItemById(postId).images);
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -326,7 +326,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('When I click the image on the post', async () => {
-    await t.click(atMentionPage.postItemById(postId).img);
+    await t.click(atMentionPage.postItemById(postId).images);
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -361,7 +361,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('When I click the first image', async () => {
     await searchDialog.fullSearchPage.messagesTab.postItemById(postId).scrollIntoView();
     scrollTop = await searchDialog.fullSearchPage.messagesTab.scrollDiv.scrollTop;
-    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).img.nth(0));
+    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).images.nth(0));
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -386,7 +386,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   });
 
   await h(t).withLog('When I click the image on the post', async () => {
-    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).img.nth(0));
+    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).images.nth(0));
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
@@ -450,7 +450,7 @@ test(formalName('Should scroll to the bottom automatically when reveived new mes
 
   await h(t).withLog('When I scroll to the first image post and click the first image', async () => {
     await conversationPage.scrollUpToViewPostById(postId);
-    await t.click(conversationPage.postItemById(postId).img);
+    await t.click(conversationPage.postItemById(postId).images);
   });
 
   const previewer = app.homePage.fileAndImagePreviewer;
@@ -527,7 +527,7 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
   await h(t).withLog('When I scroll to the first image post and click the first image', async () => {
     await t.wait(1e3); // wait conversation stream stage.
     await conversationPage.postItemById(postId).scrollIntoView();
-    await t.click(conversationPage.postItemById(postId).img);
+    await t.click(conversationPage.postItemById(postId).images);
   });
 
   const previewer = app.homePage.fileAndImagePreviewer;
@@ -620,7 +620,7 @@ test.meta(<ITestMeta>{
 
 
   await h(t).withLog('When I click the image of post', async () => {
-    await t.click(conversationPage.postItemById(postId).img);
+    await t.click(conversationPage.postItemById(postId).images);
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;

@@ -1,0 +1,295 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563783663164' stop='1563783663390'>
+    <name>support multiple call</name>
+    <title>support multiple call</title>
+    <test-cases>
+        <test-case start='1563783663302' status='failed' stop='1563783663365'>
+            <name>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</name>
+            <title>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563783663303' status='passed' stop='1563783663303'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563783663305' status='failed' stop='1563783663306'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: Failed: ErrorEvent {
+                  "error": [Error: connect ECONNREFUSED 127.0.0.1:3001],
+                  "message": "connect ECONNREFUSED 127.0.0.1:3001",
+                  "target": WebSocket {
+                    "_binaryType": "nodebuffer",
+                    "_closeCode": 1006,
+                    "_closeFrameReceived": false,
+                    "_closeFrameSent": false,
+                    "_closeMessage": "",
+                    "_closeTimer": null,
+                    "_events": Object {
+                      "error": [Function onError],
+                      "open": [Function onOpen],
+                    },
+                    "_eventsCount": 2,
+                    "_extensions": Object {},
+                    "_isServer": false,
+                    "_maxListeners": undefined,
+                    "_receiver": null,
+                    "_redirects": 0,
+                    "_req": null,
+                    "_sender": null,
+                    "_socket": null,
+                    "protocol": "",
+                    "readyState": 3,
+                    "url": "ws://localhost:3001?headless=false",
+                  },
+                  "type": "error",
+                }</message>
+                <stack-trace>Error
+                    at Env.beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:41:24)
+                    at beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:131:28)
+                    at Suite.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:34:3)
+                    at addSpecsToSuite (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:496:51)
+                    at Env.describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:466:11)
+                    at describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:81:18)
+                    at Object.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:28:1)
+                    at Runtime._execModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:858:13)
+                    at Runtime._loadModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:551:12)
+                    at Runtime.requireModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:415:10)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:201:13
+                    at Generator.next (&lt;anonymous>)
+                    at asyncGeneratorStep (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:27:24)
+                    at _next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:47:9)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:52:7
+                    at new Promise (&lt;anonymous>)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+        <test-case start='1563783663365' status='failed' stop='1563783663366'>
+            <name>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</name>
+            <title>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563783663365' status='passed' stop='1563783663365'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563783663365' status='failed' stop='1563783663365'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: Failed: ErrorEvent {
+                  "error": [Error: connect ECONNREFUSED 127.0.0.1:3001],
+                  "message": "connect ECONNREFUSED 127.0.0.1:3001",
+                  "target": WebSocket {
+                    "_binaryType": "nodebuffer",
+                    "_closeCode": 1006,
+                    "_closeFrameReceived": false,
+                    "_closeFrameSent": false,
+                    "_closeMessage": "",
+                    "_closeTimer": null,
+                    "_events": Object {
+                      "error": [Function onError],
+                      "open": [Function onOpen],
+                    },
+                    "_eventsCount": 2,
+                    "_extensions": Object {},
+                    "_isServer": false,
+                    "_maxListeners": undefined,
+                    "_receiver": null,
+                    "_redirects": 0,
+                    "_req": null,
+                    "_sender": null,
+                    "_socket": null,
+                    "protocol": "",
+                    "readyState": 3,
+                    "url": "ws://localhost:3001?headless=false",
+                  },
+                  "type": "error",
+                }</message>
+                <stack-trace>Error
+                    at Env.beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:41:24)
+                    at beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:131:28)
+                    at Suite.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:34:3)
+                    at addSpecsToSuite (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:496:51)
+                    at Env.describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:466:11)
+                    at describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:81:18)
+                    at Object.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:28:1)
+                    at Runtime._execModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:858:13)
+                    at Runtime._loadModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:551:12)
+                    at Runtime.requireModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:415:10)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:201:13
+                    at Generator.next (&lt;anonymous>)
+                    at asyncGeneratorStep (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:27:24)
+                    at _next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:47:9)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:52:7
+                    at new Promise (&lt;anonymous>)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+        <test-case start='1563783663366' status='failed' stop='1563783663367'>
+            <name>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</name>
+            <title>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563783663366' status='passed' stop='1563783663366'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563783663366' status='failed' stop='1563783663367'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: Failed: ErrorEvent {
+                  "error": [Error: connect ECONNREFUSED 127.0.0.1:3001],
+                  "message": "connect ECONNREFUSED 127.0.0.1:3001",
+                  "target": WebSocket {
+                    "_binaryType": "nodebuffer",
+                    "_closeCode": 1006,
+                    "_closeFrameReceived": false,
+                    "_closeFrameSent": false,
+                    "_closeMessage": "",
+                    "_closeTimer": null,
+                    "_events": Object {
+                      "error": [Function onError],
+                      "open": [Function onOpen],
+                    },
+                    "_eventsCount": 2,
+                    "_extensions": Object {},
+                    "_isServer": false,
+                    "_maxListeners": undefined,
+                    "_receiver": null,
+                    "_redirects": 0,
+                    "_req": null,
+                    "_sender": null,
+                    "_socket": null,
+                    "protocol": "",
+                    "readyState": 3,
+                    "url": "ws://localhost:3001?headless=false",
+                  },
+                  "type": "error",
+                }</message>
+                <stack-trace>Error
+                    at Env.beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:41:24)
+                    at beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:131:28)
+                    at Suite.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:34:3)
+                    at addSpecsToSuite (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:496:51)
+                    at Env.describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:466:11)
+                    at describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:81:18)
+                    at Object.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:28:1)
+                    at Runtime._execModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:858:13)
+                    at Runtime._loadModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:551:12)
+                    at Runtime.requireModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:415:10)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:201:13
+                    at Generator.next (&lt;anonymous>)
+                    at asyncGeneratorStep (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:27:24)
+                    at _next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:47:9)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:52:7
+                    at new Promise (&lt;anonymous>)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+        <test-case start='1563783663367' status='failed' stop='1563783663369'>
+            <name>[JPT-1973][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</name>
+            <title>[JPT-1973][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563783663367' status='passed' stop='1563783663367'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563783663368' status='failed' stop='1563783663368'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: Failed: ErrorEvent {
+                  "error": [Error: connect ECONNREFUSED 127.0.0.1:3001],
+                  "message": "connect ECONNREFUSED 127.0.0.1:3001",
+                  "target": WebSocket {
+                    "_binaryType": "nodebuffer",
+                    "_closeCode": 1006,
+                    "_closeFrameReceived": false,
+                    "_closeFrameSent": false,
+                    "_closeMessage": "",
+                    "_closeTimer": null,
+                    "_events": Object {
+                      "error": [Function onError],
+                      "open": [Function onOpen],
+                    },
+                    "_eventsCount": 2,
+                    "_extensions": Object {},
+                    "_isServer": false,
+                    "_maxListeners": undefined,
+                    "_receiver": null,
+                    "_redirects": 0,
+                    "_req": null,
+                    "_sender": null,
+                    "_socket": null,
+                    "protocol": "",
+                    "readyState": 3,
+                    "url": "ws://localhost:3001?headless=false",
+                  },
+                  "type": "error",
+                }</message>
+                <stack-trace>Error
+                    at Env.beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmineAsyncInstall.js:41:24)
+                    at beforeAll (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:131:28)
+                    at Suite.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:34:3)
+                    at addSpecsToSuite (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:496:51)
+                    at Env.describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/Env.js:466:11)
+                    at describe (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/jasmine/jasmineLight.js:81:18)
+                    at Object.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/__tests__/ConferenceCall/supportMultipleCall.ts:28:1)
+                    at Runtime._execModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:858:13)
+                    at Runtime._loadModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:551:12)
+                    at Runtime.requireModule (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-runtime/build/index.js:415:10)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:201:13
+                    at Generator.next (&lt;anonymous>)
+                    at asyncGeneratorStep (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:27:24)
+                    at _next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:47:9)
+                    at /Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/node_modules/jest/node_modules/jest-jasmine2/build/index.js:52:7
+                    at new Promise (&lt;anonymous>)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

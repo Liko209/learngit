@@ -1,0 +1,1355 @@
+[info]: MAIN [PerformanceTracer]   [{"key":"conversation_fetch_from_db","count":0,"time":358.42499999853317}]
+[info]: MAIN  [LOG_FETCH_POST] groupId: 7550459906 localSize:0
+[log]: MAIN GroupConfigService   updateDraft JSHandle@object
+[info]: MAIN GroupHandleDataController   fetch unread group ids done
+[log]: MAIN  hasFeatureFlag of LEFT_RAIL_MAX_COUNT launchDarkly:80
+[info]: MAIN [GroupFetchDataController]   team getGroupsByType() result origin count: 1 maxCount: 80
+[info]: MAIN SectionGroupHandler   removeOverLimitGroupByChangingIds limit: 20
+[log]: MAIN  launchDarkly ready event flags JSHandle@object
+[log]: MAIN  hasPermission of JUPITER_CREATE_TEAM launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_SEARCH_SUPPORT_BY_SOUNDEX launchDarkly:false
+[log]: MAIN  hasPermission of CAN_SHOW_NOTE launchDarkly:false
+[log]: MAIN  hasPermission of LEFT_RAIL_MAX_COUNT launchDarkly:true
+[log]: MAIN  hasPermission of CAN_MENTION_TEAM launchDarkly:false
+[log]: MAIN  incoming event launchDarklyreadyCallback
+[log]: MAIN  hasPermission of JUPITER_SEND_NEW_MESSAGE  splitIO:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SHOW_IMAGE_DIALOG launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of CAN_SHOW_ALL_GROUP launchDarkly:false splitIO:false
+[log]: MAIN  user:3021004803, refreshPermissions:{"JUPITER_CREATE_TEAM":true,"JUPITER_CAN_SAVE_LOG":true,"JUPITER_CAN_UPLOAD_LOG":false,"JUPITER_CAN_USE_TELEPHONY":true,"JUPITER_SEARCH_SUPPORT_BY_SOUNDEX":false,"CAN_SHOW_NOTE":false,"LEFT_RAIL_MAX_COUNT":true,"CAN_MENTION_TEAM":false,"JUPITER_SEND_NEW_MESSAGE":true,"JUPITER_CAN_SHOW_IMAGE_DIALOG":false,"ZIP_LOG_AUTO_UPLOAD_BETA":false,"CAN_SHOW_ALL_GROUP":false}
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[debug]: TELEPHONY  onPermissionUpdated voipCalling: true false
+[info]: MAIN [UI TelephonyService]    pause audio, Mon Jul 22 2019 12:10:42 GMT+0800 (China Standard Time)
+[debug]: MAIN  isVoipCallingAvailable: true
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN RCSubscriptionController   subscription is alive, should update: false
+[log]: MAIN RCSubscriptionController   subscription not updated
+[log]: MAIN RCSubscriptionController   get subscription success JSHandle@object
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: MAIN  [PowerMonitor]PowerMonitor init
+[info]: MAIN  [SOCKET manager] getInstance
+[info]: MAIN  [Telephony] constructor
+[info]: MAIN  ErrorReporter enabled status: false
+[info]: MAIN  [Upgrade]constructor with interval: 3600000
+[log]: [ServiceWorker][Upgrade]registerServiceWorker on load. document.readyState: loading
+[info]: MAIN SDK   onStartLogin
+[info]: MAIN SDK   start onAuthSuccess
+[log]: MAIN RCSubscriptionController   need to init subscription before start
+[log]: MAIN RCSubscriptionController   init subscription
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  initial cache without permission or already initialized
+[info]: MAIN  [2019-07-22T04:10:43.308Z][Debug] RTCMediaDeviceManager: init updating media device infos ...
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN  _initialEntitiesCache begin
+[debug]: MAIN JobScheduler   _canExecute, FETCH_CLIENT_INFO, 1563768643318, 1563768634521
+[debug]: MAIN JobScheduler   _setTimer, FETCH_CLIENT_INFO, 86391203
+[debug]: MAIN JobScheduler   _canExecute, FETCH_ACCOUNT_INFO, 1563768643318, 1563768634522
+[debug]: MAIN JobScheduler   _setTimer, FETCH_ACCOUNT_INFO, 86391203
+[debug]: MAIN JobScheduler   _canExecute, FETCH_EXTENSION_INFO, 1563768643319, 1563768634523
+[debug]: MAIN JobScheduler   _setTimer, FETCH_EXTENSION_INFO, 86391203
+[debug]: MAIN JobScheduler   _canExecute, FETCH_ROLE_PERMISSIONS, 1563768643320, 1563768634524
+[debug]: MAIN JobScheduler   _setTimer, FETCH_ROLE_PERMISSIONS, 86391204
+[debug]: MAIN JobScheduler   _canExecute, FETCH_RC_ACCOUNT_SERVICE_INFO, 1563768643321, 1563768635456
+[debug]: MAIN JobScheduler   _setTimer, FETCH_RC_ACCOUNT_SERVICE_INFO, 86392135
+[debug]: MAIN JobScheduler   _canExecute, FETCH_SPECIAL_NUMBER_RULE, 1563768643321, 1563768635656
+[debug]: MAIN JobScheduler   _setTimer, FETCH_SPECIAL_NUMBER_RULE, 86392334
+[debug]: MAIN JobScheduler   _canExecute, FETCH_EXTENSION_PHONE_NUMBER_LIST, 1563768643322, 1563768635834
+[debug]: MAIN JobScheduler   _setTimer, FETCH_EXTENSION_PHONE_NUMBER_LIST, 86392512
+[debug]: MAIN JobScheduler   _canExecute, FETCH_EXTENSION_CALLER_ID, 1563768643323, 1563768635892
+[debug]: MAIN JobScheduler   _setTimer, FETCH_EXTENSION_CALLER_ID, 86392569
+[debug]: MAIN JobScheduler   _canExecute, FETCH_DIALING_PLAN, 1563768643324, 1563768635932
+[debug]: MAIN JobScheduler   _setTimer, FETCH_DIALING_PLAN, 86392608
+[debug]: MAIN JobScheduler   _canExecute, FETCH_FORWARDING_NUMBER, 1563768643324, 1563768636009
+[debug]: MAIN JobScheduler   _setTimer, FETCH_FORWARDING_NUMBER, 86392684
+[debug]: MAIN JobScheduler   _canExecute, FETCH_PHONE_DATA, 1563768643325, 1563768636040
+[debug]: MAIN JobScheduler   _setTimer, FETCH_PHONE_DATA, 86392715
+[debug]: MAIN JobScheduler   _canExecute, FETCH_BLOCK_NUMBER, 1563768643326, 1563768636114
+[debug]: MAIN JobScheduler   _setTimer, FETCH_BLOCK_NUMBER, 86392788
+[info]: MAIN [SOCKET manager]   onLogin 1563768640870
+[log]: MAIN  SyncController handleStoppingSocketEvent
+[info]: MAIN  SyncController reset socket connected time
+[info]: MAIN [SOCKET manager]   _startFSM
+[log]: MAIN  [Socket SocketCanConnectController] start checkCanConnectToServer 2059 later
+[log]: MAIN  SyncController start syncData time: 1563768640870
+[info]: MAIN INDEX_TASK_CONTROLLER   incomes new start
+[info]: MAIN INDEX_TASK_CONTROLLER   new task arrived
+[debug]: MAIN JobScheduler   cancelJob INDEX_DATA, false
+[log]: MAIN  SyncController start fetching index:1563768640870
+[info]: NETWORK  appendTask() task priority: 1, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/api/index headers:{} params:{"newer_than":"1563768340870"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 5 startRequest:  JSHandle@object
+[log]: MAIN  SyncController start fetching remaining
+[info]: NETWORK  appendTask() task priority: 1, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:v1.0/desktop/remaining headers:{} params:{"_":1563768640870} data:{}
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 3 startRequest:  JSHandle@object
+[info]: MAIN  SleepModeDetector  subScribe: SDK_SLEEP_MODE_DETECT
+[info]: MAIN SDK   sdk init finished
+[debug]: MAIN  [Call_Window_FSM] Transition: init from: none to: minimized
+[log]: MAIN  MultiEntityMapStore get error JSHandle@error
+[info]: MAIN  [2019-07-22T04:10:43.546Z][Debug] RTCMediaDeviceManager: Detect audio input devices has 'default' as deviceId
+[info]: MAIN  [2019-07-22T04:10:43.547Z][Debug] RTCMediaDeviceManager: default device label: Default - Internal Microphone (Built-in)
+[info]: MAIN  [2019-07-22T04:10:43.547Z][Debug] RTCMediaDeviceManager: set audio input device id: 5011bf763a6726fee25b0a3cbc1c09593dbe265dc98b5babdff69f74c4037fe7
+[info]: MAIN  [2019-07-22T04:10:43.547Z][Debug] RTCMediaDeviceManager: audioinput updated: [{"deviceId":"default","kind":"audioinput","label":"Default - Internal Microphone (Built-in)","groupId":"4a013f6cad65ab6ea9d4943d3dd27c62ea66592a5ddcdaa58896e2ac9e28cc86"},{"deviceId":"5011bf763a6726fee25b0a3cbc1c09593dbe265dc98b5babdff69f74c4037fe7","kind":"audioinput","label":"Internal Microphone (Built-in)","groupId":"4a013f6cad65ab6ea9d4943d3dd27c62ea66592a5ddcdaa58896e2ac9e28cc86"},{"deviceId":"a70f60c4d4130e64d54e4075ab16fff1b670985e7edc7ea5497992ee88535b2f","kind":"audioinput","label":"Soundflower (2ch)","groupId":"168c2e8e6b52b26972fa91330d3cc698054e30b98a76eac1cd6c77ce3a5e178d"},{"deviceId":"0ee1e0ca20573a9afc77cd11f10c46bcfdde536ebbd0479c1c9a190e71318956","kind":"audioinput","label":"Soundflower (64ch)","groupId":"7206fed0d6dd67a43abe53d7ef4e1355e2b7160697133df08dafef1233bca4b5"}]
+[info]: MAIN  [2019-07-22T04:10:43.548Z][Debug] RTCMediaDeviceManager: Detect audio output devices has 'default' as deviceId
+[info]: MAIN  [2019-07-22T04:10:43.548Z][Debug] RTCMediaDeviceManager: default device label: Default - Internal Speakers (Built-in)
+[info]: MAIN  [2019-07-22T04:10:43.548Z][Debug] RTCMediaDeviceManager: set audio output device id: 38c72b50622763d1efabb725968e1c90977a1c97c5e2cecbef773f205ae2a945
+[info]: MAIN  [2019-07-22T04:10:43.549Z][Debug] RTCMediaDeviceManager: audiooutput updated: [{"deviceId":"default","kind":"audiooutput","label":"Default - Internal Speakers (Built-in)","groupId":"4a013f6cad65ab6ea9d4943d3dd27c62ea66592a5ddcdaa58896e2ac9e28cc86"},{"deviceId":"38c72b50622763d1efabb725968e1c90977a1c97c5e2cecbef773f205ae2a945","kind":"audiooutput","label":"Internal Speakers (Built-in)","groupId":"4a013f6cad65ab6ea9d4943d3dd27c62ea66592a5ddcdaa58896e2ac9e28cc86"},{"deviceId":"a70f60c4d4130e64d54e4075ab16fff1b670985e7edc7ea5497992ee88535b2f","kind":"audiooutput","label":"Soundflower (2ch)","groupId":"9c1c5e9cd773bb9f8a9dc70f96e624da32f0641b951947b18242fb452de4619a"},{"deviceId":"0ee1e0ca20573a9afc77cd11f10c46bcfdde536ebbd0479c1c9a190e71318956","kind":"audiooutput","label":"Soundflower (64ch)","groupId":"b2a192adcb0d8a3e7ab23e43248609c28b89e267a7cbfd188278f32d8f93f580"}]
+[log]: i18next: languageChanged en
+[log]: i18next: initialized JSHandle@object
+[log]: [ServiceWorker][Upgrade]registerValidSW: /service-worker.js
+[info]: MAIN  [Upgrade]registered /service-worker.js. controller: true
+[info]: MAIN  [Upgrade]setServiceWorkerURL: /service-worker.js, hasWaitingWorker: false
+[debug]: MAIN  _initialEntitiesCache done
+[debug]: MAIN  _initialEntitiesCache done
+[debug]: MAIN  _initialEntitiesCache done
+[debug]: MAIN  _initialEntitiesCache done
+[info]: MAIN [PerformanceTracer]   [{"key":"prepare_person_cache","count":2,"time":325.8200000018405}]
+[debug]: MAIN  _initialEntitiesCache done
+[debug]: MAIN  _initialEntitiesCache done
+[info]: MAIN voicemail.VOICEMAILS   update badge:  JSHandle@object
+[info]: MAIN [PerformanceTracer]   [{"key":"init_rc_message_badge","infos":{"id":"voicemail.VOICEMAILS","count":1},"time":314.6500000002561}]
+[debug]: MAIN  PhoneParserUtility: module loaded successfully.
+[info]: MAIN [PerformanceTracer]   [{"key":"load_phone_parser","infos":true,"time":400.1300000018091}]
+[log]: MAIN  hasPermission of JUPITER_CREATE_TEAM launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_SEARCH_SUPPORT_BY_SOUNDEX launchDarkly:false
+[log]: MAIN  hasPermission of CAN_SHOW_NOTE launchDarkly:false
+[log]: MAIN  hasPermission of LEFT_RAIL_MAX_COUNT launchDarkly:true
+[log]: MAIN  hasPermission of CAN_MENTION_TEAM launchDarkly:false
+[info]: MAIN SectionGroupHandler   start init SectionGroupHandler
+[info]: MAIN [GroupFetchDataController]   offset:0 limit:Infinity groupType:favorite
+[info]: MAIN  [Telephony] _onLogin
+[debug]: MAIN  [1563768643874] RTC_ACCOUNT_FSM: Transition: init from: none to: idle
+[info]: MAIN  SleepModeDetector  subScribe: RTCVoipSleepModeDetector
+[info]: MAIN  [1563768643876] RTCProvManager: There's no SIP provisioning info in DAO
+[info]: MAIN  [1563768643877] RTCProvManager: start send SipProv Request
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/client-info/sip-provision headers:{} params:{} data:{"sipInfo":[{"transport":"WSS"}]}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 2 startRequest:  JSHandle@object
+[log]: MAIN  hasPermission of JUPITER_SEND_NEW_MESSAGE  splitIO:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SHOW_IMAGE_DIALOG launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of CAN_SHOW_ALL_GROUP launchDarkly:false splitIO:false
+[info]: MAIN [GroupFetchDataController]   offset:0 limit:20 groupType:group
+[info]: MAIN [GroupFetchDataController]   offset:0 limit:20 groupType:team
+[info]: MAIN [GroupFetchDataController]   check hiddenIds
+[info]: MAIN [GroupFetchDataController]   check hiddenIds
+[log]: MAIN  hasPermission of JUPITER_CREATE_TEAM launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_SEARCH_SUPPORT_BY_SOUNDEX launchDarkly:false
+[log]: MAIN  hasPermission of CAN_SHOW_NOTE launchDarkly:false
+[log]: MAIN  hasPermission of LEFT_RAIL_MAX_COUNT launchDarkly:true
+[log]: MAIN  hasPermission of CAN_MENTION_TEAM launchDarkly:false
+[log]: MAIN  incoming event splitIOReady
+[log]: MAIN  hasPermission of JUPITER_SEND_NEW_MESSAGE  splitIO:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SHOW_IMAGE_DIALOG launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of CAN_SHOW_ALL_GROUP launchDarkly:false splitIO:false
+[log]: MAIN  user:3021004803, refreshPermissions:{"JUPITER_CREATE_TEAM":true,"JUPITER_CAN_SAVE_LOG":false,"JUPITER_CAN_UPLOAD_LOG":false,"JUPITER_CAN_USE_TELEPHONY":true,"JUPITER_SEARCH_SUPPORT_BY_SOUNDEX":false,"CAN_SHOW_NOTE":false,"LEFT_RAIL_MAX_COUNT":true,"CAN_MENTION_TEAM":false,"JUPITER_SEND_NEW_MESSAGE":true,"JUPITER_CAN_SHOW_IMAGE_DIALOG":false,"ZIP_LOG_AUTO_UPLOAD_BETA":false,"CAN_SHOW_ALL_GROUP":false}
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[error]: Failed to load resource: the server responded with a status of 404 ()
+[warning]: i18next::backendConnector: loading namespace Phone for language en failed failed loading /locales/en/Phone.json
+[log]: MAIN  launchDarkly ready event flags JSHandle@object
+[log]: MAIN  hasPermission of JUPITER_CREATE_TEAM launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_SEARCH_SUPPORT_BY_SOUNDEX launchDarkly:false
+[log]: MAIN  hasPermission of CAN_SHOW_NOTE launchDarkly:false
+[log]: MAIN  hasPermission of LEFT_RAIL_MAX_COUNT launchDarkly:true
+[log]: MAIN  hasPermission of CAN_MENTION_TEAM launchDarkly:false
+[log]: MAIN  incoming event launchDarklyreadyCallback
+[log]: MAIN  hasPermission of JUPITER_SEND_NEW_MESSAGE  splitIO:true
+[log]: MAIN  hasPermission of JUPITER_CAN_SHOW_IMAGE_DIALOG launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[log]: MAIN  hasPermission of CAN_SHOW_ALL_GROUP launchDarkly:false splitIO:false
+[log]: MAIN  user:3021004803, refreshPermissions:{"JUPITER_CREATE_TEAM":true,"JUPITER_CAN_SAVE_LOG":true,"JUPITER_CAN_UPLOAD_LOG":false,"JUPITER_CAN_USE_TELEPHONY":true,"JUPITER_SEARCH_SUPPORT_BY_SOUNDEX":false,"CAN_SHOW_NOTE":false,"LEFT_RAIL_MAX_COUNT":true,"CAN_MENTION_TEAM":false,"JUPITER_SEND_NEW_MESSAGE":true,"JUPITER_CAN_SHOW_IMAGE_DIALOG":false,"ZIP_LOG_AUTO_UPLOAD_BETA":false,"CAN_SHOW_ALL_GROUP":false}
+[log]: MAIN  hasPermission of JUPITER_CAN_SAVE_LOG launchDarkly:true
+[log]: MAIN  hasPermission of JUPITER_CAN_UPLOAD_LOG launchDarkly:false
+[log]: MAIN  hasPermission of ZIP_LOG_AUTO_UPLOAD_BETA launchDarkly:false splitIO:false
+[info]: MAIN callLog.MISSED_CALLS   update badge:  JSHandle@object
+[info]: MAIN [PerformanceTracer]   [{"key":"init_rc_call_log_badge","infos":{"id":"callLog.MISSED_CALLS","count":2},"time":730.4499999991094}]
+[debug]: MAIN  isVoipCallingAvailable: true
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: MAIN  [Auth]white list not defined for XMN-UP-TELEPHONY-MOCK-4
+[debug]: MAIN  PhoneParserUtility: init result =>  true
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[info]: MAIN [UI TelephonyService]    pause audio, Mon Jul 22 2019 12:10:44 GMT+0800 (China Standard Time)
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 807  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN  [1563768644689] RTCProvManager: the response is: {"data":{"device":{"uri":"https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/1042942004/device/803795537004","id":"803795537004","type":"WebPhone","status":"Online","phoneLines":[],"linePooling":"None"},"sipInfo":[{"transport":"WSS","username":"18882288388*101","password":"3sJKO4","authorizationId":"803795537004","domain":"sip-xmnup.lab.nordigy.ru","outboundProxy":"glip-sip-xmnup.lab.nordigy.ru:8083","outboundProxyBackup":"glip-sip-xmnup-backup.lab.nordigy.ru:8083","switchBackInterval":3600}],"sipInfoPstn":[],"sipFlags":{"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":true,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34},"sipErrorCodes":["503","502","504"],"pollingInterval":7200},"status":200,"statusText":"OK","headers":{"date":"Mon, 22 Jul 2019 04:10:44 GMT","content-encoding":"gzip","x-rate-limit-limit":"60","routingkey":"SJC01P01PAS01","x-rate-limit-remaining":"59","connection":"keep-alive","content-length":"447","rcrequestid":"aceae4a6-ac36-11e9-9845-005056bea238","server":"nginx/1.14.2","vary":"Accept-Encoding, User-Agent","content-language":"en-US","access-control-allow-origin":"null","access-control-expose-headers":"Date, RoutingKey, Content-Length, Content-Encoding, Retry-After, RCRequestId, X-Rate-Limit-Group, X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Window, ETag","x-rate-limit-group":"heavy","access-control-allow-credentials":"true","content-type":"application/json; charset=UTF-8","x-rate-limit-window":"60"},"retryAfter":6000,"request":{"startTime":1563768643881,"id":"9ed73716-04d6-4db6-8bb0-6bf8a067d5cf","path":"/restapi/v1.0/client-info/sip-provision","method":"post","data":{"sipInfo":[{"transport":"WSS"}]},"headers":{"Authorization":"Bearer U0pDMDFQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGQ1pTM0JRS3o0eHVrb3FrNF95WGR4b2V2X0xkRlBnVUNlTDFsQV9wXzNXRzR3ZHpZbi1ROEUxQzBFM0tsV292OXZ2S3duS0UtQTlhSC16NGphVk42X0pIRk9rRXEzd1haeDN6aWxyQ2NGYzdlc3g1eDRGQzZLUEtKc3JpM0I4OU5ULWlYbWZwSEgwOTdaZjJTYkphM0pQWDlRTmpiVUN1OTRmd2hEOWVIM3l8WWRDZGVnfFo1VzVhQTBRaEw3c1NLdE9OVy1GSmd8QUE"},"params":{},"authFree":false,"host":"https://xmn02-i01-wpt01.lab.nordigy.ru:446/pubapi","handlerType":{"name":"RINGCENTRAL","defaultVia":0,"survivalModeSupportable":true,"tokenExpirable":true,"tokenRefreshable":true,"platformHandleDelegate":{"_isStarted":true,"_accountManager":{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_container":{"_registrationMap":{},"_containerConfig":{"singleton":true}},"_isLogin":true,"_isRCOnlyMode":false,"_glipLoginStatus":1,"_accountMap":{},"_accounts":[{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","DBConfigService","GlobalConfigService","PermissionService","PhoneNumberService","RCEventSubscriptionService","RCInfoService","SettingService","TelephonyService","UserConfigService","VoicemailService"],"event":"SUPPORTED_SERVICE_CHANGE"},{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","CompanyService","DBConfigService","GlobalConfigService","GroupConfigService","GroupService","ItemService","PermissionService","PersonService","PhoneNumberService","PostService","PresenceService","ProfileService","ProgressService","RCEventSubscriptionService","RCInfoService","SearchService","SettingService","StateService","SyncService","TelephonyService","VoicemailService","UserConfigService"],"event":"SUPPORTED_SERVICE_CHANGE"}],"event":"ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"},"_refreshTokenQueue":[],"_subscribeController":{"_subscriptions":{},"_isSubscribed":true},"_userConfig":{"_userId":"1042942004","_moduleName":"account","_configCache":{},"_configService":{"_isStarted":true,"_ns":"1042942004"}},"_authUserConfig":{"_userId":"1042942004","_moduleName":"auth","_configCache":{},"_configService":{"_isStarted":true,"_ns":"1042942004"}},"_authController":{"_accountManager":{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_container":{"_registrationMap":{},"_containerConfig":{"singleton":true}},"_isLogin":true,"_isRCOnlyMode":false,"_glipLoginStatus":1,"_accountMap":{},"_accounts":[{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","DBConfigService","GlobalConfigService","PermissionService","PhoneNumberService","RCEventSubscriptionService","RCInfoService","SettingService","TelephonyService","UserConfigService","VoicemailService"],"event":"SUPPORTED_SERVICE_CHANGE"},{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","CompanyService","DBConfigService","GlobalConfigService","GroupConfigService","GroupService","ItemService","PermissionService","PersonService","PhoneNumberService","PostService","PresenceService","ProfileService","ProgressService","RCEventSubscriptionService","RCInfoService","SearchService","SettingService","StateService","SyncService","TelephonyService","VoicemailService","UserConfigService"],"event":"SUPPORTED_SERVICE_CHANGE"}],"event":"ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"}}}},"requestConfig":{},"timeout":60000,"retryCount":0,"priority":2,"HAPriority":0,"via":0}}
+[info]: MAIN  [1563768644690] RTCProvManager: the prov info: {"device":{"uri":"https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/1042942004/device/803795537004","id":"803795537004","type":"WebPhone","status":"Online","phoneLines":[],"linePooling":"None"},"sipInfo":[{"transport":"WSS","username":"18882288388*101","password":"3sJKO4","authorizationId":"803795537004","domain":"sip-xmnup.lab.nordigy.ru","outboundProxy":"glip-sip-xmnup.lab.nordigy.ru:8083","outboundProxyBackup":"glip-sip-xmnup-backup.lab.nordigy.ru:8083","switchBackInterval":3600}],"sipInfoPstn":[],"sipFlags":{"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":true,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34},"sipErrorCodes":["503","502","504"],"pollingInterval":7200}
+[info]: MAIN  [1563768644690] RTCProvManager: set fresh timer
+[info]: MAIN  [1563768644690] RTCProvManager: Reset SIP provisioning info error retry interval to 8
+[info]: MAIN  [1563768644690] RTCProvManager: Received new SIP provisioning info from server
+[debug]: MAIN  [1563768644691] RTCAccount: There's no active call. Process new provisioning info
+[info]: MAIN  [Telephony] Notify Delegate New SipFlags: {"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":true,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34}
+[debug]: MAIN  [1563768644712] RC_WEBPHONE: [sip.ua] configuration parameters after validation:
+[debug]: MAIN  [1563768644713] RC_WEBPHONE: [sip.ua] · viaHost: "04t0cm7nfa1l.invalid"
+[debug]: MAIN  [1563768644714] RC_WEBPHONE: [sip.ua] · uri: sip:18882288388*101@sip-xmnup.lab.nordigy.ru
+[debug]: MAIN  [1563768644714] RC_WEBPHONE: [sip.ua] · custom: {}
+[debug]: MAIN  [1563768644715] RC_WEBPHONE: [sip.ua] · displayName: ""
+[debug]: MAIN  [1563768644715] RC_WEBPHONE: [sip.ua] · password: NOT SHOWN
+[debug]: MAIN  [1563768644716] RC_WEBPHONE: [sip.ua] · register: true
+[debug]: MAIN  [1563768644716] RC_WEBPHONE: [sip.ua] · registerOptions: {}
+[debug]: MAIN  [1563768644717] RC_WEBPHONE: [sip.ua] · transportConstructor: Transport
+[debug]: MAIN  [1563768644717] RC_WEBPHONE: [sip.ua] · transportOptions: {"wsServers":[{"wsUri":"wss://glip-sip-xmnup.lab.nordigy.ru:8083","weight":10},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0}],"traceSip":true,"maxReconnectionAttempts":10,"reconnectionTimeout":4,"connectionTimeout":5}
+[debug]: MAIN  [1563768644718] RC_WEBPHONE: [sip.ua] · userAgentString: "RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2"
+[debug]: MAIN  [1563768644719] RC_WEBPHONE: [sip.ua] · noAnswerTimeout: 60000
+[debug]: MAIN  [1563768644719] RC_WEBPHONE: [sip.ua] · hackViaTcp: false
+[debug]: MAIN  [1563768644720] RC_WEBPHONE: [sip.ua] · hackIpInContact: false
+[debug]: MAIN  [1563768644720] RC_WEBPHONE: [sip.ua] · hackWssInTransport: false
+[debug]: MAIN  [1563768644721] RC_WEBPHONE: [sip.ua] · hackAllowUnregisteredOptionTags: false
+[debug]: MAIN  [1563768644721] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactoryOptions: {"peerConnectionOptions":{"iceCheckingTimeout":500,"rtcConfiguration":{"rtcpMuxPolicy":"negotiate","sdpSemantics":"plan-b"}},"constraints":{"audio":true,"video":false},"modifiers":[null,null,null]}
+[debug]: MAIN  [1563768644722] RC_WEBPHONE: [sip.ua] · extraSupported: []
+[debug]: MAIN  [1563768644722] RC_WEBPHONE: [sip.ua] · contactName: "2spgeta7"
+[debug]: MAIN  [1563768644723] RC_WEBPHONE: [sip.ua] · contactTransport: "ws"
+[debug]: MAIN  [1563768644723] RC_WEBPHONE: [sip.ua] · forceRport: false
+[debug]: MAIN  [1563768644724] RC_WEBPHONE: [sip.ua] · autostart: false
+[debug]: MAIN  [1563768644724] RC_WEBPHONE: [sip.ua] · autostop: true
+[debug]: MAIN  [1563768644725] RC_WEBPHONE: [sip.ua] · rel100: "none"
+[debug]: MAIN  [1563768644725] RC_WEBPHONE: [sip.ua] · dtmfType: "info"
+[debug]: MAIN  [1563768644726] RC_WEBPHONE: [sip.ua] · replaces: "none"
+[debug]: MAIN  [1563768644726] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactory: function(e,t){var r=e.ua.getLogger("sip.invitecontext.sessionDescriptionHandler",e.id);var n=new l.SessionDescriptionHandlerObserver(e,t);return new SessionDescriptionHandler(r,n,t)}
+[debug]: MAIN  [1563768644727] RC_WEBPHONE: [sip.ua] · authenticationFactory: undefined
+[debug]: MAIN  [1563768644728] RC_WEBPHONE: [sip.ua] · allowLegacyNotifications: true
+[debug]: MAIN  [1563768644728] RC_WEBPHONE: [sip.ua] · allowOutOfDialogRefers: false
+[debug]: MAIN  [1563768644729] RC_WEBPHONE: [sip.ua] · authorizationUser: "803795537004"
+[debug]: MAIN  [1563768644729] RC_WEBPHONE: [sip.ua] · sipjsId: "ujb87"
+[debug]: MAIN  [1563768644730] RC_WEBPHONE: [sip.ua] · hostportParams: "sip-xmnup.lab.nordigy.ru"
+[debug]: MAIN  [1563768644733] RC_WEBPHONE: [sip.registercontext] configuration parameters for RegisterContext after validation:
+[debug]: MAIN  [1563768644733] RC_WEBPHONE: [sip.registercontext] · expires: 600
+[debug]: MAIN  [1563768644734] RC_WEBPHONE: [sip.registercontext] · extraContactHeaderParams: []
+[debug]: MAIN  [1563768644734] RC_WEBPHONE: [sip.registercontext] · instanceId: undefined
+[debug]: MAIN  [1563768644735] RC_WEBPHONE: [sip.registercontext] · params: {"toUri":{"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"}},"toDisplayName":"","callId":"t04lvkmvu8ia0lu5fci8qq","cseq":6490}
+[debug]: MAIN  [1563768644735] RC_WEBPHONE: [sip.registercontext] · regId: undefined
+[debug]: MAIN  [1563768644736] RC_WEBPHONE: [sip.registercontext] · registrar: {"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"}}
+[debug]: MAIN  [1563768644737] RC_WEBPHONE: [sip.ua] user requested startup...
+[debug]: MAIN  [1563768644740] RC_WEBPHONE: [sip.transport] configuration parameters after validation:
+[debug]: MAIN  [1563768644740] RC_WEBPHONE: [sip.transport] · wsServers: [{"wsUri":"wss://glip-sip-xmnup.lab.nordigy.ru:8083","weight":10,"sipUri":"<sip:glip-sip-xmnup.lab.nordigy.ru:8083;transport=ws;lr>","isError":false,"scheme":"WSS"},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0,"sipUri":"<sip:glip-sip-xmnup-backup.lab.nordigy.ru:8083;transport=ws;lr>","isError":false,"scheme":"WSS"}]
+[debug]: MAIN  [1563768644741] RC_WEBPHONE: [sip.transport] · connectionTimeout: 5
+[debug]: MAIN  [1563768644741] RC_WEBPHONE: [sip.transport] · maxReconnectionAttempts: 10
+[debug]: MAIN  [1563768644742] RC_WEBPHONE: [sip.transport] · reconnectionTimeout: 4
+[debug]: MAIN  [1563768644743] RC_WEBPHONE: [sip.transport] · keepAliveInterval: 0
+[debug]: MAIN  [1563768644743] RC_WEBPHONE: [sip.transport] · keepAliveDebounce: 10
+[debug]: MAIN  [1563768644744] RC_WEBPHONE: [sip.transport] · traceSip: true
+[debug]: MAIN  [1563768644745] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768644747] RTC_ACCOUNT_FSM: Transition: provisionReady from: idle to: inProgress
+[info]: MAIN [GroupFetchDataController]   fetched from entity source done
+[info]: MAIN GroupHandleDataController   fetch unread group ids done
+[log]: MAIN  hasFeatureFlag of LEFT_RAIL_MAX_COUNT launchDarkly:80
+[info]: MAIN [GroupFetchDataController]   group getGroupsByType() result origin count: 0 maxCount: 80
+[info]: MAIN  fetch left rail group: 0 type: group
+[info]: MAIN [PerformanceTracer]   [{"key":"group_section_fetch_direct_messages","count":0,"time":923.6400000008871}]
+[info]: MAIN [GroupFetchDataController]   fetched from entity source done
+[info]: MAIN GroupHandleDataController   fetch unread group ids done
+[log]: MAIN  hasFeatureFlag of LEFT_RAIL_MAX_COUNT launchDarkly:80
+[info]: MAIN [GroupFetchDataController]   team getGroupsByType() result origin count: 0 maxCount: 80
+[info]: MAIN  fetch left rail group: 0 type: team
+[info]: MAIN [PerformanceTracer]   [{"key":"group_section_fetch_teams","count":0,"time":925.9149999998044}]
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN RCSubscriptionController   subscription is alive, should update: false
+[log]: MAIN RCSubscriptionController   subscription not updated
+[log]: MAIN RCSubscriptionController   get subscription success JSHandle@object
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[debug]: TELEPHONY  onPermissionUpdated voipCalling: true false
+[info]: MAIN [UI TelephonyService]    pause audio, Mon Jul 22 2019 12:10:44 GMT+0800 (China Standard Time)
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[debug]: TELEPHONY  onPermissionUpdated voipCalling: true true
+[debug]: TELEPHONY  No permission change
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK  requestConsumeTime: 1448  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[log]: MAIN  [LOG_INDEX_DATA] fetch index done
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_account","time":6.3649999974586535}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingCompany() company.length: 1, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingItem() item.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPresence() item.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingState() states.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_item","count":0,"time":0.9350000000267755}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_presence","count":0,"time":1.0400000028312206}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_state","count":0,"time":1.9150000007357448}]
+[debug]: MAIN  [1563768644820] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK605804
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6491 REGISTER
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:2spgeta7@04t0cm7nfa1l.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768644821] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768644821] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083 connected
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/api/team/7550459906 headers:{} params:{} data:{}
+[info]: NETWORK  Socket executor queue size: 0
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 4 startRequest:  JSHandle@object
+[debug]: MAIN  [1563768644830] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK605804;received=10.32.58.61
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6491 REGISTER
+Content-Length: 0
+
+
+
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_company","count":1,"time":35.855000001902226}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingProfile(), source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_profile","time":0.11499999891384505}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPerson() persons.length: 1, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_person","count":1,"time":0.8899999993445817}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingGroup() groups.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_group","count":0,"time":0.07500000356230885}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPost() posts.length: , source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_post","count":0,"time":0.22500000341096893}]
+[debug]: MAIN  [LOG_INDEX_DATA] store index data done===47
+[debug]: MAIN  [LOG_INDEX_DATA] emit index data done===1
+[log]: MAIN  SyncController updateIndexTimestamp time: 1563768644016 forceUpdate:true
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_data","time":49.779999997554114}]
+[log]: MAIN  [LOG_INDEX_DATA] handle index done
+[log]: MAIN  [LOG_INDEX_DATA] executeFunc done. stop progress
+[debug]: MAIN JobScheduler   cancelJob INDEX_DATA, false
+[info]: MAIN [TaskController]   clear done
+[info]: MAIN INDEX_TASK_CONTROLLER   new task arrived
+[debug]: MAIN  [1563768644846] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK605804;received=10.32.58.61
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-9d1d
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6491 REGISTER
+WWW-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU4cF01N0TdBniKtyca9NH62aLWOa1d"
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768644850] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK5891397
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6492 REGISTER
+Authorization: Digest algorithm=MD5, username="803795537004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU4cF01N0TdBniKtyca9NH62aLWOa1d", uri="sip:sip-xmnup.lab.nordigy.ru", response="48f9a306739e3db3c7218ac957752e35"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:2spgeta7@04t0cm7nfa1l.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN  hasPermission of JUPITER_CAN_USE_TELEPHONY launchDarkly:true
+[log]: MAIN RCSubscriptionController   startPubNub JSHandle@object
+[log]: MAIN RCSubscriptionController    _scheduleSubscriptionJob -> ignoreFirstTime false
+[debug]: MAIN JobScheduler   _canExecute, RC_RENEW_SUBSCRIPTION, 1563768644867, 1563768635532
+[debug]: MAIN JobScheduler   _setTimer, RC_RENEW_SUBSCRIPTION, 830664
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: MAIN AllCallLogFetchController   try to add ISync processor
+[info]: MAIN AllCallLogFetchController   silent sync start
+[info]: MAIN AllCallLogFetchController   start sync, isSilent: true, type:ISync, direction:0, count:undefined
+[info]: MAIN VoicemailFetchController   try to add ISync processor
+[debug]: MAIN  isVoipCallingAvailable: true
+[debug]: MAIN  isVoipCallingAvailable: true
+[log]: MAIN RCSubscriptionController   subscription is alive, should update: false
+[log]: MAIN RCSubscriptionController   subscription not updated
+[log]: MAIN RCSubscriptionController   get subscription success JSHandle@object
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/account/~/extension/~/call-log-sync headers:{} params:{"syncType":"ISync","syncToken":"FAMAAAFrscmDMAQAAAFsF9_AcggAAAAAPioINA0AAAACWlCwJA4AAAFrscmDMBIAAAFsF9_AchQBFQAYABoBpnUoCw"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 2 startRequest:  JSHandle@object
+[debug]: MAIN  [1563768644903] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK5891397;received=10.32.58.61
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6492 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768644905] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS 04t0cm7nfa1l.invalid;branch=z9hG4bK5891397;received=10.32.58.61
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-6172
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=mr9vp0ed2o
+Call-ID: t04lvkmvu8ia0lu5fci8qq
+CSeq: 6492 REGISTER
+Contact: <sip:2spgeta7@04t0cm7nfa1l.invalid;transport=ws>;expires=49
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768644907] RTC_ACCOUNT_FSM: Transition: regSuccess from: inProgress to: ready
+[debug]: MAIN  [1563768644908] RTCRegistrationManager: Clear retry registration timer
+[log]: MAIN RCSubscriptionController   no needUpdatePubNub -  _startPubNub
+[log]: MAIN RCSubscriptionController    _scheduleSubscriptionJob -> ignoreFirstTime false
+[warning]: MAIN JobScheduler   already has job: RC_RENEW_SUBSCRIPTION,
+        will remove the old job and schedule again.
+[debug]: MAIN JobScheduler   cancelJob RC_RENEW_SUBSCRIPTION, false
+[debug]: MAIN JobScheduler   _canExecute, RC_RENEW_SUBSCRIPTION, 1563768644911, 1563768635532
+[debug]: MAIN JobScheduler   _setTimer, RC_RENEW_SUBSCRIPTION, 830620
+[info]: MAIN  SequenceProcessorHandler (RCSubscriptionController): is done
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK  requestConsumeTime: 1570  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_account","time":4.765000001498265}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingCompany() company.length: 0, source: SYNC_SOURCE.REMAINING
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingItem() item.length: 0, source: SYNC_SOURCE.REMAINING
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPresence() item.length: 0, source: SYNC_SOURCE.REMAINING
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingState() states.length: 0, source: SYNC_SOURCE.REMAINING
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_item","count":0,"time":0.8649999981571455}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_company","count":0,"time":1.5100000018719584}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_presence","count":0,"time":0.994999998511048}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_state","count":0,"time":0.8550000020477455}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingProfile(), source: SYNC_SOURCE.REMAINING
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_profile","time":0.06999999823165126}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPerson() persons.length: 4, source: SYNC_SOURCE.REMAINING
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_person","count":4,"time":1.2199999982840382}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingGroup() groups.length: 0, source: SYNC_SOURCE.REMAINING
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_group","count":0,"time":0.09000000136438757}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPost() posts.length: , source: SYNC_SOURCE.REMAINING
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_incoming_post","count":0,"time":0.2300000014656689}]
+[debug]: MAIN  [LOG_INDEX_DATA] store index data done===12
+[debug]: MAIN  [LOG_INDEX_DATA] emit index data done===1
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_remaining_data","time":13.514999998733401}]
+[log]: MAIN  fetch remaining data and handle success
+[info]: MAIN  SyncController fetch remaining data success
+[info]: MAIN SDK   end onAuthSuccess
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 131  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 69  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN AllCallLogFetchController   sync success, size:0 JSHandle@object
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: MAIN AllCallLogFetchController   handleDataAndSave, updateLength: 0 deleteLength: 0 pseudoInfo: JSHandle@object
+[log]: MAIN  hasFeatureFlag of LEFT_RAIL_MAX_COUNT launchDarkly:80
+[info]: MAIN [GroupFetchDataController]   favorite getGroupsByType() result origin count: 1 maxCount: 80
+[info]: MAIN  fetch left rail group: 1 type: favorite
+[debug]: MAIN FetchSortableDataListHandler   change maintain mode, true
+[debug]: MAIN FetchSortableDataListHandler   refreshData: -20
+[info]: MAIN  [LOG_FETCH_POST] getPostsByGroupId() groupId: 7550459906 postId: 0 shouldSaveToDb true direction older
+[info]: MAIN  [LOG_FETCH_POST] _getPostsFromDb() groupId:7550459906 postId:0 direction:older limit:20
+[debug]: MAIN FetchSortableDataListHandler   change maintain mode, true
+[debug]: MAIN FetchSortableDataListHandler   refreshData: -20
+[info]: MAIN [PerformanceTracer]   [{"key":"group_section_fetch_favorites","count":1,"time":1184.545000000071}]
+[info]: MAIN  PinnedPostCacheController doPrefetch done -  7550459906
+[info]: MAIN SectionGroupHandler   removeOverLimitGroupByChangingCurrentGroupId limit: 20
+[info]: MAIN [PerformanceTracer]   [{"key":"conversation_fetch_from_db","count":0,"time":24.295000002894085}]
+[info]: MAIN  [LOG_FETCH_POST] groupId: 7550459906 localSize:0
+[info]: MAIN  [LOG_FETCH_POST] getPostsByGroupId() groupId: 7550459906 shouldSaveToDb:true shouldFetch:true localSize:0
+[info]: MAIN  [LOG_FETCH_POST] _findValidAnchorPostId()
+[debug]: MAIN  [LOG_FETCH_POST] 7550459906 getRemotePostsByGroupId() db is not exceed limit, request from server
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/api/posts headers:{} params:{"limit":20,"direction":"older","group_id":7550459906} data:{}
+[info]: NETWORK  Socket executor queue size: 0
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 3 startRequest:  JSHandle@object
+[info]: MAIN AllCallLogFetchController   silent sync end
+[info]: MAIN VoicemailFetchController   silent sync start
+[info]: MAIN VoicemailFetchController   start sync, isSilent: true, type:ISync, direction:0, count:undefined
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/account/~/extension/~/message-sync headers:{} params:{"syncType":"ISync","syncToken":"AQEAAAACAwAAAWuxyZa4BgAAAPoFAAABbBffh8YTAAgAAAAAPioINAkBCgEZAAABbBffquIOfXaj"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 1 startRequest:  JSHandle@object
+[info]: MAIN RegionInfoController   setStationLocation JSHandle@object
+[info]: MAIN [PerformanceTracer]   [{"key":"init_phone_parser","infos":true,"time":1000.7200000000012}]
+[log]: MAIN  [Socket SocketCanConnectController]  canConnect parameters: {"presence":"online","uidtk":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2Mzc2ODY0MDM5MiwidHlwZSI6IndlYiIsInVpZCI6MzAyMTAwNDgwMywiaWF0IjoxNTYzNzY4NjQwLCJpc3MiOiJ4bW51cC5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.TmG6TAQURTS_BA-Q_cYu5waa4lS5QtK99tPZsq8kcRCdXbtSlTPPXxbmNfhMoL4v-K585ha7BOKn7MEtz4IuCw","user_id":3021004803,"newer_than":1563768644016}
+[info]: NETWORK  appendTask() task priority: 0, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/api/can-reconnect-v2 headers:{} params:{"presence":"online","uidtk":"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2Mzc2ODY0MDM5MiwidHlwZSI6IndlYiIsInVpZCI6MzAyMTAwNDgwMywiaWF0IjoxNTYzNzY4NjQwLCJpc3MiOiJ4bW51cC5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.TmG6TAQURTS_BA-Q_cYu5waa4lS5QtK99tPZsq8kcRCdXbtSlTPPXxbmNfhMoL4v-K585ha7BOKn7MEtz4IuCw","user_id":3021004803,"newer_than":1563768644016} data:{}
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 3 startRequest:  JSHandle@object
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 515  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN VoicemailFetchController   sync success, size:0 JSHandle@object
+[info]: MAIN VoicemailFetchController   silent sync end
+[info]: MAIN  SequenceProcessorHandler (SingleSequenceProcessor): is done
+[log]: MAIN RCSubscriptionController   _notifyStatus JSHandle@object
+[info]: MAIN [SOCKET manager]   focused and has not active FSM, try to restart one
+[info]: MAIN [SOCKET manager]   should not restartFSM isScreenLocked: false , _isDoingCanConnect: true
+[info]: MAIN  [1563768646038] RTCProvManager: SIP provisioning info FOUND in DAO
+[debug]: MAIN  [1563768646039] RTCAccount: There's no active call. Process new provisioning info
+[info]: MAIN  [Telephony] Notify Delegate New SipFlags: {"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":true,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34}
+[info]: MAIN  [1563768646040] RTCProvManager: start send SipProv Request
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/client-info/sip-provision headers:{} params:{} data:{"sipInfo":[{"transport":"WSS"}]}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 3 startRequest:  JSHandle@object
+[debug]: MAIN  [1563768646045] RTCSipUserAgent: Destroy User Agent ...
+[debug]: MAIN  [1563768646046] RC_WEBPHONE: [sip.transport] Attempting to transition status from 1 to 2
+[debug]: MAIN  [1563768646046] RC_WEBPHONE: [sip.transport] closing WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768646047] RC_WEBPHONE: [sip.ua] user requested closure...
+[debug]: MAIN  [1563768646047] RC_WEBPHONE: [sip.ua] closing registerContext
+[warning]: MAIN  [1563768646048] RC_WEBPHONE: [sip.transport] Tried to assert 1 but is currently 2
+[warning]: MAIN  [1563768646049] RC_WEBPHONE: [sip.transport] Transport error: unable to send message - WebSocket not open
+[debug]: MAIN  [1563768646050] RC_WEBPHONE: [sip.ua] configuration parameters after validation:
+[debug]: MAIN  [1563768646050] RC_WEBPHONE: [sip.ua] · viaHost: "1rb48vgbb1kg.invalid"
+[debug]: MAIN  [1563768646051] RC_WEBPHONE: [sip.ua] · uri: sip:18882288388*101@sip-xmnup.lab.nordigy.ru
+[debug]: MAIN  [1563768646051] RC_WEBPHONE: [sip.ua] · custom: {}
+[debug]: MAIN  [1563768646052] RC_WEBPHONE: [sip.ua] · displayName: ""
+[debug]: MAIN  [1563768646052] RC_WEBPHONE: [sip.ua] · password: NOT SHOWN
+[debug]: MAIN  [1563768646052] RC_WEBPHONE: [sip.ua] · register: true
+[debug]: MAIN  [1563768646053] RC_WEBPHONE: [sip.ua] · registerOptions: {}
+[debug]: MAIN  [1563768646053] RC_WEBPHONE: [sip.ua] · transportConstructor: Transport
+[debug]: MAIN  [1563768646054] RC_WEBPHONE: [sip.ua] · transportOptions: {"wsServers":[{"wsUri":"wss://glip-sip-xmnup.lab.nordigy.ru:8083","weight":10},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0}],"traceSip":true,"maxReconnectionAttempts":10,"reconnectionTimeout":4,"connectionTimeout":5}
+[debug]: MAIN  [1563768646054] RC_WEBPHONE: [sip.ua] · userAgentString: "RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2"
+[debug]: MAIN  [1563768646054] RC_WEBPHONE: [sip.ua] · noAnswerTimeout: 60000
+[debug]: MAIN  [1563768646055] RC_WEBPHONE: [sip.ua] · hackViaTcp: false
+[debug]: MAIN  [1563768646055] RC_WEBPHONE: [sip.ua] · hackIpInContact: false
+[debug]: MAIN  [1563768646056] RC_WEBPHONE: [sip.ua] · hackWssInTransport: false
+[debug]: MAIN  [1563768646056] RC_WEBPHONE: [sip.ua] · hackAllowUnregisteredOptionTags: false
+[debug]: MAIN  [1563768646057] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactoryOptions: {"peerConnectionOptions":{"iceCheckingTimeout":500,"rtcConfiguration":{"rtcpMuxPolicy":"negotiate","sdpSemantics":"plan-b"}},"constraints":{"audio":true,"video":false},"modifiers":[null,null,null]}
+[debug]: MAIN  [1563768646057] RC_WEBPHONE: [sip.ua] · extraSupported: []
+[debug]: MAIN  [1563768646057] RC_WEBPHONE: [sip.ua] · contactName: "gcfeqfju"
+[debug]: MAIN  [1563768646058] RC_WEBPHONE: [sip.ua] · contactTransport: "ws"
+[debug]: MAIN  [1563768646058] RC_WEBPHONE: [sip.ua] · forceRport: false
+[debug]: MAIN  [1563768646058] RC_WEBPHONE: [sip.ua] · autostart: false
+[debug]: MAIN  [1563768646059] RC_WEBPHONE: [sip.ua] · autostop: true
+[debug]: MAIN  [1563768646059] RC_WEBPHONE: [sip.ua] · rel100: "none"
+[debug]: MAIN  [1563768646060] RC_WEBPHONE: [sip.ua] · dtmfType: "info"
+[debug]: MAIN  [1563768646060] RC_WEBPHONE: [sip.ua] · replaces: "none"
+[debug]: MAIN  [1563768646060] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactory: function(e,t){var r=e.ua.getLogger("sip.invitecontext.sessionDescriptionHandler",e.id);var n=new l.SessionDescriptionHandlerObserver(e,t);return new SessionDescriptionHandler(r,n,t)}
+[debug]: MAIN  [1563768646061] RC_WEBPHONE: [sip.ua] · authenticationFactory: undefined
+[debug]: MAIN  [1563768646061] RC_WEBPHONE: [sip.ua] · allowLegacyNotifications: true
+[debug]: MAIN  [1563768646061] RC_WEBPHONE: [sip.ua] · allowOutOfDialogRefers: false
+[debug]: MAIN  [1563768646062] RC_WEBPHONE: [sip.ua] · authorizationUser: "803795537004"
+[debug]: MAIN  [1563768646062] RC_WEBPHONE: [sip.ua] · sipjsId: "kn72k"
+[debug]: MAIN  [1563768646062] RC_WEBPHONE: [sip.ua] · hostportParams: "sip-xmnup.lab.nordigy.ru"
+[debug]: MAIN  [1563768646063] RC_WEBPHONE: [sip.registercontext] configuration parameters for RegisterContext after validation:
+[debug]: MAIN  [1563768646064] RC_WEBPHONE: [sip.registercontext] · expires: 600
+[debug]: MAIN  [1563768646064] RC_WEBPHONE: [sip.registercontext] · extraContactHeaderParams: []
+[debug]: MAIN  [1563768646064] RC_WEBPHONE: [sip.registercontext] · instanceId: undefined
+[debug]: MAIN  [1563768646065] RC_WEBPHONE: [sip.registercontext] · params: {"toUri":{"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"}},"toDisplayName":"","callId":"771geqtsgn3itb770qnmdt","cseq":6980}
+[debug]: MAIN  [1563768646065] RC_WEBPHONE: [sip.registercontext] · regId: undefined
+[debug]: MAIN  [1563768646065] RC_WEBPHONE: [sip.registercontext] · registrar: {"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"}}
+[debug]: MAIN  [1563768646066] RC_WEBPHONE: [sip.ua] user requested startup...
+[debug]: MAIN  [1563768646066] RC_WEBPHONE: [sip.transport] configuration parameters after validation:
+[debug]: MAIN  [1563768646067] RC_WEBPHONE: [sip.transport] · wsServers: [{"wsUri":"wss://glip-sip-xmnup.lab.nordigy.ru:8083","weight":10,"sipUri":"<sip:glip-sip-xmnup.lab.nordigy.ru:8083;transport=ws;lr>","isError":false,"scheme":"WSS"},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0,"sipUri":"<sip:glip-sip-xmnup-backup.lab.nordigy.ru:8083;transport=ws;lr>","isError":false,"scheme":"WSS"}]
+[debug]: MAIN  [1563768646067] RC_WEBPHONE: [sip.transport] · connectionTimeout: 5
+[debug]: MAIN  [1563768646068] RC_WEBPHONE: [sip.transport] · maxReconnectionAttempts: 10
+[debug]: MAIN  [1563768646068] RC_WEBPHONE: [sip.transport] · reconnectionTimeout: 4
+[debug]: MAIN  [1563768646068] RC_WEBPHONE: [sip.transport] · keepAliveInterval: 0
+[debug]: MAIN  [1563768646069] RC_WEBPHONE: [sip.transport] · keepAliveDebounce: 10
+[debug]: MAIN  [1563768646069] RC_WEBPHONE: [sip.transport] · traceSip: true
+[debug]: MAIN  [1563768646070] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768646070] RTC_ACCOUNT_FSM: Transition: provisionReady from: ready to: inProgress
+[debug]: MAIN  [1563768646072] RC_WEBPHONE: [sip.transaction.nict] transport error occurred, deleting non-INVITE client transaction z9hG4bK1547276
+[debug]: MAIN  [1563768646081] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1000)
+[debug]: MAIN  [1563768646081] RC_WEBPHONE: [sip.transport] Attempting to transition status from 2 to 3
+[debug]: MAIN  isVoipCallingAvailable: true
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: NETWORK  Http executor queue size: 1
+[info]: NETWORK  requestConsumeTime: 1062  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN  [LOG_FETCH_POST] fetchPaginationPosts() groupId:7550459906 postId:0 fetch done
+[info]: MAIN [PerformanceTracer]   [{"key":"conversation_fetch_from_server","count":0,"time":1065.8299999995506}]
+[info]: MAIN  [LOG_FETCH_POST] handleFetchedPosts()
+[info]: MAIN [PerformanceTracer]   [{"key":"conversation_handle_data_from_server","count":0,"time":0.5049999999755528}]
+[info]: MAIN  [LOG_FETCH_POST] _handleDuplicatePosts() localSize:0 remoteSize:0
+[log]: MAIN  [LOG_FETCH_POST] after handled duplicate, resultSize:0
+[info]: MAIN [PerformanceTracer]   [{"key":"goto_conversation_fetch_posts","count":0,"infos":{"groupId":7550459906},"time":1113.01999999705}]
+[info]: MAIN  ConversationPostCacheController doPrefetch done -  7550459906
+[info]: MAIN  SequenceProcessorHandler (PreFetchConversationDataHandler): is done
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 66  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN  [1563768646110] RTCProvManager: the response is: {"data":{"device":{"uri":"https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/1042942004/device/803795309004","id":"803795309004","type":"WebPhone","status":"Online","phoneLines":[],"linePooling":"None"},"sipInfo":[{"transport":"WSS","username":"18882288388*101","password":"uFCQn44EW","authorizationId":"803795309004","domain":"sip-xmnup.lab.nordigy.ru","outboundProxy":"localhost:18083","outboundProxyBackup":"glip-sip-xmnup-backup.lab.nordigy.ru:8083","switchBackInterval":3600}],"sipInfoPstn":[],"sipFlags":{"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":false,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34},"sipErrorCodes":["503","502","504"],"pollingInterval":7200},"status":200,"statusText":"OK","headers":{"access-control-allow-origin":"*","date":"Mon, 22 Jul 2019 04:10:46 GMT","server":"nginx/1.14.2","connection":"keep-alive","content-length":"717","content-type":"application/json; charset=utf-8"},"retryAfter":6000,"request":{"startTime":1563768646043,"id":"8c68cb14-c212-4aa4-ce85-994ece0d1bd5","path":"/restapi/v1.0/client-info/sip-provision","method":"post","data":{"sipInfo":[{"transport":"WSS"}]},"headers":{"Authorization":"Bearer U0pDMDFQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGQ1pTM0JRS3o0eHVrb3FrNF95WGR4b2V2X0xkRlBnVUNlTDFsQV9wXzNXRzR3ZHpZbi1ROEUxQzBFM0tsV292OXZ2S3duS0UtQTlhSC16NGphVk42X0pIRk9rRXEzd1haeDN6aWxyQ2NGYzdlc3g1eDRGQzZLUEtKc3JpM0I4OU5ULWlYbWZwSEgwOTdaZjJTYkphM0pQWDlRTmpiVUN1OTRmd2hEOWVIM3l8WWRDZGVnfFo1VzVhQTBRaEw3c1NLdE9OVy1GSmd8QUE"},"params":{},"authFree":false,"host":"https://xmn02-i01-wpt01.lab.nordigy.ru:446/pubapi","handlerType":{"name":"RINGCENTRAL","defaultVia":0,"survivalModeSupportable":true,"tokenExpirable":true,"tokenRefreshable":true,"platformHandleDelegate":{"_isStarted":true,"_accountManager":{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_container":{"_registrationMap":{},"_containerConfig":{"singleton":true}},"_isLogin":true,"_isRCOnlyMode":false,"_glipLoginStatus":1,"_accountMap":{},"_accounts":[{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","DBConfigService","GlobalConfigService","PermissionService","PhoneNumberService","RCEventSubscriptionService","RCInfoService","SettingService","TelephonyService","UserConfigService","VoicemailService"],"event":"SUPPORTED_SERVICE_CHANGE"},{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","CompanyService","DBConfigService","GlobalConfigService","GroupConfigService","GroupService","ItemService","PermissionService","PersonService","PhoneNumberService","PostService","PresenceService","ProfileService","ProgressService","RCEventSubscriptionService","RCInfoService","SearchService","SettingService","StateService","SyncService","TelephonyService","VoicemailService","UserConfigService"],"event":"SUPPORTED_SERVICE_CHANGE"}],"event":"ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"},"_refreshTokenQueue":[],"_subscribeController":{"_subscriptions":{},"_isSubscribed":true},"_userConfig":{"_userId":"1042942004","_moduleName":"account","_configCache":{},"_configService":{"_isStarted":true,"_ns":"1042942004"}},"_authUserConfig":{"_userId":"1042942004","_moduleName":"auth","_configCache":{},"_configService":{"_isStarted":true,"_ns":"1042942004"}},"_authController":{"_accountManager":{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_container":{"_registrationMap":{},"_containerConfig":{"singleton":true}},"_isLogin":true,"_isRCOnlyMode":false,"_glipLoginStatus":1,"_accountMap":{},"_accounts":[{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","DBConfigService","GlobalConfigService","PermissionService","PhoneNumberService","RCEventSubscriptionService","RCInfoService","SettingService","TelephonyService","UserConfigService","VoicemailService"],"event":"SUPPORTED_SERVICE_CHANGE"},{"_events":{},"_newListener":false,"_removeListener":false,"verboseMemoryLeak":false,"_maxListeners":10,"_supportedServices":["AccountService","BadgeService","CallLogService","CompanyService","DBConfigService","GlobalConfigService","GroupConfigService","GroupService","ItemService","PermissionService","PersonService","PhoneNumberService","PostService","PresenceService","ProfileService","ProgressService","RCEventSubscriptionService","RCInfoService","SearchService","SettingService","StateService","SyncService","TelephonyService","VoicemailService","UserConfigService"],"event":"SUPPORTED_SERVICE_CHANGE"}],"event":"ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE"}}}},"requestConfig":{},"timeout":60000,"retryCount":0,"priority":2,"HAPriority":0,"via":0}}
+[info]: MAIN  [1563768646110] RTCProvManager: the prov info: {"device":{"uri":"https://api-xmnup.lab.nordigy.ru/restapi/v1.0/account/1042942004/device/803795309004","id":"803795309004","type":"WebPhone","status":"Online","phoneLines":[],"linePooling":"None"},"sipInfo":[{"transport":"WSS","username":"18882288388*101","password":"uFCQn44EW","authorizationId":"803795309004","domain":"sip-xmnup.lab.nordigy.ru","outboundProxy":"localhost:18083","outboundProxyBackup":"glip-sip-xmnup-backup.lab.nordigy.ru:8083","switchBackInterval":3600}],"sipInfoPstn":[],"sipFlags":{"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":false,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34},"sipErrorCodes":["503","502","504"],"pollingInterval":7200}
+[info]: MAIN  [1563768646111] RTCProvManager: set fresh timer
+[info]: MAIN  [1563768646111] RTCProvManager: Reset SIP provisioning info error retry interval to 8
+[info]: MAIN  [1563768646111] RTCProvManager: Received new SIP provisioning info from server
+[debug]: MAIN  [1563768646112] RTCAccount: There's no active call. Process new provisioning info
+[info]: MAIN  [Telephony] Notify Delegate New SipFlags: {"voipFeatureEnabled":true,"voipCountryBlocked":false,"outboundCallsEnabled":false,"dscpEnabled":false,"dscpSignaling":26,"dscpVoice":46,"dscpVideo":34}
+[debug]: MAIN  [1563768646113] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS 1rb48vgbb1kg.invalid;branch=z9hG4bK9838652
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=5m31jnk5l2
+Call-ID: 771geqtsgn3itb770qnmdt
+CSeq: 6981 REGISTER
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:gcfeqfju@1rb48vgbb1kg.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768646113] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768646114] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083 connected
+[debug]: MAIN  [1563768646114] RTCSipUserAgent: Destroy User Agent ...
+[debug]: MAIN  [1563768646115] RC_WEBPHONE: [sip.transport] Attempting to transition status from 1 to 2
+[debug]: MAIN  [1563768646115] RC_WEBPHONE: [sip.transport] closing WebSocket wss://glip-sip-xmnup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768646116] RC_WEBPHONE: [sip.ua] user requested closure...
+[debug]: MAIN  [1563768646116] RC_WEBPHONE: [sip.ua] closing registerContext
+[debug]: MAIN  [1563768646117] RC_WEBPHONE: [sip.ua] configuration parameters after validation:
+[debug]: MAIN  [1563768646117] RC_WEBPHONE: [sip.ua] · viaHost: "on93sv3k55lr.invalid"
+[debug]: MAIN  [1563768646118] RC_WEBPHONE: [sip.ua] · uri: sip:18882288388*101@sip-xmnup.lab.nordigy.ru
+[debug]: MAIN  [1563768646118] RC_WEBPHONE: [sip.ua] · custom: {}
+[debug]: MAIN  [1563768646119] RC_WEBPHONE: [sip.ua] · displayName: ""
+[debug]: MAIN  [1563768646119] RC_WEBPHONE: [sip.ua] · password: NOT SHOWN
+[debug]: MAIN  [1563768646119] RC_WEBPHONE: [sip.ua] · register: true
+[debug]: MAIN  [1563768646120] RC_WEBPHONE: [sip.ua] · registerOptions: {}
+[debug]: MAIN  [1563768646120] RC_WEBPHONE: [sip.ua] · transportConstructor: Transport
+[debug]: MAIN  [1563768646121] RC_WEBPHONE: [sip.ua] · transportOptions: {"wsServers":[{"wsUri":"wss://localhost:18083","weight":10},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0}],"traceSip":true,"maxReconnectionAttempts":10,"reconnectionTimeout":4,"connectionTimeout":5}
+[debug]: MAIN  [1563768646121] RC_WEBPHONE: [sip.ua] · userAgentString: "RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2"
+[debug]: MAIN  [1563768646121] RC_WEBPHONE: [sip.ua] · noAnswerTimeout: 60000
+[debug]: MAIN  [1563768646122] RC_WEBPHONE: [sip.ua] · hackViaTcp: false
+[debug]: MAIN  [1563768646122] RC_WEBPHONE: [sip.ua] · hackIpInContact: false
+[debug]: MAIN  [1563768646123] RC_WEBPHONE: [sip.ua] · hackWssInTransport: false
+[debug]: MAIN  [1563768646123] RC_WEBPHONE: [sip.ua] · hackAllowUnregisteredOptionTags: false
+[debug]: MAIN  [1563768646123] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactoryOptions: {"peerConnectionOptions":{"iceCheckingTimeout":500,"rtcConfiguration":{"rtcpMuxPolicy":"negotiate","sdpSemantics":"plan-b"}},"constraints":{"audio":true,"video":false},"modifiers":[null,null,null]}
+[debug]: MAIN  [1563768646124] RC_WEBPHONE: [sip.ua] · extraSupported: []
+[debug]: MAIN  [1563768646124] RC_WEBPHONE: [sip.ua] · contactName: "jaghhher"
+[debug]: MAIN  [1563768646124] RC_WEBPHONE: [sip.ua] · contactTransport: "ws"
+[debug]: MAIN  [1563768646125] RC_WEBPHONE: [sip.ua] · forceRport: false
+[debug]: MAIN  [1563768646125] RC_WEBPHONE: [sip.ua] · autostart: false
+[debug]: MAIN  [1563768646126] RC_WEBPHONE: [sip.ua] · autostop: true
+[debug]: MAIN  [1563768646126] RC_WEBPHONE: [sip.ua] · rel100: "none"
+[debug]: MAIN  [1563768646126] RC_WEBPHONE: [sip.ua] · dtmfType: "info"
+[debug]: MAIN  [1563768646127] RC_WEBPHONE: [sip.ua] · replaces: "none"
+[debug]: MAIN  [1563768646127] RC_WEBPHONE: [sip.ua] · sessionDescriptionHandlerFactory: function(e,t){var r=e.ua.getLogger("sip.invitecontext.sessionDescriptionHandler",e.id);var n=new l.SessionDescriptionHandlerObserver(e,t);return new SessionDescriptionHandler(r,n,t)}
+[debug]: MAIN  [1563768646127] RC_WEBPHONE: [sip.ua] · authenticationFactory: undefined
+[debug]: MAIN  [1563768646128] RC_WEBPHONE: [sip.ua] · allowLegacyNotifications: true
+[debug]: MAIN  [1563768646128] RC_WEBPHONE: [sip.ua] · allowOutOfDialogRefers: false
+[debug]: MAIN  [1563768646128] RC_WEBPHONE: [sip.ua] · authorizationUser: "803795309004"
+[debug]: MAIN  [1563768646129] RC_WEBPHONE: [sip.ua] · sipjsId: "q3tgb"
+[debug]: MAIN  [1563768646129] RC_WEBPHONE: [sip.ua] · hostportParams: "sip-xmnup.lab.nordigy.ru"
+[debug]: MAIN  [1563768646130] RC_WEBPHONE: [sip.registercontext] configuration parameters for RegisterContext after validation:
+[debug]: MAIN  [1563768646130] RC_WEBPHONE: [sip.registercontext] · expires: 600
+[debug]: MAIN  [1563768646130] RC_WEBPHONE: [sip.registercontext] · extraContactHeaderParams: []
+[debug]: MAIN  [1563768646131] RC_WEBPHONE: [sip.registercontext] · instanceId: undefined
+[debug]: MAIN  [1563768646131] RC_WEBPHONE: [sip.registercontext] · params: {"toUri":{"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","user":"18882288388*101","host":"sip-xmnup.lab.nordigy.ru"}},"toDisplayName":"","callId":"98tmdd24h3j2c0qr70kb46","cseq":4881}
+[debug]: MAIN  [1563768646131] RC_WEBPHONE: [sip.registercontext] · regId: undefined
+[debug]: MAIN  [1563768646132] RC_WEBPHONE: [sip.registercontext] · registrar: {"parameters":{},"type":38,"headers":{},"raw":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"},"normal":{"scheme":"sip","host":"sip-xmnup.lab.nordigy.ru"}}
+[debug]: MAIN  [1563768646132] RC_WEBPHONE: [sip.ua] user requested startup...
+[debug]: MAIN  [1563768646133] RC_WEBPHONE: [sip.transport] configuration parameters after validation:
+[debug]: MAIN  [1563768646133] RC_WEBPHONE: [sip.transport] · wsServers: [{"wsUri":"wss://localhost:18083","weight":10,"sipUri":"<sip:localhost:18083;transport=ws;lr>","isError":false,"scheme":"WSS"},{"wsUri":"wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083","weight":0,"sipUri":"<sip:glip-sip-xmnup-backup.lab.nordigy.ru:8083;transport=ws;lr>","isError":false,"scheme":"WSS"}]
+[debug]: MAIN  [1563768646133] RC_WEBPHONE: [sip.transport] · connectionTimeout: 5
+[debug]: MAIN  [1563768646134] RC_WEBPHONE: [sip.transport] · maxReconnectionAttempts: 10
+[debug]: MAIN  [1563768646134] RC_WEBPHONE: [sip.transport] · reconnectionTimeout: 4
+[debug]: MAIN  [1563768646135] RC_WEBPHONE: [sip.transport] · keepAliveInterval: 0
+[debug]: MAIN  [1563768646135] RC_WEBPHONE: [sip.transport] · keepAliveDebounce: 10
+[debug]: MAIN  [1563768646136] RC_WEBPHONE: [sip.transport] · traceSip: true
+[debug]: MAIN  [1563768646136] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[debug]: MAIN  [1563768646137] RTC_ACCOUNT_FSM: Transition: provisionReady from: inProgress to: inProgress
+[debug]: MAIN  [1563768646138] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1000)
+[debug]: MAIN  [1563768646138] RC_WEBPHONE: [sip.transport] Attempting to transition status from 2 to 3
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768646140] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768646140] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768646141] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768646141] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 1)
+[warning]: MAIN  [1563768646142] RC_WEBPHONE: [sip.transport] next reconnection attempt in:4 seconds.
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 758  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[log]: MAIN  [Socket SocketCanConnectController]  handleRequestSuccess: JSHandle@object
+[info]: MAIN [SOCKET manager]   _startFSM can reconnect callback _startRealFSM id:1563768643329 this._currentId:1563768643329
+[info]: MAIN [SOCKET manager]   starting FSM with host: xmnup.asialab.glip.net:443
+[info]: MAIN [SOCKET _FSM1]   serverUrl: xmnup.asialab.glip.net:443
+[info]: MAIN [SOCKET _FSM1]   onTransition init: none => idle
+[info]: MAIN [SOCKET _FSM1]   onEnterState idle isManualStopped:false
+[info]: MAIN [SOCKET manager]   stateHandler name:_FSM1, state:idle, isManualStopped:false
+[log]: MAIN  SyncController sync service SERVICE.SOCKET_STATE_CHANGE idle
+[info]: MAIN [SOCKET _FSM1]   onInit idle
+[info]: MAIN [SOCKET _FSM1]   onTransition start: idle => connecting
+[info]: MAIN [SOCKET _FSM1]   onEnterState connecting isManualStopped:false
+[info]: MAIN [SOCKET manager]   stateHandler name:_FSM1, state:connecting, isManualStopped:false
+[log]: MAIN  SyncController sync service SERVICE.SOCKET_STATE_CHANGE connecting
+[info]: MAIN [SOCKET _FSM1]   socket-> connecting.  
+[log]: MAIN  [Socket SocketCanConnectController] clean up
+[info]: MAIN [SOCKET _FSM1]   socket-> connect.  
+[info]: MAIN [SOCKET _FSM1]   onTransition finishConnect: connecting => connected
+[info]: MAIN [SOCKET _FSM1]   onEnterState connected isManualStopped:false
+[info]: MAIN [SOCKET manager]   stateHandler name:_FSM1, state:connected, isManualStopped:false
+[log]: MAIN  SyncController sync service SERVICE.SOCKET_STATE_CHANGE connected
+[log]: MAIN  SyncController start syncData time: 1563768644016
+[info]: MAIN INDEX_TASK_CONTROLLER   incomes new start
+[info]: MAIN INDEX_TASK_CONTROLLER   new task arrived
+[debug]: MAIN JobScheduler   cancelJob INDEX_DATA, false
+[log]: MAIN  SyncController start fetching index:1563768644016
+[info]: NETWORK  appendTask() task priority: 1, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/api/index headers:{} params:{"newer_than":"1563768344016"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 6 startRequest:  JSHandle@object
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/glip-presence/v1/person/3021004803/presence headers:{} params:{} data:{}
+[info]: NETWORK  Socket executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 3 startRequest:  JSHandle@object
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 467  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[log]: MAIN  [LOG_INDEX_DATA] fetch index done
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_account","time":4.820000001927838}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingCompany() company.length: 1, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingItem() item.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPresence() item.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingState() states.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_item","count":0,"time":0.5149999997229315}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_presence","count":0,"time":0.5799999998998828}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_state","count":0,"time":1.0600000023259781}]
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_company","count":1,"time":15.750000002299203}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingProfile(), source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_profile","time":0.10000000111176632}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPerson() persons.length: 1, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_person","count":1,"time":0.5700000001525041}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingGroup() groups.length: 0, source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_group","count":0,"time":0.045000000682193786}]
+[info]: MAIN  [LOG_INDEX_DATA] _handleIncomingPost() posts.length: , source: SYNC_SOURCE.INDEX
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_incoming_post","count":0,"time":0.050000002374872565}]
+[debug]: MAIN  [LOG_INDEX_DATA] store index data done===24
+[debug]: MAIN  [LOG_INDEX_DATA] emit index data done===2
+[log]: MAIN  SyncController updateIndexTimestamp time: 1563768646511 forceUpdate:true
+[info]: MAIN [PerformanceTracer]   [{"key":"handle_index_data","time":26.869999997870764}]
+[log]: MAIN  [LOG_INDEX_DATA] handle index done
+[log]: MAIN  [LOG_INDEX_DATA] executeFunc done. stop progress
+[debug]: MAIN JobScheduler   cancelJob INDEX_DATA, false
+[info]: MAIN [TaskController]   clear done
+[info]: MAIN INDEX_TASK_CONTROLLER   new task arrived
+[info]: MAIN  [Socket]: Handle request:2
+[info]: MAIN [SOCKET _FSM1]   socket-> response.  JSHandle@object
+[info]: NETWORK  Socket executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 1918  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768650586] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768650588] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768650588] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768650589] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768650589] RC_WEBPHONE: [sip.transport] Reconnection attempt 1 failed
+[debug]: MAIN  [1563768650590] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 2)
+[warning]: MAIN  [1563768650590] RC_WEBPHONE: [sip.transport] next reconnection attempt in:6 seconds.
+[debug]: MAIN  [1563768657068] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768657071] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768657072] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768657072] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768657073] RC_WEBPHONE: [sip.transport] Reconnection attempt 2 failed
+[debug]: MAIN  [1563768657073] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 3)
+[warning]: MAIN  [1563768657073] RC_WEBPHONE: [sip.transport] next reconnection attempt in:10 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768667368] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768667369] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768667370] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768667370] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768667371] RC_WEBPHONE: [sip.transport] Reconnection attempt 3 failed
+[debug]: MAIN  [1563768667371] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 4)
+[warning]: MAIN  [1563768667371] RC_WEBPHONE: [sip.transport] next reconnection attempt in:17 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  890
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768672168
+[debug]: MAIN  [1563768678130] RC_WEBPHONE: [sip.transaction.nict] Timer F expired for non-INVITE client transaction z9hG4bK9838652
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768684787] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768684790] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768684790] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768684791] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768684791] RC_WEBPHONE: [sip.transport] Reconnection attempt 4 failed
+[debug]: MAIN  [1563768684791] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 5)
+[warning]: MAIN  [1563768684792] RC_WEBPHONE: [sip.transport] next reconnection attempt in:19 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[warning]: MAIN  [1563768693921] RC_WEBPHONE: [sip.registercontext] registration expired
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  109
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768697279
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768704191] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768704194] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768704195] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768704195] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768704196] RC_WEBPHONE: [sip.transport] Reconnection attempt 5 failed
+[debug]: MAIN  [1563768704196] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 6)
+[warning]: MAIN  [1563768704197] RC_WEBPHONE: [sip.transport] next reconnection attempt in:24 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  84
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768722363
+[debug]: MAIN  [1563768727813] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768727816] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768727816] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768727817] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768727817] RC_WEBPHONE: [sip.transport] Reconnection attempt 6 failed
+[debug]: MAIN  [1563768727817] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 7)
+[warning]: MAIN  [1563768727818] RC_WEBPHONE: [sip.transport] next reconnection attempt in:30 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  84
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768747449
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768757693] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768757697] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768757698] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768757698] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768757698] RC_WEBPHONE: [sip.transport] Reconnection attempt 7 failed
+[debug]: MAIN  [1563768757699] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 8)
+[warning]: MAIN  [1563768757699] RC_WEBPHONE: [sip.transport] next reconnection attempt in:32 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  86
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768772536
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768789656] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768789658] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768789659] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768789659] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768789659] RC_WEBPHONE: [sip.transport] Reconnection attempt 8 failed
+[debug]: MAIN  [1563768789660] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 9)
+[warning]: MAIN  [1563768789660] RC_WEBPHONE: [sip.transport] next reconnection attempt in:34 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  348
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768797885
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  85
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768822971
+[debug]: MAIN  [1563768823743] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768823745] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768823746] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768823746] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768823747] RC_WEBPHONE: [sip.transport] Reconnection attempt 9 failed
+[debug]: MAIN  [1563768823747] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://localhost:18083 (reconnection attempt 10)
+[warning]: MAIN  [1563768823748] RC_WEBPHONE: [sip.transport] next reconnection attempt in:39 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  97
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768848070
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768862258] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://localhost:18083
+[error]: WebSocket connection to 'wss://localhost:18083/' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+[warning]: MAIN  [1563768862261] RC_WEBPHONE: [sip.transport] Transport error: The Websocket had an error
+[debug]: MAIN  [1563768862262] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1006)
+[warning]: MAIN  [1563768862262] RC_WEBPHONE: [sip.transport] WebSocket closed without SIP.js requesting it
+[debug]: MAIN  [1563768862263] RC_WEBPHONE: [sip.transport] Reconnection attempt 10 failed
+[warning]: MAIN  [1563768862263] RC_WEBPHONE: [sip.transport] maximum reconnection attempts for WebSocket wss://localhost:18083
+[debug]: MAIN  [1563768862278] RC_WEBPHONE: [sip.transport] transport wss://localhost:18083 failed | connection state set to 'error'
+[debug]: MAIN  [1563768862278] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 (reconnection attempt 1)
+[warning]: MAIN  [1563768862279] RC_WEBPHONE: [sip.transport] next reconnection attempt in:6 seconds.
+[debug]: MAIN  [1563768868006] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[warning]: MAIN  [1563768868493] RC_WEBPHONE: [sip.transport] Try to switch back to main proxy after 71 min
+[debug]: MAIN  [1563768868493] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5460374
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4882 REGISTER
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768868494] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768868494] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 connected
+[debug]: MAIN  [1563768868559] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5460374
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4882 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768868563] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5460374
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=2DM8dm
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4882 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5UF01OCTSsm2g7TNGpIyWKDVvHUdi"
+
+
+
+[debug]: MAIN  [1563768868565] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK130349
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4883 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5UF01OCTSsm2g7TNGpIyWKDVvHUdi", uri="sip:sip-xmnup.lab.nordigy.ru", response="c312ee3e51c0ddb632fae00b4e19b0d9"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768868574] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK130349
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4883 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768868588] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK130349
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=a9P9Nn
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4883 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5UF01OCTSsm2g7TNGpIyWKDVvHUdi"
+
+
+
+[debug]: MAIN  [1563768868599] RTC_ACCOUNT_FSM: Transition: regFailed from: inProgress to: failure
+[debug]: MAIN  [1563768868600] RTCRegistrationManager: Schedule retry registration in 5 seconds
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  92
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768873163
+[debug]: MAIN  [1563768873612] RTCSipUserAgent: Try to restart register with new transport
+[warning]: MAIN  [1563768873612] RC_WEBPHONE: [sip.transport] attempted to reconnect while connected - forcing disconnect
+[debug]: MAIN  [1563768873627] RC_WEBPHONE: [sip.transport] Attempting to transition status from 1 to 2
+[debug]: MAIN  [1563768873628] RC_WEBPHONE: [sip.transport] closing WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768873628] RTC_ACCOUNT_FSM: Transition: reRegister from: failure to: inProgress
+[debug]: MAIN  [1563768873666] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1000)
+[debug]: MAIN  [1563768873667] RC_WEBPHONE: [sip.transport] Attempting to transition status from 2 to 3
+[debug]: MAIN  [1563768873668] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 (reconnection attempt 1)
+[warning]: MAIN  [1563768873668] RC_WEBPHONE: [sip.transport] next reconnection attempt in:4 seconds.
+[debug]: MAIN  [1563768877949] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768877976] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5386837
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4884 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5UF01OCTSsm2g7TNGpIyWKDVvHUdi", uri="sip:sip-xmnup.lab.nordigy.ru", response="c312ee3e51c0ddb632fae00b4e19b0d9"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768877977] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768877977] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 connected
+[debug]: MAIN  [1563768877986] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5386837
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4884 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768877999] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5386837
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=1lYF3y
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4884 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5WV01OC1pboAja/M6XfemL0Erru2f"
+
+
+
+[debug]: MAIN  [1563768878001] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5597540
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4885 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5WV01OC1pboAja/M6XfemL0Erru2f", uri="sip:sip-xmnup.lab.nordigy.ru", response="e803c07e7ece7990e7d7eca1200ed398"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768878007] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5597540
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4885 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768878018] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK5597540
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=aN7aY1
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4885 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5Wl01OC5UFouaHWFZKeH0u5+EPV9e"
+
+
+
+[debug]: MAIN  [1563768878019] RTC_ACCOUNT_FSM: Transition: regFailed from: inProgress to: failure
+[debug]: MAIN  [1563768878021] RTCRegistrationManager: Schedule retry registration in 16 seconds
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768894022] RTCSipUserAgent: Try to restart register with new transport
+[warning]: MAIN  [1563768894023] RC_WEBPHONE: [sip.transport] attempted to reconnect while connected - forcing disconnect
+[debug]: MAIN  [1563768894023] RC_WEBPHONE: [sip.transport] Attempting to transition status from 1 to 2
+[debug]: MAIN  [1563768894024] RC_WEBPHONE: [sip.transport] closing WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768894025] RTC_ACCOUNT_FSM: Transition: reRegister from: failure to: inProgress
+[debug]: MAIN  [1563768894044] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1000)
+[debug]: MAIN  [1563768894044] RC_WEBPHONE: [sip.transport] Attempting to transition status from 2 to 3
+[debug]: MAIN  [1563768894045] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 (reconnection attempt 1)
+[warning]: MAIN  [1563768894045] RC_WEBPHONE: [sip.transport] next reconnection attempt in:4 seconds.
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  85
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768898247
+[debug]: MAIN  [1563768898459] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768898473] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK6023155
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4886 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5WV01OC1pboAja/M6XfemL0Erru2f", uri="sip:sip-xmnup.lab.nordigy.ru", response="e803c07e7ece7990e7d7eca1200ed398"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768898473] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768898474] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 connected
+[debug]: MAIN  [1563768898481] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK6023155
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4886 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768898491] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK6023155
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=43uBxI
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4886 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5bl01OEKMVcyV8ca8GIYQmOTYo8NC"
+
+
+
+[debug]: MAIN  [1563768898493] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK1763187
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4887 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5bl01OEKMVcyV8ca8GIYQmOTYo8NC", uri="sip:sip-xmnup.lab.nordigy.ru", response="3771dd2f4c629e92cb060a145d70d335"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768898500] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK1763187
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4887 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768898550] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK1763187
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=3gBiPu
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4887 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5bl01OEKMVcyV8ca8GIYQmOTYo8NC"
+
+
+
+[debug]: MAIN  [1563768898551] RTC_ACCOUNT_FSM: Transition: regFailed from: inProgress to: failure
+[debug]: MAIN  [1563768898552] RTCRegistrationManager: Schedule retry registration in 38 seconds
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  225
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563768923474
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768936553] RTCSipUserAgent: Try to restart register with new transport
+[warning]: MAIN  [1563768936554] RC_WEBPHONE: [sip.transport] attempted to reconnect while connected - forcing disconnect
+[debug]: MAIN  [1563768936555] RC_WEBPHONE: [sip.transport] Attempting to transition status from 1 to 2
+[debug]: MAIN  [1563768936555] RC_WEBPHONE: [sip.transport] closing WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768936556] RTC_ACCOUNT_FSM: Transition: reRegister from: failure to: inProgress
+[debug]: MAIN  [1563768936560] RC_WEBPHONE: [sip.transport] WebSocket disconnected (code: 1000)
+[debug]: MAIN  [1563768936560] RC_WEBPHONE: [sip.transport] Attempting to transition status from 2 to 3
+[debug]: MAIN  [1563768936561] RC_WEBPHONE: [sip.transport] trying to reconnect to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 (reconnection attempt 1)
+[warning]: MAIN  [1563768936561] RC_WEBPHONE: [sip.transport] next reconnection attempt in:5 seconds.
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563768941238] RC_WEBPHONE: [sip.transport] connecting to WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083
+[debug]: MAIN  [1563768941251] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7915232
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4888 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5bl01OEKMVcyV8ca8GIYQmOTYo8NC", uri="sip:sip-xmnup.lab.nordigy.ru", response="3771dd2f4c629e92cb060a145d70d335"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768941252] RTCSipUserAgent: Transport connected
+[debug]: MAIN  [1563768941252] RC_WEBPHONE: [sip.transport] WebSocket wss://glip-sip-xmnup-backup.lab.nordigy.ru:8083 connected
+[debug]: MAIN  [1563768941264] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7915232
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4888 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768941279] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7915232
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=adlYWv
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4888 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5mV01OG2VUw1h1GGee2TuH+Exs1Ic"
+
+
+
+[debug]: MAIN  [1563768941282] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7614199
+Max-Forwards: 70
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4889 REGISTER
+Authorization: Digest algorithm=MD5, username="803795309004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5mV01OG2VUw1h1GGee2TuH+Exs1Ic", uri="sip:sip-xmnup.lab.nordigy.ru", response="2297c3703b56bda3338c25d63e891a53"
+P-rc-endpoint-id: ebfd212b-af12-4b92-8cb1-e07e300740d2
+Client-id:undefined
+Contact: <sip:jaghhher@on93sv3k55lr.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768941289] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7614199
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4889 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563768941300] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS on93sv3k55lr.invalid;branch=z9hG4bK7614199
+From: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=jhfdmcco9p
+To: <sip:18882288388*101@sip-xmnup.lab.nordigy.ru>;tag=4XA2iQ
+Call-ID: 98tmdd24h3j2c0qr70kb46
+CSeq: 4889 REGISTER
+Content-Length: 0
+Www-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTU5mV01OG2VUw1h1GGee2TuH+Exs1Ic"
+
+
+
+[debug]: MAIN  [1563768941302] RTC_ACCOUNT_FSM: Transition: regFailed from: inProgress to: failure
+[debug]: MAIN  [1563768941303] RTCRegistrationManager: Schedule retry registration in 41 seconds

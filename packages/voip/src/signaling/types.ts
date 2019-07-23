@@ -10,7 +10,7 @@ enum UA_EVENT {
   RECEIVE_INVITE = 'uaReceiveInvite',
   TRANSPORT_ERROR = 'uaTransportError',
   SWITCH_BACK_PROXY = 'uaSwitchBackProxy',
-  PROVISION_UPDATE = 'uaProvisionUpdate'
+  PROVISION_UPDATE = 'uaProvisionUpdate',
 }
 
 enum WEBPHONE_SESSION_STATE {
@@ -20,21 +20,21 @@ enum WEBPHONE_SESSION_STATE {
   FAILED = 'failed',
   PROGRESS = 'progress',
   REINVITE_ACCEPTED = 'reinviteAccepted',
-  REINVITE_FAILED = 'reinviteFailed'
+  REINVITE_FAILED = 'reinviteFailed',
 }
 
 enum RC_SIP_HEADER_NAME {
-  RC_API_IDS = 'P-Rc-Api-Ids'
+  RC_API_IDS = 'P-Rc-Api-Ids',
 }
 
 enum RC_REFER_EVENT {
   REFER_REQUEST_ACCEPTED = 'referRequestAccepted',
-  REFER_REQUEST_REJECTED = 'referRequestRejected'
+  REFER_REQUEST_REJECTED = 'referRequestRejected',
 }
 
 enum WEBPHONE_SESSION_EVENT {
   SDH_CREATED = 'SessionDescriptionHandler-created',
-  ADD_TRACK = 'addTrack'
+  ADD_TRACK = 'addTrack',
 }
 
 enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
@@ -44,14 +44,14 @@ enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
   MEDIA_CONNECTION_COMPLETED = 'mediaConnectionStateCompleted',
   MEDIA_CONNECTION_FAILED = 'mediaConnectionStateFailed',
   MEDIA_CONNECTION_DISCONNECTED = 'mediaConnectionStateDisconnected',
-  MEDIA_CONNECTION_CLOSED = 'mediaConnectionStateClosed'
+  MEDIA_CONNECTION_CLOSED = 'mediaConnectionStateClosed',
 }
 
 enum WEBPHONE_LOG_LEVEL {
   DEBUG = 'debug',
   LOG = 'log',
   WARN = 'warn',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 type ProvisionDataOptions = {
@@ -83,6 +83,13 @@ type OutboundRtpReport = {
   packetsSent: number;
 };
 
+type InviteOptions = {
+  fromNumber?: string;
+  homeCountryId?: string;
+  extraHeaders?: any;
+  RTCConstraints?: any;
+};
+
 type RttMS = {
   currentRoundTripTime: number;
 };
@@ -102,5 +109,6 @@ export {
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
   MediaStatsReport,
-  RC_REFER_EVENT
+  RC_REFER_EVENT,
+  InviteOptions,
 };

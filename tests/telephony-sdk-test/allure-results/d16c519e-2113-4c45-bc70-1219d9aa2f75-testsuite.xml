@@ -1,0 +1,319 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563858453768' stop='1563858667641'>
+    <name>support multiple call</name>
+    <title>support multiple call</title>
+    <test-cases>
+        <test-case start='1563858594844' status='failed' stop='1563858667510'>
+            <name>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</name>
+            <title>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563858594845' status='passed' stop='1563858594846'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858594847' status='passed' stop='1563858595255'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858595256' status='passed' stop='1563858595260'>
+                    <name>Given party2 is registered</name>
+                    <title>Given party2 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858597265' status='passed' stop='1563858597364'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858597364' status='passed' stop='1563858598157'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858598157' status='passed' stop='1563858598272'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858599275' status='passed' stop='1563858604318'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858604318' status='passed' stop='1563858604332'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858607336' status='passed' stop='1563858607448'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858607448' status='passed' stop='1563858608019'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858608019' status='passed' stop='1563858608065'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858609069' status='passed' stop='1563858614088'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858614088' status='passed' stop='1563858614091'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858617091' status='passed' stop='1563858617174'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858617174' status='passed' stop='1563858617649'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858617649' status='passed' stop='1563858617679'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858618683' status='passed' stop='1563858623704'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858623704' status='passed' stop='1563858623707'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858624710' status='passed' stop='1563858624714'>
+                    <name>Check party1 call list item = 3</name>
+                    <title>Check party1 call list item = 3</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858625719' status='passed' stop='1563858625761'>
+                    <name>When party1 mute call</name>
+                    <title>When party1 mute call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858625761' status='passed' stop='1563858625776'>
+                    <name>When party2 play out tone with frequency 440</name>
+                    <title>When party2 play out tone with frequency 440</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858625776' status='passed' stop='1563858638842'>
+                    <name>check party1 tone frequency</name>
+                    <title>check party1 tone frequency</title>
+                    <attachments/>
+                    <steps>
+                        <step start='1563858625777' status='passed' stop='1563858626786'>
+                            <name>Then party1 start local recording</name>
+                            <title>Then party1 start local recording</title>
+                            <attachments/>
+                            <steps/>
+                        </step>
+                        <step start='1563858636790' status='passed' stop='1563858637798'>
+                            <name>When party1 stop local recording</name>
+                            <title>When party1 stop local recording</title>
+                            <attachments/>
+                            <steps/>
+                        </step>
+                    </steps>
+                </step>
+                <step start='1563858638843' status='passed' stop='1563858638843'>
+                    <name>check frequency 440 with stability 9 to be true</name>
+                    <title>check frequency 440 with stability 9 to be true</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858638843' status='passed' stop='1563858638853'>
+                    <name>When party2 stop playing tone</name>
+                    <title>When party2 stop playing tone</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858638853' status='passed' stop='1563858638884'>
+                    <name>When party1 unmute call</name>
+                    <title>When party1 unmute call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858639889' status='passed' stop='1563858639930'>
+                    <name>When party2 mute call</name>
+                    <title>When party2 mute call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858639931' status='passed' stop='1563858639944'>
+                    <name>When party1 play out tone with frequency 660</name>
+                    <title>When party1 play out tone with frequency 660</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858639944' status='passed' stop='1563858652989'>
+                    <name>check party2 tone frequency</name>
+                    <title>check party2 tone frequency</title>
+                    <attachments/>
+                    <steps>
+                        <step start='1563858639944' status='passed' stop='1563858640953'>
+                            <name>Then party2 start local recording</name>
+                            <title>Then party2 start local recording</title>
+                            <attachments/>
+                            <steps/>
+                        </step>
+                        <step start='1563858650958' status='passed' stop='1563858651963'>
+                            <name>When party2 stop local recording</name>
+                            <title>When party2 stop local recording</title>
+                            <attachments/>
+                            <steps/>
+                        </step>
+                    </steps>
+                </step>
+                <step start='1563858652989' status='passed' stop='1563858652991'>
+                    <name>check frequency 660 with stability 9 to be true</name>
+                    <title>check frequency 660 with stability 9 to be true</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858652992' status='passed' stop='1563858653003'>
+                    <name>When party1 stop playing tone</name>
+                    <title>When party1 stop playing tone</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858653003' status='passed' stop='1563858653033'>
+                    <name>When party2 unmute call</name>
+                    <title>When party2 unmute call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858654038' status='passed' stop='1563858654128'>
+                    <name>When party2 end call</name>
+                    <title>When party2 end call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858655132' status='passed' stop='1563858655179'>
+                    <name>When party2 end call</name>
+                    <title>When party2 end call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858656184' status='passed' stop='1563858656231'>
+                    <name>When party2 end call</name>
+                    <title>When party2 end call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563858657235' status='passed' stop='1563858662453'>
+                    <name>check party1 log</name>
+                    <title>check party1 log</title>
+                    <attachments>
+                        <attachment title='party1-12009a5f-22d9-33f3-9167-7f475698f522.txt' source='97e66bcf-ca9b-499e-a558-7e602e2345ac-attachment.txt' type='text/plain' size='214808'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1563858662453' status='failed' stop='1563858667479'>
+                    <name>check party1 log</name>
+                    <title>check party1 log</title>
+                    <attachments>
+                        <attachment title='party1-12009a5f-22d9-33f3-9167-7f475698f522.txt' source='bb86376b-b4c0-4d9a-aeda-c23f83267396-attachment.txt' type='text/plain' size='214808'/>
+                        <attachment title='party1-12009a5f-22d9-33f3-9167-7f475698f522.txt' source='f81086be-f93c-4e46-bb2b-dcc68e2d6a9d-attachment.txt' type='text/plain' size='214808'/>
+                        <attachment title='party2-450c3938-bcec-3bcc-9a63-d666f07fc46d.txt' source='4fc2d026-d89a-40a7-b6dc-e726f3ca6ef1-attachment.txt' type='text/plain' size='207456'/>
+                        <attachment title='party3-9352bf77-43b9-3ea7-895a-682de869c174.txt' source='2df1245b-4cdf-4c45-af09-665ac7096d2b-attachment.txt' type='text/plain' size='38731'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false</message>
+                <stack-trace>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false
+                    at StepHelper.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:816:22)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:37:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:18:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:9:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+        <test-case start='1563858667510' status='undefined' stop='1563858667510'>
+            <name>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</name>
+            <title>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563858667510' status='undefined' stop='1563858667510'>
+            <name>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</name>
+            <title>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563858667510' status='undefined' stop='1563858667510'>
+            <name>[JPT-1971][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</name>
+            <title>[JPT-1971][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

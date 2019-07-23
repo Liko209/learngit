@@ -1,0 +1,894 @@
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  48
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563854461906
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563854481442] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9572331
+Max-Forwards: 70
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5680 REGISTER
+Authorization: Digest algorithm=MD5, username="803962447004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaGMV02hQU07GcVlOJ4pL3RK6XNPE2j", uri="sip:sip-xmnup.lab.nordigy.ru", response="e276891a2e5f537e2a8b1a7739de2669"
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854481451] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9572331;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=`yq+AW0sbdk
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5680 REGISTER
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=47
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854481453] RTC_ACCOUNT_FSM: Transition: regSuccess from: ready to: ready
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  3
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563854486910
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  4
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563854511914
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563854525453] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK6158303
+Max-Forwards: 70
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5681 REGISTER
+Authorization: Digest algorithm=MD5, username="803962447004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaGMV02hQU07GcVlOJ4pL3RK6XNPE2j", uri="sip:sip-xmnup.lab.nordigy.ru", response="e276891a2e5f537e2a8b1a7739de2669"
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525483] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK6158303;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5681 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525485] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK6158303;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-c8ed
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5681 REGISTER
+WWW-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTaH6V02hr1F8b7O28elH0+9LwbtuMXD"
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525511] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5634340
+Max-Forwards: 70
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5682 REGISTER
+Authorization: Digest algorithm=MD5, username="803962447004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaH6V02hr1F8b7O28elH0+9LwbtuMXD", uri="sip:sip-xmnup.lab.nordigy.ru", response="6ae9b6f334ed6c74584148be51ec75ed"
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525520] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5634340;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5682 REGISTER
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525535] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5634340;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-d84b
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5682 REGISTER
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=45
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854525537] RTC_ACCOUNT_FSM: Transition: regSuccess from: ready to: ready
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  60
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563854536975
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN [SOCKET _FSM1]   check if socket is connected, isStateConnected: true
+[log]: MAIN  [SOCKET GLIP_PING_PONG]  enter glip ping
+[log]: MAIN  [SOCKET GLIP_PING_PONG]  ping id:  1563854548050
+[debug]: MAIN  isVoipCallingAvailable: true
+[debug]: MAIN  isVoipCallingAvailable: true
+[info]: MAIN AllCallLogFetchController   try to add ISync processor
+[info]: MAIN AllCallLogFetchController   silent sync start
+[info]: MAIN AllCallLogFetchController   start sync, isSilent: true, type:ISync, direction:0, count:undefined
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/account/~/extension/~/call-log-sync headers:{} params:{"syncType":"ISync","syncToken":"FAMAAAFsGQZr-AQAAAFsHPdr5QgAAAAAcdH8PA4AAAFsGQZr-BIAAAFsHPedEhQBFQAYABoBBofZ0Q"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 5 startRequest:  JSHandle@object
+[info]: MAIN VoicemailFetchController   try to add ISync processor
+[debug]: MAIN  [1563854548189] RTCCall: Create new call to 701
+[debug]: MAIN  [1563854548193] RTC_Call_FSM: Transition: init from: none to: idle
+[debug]: MAIN  [1563854548200] RTCCallManager: Call d265083c-0207-42b7-834e-b30c2a4b8b81 added into call manager. Calls: 1
+[debug]: MAIN  [1563854548213] RTC_ACCOUNT_FSM: Invalid transition: makeOutgoingCall from: ready to: undefined
+[log]: JSHandle@object
+[debug]: MAIN  [1563854548219] RTC_Call_FSM: Transition: accountReady from: idle to: connecting
+[debug]: MAIN  [1563854548223] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] SessionDescriptionHandlerOptions: {"peerConnectionOptions":{"iceCheckingTimeout":500,"rtcConfiguration":{"rtcpMuxPolicy":"negotiate","sdpSemantics":"plan-b"}},"constraints":{"audio":true,"video":false},"modifiers":[null,null,null]}
+[debug]: MAIN  [1563854548224] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] initPeerConnection
+[warning]: The rtcpMuxPolicy option is being considered for removal and may be removed no earlier than M62, around October 2017. If you depend on it, please see https://www.chromestatus.com/features/5654810086866944 for more details.
+[debug]: MAIN  [1563854548230] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] New peer connection created
+[debug]: MAIN  [1563854548231] RC_WEBPHONE: [sip.inviteclientcontext] SessionDescriptionHandler Created
+[debug]: MAIN  [1563854548233] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] acquiring local media
+[debug]: MAIN  [1563854548278] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] acquired local media streams
+[debug]: MAIN  [1563854548280] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] createOffer
+[debug]: MAIN  [1563854548283] opusModifier: Final SDP  v=0
+o=- 6754619576165322110 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+m=audio 9 UDP/TLS/RTP/SAVPF 111 103 104 9 0 8 106 105 13 110 112 113 126
+c=IN IP4 0.0.0.0
+a=rtcp:9 IN IP4 0.0.0.0
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:9 G722/8000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ssrc:2672286597 cname:8dgjBSYrtmv2meZJ
+a=ssrc:2672286597 msid:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA 0dee4735-ee5f-4c9a-8557-67236513d605
+a=ssrc:2672286597 mslabel:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+a=ssrc:2672286597 label:0dee4735-ee5f-4c9a-8557-67236513d605
+
+[debug]: MAIN  [1563854548284] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] resetIceGatheringComplete
+[debug]: MAIN  [1563854548284] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] Setting local sdp.
+[debug]: MAIN  [1563854548285] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] sdp is v=0
+o=- 6754619576165322110 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+m=audio 9 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 0.0.0.0
+a=rtcp:9 IN IP4 0.0.0.0
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ssrc:2672286597 cname:8dgjBSYrtmv2meZJ
+a=ssrc:2672286597 msid:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA 0dee4735-ee5f-4c9a-8557-67236513d605
+a=ssrc:2672286597 mslabel:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+a=ssrc:2672286597 label:0dee4735-ee5f-4c9a-8557-67236513d605
+
+[debug]: MAIN  [1563854548289] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] waitForIceGatheringComplete
+[debug]: MAIN  [1563854548289] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE is not complete. Returning promise
+[debug]: MAIN  [1563854548290] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] RTCIceGatheringState changed: gathering
+[debug]: MAIN  [1563854548291] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548292] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548391] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:3886365929 1 tcp 1518280447 10.32.58.61 9 typ host tcptype active generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548391] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:3886365929 2 tcp 1518280446 10.32.58.61 9 typ host tcptype active generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548710] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548711] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate received: candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 ufrag VGPQ network-id 1 network-cost 10
+[debug]: MAIN  [1563854548711] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] RTCIceGatheringState changed: complete
+[debug]: MAIN  [1563854548712] opusModifier: Final SDP  v=0
+o=- 6754619576165322110 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:3886365929 1 tcp 1518280447 10.32.58.61 9 typ host tcptype active generation 0 network-id 1 network-cost 10
+a=candidate:3886365929 2 tcp 1518280446 10.32.58.61 9 typ host tcptype active generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ptime:20
+a=ssrc:2672286597 cname:8dgjBSYrtmv2meZJ
+a=ssrc:2672286597 msid:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA 0dee4735-ee5f-4c9a-8557-67236513d605
+a=ssrc:2672286597 mslabel:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+a=ssrc:2672286597 label:0dee4735-ee5f-4c9a-8557-67236513d605
+
+[debug]: MAIN  [1563854548713] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+INVITE sip:701@sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5305882
+Max-Forwards: 70
+To: <sip:701@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6005 INVITE
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+P-Asserted-Identity: sip:18002313373*706@sip-xmnup.lab.nordigy.ru
+P-rc-country-id: 1
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws;ob>
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Type: application/sdp
+Content-Length: 1961
+
+v=0
+o=- 6754619576165322110 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ptime:20
+a=ssrc:2672286597 cname:8dgjBSYrtmv2meZJ
+a=ssrc:2672286597 msid:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA 0dee4735-ee5f-4c9a-8557-67236513d605
+a=ssrc:2672286597 mslabel:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+a=ssrc:2672286597 label:0dee4735-ee5f-4c9a-8557-67236513d605
+
+
+[debug]: MAIN  [1563854548714] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE candidate gathering complete
+[debug]: MAIN  [1563854548747] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE Connection State changed to iceConnectionChecking
+[debug]: MAIN  [1563854549334] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5305882;received=10.32.58.61
+To: <sip:701@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6005 INVITE
+Content-Length: 0
+
+
+
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [1563854549353] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 407 Proxy Authentication Required
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK5305882;received=10.32.58.61
+To: <sip:701@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-4e90
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6005 INVITE
+Contact: <sip:701@10.74.3.83:8083;transport=wss>
+Proxy-Authenticate: Digest realm="sip-xmnup.lab.nordigy.ru", nonce="XTaIAF02htTKx9vqekwvAMooLiTnYSgJ"
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854549358] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+ACK sip:701@10.74.3.83:8083;transport=wss SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK3501267
+Max-Forwards: 70
+To: <sip:701@sip-xmnup.lab.nordigy.ru>;tag=3736e950a37497fd49bbf37995a53c56-4e90
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6005 ACK
+Supported: outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854549360] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+INVITE sip:701@sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9668083
+Max-Forwards: 70
+To: <sip:701@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6006 INVITE
+Proxy-Authorization: Digest algorithm=MD5, username="803962447004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaIAF02htTKx9vqekwvAMooLiTnYSgJ", uri="sip:701@sip-xmnup.lab.nordigy.ru", response="07f02ef0fe96dfdae94e4648cab8a72f"
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+P-Asserted-Identity: sip:18002313373*706@sip-xmnup.lab.nordigy.ru
+P-rc-country-id: 1
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws;ob>
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Type: application/sdp
+Content-Length: 1961
+
+v=0
+o=- 6754619576165322110 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ptime:20
+a=ssrc:2672286597 cname:8dgjBSYrtmv2meZJ
+a=ssrc:2672286597 msid:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA 0dee4735-ee5f-4c9a-8557-67236513d605
+a=ssrc:2672286597 mslabel:nBlWCwodrW72ME1QQ4rypFaZhdFN6B7a5PPA
+a=ssrc:2672286597 label:0dee4735-ee5f-4c9a-8557-67236513d605
+
+
+[debug]: MAIN  [1563854549656] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 100 Trying
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9668083;received=10.32.58.61
+To: <sip:701@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6006 INVITE
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854549658] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 183 Session Progress
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9668083;received=10.32.58.61
+To: <sip:701@sip-xmnup.lab.nordigy.ru>;tag=10.74.3.17-5070-2cfd4a6cc0b04473
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6006 INVITE
+Allow: SUBSCRIBE, NOTIFY, REFER, INVITE, ACK, BYE, CANCEL, UPDATE, INFO
+Contact: <sip:701@10.74.3.83:8083;transport=wss>
+Content-Type: application/sdp
+p-rc-api-ids: party-id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc-1;session-id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc
+Content-Length: 514
+
+v=0
+o=- 2776136309094293710 3177672017311540397 IN IP4 10.74.3.85
+s=SmcSip
+c=IN IP4 10.74.3.85
+t=0 0
+m=audio 20756 RTP/SAVPF 111 110
+a=rtpmap:111 OPUS/48000/2
+a=fmtp:111 useinbandfec=1
+a=rtpmap:110 telephone-event/48000
+a=fmtp:110 0-15
+a=sendrecv
+a=rtcp:20756
+a=rtcp-mux
+a=setup:active
+a=fingerprint:sha-1 25:DD:03:AF:68:91:27:BB:32:D2:9C:81:5E:3A:9D:92:EF:CC:90:73
+a=ice-ufrag:dGXt0KnP
+a=ice-pwd:KRECs0pww6KlDvfb5ADPLvZCDm
+a=candidate:8oEbzvqF7sxMFrbP 1 UDP 2130706431 10.74.3.85 20756 typ host
+
+
+[debug]: MAIN  [1563854549661] RC_WEBPHONE: [sip.dialog] new UAC dialog created with status EARLY
+[debug]: MAIN  [1563854549662] RC_WEBPHONE: [sip.inviteclientcontext] Receiving 183 In Progress from server
+[debug]: MAIN  [1563854549662] RC_WEBPHONE: [sip.dialog] dialog 0j90csmaebrsfaa6p4pmldagj4s5bm10.74.3.17-5070-2cfd4a6cc0b04473  changed to CONFIRMED state
+[debug]: MAIN  [1563854549663] opusModifier: Final SDP  v=0
+o=- 2776136309094293710 3177672017311540397 IN IP4 10.74.3.85
+s=SmcSip
+c=IN IP4 10.74.3.85
+t=0 0
+m=audio 20756 RTP/SAVPF 111 110
+a=rtpmap:111 OPUS/48000/2
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:110 telephone-event/48000
+a=fmtp:110 0-15
+a=sendrecv
+a=rtcp:20756
+a=rtcp-mux
+a=setup:active
+a=fingerprint:sha-1 25:DD:03:AF:68:91:27:BB:32:D2:9C:81:5E:3A:9D:92:EF:CC:90:73
+a=ice-ufrag:dGXt0KnP
+a=ice-pwd:KRECs0pww6KlDvfb5ADPLvZCDm
+a=candidate:8oEbzvqF7sxMFrbP 1 UDP 2130706431 10.74.3.85 20756 typ host
+
+[debug]: MAIN  [1563854549663] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK9668083;received=10.32.58.61
+To: <sip:701@sip-xmnup.lab.nordigy.ru>;tag=10.74.3.17-5070-2cfd4a6cc0b04473
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6006 INVITE
+Allow: SUBSCRIBE, NOTIFY, REFER, INVITE, ACK, BYE, CANCEL, UPDATE, INFO
+Contact: <sip:701@10.74.3.83:8083;transport=wss>
+Content-Type: application/sdp
+Supported: replaces, timer, diversion
+p-rc-api-ids: party-id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc-1;session-id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc
+Content-Length: 514
+
+v=0
+o=- 2776136309094293710 3177672017311540397 IN IP4 10.74.3.85
+s=SmcSip
+c=IN IP4 10.74.3.85
+t=0 0
+m=audio 20756 RTP/SAVPF 111 110
+a=rtpmap:111 OPUS/48000/2
+a=fmtp:111 useinbandfec=1
+a=rtpmap:110 telephone-event/48000
+a=fmtp:110 0-15
+a=sendrecv
+a=rtcp:20756
+a=rtcp-mux
+a=setup:active
+a=fingerprint:sha-1 25:DD:03:AF:68:91:27:BB:32:D2:9C:81:5E:3A:9D:92:EF:CC:90:73
+a=ice-ufrag:dGXt0KnP
+a=ice-pwd:KRECs0pww6KlDvfb5ADPLvZCDm
+a=candidate:8oEbzvqF7sxMFrbP 1 UDP 2130706431 10.74.3.85 20756 typ host
+
+
+[debug]: MAIN  [1563854549666] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+ACK sip:701@10.74.3.83:8083;transport=wss SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK6013753
+Max-Forwards: 70
+To: <sip:701@sip-xmnup.lab.nordigy.ru>;tag=10.74.3.17-5070-2cfd4a6cc0b04473
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=ldagj4s5bm
+Call-ID: 0j90csmaebrsfaa6p4pm
+CSeq: 6006 ACK
+Supported: outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854549667] RTCSipCallSession: Set audio input device id: e49e626062be575c7c062a3f19b67afed0d6339a8881213b3c51a267893c1d4f
+[debug]: MAIN  [1563854549668] RTCSipCallSession: Set audio output device id: a300affe67604b072e3aea448f7f789666691bf0f6e6f288805a14b1904e7e7e
+[debug]: MAIN  [1563854549669] RTCSipCallSession: mediaElement: [object Object] setSinkId: function setSinkId() { [native code] }
+[info]: MAIN  [1563854549669] RTCCall: Got party id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc-1 session id=Y3MxNzI2MjI2MDkzMzA0NjAxMDMwQDEwLjc0LjMuMTc
+[debug]: MAIN  [1563854549688] RTC_Call_FSM: Transition: sessionAccepted from: connecting to: connected
+[debug]: MAIN  [1563854549689] RC_WEBPHONE: [sip.inviteclientcontext] Unmuting Audio
+[debug]: MAIN  [1563854549692] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] track added
+[debug]: MAIN  [1563854549693] RTCSipCallSession: Receiver track from RTCTrackEvent added
+[debug]: MAIN  [1563854549693] RTCSipCallSession: Sender track added
+[debug]: MAIN  [1563854549696] RTCSipCallSession: set local audio output device a300affe67604b072e3aea448f7f789666691bf0f6e6f288805a14b1904e7e7e success
+[debug]: MAIN  [1563854549696] RTCSipCallSession: set remote audio output device a300affe67604b072e3aea448f7f789666691bf0f6e6f288805a14b1904e7e7e success
+[debug]: MAIN  [1563854549707] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE Connection State changed to iceConnectionConnected
+[debug]: MAIN  [1563854549708] RC_WEBPHONE: [sip.inviteclientcontext] MediaStreams Unknown peerConnection state: undefined
+[debug]: MAIN  [1563854549708] RC_WEBPHONE: [sip.inviteclientcontext] MediaStreams peerConnection State: unknown
+[debug]: MAIN  [1563854549709] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE Connection State changed to iceConnectionCompleted
+[debug]: MAIN  [1563854549709] RC_WEBPHONE: [sip.inviteclientcontext] MediaStreams Unknown peerConnection state: undefined
+[debug]: MAIN  [1563854549710] RC_WEBPHONE: [sip.inviteclientcontext] MediaStreams peerConnection State: unknown
+[debug]: MAIN  [1563854549741] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] createOffer
+[debug]: MAIN  [1563854549742] opusModifier: Final SDP  v=0
+o=- 6754619576165322110 3 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126 9
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:3886365929 1 tcp 1518280447 10.32.58.61 9 typ host tcptype active generation 0 network-id 1 network-cost 10
+a=candidate:3886365929 2 tcp 1518280446 10.32.58.61 9 typ host tcptype active generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=rtpmap:9 G722/8000
+a=ptime:20
+a=ssrc:948392818 cname:8dgjBSYrtmv2meZJ
+a=ssrc:948392818 msid:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA 8f28667d-8afe-4256-8137-86f771da6680
+a=ssrc:948392818 mslabel:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+a=ssrc:948392818 label:8f28667d-8afe-4256-8137-86f771da6680
+
+[debug]: MAIN  [1563854549743] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] resetIceGatheringComplete
+[debug]: MAIN  [1563854549743] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] Setting local sdp.
+[debug]: MAIN  [1563854549743] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] sdp is v=0
+o=- 6754619576165322110 3 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ptime:20
+a=ssrc:948392818 cname:8dgjBSYrtmv2meZJ
+a=ssrc:948392818 msid:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA 8f28667d-8afe-4256-8137-86f771da6680
+a=ssrc:948392818 mslabel:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+a=ssrc:948392818 label:8f28667d-8afe-4256-8137-86f771da6680
+
+[debug]: MAIN  [1563854549746] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] waitForIceGatheringComplete
+[debug]: MAIN  [1563854549746] RC_WEBPHONE: [sip.invitecontext.sessionDescriptionHandler] ICE is already complete. Return resolved.
+[debug]: MAIN  [1563854549747] opusModifier: Final SDP  v=0
+o=- 6754619576165322110 3 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE audio
+a=msid-semantic: WMS Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+m=audio 58500 UDP/TLS/RTP/SAVPF 111 103 104 0 8 106 105 13 110 112 113 126
+c=IN IP4 98.124.135.226
+a=rtcp:16707 IN IP4 98.124.135.226
+a=candidate:2837889049 1 udp 2122260223 10.32.58.61 55976 typ host generation 0 network-id 1 network-cost 10
+a=candidate:2837889049 2 udp 2122260222 10.32.58.61 60443 typ host generation 0 network-id 1 network-cost 10
+a=candidate:7950284 1 udp 1686052607 98.124.135.226 58500 typ srflx raddr 10.32.58.61 rport 55976 generation 0 network-id 1 network-cost 10
+a=candidate:7950284 2 udp 1686052606 98.124.135.226 16707 typ srflx raddr 10.32.58.61 rport 60443 generation 0 network-id 1 network-cost 10
+a=ice-ufrag:VGPQ
+a=ice-pwd:oD9zjjGQOL2U87w/NPMpolcx
+a=ice-options:trickle
+a=fingerprint:sha-256 72:91:CF:C1:9B:A3:8A:C2:A6:C7:03:9D:55:BE:E6:55:A7:9B:72:DA:A8:04:AE:0A:3E:07:86:61:2D:44:67:7D
+a=setup:actpass
+a=mid:audio
+a=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level
+a=extmap:2 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+a=sendrecv
+a=rtcp-mux
+a=rtpmap:111 opus/48000/2
+a=rtcp-fb:111 transport-cc
+a=fmtp:111 minptime=10; useinbandfec=1; maxaveragebitrate=32000; sprop-maxcapturerate=16000; maxplaybackrate=16000; stereo=0; sprop-stereo=0; ptime=20
+a=rtpmap:103 ISAC/16000
+a=rtpmap:104 ISAC/32000
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:106 CN/32000
+a=rtpmap:105 CN/16000
+a=rtpmap:13 CN/8000
+a=rtpmap:110 telephone-event/48000
+a=rtpmap:112 telephone-event/32000
+a=rtpmap:113 telephone-event/16000
+a=rtpmap:126 telephone-event/8000
+a=ptime:20
+a=ssrc:948392818 cname:8dgjBSYrtmv2meZJ
+a=ssrc:948392818 msid:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA 8f28667d-8afe-4256-8137-86f771da6680
+a=ssrc:948392818 mslabel:Lh8ECyFi5CSs7KW9tAXkhhS62uuuV6Hy7PJA
+a=ssrc:948392818 label:8f28667d-8afe-4256-8137-86f771da6680
+
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[log]: MAIN RCSubscriptionController   _dispatchMessages, receive message JSHandle@object
+[info]: MAIN CallLogHandleDataController   create pseudo calls from presence,  JSHandle@array
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[log]: MAIN  [SOCKET GLIP_PING_PONG]  ping back to pong id:  1563854548050
+[log]: MAIN  [SOCKET GLIP_PING_PONG]  socket-> glip ping pong handle ping result: true
+[info]: MAIN [SOCKET _FSM1]    glipPingPongCallback success: true state:connected isManualStopped :false
+[info]: MAIN [SOCKET manager]    _glipPingPongStatusCallback isSuccess true
+[info]: MAIN [SOCKET _FSM1]   check socket and it is ping result is: true
+[log]: MAIN RCSubscriptionController   _dispatchMessages, receive message JSHandle@object
+[info]: MAIN CallLogHandleDataController   create pseudo calls from presence,  JSHandle@array
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 2324  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN AllCallLogFetchController   sync success, size:0 JSHandle@object
+[info]: MAIN AllCallLogFetchController   handleDataAndSave, updateLength: 0 deleteLength: 0 pseudoInfo: JSHandle@object
+[info]: MAIN AllCallLogFetchController   silent sync end
+[info]: MAIN VoicemailFetchController   silent sync start
+[info]: MAIN VoicemailFetchController   start sync, isSilent: true, type:ISync, direction:0, count:undefined
+[info]: NETWORK  appendTask() task priority: 2, pending queue size:1
+[info]: NETWORK  addRequestToQueue:  id: path:/restapi/v1.0/account/~/extension/~/message-sync headers:{} params:{"syncType":"ISync","syncToken":"AQEAAAACBgAAAPoFAAABbBz3gfYTAAgAAAAAcdH8PAkBCgEZAAABbBz3WRB1ykhS"} data:{}
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK NetworkRequestExecutor   _performNetworkRequest()
+[info]: NETWORK  inPendingQueueTime: 2 startRequest:  JSHandle@object
+[info]: NETWORK  Http executor queue size: 0
+[info]: NETWORK  requestConsumeTime: 99  <<request>>:  JSHandle@object      <<response>>:     JSHandle@object
+[info]: MAIN VoicemailFetchController   sync success, size:0 JSHandle@object
+[info]: MAIN VoicemailFetchController   silent sync end
+[info]: MAIN  SequenceProcessorHandler (SingleSequenceProcessor): is done
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [Analysis] [1563854551693] analysis data: [{"min":0,"max":0}]
+[info]: MAIN  [1563854551701] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":91,"bytesReceived":8148,"packetsLost":0,"jitter":0.002,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":97,"bytesSent":8877},"rttMS":{"currentRoundTripTime":13}}
+[debug]: MAIN  [Analysis] [1563854552693] analysis data: []
+[debug]: MAIN  [Analysis] [1563854553205] analysis data: []
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [Analysis] [1563854553693] analysis data: []
+[info]: MAIN  [1563854553697] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":191,"bytesReceived":17210,"packetsLost":0,"jitter":0.002,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":197,"bytesSent":18177},"rttMS":{"currentRoundTripTime":18}}
+[info]: MAIN  Data dispatched for event:SOCKET.CLIENT_CONFIG
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [Analysis] [1563854554692] analysis data: []
+[debug]: MAIN  [Analysis] [1563854555693] analysis data: [{"min":129.19921875,"max":150.732421875}]
+[info]: MAIN  [1563854555699] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":291,"bytesReceived":26518,"packetsLost":0,"jitter":0.002,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":297,"bytesSent":25128},"rttMS":{"currentRoundTripTime":35}}
+[debug]: MAIN  [Analysis] [1563854556693] analysis data: [{"min":64.599609375,"max":86.1328125},{"min":172.265625,"max":215.33203125},{"min":387.59765625,"max":387.59765625}]
+[debug]: MAIN  [Analysis] [1563854557693] analysis data: [{"min":193.798828125,"max":215.33203125}]
+[info]: MAIN  [1563854557708] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":391,"bytesReceived":35667,"packetsLost":7,"jitter":0.014,"fractionLost":0.01953125},"outboundRtpReport":{"mediaType":"audio","packetsSent":397,"bytesSent":32823},"rttMS":{"currentRoundTripTime":2}}
+[debug]: MAIN  [Analysis] [1563854558693] analysis data: [{"min":172.265625,"max":215.33203125},{"min":366.064453125,"max":409.130859375}]
+[debug]: MAIN  [Analysis] [1563854559693] analysis data: []
+[info]: MAIN  [1563854559699] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":491,"bytesReceived":44666,"packetsLost":7,"jitter":0.014,"fractionLost":0.01953125},"outboundRtpReport":{"mediaType":"audio","packetsSent":497,"bytesSent":42123},"rttMS":{"currentRoundTripTime":31}}
+[debug]: MAIN  [Analysis] [1563854560692] analysis data: []
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [Analysis] [1563854561693] analysis data: [{"min":150.732421875,"max":150.732421875},{"min":215.33203125,"max":215.33203125},{"min":301.46484375,"max":301.46484375}]
+[info]: MAIN  [1563854561714] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":590,"bytesReceived":53835,"packetsLost":7,"jitter":0.006,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":597,"bytesSent":49985},"rttMS":{"currentRoundTripTime":31}}
+[info]: MAIN [SOCKET _FSM1]   socket-> ping.  
+[info]: MAIN [SOCKET _FSM1]   socket-> pong.  3
+[info]: MAIN [SOCKET _FSM1]   latestPongTime 1563854561979
+[debug]: MAIN  [Analysis] [1563854562692] analysis data: []
+[debug]: MAIN  [Analysis] [1563854563693] analysis data: []
+[info]: MAIN  [1563854563696] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":691,"bytesReceived":62932,"packetsLost":7,"jitter":0.006,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":697,"bytesSent":54303},"rttMS":{"currentRoundTripTime":2}}
+[debug]: MAIN  [Analysis] [1563854564693] analysis data: [{"min":129.19921875,"max":236.865234375},{"min":322.998046875,"max":322.998046875}]
+[debug]: MAIN  [Analysis] [1563854565693] analysis data: [{"min":301.46484375,"max":344.53125}]
+[info]: MAIN  [1563854565710] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":788,"bytesReceived":71400,"packetsLost":7,"jitter":0.006,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":797,"bytesSent":63197},"rttMS":{"currentRoundTripTime":2}}
+[debug]: MAIN  [Analysis] [1563854566693] analysis data: [{"min":150.732421875,"max":172.265625},{"min":301.46484375,"max":387.59765625}]
+[debug]: MAIN  [1563854567538] RC_WEBPHONE: [sip.transport] sending WebSocket message:
+
+REGISTER sip:sip-xmnup.lab.nordigy.ru SIP/2.0
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK4897324
+Max-Forwards: 70
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5683 REGISTER
+Authorization: Digest algorithm=MD5, username="803962447004", realm="sip-xmnup.lab.nordigy.ru", nonce="XTaH6V02hr1F8b7O28elH0+9LwbtuMXD", uri="sip:sip-xmnup.lab.nordigy.ru", response="6ae9b6f334ed6c74584148be51ec75ed"
+P-rc-endpoint-id: fda04a28-1496-4654-ac71-0d400f39a88c
+Client-id:undefined
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=600
+Allow: ACK,CANCEL,INVITE,MESSAGE,BYE,OPTIONS,INFO,NOTIFY,REFER
+Supported: path, gruu, outbound
+User-Agent: RingCentral Jupiter Macintosh-Intel-Mac-OS-X-10_14_4 RCWEBPHONE/0.7.2
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854567543] RC_WEBPHONE: [sip.transport] received WebSocket text message:
+
+SIP/2.0 200 OK
+Via: SIP/2.0/WSS f53sfogoquvu.invalid;branch=z9hG4bK4897324;received=10.32.58.61
+To: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=`Pl!kHdDr!h
+From: <sip:18002313373*706@sip-xmnup.lab.nordigy.ru>;tag=drddbu1h9n
+Call-ID: flp9jp1f8ej4j9douj3ksk
+CSeq: 5683 REGISTER
+Contact: <sip:iutgsbch@f53sfogoquvu.invalid;transport=ws>;expires=45
+Content-Length: 0
+
+
+
+[debug]: MAIN  [1563854567545] RTC_ACCOUNT_FSM: Transition: regSuccess from: ready to: ready
+[debug]: MAIN  [Analysis] [1563854567693] analysis data: []
+[info]: MAIN  [1563854567699] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":889,"bytesReceived":80460,"packetsLost":7,"jitter":0.014,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":897,"bytesSent":72497},"rttMS":{"currentRoundTripTime":2}}
+[debug]: MAIN  [Analysis] [1563854568693] analysis data: [{"min":150.732421875,"max":279.931640625},{"min":344.53125,"max":409.130859375},{"min":732.12890625,"max":753.662109375}]
+[debug]: MAIN  [Analysis] [1563854569693] analysis data: [{"min":0,"max":0}]
+[info]: MAIN  [1563854569706] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":987,"bytesReceived":88388,"packetsLost":7,"jitter":0.014,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":997,"bytesSent":81550},"rttMS":{"currentRoundTripTime":36}}
+[debug]: MAIN  [Analysis] [1563854570693] analysis data: [{"min":150.732421875,"max":193.798828125},{"min":322.998046875,"max":366.064453125},{"min":495.263671875,"max":538.330078125},{"min":689.0625,"max":689.0625}]
+[info]: MAIN  Data dispatched for event:SOCKET.TOPHAT
+[info]: MAIN [SOCKET _FSM1]   socket-> system_message.  JSHandle@object
+[debug]: MAIN  [Analysis] [1563854571693] analysis data: [{"min":172.265625,"max":193.798828125},{"min":344.53125,"max":366.064453125},{"min":516.796875,"max":538.330078125},{"min":689.0625,"max":732.12890625},{"min":839.794921875,"max":904.39453125}]
+[info]: MAIN  [1563854571700] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1088,"bytesReceived":97162,"packetsLost":7,"jitter":0.014,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1097,"bytesSent":90876},"rttMS":{"currentRoundTripTime":36}}
+[debug]: MAIN  [Analysis] [1563854572692] analysis data: [{"min":172.265625,"max":215.33203125},{"min":366.064453125,"max":366.064453125}]
+[debug]: MAIN  [Analysis] [1563854573693] analysis data: []
+[info]: MAIN  [1563854573697] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1186,"bytesReceived":106069,"packetsLost":7,"jitter":0.011,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1197,"bytesSent":100229},"rttMS":{"currentRoundTripTime":2}}
+[debug]: MAIN  [Analysis] [1563854574693] analysis data: [{"min":236.865234375,"max":301.46484375}]
+[debug]: MAIN  [Analysis] [1563854575693] analysis data: [{"min":129.19921875,"max":172.265625},{"min":301.46484375,"max":301.46484375}]
+[info]: MAIN  [1563854575699] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1288,"bytesReceived":114877,"packetsLost":7,"jitter":0.011,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1297,"bytesSent":109456},"rttMS":{"currentRoundTripTime":37}}
+[debug]: MAIN  [Analysis] [1563854576693] analysis data: []
+[debug]: MAIN  [Analysis] [1563854577693] analysis data: []
+[info]: MAIN  [1563854577701] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1388,"bytesReceived":124035,"packetsLost":7,"jitter":0.009,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1397,"bytesSent":118671},"rttMS":{"currentRoundTripTime":1}}
+[debug]: MAIN  [Analysis] [1563854578694] analysis data: [{"min":516.796875,"max":753.662109375},{"min":2799.31640625,"max":2906.982421875},{"min":3445.3125,"max":4091.30859375}]
+[debug]: MAIN  [Analysis] [1563854579693] analysis data: [{"min":0,"max":0}]
+[info]: MAIN  [1563854579712] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1486,"bytesReceived":128960,"packetsLost":7,"jitter":0.009,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1497,"bytesSent":125163},"rttMS":{"currentRoundTripTime":17}}
+[debug]: MAIN  [Analysis] [1563854580693] analysis data: [{"min":0,"max":0}]
+[debug]: MAIN  [1563854580730] RC_WEBPHONE: [sip.transaction.ict] Timer B expired for INVITE client transaction z9hG4bK5305882
+[debug]: MAIN  [1563854581361] RC_WEBPHONE: [sip.transaction.ict] Timer B expired for INVITE client transaction z9hG4bK9668083
+[debug]: MAIN  [1563854581666] RC_WEBPHONE: [sip.transaction.ict] Timer M expired for INVITE client transaction z9hG4bK9668083
+[debug]: MAIN  [Analysis] [1563854581692] analysis data: [{"min":0,"max":0}]
+[info]: MAIN  [1563854581700] RTCMediaStatsManager:  Got mediaStats {"inboundRtpReport":{"mediaType":"audio","packetsReceived":1584,"bytesReceived":131018,"packetsLost":7,"jitter":0.004,"fractionLost":0},"outboundRtpReport":{"mediaType":"audio","packetsSent":1597,"bytesSent":126663},"rttMS":{"currentRoundTripTime":17}}
+[debug]: MAIN  [Analysis] [1563854582693] analysis data: [{"min":0,"max":0}]

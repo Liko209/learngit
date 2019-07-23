@@ -1,0 +1,194 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563859318538' stop='1563859414232'>
+    <name>support multiple call</name>
+    <title>support multiple call</title>
+    <test-cases>
+        <test-case start='1563859383497' status='undefined' stop='1563859383498'>
+            <name>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</name>
+            <title>[JPT-1970][P1][Yilia Hong] Make call success when there is 8 call</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563859383498' status='failed' stop='1563859413971'>
+            <name>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</name>
+            <title>[JPT-1971][P1][Yilia Hong] Make call failed when there are 9 calls</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563859383501' status='passed' stop='1563859383501'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node2","node":{"nodeID":"node2","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}},{"nodeID":"node3","node":{"nodeID":"node3","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859383503' status='passed' stop='1563859383508'>
+                    <name>Given party1 is registered</name>
+                    <title>Given party1 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859383508' status='passed' stop='1563859383512'>
+                    <name>Given party2 is registered</name>
+                    <title>Given party2 is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859385515' status='passed' stop='1563859385653'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859385653' status='passed' stop='1563859386312'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859386312' status='passed' stop='1563859386439'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859387443' status='passed' stop='1563859392493'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859392493' status='passed' stop='1563859392497'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859395498' status='passed' stop='1563859395622'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859395622' status='passed' stop='1563859396282'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859396282' status='passed' stop='1563859396575'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859397579' status='passed' stop='1563859402599'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859402600' status='passed' stop='1563859402603'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859405605' status='passed' stop='1563859405693'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859405693' status='passed' stop='1563859406352'>
+                    <name>Then party1 enter connected state</name>
+                    <title>Then party1 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859406352' status='passed' stop='1563859406386'>
+                    <name>Then party2 receive incoming call</name>
+                    <title>Then party2 receive incoming call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859407391' status='passed' stop='1563859412416'>
+                    <name>When party2 answer call</name>
+                    <title>When party2 answer call</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859412416' status='passed' stop='1563859412419'>
+                    <name>Then party2 enter connected state</name>
+                    <title>Then party2 enter connected state</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859413420' status='passed' stop='1563859413501'>
+                    <name>When make call from party1 to party2</name>
+                    <title>When make call from party1 to party2</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563859413502' status='failed' stop='1563859413527'>
+                    <name>Check party1 call list item = 3</name>
+                    <title>Check party1 call list item = 3</title>
+                    <attachments>
+                        <attachment title='party1-f368bb8f-9f89-3be6-bc11-8f2d6d8542d9.txt' source='cbbf8f8e-62dd-4f09-90a3-05456d451340-attachment.txt' type='text/plain' size='184152'/>
+                        <attachment title='party2-91e68e56-901d-3619-ad5d-93646e82e87b.txt' source='51d15bdb-fec8-4643-a59a-c63ffd3b5492-attachment.txt' type='text/plain' size='170260'/>
+                        <attachment title='party3-5d546fb7-b1ff-3a20-9d5b-3a89f2674e10.txt' source='038af6fa-65cb-4343-81e9-a90e882c242b-attachment.txt' type='text/plain' size='64210'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: 4
+                Received: 3</message>
+                <stack-trace>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: 4
+                Received: 3
+                    at StepHelper.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:716:19)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:37:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:18:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:9:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>support multiple call</description>
+        </test-case>
+        <test-case start='1563859413972' status='undefined' stop='1563859413972'>
+            <name>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</name>
+            <title>[JPT-1972][P1][Yilia Hong] Can receive incoming call when there is 8 call</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563859413972' status='undefined' stop='1563859413972'>
+            <name>[JPT-1971][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</name>
+            <title>[JPT-1971][P1][Yilia Hong] Can not receive incoming call when there are 9 calls</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

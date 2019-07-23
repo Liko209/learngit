@@ -1,0 +1,121 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563842468870' stop='1563842595021'>
+    <name>telephony HA</name>
+    <title>telephony HA</title>
+    <test-cases>
+        <test-case start='1563842470061' status='undefined' stop='1563842470062'>
+            <name>[JPT-2301][P1][Jayson Zhang] Switch to backup proxy after 10 times connectionFailed on main proxy</name>
+            <title>[JPT-2301][P1][Jayson Zhang] Switch to backup proxy after 10 times connectionFailed on main proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563842470062' status='failed' stop='1563842594933'>
+            <name>[JPT-2302][P1][Jayson Zhang] switch to backup proxy immediately when register failed and response error code on main proxy</name>
+            <title>[JPT-2302][P1][Jayson Zhang] switch to backup proxy immediately when register failed and response error code on main proxy</title>
+            <labels>
+                <label name='severity' value='critical'/>
+            </labels>
+            <parameters/>
+            <steps>
+                <step start='1563842519134' status='passed' stop='1563842519136'>
+                    <name>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</name>
+                    <title>Get nodes from puppeteer hub: [{"nodeID":"node1","node":{"nodeID":"node1","connectionType":"local","isVM":true,"sessionMode":"simple","maxConcurrentSessions":1,"networkSimulator":false,"puppeteerWSUrl":"ws://localhost:3001","headless":false,"host":"localhost","port":"3001"}}]</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563842519149' status='passed' stop='1563842519395'>
+                    <name>Given pageCaller is registered</name>
+                    <title>Given pageCaller is registered</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563842520456' status='passed' stop='1563842520615'>
+                    <name>When pageCaller click NewProvision button</name>
+                    <title>When pageCaller click NewProvision button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1563842580619' status='failed' stop='1563842592374'>
+                    <name>check pageCaller log</name>
+                    <title>check pageCaller log</title>
+                    <attachments>
+                        <attachment title='pageCaller-e51d1ad7-879d-3231-bb7c-fadea9b10540.txt' source='8a1eaeff-f8b0-4f71-ba8f-a953c083c6cf-attachment.txt' type='text/plain' size='88133'/>
+                        <attachment title='pageCaller-e51d1ad7-879d-3231-bb7c-fadea9b10540.txt' source='fcae04d9-699f-4d07-9721-c77aa677abd0-attachment.txt' type='text/plain' size='88133'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments/>
+            <failure>
+                <message>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false</message>
+                <stack-trace>Error: expect(received).toBe(expected) // Object.is equality
+                
+                Expected: true
+                Received: false
+                    at StepHelper.&lt;anonymous> (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:816:22)
+                    at step (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:37:23)
+                    at Object.next (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:18:53)
+                    at fulfilled (/Users/jayson.zhang/gitLab_workspace/Fiji-01/tests/telephony-sdk-test/helper/StepHelper.ts:9:58)
+                    at process._tickCallback (internal/process/next_tick.js:68:7)</stack-trace>
+            </failure>
+            <description type='text'>telephony HA</description>
+        </test-case>
+        <test-case start='1563842594934' status='undefined' stop='1563842594934'>
+            <name>[JPT-2479][P2][Jayson Zhang] register on main proxy when register failed unMatchedErrorCode on main proxy</name>
+            <title>[JPT-2479][P2][Jayson Zhang] register on main proxy when register failed unMatchedErrorCode on main proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563842594934' status='undefined' stop='1563842594934'>
+            <name>[JPT-2303][P1][Jayson Zhang] switch to main proxy after app reaching SwitchBackInterval on backup proxy</name>
+            <title>[JPT-2303][P1][Jayson Zhang] switch to main proxy after app reaching SwitchBackInterval on backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563842594934' status='undefined' stop='1563842594934'>
+            <name>[JPT-2417][P2][Jayson Zhang] Begin a new loop accord to scheduled interval after 20 times failure on main and backup proxy</name>
+            <title>[JPT-2417][P2][Jayson Zhang] Begin a new loop accord to scheduled interval after 20 times failure on main and backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1563842594934' status='undefined' stop='1563842594934'>
+            <name>[JPT-2421][P2][Jayson Zhang] Begin a new register loop accord to scheduled interval when register failed with matched error code on main and backup proxy</name>
+            <title>[JPT-2421][P2][Jayson Zhang] Begin a new register loop accord to scheduled interval when register failed with matched error code on main and backup proxy</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message>This test was disabled</message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

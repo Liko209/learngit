@@ -1,0 +1,19 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1563764773918' stop='1563764854974'>
+    <name>multiple callee receive incoming call</name>
+    <title>multiple callee receive incoming call</title>
+    <test-cases>
+        <test-case start='1563764854806' status='pending' stop='1563764854808'>
+            <name>[DEMO-1593][P2][Jimmy Xu] Receive call after register on multiple endpoints</name>
+            <title>[DEMO-1593][P2][Jimmy Xu] Receive call after register on multiple endpoints</title>
+            <labels/>
+            <parameters/>
+            <steps/>
+            <attachments/>
+            <failure>
+                <message></message>
+                <stack-trace>undefined</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>
