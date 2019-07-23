@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
-import { JuiIconButton, JuiLozengeButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiRoundButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
 
@@ -22,12 +22,12 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
     const { handleJoinTeam, group, addRecentRecord } = this.props;
     addRecentRecord();
     await handleJoinTeam(group);
-  }
+  };
 
   goToConversation = async () => {
     const { goToConversation, group } = this.props;
     await goToConversation(group.id);
-  }
+  };
 
   onClick = async (event: React.MouseEvent) => {
     const { canJoinTeam } = this.props;
@@ -35,14 +35,14 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       return await this.handleJoinTeam(event);
     }
     return await this.handleGoToConversation(event);
-  }
+  };
 
   handleGoToConversation = (evt: React.MouseEvent) => {
     const { addRecentRecord } = this.props;
     evt.stopPropagation();
     addRecentRecord();
     this.goToConversation();
-  }
+  };
 
   render() {
     const {
@@ -64,12 +64,12 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
       return null;
     }
     const joinTeamBtn = (
-      <JuiLozengeButton
+      <JuiRoundButton
         data-test-automation-id="joinButton"
         onClick={this.handleJoinTeam}
       >
         {t('people.team.joinButtonTitle')}
-      </JuiLozengeButton>
+      </JuiRoundButton>
     );
     const goToConversationIcon = (
       <JuiIconButton

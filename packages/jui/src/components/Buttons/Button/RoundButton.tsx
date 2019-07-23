@@ -5,7 +5,9 @@
  */
 
 import * as React from 'react';
-import MuiButton from '@material-ui/core/Button';
+import MuiButton, {
+  ButtonProps as MuiButtonProps,
+} from '@material-ui/core/Button';
 import styled from '../../../foundation/styled-components';
 import {
   typography,
@@ -15,7 +17,7 @@ import {
   rippleEnter,
   height,
   grey,
-  primary
+  primary,
 } from '../../../foundation/utils/styles';
 
 const StyledButton = styled(MuiButton)`
@@ -54,7 +56,7 @@ const StyledButton = styled(MuiButton)`
   }
 `;
 
-export interface JuiRoundButtonProps {}
+export type JuiRoundButtonProps = {} & MuiButtonProps;
 
 export function JuiRoundButton(props: JuiRoundButtonProps) {
   return <StyledButton disableRipple {...props} />;
