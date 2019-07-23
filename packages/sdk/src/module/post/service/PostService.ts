@@ -81,13 +81,23 @@ class PostService extends EntityBaseService<Post> {
       .deletePost(id);
   }
 
-  async editSuccessPost(params: EditPostType) {
+  async editPost(params: EditPostType) {
+    this._isFailedPost(params)
+      ? this._editFailedPost(params)
+      : this._editSuccessPost(params);
+  }
+
+  private _isFailedPost(params: EditPostType) {
+    return params.postId < 0;
+  }
+
+  private _editSuccessPost(params: EditPostType) {
     return this.getPostController()
       .getPostActionController()
       .editSuccessPost(params);
   }
 
-  async editFailedPost(params: EditPostType) {
+  private _editFailedPost(params: EditPostType) {
     return this.getPostController()
       .getSendPostController()
       .editFailedPost(params);

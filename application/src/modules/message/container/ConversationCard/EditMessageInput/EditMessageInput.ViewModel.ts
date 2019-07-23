@@ -146,7 +146,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
   private _handleEditPost(content: string, ids: number[]) {
-    return this._postService.editSuccessPost({
+    return this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,

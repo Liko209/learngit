@@ -210,8 +210,9 @@ describe('PostService', () => {
     });
   });
 
-  describe('editSuccessPost', () => {
+  describe('editPost', () => {
     let postActionController: PostActionController;
+    let sendPostController: SendPostController;
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -220,32 +221,18 @@ describe('PostService', () => {
         null as any,
         null as any,
       );
-
       postController.getPostActionController = jest
         .fn()
         .mockImplementation(() => {
           return postActionController;
         });
-      postService.postController = postController;
-    });
 
-    it('should call PostActionController editSuccessPost api', async () => {
-      const spy = jest.spyOn(postActionController, 'editSuccessPost');
-      postService.editSuccessPost({ postId: 1, groupId: 1, text: '111' });
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('editFailedPost', () => {
-    let sendPostController: SendPostController;
-    beforeEach(() => {
-      clearMocks();
-      setUp();
       sendPostController = new SendPostController(
         null as any,
         null as any,
         null as any,
       );
+
       postController.getSendPostController = jest
         .fn()
         .mockImplementation(() => {
@@ -254,10 +241,27 @@ describe('PostService', () => {
       postService.postController = postController;
     });
 
+    it('should call PostActionController editSuccessPost api for id > 0 post', async () => {
+      const spySuccess = jest.spyOn(postActionController, 'editSuccessPost');
+      const spyFailed = jest.spyOn(sendPostController, 'editFailedPost');
+      postService.editPost({ postId: 1, groupId: 1, text: '111' });
+      expect(spySuccess).toHaveBeenCalled();
+      expect(spyFailed).not.toHaveBeenCalled();
+    });
+
     it('should call SendPostController editFailedPost api', async () => {
       const spy = jest.spyOn(sendPostController, 'editFailedPost');
-      postService.editFailedPost({ postId: -1, groupId: 1, text: '111' });
+      postService.editPost({ postId: -1, groupId: 1, text: '111' });
       expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('editFailedPost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+
+      postService.postController = postController;
     });
   });
 });
