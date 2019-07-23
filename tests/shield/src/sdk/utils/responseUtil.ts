@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { IApiContract, IRequestResponse, IApiPath, ISocketInfo } from '../types';
+import { IApiContract, IRequestResponse, IApiPath } from '../types';
 import { createResponse } from '../mocks/server/utils';
 
 import assert = require('assert');
@@ -15,7 +15,9 @@ export function readJson<
   ReqData = A extends IApiContract<infer B, any> ? B : any,
   ResData = A extends IApiContract<any, infer B> ? B : any
 >(json: IRequestResponse<ReqData, ResData>) {
-  ['path', 'method', 'request', 'response'].forEach(k => assert(json[k], `json lack of property[${k}]`),);
+  ['path', 'method', 'request', 'response'].forEach(k =>
+    assert(json[k], `json lack of property[${k}]`),
+  );
   return json;
 }
 

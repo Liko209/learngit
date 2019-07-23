@@ -33,7 +33,8 @@ export class ProxyServer implements IMockServer {
     const { host, method, path } = request;
     const pool = this.getRequestResponsePool();
     return pool.find(
-      item => item.host === host &&
+      item =>
+        item.host === host &&
         item.request.method === method &&
         (item.path === path || item.pathRegexp.test(path)),
     );
@@ -53,7 +54,9 @@ export class ProxyServer implements IMockServer {
       path: request.path,
       method: request.method,
     };
-    const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) => request.host.startsWith(key),);
+    const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
+      request.host.startsWith(key),
+    );
     if (match) {
       transRequestInfo.host = match[1];
       request.host = match[1];
@@ -88,7 +91,10 @@ export class ProxyServer implements IMockServer {
         NETWORK_HANDLE_TYPE.UPLOAD,
       ].includes(request.handlerType.name)
     ) {
-      return InstanceManager.get(MockGlipServer).handleRequest(request, listener);
+      return InstanceManager.get(MockGlipServer).handleRequest(
+        request,
+        listener,
+      );
     }
     InstanceManager.get(CommonFileServer).handleRequest(request, listener);
   };

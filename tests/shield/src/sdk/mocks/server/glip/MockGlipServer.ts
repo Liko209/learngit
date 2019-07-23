@@ -7,7 +7,11 @@ import assert from 'assert';
 import { LokiDB } from 'foundation/db';
 import _ from 'lodash';
 import { createDebug } from 'sdk/__tests__/utils';
-import { IMockServer, IResponseAdapter, JRequestHandler } from 'shield/sdk/types';
+import {
+  IMockServer,
+  IResponseAdapter,
+  JRequestHandler,
+} from 'shield/sdk/types';
 
 import { Route } from '../../../decorators/Route.decorator';
 import { globalConfig } from '../../../globalConfig';
@@ -95,7 +99,6 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
     this.profileDao.bulkPut(glipData.profile);
     this.stateDao.bulkPut(glipData.state);
     glipData.groupState && this.groupStateDao.bulkPut(glipData.groupState);
-    // this.personDao.insert(glipDataTemplate.user);
     glipData.posts.length && this.postDao.bulkPut(glipData.posts);
     this.personDao.bulkPut(glipData.people);
     this.groupDao.bulkPut(glipData.groups);
@@ -114,7 +117,7 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
     if (globalConfig.get('mode') === 'glip') {
       return createResponse({
         headers: {
-          'x-authorization': 'mock-x-authorization'
+          'x-authorization': 'mock-x-authorization',
         },
         status: 200,
         statusText: '[mock] glip login success',

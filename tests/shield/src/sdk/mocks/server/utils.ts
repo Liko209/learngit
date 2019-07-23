@@ -5,6 +5,7 @@
  */
 import { IResponse } from 'foundation/network/network';
 import _ from 'lodash';
+
 export function createResponse<T>(
   partial: Partial<IResponse<T>>,
 ): IResponse<T> {

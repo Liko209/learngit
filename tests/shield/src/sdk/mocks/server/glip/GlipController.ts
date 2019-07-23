@@ -16,9 +16,7 @@ import { Route } from '../../../decorators/Route.decorator';
 import { IJRequest } from '../../../types';
 import { createResponse, String2Number } from '../utils';
 import { IGlipServerContext } from './IGlipServerContext';
-import {
- GlipGroup, GlipPost, GlipProfile, GlipState
-} from './types';
+import { GlipGroup, GlipPost, GlipProfile, GlipState } from './types';
 import { doPartialUpdate, genPostId, parseState } from './utils';
 
 const debug = createDebug('GlipController');
@@ -127,7 +125,8 @@ export class GlipController {
       return createResponse({
         request,
         data: doPartialUpdate(context.groupStateDao, groupStates[0], result =>
-          context.socketServer.emitPartial(result),),
+          context.socketServer.emitPartial(result),
+        ),
       });
     }
     return createResponse({

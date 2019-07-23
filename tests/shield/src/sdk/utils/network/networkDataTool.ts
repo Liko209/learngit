@@ -15,6 +15,7 @@ import {
   ISocketResponseInfo,
   ISocketRequestInfo,
 } from '../../types';
+
 const INJECT_FLAG = '__jupiter__';
 const INJECT_DATA = '__jupiter_data__';
 const INJECT_HEADER = '__jupiter_header__';

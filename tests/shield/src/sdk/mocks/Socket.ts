@@ -15,7 +15,7 @@ export default class Socket {
   ) => {
     request.params = request.parameters;
     InstanceManager.get(ProxyServer).handleRequest(request, listener);
-  }
+  };
 
   isNetworkReachable = () => window.navigator.onLine;
 

@@ -15,7 +15,7 @@ function create(url, protocol) {
   };
   socket.removeAllListeners = () => {};
   const rawClose = socket.close;
-  socket.close = function () {
+  socket.close = function() {
     // console.warn('socket.close -> ', url);
     return rawClose.call(socket, ...arguments);
   };

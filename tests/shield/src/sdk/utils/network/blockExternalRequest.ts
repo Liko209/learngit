@@ -60,10 +60,12 @@ function wrapRequest(transport: typeof http | typeof https) {
       response.emit('end');
     });
     req.on('end', () => {
-      response.emit('data', 'eeeeee');
+      debug('end');
       response.emit('end');
     });
-    req.on('upgrade', () => {});
+    req.on('upgrade', () => {
+      debug('upgrade');
+    });
     response.statusCode = 500;
     response.statusMessage = 'Blocked for test';
     response.headers = {};

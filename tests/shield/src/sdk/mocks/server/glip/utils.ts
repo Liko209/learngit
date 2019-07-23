@@ -9,6 +9,7 @@ import { STATE_KEYS } from './constants';
 import { GlipState, GlipModel, InitialData, GlipData } from './types';
 import { GlipBaseDao } from './GlipBaseDao';
 import _ from 'lodash';
+
 import assert = require('assert');
 
 const FACTOR = (TYPE_ID_MASK << 1) & ~TYPE_ID_MASK;
@@ -18,7 +19,8 @@ const getTableCursor = (table: string) => {
   typeIdPool.set(table, cursor + 1);
   return cursor;
 };
-const genId = (table: string, typeId: number) => (getTableCursor(table) * FACTOR) | typeId;
+const genId = (table: string, typeId: number) =>
+  (getTableCursor(table) * FACTOR) | typeId;
 
 const genGroupId = () => genId('group', TypeDictionary.TYPE_ID_GROUP);
 const genTeamId = () => genId('team', TypeDictionary.TYPE_ID_TEAM);
@@ -52,7 +54,6 @@ export function parseState(state: GlipState) {
   return Array.from(groupIds).map(id => groupStates[id]);
 }
 
-
 export function parseInitialData(initialData: InitialData): GlipData {
   const company = _.find(
     initialData.companies,
@@ -79,7 +80,7 @@ export function parseInitialData(initialData: InitialData): GlipData {
     profile: initialData.profile,
   };
   return result;
-  }
+}
 
 export function doPartialUpdate<T extends GlipModel>(
   dao: GlipBaseDao<T>,
@@ -97,5 +98,12 @@ export function doPartialUpdate<T extends GlipModel>(
 }
 
 export {
-  genId, genCompanyId, genGroupId, genTeamId, genPersonId, genPostId, genStateId, genProfileId
+  genId,
+  genCompanyId,
+  genGroupId,
+  genTeamId,
+  genPersonId,
+  genPostId,
+  genStateId,
+  genProfileId,
 };

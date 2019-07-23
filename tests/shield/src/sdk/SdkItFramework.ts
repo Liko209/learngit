@@ -67,7 +67,7 @@ function clearMocks() {
 
 async function initSdk() {
   EnvConfig.disableSplitIo(true);
-  EnvConfig.disableLD(true)
+  EnvConfig.disableLD(true);
   await sdk.init({});
 }
 
@@ -79,7 +79,10 @@ async function login() {
 
 async function onLogin(mode: 'glip' | 'rc' = 'glip') {
   return new Promise(resolve => {
-    notificationCenter.once(mode === 'glip' ? SERVICE.GLIP_LOGIN : SERVICE.RC_LOGIN, () => resolve());
+    notificationCenter.once(
+      mode === 'glip' ? SERVICE.GLIP_LOGIN : SERVICE.RC_LOGIN,
+      () => resolve(),
+    );
   });
 }
 
@@ -153,8 +156,12 @@ export function itForSdk(
   };
 
   const mockApi: MockApi = (apiPath, response, extractor, mapper) => {
-    return mockResponse(createApiResponse(apiPath, response), extractor, mapper)
-  }
+    return mockResponse(
+      createApiResponse(apiPath, response),
+      extractor,
+      mapper,
+    );
+  };
 
   // provide for it case to mock data.
   const itCtx: ItContext = {

@@ -134,14 +134,14 @@ function subscribeXHR(callback) {
     const originSend = XMLHttpRequest.prototype.send;
     const originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype[INJECT_FLAG] = true;
-    XMLHttpRequest.prototype.setRequestHeader = function (name, value) {
+    XMLHttpRequest.prototype.setRequestHeader = function(name, value) {
       // tslint:disable-next-line:no-this-assignment
       const request = this;
       request[INJECT_HEADER] = request[INJECT_HEADER] || {};
       request[INJECT_HEADER][name] = value;
       originSetRequestHeader.apply(this, arguments);
     };
-    XMLHttpRequest.prototype.open = function () {
+    XMLHttpRequest.prototype.open = function() {
       const method = arguments[0];
       const openUrl = arguments[1];
       // tslint:disable-next-line:no-this-assignment
@@ -185,7 +185,7 @@ function subscribeXHR(callback) {
       this.addEventListener('readystatechange', readyStateChangeListener);
       return originOpen.apply(this, arguments);
     };
-    XMLHttpRequest.prototype.send = function (data) {
+    XMLHttpRequest.prototype.send = function(data) {
       // tslint:disable-next-line:no-this-assignment
       const request = this;
       if (request[INJECT_FLAG]) {
@@ -198,7 +198,7 @@ function subscribeXHR(callback) {
 function subscribeSocket(callback) {
   onSocketInfoComing = callback;
   const originSocketSend = WebSocket.prototype.send;
-  WebSocket.prototype.send = function () {
+  WebSocket.prototype.send = function() {
     // tslint:disable-next-line:no-this-assignment
     const socket = this;
     onSocketInfoComing &&
@@ -215,7 +215,7 @@ function subscribeSocket(callback) {
       );
     if (!socket[INJECT_FLAG]) {
       socket[INJECT_FLAG] = true;
-      const messageListener = function (event) {
+      const messageListener = function(event) {
         onSocketInfoComing &&
           onSocketInfoComing(
             Object.assign(
@@ -246,7 +246,9 @@ class NetworkDataTool {
     this._infoPool = [];
   }
   _aliasHost(host) {
-    const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) => host.startsWith(key),);
+    const match = Object.entries(SERVER_ALIAS_MAP).find(([key, value]) =>
+      host.startsWith(key),
+    );
     return match ? match[1] : host;
   }
   startWatch() {
@@ -267,7 +269,8 @@ class NetworkDataTool {
             },
           } = socketResponse.data;
           const sourceRequest = this._infoPool.find(
-            item => item.type === 'socket-message' &&
+            item =>
+              item.type === 'socket-message' &&
               item['channel'] === 'request' &&
               item.data.id.toString() === request_id,
           );

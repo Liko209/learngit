@@ -99,7 +99,15 @@ export type GlipClientConfig = GlipBase & {
   Force_Logout_Percentage: string;
 };
 
-export type GlipModel = GlipState | GlipGroup | GlipProfile | GlipCompany | GlipPost | GlipItem | GlipGroupState | GlipClientConfig;
+export type GlipModel =
+  | GlipState
+  | GlipGroup
+  | GlipProfile
+  | GlipCompany
+  | GlipPost
+  | GlipItem
+  | GlipGroupState
+  | GlipClientConfig;
 
 export type InitialData = {
   user_id: number;
@@ -133,4 +141,3 @@ export type GlipData = {
   groupState: GlipGroupState[];
   profile: GlipProfile;
 };
-

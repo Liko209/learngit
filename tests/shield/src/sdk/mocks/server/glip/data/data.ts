@@ -33,54 +33,68 @@ class AccountDataFactory {
   }
 
   people() {
-    return this._get<IFactory<GlipPerson>>('person', () => personFactory.extend({
+    return this._get<IFactory<GlipPerson>>('person', () =>
+      personFactory.extend({
         company_id: this.companyId,
-      }),);
+      }),
+    );
   }
 
   group(): IFactory<GlipGroup> {
-    return this._get<IFactory<GlipGroup>>('group', () => groupFactory.extend({
+    return this._get<IFactory<GlipGroup>>('group', () =>
+      groupFactory.extend({
         company_id: this.companyId,
         creator_id: this.userId,
         members: [this.userId],
-      }),);
+      }),
+    );
   }
 
   team(): IFactory<GlipGroup> {
-    return this._get<IFactory<GlipGroup>>('team', () => teamFactory.extend({
+    return this._get<IFactory<GlipGroup>>('team', () =>
+      teamFactory.extend({
         is_team: true,
         company_id: this.companyId,
         creator_id: this.userId,
         members: [this.userId],
         permissions: { admin: { uids: [this.userId] } },
-      }),);
+      }),
+    );
   }
 
   post(): IFactory<GlipPost> {
-    return this._get<IFactory<GlipPost>>('post', () => postFactory.extend({
+    return this._get<IFactory<GlipPost>>('post', () =>
+      postFactory.extend({
         company_id: this.companyId,
         creator_id: this.userId,
-      }),);
+      }),
+    );
   }
 
   groupState(): IFactory<GlipGroupState> {
-    return this._get<IFactory<GlipGroupState>>('GlipGroupState', () => groupStateFactory.extend({
+    return this._get<IFactory<GlipGroupState>>('GlipGroupState', () =>
+      groupStateFactory.extend({
         creator_id: this.userId,
-      }),);
+      }),
+    );
   }
 
   profile(): IFactory<GlipProfile> {
-    return this._get<IFactory<GlipProfile>>('GlipProfile', () => profileFactory.extend({
+    return this._get<IFactory<GlipProfile>>('GlipProfile', () =>
+      profileFactory.extend({
         person_id: this.userId,
         creator_id: this.userId,
-      }),);
+      }),
+    );
   }
 
   state(): IFactory<GlipState> {
-    return this._get<IFactory<GlipState>>('GlipState', () => stateFactory.extend({
+    return this._get<IFactory<GlipState>>('GlipState', () =>
+      stateFactory.extend({
         creator_id: this.userId,
         person_id: this.userId,
-      }),);
+      }),
+    );
   }
 }
 

@@ -13,6 +13,7 @@ import url from 'url';
 import path from 'path';
 import fs from 'fs';
 import { createDebug } from 'sdk/__tests__/utils';
+
 const debug = createDebug('FileServer');
 const error = createDebug('FileServer', true);
 
@@ -33,7 +34,9 @@ export class CommonFileServer implements IMockServer {
       cb.onSuccess({ request, ...result.response });
     } else {
       error(
-        `request: ${request.host}${request.path}\n not file match, ${mockJsonPath} not exist.`,
+        `request: ${request.host}${
+          request.path
+        }\n not file match, ${mockJsonPath} not exist.`,
       );
       cb.onFailure({
         request,
@@ -43,7 +46,7 @@ export class CommonFileServer implements IMockServer {
         headers: {},
       } as any);
     }
-  }
+  };
 
   getMockJsonPath = (host: string, uri: string, method: string) => {
     const { hostname, protocol } = url.parse(host);
@@ -59,5 +62,5 @@ export class CommonFileServer implements IMockServer {
       )}/${method.toUpperCase()}.template.json`,
     );
     return mockDataPath;
-  }
+  };
 }
