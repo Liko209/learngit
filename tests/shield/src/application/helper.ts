@@ -3,6 +3,7 @@
  * @Date: 2019-06-28 16:16:14
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import { TestApp } from './application';
 import { act as ract } from 'react-dom/test-utils';
 import { getWrapper, WrapperType } from './wrapper';
@@ -31,12 +32,17 @@ function act(callback: TestCallback): Promise<void> {
 }
 
 async function helper(
-  config: BootstrapConfig,
+  config: BootstrapConfig | JSX.Element,
   type: WrapperType = WrapperType.Enzyme,
 ) {
   let p: any;
   await act(async () => {
-    const element = await mockApp(config);
+    let element: JSX.Element;
+    if (React.isValidElement(config)) {
+      element = config;
+    } else {
+      element = await mockApp(config as BootstrapConfig);
+    }
     p = new TestApp(getWrapper(element, type));
     notificationCenter.emitKVChange(SERVICE.STOP_LOADING);
     notificationCenter.emitKVChange(SERVICE.RC_LOGIN);
