@@ -6,14 +6,12 @@
 import React, { memo } from 'react';
 
 import MuiMenuItem, {
-  MenuItemProps as MuiMenuItemProps,
+  MenuItemProps as MuiMenuItemProps
 } from '@material-ui/core/MenuItem';
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {
-  spacing, grey, palette, width, height,
-} from '../../foundation/utils';
+import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
@@ -52,7 +50,8 @@ const rippleEnter = (theme: Theme) => keyframes`
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
 const hoverStyle = css`
-  background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
+  background-color: ${({ theme }) =>
+    fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
     display: inline-flex;
   }
@@ -86,10 +85,11 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      ${({ theme }) => theme.transitions.create('background-color', {
-    duration: theme.transitions.duration.shortest,
-    easing: theme.transitions.easing.easeInOut,
-  })};
+      ${({ theme }) =>
+        theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeInOut
+        })};
   }
   &&&& {
     ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
@@ -114,7 +114,8 @@ const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
   }
 
   &&.selected {
-    background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'])};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity['1'])};
     p {
       color: ${palette('primary', 'main')};
     }
@@ -147,8 +148,8 @@ const StyledPresenceWrapper = styled.div`
 
 type JuiConversationListItemProps = {
   title: string;
-  presence?: JSX.Element | null;
-  umi?: JSX.Element;
+  presence?: () => JSX.Element | null;
+  umi?: () => JSX.Element | undefined;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
@@ -164,7 +165,7 @@ type IConversationListItem = {
 
 const touchRippleClasses = {
   child: 'child',
-  rippleVisible: 'rippleVisible',
+  rippleVisible: 'rippleVisible'
 };
 
 const JuiConversationListItem: IConversationListItem = memo(
@@ -200,9 +201,11 @@ const JuiConversationListItem: IConversationListItem = memo(
         isItemHover={isItemHover}
         {...rest}
       >
-        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        {presence && (
+          <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
+        )}
         <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi}
+        {umi && umi()}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconButtonMore
@@ -218,7 +221,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         {children}
       </StyledListItem>
     );
-  },
+  }
 );
 
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
@@ -227,5 +230,5 @@ export default JuiConversationListItem;
 export {
   JuiConversationListItemProps,
   JuiConversationListItem,
-  JuiMenuContain,
+  JuiMenuContain
 };
