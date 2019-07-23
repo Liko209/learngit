@@ -29,8 +29,8 @@ export class SettingMenu extends BaseWebComponent {
     await this.t.click(this.aboutButton);
   }
 
-  async clickSendFeedBackButton() {
-    await this.t.click(this.sendFeedBackButton);
+  async clickSendFeedbackButton() {
+    await this.t.click(this.sendFeedbackButton);
   }
 
   async clickLogout() {
