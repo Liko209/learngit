@@ -20,9 +20,6 @@ itForSdk('Service Integration test', ({ helper, template, sdk }) => {
       await sdk.setup();
     });
 
-    afterAll(async () => {
-      // await sdk.cleanUp();
-    });
     it('should run', async () => {
       const url = '/message/42614790';
       await bootstrap({ url });

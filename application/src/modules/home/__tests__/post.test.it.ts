@@ -22,9 +22,6 @@ itForSdk('Service Integration test', ({ helper, template, sdk }) => {
       await sdk.setup();
     });
 
-    afterAll(async () => {
-      // await sdk.cleanUp();
-    });
     it('should send post', async () => {
       const app = await h({ url: `/messages/${team1._id}` });
 
