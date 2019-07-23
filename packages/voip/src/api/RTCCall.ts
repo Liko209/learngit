@@ -389,6 +389,7 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
+      this._setSipInfoIntoCallInfo();
       this._clearHangupTimer();
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
@@ -554,6 +555,24 @@ class RTCCall {
       clearTimeout(this._hangupInvalidCallTimer);
       this._hangupInvalidCallTimer = null;
     }
+  }
+
+  private _setSipInfoIntoCallInfo() {
+    const session = this._callSession.getSession();
+    if (!session) {
+      return;
+    }
+
+    this._callInfo.callId = session.request.callId || '';
+    this._callInfo.fromTag = session.request.fromTag || '';
+    this._callInfo.toTag = session.request.toTag || '';
+
+    rtcLogger.info(
+      LOG_TAG,
+      `set sip info callId=${this._callInfo.callId}; fromTag=${
+        this._callInfo.fromTag
+      }; toTag=${this._callInfo.toTag}; to call info`,
+    );
   }
 
   // session listener
