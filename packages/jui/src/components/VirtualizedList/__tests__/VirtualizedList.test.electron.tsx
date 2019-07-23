@@ -85,10 +85,10 @@ const buildExpect = (
       startIndex: number,
       stopIndex: number,
     ) => {
-      expect(handleVisibleRangeChange).toBeCalledWith({
+      expect(handleVisibleRangeChange.mock.calls[0][0]).toEqual({
         startIndex,
         stopIndex,
-      }, {"clientHeight": 100, "scrollHeight": 200, "scrollTop": 0});
+      }, );
       expect(handleRenderedRangeChange).toBeCalledWith({
         startIndex,
         stopIndex,
