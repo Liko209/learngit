@@ -10,7 +10,7 @@ import { RuiCircularProgress } from 'rcui/components/Progress';
 import arrowUp from '../../../assets/jupiter-icon/icon-jump-to-unread.svg';
 import arrowDown from '../../../assets/jupiter-icon/icon-jump-to-latest.svg';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { DIRECTION } from '../../Lists';
+import { DIRECTION } from '../../Lists/interface';
 
 type JuiLozengeButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
@@ -83,8 +83,8 @@ const _JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
 };
 
 _JuiLozengeButton.defaultProps = {
-  loading: false
+  loading: false,
 };
 _JuiLozengeButton.displayName = 'JuiLozengeButton';
 const JuiLozengeButton = memo(_JuiLozengeButton);
-export { JuiLozengeButton, JuiLozengeButtonProps, DIRECTION };
+export { JuiLozengeButton, JuiLozengeButtonProps };
