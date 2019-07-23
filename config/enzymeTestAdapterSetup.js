@@ -11,18 +11,23 @@ import 'reflect-metadata';
 faker.seed(1);
 
 const withTranslation = () => Component => {
-  Component.defaultProps = { ...Component.defaultProps, t: (key) => key };
+  Component.defaultProps = { ...Component.defaultProps, t: key => key };
   return Component;
 };
+const useTranslation = () => ({
+  t: i => i,
+});
 
 const mockReactI18nNext = {
   // this mock makes sure any components using the withTranslation HoC receive the t function as a prop
   withTranslation,
+  useTranslation,
 };
 
 jest.mock('react-i18next', () => mockReactI18nNext);
 
 const React = require('react');
+
 React.memo = x => x;
 
 configure({ adapter: new Adapter() });
