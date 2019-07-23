@@ -3,8 +3,6 @@
  * @Date: 2019-03-04 15:28:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { withTheme } from 'jui/foundation/styled-components';
-import { ThemeProps } from 'jui/foundation/theme/theme';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiDragZoom } from 'jui/pattern/DragZoom';
 import {
@@ -29,7 +27,7 @@ import { memoizeColor } from '@/common/memoizeFunction';
 import { accelerateURL } from '@/common/accelerateURL';
 import { mainLogger } from 'sdk';
 
-type ImageViewerProps = WithTranslation & ImageViewerViewProps & ThemeProps;
+type ImageViewerProps = WithTranslation & ImageViewerViewProps;
 
 @observer
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
@@ -149,7 +147,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   render() {
     const {
       imageUrl,
-      theme,
       t,
       thumbnailSrc,
       imageWidth,
@@ -158,7 +155,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       hasPrevious,
       hasNext,
     } = this.props;
-    const padding = theme.spacing(8);
+    const padding = 32;
     return (
       <ViewerContext.Consumer>
         {value => (
@@ -261,8 +258,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   }
 }
 
-const ImageViewerView = withTheme(
-  withTranslation('translations')(ImageViewerComponent),
-);
+const ImageViewerView = withTranslation('translations')(ImageViewerComponent);
 
 export { ImageViewerView };
