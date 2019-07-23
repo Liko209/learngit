@@ -18,18 +18,18 @@ function getKnobs() {
     'size',
     {
       small: 'small',
-      large: 'large'
+      large: 'large',
     },
-    'large'
+    'large',
   );
   const color = select<JuiButtonProps['color']>(
     'color',
     {
       primary: 'primary',
       secondary: 'secondary',
-      negative: 'negative'
+      negative: 'negative',
     },
-    'primary'
+    'primary',
   );
   const disabled = boolean('disabled', false);
   const loading = boolean('loading', false);
@@ -38,7 +38,7 @@ function getKnobs() {
     size,
     color,
     disabled,
-    loading
+    loading,
   };
 }
 
@@ -71,10 +71,12 @@ storiesOf('Components/Buttons', module)
     );
   })
   .add('Round Button', () => {
-    const { content, ...rest } = getKnobs();
+    const { content, color, ...rest } = getKnobs();
     return (
       <div>
-        <JuiRoundButton {...rest}>{content}</JuiRoundButton>
+        <JuiRoundButton color={color as any} {...rest}>
+          {content}
+        </JuiRoundButton>
       </div>
     );
   })
