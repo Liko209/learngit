@@ -32,7 +32,9 @@ class CompanyService extends EntityBaseService<Company> {
       }),
     );
 
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_COMPANY));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_COMPANY),
+    );
   }
 
   protected buildEntityCacheController() {
@@ -64,6 +66,10 @@ class CompanyService extends EntityBaseService<Company> {
 
   async getUserAccountTypeFromSP430() {
     return await this.getCompanyController().getUserAccountTypeFromSP430();
+  }
+
+  async isFreyjaAccount() {
+    return await this.getCompanyController().isFreyjaAccount();
   }
 
   async isUserCompanyTelephonyOn() {
