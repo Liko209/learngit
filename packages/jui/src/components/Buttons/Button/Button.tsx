@@ -32,6 +32,7 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
+  component?: React.ElementType;
 };
 
 const ColorMap: {
