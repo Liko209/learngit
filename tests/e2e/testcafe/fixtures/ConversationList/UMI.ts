@@ -705,6 +705,10 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
     });
 
+    await h(t).withLog('And Enter the mentions', async () => {
+      await app.homePage.messageTab.mentionsEntry.enter();
+    });
+
     await h(t).withLog('And then leave browser window', async () => {
       await h(t).interceptHasFocus(false);
     });
@@ -1134,8 +1138,8 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
   });
 
-  await h(t).withLog('Then UMI=1 for DM in Fav conversation', async () => {
-    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
+  await h(t).withLog('Then UMI=0 for DM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(0);
   });
 
   await h(t).withLog('And no change for TM in Fav conversation', async () => {
