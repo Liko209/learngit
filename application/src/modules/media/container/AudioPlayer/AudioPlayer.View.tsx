@@ -14,19 +14,7 @@ import { computed } from 'mobx';
 @observer
 class AudioPlayerViewComponent extends Component<AudioPlayerViewProps> {
   @computed
-  private get _getCurrentTime() {
-    const { currentTime } = this.props;
-    return currentTime;
-  }
-
-  @computed
-  private get _getDuration() {
-    const { duration, currentDuration } = this.props;
-    return currentDuration || duration;
-  }
-
-  @computed
-  private get _getAction() {
+  private get _action() {
     const { t, playHandler, pauseHandler, reloadHandler } = this.props;
 
     return {
@@ -57,6 +45,9 @@ class AudioPlayerViewComponent extends Component<AudioPlayerViewProps> {
   render() {
     const {
       mode,
+      currentTime,
+      duration,
+      currentDuration,
       mediaStatus,
       isHighlight,
       dragHandler,
@@ -65,10 +56,10 @@ class AudioPlayerViewComponent extends Component<AudioPlayerViewProps> {
     return (
       <JuiAudioPlayer
         mode={mode}
-        duration={this._getDuration}
-        timestamp={this._getCurrentTime}
+        duration={currentDuration || duration}
+        timestamp={currentTime}
         status={mediaStatus}
-        actions={this._getAction}
+        actions={this._action}
         onProcessDragged={dragHandler}
         onTimeStampChanged={timestampHandler}
         isHighlight={isHighlight}

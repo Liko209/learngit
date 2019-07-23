@@ -54,6 +54,80 @@ describe('AudioPlayerViewModel', () => {
     container.restore();
   });
 
+  describe('reaction()', () => {
+    it('should update media when props media update', () => {
+      const mediaService: IMediaService = jupiter.get(IMediaService);
+      const media = mediaService.createMedia({
+        src: 'example.mp3',
+      });
+      const vm = new AudioPlayerViewModel({});
+      expect(vm._media).toEqual(null);
+      expect(vm._currentSrc).toEqual('');
+
+      vm._propMediaReaction(media);
+
+      expect(vm._media).toEqual(media);
+      expect(vm._currentSrc).toEqual('example.mp3');
+    })
+    it('should throw error when prop media is not instance Media', () => {
+      const vm = new AudioPlayerViewModel({});
+      expect(() => {
+        vm._propMediaReaction('test');
+      }).toThrowError();
+    })
+    it('should console warning if use prop media and trackId given', () => {
+      const mediaService: IMediaService = jupiter.get(IMediaService);
+      const media = mediaService.createMedia({
+        src: 'example.mp3',
+      });
+      const vm = new AudioPlayerViewModel({
+        trackId: 'trackId',
+      });
+      expect(vm._media).toEqual(null);
+      expect(vm._currentSrc).toEqual('');
+
+      const warnFn = jest.spyOn(console, 'warn').mockImplementation();
+
+      vm._propMediaReaction(media);
+      expect(warnFn).toBeCalled();
+      expect(vm._media.trackId).not.toEqual('trackId');
+      expect(vm._currentSrc).toEqual('example.mp3');
+    })
+
+    it('should get media when props id update', () => {
+      const mediaService: IMediaService = jupiter.get(IMediaService);
+      const media = mediaService.createMedia({
+        id: 'propsID',
+        src: 'example.mp3',
+      });
+
+      const vm = new AudioPlayerViewModel({});
+      expect(vm._media).toEqual(null);
+      
+      vm._propIdReaction('propsID');
+      expect(vm._media).toEqual(media);
+    })
+
+    it('should create media and dispose old media when src update', () => {
+      const vm = new AudioPlayerViewModel({});
+
+      jest.spyOn(vm, '_mediaOptions', 'get')
+        .mockReturnValueOnce({
+          src: 'example1.mp3',
+        }).mockReturnValueOnce({
+          src: 'example2.mp3'
+        })
+      
+      expect(vm._media).toEqual(null);
+
+      vm._propSrcReaction('example1.mp3');
+      expect(vm._media.src).toEqual('example1.mp3');
+      vm._propSrcReaction('example2.mp3');
+      expect(vm._media.src).toEqual('example2.mp3');
+    })
+  })
+
+
   describe('createMedia()', () => {
     it('should create media by media service', () => {
       const { media } = setup();
@@ -364,7 +438,7 @@ describe('AudioPlayerViewModel', () => {
         onTimeUpdate: timeUpdateMockFn
       });
       expect(vm._media).toBe(null);
-      
+
       const timestamp = 100;
       vm.timestampHandler(timestamp);
       expect(timeUpdateMockFn).toBeCalled();
@@ -378,7 +452,7 @@ describe('AudioPlayerViewModel', () => {
         onTimeUpdate: timeUpdateMockFn
       });
       expect(vm._media).toBe(null);
-      
+
       const timestamp = 11;
       vm.timestampHandler(timestamp);
       expect(timeUpdateMockFn).toBeCalled();
