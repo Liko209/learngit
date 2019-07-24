@@ -6,7 +6,7 @@
 import { Omit } from 'jui/foundation/utils/typeHelper';
 import { createDecorator } from 'framework';
 import { INotificationPermission as permissionInterface } from 'sdk/pal';
-import { RINGS_TYPE, SOUNDS_TYPE } from 'sdk/src/module/profile';
+import { RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
 import { IMedia } from '@/interface/media';
 
 type NotificationId = number | string;

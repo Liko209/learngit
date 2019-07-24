@@ -25,7 +25,7 @@ type JuiMenuItemProps = {
   secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
-  hasSecondaryAction: boolean;
+  hasSecondaryAction?: boolean;
 } & MuiMenuItemProps;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`

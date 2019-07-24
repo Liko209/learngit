@@ -1,7 +1,7 @@
 import { IMediaService } from '@/interface/media';
 import { ISoundNotification, Sounds } from '../interface';
-import { RingsList, SoundsList } from 'sdk/src/module/profile';
-import { mainLogger } from 'sdk/src';
+import { RingsList, SoundsList } from 'sdk/module/profile';
+import { mainLogger } from 'sdk';
 
 export class SoundNotification implements ISoundNotification {
   @IMediaService private _mediaService: IMediaService;

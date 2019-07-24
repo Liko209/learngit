@@ -11,11 +11,7 @@ import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { container } from 'framework/src';
 import { ISoundNotification, Sounds } from '@/modules/notification/interface';
 import { IMedia } from '@/interface/media';
-import {
-  AUDIO_SOUNDS_INFO,
-  RINGS_TYPE,
-  SOUNDS_TYPE,
-} from 'sdk/src/module/profile';
+import { AUDIO_SOUNDS_INFO, RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
 import { useHotKey } from 'jui/hoc/HotKeys';
 
 type SoundItemProps = {
