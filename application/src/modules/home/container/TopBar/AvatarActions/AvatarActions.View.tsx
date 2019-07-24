@@ -38,36 +38,25 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   private get _tooltip() {
     const { t, presence } = this.props
-    switch (presence) {
-      case PRESENCE.AVAILABLE:
-        return t('presence.available');
-      case PRESENCE.DND:
-        return t('presence.doNotDisturb');
-      case PRESENCE.INMEETING:
-        return t('presence.inMeeting');
-      case PRESENCE.ONCALL:
-        return t('presence.onCall');
-      default:
-        return t('presence.offline');
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
     }
+    return t(i18nMap[presence] || 'presence.offline');
   }
 
   private get title() {
     const { t, presence } = this.props
-    switch (presence) {
-      case PRESENCE.AVAILABLE:
-        return t('presence.available');
-      case PRESENCE.DND:
-        return t('presence.doNotDisturb');
-      case PRESENCE.INMEETING:
-        return t('presence.inMeeting');
-      case PRESENCE.ONCALL:
-        return t('presence.onCall');
-      case PRESENCE.UNAVAILABLE:
-        return t('presence.invisible');
-      default:
-        return t('presence.offline');
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
     }
+    return t(i18nMap[presence] || 'presence.offline');
   }
 
   private _Anchor() {
