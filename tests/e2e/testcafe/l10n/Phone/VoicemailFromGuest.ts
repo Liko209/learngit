@@ -37,7 +37,7 @@ fixture('Phone/VoicemailFromGuest')
   const telephoneDialog = app.homePage.telephonyDialog;
   const voicemailItemFromGuest = voicemailPage.voicemailItemByNth(0);
 
-  await h(t).withLog('Then I minimize the telephone  dialog', async() => {
+  await h(t).withLog('And I minimize the telephone  dialog', async() => {
     if (await telephoneDialog.exists) {
       await telephoneDialog.clickMinimizeButton()
     };

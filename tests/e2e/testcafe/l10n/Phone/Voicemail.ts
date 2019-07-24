@@ -38,13 +38,13 @@ fixture('Phone/Voicemail')
   const telephoneDialog = app.homePage.telephonyDialog;
   const deleteVoicemailDialog = app.homePage.deleteVoicemailDialog;
 
-  await h(t).withLog('Then I minimize the telephone dialog', async() => {
+  await h(t).withLog('And I minimize the telephone dialog', async() => {
     if (await telephoneDialog.exists) {
       await telephoneDialog.clickMinimizeButton()
     };
   });
 
-  await h(t).withLog('And delete exists voicemail', async() => {
+  await h(t).withLog('And I delete exists voicemail', async() => {
     while(1){
       if (await voicemailItemFromExt.exists) {
         await voicemailItemFromExt.openMoreMenu();
@@ -57,17 +57,17 @@ fixture('Phone/Voicemail')
     };
   });
 
-  await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailPage' });
+  await h(t).log('Then I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailPage' });
 
-  await h(t).withLog('When I have a voicemail', async () => {
+  await h(t).withLog('When I add a voicemail', async () => {
     await addOneVoicemailFromExt(t, caller, callee, app);
   });
 
-  await h(t).withLog('Then I hover the "more" button', async() => {
+  await h(t).withLog('And I hover the "more" button', async() => {
     await voicemailItemFromExt.hoverMoreButton();
   });
 
-  await h(t).withLog('And more button should be displayed' , async() => {
+  await h(t).withLog('Then "more" button should be displayed' , async() => {
     await t.expect(voicemailItemFromExt.moreMenuButton.exists).ok;
   });
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailMoreButton'});
@@ -76,7 +76,7 @@ fixture('Phone/Voicemail')
     await voicemailItemFromExt.openMoreMenu();
   });
 
-  await h(t).withLog('Then more menu should be displayed' , async() => {
+  await h(t).withLog('Then "more" menu should be displayed' , async() => {
     await t.expect(voicemailItemFromExt.downloadButton.exists).ok;
   });
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailMoreMenu01'});
@@ -86,7 +86,7 @@ fixture('Phone/Voicemail')
     await voicemailItemFromExt.openMoreMenu();
   });
 
-  await h(t).withLog('Then more menu should be displayed' , async() => {
+  await h(t).withLog('Then "more" menu should be displayed' , async() => {
     await t.expect(voicemailItemFromExt.unreadButton.exists).ok;
   });
   await h(t).log('And I take screenshot', { screenshotPath:'Jupiter_Phone_VoicemailMoreMenu02'});
