@@ -95,6 +95,7 @@ const FileCard = styled(JuiCard)`
   width: ${width(ITEM_WIDTH)};
   height: ${height(FILE_CARD_HEIGHT)};
   margin: ${spacing(0, 3, 3, 0)};
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
 type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
@@ -106,9 +107,9 @@ const FileCardMediaWrapper = ({
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
   height: ${height(50)};
-  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   background-color: ${palette('accent', 'ash')};
-  opacity: ${({ disabled, theme }) => (disabled ? theme.palette.action.hoverOpacity * 3 : 1)};
+  opacity: ${({ disabled, theme }) =>
+    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
 `;
 
 const FileCardContent = styled(MuiCardContent)`
@@ -170,7 +171,6 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   position: absolute;
   bottom: 0;
   left: 0;
-  cursor: default;
   width: 100%;
   height: ${height(9)};
   padding: ${spacing(2)};
@@ -197,7 +197,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
     border-radius: 0;
     align-items: center;
     justify-content: center;
-    background-color: ${props => (props.transparent ? null : palette('grey', '100'))};
+    background-color: ${props =>
+      props.transparent ? null : palette('grey', '100')};
     box-shadow: none;
   }
   &:hover ${ImageFileInfo} {

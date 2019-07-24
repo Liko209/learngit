@@ -32,12 +32,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail
-            ref={this._thumbnailRef}
-            id={id}
-            type='image'
-            onClick={this._handleImageClick}
-          />
+          <Thumbnail ref={this._thumbnailRef} id={id} type="image" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={
@@ -51,7 +46,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         />
         {hover && (
           <JuiListItemSecondaryAction>
-            <JuiButtonBar overlapSize={-2}>
+            <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
               <FileActionMenu fileId={id} disablePortal={true} />
             </JuiButtonBar>
@@ -79,8 +74,9 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     }
     return (
       <JuiListItemWithHover
+        onClick={this._handleImageClick}
         render={this._renderItem}
-        data-test-automation-id='rightRail-image-item'
+        data-test-automation-id="rightRail-image-item"
       />
     );
   }

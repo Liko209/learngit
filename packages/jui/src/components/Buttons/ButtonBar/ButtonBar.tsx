@@ -16,27 +16,47 @@ type JuiButtonBarProps = {
 } & {
   className?: string;
   style?: React.CSSProperties;
+  isStopPropagation?: boolean;
 };
 
-const padding = (theme: Theme, overlapSize?: number) => (overlapSize ? `${spacing(-overlapSize)({ theme })}` : '0');
+const padding = (theme: Theme, overlapSize?: number) =>
+  overlapSize ? `${spacing(-overlapSize)({ theme })}` : '0';
 /* eslint-disable react/prop-types */
 const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
   display: flex;
-  flex-direction: ${({ direction }) => (direction === 'vertical' ? 'column' : 'row')};
+  flex-direction: ${({ direction }) =>
+    direction === 'vertical' ? 'column' : 'row'};
   white-space: nowrap;
   flex-wrap: nowrap;
   flex-shrink: 0;
   align-items: center;
 
   && > *:nth-child(n + 2) {
-    margin-left: ${({ theme, direction = 'horizontal', overlapSize }) => direction === 'horizontal' && padding(theme, overlapSize)};
+    margin-left: ${({ theme, direction = 'horizontal', overlapSize }) =>
+      direction === 'horizontal' && padding(theme, overlapSize)};
 
-    margin-top: ${({ theme, direction = 'horizontal', overlapSize }) => direction === 'vertical' && padding(theme, overlapSize)};
+    margin-top: ${({ theme, direction = 'horizontal', overlapSize }) =>
+      direction === 'vertical' && padding(theme, overlapSize)};
   }
 `;
 
 type IButtonBar = React.SFC<JuiButtonBarProps>;
-const _JuiButtonBar: IButtonBar = ({ children, ...rest }) => <StyledButtonBar {...rest}>{children}</StyledButtonBar>;
+const _JuiButtonBar: IButtonBar = ({
+  children,
+  isStopPropagation,
+  onClick,
+  ...rest
+}) => {
+  const _handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    onClick && onClick();
+    isStopPropagation && event.stopPropagation();
+  };
+  return (
+    <StyledButtonBar onClick={_handleClick} {...rest}>
+      {children}
+    </StyledButtonBar>
+  );
+};
 
 _JuiButtonBar.defaultProps = {
   overlapSize: 0,
