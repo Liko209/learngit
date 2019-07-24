@@ -20,15 +20,18 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'DesktopNotificationW
 
   const settingTab = app.homePage.settingTab;
   const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
-  await h(t).withLog('When I open Settings > Notifications and sounds tab and turn on desktop notification for browser', async () => {
+  await h(t).withLog('When I open Settings > Notifications and sounds tab', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.notificationAndSoundsEntry.enter();
+  })
+
+  await h(t).withLog('And turn on desktop notification for browser', async () => {
     await notificationAndSoundsSettingPage.toggleOnBrowserNotification();
   })
 
   await h(t).withLog('And I click new message item select box', async () => {
     await notificationAndSoundsSettingPage.clickNewMessageItemSelectBox();
-    await t.hover(`*[data-test-automation-id="settingItemSelectBoxItem-newMessages-never"]`)
+    await notificationAndSoundsSettingPage.hoverNewMessageItemSelectOff();
   })
 
   await h(t).withLog('Then I can see Off item in select list', async () => {

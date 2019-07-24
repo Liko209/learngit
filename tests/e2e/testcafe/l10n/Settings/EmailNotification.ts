@@ -23,12 +23,12 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'EmailNotification', 
   await h(t).withLog('When I open Settings > Notifications and sounds tab', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.notificationAndSoundsEntry.enter();
-    await t.hover(`*[data-test-automation-id="settingSectionTitle-otherNotificationSettings"]`);
+    await notificationAndSoundsSettingPage.hoverOtherNotificationSettingsTitle();
   })
 
   await h(t).withLog('And I click time select box in direct messages', async () => {
     await notificationAndSoundsSettingPage.clickDirectMessagesSelectBox();
-    await t.hover(`*[data-test-automation-id="settingItemSelectBoxItem-notificationDirectMessages-0"]`);
+    await notificationAndSoundsSettingPage.hoverDirectMessagesOffItem();
   })
 
   await h(t).withLog('Then I can see Off item in select list', async () => {

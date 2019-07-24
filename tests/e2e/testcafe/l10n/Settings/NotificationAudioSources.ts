@@ -23,12 +23,12 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSou
   await h(t).withLog('When I open Settings > Notifications and sounds tab', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.notificationAndSoundsEntry.enter();
-    await t.hover(`*[data-test-automation-id="settingItemLabel-volume"]`);
+    await notificationAndSoundsSettingPage.hoverAudioSourcesVolumeControlLabel();
   })
 
   await h(t).withLog('And I click Microphone source select box', async () => {
     await notificationAndSoundsSettingPage.clickMicrophoneSourceSelectBox();
-    await t.hover(`*[data-test-automation-id="settingItemSelectBox-ringerSource"]`);
+    await notificationAndSoundsSettingPage.hoverRingerSourceSelectBox();
   })
 
   await h(t).withLog('Then I can see Use system default item in select list', async () => {
@@ -38,10 +38,10 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'NotificationAudioSou
   await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_NotificationMicrophoneSource' })
 
   await h(t).withLog('When I click Ringer source select box', async () => {
-    await t.hover(`*[data-test-automation-id="settingItemLabel-volume"]`);
+    await notificationAndSoundsSettingPage.hoverAudioSourcesVolumeControlLabel();
     await notificationAndSoundsSettingPage.clickMicrophoneSourceSelectBox();
     await notificationAndSoundsSettingPage.clickRingerSourceSelectBox();
-    await t.hover(`*[data-test-automation-id="settingItemSelectBoxItem-ringerSource-off"]`);
+    await notificationAndSoundsSettingPage.hoverRingSourceSelectBoxOffItem();
   })
 
   await h(t).withLog('Then I can see All audio sources item in select list', async () => {

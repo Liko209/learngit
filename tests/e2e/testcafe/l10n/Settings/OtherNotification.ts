@@ -23,12 +23,12 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'OtherNotification', 
   await h(t).withLog('When I open Settings > Notifications and sounds tab', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.notificationAndSoundsEntry.enter();
-    await t.hover(`*[data-test-automation-id="settingSectionTitle-audioSource"]`);
+    await notificationAndSoundsSettingPage.hoverMicrophoneSourceSelectBox();
   })
 
   await h(t).withLog('And I click select box in new message badge count', async () => {
     await notificationAndSoundsSettingPage.clickNewMessageBadgeCountSelectBox();
-    await t.hover(`*[data-test-automation-id="settingItemSelectBoxItem-newMessageBadgeCount-all"]`);
+    await notificationAndSoundsSettingPage.hoverAllNewMessagesItem();
   })
 
   await h(t).withLog('Then I can see Direc messages and mentions only item in select list', async () => {

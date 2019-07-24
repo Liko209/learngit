@@ -41,5 +41,5 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhoneChooseA
     await t.expect(phoneSettingPage.changeRCPhoneDialog.cancelButton.exists).ok();
   })
 
-  await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Settings_ChoosePhoneAlert'})
+  await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_ChoosePhoneAlert'})
 })

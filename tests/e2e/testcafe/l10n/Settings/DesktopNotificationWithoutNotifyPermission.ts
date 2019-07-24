@@ -20,9 +20,12 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'DesktopNotificationW
 
   const settingTab = app.homePage.settingTab;
   const notificationAndSoundsSettingPage = settingTab.notificationAndSoundPage;
-  await h(t).withLog('When I open Settings > Notifications and sounds tab and turn on desktop notification for browser', async () => {
+  await h(t).withLog('When I open Settings > Notifications and sounds tab', async () => {
     await app.homePage.leftPanel.settingsEntry.enter();
     await settingTab.notificationAndSoundsEntry.enter();
+  })
+
+  await h(t).withLog('And turn on desktop notification for browser', async () => {
     await notificationAndSoundsSettingPage.toggleOnBrowserNotification();
   })
 
