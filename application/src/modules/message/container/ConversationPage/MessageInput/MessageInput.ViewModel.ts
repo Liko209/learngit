@@ -53,6 +53,7 @@ const DEBUG_COMMAND_MAP = {
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
+const DRAFT_SAVE_WAIT: number = 1000;
 enum ERROR_TYPES {
   CONTENT_LENGTH = 'message.prompt.contentLength',
   CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
@@ -69,7 +70,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
-
+  
   get items() {
     return this._itemService.getUploadItems(this.props.id);
   }
@@ -222,6 +223,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.error = '';
     this.draft = draft;
     this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    this._handleDraftSave()
   }
 
   @action
@@ -372,7 +374,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     );
   }
 
+  private _handleDraftSave = debounce(() => {
+    this.forceSaveDraft();
+  }, DRAFT_SAVE_WAIT)
+
   private _handleBeforeUnload = () => {
+    this._handleDraftSave.cancel()
     this.forceSaveDraft();
   }
 }

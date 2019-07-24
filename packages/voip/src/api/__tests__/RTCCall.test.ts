@@ -56,6 +56,10 @@ describe('RTC call', () => {
         },
       ],
     };
+
+    public callId =  '100';
+    public fromTag =  '200';
+    public toTag =  '300';
   }
   class MockResponse {
     public headers: any = {
@@ -124,6 +128,10 @@ describe('RTC call', () => {
 
     emitSessionReinviteFailed() {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
+    }
+
+    getSession(){
+      return this;
     }
 
     request: MockRequest = new MockRequest();
@@ -2006,14 +2014,16 @@ describe('RTC call', () => {
       });
     });
 
-    it('should clear timer when enter connected state', done => {
+    it('should set call sip info into callInfo when call enter connected state [JPT-2555]', done => {
       setup();
-      expect(call._hangupInvalidCallTimer).not.toBeNull();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
-        expect(call._hangupInvalidCallTimer).toBeNull();
+        const callInfo = call.getCallInfo()
+        expect(callInfo.callId).toBe('100');
+        expect(callInfo.fromTag).toBe('200');
+        expect(callInfo.toTag).toBe('300');
         done();
       });
     });

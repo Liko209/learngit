@@ -13,10 +13,8 @@ import {
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
 import { PostService } from 'sdk/module/post';
-import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { DeltaStatic } from 'quill';
-import { isEmpty } from '../helper';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
@@ -24,6 +22,7 @@ jest.mock('sdk/api');
 jest.mock('sdk/module/config/GlobalConfig');
 jest.mock('sdk/module/config/UserConfig');
 jest.mock('sdk/module/group');
+jest.mock('lodash/debounce', () => jest.fn(fn => fn));
 
 const postService = new PostService();
 const userId = 1232222;
@@ -83,6 +82,23 @@ describe('MessageInputViewModel', () => {
   });
 
   describe('MessageInputViewModel', () => {
+    describe('contentChange()', () => {
+      it('should not call sendTypingEvent when being called and both new and old draft has no content', () => {
+        messageInputViewModel.contentChange('');
+        expect(groupService.sendTypingEvent).not.toHaveBeenCalled();
+      });
+      it('should call sendTypingEvent when being called and new draft has content', () => {
+        messageInputViewModel.contentChange('xx');
+        expect(groupService.sendTypingEvent).toHaveBeenCalledWith(123, false);
+      });
+      it('should call forceSaveDraft 1 second after being called', () => {
+        messageInputViewModel.forceSaveDraft = jest.fn();
+        jest.spyOn(messageInputViewModel, '_handleDraftSave');
+        messageInputViewModel.contentChange('123');
+        expect(messageInputViewModel._handleDraftSave).toHaveBeenCalled();
+        expect(messageInputViewModel.forceSaveDraft).toHaveBeenCalled();
+      });
+    });
     describe('_sendPost()', () => {
       let mockThis;
       let enterHandler;
@@ -119,13 +135,13 @@ describe('MessageInputViewModel', () => {
           .mockImplementation(() => {});
         markdownFromDeltaGen('test')();
         expect(messageInputViewModel.draft).toBe('');
-        expect(sendPost).toBeCalled();
+        expect(sendPost).toHaveBeenCalled();
       });
 
       it('should not send when empty draft content', () => {
         itemService.getUploadItems = jest.fn().mockReturnValue([]);
         markdownFromDeltaGen('')();
-        expect(postService.sendPost).toBeCalledTimes(0);
+        expect(postService.sendPost).toHaveBeenCalledTimes(0);
       });
 
       it('should not send when draft contains illegal content', () => {
@@ -142,7 +158,7 @@ describe('MessageInputViewModel', () => {
       it('should trim prefix / suffix spaces when send post [JPT-383]', () => {
         const text = '   abc   ';
         markdownFromDeltaGen(text)();
-        expect(postService.sendPost).toBeCalledWith({
+        expect(postService.sendPost).toHaveBeenCalledWith({
           text: text.trim(),
           groupId: 123,
           itemIds: [],
@@ -181,7 +197,7 @@ describe('MessageInputViewModel', () => {
           onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
-        expect(onPostHandler).toBeCalled();
+        expect(onPostHandler).toHaveBeenCalled();
       });
       it('should always call onPostHandler of the props when a post fails to sent', async () => {
         const onPostHandler = jest.fn();
@@ -192,7 +208,7 @@ describe('MessageInputViewModel', () => {
           onUpArrowPressed: jest.fn(),
         });
         await messageInputViewModel._sendPost();
-        expect(onPostHandler).toBeCalled();
+        expect(onPostHandler).toHaveBeenCalled();
       });
     });
     describe('cellWillChange', () => {
@@ -217,7 +233,7 @@ describe('MessageInputViewModel', () => {
     describe('forceSaveDraft', () => {
       it('should call groupConfigService updateDraft', () => {
         messageInputViewModel.forceSaveDraft();
-        expect(groupConfigService.updateDraft).toBeCalled();
+        expect(groupConfigService.updateDraft).toHaveBeenCalled();
       });
       it('should not remove empty line with any text when save draft', () => {
         const draft = '<p><br></p><p>111</p>';
@@ -255,19 +271,19 @@ describe('MessageInputViewModel', () => {
         const mockQuill = {
           focus: jest.fn(),
           getSelection: jest.fn().mockReturnValue(focusIndex),
+          setSelection: jest.fn(),
           insertText: jest.fn(),
         };
         document.querySelector = jest.fn().mockReturnValue({
           __quill: mockQuill,
         });
         messageInputViewModel.insertEmoji(emoji);
-        expect(mockQuill.focus).toBeCalled();
+        expect(mockQuill.focus).toHaveBeenCalled();
         expect(mockQuill.getSelection()).toEqual(focusIndex);
-        expect(mockQuill.insertText).toBeCalledWith(
+        expect(mockQuill.insertText).toHaveBeenCalledWith(
           focusIndex.index,
           emoji.colons,
         );
-        expect(messageInputViewModel.cb).toBeCalled;
       });
       it('should call _doUnderscoreTransfer if emoji in Convert List', () => {
         const emoji = { colons: ':flag-ac:' };
@@ -304,16 +320,6 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel._memoryDraftMap = new Map();
         messageInputViewModel._memoryDraftMap.set(123, 'test');
         expect(messageInputViewModel.hasInput).toBeTruthy();
-      });
-    });
-    describe('contentChange()', () => {
-      it('should not call sendTypingEvent when being called and both new and old draft has no content', () => {
-        messageInputViewModel.contentChange('');
-        expect(groupService.sendTypingEvent).not.toBeCalled();
-      });
-      it('should call sendTypingEvent when being called and new draft has content', () => {
-        messageInputViewModel.contentChange('xx');
-        expect(groupService.sendTypingEvent).toBeCalledWith(123, false);
       });
     });
   });

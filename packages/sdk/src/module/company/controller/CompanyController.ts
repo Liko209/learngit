@@ -45,8 +45,7 @@ class CompanyController {
       const serviceParameters = company.rc_service_parameters;
       if (serviceParameters) {
         const infoIndex = serviceParameters.findIndex(
-          (value: CompanyServiceParameter) => value.id === 430 // 430 means tier edition
-          ,
+          (value: CompanyServiceParameter) => value.id === 430, // 430 means tier edition
         );
         if (infoIndex !== -1) {
           return serviceParameters[infoIndex].value;
@@ -55,6 +54,11 @@ class CompanyController {
     }
 
     return undefined;
+  }
+
+  async isFreyjaAccount() {
+    const type = await this.getUserAccountTypeFromSP430();
+    return type === E_ACCOUNT_TYPE.RC_MEETINGS;
   }
 
   async isUserCompanyTelephonyOn() {

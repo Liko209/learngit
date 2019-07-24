@@ -16,6 +16,7 @@ const companyController = {
   getUserAccountTypeFromSP430: jest.fn(),
   isUserCompanyTelephonyOn: jest.fn(),
   getBrandType: jest.fn(),
+  isFreyjaAccount: jest.fn()
 };
 
 function clearMocks() {
@@ -31,7 +32,7 @@ describe('CompanyController', () => {
     companyService = new CompanyService();
 
     Object.assign(companyService, {
-      _companyController: companyController,
+      _companyController: companyController
     });
   });
 
@@ -42,7 +43,7 @@ describe('CompanyController', () => {
   describe('CompanyController', () => {
     it('should call getCompanyEmailDomain with correct parameter ', async () => {
       await companyService.getCompanyEmailDomain(123);
-      expect(companyController.getCompanyEmailDomain).toBeCalledWith(123);
+      expect(companyController.getCompanyEmailDomain).toHaveBeenCalledWith(123);
     });
 
     it('getUserAccountTypeFromSP430, should call companyController', async () => {
@@ -65,26 +66,33 @@ describe('CompanyController', () => {
       const result = 'RC';
       companyController.getBrandType = jest.fn().mockResolvedValue(result);
       expect(await companyService.getBrandType()).toEqual(result);
-      expect(companyController.getBrandType).toBeCalled();
+      expect(companyController.getBrandType).toHaveBeenCalled();
+    });
+
+    it('should call isFreyjaAccount in companyController', async () => {
+      const result = true;
+      companyController.isFreyjaAccount = jest.fn().mockResolvedValue(result);
+      expect(await companyService.isFreyjaAccount()).toEqual(result);
+      expect(companyController.isFreyjaAccount).toHaveBeenCalled();
     });
   });
 
   describe('handleData', () => {
     it('should call handleData with index data', async () => {
       await companyService.handleIncomingData([], SYNC_SOURCE.INDEX);
-      expect(companyController.handleCompanyData).toBeCalledWith(
+      expect(companyController.handleCompanyData).toHaveBeenCalledWith(
         [],
         SYNC_SOURCE.INDEX,
-        undefined,
+        undefined
       );
     });
 
     it('should call handleData with remaining data', async () => {
       await companyService.handleIncomingData([], SYNC_SOURCE.REMAINING);
-      expect(companyController.handleCompanyData).toBeCalledWith(
+      expect(companyController.handleCompanyData).toHaveBeenCalledWith(
         [],
         SYNC_SOURCE.REMAINING,
-        undefined,
+        undefined
       );
     });
   });

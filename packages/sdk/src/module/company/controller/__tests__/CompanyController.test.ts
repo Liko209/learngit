@@ -11,6 +11,7 @@ import { rawCompanyFactory } from '../../../../__tests__/factories';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { AccountUserConfig } from '../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { E_ACCOUNT_TYPE } from '../../entity';
 
 jest.mock('../../../account/config/AccountUserConfig', () => {
   const xx = {
@@ -281,6 +282,23 @@ describe('CompanyController', () => {
       expect(res).toBe('TestType');
     });
   });
+
+  describe('isFreyjaAccount()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+    it('should return true when current user is freyja accout', async () => {
+      companyController.getUserAccountTypeFromSP430 = jest.fn().mockReturnValue(E_ACCOUNT_TYPE.RC_MEETINGS);
+      const result = await companyController.isFreyjaAccount();
+      expect(result).toBeTruthy();
+    });
+    it('should return false when current user is not freyja accout',async () => {
+      companyController.getUserAccountTypeFromSP430 = jest.fn().mockReturnValue(E_ACCOUNT_TYPE.RC_MOBILE);
+      const result = await companyController.isFreyjaAccount();
+      expect(result).toBeFalsy();
+    });
+  })
 
   describe('getBrandType', () => {
     beforeEach(() => {

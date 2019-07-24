@@ -78,6 +78,13 @@ type OutboundRtpReport = {
   packetsSent: number;
 };
 
+type InviteOptions = {
+  fromNumber?: string;
+  homeCountryId?: string;
+  extraHeaders?: any;
+  RTCConstraints?: any;
+};
+
 type RttMS = {
   currentRoundTripTime: number;
 };
@@ -97,4 +104,5 @@ export {
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
   MediaStatsReport,
+  InviteOptions,
 };

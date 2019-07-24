@@ -81,6 +81,18 @@
     "zipCode": "Zip Code",
     "zipCodePlaceholder": "e.g.35007"
   },
+  "presence": {
+    "available": "Available",
+    "doMotDisturb": "Do not disturb",
+    "inMeeting": "In a meeting",
+    "onCall": "On a call",
+    "offline": "Offline",
+    "invisible": "Invisible",
+    "prompt": {
+      "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
+      "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
+    }
+  },
   "auth": {
     "signIn": "Sign in",
     "signOut": "Sign out",
