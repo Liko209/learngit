@@ -36,31 +36,24 @@ const PaperComponent = ({
   TransitionComponent = JuiFade,
   ...rest
 }: PaperProps) => (
-    <Draggable
-      bounds="body"
-      defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
-      ref={dragRef}
-      onStart={onStart}
-      onStop={onStop}
-      onDrag={onDrag}
-      handle={handle}
-    >
-      <div>
-        <TransitionComponent in={open}>
-          <JuiPaper {...rest} />
-        </TransitionComponent>
-      </div>
-    </Draggable>
+  <Draggable
+    bounds="body"
+    defaultPosition={{ x: Math.round(x), y: Math.round(y) }}
+    ref={dragRef}
+    onStart={onStart}
+    onStop={onStop}
+    onDrag={onDrag}
+    handle={handle}
+  >
+    <div>
+      <TransitionComponent in={open}>
+        <JuiPaper {...rest} />
+      </TransitionComponent>
+    </div>
+  </Draggable>
 );
 
 const StyledDraggableDialog = styled(JuiDialog)`
-  &.root {
-    bottom: auto;
-    right: auto;
-    top: auto;
-    left: auto;
-    position: static;
-  }
   && .react-draggable {
     position: fixed;
     z-index: ${({ theme }) => theme.zIndex.modal};
@@ -102,6 +95,13 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
 
     return (
       <StyledDraggableDialog
+        style={{
+          position: 'static',
+          right: '0',
+          left: '0',
+          top: '0',
+          bottom: '0',
+        }}
         PaperComponent={PaperComponent}
         TransitionComponent={Transition}
         disableBackdropClick
