@@ -24,14 +24,17 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NEW_MESSAGE_BADGES_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
-  SOUNDS_LIST,
+  AUDIO_SOUNDS_INFO,
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
 import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
 import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
-import { SoundSourceItem, SoundSourcePlayer } from './SoundSourceItem.View';
+import {
+  SoundSourceItem,
+  SoundSourcePlayerRenderer,
+} from './SoundSourceItem.View';
 
 const NewMessageSelectDataTrackingOption: {
   [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
@@ -165,7 +168,9 @@ class MessageSettingManager implements IMessageSettingManager {
         ),
       } as SelectSettingItem<NEW_MESSAGE_BADGES_OPTIONS>,
     );
-
+    this.registerSounds();
+  }
+  registerSounds() {
     this._settingService.registerItem(
       MESSAGE_SETTING_SCOPE,
       SETTING_SECTION__SOUNDS,
@@ -175,16 +180,41 @@ class MessageSettingManager implements IMessageSettingManager {
         weight: 100,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: SoundSourceItem,
-        secondaryActionRenderer: SoundSourcePlayer,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
         ...buildTitleAndDesc(
           'notificationAndSounds',
           'sounds',
           'directMessages',
         ),
-      } as SelectSettingItem<SOUNDS_LIST>,
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
+    );
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__SOUNDS,
+      {
+        id: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
+        automationId: 'soundMentions',
+        weight: 300,
+        type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: SoundSourceItem,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
+        ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'mentions'),
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
+    );
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__SOUNDS,
+      {
+        id: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
+        automationId: 'soundTeamMessages',
+        weight: 200,
+        type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: SoundSourceItem,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
+        ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'teamMessages'),
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
     );
   }
-
   dispose() {
     this._settingService.unRegisterAll(MESSAGE_SETTING_SCOPE);
   }

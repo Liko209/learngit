@@ -39,6 +39,7 @@ const WrappedMenuItem = ({
   icon,
   avatar,
   maxWidth,
+  hasSecondaryAction,
   ...rest
 }: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
 
@@ -52,7 +53,7 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
     padding: ${spacing(1, 4)};
     padding-right: ${({ hasSecondaryAction }) =>
-      hasSecondaryAction ? spacing(0) : 'initial'}
+      hasSecondaryAction ? spacing(0) : 'initial'};
     box-sizing: border-box;
     &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
       padding-right: ${spacing(12)};
@@ -83,6 +84,7 @@ const JuiMenuItem = React.memo(
     automationId,
     maxWidth,
     classes,
+    hasSecondaryAction,
     ...rest
   }: JuiMenuItemProps) => {
     let iconElement: any;
@@ -99,6 +101,7 @@ const JuiMenuItem = React.memo(
         disabled={disabled}
         data-disabled={disabled}
         maxWidth={maxWidth}
+        hasSecondaryAction={hasSecondaryAction}
         {...rest}
       >
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}

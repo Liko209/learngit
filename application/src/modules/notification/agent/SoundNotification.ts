@@ -8,7 +8,7 @@ export class SoundNotification implements ISoundNotification {
   private _library: Map<string, string> = new Map();
   constructor() {
     [...SoundsList, ...RingsList].forEach(item => {
-      this._library.set(item.label, item.url);
+      this._library.set(item.id, item.url);
     });
   }
   create(name: Sounds, trackId: string) {

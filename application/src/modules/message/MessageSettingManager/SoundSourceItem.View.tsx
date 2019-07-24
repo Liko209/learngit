@@ -11,34 +11,43 @@ import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
 import { container } from 'framework/src';
 import { ISoundNotification, Sounds } from '@/modules/notification/interface';
 import { IMedia } from '@/interface/media';
+import {
+  AUDIO_SOUNDS_INFO,
+  RINGS_TYPE,
+  SOUNDS_TYPE,
+} from 'sdk/src/module/profile';
 
 type SoundItemProps = {
-  value: Sounds;
+  value: AUDIO_SOUNDS_INFO;
 };
 
-const useSound = (soundName: Sounds) => {
-  const [state, setState] = useState<IMedia>();
+function useSound(soundName: Sounds) {
+  const [state, setState] = useState<IMedia | undefined>(undefined);
   useEffect(() => {
     const soundNotification: ISoundNotification = container.get(
-      ISoundNotification,
+      'SOUND_NOTIFICATION',
     );
-    setState(soundNotification.create(soundName, 'setting'));
+    const media = soundNotification.create(soundName, 'setting');
+    setState(media);
   }, []);
   return state;
-};
+}
 
 const SoundSourceItem = (props: SoundItemProps) => {
   const { value } = props;
   return (
     <JuiTextWithEllipsis>
-      {i18nP(`setting.notificationAndSounds.sounds.options.${value}`)}
+      {i18nP(`setting.notificationAndSounds.sounds.options.${value.id}`)}
     </JuiTextWithEllipsis>
   );
 };
 
 const SoundSourcePlayer = (props: SoundItemProps) => {
   const { value } = props;
-  const media = useSound(value);
+  if ([RINGS_TYPE.Off, SOUNDS_TYPE.Off].includes(value.id)) {
+    return null;
+  }
+  const media = useSound(value.id);
   return (
     <AudioPlayerButton
       media={media}
@@ -48,5 +57,8 @@ const SoundSourcePlayer = (props: SoundItemProps) => {
     />
   );
 };
+const SoundSourcePlayerRenderer = (props: SoundItemProps) => (
+  <SoundSourcePlayer {...props} />
+);
 
-export { SoundSourceItem, SoundSourcePlayer };
+export { SoundSourceItem, SoundSourcePlayerRenderer };

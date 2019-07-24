@@ -811,6 +811,14 @@
           "label": "Direct messages",
           "description": "Choose sound for new direct messages"
         },
+        "teamMessages": {
+          "label": "Team messages",
+          "description": "Choose a sound for new team messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Choose sound for when you are mentioned"
+        },
 
         "options": {
           "2 Beeps": "2 Beeps",
