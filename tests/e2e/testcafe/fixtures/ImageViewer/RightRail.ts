@@ -96,12 +96,12 @@ test(formalName('Open the image thumbnail that support preview', ['Potar.He', 'P
   });
 
   await h(t).withLog('Then the mouser cursor should be not changed', async () => {
-    const style = await imageTab.nthItem(0).previewIcon.style
-    assert.notStrictEqual(style['cursor'], 'pointer', "the cursor style is little hand");
+    const style = await imageTab.nthItem(0).self.style
+    assert.strictEqual(style['cursor'], 'pointer', "the cursor style is little hand");
   });
 
   await h(t).withLog(`When I click the image thumbnail of the image file ${filesName[1]}`, async () => {
-    await t.click(imageTab.nthItem(0).previewIcon)
+    await t.click(imageTab.nthItem(0).self)
   });
 
   await h(t).withLog('Then the image viewer dialog should not open', async () => {
