@@ -8,7 +8,7 @@ import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
 import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
 import { JuiLozengeButton, JuiLozengeButtonProps } from '..';
-import { DIRECTION } from '../LozengeButton';
+import { DIRECTION } from '../../../Lists/interface';
 
 function getKnobs() {
   const content = text('content', '2 new messages');
@@ -17,14 +17,14 @@ function getKnobs() {
     'arrowDirection',
     {
       up: DIRECTION.UP,
-      down: DIRECTION.DOWN
+      down: DIRECTION.DOWN,
     },
-    DIRECTION.UP
+    DIRECTION.UP,
   );
   return {
     content,
     loading,
-    arrowDirection
+    arrowDirection,
   };
 }
 
