@@ -17,6 +17,7 @@ type JuiButtonBarProps = {
   className?: string;
   style?: React.CSSProperties;
   isStopPropagation?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const padding = (theme: Theme, overlapSize?: number) =>
@@ -48,7 +49,7 @@ const _JuiButtonBar: IButtonBar = ({
   ...rest
 }) => {
   const _handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    onClick && onClick();
+    onClick && onClick(event);
     isStopPropagation && event.stopPropagation();
   };
   return (
