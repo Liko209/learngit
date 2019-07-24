@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c1 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 24px;
+}
+
+<div
+  style={
+    Object {
+      "padding": "0 30px",
+    }
+  }
+>
+  <label
+    className="MuiFormControlLabel-root"
+  >
+    <span
+      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={null}
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className=" unselect icon c0"
+        >
+          <svg
+            className="c1"
+          >
+            <use
+              href="#icon-unselect"
+              xlinkHref="#icon-unselect"
+            />
+          </svg>
+        </span>
+        <input
+          className="MuiPrivateSwitchBase-input"
+          data-indeterminate={false}
+          onChange={[Function]}
+          type="checkbox"
+        />
+      </span>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </span>
+    <span
+      className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+    >
+      SecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondary
+    </span>
+  </label>
+  <br />
+  <label
+    className="MuiFormControlLabel-root"
+  >
+    <span
+      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-indeterminate"
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={null}
+    >
+      <span
+        className="MuiIconButton-label"
+      >
+        <span
+          className=" indeterminate icon c0"
+        >
+          <svg
+            className="c1"
+          >
+            <use
+              href="#icon-indeterminate"
+              xlinkHref="#icon-indeterminate"
+            />
+          </svg>
+        </span>
+        <input
+          className="MuiPrivateSwitchBase-input"
+          data-indeterminate={true}
+          onChange={[Function]}
+          type="checkbox"
+        />
+      </span>
+      <span
+        className="MuiTouchRipple-root"
+      />
+    </span>
+    <span
+      className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+    >
+      Indeterminate
+    </span>
+  </label>
+  <br />
+  <div
+    className="MuiFormControl-root"
+  >
+    <label
+      className="MuiFormLabel-root"
+    >
+      Pick two
+    </label>
+    <div
+      className="MuiFormGroup-root"
+    >
+      <label
+        className="MuiFormControlLabel-root"
+      >
+        <span
+          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={null}
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className=" unselect icon c0"
+            >
+              <svg
+                className="c1"
+              >
+                <use
+                  href="#icon-unselect"
+                  xlinkHref="#icon-unselect"
+                />
+              </svg>
+            </span>
+            <input
+              className="MuiPrivateSwitchBase-input"
+              data-indeterminate={false}
+              disabled={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+          </span>
+          <span
+            className="MuiTouchRipple-root"
+          />
+        </span>
+        <span
+          className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+        >
+          one
+        </span>
+      </label>
+      <label
+        className="MuiFormControlLabel-root"
+      >
+        <span
+          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+          onBlur={[Function]}
+          onContextMenu={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={null}
+        >
+          <span
+            className="MuiIconButton-label"
+          >
+            <span
+              className=" unselect icon c0"
+            >
+              <svg
+                className="c1"
+              >
+                <use
+                  href="#icon-unselect"
+                  xlinkHref="#icon-unselect"
+                />
+              </svg>
+            </span>
+            <input
+              className="MuiPrivateSwitchBase-input"
+              data-indeterminate={false}
+              disabled={false}
+              onChange={[Function]}
+              type="checkbox"
+            />
+          </span>
+          <span
+            className="MuiTouchRipple-root"
+          />
+        </span>
+        <span
+          className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+        >
+          two
+        </span>
+      </label>
+    </div>
+  </div>
+</div>
+`;
