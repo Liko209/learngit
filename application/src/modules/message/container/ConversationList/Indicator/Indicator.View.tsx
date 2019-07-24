@@ -23,11 +23,12 @@ const IndicatorView = observer((props: IndicatorViewProps) => {
     if (props.hasDraft) {
       tags.push(<JuiIndicatorDraft key="Draft" />); // '[Draft]'
     }
-
-    if (props.showUmi) {
-      tags.push(<Umi key="Umi" type={UMI_SECTION_TYPE.SINGLE} id={props.id} />); // '[Umi]'
-    }
   }
+
+  if (props.showUmi) {
+    tags.push(<Umi key="Umi" type={UMI_SECTION_TYPE.SINGLE} id={props.id} />); // '[Umi]'
+  }
+
   if (!tags.length) {
     return null;
   }
