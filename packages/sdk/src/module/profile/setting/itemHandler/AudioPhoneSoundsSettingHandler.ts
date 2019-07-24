@@ -11,7 +11,12 @@ import {
 } from 'sdk/module/setting';
 import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service';
-import { SETTING_KEYS, AUDIO_SOUNDS_INFO } from 'sdk/module/profile/constants';
+import {
+  SETTING_KEYS,
+  AUDIO_SOUNDS_INFO,
+  SOUNDS_TYPE,
+  RINGS_TYPE,
+} from 'sdk/module/profile/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { IProfileService } from '../../service/IProfileService';
@@ -26,14 +31,14 @@ class AudioPhoneSoundsSettingHandler extends AbstractSettingEntityHandler<
   id: SettingEntityIds;
   setting_key: SETTING_KEYS;
   source: AUDIO_SOUNDS_INFO[];
-  defaultValue: AUDIO_SOUNDS_INFO;
+  defaultValue: SOUNDS_TYPE | RINGS_TYPE;
   constructor(
     private _profileService: IProfileService,
     settingEntity: {
       id: SettingEntityIds;
       setting_key: SETTING_KEYS;
       source: AUDIO_SOUNDS_INFO[];
-      defaultValue: AUDIO_SOUNDS_INFO;
+      defaultValue: SOUNDS_TYPE | RINGS_TYPE;
     },
   ) {
     super();

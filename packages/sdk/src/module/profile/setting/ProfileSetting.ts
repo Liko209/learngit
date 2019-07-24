@@ -130,6 +130,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           id: SettingEntityIds.Audio_DirectMessage,
           setting_key: SETTING_KEYS.AUDIO_DIRECT_MESSAGES,
           source: SoundsList,
+          defaultValue: SOUNDS_TYPE.Log_Drum,
         },
       ),
       [SettingEntityIds.Audio_Mentions]: new AudioMessageSoundsSettingHandler(
@@ -138,6 +139,7 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           id: SettingEntityIds.Audio_Mentions,
           setting_key: SETTING_KEYS.AUDIO_MENTIONS,
           source: SoundsList,
+          defaultValue: SOUNDS_TYPE.Bing_Bong,
         },
       ),
       [SettingEntityIds.Audio_IncomingCalls]: new AudioPhoneSoundsSettingHandler(
