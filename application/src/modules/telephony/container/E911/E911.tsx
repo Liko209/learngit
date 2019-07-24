@@ -19,6 +19,9 @@ const OpenE911 = () => {
   Dialog.confirm({
     title: 'Confirm address for emergency calls',
     content: <E911 />,
+    modalProps: {
+      scroll: 'body',
+    },
   });
 };
 
