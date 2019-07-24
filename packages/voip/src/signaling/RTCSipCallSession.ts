@@ -322,7 +322,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   }
 
   warmTransfer(targetSession: any) {
-    targetSession.dialog.remoteTarget.parameters = null;
     this._session.warmTransfer(targetSession).then(
       (referClientContext: any) => {
         this._referClientContext = referClientContext;

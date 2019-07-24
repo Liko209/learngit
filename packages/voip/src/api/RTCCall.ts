@@ -274,7 +274,7 @@ class RTCCall {
 
   warmTransfer(callUuid: string): void {
     const targetCall = this._account.getCallByUuid(callUuid);
-    if (!targetCall || targetCall.getCallSession()) {
+    if (!targetCall || !targetCall.getCallSession()) {
       rtcLogger.warn(
         LOG_TAG,
         'Can get call or call session from input call uuid',
