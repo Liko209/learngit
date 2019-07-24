@@ -82,7 +82,7 @@ test.meta(<ITestMeta>{
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
-        await t.click(posts.nth(-1).find('img'));
+        await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
         await viewerDialog.ensureLoaded();
       });
       await h(t).withLog(`And I click the more button of the file`, async() => {
@@ -143,7 +143,7 @@ test.meta(<ITestMeta>{
     }else{
 
       await h(t).withLog('When I click the file(Entry3:file viewer)', async () => {
-        await t.click(posts.nth(-1).find('img'));
+        await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
         await viewerDialog.ensureLoaded();
       });
 

@@ -7,8 +7,10 @@
 import { PresenceService } from '../PresenceService';
 import { PresenceController } from '../../controller/PresenceController';
 import { PRESENCE } from '../../constant';
+import { PresenceActionController } from '../../controller/PresenceActionController';
 
 jest.mock('../../controller/PresenceController');
+jest.mock('../../controller/PresenceActionController');
 
 const _INTERVAL = 250;
 const presenceService: PresenceService = new PresenceService(5, _INTERVAL);
@@ -16,12 +18,18 @@ const presenceController: PresenceController = new PresenceController(
   5,
   _INTERVAL,
 );
+const presenceActionController: PresenceActionController = new PresenceActionController(
+  presenceController,
+);
 
 describe('Presence Controller', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    Object.assign(presenceService, { _presenceController: presenceController });
+    Object.assign(presenceService, {
+      _presenceController: presenceController,
+      _presenceActionController: presenceActionController,
+    });
   });
 
   it('should call saveToMemory() with correct parameter', () => {
@@ -61,6 +69,22 @@ describe('Presence Controller', () => {
   it('should call getById() with correct parameter', async () => {
     await presenceService.getById(1);
     expect(presenceController.getById).toHaveBeenCalledWith(1);
+  });
+
+  describe('getPresenceActionController', () => {
+    it('should not create PresenceActionController when have presenceActionController', () => {
+      const result = presenceService.getPresenceActionController();
+      expect(result instanceof PresenceActionController).toBeTruthy();
+    });
+  });
+
+  describe('PresenceActionController', () => {
+    it('should call setPresence with correct parameter', async () => {
+      await presenceService.setPresence(PRESENCE.DND);
+      expect(presenceActionController.setPresence).toHaveBeenCalledWith(
+        PRESENCE.DND,
+      );
+    });
   });
 
   describe('presence handleData with correct parameter', () => {

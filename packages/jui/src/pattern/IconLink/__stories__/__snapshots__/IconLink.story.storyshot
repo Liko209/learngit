@@ -1,0 +1,184 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Pattern IconLink: Pattern IconLink 1`] = `
+.c4 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c5 {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+.c2.c2 {
+  min-width: 104px;
+  padding: 10px 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  text-transform: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  color: #0684bd;
+  text-align: center;
+}
+
+.c2.c2.containedButtonStyle {
+  color: #fff;
+  box-shadow: unset;
+  background-color: #0684bd;
+}
+
+.c2.c2.containedButtonStyle:hover {
+  opacity: 0.88;
+}
+
+.c2.c2.containedButtonStyle.disabled {
+  background-color: #bfbfbf;
+  color: #fff;
+}
+
+.c2.c2.containedButtonStyle:active {
+  box-shadow: unset;
+}
+
+.c2.c2.textButtonStyle.disabled {
+  color: #bfbfbf;
+}
+
+.c2.c2.textButtonStyle:hover {
+  background-color: rgba(6,132,189,0.12);
+}
+
+.c2.c2.outlineButtonStyle {
+  border-color: #0684bd;
+}
+
+.c2.c2.roundButtonStyle {
+  height: 28px;
+  border-radius: 28px;
+  padding: 0px 16px;
+  background-color: #fff;
+  color: #0684bd;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  min-height: unset;
+  width: inherit;
+}
+
+.c2.c2.roundButtonStyle:hover {
+  background-color: #fafafa;
+}
+
+.c2.c2.roundButtonStyle:hover:active {
+  background-color: #f5f6fb;
+}
+
+.c2.c2.roundButtonStyle .rippleVisible {
+  opacity: 0.24;
+  -webkit-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
+  -webkit-animation-name: cBKRfH;
+  animation-name: cBKRfH;
+}
+
+.c3 {
+  margin-right: 4px;
+  color: #757575;
+}
+
+.c6 {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.c1.c1.c1 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  padding: 0px 4px;
+  color: #4475fd;
+  background-color: #f5f6fb;
+  min-width: 0;
+}
+
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  max-width: 500px;
+}
+
+<div
+  className="c0"
+>
+  <span
+    className="MuiButtonBase-root MuiButton-root MuiButton-contained containedButtonStyle MuiButton-raised MuiButton-sizeLarge c1 c2"
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    role="button"
+    tabIndex="0"
+  >
+    <span
+      className="MuiButton-label"
+    >
+      <span
+        className="c3 event_new icon c4"
+      >
+        <svg
+          className="c5"
+          role="img"
+          size="extraSmall"
+        >
+          <use
+            href="#icon-event-new"
+            xlinkHref="#icon-event-new"
+          />
+        </svg>
+      </span>
+      <span
+        className="c6"
+      >
+        hello  hello  hello  hello  hello  hello  hello  hello  hello  hello  
+      </span>
+    </span>
+    <span
+      className="MuiTouchRipple-root"
+    />
+  </span>
+</div>
+`;

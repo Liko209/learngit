@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
 import styled from '../../../../foundation/styled-components';
@@ -6,6 +6,7 @@ import MuiTextField from '@material-ui/core/TextField';
 import { alignCenterDecorator } from '../../../../storybook/decorators';
 import { RuiIconography } from '../../../Iconography';
 import { RuiSliderNoStyled, RuiSliderProps } from '../Slider';
+
 const RuiSlider = RuiSliderNoStyled;
 (RuiSlider as any).displayName = 'RuiSlider';
 const Wrapper = styled.div`

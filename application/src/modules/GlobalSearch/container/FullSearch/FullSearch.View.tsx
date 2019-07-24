@@ -19,11 +19,11 @@ type Props = FullSearchViewProps & WithTranslation;
 
 @observer
 class FullSearchViewComponent extends Component<Props> {
-  private _unlisten: UnregisterCallback;
+  private _unListen: UnregisterCallback;
   static contextType = InputContext;
 
   componentDidMount() {
-    this._unlisten = history.listen(location => {
+    this._unListen = history.listen(location => {
       if (/^\/messages\/\d+$/.test(location.pathname)) {
         this.props.jumpToConversationCallback();
       }
@@ -33,7 +33,7 @@ class FullSearchViewComponent extends Component<Props> {
   }
 
   componentWillUnmount() {
-    this._unlisten && this._unlisten();
+    this._unListen();
 
     this.props.resetSearchScope();
   }
@@ -48,14 +48,20 @@ class FullSearchViewComponent extends Component<Props> {
     return (
       <JuiFullSearch>
         <JuiTabs defaultActiveIndex={currentTab} onChangeTab={this.onChangeTab}>
-          {TAB_CONFIG.map(({ title, container, automationID }: TabConfig, index: number) => {
-            const Component = container;
-            return (
-              <JuiTab key={index} title={t(title)} automationId={automationID}>
-                <Component isShow={index === currentTab} />
-              </JuiTab>
-            );
-          })}
+          {TAB_CONFIG.map(
+            ({ title, container, automationID }: TabConfig, index: number) => {
+              const Component = container;
+              return (
+                <JuiTab
+                  key={index}
+                  title={t(title)}
+                  automationId={automationID}
+                >
+                  <Component isShow={index === currentTab} />
+                </JuiTab>
+              );
+            }
+          )}
         </JuiTabs>
       </JuiFullSearch>
     );

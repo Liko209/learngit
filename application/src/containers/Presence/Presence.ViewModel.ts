@@ -11,35 +11,16 @@ import { Presence } from 'sdk/module/presence/entity';
 import PresenceModel from '@/store/models/Presence';
 import { PresenceProps, PresenceViewProps } from './types';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { Person } from 'sdk/module/person/entity';
-import PersonModel from '@/store/models/Person';
 
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {
   @computed
-  get size() {
-    return this.props.size;
-  }
-  @computed
-  get borderSize() {
-    return this.props.borderSize;
-  }
-  @computed
   get presence() {
-    if (this.props.uid !== 0) {
-      const person = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        this.props.uid,
-      );
-      if (person.deactivated) {
-        return PRESENCE.NOTREADY;
-      }
-      return (
-        getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.props.uid)
-          .presence || PRESENCE.NOTREADY
-      );
-    }
-    return PRESENCE.NOTREADY;
+    const { presence = PRESENCE.NOTREADY } = getEntity<Presence, PresenceModel>(
+      ENTITY_NAME.PRESENCE,
+      this.props.uid
+    );
+    return presence;
   }
 }
 

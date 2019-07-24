@@ -9,3 +9,8 @@ export function isEmpty(content: string) {
   const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+)*<\/p>)+$/gm;
   return commentText === '' || re.test(commentText);
 }
+
+export function isMultipleLine(content: string) {
+  const match = content.match(/<p>/gi);
+  return !!match && match.length > 1;
+}

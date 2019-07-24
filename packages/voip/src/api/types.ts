@@ -19,11 +19,17 @@ type RTCCallInfo = {
   uuid: string;
   partyId: string;
   sessionId: string;
+  fromTag?: string;
+  toTag?: string;
+  callId?: string;
 };
 
 type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
+  replacesCallId?: string;
+  replacesFromTag?: string;
+  replacesToTag?: string;
 };
 
 type RTCCallActionSuccessOptions = {

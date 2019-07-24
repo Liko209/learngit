@@ -28,15 +28,26 @@ test.meta(<ITestMeta>{
 
   const voicemailTitle = 'Voicemail';
 
+
+  await h(t).withLog('Given I clear voicemails of extension: {number}#{extension}', async (step) => {
+    step.initMetadata({
+      number: callee.company.number,
+      extension: callee.extension,
+    });
+    await h(t).platform(callee).init();
+    await h(t).platform(callee).deleteAllVoicemail();
+  });
+
   const app = new AppRoot(t);
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
     step.initMetadata({
       number: callee.company.number,
       extension: callee.extension,
-    })
+    });
     await h(t).directLoginWithUser(SITE_URL, callee);
     await app.homePage.ensureLoaded();
   });
+
 
   await h(t).withLog('When I click Phone entry of leftPanel,', async () => {
     await app.homePage.leftPanel.phoneEntry.enter();

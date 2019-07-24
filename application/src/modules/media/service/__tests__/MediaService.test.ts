@@ -21,11 +21,24 @@ describe('MediaService', () => {
   describe('createMedia()', () => {
     it('should create mediaTrack', () => {
       const media = new MediaService().createMedia({
-        src: [],
+        src: []
       });
       expect(media).toBeInstanceOf(Media);
     });
   });
+  describe('getMedia()', () => {
+    it('should get exist media', () => {
+      const mediaId = 'testMediaId';
+      const mediaService = new MediaService();
+      const media = mediaService.createMedia({
+        src: [],
+        id: mediaId
+      });
+      const checkMedia = mediaService.getMedia(mediaId);
+      expect(checkMedia).toEqual(media);
+    });
+  });
+
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
       const canPlayType = jest
@@ -49,20 +62,20 @@ describe('MediaService', () => {
       const devices = [
         {
           deviceId: 'device1',
-          label: 'device1',
+          label: 'device1'
         },
         {
           deviceId: 'device2',
-          label: 'device2',
+          label: 'device2'
         },
         {
           deviceId: 'default',
-          label: 'default',
+          label: 'default'
         },
         {
           deviceId: 'VirtualDevice',
-          label: 'VirtualDevice',
-        },
+          label: 'VirtualDevice'
+        }
       ];
       jest
         .spyOn(utils, 'getEntity')
