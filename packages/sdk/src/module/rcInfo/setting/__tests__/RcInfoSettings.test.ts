@@ -9,6 +9,8 @@ import { ExtensionSettingHandler } from '../ExtensionSettingHandler';
 import { RegionSettingHandler } from '../RegionSettingHandler';
 import { CallerIdSettingHandler } from '../CallerIdSettingHandler';
 import { RCInfoService } from '../../service';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('../CallerIdSettingHandler');
 function clearMocks() {
   jest.clearAllMocks();
@@ -17,7 +19,13 @@ function clearMocks() {
 }
 
 describe('RcInfoSetting ', () => {
-  function setUp() {}
+  function setUp() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((config: string) => {
+        return {};
+      });
+  }
 
   beforeEach(() => {
     clearMocks();

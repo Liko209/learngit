@@ -11,6 +11,7 @@ import { RegionSettingHandler } from './RegionSettingHandler';
 import { CallerIdSettingHandler } from './CallerIdSettingHandler';
 import { ExtensionSettingHandler } from './ExtensionSettingHandler';
 import { DefaultAppSettingHandler } from './DefaultAppSettingHandler';
+import { E911SettingHandler } from './E911SettingHandler';
 
 type HandlerMap = {
   [SettingEntityIds.Phone_CallerId]: CallerIdSettingHandler;
@@ -34,6 +35,7 @@ class RcInfoSettings extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Phone_Extension]: new ExtensionSettingHandler(
         this._rcInfoService,
       ),
+      [SettingEntityIds.Phone_E911]: new E911SettingHandler(),
     };
   }
 }

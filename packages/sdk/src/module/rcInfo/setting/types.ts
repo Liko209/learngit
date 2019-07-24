@@ -11,4 +11,17 @@ type RegionSettingInfo = {
   areaCode: string;
 };
 
-export { RegionSettingInfo };
+type E911SettingInfo = {
+  countryInfo: DialingCountryInfo;
+  street: string;
+  street2: string;
+  city: string;
+  state: string;
+  stateId: string;
+  stateIsoCode: string;
+  stateName: string;
+  zip: string;
+  customerName: string;
+};
+
+export { RegionSettingInfo, E911SettingInfo };
