@@ -9,11 +9,17 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
-import { JuiAvatarActions } from 'jui/pattern/TopBar';
+import {
+  JuiAvatarActions,
+  JuiDropdownContactInfo,
+  JuiStyledDropdown,
+} from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { JuiDivider } from 'jui/components/Divider';
+import { dataAnalysis } from 'sdk';
 
 type Props = ViewProps & WithTranslation;
 
@@ -36,7 +42,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   }
 
   private get _tooltip() {
-    const { t, presence } = this.props
+    const { t, presence } = this.props;
     switch (presence) {
       case PRESENCE.AVAILABLE:
         return t('presence.available');
@@ -67,16 +73,29 @@ class AvatarActionsComponent extends React.Component<Props> {
     );
   }
 
+  private _DropdownAvatar() {
+    const { currentUserId } = this.props;
+    return <Avatar uid={currentUserId} size="large" />;
+  }
+
+  // TODO: when edit profile completed then Replenish
+  handleOpenEditProfile = () => {};
+
+  handleDropdown = () => {
+    dataAnalysis.page('Jup_Web/DT__appOptions');
+  };
+
   handleAboutPage = () => this.props.toggleAboutPage();
 
   handleSendFeedback = () => this.props.handleSendFeedback();
 
   render() {
-    const { handleSignOut, currentUserId, t } = this.props;
+    const { handleSignOut, currentUserId, person, t } = this.props;
 
     return (
       <JuiAvatarActions
         Anchor={this._Anchor}
+        onOpen={this.handleDropdown}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -86,37 +105,46 @@ class AvatarActionsComponent extends React.Component<Props> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList data-test-automation-id="avatarMenu">
-          <OpenProfileDialog id={currentUserId}>
+        <JuiStyledDropdown>
+          <JuiDropdownContactInfo
+            Avatar={this._DropdownAvatar()}
+            openEditProfile={this.handleOpenEditProfile}
+            name={person.displayName}
+            content={t('home.editProfile')}
+          />
+          <JuiDivider key="divider-avatar-menu" />
+          <JuiMenuList data-test-automation-id="avatarMenu">
+            <OpenProfileDialog id={currentUserId}>
+              <JuiMenuItem
+                aria-label={t('home.viewYourProfile')}
+                data-test-automation-id="viewYourProfile"
+              >
+                {t('people.team.profile')}
+              </JuiMenuItem>
+            </OpenProfileDialog>
             <JuiMenuItem
-              aria-label={t('home.viewYourProfile')}
-              data-test-automation-id="viewYourProfile"
+              onClick={this.handleAboutPage}
+              aria-label={t('home.aboutRingCentral')}
+              data-test-automation-id="aboutPage"
             >
-              {t('people.team.profile')}
+              {t('home.aboutRingCentral')}
             </JuiMenuItem>
-          </OpenProfileDialog>
-          <JuiMenuItem
-            onClick={this.handleAboutPage}
-            aria-label={t('home.aboutRingCentral')}
-            data-test-automation-id="aboutPage"
-          >
-            {t('home.aboutRingCentral')}
-          </JuiMenuItem>
-          <JuiMenuItem
-            onClick={this.handleSendFeedback}
-            aria-label={t('home.sendFeedback')}
-            data-test-automation-id="sendFeedback"
-          >
-            {t('home.sendFeedback')}
-          </JuiMenuItem>
-          <JuiMenuItem
-            onClick={handleSignOut}
-            aria-label={t('auth.signOut')}
-            data-test-automation-id="signOut"
-          >
-            {t('auth.signOut')}
-          </JuiMenuItem>
-        </JuiMenuList>
+            <JuiMenuItem
+              onClick={this.handleSendFeedback}
+              aria-label={t('home.sendFeedback')}
+              data-test-automation-id="sendFeedback"
+            >
+              {t('home.sendFeedback')}
+            </JuiMenuItem>
+            <JuiMenuItem
+              onClick={handleSignOut}
+              aria-label={t('auth.signOut')}
+              data-test-automation-id="signOut"
+            >
+              {t('auth.signOut')}
+            </JuiMenuItem>
+          </JuiMenuList>
+        </JuiStyledDropdown>
       </JuiAvatarActions>
     );
   }

@@ -109,25 +109,29 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
     UploadRecentLogs.show();
   };
 
-
   @computed
   get presence() {
     if (this.currentUserId === 0) {
       return PRESENCE.NOTREADY;
     }
 
-    const person = getEntity<Person, PersonModel>(
-      ENTITY_NAME.PERSON,
-      this.currentUserId,
-    );
-
-    if (person.deactivated) {
+    if (this.person.deactivated) {
       return PRESENCE.NOTREADY;
     }
 
     return (
-      getEntity<Presence, PresenceModel>(ENTITY_NAME.PRESENCE, this.currentUserId)
-        .presence || PRESENCE.NOTREADY
+      getEntity<Presence, PresenceModel>(
+        ENTITY_NAME.PRESENCE,
+        this.currentUserId,
+      ).presence || PRESENCE.NOTREADY
+    );
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
     );
   }
 }
