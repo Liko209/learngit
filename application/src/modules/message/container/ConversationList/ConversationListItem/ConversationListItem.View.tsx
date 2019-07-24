@@ -121,6 +121,9 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   private _closeMenu(event: MouseEvent<HTMLElement> | UIEvent) {
     event.stopPropagation();
     this.menuAnchorEl = null;
+    this.setState({
+      isHover: false,
+    });
   }
 }
 
