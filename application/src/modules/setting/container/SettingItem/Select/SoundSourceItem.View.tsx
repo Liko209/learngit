@@ -16,6 +16,7 @@ import {
   RINGS_TYPE,
   SOUNDS_TYPE,
 } from 'sdk/src/module/profile';
+import { useHotKey } from 'jui/hoc/HotKeys';
 
 type SoundItemProps = {
   value: AUDIO_SOUNDS_INFO;
@@ -48,14 +49,39 @@ const SoundSourcePlayer = (props: SoundItemProps) => {
   if ([RINGS_TYPE.Off, SOUNDS_TYPE.Off].includes(value.id)) {
     return null;
   }
-  const media = useSound(value.id);
+  const soundName = value.id;
+  const media = useSound(soundName);
+  useHotKey(
+    {
+      key: 'right',
+      callback: e => {
+        const el = e.srcElement as HTMLElement;
+        if (!el) {
+          return;
+        }
+        const attr = 'data-sound-type';
+        const player = el.querySelector(`[${attr}]`);
+        if (player) {
+          const val = player.getAttribute(attr);
+          if (val === soundName && media) {
+            media.stop();
+            media.play();
+          }
+        }
+      },
+    },
+    [media],
+  );
+
   return (
-    <AudioPlayerButton
-      media={media}
-      actionIcon={{
-        [JuiAudioStatus.PLAY]: 'speaker',
-      }}
-    />
+    <div data-sound-type={soundName}>
+      <AudioPlayerButton
+        media={media}
+        actionIcon={{
+          [JuiAudioStatus.PLAY]: 'speaker',
+        }}
+      />
+    </div>
   );
 };
 const SoundSourcePlayerRenderer = (props: SoundItemProps) => (

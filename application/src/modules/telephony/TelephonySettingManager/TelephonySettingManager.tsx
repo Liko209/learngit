@@ -174,15 +174,6 @@ class TelephonySettingManager {
       secondaryActionRenderer: SoundSourcePlayerRenderer,
       ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'incomingCall'),
     } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
-    this._settingService.registerItem(this._scope, SETTING_SECTION__SOUNDS, {
-      id: PHONE_SETTING_ITEM.SOUND_VOICE_MAIL,
-      automationId: 'soundVoiceMail',
-      weight: 500,
-      type: SETTING_ITEM_TYPE.SELECT,
-      sourceRenderer: SoundSourceItem,
-      secondaryActionRenderer: SoundSourcePlayerRenderer,
-      ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'voiceMail'),
-    } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
   }
 
   dispose() {
