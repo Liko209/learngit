@@ -37,7 +37,7 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
 
   async updateValue(value: AUDIO_SOUNDS_INFO) {
     await this._profileService.updateSettingOptions([
-      { value: value.label, key: this.settingId },
+      { value: value.id, key: this.settingId },
     ]);
   }
   async fetchUserSettingEntity() {
@@ -59,7 +59,7 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
     if (value === undefined) {
       value = SOUNDS_TYPE.Log_Drum;
     }
-    return SoundsList.find(item => item.label === value);
+    return SoundsList.find(item => item.id === value);
   }
 
   async onProfileEntityUpdate(
@@ -73,7 +73,7 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
-    if (profile[this.settingId] !== this.userSettingEntityCache!.value!.label) {
+    if (profile[this.settingId] !== this.userSettingEntityCache!.value!.id) {
       await this.getUserSettingEntity();
     }
   }

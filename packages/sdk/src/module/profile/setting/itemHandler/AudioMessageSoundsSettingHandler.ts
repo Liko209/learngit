@@ -58,7 +58,7 @@ class AudioMessageSoundsSettingHandler extends AbstractSettingEntityHandler<
 
   async updateValue(value: AUDIO_SOUNDS_INFO) {
     await this._profileService.updateSettingOptions([
-      { value: value.label, key: this.setting_key },
+      { value: value.id, key: this.setting_key },
     ]);
   }
   async fetchUserSettingEntity() {
@@ -90,7 +90,7 @@ class AudioMessageSoundsSettingHandler extends AbstractSettingEntityHandler<
       );
       return model && model.value;
     }
-    return this.source.find(item => item.label === value);
+    return this.source.find(item => item.id === value);
   }
 
   async onSettingEntityUpdate(
@@ -112,9 +112,7 @@ class AudioMessageSoundsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
-    if (
-      profile[this.setting_key] !== this.userSettingEntityCache!.value!.label
-    ) {
+    if (profile[this.setting_key] !== this.userSettingEntityCache!.value!.id) {
       await this.getUserSettingEntity();
     }
   }
