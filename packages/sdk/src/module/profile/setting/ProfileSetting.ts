@@ -51,7 +51,6 @@ type HandlerMap = {
   [SettingEntityIds.Audio_DirectMessage]: AudioMessageSoundsSettingHandler;
   [SettingEntityIds.Audio_Mentions]: AudioMessageSoundsSettingHandler;
   [SettingEntityIds.Audio_IncomingCalls]: AudioPhoneSoundsSettingHandler;
-  [SettingEntityIds.Audio_NewVoicemail]: AudioPhoneSoundsSettingHandler;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -149,15 +148,6 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
           setting_key: SETTING_KEYS.AUDIO_INCOMING_CALLS,
           source: RingsList,
           defaultValue: RINGS_TYPE.High_Gong,
-        },
-      ),
-      [SettingEntityIds.Audio_NewVoicemail]: new AudioPhoneSoundsSettingHandler(
-        this._profileService,
-        {
-          id: SettingEntityIds.Audio_NewVoicemail,
-          setting_key: SETTING_KEYS.AUDIO_NEW_VOICEMAIL,
-          source: SoundsList,
-          defaultValue: SOUNDS_TYPE.Ching,
         },
       ),
     };
