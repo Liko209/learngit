@@ -7,6 +7,7 @@ import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 import Pseudo from '@/utils/i18next-pseudo';
 import enLngJson from '../public/locales/en/translations.json';
+import i18nOptions from './i18nOptions';
 
 const getVariationOfAOrAn = function(value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
@@ -43,39 +44,13 @@ const interpolation = {
 };
 
 const config: i18next.InitOptions = {
+  ...i18nOptions,
   interpolation,
-  fallbackLng: {
-    en: ['en-US'],
-    'en-AU': ['en-GB', 'en-US'],
-    de: ['de-DE'],
-    es: ['es-ES'],
-    fr: ['fr-FR'],
-    it: ['it-IT'],
-    ja: ['ja-JP'],
-    pt: ['pt-BR'],
-    zh: ['zh-CN'],
-    'zh-HK': ['zh-TW', 'zh-CN'],
-    default: ['en-US'],
-  },
   // have a common namespace used around the full app
   ns: ['translations'],
   defaultNS: 'translations',
   debug: true,
   react: { wait: true, useSuspense: false },
-  whitelist: [
-    'en-US',
-    'de-DE',
-    'en-GB',
-    'es-419',
-    'es-ES',
-    'fr-CA',
-    'fr-FR',
-    'it-IT',
-    'ja-JP',
-    'pt-BR',
-    'zh-CN',
-    'zh-TW',
-  ],
   postProcess: ['pseudo'],
   nsSeparator: ':::',
   load: 'currentOnly',

@@ -14,7 +14,7 @@ export default class Pseudo {
   options: PseudoOptionsProps;
   holders: { [key: string]: string };
 
-  constructor({ languageToPseudo = 'en-US' } = {}) {
+  constructor({ languageToPseudo = 'en' } = {}) {
     const userConfig = ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.GLOBAL_CONFIG_SERVICE,
     );
