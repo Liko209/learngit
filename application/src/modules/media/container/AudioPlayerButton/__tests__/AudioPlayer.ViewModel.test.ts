@@ -21,6 +21,7 @@ const setup = (opts?: any) => {
   const vm = new AudioPlayerButtonViewModel({
     media,
     onPlay: opts && opts.onPlay,
+    onPause: opts && opts.onPause,
     onEnded: opts && opts.onEnded,
     onError: opts && opts.onError,
   });
@@ -90,10 +91,19 @@ describe('AudioPlayerButtonViewModel', () => {
       const onError = jest.fn();
       const { vm, media } = setup({
         onError,
-      })
+      });
       emit(media, 'error');
       expect(onError).toHaveBeenCalled();
       expect(vm.isPlaying).toBeFalsy();
-    })
+    });
+    it('should call onPause when media pause', () => {
+      const onPause = jest.fn();
+      const { vm, media } = setup({
+        onPause,
+      });
+      emit(media, 'pause');
+      expect(onPause).toHaveBeenCalled();
+      expect(vm.isPlaying).toBeFalsy();
+    });
   });
 });

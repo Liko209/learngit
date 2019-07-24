@@ -11,6 +11,7 @@ import { JuiAudioActionIcon } from 'jui/components/AudioPlayer';
 
 type AudioEvent = {
   onPlay?: () => void;
+  onPause?: () => void;
   onEnded?: () => void;
   onError?: () => void;
 };
