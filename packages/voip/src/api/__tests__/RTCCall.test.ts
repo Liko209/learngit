@@ -921,7 +921,7 @@ describe('RTC call', () => {
       });
     });
 
-    it('should notify warm transfer success when call webPhone warm transfer return success. [JPT-2542]', done => {
+    it('should notify warm transfer success when call webPhone warm transfer return success. [JPT-2548]', done => {
       const account = new VirturlAccountAndCallObserver();
       const sessionA = new MockSession();
       const sessionB = new MockSession();
@@ -950,7 +950,7 @@ describe('RTC call', () => {
         });
       });
     });
-    it('should notify warm transfer failed when warm transfer but has not target session. [JPT-2542]', done => {
+    it('should notify warm transfer failed when warm transfer receive rejected event. [JPT-2684]', done => {
       const account = new VirturlAccountAndCallObserver();
       const sessionA = new MockSession();
       const sessionB = new MockSession();
@@ -979,7 +979,7 @@ describe('RTC call', () => {
         });
       });
     });
-    it('should notify warm transfer failed when warm transfer but has not target session. [JPT-2542]', done => {
+    it('should notify warm transfer failed when warm transfer return failed. [JPT-2546]', done => {
       const account = new VirturlAccountAndCallObserver();
       const sessionA = new MockSession();
       const sessionB = new MockSession();

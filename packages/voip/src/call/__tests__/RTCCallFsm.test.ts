@@ -689,7 +689,7 @@ describe('Call FSM UT', () => {
       });
     });
 
-    describe('should call session WarmTransfer() when current FSM is in connected/holding/holded/unholding state [JPT-2543]', () => {
+    describe('should call session WarmTransfer() when current FSM is in connected/holding/holded/unholding state [JPT-2683]', () => {
       const targetSession = 'targetSession';
       it('should call session WarmTransfer() when warmTransfer() in connected state', done => {
         const callFsm = new RTCCallFsm();
