@@ -31,7 +31,7 @@ class DashboardConfig {
   };
   icons: FlagConfig = {
     warning: ":warning:",
-    block: ":negative_squared_cross_mark:",
+    block: ":x:",
     pass: ":white_check_mark:"
   };
   lodingTimeUrl: string = "http://xmn145.rcoffice.ringcentral.com:9005/question/140";

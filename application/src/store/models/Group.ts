@@ -14,8 +14,7 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
 import i18nT from '@/utils/i18nT';
-import { TeamPermission, GroupService } from 'sdk/module/group';
-import { PERMISSION_ENUM } from 'sdk/service';
+import { TeamPermission, GroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
@@ -340,6 +339,17 @@ export default class GroupModel extends Base<Group> {
     );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_PIN_POST,
+      this.teamPermissionParams,
+    );
+  }
+
+  @computed
+  get canMentionTeam() {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_MENTION,
       this.teamPermissionParams,
     );
   }
