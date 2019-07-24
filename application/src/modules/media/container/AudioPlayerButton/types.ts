@@ -10,6 +10,7 @@ import { JuiAudioStatus } from 'jui/pattern/AudioPlayer/types';
 
 type AudioEvent = {
   onPlay?: () => void;
+  onPause?: () => void;
   onEnded?: () => void;
   onError?: () => void;
 };

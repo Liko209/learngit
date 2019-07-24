@@ -90,10 +90,19 @@ describe('AudioPlayerButtonViewModel', () => {
       const onError = jest.fn();
       const { vm, media } = setup({
         onError,
-      })
+      });
       emit(media, 'error');
       expect(onError).toHaveBeenCalled();
       expect(vm.isPlaying).toBeFalsy();
-    })
+    });
+    it('should call onPause when media pause', () => {
+      const onPause = jest.fn();
+      const { vm, media } = setup({
+        onPause,
+      });
+      emit(media, 'pause');
+      expect(onPause).toHaveBeenCalled();
+      expect(vm.isPlaying).toBeFalsy();
+    });
   });
 });
