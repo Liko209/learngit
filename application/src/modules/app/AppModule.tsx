@@ -39,7 +39,7 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { PermissionService } from 'sdk/src/module/permission';
+import { PermissionService } from 'sdk/module/permission';
 import { LaunchDarklyController } from '@/permissions/Launchdarkly/LaunchDarklyController';
 import { SplitIOController } from '@/permissions/SplitIO/SplitIOController';
 
