@@ -21,6 +21,7 @@ const setup = (opts?: any) => {
   const vm = new AudioPlayerButtonViewModel({
     media,
     onPlay: opts && opts.onPlay,
+    onPause: opts && opts.onPause,
     onEnded: opts && opts.onEnded,
     onError: opts && opts.onError,
   });
