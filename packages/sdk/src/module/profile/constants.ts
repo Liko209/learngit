@@ -111,7 +111,6 @@ const SoundsList: AUDIO_SOUNDS_INFO[] = [
     url: `${AudioSourceUrl}${SOUNDS_TYPE.Whoosh_Double}`,
     id: SOUNDS_TYPE.Whoosh_Double,
   },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Default}`, id: SOUNDS_TYPE.Default },
   { url: `${AudioSourceUrl}${SOUNDS_TYPE.Off}`, id: SOUNDS_TYPE.Off },
 ];
 

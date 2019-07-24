@@ -73,7 +73,12 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
-    if (profile[this.settingId] !== this.userSettingEntityCache!.value!.id) {
+    if (
+      profile[this.settingId] !==
+      (this.userSettingEntityCache &&
+        this.userSettingEntityCache.value &&
+        this.userSettingEntityCache.value.id)
+    ) {
       await this.getUserSettingEntity();
     }
   }
