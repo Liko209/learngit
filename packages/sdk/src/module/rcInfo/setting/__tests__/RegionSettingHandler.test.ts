@@ -93,7 +93,7 @@ describe('RegionSettingHandler', () => {
 
       notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
 
         done();
       });
@@ -104,7 +104,7 @@ describe('RegionSettingHandler', () => {
 
       notificationCenter.emit(RC_INFO.RC_REGION_INFO);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
@@ -174,7 +174,7 @@ describe('RegionSettingHandler', () => {
       rcInfoService.hasAreaCode = jest.fn();
       const res = await settingHandler['_getRegionSettingVisibleState']('US');
       expect(res).toEqual(ESettingItemState.ENABLE);
-      expect(rcInfoService.hasAreaCode).not.toBeCalled();
+      expect(rcInfoService.hasAreaCode).not.toHaveBeenCalled();
     });
 
     it('should return enable when has 1 country and support area code ', async () => {
@@ -182,7 +182,7 @@ describe('RegionSettingHandler', () => {
       rcInfoService.hasAreaCode = jest.fn().mockReturnValue(true);
       const res = await settingHandler['_getRegionSettingVisibleState']('US');
       expect(res).toEqual(ESettingItemState.ENABLE);
-      expect(rcInfoService.hasAreaCode).toBeCalled();
+      expect(rcInfoService.hasAreaCode).toHaveBeenCalled();
     });
 
     it('should return disable when has no dialing plan', async () => {
@@ -190,7 +190,7 @@ describe('RegionSettingHandler', () => {
       rcInfoService.hasAreaCode = jest.fn();
       const res = await settingHandler['_getRegionSettingVisibleState']('US');
       expect(res).toEqual(ESettingItemState.DISABLE);
-      expect(rcInfoService.hasAreaCode).not.toBeCalled();
+      expect(rcInfoService.hasAreaCode).not.toHaveBeenCalled();
     });
 
     it('should return disable when has 1 country list and is not support area code', async () => {
@@ -198,7 +198,7 @@ describe('RegionSettingHandler', () => {
       rcInfoService.hasAreaCode = jest.fn().mockReturnValue(false);
       const res = await settingHandler['_getRegionSettingVisibleState']('PP');
       expect(res).toEqual(ESettingItemState.DISABLE);
-      expect(rcInfoService.hasAreaCode).toBeCalled();
+      expect(rcInfoService.hasAreaCode).toHaveBeenCalled();
     });
   });
 });

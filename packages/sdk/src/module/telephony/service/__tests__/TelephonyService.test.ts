@@ -97,7 +97,7 @@ describe('TelephonyService', () => {
     it('should call logout', () => {
       engineController.logout = jest.fn();
       telephonyService.handleLogOut();
-      expect(engineController.logout).toBeCalled();
+      expect(engineController.logout).toHaveBeenCalled();
     });
   });
 
@@ -105,7 +105,7 @@ describe('TelephonyService', () => {
     it('should create telephonyController', () => {
       telephonyService['_telephonyEngineController'] = undefined as any;
       telephonyService['telephonyController'];
-      expect(TelephonyEngineController).toBeCalled();
+      expect(TelephonyEngineController).toHaveBeenCalled();
     });
   });
 
@@ -113,14 +113,14 @@ describe('TelephonyService', () => {
     it('should call initEngine', () => {
       engineController.initEngine = jest.fn();
       telephonyService['_init']();
-      expect(engineController.initEngine).toBeCalled();
+      expect(engineController.initEngine).toHaveBeenCalled();
     });
   });
 
   describe('userConfig', () => {
     it('should create userConfig', () => {
       telephonyService.userConfig;
-      expect(TelephonyUserConfig).toBeCalled();
+      expect(TelephonyUserConfig).toHaveBeenCalled();
     });
   });
 
@@ -253,7 +253,7 @@ describe('TelephonyService', () => {
     it('should call account controller to get voip state', () => {
       const spy = jest.spyOn(accountController, 'getVoipState');
       telephonyService.getVoipState();
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -261,7 +261,7 @@ describe('TelephonyService', () => {
     it('should call registerModuleSetting', () => {
       telephonyService['_phoneSetting'] = mockSetting;
       telephonyService['onStarted']();
-      expect(mockSettingService.registerModuleSetting).toBeCalledWith(
+      expect(mockSettingService.registerModuleSetting).toHaveBeenCalledWith(
         mockSetting,
       );
     });
@@ -271,7 +271,7 @@ describe('TelephonyService', () => {
     it('should call unsubscribe of profile setting', () => {
       telephonyService['_phoneSetting'] = mockSetting;
       telephonyService['onStopped']();
-      expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith(
+      expect(mockSettingService.unRegisterModuleSetting).toHaveBeenCalledWith(
         mockSetting,
       );
     });
@@ -280,7 +280,14 @@ describe('TelephonyService', () => {
   describe('getRingerDevicesList', () => {
     it('should call getRingerDevicesList', () => {
       telephonyService.getRingerDevicesList();
-      expect(engineController.getRingerDevicesList).toBeCalled();
+      expect(engineController.getRingerDevicesList).toHaveBeenCalled();
+    });
+  });
+
+  describe('getEmergencyAddress', () => {
+    it('should call getEmergencyAddress', () => {
+      telephonyService.getEmergencyAddress();
+      expect(accountController.getEmergencyAddress).toHaveBeenCalled();
     });
   });
 });

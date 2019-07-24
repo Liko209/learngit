@@ -5,7 +5,7 @@
  */
 
 import { ITelephonyDaoDelegate } from 'foundation';
-import { RTCSipProvisionInfo } from '../account/types';
+import { RTCSipProvisionInfo } from '../api/types';
 import { rtcLogger } from './RTCLoggerProxy';
 import { kProvisioningInfoKey } from './constants';
 
