@@ -14,7 +14,7 @@ export default class Pseudo {
   options: PseudoOptionsProps;
   holders: { [key: string]: string };
 
-  constructor({ languageToPseudo = 'en' } = {}) {
+  constructor({ languageToPseudo = 'en-US' } = {}) {
     const userConfig = ServiceLoader.getInstance<UserConfigService>(
       ServiceConfig.GLOBAL_CONFIG_SERVICE,
     );
@@ -72,7 +72,8 @@ export default class Pseudo {
    */
   process(src: string, key: string, options: any, translator: any) {
     if (
-      (translator.language && this.options.languageToPseudo !== translator.language) ||
+      (translator.language &&
+        this.options.languageToPseudo !== translator.language) ||
       !this.options.enabled
     ) {
       return src;

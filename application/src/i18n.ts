@@ -45,7 +45,8 @@ const interpolation = {
 const config: i18next.InitOptions = {
   interpolation,
   fallbackLng: {
-    en: ['en'],
+    en: ['en-US'],
+    'en-AU': ['en-GB', 'en-US'],
     de: ['de-DE'],
     es: ['es-ES'],
     fr: ['fr-FR'],
@@ -53,7 +54,8 @@ const config: i18next.InitOptions = {
     ja: ['ja-JP'],
     pt: ['pt-BR'],
     zh: ['zh-CN'],
-    default: ['en'],
+    'zh-HK': ['zh-TW', 'zh-CN'],
+    default: ['en-US'],
   },
   // have a common namespace used around the full app
   ns: ['translations'],
@@ -61,9 +63,8 @@ const config: i18next.InitOptions = {
   debug: true,
   react: { wait: true, useSuspense: false },
   whitelist: [
-    'en',
+    'en-US',
     'de-DE',
-    'en-AU',
     'en-GB',
     'es-419',
     'es-ES',
@@ -73,7 +74,6 @@ const config: i18next.InitOptions = {
     'ja-JP',
     'pt-BR',
     'zh-CN',
-    'zh-HK',
     'zh-TW',
   ],
   postProcess: ['pseudo'],
