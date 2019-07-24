@@ -39,9 +39,11 @@ class LaunchDarklyClient {
   }
 
   shutdown() {
-    this._ldclient && this._ldclient.off('change', () => {});
-    this._ldclient && this._ldclient.off('ready', () => {});
-    this._ldclient && this._ldclient.setStreaming(false);
+    if (this._ldclient) {
+      this._ldclient.off('change', () => {});
+      this._ldclient.off('ready', () => {});
+      this._ldclient.setStreaming(false);
+    }
   }
 
   private _initLDClient(options: Options) {
