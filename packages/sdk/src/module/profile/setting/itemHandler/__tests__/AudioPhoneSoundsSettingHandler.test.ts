@@ -5,7 +5,7 @@
  */
 
 import notificationCenter from 'sdk/service/notificationCenter';
-import { AudioMessageSoundsSettingHandler } from '../AudioMessageSoundsSettingHandler';
+import { AudioPhoneSoundsSettingHandler } from '../AudioPhoneSoundsSettingHandler';
 import {
   UserSettingEntity,
   SettingEntityIds,
@@ -17,7 +17,14 @@ import { ProfileService } from 'sdk/module/profile';
 import { SETTING_KEYS } from 'sdk/module/profile/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Profile } from '../../../entity';
-import { SoundsList, SOUNDS_TYPE, AudioSourceUrl } from '../../../constants';
+import {
+  SOUNDS_TYPE,
+  AudioSourceUrl,
+  RingsList,
+  RINGS_TYPE,
+  CALLING_OPTIONS,
+} from '../../../constants';
+import { ESettingItemState } from 'sdk/framework/model/setting';
 
 jest.mock('sdk/module/profile');
 
@@ -27,16 +34,16 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('AudioMessageSoundsSettingHandler', () => {
+describe('AudioPhoneSoundsSettingHandler', () => {
   let profileService: ProfileService;
   let accountService: AccountService;
   let settingService: SettingService;
-  let settingHandler: AudioMessageSoundsSettingHandler;
+  let settingHandler: AudioPhoneSoundsSettingHandler;
   let mockDefaultSettingItem: UserSettingEntity;
   const mockUserId = 123;
-  const defaultSounds = {
-    url: `${AudioSourceUrl}LogDrum2.wav`,
-    id: SOUNDS_TYPE.Log_Drum,
+  const defaultRings = {
+    url: `${AudioSourceUrl}${RINGS_TYPE.High_Gong}`,
+    id: RINGS_TYPE.High_Gong,
   };
   function setUp() {
     jest.spyOn(notificationCenter, 'on');
@@ -46,9 +53,9 @@ describe('AudioMessageSoundsSettingHandler', () => {
       weight: 1,
       parentModelId: 1,
       valueType: 1,
-      id: SettingEntityIds.Audio_DirectMessage,
-      source: SoundsList,
-      value: defaultSounds,
+      id: SettingEntityIds.Audio_IncomingCalls,
+      source: RingsList,
+      value: defaultRings,
       state: 0,
       valueSetter: expect.any(Function),
     };
@@ -72,12 +79,13 @@ describe('AudioMessageSoundsSettingHandler', () => {
       }
     });
     profileService.updateSettingOptions = jest.fn();
-    settingHandler = new AudioMessageSoundsSettingHandler(profileService, {
-      id: SettingEntityIds.Audio_DirectMessage,
-      setting_key: SETTING_KEYS.AUDIO_DIRECT_MESSAGES,
-      source: SoundsList,
-      defaultValue: SOUNDS_TYPE.Log_Drum,
+    settingHandler = new AudioPhoneSoundsSettingHandler(profileService, {
+      id: SettingEntityIds.Audio_IncomingCalls,
+      setting_key: SETTING_KEYS.AUDIO_INCOMING_CALLS,
+      source: RingsList,
+      defaultValue: RINGS_TYPE.High_Gong,
     });
+    settingService.getById = jest.fn();
     settingHandler.notifyUserSettingEntityUpdate = jest.fn();
   }
 
@@ -98,55 +106,41 @@ describe('AudioMessageSoundsSettingHandler', () => {
   describe('fetchUserSettingEntity()', () => {
     it('should get new messages setting value ', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
-        [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Log_Drum,
+        [SETTING_KEYS.AUDIO_INCOMING_CALLS]: RINGS_TYPE.High_Gong,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
     });
-    it('should return value is default Log_Drum when profile is undefined', async () => {
+    it('should return value is default High_Gong when profile is undefined', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: undefined,
       });
 
       const result = await settingHandler.fetchUserSettingEntity();
-      expect(result.value).toEqual(defaultSounds);
+      expect(result.value).toEqual(defaultRings);
     });
-    it('should return value is Audio_TeamMessages value when value is default', async () => {
+
+    it('should return state is invisible when default app is RingCentral Phone', async () => {
       const value = {
         id: SOUNDS_TYPE.Ching,
         url: `${AudioSourceUrl}${SOUNDS_TYPE.Ching}`,
       };
-      profileService.getProfile = jest.fn().mockReturnValue({
-        [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Default,
-      });
-      settingService.getById = jest.fn().mockReturnValue({ value });
+      settingService.getById = jest
+        .fn()
+        .mockReturnValue({ value: CALLING_OPTIONS.RINGCENTRAL });
 
       const result = await settingHandler.fetchUserSettingEntity();
-      expect(result.value).toEqual(value);
-    });
-
-    it('should return value is Audio_TeamMessages value when value is default', async () => {
-      const value = {
-        id: SOUNDS_TYPE.Ching,
-        url: `${AudioSourceUrl}${SOUNDS_TYPE.Ching}`,
-      };
-      profileService.getProfile = jest.fn().mockReturnValue({
-        [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Default,
-      });
-      settingService.getById = jest.fn().mockReturnValue({ value });
-
-      const result = await settingHandler.fetchUserSettingEntity();
-      expect(result.value).toEqual(value);
+      expect(result.state).toEqual(ESettingItemState.INVISIBLE);
     });
   });
 
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
-      await settingHandler.updateValue(defaultSounds);
+      await settingHandler.updateValue(defaultRings);
       expect(profileService.updateSettingOptions).toHaveBeenCalledWith([
         {
-          value: SOUNDS_TYPE.Log_Drum,
-          key: SETTING_KEYS.AUDIO_DIRECT_MESSAGES,
+          value: RINGS_TYPE.High_Gong,
+          key: SETTING_KEYS.AUDIO_INCOMING_CALLS,
         },
       ]);
     });
@@ -160,7 +154,7 @@ describe('AudioMessageSoundsSettingHandler', () => {
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
-          [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Alert,
+          [SETTING_KEYS.AUDIO_INCOMING_CALLS]: RINGS_TYPE.Air_Raid,
         } as Profile,
       ]);
       setTimeout(() => {
@@ -175,11 +169,8 @@ describe('AudioMessageSoundsSettingHandler', () => {
 
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.USER_SETTING, [
         {
-          id: SettingEntityIds.Audio_TeamMessages,
-          value: {
-            id: SOUNDS_TYPE.Alert_Double,
-            url: `${AudioSourceUrl}${SOUNDS_TYPE.Alert_Double}`,
-          },
+          id: SettingEntityIds.Phone_DefaultApp,
+          value: CALLING_OPTIONS.GLIP,
         },
       ]);
       setTimeout(() => {
@@ -194,7 +185,7 @@ describe('AudioMessageSoundsSettingHandler', () => {
       notificationCenter.emitEntityUpdate<Profile>(ENTITY.PROFILE, [
         {
           id: mockUserId,
-          [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Log_Drum,
+          [SETTING_KEYS.AUDIO_INCOMING_CALLS]: RINGS_TYPE.High_Gong,
         } as Profile,
       ]);
       setTimeout(() => {

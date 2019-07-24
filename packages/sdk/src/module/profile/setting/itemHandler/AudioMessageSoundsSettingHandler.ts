@@ -112,7 +112,12 @@ class AudioMessageSoundsSettingHandler extends AbstractSettingEntityHandler<
     if (!profile) {
       return;
     }
-    if (profile[this.setting_key] !== this.userSettingEntityCache!.value!.id) {
+    if (
+      profile[this.setting_key] !==
+      (this.userSettingEntityCache &&
+        this.userSettingEntityCache.value &&
+        this.userSettingEntityCache.value.id)
+    ) {
       await this.getUserSettingEntity();
     }
   }

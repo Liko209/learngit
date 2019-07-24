@@ -145,8 +145,8 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
       [SettingEntityIds.Audio_IncomingCalls]: new AudioPhoneSoundsSettingHandler(
         this._profileService,
         {
-          id: SettingEntityIds.Audio_Mentions,
-          setting_key: SETTING_KEYS.AUDIO_MENTIONS,
+          id: SettingEntityIds.Audio_IncomingCalls,
+          setting_key: SETTING_KEYS.AUDIO_INCOMING_CALLS,
           source: RingsList,
           defaultValue: RINGS_TYPE.High_Gong,
         },
