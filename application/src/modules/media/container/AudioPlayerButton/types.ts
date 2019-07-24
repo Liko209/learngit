@@ -7,6 +7,7 @@
 import { WithTranslation } from 'react-i18next';
 import { IMedia } from '@/interface/media';
 import { JuiAudioStatus } from 'jui/pattern/AudioPlayer/types';
+import { JuiAudioActionIcon } from 'jui/components/AudioPlayer';
 
 type AudioEvent = {
   onPlay?: () => void;
@@ -16,13 +17,14 @@ type AudioEvent = {
 
 type AudioPlayerButtonProps = {
   media?: IMedia;
+  actionIcon?: JuiAudioActionIcon;
 } & AudioEvent;
 
 type AudioPlayerButtonViewProps = WithTranslation & {
   media: IMedia;
   mediaStatus: JuiAudioStatus;
   isPlaying: boolean;
-
+  actionIcon?: JuiAudioActionIcon;
   playHandler: () => void;
 };
 

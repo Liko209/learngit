@@ -11,27 +11,35 @@ import {
 } from 'sdk/module/setting';
 import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
 import { ENTITY } from 'sdk/service';
-import { SETTING_KEYS } from 'sdk/module/profile/constants';
+import {
+  SETTING_KEYS,
+  AUDIO_SOUNDS_INFO,
+  SOUNDS_TYPE,
+  RINGS_TYPE,
+} from 'sdk/module/profile/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ESettingItemState } from 'sdk/framework/model/setting';
 import { IProfileService } from '../../service/IProfileService';
 import { Profile } from '../../entity';
 import { AccountService } from 'sdk/module/account';
-import { SettingValue, SettingItemConfig } from '../../types';
-import { UndefinedAble } from 'sdk/types';
 import { CALLING_OPTIONS } from '../../constants';
 import { SettingService } from '../../../setting';
 
-class AudioPhoneSoundsSettingHandler<
-  T extends SettingValue
-> extends AbstractSettingEntityHandler<T> {
+class AudioPhoneSoundsSettingHandler extends AbstractSettingEntityHandler<
+  AUDIO_SOUNDS_INFO
+> {
   id: SettingEntityIds;
   setting_key: SETTING_KEYS;
-  source?: T[];
-  defaultValue?: T;
+  source: AUDIO_SOUNDS_INFO[];
+  defaultValue: SOUNDS_TYPE | RINGS_TYPE;
   constructor(
     private _profileService: IProfileService,
-    settingEntity: SettingItemConfig<T>,
+    settingEntity: {
+      id: SettingEntityIds;
+      setting_key: SETTING_KEYS;
+      source: AUDIO_SOUNDS_INFO[];
+      defaultValue: SOUNDS_TYPE | RINGS_TYPE;
+    },
   ) {
     super();
     this.id = settingEntity.id;
@@ -45,15 +53,18 @@ class AudioPhoneSoundsSettingHandler<
     this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
       this.onProfileEntityUpdate(payload),
     );
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
   }
 
-  async updateValue(value: T) {
+  async updateValue(value: AUDIO_SOUNDS_INFO) {
     await this._profileService.updateSettingOptions([
-      { value, key: this.setting_key },
+      { value: value.label, key: this.setting_key },
     ]);
   }
   async fetchUserSettingEntity() {
-    const settingItem: UserSettingEntity<T> = {
+    const settingItem: UserSettingEntity<AUDIO_SOUNDS_INFO> = {
       weight: 1,
       valueType: 1,
       parentModelId: 1,
@@ -72,18 +83,26 @@ class AudioPhoneSoundsSettingHandler<
     const model = await settingService.getById<CALLING_OPTIONS>(
       SettingEntityIds.Phone_DefaultApp,
     );
-    return model && model.value === CALLING_OPTIONS.RINGCENTRAL
+    return (model && model.value) === CALLING_OPTIONS.RINGCENTRAL
       ? ESettingItemState.INVISIBLE
       : ESettingItemState.ENABLE;
   }
 
   private async _getValue() {
     const profile = await this._profileService.getProfile();
-    let value: UndefinedAble<T> = profile && profile[this.setting_key];
+    let value = profile ? profile[this.setting_key] : undefined;
     if (value === undefined) {
       value = this.defaultValue;
     }
-    return value;
+    return this.source.find(item => item.label === value);
+  }
+
+  async onSettingEntityUpdate(
+    payload: NotificationEntityUpdatePayload<UserSettingEntity>,
+  ) {
+    if (payload.body.entities.has(SettingEntityIds.Phone_DefaultApp)) {
+      await this.getUserSettingEntity();
+    }
   }
 
   async onProfileEntityUpdate(

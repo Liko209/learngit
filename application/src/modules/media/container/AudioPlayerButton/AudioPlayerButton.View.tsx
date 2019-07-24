@@ -35,11 +35,12 @@ class AudioPlayerButtonViewComponent extends Component<
   }
 
   render() {
-    const { mediaStatus, isPlaying } = this.props;
+    const { mediaStatus, isPlaying, actionIcon } = this.props;
     return (
       <JuiAudioPlayer
         mode={JuiAudioMode.TINY}
         status={mediaStatus}
+        actionIcon={actionIcon}
         actions={this._getAction}
         isHighlight={isPlaying}
       />

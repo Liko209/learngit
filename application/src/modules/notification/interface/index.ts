@@ -6,6 +6,8 @@
 import { Omit } from 'jui/foundation/utils/typeHelper';
 import { createDecorator } from 'framework';
 import { INotificationPermission as permissionInterface } from 'sdk/pal';
+import { RINGS_TYPE, SOUNDS_TYPE } from 'sdk/src/module/profile';
+import { IMedia } from '@/interface/media';
 
 type NotificationId = number | string;
 const INotificationService = createDecorator('NOTIFICATION_SERVICE');
@@ -49,10 +51,18 @@ interface INotificationSettingManager {
   init: Function;
   dispose: Function;
 }
+type Sounds = RINGS_TYPE | SOUNDS_TYPE;
 
 const INotificationPermission = createDecorator('NOTIFICATION_PERMISSION');
 interface INotificationPermission extends permissionInterface {}
+
+const ISoundNotification = createDecorator('SOUND_NOTIFICATION');
+interface ISoundNotification {
+  create: (sound: Sounds, track: string) => IMedia | undefined;
+}
 export {
+  Sounds,
+  ISoundNotification,
   INotificationService,
   NotificationActionHandler,
   NotificationAction,
