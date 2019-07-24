@@ -74,10 +74,10 @@ class SplitIOController extends AbstractPermissionController
   }
 
   async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
-    return (
-      (this.isClientReady && this.splitIOClient.getFeatureFlag(type)) ||
-      this._defaultFeatureFlag(type)
-    );
+    if (this.isClientReady) {
+      return this.splitIOClient.getFeatureFlag(type);
+    }
+    return this._defaultFeatureFlag(type);
   }
 
   isFlagSupported(type: UserPermissionType): boolean {
