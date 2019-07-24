@@ -11,12 +11,12 @@ import {
 } from 'sdk/module/permission';
 import { SplitIODefaultPermissions } from './SplitIOFlagList';
 import { SplitIOClient } from './SplitIOClient';
-import { ServiceLoader, ServiceConfig } from 'sdk/src/module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
 import { mainLogger } from 'sdk';
-import { EnvConfig } from 'sdk/src/module/env/config';
-import { AccountGlobalConfig } from 'sdk/src/module/account/config';
+import { EnvConfig } from 'sdk/module/env/config';
+import { AccountGlobalConfig } from 'sdk/module/account/config';
 
 class SplitIOController extends AbstractPermissionController
   implements IPermissionController {
@@ -61,8 +61,8 @@ class SplitIOController extends AbstractPermissionController
       },
     };
     const { clientSecret } = Api.httpConfig.splitio;
-    const disableLD = EnvConfig.getDisableLD();
-    if (clientSecret && !disableLD) {
+    const isRunningE2E = EnvConfig.getIsRunningE2E();
+    if (clientSecret && !isRunningE2E) {
       this.splitIOClient = new SplitIOClient(params);
     }
   }
