@@ -7,6 +7,11 @@ import { SceneConfig } from './config/sceneConfig';
 import { LoginGatherer, HomePageGatherer } from '../gatherers';
 
 class RefreshScene extends Scene {
+
+  tags(): Array<string> {
+    return ["Lighthouse"];
+  }
+
   async preHandle() {
     this.config = new SceneConfig();
 
