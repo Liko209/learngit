@@ -1157,8 +1157,8 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
   });
 
-  await h(t).withLog('Then UMI=0 for DM in Fav conversation', async () => {
-    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(0);
+  await h(t).withLog('Then UMI=1 for DM in Fav conversation', async () => {
+    await favoritesSection.conversationEntryById(favoriteDirectMessageWithUmiId).umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('And no change for TM in Fav conversation', async () => {
@@ -1197,8 +1197,8 @@ test.meta(<ITestMeta>{
     await app.homePage.messageTab.moreMenu.markAsReadOrUnread.enter();
   });
 
-  await h(t).withLog('Then UMI=0 for DM conversation', async () => {
-    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(0);
+  await h(t).withLog('Then UMI=1 for DM conversation', async () => {
+    await directMessagesSection.conversationEntryById(directMessageWithUmiId).umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When I collapsed DM section', async () => {
