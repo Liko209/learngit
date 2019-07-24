@@ -35,9 +35,10 @@ function useSound(soundName: Sounds) {
 
 const SoundSourceItem = (props: SoundItemProps) => {
   const { value } = props;
+  const key = value.id.split('.')[0];
   return (
     <JuiTextWithEllipsis>
-      {i18nP(`setting.notificationAndSounds.sounds.options.${value.id}`)}
+      {i18nP(`setting.notificationAndSounds.sounds.options.${key}`)}
     </JuiTextWithEllipsis>
   );
 };

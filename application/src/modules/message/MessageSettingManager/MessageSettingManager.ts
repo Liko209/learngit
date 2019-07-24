@@ -34,7 +34,7 @@ import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
 import {
   SoundSourceItem,
   SoundSourcePlayerRenderer,
-} from './SoundSourceItem.View';
+} from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
 
 const NewMessageSelectDataTrackingOption: {
   [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
@@ -194,7 +194,7 @@ class MessageSettingManager implements IMessageSettingManager {
       {
         id: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
         automationId: 'soundMentions',
-        weight: 300,
+        weight: 200,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: SoundSourceItem,
         secondaryActionRenderer: SoundSourcePlayerRenderer,
@@ -207,7 +207,7 @@ class MessageSettingManager implements IMessageSettingManager {
       {
         id: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
         automationId: 'soundTeamMessages',
-        weight: 200,
+        weight: 300,
         type: SETTING_ITEM_TYPE.SELECT,
         sourceRenderer: SoundSourceItem,
         secondaryActionRenderer: SoundSourcePlayerRenderer,

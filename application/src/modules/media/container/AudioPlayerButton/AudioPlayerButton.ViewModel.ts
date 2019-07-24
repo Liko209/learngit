@@ -82,6 +82,7 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
     this._media.on('play', this._onPlay);
     this._media.on('pause', this._onPause);
     this._media.on('ended', this._onEnded);
+    this._media.on('pause', this._onPause);
     this._media.on('error', this._onError);
   };
 
@@ -114,6 +115,13 @@ class AudioPlayerButtonViewModel extends StoreViewModel<
     const { onEnded } = this.props;
     this._isPlaying = false;
     onEnded && onEnded();
+  };
+
+  @action
+  private _onPause = () => {
+    const { onPause } = this.props;
+    this._isPlaying = false;
+    onPause && onPause();
   };
 
   @action

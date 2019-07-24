@@ -45,15 +45,14 @@ const WrappedMenuItem = ({
 
 const StyledMenuItem = styled(WrappedMenuItem)`
   && {
+    padding: ${({ hasSecondaryAction }) =>
+      spacing(1, hasSecondaryAction ? 0 : 4, 1, 4)};
     ${typography('caption1')};
     color: ${grey('700')};
     height: auto;
     min-height: ${height(8)};
     min-width: ${width(28)};
     max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
-    padding: ${spacing(1, 4)};
-    padding-right: ${({ hasSecondaryAction }) =>
-      hasSecondaryAction ? spacing(0) : 'initial'};
     box-sizing: border-box;
     &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
       padding-right: ${spacing(12)};
