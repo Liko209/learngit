@@ -16,11 +16,18 @@ import { NewVoicemailsSettingHandler } from './itemHandler/NewVoicemailsSettingH
 import { AccountService } from 'sdk/module/account';
 import { MessageBadgeSettingHandler } from './itemHandler/MessageBadgeSettingHandler';
 import { ProfileSubscribeEntityHandler } from './itemHandler/ProfileSubscribeEntityHandler';
+import { AudioTeamMessagesSettingHandler } from './itemHandler/AudioTeamMessagesSettingHandler';
+import { AudioPhoneSoundsSettingHandler } from './itemHandler/AudioPhoneSoundsSettingHandler';
 import {
   SETTING_KEYS,
   EMAIL_NOTIFICATION_OPTIONS,
   NOTIFICATION_OPTIONS,
+  SoundsList,
+  RingsList,
+  RINGS_TYPE,
+  SOUNDS_TYPE,
 } from '../constants';
+import { AudioMessageSoundsSettingHandler } from './itemHandler/AudioMessageSoundsSettingHandler';
 
 type HandlerMap = {
   [SettingEntityIds.Notification_NewMessageBadgeCount]: MessageBadgeSettingHandler;
@@ -40,6 +47,11 @@ type HandlerMap = {
   [SettingEntityIds.Notification_DailyDigest]: ProfileSubscribeEntityHandler<
     NOTIFICATION_OPTIONS
   >;
+  [SettingEntityIds.Audio_TeamMessages]: AudioTeamMessagesSettingHandler;
+  [SettingEntityIds.Audio_DirectMessage]: AudioMessageSoundsSettingHandler;
+  [SettingEntityIds.Audio_Mentions]: AudioMessageSoundsSettingHandler;
+  [SettingEntityIds.Audio_IncomingCalls]: AudioPhoneSoundsSettingHandler;
+  [SettingEntityIds.Audio_NewVoicemail]: AudioPhoneSoundsSettingHandler;
 };
 
 class ProfileSetting extends BaseModuleSetting<HandlerMap> {
@@ -75,50 +87,77 @@ class ProfileSetting extends BaseModuleSetting<HandlerMap> {
         this._accountService,
         this._settingService,
       ),
-      // prettier-ignore
-      [SettingEntityIds.Notification_DirectMessages]: new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
+      [SettingEntityIds.Notification_DirectMessages]: new ProfileSubscribeEntityHandler<
+        EMAIL_NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.Notification_DirectMessages,
+        setting_key: SETTING_KEYS.EMAIL_DM,
+        source: [
+          EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+          EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+          EMAIL_NOTIFICATION_OPTIONS.OFF,
+        ],
+      }),
+      [SettingEntityIds.Notification_Mentions]: new ProfileSubscribeEntityHandler<
+        NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.Notification_Mentions,
+        setting_key: SETTING_KEYS.EMAIL_MENTION,
+      }),
+      [SettingEntityIds.Notification_Teams]: new ProfileSubscribeEntityHandler<
+        EMAIL_NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.Notification_Teams,
+        setting_key: SETTING_KEYS.EMAIL_TEAM,
+        source: [
+          EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
+          EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
+          EMAIL_NOTIFICATION_OPTIONS.OFF,
+        ],
+      }),
+      [SettingEntityIds.Notification_DailyDigest]: new ProfileSubscribeEntityHandler<
+        NOTIFICATION_OPTIONS
+      >(this._profileService, {
+        id: SettingEntityIds.Notification_DailyDigest,
+        setting_key: SETTING_KEYS.EMAIL_TODAY,
+      }),
+      [SettingEntityIds.Audio_TeamMessages]: new AudioTeamMessagesSettingHandler(
+        this._profileService,
+      ),
+      [SettingEntityIds.Audio_DirectMessage]: new AudioMessageSoundsSettingHandler(
         this._profileService,
         {
-          id: SettingEntityIds.Notification_DirectMessages,
-          setting_key: SETTING_KEYS.EMAIL_DM,
-          source: [
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
-            EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
-            EMAIL_NOTIFICATION_OPTIONS.OFF,
-          ],
+          id: SettingEntityIds.Audio_DirectMessage,
+          setting_key: SETTING_KEYS.AUDIO_DIRECT_MESSAGES,
+          source: SoundsList,
         },
       ),
-      [SettingEntityIds.Notification_Mentions]:
-        // prettier-ignore
-        new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
-          this._profileService,
-          {
-            id: SettingEntityIds.Notification_Mentions,
-            setting_key: SETTING_KEYS.EMAIL_MENTION,
-          },
-        ),
-      [SettingEntityIds.Notification_Teams]:
-        // prettier-ignore
-        new ProfileSubscribeEntityHandler<EMAIL_NOTIFICATION_OPTIONS>(
-          this._profileService,
-          {
-            id: SettingEntityIds.Notification_Teams,
-            setting_key: SETTING_KEYS.EMAIL_TEAM,
-            source: [
-              EMAIL_NOTIFICATION_OPTIONS.EVERY_15_MESSAGE,
-              EMAIL_NOTIFICATION_OPTIONS.EVERY_HOUR,
-              EMAIL_NOTIFICATION_OPTIONS.OFF,
-            ],
-          },
-        ),
-      // prettier-ignore
-      [SettingEntityIds.Notification_DailyDigest]: new ProfileSubscribeEntityHandler<NOTIFICATION_OPTIONS>(
+      [SettingEntityIds.Audio_Mentions]: new AudioMessageSoundsSettingHandler(
         this._profileService,
         {
-          id: SettingEntityIds.Notification_DailyDigest,
-          setting_key: SETTING_KEYS.EMAIL_TODAY,
+          id: SettingEntityIds.Audio_Mentions,
+          setting_key: SETTING_KEYS.AUDIO_MENTIONS,
+          source: SoundsList,
         },
-      )
+      ),
+      [SettingEntityIds.Audio_IncomingCalls]: new AudioPhoneSoundsSettingHandler(
+        this._profileService,
+        {
+          id: SettingEntityIds.Audio_Mentions,
+          setting_key: SETTING_KEYS.AUDIO_MENTIONS,
+          source: RingsList,
+          defaultValue: RINGS_TYPE.High_Gong,
+        },
+      ),
+      [SettingEntityIds.Audio_NewVoicemail]: new AudioPhoneSoundsSettingHandler(
+        this._profileService,
+        {
+          id: SettingEntityIds.Audio_NewVoicemail,
+          setting_key: SETTING_KEYS.AUDIO_NEW_VOICEMAIL,
+          source: SoundsList,
+          defaultValue: SOUNDS_TYPE.Ching,
+        },
+      ),
     };
   }
 }
