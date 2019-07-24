@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { EventEmitter2 } from 'eventemitter2';
-import { RTCCallOptions } from '../api/types';
-import { RTCSipProvisionInfo } from '../account/types';
+import { RTCCallOptions, RTCSipProvisionInfo } from '../api/types';
 import { ProvisionDataOptions } from './types';
 
 interface IRTCUserAgent extends EventEmitter2 {

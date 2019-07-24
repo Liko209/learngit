@@ -126,6 +126,10 @@ describe('RTC call', () => {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
     }
 
+    getSession(){
+      return this;
+    }
+
     request: MockRequest = new MockRequest();
     flip = jest.fn();
     startRecord = jest.fn();
@@ -145,6 +149,15 @@ describe('RTC call', () => {
     accept = jest.fn();
     reject = jest.fn();
     toVoicemail = jest.fn();
+
+
+    dialog = {
+      id: {
+        callId: '100',
+        remoteTag: '200',
+        localTag: '300',
+      }
+    }
 
     mockSignal(signal: string, response?: any): void {
       this.emit(signal, response);
@@ -2006,14 +2019,16 @@ describe('RTC call', () => {
       });
     });
 
-    it('should clear timer when enter connected state', done => {
+    it('should set call sip info into callInfo when call enter connected state [JPT-2555]', done => {
       setup();
-      expect(call._hangupInvalidCallTimer).not.toBeNull();
       call.onAccountReady();
       session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
-        expect(call._hangupInvalidCallTimer).toBeNull();
+        const callInfo = call.getCallInfo()
+        expect(callInfo.callId).toBe('100');
+        expect(callInfo.fromTag).toBe('200');
+        expect(callInfo.toTag).toBe('300');
         done();
       });
     });

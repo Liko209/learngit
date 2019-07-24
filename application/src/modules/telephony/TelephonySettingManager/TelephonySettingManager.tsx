@@ -12,7 +12,17 @@ import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import {
   SETTING_PAGE__PHONE,
   SETTING_SECTION__PHONE_GENERAL,
+<<<<<<< HEAD
   PHONE_SETTING_ITEM,
+=======
+  SETTING_ITEM__PHONE_CALLER_ID,
+  SETTING_ITEM__PHONE_REGION,
+  SETTING_ITEM__PHONE_EXTENSIONS,
+  SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+  SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
+  SETTING_ITEM__PHONE_E911,
+>>>>>>> origin/develop
 } from './constant';
 import {
   CallerIdSelectSourceItem,
@@ -121,6 +131,12 @@ class TelephonySettingManager {
                 name: 'extensionSettings',
                 type: 'phoneGeneral',
               },
+            },
+            {
+              id: SETTING_ITEM__PHONE_E911,
+              automationId: 'e911Setting',
+              type: RegionSettingItem,
+              weight: 300,
             },
           ],
         },

@@ -29,7 +29,8 @@ import { GroupActionController } from '../GroupActionController';
 import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
-import { PERMISSION_ENUM, ENTITY } from '../../../../service';
+import { ENTITY } from '../../../../service';
+import { PERMISSION_ENUM } from '../../../../module/group';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { AccountService } from '../../../account';
 
@@ -685,6 +686,51 @@ describe('GroupFetchDataController', () => {
                 level:
                   mockTeam.permissions.user.level |
                   PERMISSION_ENUM.TEAM_ADD_MEMBER,
+              },
+            },
+          },
+          replaceArray,
+        ),
+      );
+    });
+    it('should toggle TEAM_MENTION correctly.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: true,
+        permissions: {
+          admin: {
+            uids: [1],
+            level: DEFAULT_ADMIN_PERMISSION_LEVEL,
+          },
+          user: {
+            uids: [2],
+            level: PERMISSION_ENUM.TEAM_POST,
+          },
+        },
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await groupActionController.updateTeamSetting(mockTeam.id, {
+        name: 'team name',
+        description: 'team desc',
+        isPublic: true,
+        permissionFlags: {
+          TEAM_MENTION: true,
+        },
+      });
+      expect(testTeamRequestController.put).toBeCalledWith(
+        _.mergeWith(
+          {},
+          mockTeam,
+          {
+            set_abbreviation: 'team name',
+            description: 'team desc',
+            privacy: 'protected',
+            permissions: {
+              user: {
+                level:
+                  mockTeam.permissions.user.level |
+                  PERMISSION_ENUM.TEAM_MENTION,
               },
             },
           },

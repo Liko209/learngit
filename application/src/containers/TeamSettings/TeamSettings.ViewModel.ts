@@ -58,6 +58,11 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @computed
+  get allowMentionTeam() {
+    return !!this.permissionFlags.TEAM_MENTION;
+  }
+
+  @computed
   get id() {
     return this.props.id;
   }

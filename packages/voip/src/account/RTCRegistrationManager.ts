@@ -9,7 +9,7 @@ import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { RTC_ACCOUNT_STATE, RTCCallOptions, RTCUserInfo } from '../api/types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions, RTCUserInfo , RTCSipProvisionInfo } from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
@@ -17,13 +17,13 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
-  RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import _ from 'lodash';
 import { randomBetween } from '../utils/utils';
 import { kRetryIntervalList } from './constants';
+
 
 const LOG_TAG = 'RTCRegistrationManager';
 class RTCRegistrationManager extends EventEmitter2

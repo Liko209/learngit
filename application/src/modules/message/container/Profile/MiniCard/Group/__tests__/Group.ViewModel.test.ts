@@ -12,30 +12,26 @@ import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
-import { ToastMessageAlign } from '../../../../../../../containers/ToastWrapper/Toast/types';
-import {ServiceConfig, ServiceLoader} from 'sdk/module/serviceLoader';
+import { ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
-jest.mock('sdk/module/account/config/AccountUserConfig');
 jest.mock('@/store/utils');
-jest.mock('@/utils/error');
-jest.mock('sdk/api');
 jest.mock('sdk/dao');
-jest.mock('sdk/module/config');
 
 const mockData = {
   displayName: 'Group name',
   isTeam: true,
 };
 const groupService: GroupService = new GroupService();
-ServiceLoader.getInstance = jest.fn().mockImplementation((type) => {
+ServiceLoader.getInstance = jest.fn().mockImplementation(type => {
   switch (type) {
     case ServiceConfig.GROUP_SERVICE:
       return groupService;
     default:
-      return { userConfig: { getGlipUserId: () => 2222 }};
+      return { userConfig: { getGlipUserId: () => 2222 } };
   }
 });
 const props = {
@@ -60,7 +56,6 @@ describe('ProfileMiniCardGroupViewModel', () => {
   });
 
   describe('group', () => {
-    beforeEach(() => {});
     it('should be get group entity when invoke class instance property group [JPT-405]', () => {
       groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
@@ -88,7 +83,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
         expect(groupService.getById).toHaveBeenCalled();
         expect(groupStore.set).toHaveBeenCalled();
         done();
-      },         500);
+      }, 0);
     });
 
     it('should show error toast when server response with error [JPT-694]', (done: Function) => {
@@ -115,7 +110,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
           type: ToastType.ERROR,
         });
         done();
-      },         500);
+      }, 0);
     });
 
     it('should use generalErrorHandler if error is not from backend', (done: Function) => {
@@ -136,7 +131,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
         expect(groupService.getById).toHaveBeenCalled();
         expect(groupStore.set).not.toHaveBeenCalled();
         expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
-      },         500);
+      }, 0);
     });
   });
 });
