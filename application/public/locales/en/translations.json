@@ -785,6 +785,7 @@
   },
   "integration": {},
   "setting": {
+    "playSound": "Play sound",
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
       "network": "We weren't able to save your settings. Check your network connection, then try again.",

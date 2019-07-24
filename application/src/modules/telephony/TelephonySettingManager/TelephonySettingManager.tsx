@@ -36,14 +36,14 @@ import {
 import { buildTitleAndDesc } from '@/modules/setting/utils';
 
 const DefaultPhoneAppDataTrackingOption: {
-  [key in CALLING_OPTIONS]: string
+  [key in CALLING_OPTIONS]: string;
 } = {
   glip: 'Use RingCentral App (this app)',
   ringcentral: 'Use RingCentral Phone',
 };
 
 const CallerIDDataTrackingOption: {
-  [key in IPhoneNumberRecord['usageType']]: string
+  [key in IPhoneNumberRecord['usageType']]: string;
 } = {
   DirectNumber: '"DID", personal direct number',
   MainCompanyNumber: '"companyMain", company main number',
@@ -122,12 +122,6 @@ class TelephonySettingManager {
                 type: 'phoneGeneral',
               },
             },
-            {
-              id: SETTING_ITEM__PHONE_E911,
-              automationId: 'e911Setting',
-              type: RegionSettingItem,
-              weight: 300,
-            },
           ],
         },
       ],
@@ -170,6 +164,7 @@ class TelephonySettingManager {
     );
     this.registerSounds();
   }
+
   registerSounds() {
     this._settingService.registerItem(this._scope, SETTING_SECTION__SOUNDS, {
       id: PHONE_SETTING_ITEM.SOUND_INCOMING_CALL,

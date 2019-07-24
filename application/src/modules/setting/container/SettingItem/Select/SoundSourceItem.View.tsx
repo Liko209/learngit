@@ -13,6 +13,7 @@ import { ISoundNotification, Sounds } from '@/modules/notification/interface';
 import { IMedia } from '@/interface/media';
 import { AUDIO_SOUNDS_INFO, RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
 import { useHotKey } from 'jui/hoc/HotKeys';
+import { useTranslation } from 'react-i18next';
 
 type SoundItemProps = {
   value: AUDIO_SOUNDS_INFO;
@@ -68,9 +69,9 @@ const SoundSourcePlayer = (props: SoundItemProps) => {
     },
     [media],
   );
-
+  const { t } = useTranslation();
   return (
-    <div data-sound-type={soundName}>
+    <div data-sound-type={soundName} aria-label={t('setting.playSound')}>
       <AudioPlayerButton
         media={media}
         actionIcon={{

@@ -17,6 +17,7 @@ enum PHONE_SETTING_ITEM {
   PHONE_EXTENSIONS = SettingEntityIds.Phone_Extension,
   SOUND_INCOMING_CALL = SettingEntityIds.Audio_IncomingCalls,
   SOUND_VOICE_MAIL = SettingEntityIds.Audio_NewVoicemail,
+  PHONE_E911 = SettingEntityIds.Phone_E911,
 }
 export {
   PHONE_SETTING_ITEM,

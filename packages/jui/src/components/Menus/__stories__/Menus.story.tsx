@@ -35,25 +35,6 @@ storiesOf('Components/Menus', module)
   .add('Text MenuItem', () => (
     <JuiMenuItem onClick={action('onClick Profile')}>Profile</JuiMenuItem>
   ))
-  .add('Text MenuItem with secondary action', () => (
-    <JuiMenuList style={{ width: '180px' }}>
-      <JuiMenuItem
-        onClick={action('onClick Profile')}
-        secondaryAction={
-          <JuiIconButton
-            component="a"
-            aria-label={'sound'}
-            tooltipTitle={'play'}
-            size="small"
-          >
-            download
-          </JuiIconButton>
-        }
-      >
-        Profile
-      </JuiMenuItem>
-    </JuiMenuList>
-  ))
   .add('Text MenuItem With Icon', () => (
     <JuiMenuItem onClick={action('onClick Profile')} icon="star">
       Profile
