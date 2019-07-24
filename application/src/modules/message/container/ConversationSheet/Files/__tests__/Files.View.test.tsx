@@ -159,7 +159,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiFileWithPreview)
         .shallow()
-        .find(FileCardMedia)
+        .find(FileCard)
         .simulate('click', mockEvent);
 
       setTimeout(() => {
