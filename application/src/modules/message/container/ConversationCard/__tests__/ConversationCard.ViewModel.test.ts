@@ -6,6 +6,8 @@
 import { test, testable } from 'shield';
 import { mockEntity, mockGlobalValue } from 'shield/application';
 import { registerModule } from 'shield/utils';
+import { TypeDictionary } from 'sdk/utils';
+import { ENTITY_NAME } from '@/store';
 import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
@@ -234,6 +236,89 @@ describe('TestConversationCardViewModel', () => {
       const conversationCardVM = new ConversationCardViewModel({ id: 1 });
       expect(conversationCardVM.isEditMode).toBe(true);
       expect(conversationCardVM.isEditMode).toBe(false);
+    }
+  }
+
+  const repliedEntityMock = (typeId?: TypeDictionary, parentId?: number) => (
+    name: any,
+  ) => {
+    if (name === ENTITY_NAME.POST) {
+      return { parentId };
+    }
+
+    if ((name = ENTITY_NAME.ITEM)) {
+      return { typeId };
+    }
+  };
+
+  @testable
+  class repliedEntity {
+    @test('should not show replied entity when not parent id. [JPT-2571]')
+    @mockEntity(repliedEntityMock())
+    t1() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toBe(null);
+    }
+
+    @test('should show task replied when replied to a task. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_TASK, 1))
+    t2() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'task_incomplete',
+      });
+    }
+
+    @test('should show event replied when replied to a event. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_EVENT, 1))
+    t3() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'event',
+      });
+    }
+
+    @test('should show code replied when replied to a code. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_CODE, 1))
+    t4() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'code',
+      });
+    }
+
+    @test('should show link replied when replied to a link. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_LINK, 1))
+    t5() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'link',
+      });
+    }
+
+    @test('should show file replied when replied to a file. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_FILE, 1))
+    t6() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'attachment',
+      });
+    }
+
+    @test('should show note replied when replied to a note. [JPT-2571]')
+    @mockEntity(repliedEntityMock(TypeDictionary.TYPE_ID_PAGE, 1))
+    t7() {
+      const conversationCardVM = new ConversationCardViewModel({ id: 1 });
+
+      expect(conversationCardVM.repliedEntity).toMatchObject({
+        iconName: 'notes',
+      });
     }
   }
 });

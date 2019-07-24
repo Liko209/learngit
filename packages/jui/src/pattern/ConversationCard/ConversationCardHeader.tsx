@@ -67,10 +67,18 @@ type ConversationCardHeaderProps = {
   children?: React.ReactNode;
   from?: JSX.Element;
   notification?: React.ReactNode;
+  repliedEntity?: React.ReactNode;
 };
 
+const JuiConversationCardHeaderAction = styled.span`
+  flex: none;
+  margin: ${spacing(0, 1)};
+  color: ${grey('500')};
+  ${typography('caption1')};
+`;
+
 class JuiConversationCardHeader extends React.PureComponent<
-ConversationCardHeaderProps
+  ConversationCardHeaderProps
 > {
   leftSection: HTMLDivElement | null;
   constructor(props: ConversationCardHeaderProps) {
@@ -109,7 +117,8 @@ ConversationCardHeaderProps
       }
     });
     shareChildren.forEach(
-      shareChild => ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
+      shareChild =>
+        ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
     );
   }
 
@@ -128,7 +137,13 @@ ConversationCardHeaderProps
 
   render() {
     const {
-      name, status, notification, from, time, children,
+      name,
+      status,
+      notification,
+      repliedEntity,
+      from,
+      time,
+      children,
     } = this.props;
     return (
       <StyledConversationCardHeader>
@@ -144,6 +159,7 @@ ConversationCardHeaderProps
               {notification}
             </StyledNotification>
           ) : null}
+          {repliedEntity}
           {from}
         </StyledLeftSection>
         {(time || children) && (
@@ -157,5 +173,9 @@ ConversationCardHeaderProps
   }
 }
 
-export { JuiConversationCardHeader, StyledTime };
+export {
+  JuiConversationCardHeader,
+  JuiConversationCardHeaderAction,
+  StyledTime,
+};
 export default JuiConversationCardHeader;
