@@ -15,7 +15,7 @@ describe('PhoneNumberController', () => {
   const mockPersonService = {
     getPhoneNumbers: jest.fn(),
   };
-  beforeEach(() => {
+  beforeAll(() => {
     ServiceLoader.getInstance = jest.fn().mockReturnValue(mockPersonService);
     phoneNumberController = new PhoneNumberController();
   });
