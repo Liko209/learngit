@@ -82,14 +82,17 @@ describe('AudioTeamMessagesSettingHandler', () => {
   });
 
   describe('fetchUserSettingEntity()', () => {
-    it('should get new messages setting value ', async () => {
+    it('should get new messages setting value  JPT-2540', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_TEAM_MESSAGES]: SOUNDS_TYPE.Log_Drum,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
+      const source = result.source || [];
+      expect(source.length).toEqual(13);
+      expect(source[source.length - 1].id).toEqual(SOUNDS_TYPE.Off);
     });
-    it('should return value is default Log_Drum when profile is undefined', async () => {
+    it('should return value is default Log_Drum when profile is undefined JPT-2538', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_INCOMING_CALLS]: undefined,
       });

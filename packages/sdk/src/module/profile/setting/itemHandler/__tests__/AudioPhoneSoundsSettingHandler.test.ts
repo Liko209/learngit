@@ -25,6 +25,7 @@ import {
   CALLING_OPTIONS,
 } from '../../../constants';
 import { ESettingItemState } from 'sdk/framework/model/setting';
+import { SOURCE_TYPE } from 'sdk/module/telephony/controller/mediaDeviceDelegate/types';
 
 jest.mock('sdk/module/profile');
 
@@ -104,14 +105,17 @@ describe('AudioPhoneSoundsSettingHandler', () => {
   });
 
   describe('fetchUserSettingEntity()', () => {
-    it('should get new messages setting value ', async () => {
+    it('should get new messages setting value JPT-2540', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_INCOMING_CALLS]: RINGS_TYPE.High_Gong,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
+      const source = result.source || [];
+      expect(source.length).toEqual(19);
+      expect(source[source.length - 1].id).toEqual(RINGS_TYPE.Off);
     });
-    it('should return value is default High_Gong when profile is undefined', async () => {
+    it('should return value is default High_Gong when profile is undefined JPT-2538', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: undefined,
       });
@@ -120,7 +124,7 @@ describe('AudioPhoneSoundsSettingHandler', () => {
       expect(result.value).toEqual(defaultRings);
     });
 
-    it('should return state is invisible when default app is RingCentral Phone', async () => {
+    it('should return state is invisible when default app is RingCentral Phone JPT-2536', async () => {
       const value = {
         id: SOUNDS_TYPE.Ching,
         url: `${AudioSourceUrl}${SOUNDS_TYPE.Ching}`,
