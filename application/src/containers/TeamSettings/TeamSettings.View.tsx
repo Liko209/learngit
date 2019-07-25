@@ -3,8 +3,6 @@
  * @Date: 2019-01-15 15:18:00
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -24,7 +22,7 @@ import {
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { teamActionHandler } from '@/common/handleTeamAction';
-import { ViewProps } from './types';
+import { ViewProps, State } from './types';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { GroupAvatar } from '@/containers/Avatar';
 import { toTitleCase } from '@/utils/string';
@@ -32,14 +30,7 @@ import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
-
-type State = {
-  name: string;
-  description: string;
-  allowMemberAddMember: boolean;
-  allowMemberPost: boolean;
-  allowMemberPin: boolean;
-};
+import { dataAnalysis } from 'sdk';
 
 type TeamSettingsProps = WithTranslation & ViewProps;
 
@@ -57,6 +48,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         allowMemberAddMember,
         allowMemberPost,
         allowMemberPin,
+        allowMemberAtTeamMention,
       },
     } = props;
     this.state = {
@@ -65,6 +57,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       allowMemberAddMember,
       allowMemberPost,
       allowMemberPin,
+      allowMemberAtTeamMention,
     };
   }
 
@@ -75,6 +68,10 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   static DESCRIPTION_INPUT_PROPS = {
     maxLength: DESC_MAX_LENGTH,
   };
+
+  componentDidMount() {
+    dataAnalysis.page('Jup_Web/DT_Messaging_Team_Settings');
+  }
 
   handleClose = () => portalManager.dismissLast();
   handleOk = async () => {
@@ -109,9 +106,23 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     e: React.ChangeEvent<HTMLInputElement>,
     checked: boolean,
   ) => {
+    if (!checked) {
+      this.setState({
+        allowMemberAtTeamMention: checked,
+      });
+    }
     this.setState({
       allowMemberPost: checked,
       allowMemberPin: checked,
+    });
+  };
+
+  handleAllowMemberAtTeamMention = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    this.setState({
+      allowMemberAtTeamMention: checked,
     });
   };
 
@@ -124,7 +135,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   };
 
-  handleLeaveTeamClick = (e: React.MouseEvent<any>) => {
+  handleLeaveTeamClick = () => {
     const { t, groupName } = this.props;
     portalManager.dismissLast();
     Dialog.confirm({
@@ -175,7 +186,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             label={t('people.team.teamName')}
             data-test-automation-id="teamName"
             value={this.state.name}
-            fullWidth={true}
+            fullWidth
             error={!!nameErrorMsg}
             inputProps={TeamSettings.NAME_INPUT_PROPS}
             helperText={t(nameErrorMsg || '')}
@@ -186,7 +197,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             data-test-automation-id="teamDescription"
             value={this.state.description}
             inputProps={TeamSettings.DESCRIPTION_INPUT_PROPS}
-            fullWidth={true}
+            fullWidth
             onChange={this.handleDescriptionChange}
           />
         </EditSectionRight>
@@ -223,6 +234,15 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
                 data-test-automation-id="allowPostToggle"
                 checked={this.state.allowMemberPost}
                 onChange={this.handleAllowMemberPostChange}
+              />
+            </SubSectionListItem>
+            <JuiDivider />
+            <SubSectionListItem label={t('people.team.atTeamMention')}>
+              <JuiToggleButton
+                data-test-automation-id="allowMemberAtTeamMention"
+                checked={this.state.allowMemberAtTeamMention}
+                disabled={!this.state.allowMemberPost}
+                onChange={this.handleAllowMemberAtTeamMention}
               />
             </SubSectionListItem>
             <JuiDivider />
@@ -312,8 +332,8 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       !this.state.name || this.state.name.trim().length <= 0;
     return (
       <JuiModal
-        fillContent={true}
-        open={true}
+        fillContent
+        open
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn, loading: saving }}
         title={t('setting.teamSettings')}

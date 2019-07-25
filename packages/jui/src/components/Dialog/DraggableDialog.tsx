@@ -5,7 +5,10 @@ import Draggable, {
 } from 'react-draggable';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiPaper, JuiPaperProps } from '../Paper';
-import styled from '../../foundation/styled-components';
+import styled, {
+  withTheme,
+  ThemeProps,
+} from '../../foundation/styled-components';
 import Transition from 'react-transition-group/Transition';
 import { JuiFade } from '../Animation';
 import { TransitionProps } from '@material-ui/core/transitions/transition';
@@ -22,7 +25,12 @@ type PaperProps = {
   TransitionComponent?: React.ComponentType<TransitionProps | any>;
 } & JuiPaperProps;
 
-type JuiDraggableDialogProps = PaperProps & JuiDialogProps;
+type JuiDraggableDialogProps = PaperProps &
+  JuiDialogProps &
+  Partial<ThemeProps> & {
+    goToTop?: boolean;
+    forceToTop?: boolean;
+  };
 
 const PaperComponent = ({
   x,
@@ -70,8 +78,24 @@ const StyledDraggableDialog = styled(JuiDialog)`
   }
 `;
 
-class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
-  render() {
+class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
+  componentDidUpdate(prevProps: JuiDraggableDialogProps) {
+    const { goToTop, theme, forceToTop } = this.props;
+    const { goToTop: prevGoToTop } = prevProps;
+    if (
+      ((!prevGoToTop && goToTop) || (prevGoToTop && !goToTop) || forceToTop) &&
+      theme
+    ) {
+      const dialogs = document.querySelectorAll<HTMLElement>('[role="dialog"]');
+      dialogs.forEach(dialog => {
+        dialog.style.zIndex = goToTop
+          ? `${theme.zIndex.modal - 1}`
+          : `${theme.zIndex.modal}`;
+      });
+    }
+  }
+
+  render(): React.ReactNode {
     const {
       x,
       y,
@@ -82,6 +106,9 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       PaperProps,
       open,
       TransitionComponent,
+      theme,
+      goToTop,
+      forceToTop,
       ...rest
     } = this.props;
     const paperProps = {
@@ -118,5 +145,7 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
     );
   }
 }
+
+const JuiDraggableDialog = withTheme(DraggableDialog);
 
 export { JuiDraggableDialog, DraggableEvent };

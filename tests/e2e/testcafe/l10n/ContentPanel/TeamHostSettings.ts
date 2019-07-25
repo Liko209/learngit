@@ -38,6 +38,10 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
     await conversationPage.waitUntilPostsBeLoaded;
   });
 
+  await h(t).withLog('And close the right rail', async () => {
+    app.homePage.messageTab.rightRail.fold();
+  }, true);
+
   await h(t).withLog('And I click members button', async () => {
     await t.click(conversationPage.memberCountIcon);
   });

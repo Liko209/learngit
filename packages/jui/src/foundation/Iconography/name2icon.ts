@@ -150,6 +150,7 @@ const name2icon = {
   unread: 'unread',
   dial: 'dial',
   forwardcall: 'forwardcall',
+  speaker: 'speaker',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -6,12 +6,13 @@
 /* eslint-disable */
 
 import { ReactNode } from 'react';
-import { observable } from 'mobx';
+import { observable, action } from 'mobx';
 
 class MessageStore {
   @observable conversationHeaderExtensions: ReactNode[] = [];
   @observable draftMap: Map<number, string> = new Map();
   @observable currentFocusedInput?: number;
+  @observable isRightRailOpen: boolean = true;
   addConversationHeaderExtension(extension: ReactNode) {
     this.conversationHeaderExtensions.push(extension);
   }
@@ -21,6 +22,11 @@ class MessageStore {
 
   removePostDraft(id: number) {
     this.draftMap.delete(id);
+  }
+
+  @action
+  setIsRightRailOpen(bool: boolean) {
+    this.isRightRailOpen = bool;
   }
 }
 
