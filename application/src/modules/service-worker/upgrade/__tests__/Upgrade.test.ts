@@ -26,10 +26,18 @@ ServiceLoader.getInstance = jest
       };
     }
 
+    if (ServiceConfig.SYNC_SERVICE === serviceName) {
+      return {
+        isDataSyncing: () => {
+          return false;
+        },
+      };
+    }
+
     return null;
   });
 
-describe.skip('Upgrade', () => {
+describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -53,6 +61,7 @@ describe.skip('Upgrade', () => {
 
   it('should reload when new update event by waiting worker state', () => {
     upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
     upgradeHandler.setServiceWorkerURL('/service-worker.js', false);
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(false);
@@ -67,6 +76,7 @@ describe.skip('Upgrade', () => {
 
   it('should not run into infinite reload when new update event by waiting worker', () => {
     upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
     upgradeHandler._removeWorkingWorkerFlag();
 
     upgradeHandler.setServiceWorkerURL('/service-worker.js', true);

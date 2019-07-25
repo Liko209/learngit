@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
+import { SyncService } from 'sdk/module/sync/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import _ from 'lodash';
@@ -268,7 +269,8 @@ class Upgrade {
   private _backgroundTimerHandler() {
     if (this._isNearToPowerSavingByTimerDetection()) {
       mainLogger.info(
-        `${logTag}Reset user action time due to power saving by timer detection: ${this._distanceToLastBackgroundTimerFire()}`,
+        `${logTag}Reset user action time due to power saving by timer detection: ${this._distanceToLastBackgroundTimerFire() /
+          1000}`,
       );
       // To avoid do refresh when resume computer
       this._lastUserActionTime = new Date();
@@ -328,13 +330,6 @@ class Upgrade {
       return false;
     }
 
-    if (this._hasInProgressCall()) {
-      mainLogger.info(
-        `${logTag}[${triggerSource}] Forbidden to reload due to call in progress`,
-      );
-      return false;
-    }
-
     if (this._dialogIsPresenting()) {
       mainLogger.info(
         `${logTag}[${triggerSource}] Forbidden to reload due to dialog is presenting`,
@@ -349,12 +344,23 @@ class Upgrade {
       return false;
     }
 
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    if (itemService.hasUploadingFiles()) {
+    if (this._hasInProgressCall()) {
       mainLogger.info(
-        `${logTag}[${triggerSource}] Forbidden to reload due to uploading file`,
+        `${logTag}[${triggerSource}] Forbidden to reload due to call in progress`,
+      );
+      return false;
+    }
+
+    if (this._isInDataSyncing()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to data syncing`,
+      );
+      return false;
+    }
+
+    if (this._isInFileUploading()) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to file uploading`,
       );
       return false;
     }
@@ -406,6 +412,20 @@ class Upgrade {
       ServiceConfig.TELEPHONY_SERVICE,
     );
     return telephony.getAllCallCount() > 0;
+  }
+
+  private _isInDataSyncing() {
+    const service = ServiceLoader.getInstance<SyncService>(
+      ServiceConfig.SYNC_SERVICE,
+    );
+    return service.isDataSyncing();
+  }
+
+  private _isInFileUploading() {
+    const service = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    return service.hasUploadingFiles();
   }
 
   private _appInFocus() {
