@@ -38,6 +38,7 @@ enum SettingEntityIds {
   Phone_SpeakerSource,
   Phone_RingerSource,
   Phone_Volume,
+  Phone_E911,
   Notification_DirectMessages,
   Notification_Mentions,
   Notification_Teams,
