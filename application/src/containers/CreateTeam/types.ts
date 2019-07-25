@@ -29,4 +29,12 @@ type ViewProps = WithTranslation & {
   loading: boolean;
 };
 
-export { ViewProps };
+enum INIT_ITEMS {
+  IS_PUBLIC = 'isPublic',
+  CAN_ADD_MEMBER = 'canAddMember',
+  CAN_POST = 'canPost',
+  CAN_AT_TEAM_MENTION = 'canAtTeamMention',
+  CAN_PIN = 'canPin',
+}
+
+export { ViewProps, INIT_ITEMS };
