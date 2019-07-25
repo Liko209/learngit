@@ -109,10 +109,6 @@ test.meta(<ITestMeta>{
   });
 });
 
-//////////////////////
-
-
-
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
@@ -176,9 +172,6 @@ test.meta(<ITestMeta>{
   await h(t).withLog('And I jump to bottom',async () =>{
     await conversationPage.expectStreamScrollToBottom();
   });
-
-
-
 });
 
 
