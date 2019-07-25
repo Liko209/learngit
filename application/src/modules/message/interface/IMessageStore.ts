@@ -12,9 +12,11 @@ interface IMessageStore {
   conversationHeaderExtensions: React.ReactNode[];
   draftMap: Map<number, string>;
   currentFocusedInput?: number;
+  isRightRailOpen: boolean;
   addConversationHeaderExtension(extension: React.ReactNode): void;
   savePostDraft(id: number, draft: string): void;
   removePostDraft(id: number): void;
+  setIsRightRailOpen(bool: boolean): void;
 }
 
 export { IMessageStore };
