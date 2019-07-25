@@ -77,9 +77,6 @@ describe('SearchPersonController', () => {
           case ServiceConfig.GROUP_SERVICE:
             result = groupService;
             break;
-          case ServiceConfig.ITEM_SERVICE:
-            result = itemService;
-            break;
           case ServiceConfig.ACCOUNT_SERVICE:
             result = { userConfig: AccountUserConfig.prototype };
             break;
@@ -703,7 +700,8 @@ describe('SearchPersonController', () => {
         await entityCacheController.put(person as Person);
       }
     }
-    it('should return all phone numbers when is name matched', async () => {
+
+    it('should return all extension phone numbers when is name matched and is co-worker when name matched', async () => {
       await initTestData();
 
       const userConfig = ServiceLoader.getInstance<AccountService>(
@@ -720,7 +718,7 @@ describe('SearchPersonController', () => {
       expect(result!.terms.length).toBe(2);
       expect(result!.terms[0]).toBe('cat');
       expect(result!.terms[1]).toBe('bruce');
-      expect(result!.phoneContacts.length).toBe(20);
+      expect(result!.phoneContacts.length).toBe(10);
     });
 
     it('should only return direct number when all are guests', async () => {

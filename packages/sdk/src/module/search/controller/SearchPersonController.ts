@@ -28,8 +28,8 @@ import {
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
-import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation/src';
+import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { mainLogger } from 'foundation';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
 
@@ -41,7 +41,7 @@ type MatchedInfo = {
 };
 
 class SearchPersonController {
-  constructor(private _searchService: ISearchService) { }
+  constructor(private _searchService: ISearchService) {}
 
   async doFuzzySearchPhoneContacts(
     options: FuzzySearchPersonOptions,
@@ -56,23 +56,46 @@ class SearchPersonController {
     const phoneContacts: PhoneContactEntity[] = [];
     const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
 
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const myCompanyId = userConfig.getCurrentCompanyId();
     persons.sortableModels.forEach((sortablePerson: SortableModel<Person>) => {
-      sortablePerson.extraData &&
-        sortablePerson.extraData.forEach((phoneNumber: PhoneNumber) => {
+      const phoneNumbers = sortablePerson.extraData as PhoneNumber[];
+      if (phoneNumbers) {
+        //for co-workers, we should only show matched extension
+        const isCoWorker = sortablePerson.entity.company_id === myCompanyId;
+        let showExtensionOnly = false;
+        if (isCoWorker) {
+          showExtensionOnly = phoneNumbers.some(
+            (value: PhoneNumber, index: number, array: PhoneNumber[]) => {
+              return value.phoneNumberType === PhoneNumberType.Extension;
+            },
+          );
+        }
+
+        phoneNumbers.forEach((phoneNumber: PhoneNumber) => {
           if (
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.length ===
-            0 ||
+              0 ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
               item => phoneNumber.id.includes(item.formatted),
             )
           ) {
-            results.phoneContacts.push({
-              phoneNumber,
-              id: `${sortablePerson.entity.id}.${phoneNumber.id}`,
-              person: sortablePerson.entity,
-            });
+            if (showExtensionOnly) {
+              if (phoneNumber.phoneNumberType === PhoneNumberType.Extension) {
+                results.phoneContacts.push(
+                  this._buildPhoneContact(phoneNumber, sortablePerson.entity),
+                );
+              }
+            } else {
+              results.phoneContacts.push(
+                this._buildPhoneContact(phoneNumber, sortablePerson.entity),
+              );
+            }
           }
         });
+      }
     });
     mainLogger.debug(
       'search_person',
@@ -84,6 +107,14 @@ class SearchPersonController {
 
     performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PHONE_NUMBER });
     return results;
+  }
+
+  private _buildPhoneContact(phoneNumber: PhoneNumber, person: Person) {
+    return {
+      phoneNumber,
+      person,
+      id: `${person.id}.${phoneNumber.id}`,
+    };
   }
 
   async doFuzzySearchPersons(
@@ -304,14 +335,14 @@ class SearchPersonController {
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
       ? await this._searchService.getRecentSearchRecordsByType(
-        RecentSearchTypes.PEOPLE,
-      )
+          RecentSearchTypes.PEOPLE,
+        )
       : undefined;
 
     const individualGroups = recentFirst
       ? ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      ).getIndividualGroups()
+          ServiceConfig.GROUP_SERVICE,
+        ).getIndividualGroups()
       : undefined;
 
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -392,11 +423,11 @@ class SearchPersonController {
         }
         const recentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-            person.id,
-            groupConfigService,
-            recentSearchedPersons!,
-            individualGroups!,
-          )
+              person.id,
+              groupConfigService,
+              recentSearchedPersons!,
+              individualGroups!,
+            )
           : 0;
         return {
           id: person.id,
