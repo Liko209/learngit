@@ -27,10 +27,19 @@ type NotificationAction = {
   handler: NotificationActionHandler;
 };
 
+enum NotificationStrategy {
+  SOUND_AND_UI_NOTIFICATION,
+  SOUND_OR_UI_NOTIFICATION,
+  SOUND_ONLY,
+  UI_NOTIFICATION_ONLY,
+}
+
 type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
   data: { id: NotificationId; scope: string; priority: NOTIFICATION_PRIORITY };
   actions?: NotificationAction[];
   onClick?: NotificationActionHandler;
+  strategy?: NotificationStrategy;
+  sound?: Sounds;
 };
 
 type Global = {
@@ -71,4 +80,5 @@ export {
   NOTIFICATION_PRIORITY,
   INotificationSettingManager,
   INotificationPermission,
+  NotificationStrategy,
 };

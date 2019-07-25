@@ -15,9 +15,6 @@ export abstract class AbstractNotificationManager {
   constructor(protected _scope: string) {}
 
   show(title: string, opts: NotificationOpts) {
-    if (document.hasFocus()) {
-      return;
-    }
     this._notificationService.show(title, opts);
   }
 
