@@ -109,6 +109,14 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.state();
   }
 
+  getEmergencyAddress() {
+    const sipProv = this._rtcAccount.getSipProv();
+    if (sipProv && sipProv.device) {
+      return sipProv.device.emergencyServiceAddress;
+    }
+    return undefined;
+  }
+
   setLastCalledNumber(num: string) {
     const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,

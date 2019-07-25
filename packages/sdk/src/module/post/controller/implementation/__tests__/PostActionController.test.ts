@@ -77,12 +77,12 @@ describe('PostController', () => {
       expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
     });
   });
-  describe('editPost', () => {
+  describe('editSuccessPost', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
     it('should call put when edit post', async () => {
-      await postActionController.editPost({
+      await postActionController.editSuccessPost({
         postId: 4,
         groupId: 3,
         text: '',
@@ -90,6 +90,24 @@ describe('PostController', () => {
       expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
     });
   });
+
+  describe('editFailedPost', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+    it('should call put when edit post', async () => {
+      await postActionController.editFailedPost(
+        {
+          postId: -4,
+          groupId: 3,
+          text: '',
+        },
+        async (newPost: Post) => newPost,
+      );
+      expect(testPartialModifyController.updatePartially).toHaveBeenCalled();
+    });
+  });
+
   describe('deletePost', () => {
     beforeEach(() => {
       daoManager.getDao.mockReturnValueOnce(postDao);
