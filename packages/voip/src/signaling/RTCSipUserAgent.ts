@@ -40,6 +40,9 @@ enum WEBPHONE_REGISTER_EVENT {
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
   private _switchBackTimer: NodeJS.Timeout | null = null;
+  private _provisionInfo: RTCSipProvisionInfo | null = null;
+  private _provisionOptions: ProvisionDataOptions | null = null;
+
   public restartUA(
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
@@ -47,7 +50,9 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (this._webphone) {
       this._destroy();
     }
-    this._createWebPhone(provisionData, options);
+    this._provisionInfo = provisionData;
+    this._provisionOptions = options;
+    this._createWebPhone(this._provisionInfo, this._provisionOptions);
   }
 
   private _destroy() {
@@ -118,12 +123,13 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     return this._webphone.userAgent.invite(phoneNumber, options);
   }
 
-  public reRegister(forceToMain: boolean) {
+  public reRegister() {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
-    if (!this._webphone) {
+    if (!this._webphone || !this._provisionInfo || !this._provisionOptions) {
       return;
     }
-    this._webphone.userAgent.transport.reconnect(forceToMain);
+    this._destroy();
+    this._createWebPhone(this._provisionInfo, this._provisionOptions);
   }
 
   public unregister() {

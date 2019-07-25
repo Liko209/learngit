@@ -17,37 +17,31 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
-  RTCSipProvisionInfo,
+  RTCSipProvisionInfo
 } from './types';
 import async, { AsyncQueue } from 'async';
-import { rtcLogger } from '../utils/RTCLoggerProxy';
 import _ from 'lodash';
-import { randomBetween } from '../utils/utils';
-import { kRetryIntervalList } from './constants';
 
-const LOG_TAG = 'RTCRegistrationManager';
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
   private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
-  private _retryTimer: NodeJS.Timeout | null = null;
-  private _failedTimes: number = 0;
   private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
 
-  public onReRegisterAction(forceToMainProxy: boolean): void {
+  public onReRegisterAction(): void {
     if (this._userAgent) {
-      this._userAgent.reRegister(forceToMainProxy);
+      this._userAgent.reRegister();
     }
   }
 
   public onProvisionReadyAction(
     provisionData: RTCSipProvisionInfo,
-    options: ProvisionDataOptions,
+    options: ProvisionDataOptions
   ): void {
     this._restartUA(provisionData, options);
   }
@@ -79,40 +73,37 @@ class RTCRegistrationManager extends EventEmitter2
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
         callback(task.data);
-      },
+      }
     );
     this._initUserAgentListener();
     this._initFsmObserve();
   }
 
   private _onEnterReady() {
-    this._clearRegisterRetryTimer();
-    this._failedTimes = 0;
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
-      RTC_ACCOUNT_STATE.REGISTERED,
+      RTC_ACCOUNT_STATE.REGISTERED
     );
   }
 
   private _onEnterRegInProgress() {
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
-      RTC_ACCOUNT_STATE.IN_PROGRESS,
+      RTC_ACCOUNT_STATE.IN_PROGRESS
     );
   }
 
   private _onEnterRegFailure() {
-    this._scheduleRegisterRetryTimer();
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
-      RTC_ACCOUNT_STATE.FAILED,
+      RTC_ACCOUNT_STATE.FAILED
     );
   }
 
   private _onEnterUnRegistered() {
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
-      RTC_ACCOUNT_STATE.UNREGISTERED,
+      RTC_ACCOUNT_STATE.UNREGISTERED
     );
   }
 
@@ -161,33 +152,30 @@ class RTCRegistrationManager extends EventEmitter2
         name: REGISTRATION_EVENT.PROVISION_READY,
         data: {
           provData: provisionData,
-          provOptions: provisionOptions,
-        },
+          provOptions: provisionOptions
+        }
       },
       (data?: any) => {
         this._fsm.provisionReady(data.provData, data.provOptions);
-      },
+      }
     );
   }
 
-  public reRegister(forceToMainProxy: boolean = false) {
+  public reRegister() {
     this._eventQueue.push(
       {
-        name: REGISTRATION_EVENT.RE_REGISTER,
-        data: {
-          forceToMain: forceToMainProxy,
-        },
+        name: REGISTRATION_EVENT.RE_REGISTER
       },
-      (data?: any) => {
-        this._fsm.reRegister(data.forceToMain);
-      },
+      () => {
+        this._fsm.reRegister();
+      }
     );
   }
 
   public makeCall(
     to: string,
     delegate: IRTCCallDelegate,
-    options: RTCCallOptions,
+    options: RTCCallOptions
   ) {
     this._eventQueue.push(
       {
@@ -195,16 +183,16 @@ class RTCRegistrationManager extends EventEmitter2
         data: {
           toNumber: to,
           callDelegate: delegate,
-          callOptions: options,
-        },
+          callOptions: options
+        }
       },
       (data?: any) => {
         this._fsm.makeOutgoingCall(
           data.toNumber,
           data.callDelegate,
-          data.callOptions,
+          data.callOptions
         );
-      },
+      }
     );
   }
 
@@ -213,13 +201,13 @@ class RTCRegistrationManager extends EventEmitter2
       { name: REGISTRATION_EVENT.NETWORK_CHANGE_TO_ONLINE },
       () => {
         this._fsm.networkChangeToOnline();
-      },
+      }
     );
   }
 
   public createOutgoingCallSession(
     phoneNumber: string,
-    options: RTCCallOptions,
+    options: RTCCallOptions
   ): any {
     return this._userAgent.makeCall(phoneNumber, options);
   }
@@ -227,11 +215,11 @@ class RTCRegistrationManager extends EventEmitter2
   public logout() {
     this._eventQueue.push(
       {
-        name: REGISTRATION_EVENT.LOGOUT,
+        name: REGISTRATION_EVENT.LOGOUT
       },
       () => {
         this._fsm.unregister();
-      },
+      }
     );
   }
 
@@ -240,7 +228,7 @@ class RTCRegistrationManager extends EventEmitter2
       { name: REGISTRATION_EVENT.UA_REGISTER_SUCCESS },
       () => {
         this._fsm.regSuccess();
-      },
+      }
     );
   }
 
@@ -265,7 +253,7 @@ class RTCRegistrationManager extends EventEmitter2
       { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
       () => {
         this._fsm.regFailed();
-      },
+      }
     );
   }
 
@@ -274,7 +262,7 @@ class RTCRegistrationManager extends EventEmitter2
       { name: REGISTRATION_EVENT.UA_TRANSPORT_ERROR },
       () => {
         this._fsm.transportError();
-      },
+      }
     );
   }
 
@@ -283,7 +271,7 @@ class RTCRegistrationManager extends EventEmitter2
       { name: REGISTRATION_EVENT.UA_SWITCH_BACK_PROXY },
       () => {
         this._fsm.switchBackProxy();
-      },
+      }
     );
   }
 
@@ -295,43 +283,9 @@ class RTCRegistrationManager extends EventEmitter2
     this._fsm.receiveIncomingInvite(session);
   }
 
-  private _scheduleRegisterRetryTimer() {
-    const interval = this._calculateNextRetryInterval();
-    this._failedTimes++;
-    rtcLogger.debug(
-      LOG_TAG,
-      `Schedule retry registration in ${interval} seconds`,
-    );
-    if (this._retryTimer) {
-      clearTimeout(this._retryTimer);
-    }
-    this._retryTimer = setTimeout(() => {
-      this.reRegister();
-    }, interval * 1000);
-  }
-
-  private _clearRegisterRetryTimer() {
-    rtcLogger.debug(LOG_TAG, 'Clear retry registration timer');
-    if (this._retryTimer) {
-      clearTimeout(this._retryTimer);
-    }
-    this._retryTimer = null;
-  }
-
-  private _calculateNextRetryInterval(): number {
-    const index =
-      this._failedTimes < kRetryIntervalList.length
-        ? this._failedTimes
-        : kRetryIntervalList.length - 1;
-    return randomBetween(
-      kRetryIntervalList[index].min,
-      kRetryIntervalList[index].max,
-    );
-  }
-
   private _restartUA(
     provisionData: RTCSipProvisionInfo,
-    options: ProvisionDataOptions,
+    options: ProvisionDataOptions
   ) {
     const cloneOption = _.cloneDeep(options);
     if (this._userInfo) {
