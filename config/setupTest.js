@@ -48,8 +48,14 @@ beforeAll(() => {
     process.env.LISTENING_TO_UNHANDLED_REJECTION = true;
   }
 
-  window.localStorage = new FakeStorage();
-  window.sessionStorage = new FakeStorage();
+  Object.defineProperty(window, 'localStorage', {
+    value: new FakeStorage(),
+    writable: true
+  })
+  Object.defineProperty(window, 'sessionStorage', {
+    value: new FakeStorage(),
+    writable: true
+  })
 })
 
 afterAll(() => {
