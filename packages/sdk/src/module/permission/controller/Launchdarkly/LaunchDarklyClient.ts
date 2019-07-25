@@ -10,7 +10,7 @@ import {
   LDClient,
 } from 'launchdarkly-js-client-sdk';
 import { UserPermissionType } from 'sdk/module/permission';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation';
 
 type Options = {
   clientId: string;
@@ -60,6 +60,12 @@ class LaunchDarklyClient {
       this._flags = this._ldclient.allFlags();
       mainLogger.log('launchDarkly ready event flags', this._flags);
       options.readyCallback();
+    });
+    this._ldclient.on('failed', () => {
+      mainLogger.log('launchDarkly init failed');
+    });
+    this._ldclient.on('error', () => {
+      mainLogger.log('launchDarkly init error');
     });
   }
 }

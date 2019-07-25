@@ -6,10 +6,14 @@
 import { PermissionService } from './service/PermissionService';
 import UserPermissionType, { FeatureFlagType } from './types';
 import { IPermissionController } from './controller/IPermissionController';
+import { LaunchDarklyController } from './controller/Launchdarkly/LaunchDarklyController';
+import { SplitIOController } from './controller/SplitIO/SplitIOController';
 
 export {
   PermissionService,
   UserPermissionType,
   IPermissionController,
   FeatureFlagType,
+  LaunchDarklyController,
+  SplitIOController,
 };

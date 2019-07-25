@@ -14,7 +14,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { Api } from 'sdk/api';
 import { EnvConfig } from 'sdk/module/env/config';
-import { mainLogger } from 'sdk';
+import { mainLogger } from 'foundation';
 import { PersonService } from 'sdk/module/person';
 
 class LaunchDarklyController extends AbstractPermissionController
@@ -46,7 +46,6 @@ class LaunchDarklyController extends AbstractPermissionController
       ServiceConfig.PERSON_SERVICE,
     );
     const person = await personService.getById(userId);
-
     const params = {
       clientId: Api.httpConfig.launchdarkly.clientId,
       user: {

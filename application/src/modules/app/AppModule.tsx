@@ -39,10 +39,6 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-import { PermissionService } from 'sdk/module/permission';
-import { LaunchDarklyController } from '@/permissions/Launchdarkly/LaunchDarklyController';
-import { SplitIOController } from '@/permissions/SplitIO/SplitIOController';
-
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped
@@ -192,13 +188,7 @@ class AppModule extends AbstractModule {
     await sdk.init({
       api,
       db,
-    });
-
-    const permissionService = ServiceLoader.getInstance<PermissionService>(
-      ServiceConfig.PERMISSION_SERVICE,
-    );
-    permissionService.injectControllers(new LaunchDarklyController());
-    permissionService.injectControllers(new SplitIOController());
+    });    
   }
 }
 
