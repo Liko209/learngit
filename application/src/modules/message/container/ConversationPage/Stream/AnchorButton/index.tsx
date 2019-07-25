@@ -47,17 +47,18 @@ const AnchorButton = React.memo(
         onClick: jumpToFirstUnread,
         loading: jumpToFirstUnreadLoading,
         arrowDirection: DIRECTION.UP,
+        'data-test-automation-id': 'jump-to-first-unread-button',
       };
     } else if (isAboveScrollToLatestCheckPoint || hasMore(DIRECTION.DOWN)) {
       text = `${t('message.stream.jumpToLatest')}`;
       props = {
         onClick: jumpToLatest,
         arrowDirection: DIRECTION.DOWN,
+        'data-test-automation-id': 'jump-to-most-recent-button',
       };
     } else {
       return null;
     }
-    console.log(shouldHaveJumpToUnreadButton);
     return (
       <AnchorButtonWrapper>
         <JuiLozengeButton {...props}>{text}</JuiLozengeButton>
