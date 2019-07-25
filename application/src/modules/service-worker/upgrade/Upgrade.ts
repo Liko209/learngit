@@ -9,10 +9,14 @@ import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import _ from 'lodash';
 
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
+const IDLE_THRESHOLD = 5 * 60 * 1000;
+const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 3;
+const USER_ACTION_EVENT_DEBOUNCE = 500;
 const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
@@ -21,7 +25,9 @@ class Upgrade {
   private _hasControllerChanged: boolean = false;
   private _refreshing: boolean = false;
   private _swURL: string;
-  private _lastCheckTime?: Date;
+  private _lastCheckUpdateTime?: Date;
+  private _lastBackgroundTimerFire?: Date = new Date();
+  private _lastUserActionTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
   queryInterval = DEFAULT_UPDATE_INTERVAL;
@@ -32,11 +38,23 @@ class Upgrade {
     );
 
     this._resetQueryTimer();
+    setInterval(
+      this._backgroundTimerHandler.bind(this),
+      BACKGROUND_TIMER_INTERVAL,
+    );
     window.addEventListener('online', this._onlineHandler.bind(this));
-    window.addEventListener('blur', this._blurHandler.bind(this));
+    document.addEventListener(
+      'mousemove',
+      _.debounce(this._mouseMoveHandler.bind(this), USER_ACTION_EVENT_DEBOUNCE),
+    );
+    document.addEventListener(
+      'keypress',
+      _.debounce(this._keyPressHandler.bind(this), USER_ACTION_EVENT_DEBOUNCE),
+    );
 
     // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
     powerMonitor.onUnlock(() => {
+      this._lastUserActionTime = new Date();
     });
   }
 
@@ -92,7 +110,7 @@ class Upgrade {
   }
 
   public skipWaitingIfAvailable(triggerSource: string) {
-    if (this._hasNewVersion && this._canDoReload()) {
+    if (this._hasNewVersion && this._canDoReload(triggerSource)) {
       this._hasNewVersion = false;
       mainLogger.info(
         `${logTag}[${triggerSource}] Will skip waiting due to new version is detected`,
@@ -104,7 +122,7 @@ class Upgrade {
   }
 
   public reloadIfAvailable(triggerSource: string) {
-    if (this._hasControllerChanged && this._canDoReload()) {
+    if (this._hasControllerChanged && this._canDoReload(triggerSource)) {
       // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
       if (!this._hasSkippedWaiting) {
         mainLogger.info(
@@ -188,7 +206,7 @@ class Upgrade {
       mainLogger.warn(`${logTag}Fail to start update. Invalid registration`);
       return;
     }
-    this._lastCheckTime = new Date();
+    this._lastCheckUpdateTime = new Date();
 
     const activeWorker = registration.active;
     const installingWorker = registration.installing;
@@ -218,18 +236,18 @@ class Upgrade {
     mainLogger.info(`${logTag}Checking new version`);
   }
 
-  private _isTimeOut(interval: number, fromDate?: Date) {
-    if (!fromDate) {
-      return true;
-    }
-
+  private _intervalToNow(fromDate?: Date) {
+    const fromTime = fromDate ? fromDate.getTime() : 0;
     const now = new Date();
-    const duration = now.getTime() - fromDate.getTime();
-    return duration > interval;
+    return now.getTime() - fromTime;
+  }
+
+  private _isTimeOut(interval: number, fromDate?: Date) {
+    return this._intervalToNow(fromDate) > interval;
   }
 
   private _onlineHandler() {
-    if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckTime)) {
+    if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckUpdateTime)) {
       this._resetQueryTimer();
       this._queryIfHasNewVersion();
     } else {
@@ -237,10 +255,42 @@ class Upgrade {
     }
   }
 
-  private _blurHandler() {
-    this.reloadIfAvailable('Blur upgrade');
+  private _distanceToLastBackgroundTimerFire() {
+    return this._intervalToNow(this._lastBackgroundTimerFire);
+  }
 
-    this.skipWaitingIfAvailable('Blur upgrade');
+  private _isNearToPowerSavingByTimerDetection() {
+    return (
+      this._distanceToLastBackgroundTimerFire() > BACKGROUND_TIMER_INTERVAL * 3
+    );
+  }
+
+  private _backgroundTimerHandler() {
+    if (this._isNearToPowerSavingByTimerDetection()) {
+      mainLogger.info(
+        `${logTag}Reset user action time due to power saving by timer detection: ${this._distanceToLastBackgroundTimerFire()}`,
+      );
+      // To avoid do refresh when resume computer
+      this._lastUserActionTime = new Date();
+    }
+
+    this._lastBackgroundTimerFire = new Date();
+
+    this._tryUpgradeIfAvailable('Timer upgrade');
+  }
+
+  private _tryUpgradeIfAvailable(triggerSource: string) {
+    this.reloadIfAvailable(triggerSource);
+
+    this.skipWaitingIfAvailable(triggerSource);
+  }
+
+  private _mouseMoveHandler() {
+    this._lastUserActionTime = new Date();
+  }
+
+  private _keyPressHandler() {
+    this._lastUserActionTime = new Date();
   }
 
   private _resetQueryTimer() {
@@ -254,31 +304,48 @@ class Upgrade {
     );
   }
 
-  private _canDoReload() {
+  private _canDoReload(triggerSource: string) {
+    const idleInterval = this._intervalToNow(this._lastUserActionTime);
+    if (idleInterval < IDLE_THRESHOLD) {
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to App is not in idle: ${idleInterval /
+          1000}`,
+      );
+      return false;
+    }
+
     if (this._appInFocus()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to App is in focus`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to App is in focus`,
+      );
       return false;
     }
 
     if (this._isInPowerSavingMode()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to power saving mode`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to power saving mode`,
+      );
       return false;
     }
 
     if (this._hasInProgressCall()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to call in progress`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to call in progress`,
+      );
       return false;
     }
 
     if (this._dialogIsPresenting()) {
       mainLogger.info(
-        `${logTag}Forbidden to reload due to dialog is presenting`,
+        `${logTag}[${triggerSource}] Forbidden to reload due to dialog is presenting`,
       );
       return false;
     }
 
     if (this._editorIsOnFocusAndNotEmpty()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to editor is focused`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to editor is focused`,
+      );
       return false;
     }
 
@@ -286,7 +353,9 @@ class Upgrade {
       ServiceConfig.ITEM_SERVICE,
     );
     if (itemService.hasUploadingFiles()) {
-      mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
+      mainLogger.info(
+        `${logTag}[${triggerSource}] Forbidden to reload due to uploading file`,
+      );
       return false;
     }
 
