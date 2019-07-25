@@ -22,6 +22,7 @@ class Sound {
   private _outputDevice: SoundOptions['outputDevice'];
   private _isDeviceSound: SoundOptions['isDeviceSound'];
   private _events: MediaEvents[] = [];
+  private _canplayThroughListener: () => void;
 
   private _duration: number;
   private _paused: boolean;
@@ -245,6 +246,8 @@ class Sound {
         this._node.removeEventListener('canplaythrough', listener, false);
       };
 
+      this._canplayThroughListener = listener;
+
       this._node.addEventListener('canplaythrough', listener, false);
     }
   }
@@ -267,6 +270,7 @@ class Sound {
     if (!this._node) {
       return;
     }
+    this._canplayThroughListener && this._node.removeEventListener('canplaythrough', this._canplayThroughListener, false);
     this._node.pause();
     this._node.currentTime = 0;
     this._resetSound();

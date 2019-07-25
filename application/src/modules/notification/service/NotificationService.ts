@@ -40,7 +40,6 @@ class NotificationService implements INotificationService {
 
   async shouldShowNotification() {
     if (document.hasFocus()) {
-      console.log('unfocus');
       return false;
     }
     if (!this._permission.isGranted) {

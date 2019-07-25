@@ -23,7 +23,9 @@ jupiter.registerModule({
   provides: [
     {
       name: 'IMediaService',
-      value() {},
+      value() {
+        return { create: jest.fn().mockName('happy') };
+      },
     },
   ],
 });
@@ -79,7 +81,7 @@ describe('NotificationService', () => {
     container.restore();
   });
   describe('shouldShowNotification', () => {
-    it('shouldShowNotification should be false when document.hasFocus is true', async () => {
+    it('shouldShowNotification should be false when document.hasFocus is true [JPT-2570]', async () => {
       Notification.permission = 'granted';
       document.hasFocus = jest.fn().mockReturnValueOnce(true);
       setUpMock(true, 'granted', true);
@@ -134,6 +136,40 @@ describe('NotificationService', () => {
         data: { id: 0, scope: '' },
       });
       expect(service._uiNotificationDistributor.create).not.toHaveBeenCalled();
+    });
+    it('should not create ui notification and sound when app is focused and strategy is ui&sounds [JPT-2570]', async () => {
+      jest.spyOn(service._soundNotification, 'create').mockImplementation();
+      document.hasFocus = jest.fn().mockReturnValueOnce(true);
+      setUpMock(false, 'granted', true);
+      await service.show('', {
+        strategy: NotificationStrategy.SOUND_AND_UI_NOTIFICATION,
+        sound: 'mock',
+        data: { id: 0, scope: '' },
+      });
+      expect(service._uiNotificationDistributor.create).not.toHaveBeenCalled();
+      expect(service._soundNotification.create).not.toHaveBeenCalled();
+    });
+    it('should not create ui notification and sound when ui notification is turn off and strategy is ui&sounds [JPT-2573]', async () => {
+      jest.spyOn(service._soundNotification, 'create').mockImplementation();
+      setUpMock(false, 'granted', false);
+      await service.show('', {
+        strategy: NotificationStrategy.SOUND_AND_UI_NOTIFICATION,
+        sound: 'mock',
+        data: { id: 0, scope: '' },
+      });
+      expect(service._uiNotificationDistributor.create).not.toHaveBeenCalled();
+      expect(service._soundNotification.create).not.toHaveBeenCalled();
+    });
+    it('should not create ui notification and sound when ui notification is turn off and strategy is ui&sounds [JPT-2576]', async () => {
+      setUpMock(false, 'granted', false);
+      jest.spyOn(service._soundNotification, 'create').mockImplementation();
+      await service.show('', {
+        strategy: NotificationStrategy.SOUND_OR_UI_NOTIFICATION,
+        sound: 'mock',
+        data: { id: 0, scope: '' },
+      });
+      expect(service._uiNotificationDistributor.create).not.toHaveBeenCalled();
+      expect(service._soundNotification.create).toHaveBeenCalled();
     });
   });
 });
