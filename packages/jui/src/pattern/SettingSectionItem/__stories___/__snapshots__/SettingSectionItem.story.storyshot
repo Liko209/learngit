@@ -128,7 +128,7 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
         className="setting-section-item-left c3"
       >
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-label  c4"
+          className="MuiTypography-root setting-section-item-label  c4 MuiTypography-body1"
           data-test-automation-id="settingItemLabel-0"
         >
           SettingSectionItem
@@ -156,13 +156,13 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
         className="setting-section-item-left c3"
       >
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-label  c4"
+          className="MuiTypography-root setting-section-item-label  c4 MuiTypography-body1"
           data-test-automation-id="settingItemLabel-1"
         >
           SettingSectionItem
         </p>
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-description  c8"
+          className="MuiTypography-root setting-section-item-description  c8 MuiTypography-body1"
           data-test-automation-id="settingItemDescription-1"
         >
           SettingSectionItem Descriptions
@@ -190,13 +190,13 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
         className="setting-section-item-left c3"
       >
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-label  c4"
+          className="MuiTypography-root setting-section-item-label  c4 MuiTypography-body1"
           data-test-automation-id="settingItemLabel-2"
         >
           SettingSectionItem
         </p>
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-description  c8"
+          className="MuiTypography-root setting-section-item-description  c8 MuiTypography-body1"
           data-test-automation-id="settingItemDescription-2"
         >
           Visual primitives for the component age. Use the best bits of ES6 and CSS to style your apps without stress!
@@ -224,13 +224,13 @@ exports[`Storyshots Pattern/Setting SettingSectionItem: Pattern/Setting SettingS
         className="setting-section-item-left c3"
       >
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-label  c4"
+          className="MuiTypography-root setting-section-item-label  c4 MuiTypography-body1"
           data-test-automation-id="settingItemLabel-3"
         >
           SettingSectionItem
         </p>
         <p
-          className="MuiTypography-root MuiTypography-body2 setting-section-item-description  c8"
+          className="MuiTypography-root setting-section-item-description  c8 MuiTypography-body1"
           data-test-automation-id="settingItemDescription-3"
         >
           SettingSectionItem Descriptions

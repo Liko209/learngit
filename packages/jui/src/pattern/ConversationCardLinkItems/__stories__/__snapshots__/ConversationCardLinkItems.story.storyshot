@@ -147,7 +147,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 
 .c18.c18 .c10,
 .c18.c18 .c10 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c18.c18:hover .c10 {
@@ -159,23 +159,6 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 }
 
 .c18.c18.c18.c18.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c10,
-.c19.c19 .c10 svg {
-  font-size: 16px;
-}
-
-.c19.c19:hover .c10 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c19.c19:active .c10 {
-  color: #0684bd;
-}
-
-.c19.c19.c19.c19.disabled .c10 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -258,11 +241,11 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 }
 
 .c5 {
-  color: rgba(0,0,0,0.87);
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
   font-weight: 400;
   font-size: 0.875rem;
   line-height: 20px;
+  color: rgba(0,0,0,0.87);
   color: #9e9e9e;
   word-break: break-word;
   overflow: hidden;
@@ -300,7 +283,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 }
 
 <div
-  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+  className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
 >
   <div
     className="c1"
@@ -349,7 +332,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -359,8 +342,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       type="button"
       variant="plain"
     >

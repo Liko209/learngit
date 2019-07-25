@@ -52,13 +52,11 @@ class TopBar extends React.Component<TopBarProps> {
 
   private _Logo() {
     const { brandName } = this.props;
-    return <JuiLogo variant="headline">{brandName}</JuiLogo>;
+    return <JuiLogo>{brandName}</JuiLogo>;
   }
 
   render() {
-    const {
-      openGlobalSearch, searchKey, onClear, t,
-    } = this.props;
+    const { openGlobalSearch, searchKey, onClear, t } = this.props;
 
     return (
       <JuiTopBar

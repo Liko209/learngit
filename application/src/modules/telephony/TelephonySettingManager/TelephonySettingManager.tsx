@@ -18,6 +18,7 @@ import {
   SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
   SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
   SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
+  SETTING_ITEM__PHONE_E911,
 } from './constant';
 import {
   CallerIdSelectSourceItem,
@@ -78,7 +79,8 @@ class TelephonySettingManager {
               dataTracking: {
                 name: 'defaultPhoneApp',
                 type: 'phoneGeneral',
-                optionTransform: value => DefaultPhoneAppDataTrackingOption[value],
+                optionTransform: value =>
+                  DefaultPhoneAppDataTrackingOption[value],
               },
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
@@ -94,7 +96,8 @@ class TelephonySettingManager {
               dataTracking: {
                 name: 'callerID',
                 type: 'phoneGeneral',
-                optionTransform: value => CallerIDDataTrackingOption[value.usageType] ||
+                optionTransform: value =>
+                  CallerIDDataTrackingOption[value.usageType] ||
                   CallerIDDataTrackingOption.CompanyOther,
               },
             } as SelectSettingItem<IPhoneNumberRecord>,
@@ -115,6 +118,12 @@ class TelephonySettingManager {
                 name: 'extensionSettings',
                 type: 'phoneGeneral',
               },
+            },
+            {
+              id: SETTING_ITEM__PHONE_E911,
+              automationId: 'e911Setting',
+              type: RegionSettingItem,
+              weight: 300,
             },
           ],
         },

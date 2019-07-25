@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
 import { alignCenterDecorator } from '../../../../foundation/utils/decorators';
-import { JuiFabButton, JuiButton, JuiButtonProps } from '..';
+import { JuiFabButton, JuiButton, JuiButtonProps, JuiRoundButton } from '..';
 import styled from '../../../../foundation/styled-components';
 import previous from '../../../../assets/jupiter-icon/icon-previous.svg';
 import forward from '../../../../assets/jupiter-icon/icon-forward.svg';
@@ -54,7 +54,7 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant='contained' {...rest}>
+        <JuiButton variant="contained" {...rest}>
           {content}
         </JuiButton>
       </div>
@@ -64,19 +64,19 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant='text' {...rest}>
+        <JuiButton variant="text" {...rest}>
           {content}
         </JuiButton>
       </div>
     );
   })
   .add('Round Button', () => {
-    const { content, ...rest } = getKnobs();
+    const { content, color, ...rest } = getKnobs();
     return (
       <div>
-        <JuiButton variant='round' {...rest}>
+        <JuiRoundButton color={color as any} {...rest}>
           {content}
-        </JuiButton>
+        </JuiRoundButton>
       </div>
     );
   })
@@ -87,18 +87,18 @@ storiesOf('Components/Buttons', module)
       <Wrapper>
         <JuiFabButton
           {...rest}
-          className='buttonWrapper'
-          tooltipTitle='previous'
+          className="buttonWrapper"
+          tooltipTitle="previous"
           iconColor={['common', 'white']}
-          iconName='previous'
+          iconName="previous"
           icon={previous}
         />
         <JuiFabButton
           {...rest}
-          className='buttonWrapper'
-          tooltipTitle='forward'
+          className="buttonWrapper"
+          tooltipTitle="forward"
           iconColor={['common', 'white']}
-          iconName='forward'
+          iconName="forward"
           icon={forward}
         />
       </Wrapper>

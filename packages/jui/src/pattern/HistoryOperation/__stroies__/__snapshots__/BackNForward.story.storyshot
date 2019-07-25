@@ -123,7 +123,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
 
 .c12.c12 .c3,
 .c12.c12 .c3 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c12.c12:hover .c3 {
@@ -144,11 +144,11 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
 }
 
 .c13.c13:hover .c3 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c13.c13:active .c3 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c13.c13.c13.c13.disabled .c3 {
@@ -157,35 +157,18 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
 
 .c14.c14 .c3,
 .c14.c14 .c3 svg {
-  font-size: 16px;
-}
-
-.c14.c14:hover .c3 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c14.c14:active .c3 {
-  color: #fff;
-}
-
-.c14.c14.c14.c14.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c3,
-.c15.c15 .c3 svg {
   font-size: 32px;
 }
 
-.c15.c15:hover .c3 {
+.c14.c14:hover .c3 {
   color: rgba(33,33,33,0.88);
 }
 
-.c15.c15:active .c3 {
+.c14.c14:active .c3 {
   color: #212121;
 }
 
-.c15.c15.c15.c15.disabled .c3 {
+.c14.c14.c14.c14.disabled .c3 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -259,7 +242,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -270,8 +253,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="round"
@@ -310,7 +292,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -321,8 +303,7 @@ exports[`Storyshots Pattern BackNForward: Pattern BackNForward 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="round"

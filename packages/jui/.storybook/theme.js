@@ -411,18 +411,7 @@ export const rawTheme = {
     border3: '1px solid rgba(0, 0, 0, 0.36)',
     border4: '1px solid #eee',
   },
-  spacing: {
-    unit: 4,
-    xxxs: '4px',
-    xxs: '8px',
-    xs: '12px',
-    s: '16px',
-    m: '20px',
-    l: '24px',
-    xl: '32px',
-    xxl: '40px',
-    xxxl: '48px',
-  },
+  spacing: 4,
   transitions: {
     easing: {
       easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',

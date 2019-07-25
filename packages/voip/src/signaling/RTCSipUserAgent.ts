@@ -11,9 +11,8 @@ import {
   WEBPHONE_LOG_LEVEL,
   InviteOptions,
 } from './types';
-import { RTCCallOptions } from '../api/types';
+import { RTCCallOptions, RTCSipProvisionInfo } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { RTCSipProvisionInfo } from '../account/types';
 import {
   opusModifier,
   isFireFox,

@@ -19,7 +19,7 @@ type Props = WithTranslation & ContactSearchItemViewProps;
 /* eslint-disable */
 @observer
 class ContactSearchItemViewComponent extends Component<Props> {
-  private _ref: RefObject<JuiMenuItem> = createRef();
+  private _ref: RefObject<any> = createRef();
   private _frameId: number;
 
   componentWillUnmount() {
@@ -51,13 +51,13 @@ class ContactSearchItemViewComponent extends Component<Props> {
           <Avatar
             uid={uid}
             showDefaultAvatar={!uid}
-            size='medium'
-            data-test-automation-id='telephony-contact-search-list_item-avatar'
+            size="medium"
+            data-test-automation-id="telephony-contact-search-list_item-avatar"
           />
         }
         onClick={onClick}
         ref={this._ref}
-        data-test-automation-id='telephony-contact-search-list_item'
+        data-test-automation-id="telephony-contact-search-list_item"
       >
         <ItemContent>
           <JuiListItemText
@@ -68,11 +68,11 @@ class ContactSearchItemViewComponent extends Component<Props> {
           />
           {showDialIcon && (
             <JuiIconButton
-              variant='plain'
-              color='primary.600'
-              size='medium'
+              variant="plain"
+              color="primary.600"
+              size="medium"
               disableToolTip={true}
-              data-test-automation-id='telephony-contact-search-list_item-dial_button'
+              data-test-automation-id="telephony-contact-search-list_item-dial_button"
             >
               dial
             </JuiIconButton>
