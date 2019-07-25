@@ -54,7 +54,7 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
     return settingItem;
   }
   private async _getValue() {
-    const profile = this._profileService.getProfile();
+    const profile = await this._profileService.getProfile();
     let value = profile ? profile[this.settingId] : undefined;
     if (value === undefined) {
       value = SOUNDS_TYPE.Log_Drum;

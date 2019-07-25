@@ -180,7 +180,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const {DIRECT_MESSAGE, TEAM,MENTION} = MESSAGE_TYPE
     const soundSettingDict = {
       [DIRECT_MESSAGE]: MESSAGE_SETTING_ITEM.SOUND_DIRECT_MESSAGES,
-      [MENTION]: MESSAGE_SETTING_ITEM.NOTIFICATION_MENTIONS,
+      [MENTION]: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
       [TEAM]: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
     };
     const entity = await ServiceLoader.getInstance<SettingService>(

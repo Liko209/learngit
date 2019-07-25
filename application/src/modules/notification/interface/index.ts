@@ -7,7 +7,7 @@ import { Omit } from 'jui/foundation/utils/typeHelper';
 import { createDecorator } from 'framework';
 import { INotificationPermission as permissionInterface } from 'sdk/pal';
 import { RINGS_TYPE, SOUNDS_TYPE } from 'sdk/module/profile';
-import { IMedia } from '@/interface/media';
+import { IMedia, MediaOptions } from '@/interface/media';
 
 type NotificationId = number | string;
 const INotificationService = createDecorator('NOTIFICATION_SERVICE');
@@ -67,7 +67,10 @@ interface INotificationPermission extends permissionInterface {}
 
 const ISoundNotification = createDecorator('SOUND_NOTIFICATION');
 interface ISoundNotification {
-  create: (sound: Sounds, track: string) => IMedia | undefined;
+  create: (
+    sound: Sounds,
+    opts: Omit<MediaOptions, 'src'>,
+  ) => IMedia | undefined;
 }
 export {
   Sounds,

@@ -12,7 +12,7 @@ import {
   NotificationStrategy,
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
-// import { SWNotification } from '../agent/SWNotification';
+import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
@@ -34,12 +34,16 @@ class NotificationService implements INotificationService {
   private _maximumTxtLength = 700;
   constructor() {
     this._uiNotificationDistributors = new Map();
-    // this._uiNotificationDistributors.set('sw', new SWNotification());
+    this._uiNotificationDistributors.set('sw', new SWNotification());
     this._uiNotificationDistributors.set('desktop', new DeskTopNotification());
   }
 
   async shouldShowNotification() {
     if (document.hasFocus()) {
+      console.log('unfocus');
+      return false;
+    }
+    if (!this._permission.isGranted) {
       return false;
     }
     const entity = await ServiceLoader.getInstance<SettingService>(
@@ -67,6 +71,7 @@ class NotificationService implements INotificationService {
 
   async show(title: string, opts: NotificationOpts, force?: boolean) {
     const { strategy } = opts;
+    delete opts.strategy;
     const {
       SOUND_AND_UI_NOTIFICATION,
       SOUND_ONLY,
@@ -74,9 +79,9 @@ class NotificationService implements INotificationService {
     } = NotificationStrategy;
     switch (strategy) {
       case SOUND_AND_UI_NOTIFICATION: {
-        if (this.shouldShowNotification) {
+        if (await this.shouldShowNotification()) {
+          await this.buildSoundNotification(opts);
           this.buildUINotification(title, opts, force);
-          this.buildSoundNotification(opts);
         }
         break;
       }
@@ -89,8 +94,8 @@ class NotificationService implements INotificationService {
         break;
       }
       default: {
+        await this.buildSoundNotification(opts);
         this.buildUINotification(title, opts, force);
-        this.buildSoundNotification(opts);
       }
     }
     this.buildUINotification(title, opts, force);
@@ -102,7 +107,7 @@ class NotificationService implements INotificationService {
     force?: boolean,
   ) {
     const shouldShowNotification = await this.shouldShowNotification();
-    if ((!shouldShowNotification && !force) || !this._permission.isGranted) {
+    if (!shouldShowNotification && !force) {
       return;
     }
     const { id, scope } = opts.data;
@@ -123,17 +128,24 @@ class NotificationService implements INotificationService {
     this._uiNotificationDistributor.create(titleFormatted, customOps);
   }
 
-  buildSoundNotification(opts: NotificationOpts) {
+  async buildSoundNotification(opts: NotificationOpts) {
     const scope = opts.data.scope;
     const source = opts.sound;
     if (!source) {
       logger.log('not necessary to play sound');
+      return;
     }
-    const media = this._soundNotification.create(source, scope);
+    const media = this._soundNotification.create(source, {
+      trackId: scope,
+      autoplay: true,
+    });
     if (media) {
-      media.play();
+      return new Promise(resolve => {
+        delete opts.sound;
+        media.on('loadeddata', resolve);
+      });
     }
-    delete opts.sound;
+    return;
   }
 
   close(scope: string, id: number) {
