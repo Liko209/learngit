@@ -19,31 +19,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   font-size: 24px;
 }
 
-.c3 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c3.c3 > *:nth-child(n + 2) {
-  margin-left: -10px;
-}
-
 .c8.c8 .c5,
 .c8.c8 .c5 svg {
   font-size: 20px;
@@ -134,6 +109,31 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
 
 .c10.c10.c10.c10.disabled .c5 {
   color: rgba(0,0,0,0.12);
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 > *:nth-child(n + 2) {
+  margin-left: -10px;
 }
 
 .c0 {
@@ -309,31 +309,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   font-size: 24px;
 }
 
-.c3 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c3.c3 > *:nth-child(n + 2) {
-  margin-left: -10px;
-}
-
 .c10.c10 .c5,
 .c10.c10 .c5 svg {
   font-size: 20px;
@@ -465,6 +440,31 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c3.c3 > *:nth-child(n + 2) {
+  margin-left: -10px;
 }
 
 .c0 {
@@ -767,42 +767,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
 `;
 
 exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and information: Components/Dialog/DialogHeader Title with avatar and information 1`] = `
-.c2.c2 {
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  background-color: #6FAFEB;
-}
-
-.c2.c2:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c2.c2:active {
-  opacity: 0.76;
-}
-
-.c2 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c11 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -819,31 +783,6 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
-}
-
-.c8 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c8.c8 > *:nth-child(n + 2) {
-  margin-left: -10px;
 }
 
 .c15.c15 .c10,
@@ -977,6 +916,67 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c8 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c8.c8 > *:nth-child(n + 2) {
+  margin-left: -10px;
+}
+
+.c2.c2 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #6FAFEB;
+}
+
+.c2.c2:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c2.c2:active {
+  opacity: 0.76;
+}
+
+.c2 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c0 {

@@ -1,42 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
-.c12.c12 {
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  background-color: #f5f6fb;
-}
-
-.c12.c12:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c12.c12:active {
-  opacity: 0.76;
-}
-
-.c12 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -300,6 +264,42 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c12.c12 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #f5f6fb;
+}
+
+.c12.c12:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c12.c12:active {
+  opacity: 0.76;
+}
+
+.c12 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c2.c2 {

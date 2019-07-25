@@ -48,13 +48,7 @@ exports[`Storyshots Components/Forms Textarea: Components/Forms Textarea 1`] = `
   onKeyDown={[Function]}
 >
   <label
-    FormLabelClasses={
-      Object {
-        "focused": "form-label-focus",
-        "root": "form-label-root",
-      }
-    }
-    className="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
+    className="MuiFormLabel-root MuiInputLabel-root form-label-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink"
     data-shrink={true}
     htmlFor="New Message"
   >
