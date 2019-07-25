@@ -3,7 +3,6 @@
  * @Date: 2019-01-15 16:12:13
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { computed, observable, action } from 'mobx';
@@ -23,6 +22,7 @@ import {
 import { Notification } from '@/containers/Notification';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, defaultNotificationOptions } from '@/common/catchError';
+import { dataAnalysis } from 'sdk';
 
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
@@ -45,6 +45,11 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @computed
   get allowMemberAddMember() {
     return !!this.permissionFlags.TEAM_ADD_MEMBER;
+  }
+
+  @computed
+  get allowMemberAtTeamMention() {
+    return !this.permissionFlags.TEAM_ADD_MEMBER;
   }
 
   @computed
@@ -74,6 +79,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       description: this._group.description || '',
       allowMemberAddMember: this.allowMemberAddMember,
       allowMemberPost: this.allowMemberPost,
+      allowMemberAtTeamMention: this.allowMentionTeam,
       allowMemberPin: this.allowMemberPin,
     };
   }
@@ -108,7 +114,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     );
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     await groupService.leaveTeam(userId, this.id);
-  }
+  };
 
   @action
   setNameError(msg: string) {
@@ -127,6 +133,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     );
     this.setNameError('');
     this.saving = true;
+    if (params.allowMemberAtTeamMention) {
+      dataAnalysis.track('Jup_Web/DT_Messaging_Team_teamMentionSetting');
+    }
     try {
       await groupService.updateTeamSetting(this.id, {
         name,
@@ -135,6 +144,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
           TEAM_ADD_MEMBER: params.allowMemberAddMember,
           TEAM_POST: params.allowMemberPost,
           TEAM_PIN_POST: params.allowMemberPin,
+          TEAM_MENTION: params.allowMemberAtTeamMention,
         },
       });
       return true;
@@ -169,7 +179,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     } finally {
       this.saving = false;
     }
-  }
+  };
 }
 
 export { TeamSettingsViewModel };
