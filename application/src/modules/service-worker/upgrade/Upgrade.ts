@@ -5,7 +5,6 @@
  */
 
 /* eslint-disable */
-import history from '@/history';
 import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { TelephonyService } from 'sdk/module/telephony';
@@ -14,7 +13,6 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
-const FOREGROUND_RELOAD_THRESHOLD = 60 * 60 * 1000;
 const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
@@ -24,7 +22,6 @@ class Upgrade {
   private _refreshing: boolean = false;
   private _swURL: string;
   private _lastCheckTime?: Date;
-  private _lastRouterChangeTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
   queryInterval = DEFAULT_UPDATE_INTERVAL;
@@ -37,15 +34,9 @@ class Upgrade {
     this._resetQueryTimer();
     window.addEventListener('online', this._onlineHandler.bind(this));
     window.addEventListener('blur', this._blurHandler.bind(this));
-    history.listen((location: any, action: string) => {
-      if (action === 'PUSH') {
-        this._lastRouterChangeTime = new Date();
-      }
-    });
 
     // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
     powerMonitor.onUnlock(() => {
-      this._lastRouterChangeTime = new Date();
     });
   }
 
@@ -85,18 +76,7 @@ class Upgrade {
 
     this._hasNewVersion = true;
 
-    if (this._isInPowerSavingMode()) {
-      mainLogger.info(`${logTag} Postpone upgrade due to power saving mode`);
-      return;
-    }
-
-    if (this._appInFocus()) {
-      if (
-        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
-      ) {
-        this.skipWaitingIfAvailable('Foreground upgrade');
-      }
-    } else {
+    if (!this._appInFocus()) {
       this.skipWaitingIfAvailable('Background upgrade');
     }
   }
@@ -106,13 +86,7 @@ class Upgrade {
 
     this._hasControllerChanged = true;
 
-    if (this._appInFocus()) {
-      if (
-        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
-      ) {
-        this.reloadIfAvailable('Foreground upgrade');
-      }
-    } else {
+    if (!this._appInFocus()) {
       this.reloadIfAvailable('Background upgrade');
     }
   }
@@ -281,6 +255,11 @@ class Upgrade {
   }
 
   private _canDoReload() {
+    if (this._appInFocus()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to App is in focus`);
+      return false;
+    }
+
     if (this._isInPowerSavingMode()) {
       mainLogger.info(`${logTag}Forbidden to reload due to power saving mode`);
       return false;
