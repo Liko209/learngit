@@ -140,6 +140,7 @@ class RTCMediaDeviceManager extends EventEmitter2 {
         }
       }
     });
+    
     if (hasDefaultAudioInput) {
       rtcLogger.debug(
         LOG_TAG,
