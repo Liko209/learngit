@@ -16,14 +16,10 @@ import {
   JuiRightShellMemberListSubTitle,
   JuiRightShellMemberListMoreCount,
 } from '../MemberList/MemberList';
-// import { JuiRightShelfEmptyScreen } from '../../EmptyScreen';
-// import { JuiButton } from '../../../components/Buttons';
-// import image from './Files.svg';
 import { JuiLink } from '../../../components/Link';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiPresence, PRESENCE } from '../../../components/Presence/Presence';
-import { Loading } from '../../../hoc/withLoading';
 
 storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
   const title = text('title', 'Members');
@@ -37,10 +33,6 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
   const guestCount = number('guest count', 4);
   const moreCount = number('more count', 15);
   const loading = boolean('loading', false);
-  // const content = text(
-  //   'content',
-  //   'Files that get shared in your conversation automatically show up here.',
-  // );
   const Wrapper = styled.div`
     width: ${responsiveWidth}px;
     background: white;
