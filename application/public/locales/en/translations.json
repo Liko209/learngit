@@ -891,6 +891,11 @@
           "areaCodeErrorText": "Invalid area code",
           "saveSuccessText": "Your region is updated successfully.",
           "regionChangeDesc": "Set the country and area code for your region. This will be used for local and emergency dialing and phone number formatting."
+        },
+        "e911Setting": {
+          "e911Address": "Emergency address",
+          "e911AddressDesc": "Update or edit your e911 address on record with RingCentral for emergency situations.",
+          "yourSavedAddressIs": "Your saved address is: "
         }
       }
     },
