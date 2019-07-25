@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import UserPermissionType from '../types';
+import UserPermissionType, { FeatureFlagType } from '../types';
 
 interface IPermissionService {
   hasPermission(type: UserPermissionType): Promise<boolean>;
