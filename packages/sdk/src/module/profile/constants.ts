@@ -80,73 +80,54 @@ type AUDIO_SOUNDS_INFO = {
   id: RINGS_TYPE | SOUNDS_TYPE;
   url: string;
 };
-const SoundsList: AUDIO_SOUNDS_INFO[] = [
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Double_Beeps}`,
-    id: SOUNDS_TYPE.Double_Beeps,
-  },
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Triple_Beeps}`,
-    id: SOUNDS_TYPE.Triple_Beeps,
-  },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Alert}`, id: SOUNDS_TYPE.Alert },
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Alert_Double}`,
-    id: SOUNDS_TYPE.Alert_Double,
-  },
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Alert_Triple}`,
-    id: SOUNDS_TYPE.Alert_Triple,
-  },
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Bing_Bong}`,
-    id: SOUNDS_TYPE.Bing_Bong,
-  },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Ching}`, id: SOUNDS_TYPE.Ching },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Log_Drum}`, id: SOUNDS_TYPE.Log_Drum },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Snap}`, id: SOUNDS_TYPE.Snap },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Squirt}`, id: SOUNDS_TYPE.Squirt },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Whoosh}`, id: SOUNDS_TYPE.Whoosh },
-  {
-    url: `${AudioSourceUrl}${SOUNDS_TYPE.Whoosh_Double}`,
-    id: SOUNDS_TYPE.Whoosh_Double,
-  },
-  { url: `${AudioSourceUrl}${SOUNDS_TYPE.Off}`, id: SOUNDS_TYPE.Off },
+
+const ringsTypeList: RINGS_TYPE[] = [
+  RINGS_TYPE.Phone_Ring,
+  RINGS_TYPE.Air_Raid,
+  RINGS_TYPE.Allusive,
+  RINGS_TYPE.Attention,
+  RINGS_TYPE.Blub_Blub,
+  RINGS_TYPE.Buzzy,
+  RINGS_TYPE.Channel_Open,
+  RINGS_TYPE.Disco,
+  RINGS_TYPE.Door_Bell,
+  RINGS_TYPE.Fairy,
+  RINGS_TYPE.Fast_Bells,
+  RINGS_TYPE.High_Gong,
+  RINGS_TYPE.Indeed,
+  RINGS_TYPE.Nice,
+  RINGS_TYPE.Ringing_Bells,
+  RINGS_TYPE.Ring,
+  RINGS_TYPE.Simple,
+  RINGS_TYPE.Soothing,
+  RINGS_TYPE.Off,
 ];
 
-const RingsList: AUDIO_SOUNDS_INFO[] = [
-  {
-    url: `${AudioSourceUrl}${RINGS_TYPE.Phone_Ring}`,
-    id: RINGS_TYPE.Phone_Ring,
-  },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Air_Raid}`, id: RINGS_TYPE.Air_Raid },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Allusive}`, id: RINGS_TYPE.Allusive },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Attention}`, id: RINGS_TYPE.Attention },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Blub_Blub}`, id: RINGS_TYPE.Blub_Blub },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Buzzy}`, id: RINGS_TYPE.Buzzy },
-  {
-    url: `${AudioSourceUrl}${RINGS_TYPE.Channel_Open}`,
-    id: RINGS_TYPE.Channel_Open,
-  },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Disco}`, id: RINGS_TYPE.Disco },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Door_Bell}`, id: RINGS_TYPE.Door_Bell },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Fairy}`, id: RINGS_TYPE.Fairy },
-  {
-    url: `${AudioSourceUrl}${RINGS_TYPE.Fast_Bells}`,
-    id: RINGS_TYPE.Fast_Bells,
-  },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.High_Gong}`, id: RINGS_TYPE.High_Gong },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Indeed}`, id: RINGS_TYPE.Indeed },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Nice}`, id: RINGS_TYPE.Nice },
-  {
-    url: `${AudioSourceUrl}${RINGS_TYPE.Ringing_Bells}`,
-    id: RINGS_TYPE.Ringing_Bells,
-  },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Ring}`, id: RINGS_TYPE.Ring },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Simple}`, id: RINGS_TYPE.Simple },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Soothing}`, id: RINGS_TYPE.Soothing },
-  { url: `${AudioSourceUrl}${RINGS_TYPE.Off}`, id: RINGS_TYPE.Off },
+const soundsTypeList = [
+  SOUNDS_TYPE.Double_Beeps,
+  SOUNDS_TYPE.Triple_Beeps,
+  SOUNDS_TYPE.Alert,
+  SOUNDS_TYPE.Alert_Double,
+  SOUNDS_TYPE.Alert_Triple,
+  SOUNDS_TYPE.Bing_Bong,
+  SOUNDS_TYPE.Ching,
+  SOUNDS_TYPE.Log_Drum,
+  SOUNDS_TYPE.Snap,
+  SOUNDS_TYPE.Squirt,
+  SOUNDS_TYPE.Whoosh,
+  SOUNDS_TYPE.Whoosh_Double,
+  SOUNDS_TYPE.Off,
 ];
+
+const SoundsList = soundsTypeList.map(id => ({
+  id,
+  url: `${AudioSourceUrl}${id}`,
+}));
+
+const RingsList = ringsTypeList.map(id => ({
+  id,
+  url: `${AudioSourceUrl}${id}`,
+}));
 
 enum SETTING_KEYS {
   // call settings
