@@ -96,15 +96,29 @@ describe('AudioMessageSoundsSettingHandler', () => {
   });
 
   describe('fetchUserSettingEntity()', () => {
-    it('should get new messages setting value JPT-2540', async () => {
+    it('should get new messages setting value', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_DIRECT_MESSAGES]: SOUNDS_TYPE.Log_Drum,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
-      const source = result.source || [];
-      expect(source.length).toEqual(13);
-      expect(source[source.length - 1].id).toEqual(SOUNDS_TYPE.Off);
+    });
+    it('should return correct sort of sounds JPT-2540', async () => {
+      const result = await settingHandler.fetchUserSettingEntity();
+      const sounds = result.source;
+      expect(sounds[0].id).toEqual(SOUNDS_TYPE.Double_Beeps);
+      expect(sounds[1].id).toEqual(SOUNDS_TYPE.Triple_Beeps);
+      expect(sounds[2].id).toEqual(SOUNDS_TYPE.Alert);
+      expect(sounds[3].id).toEqual(SOUNDS_TYPE.Alert_Double);
+      expect(sounds[4].id).toEqual(SOUNDS_TYPE.Alert_Triple);
+      expect(sounds[5].id).toEqual(SOUNDS_TYPE.Bing_Bong);
+      expect(sounds[6].id).toEqual(SOUNDS_TYPE.Ching);
+      expect(sounds[7].id).toEqual(SOUNDS_TYPE.Log_Drum);
+      expect(sounds[8].id).toEqual(SOUNDS_TYPE.Snap);
+      expect(sounds[9].id).toEqual(SOUNDS_TYPE.Squirt);
+      expect(sounds[10].id).toEqual(SOUNDS_TYPE.Whoosh);
+      expect(sounds[11].id).toEqual(SOUNDS_TYPE.Whoosh_Double);
+      expect(sounds[12].id).toEqual(SOUNDS_TYPE.Off);
     });
     it('should return value is default Log_Drum when profile is undefined JPT-2538', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
