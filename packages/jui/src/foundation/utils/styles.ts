@@ -2,6 +2,7 @@ import tinycolor from 'tinycolor2';
 import { keyframes } from 'styled-components';
 import { Theme, Palette } from '../theme/theme';
 import { css } from '../styled-components';
+import { spacing } from 'rcui/foundation/shared/theme';
 
 /** ******************************************
  *               Dimensions                 *
@@ -15,17 +16,6 @@ import { css } from '../styled-components';
  */
 function cssValue(...values: number[]): string {
   return values.map(n => `${n}px`).join(' ');
-}
-
-/**
- * spacing
- * @param values
- */
-function spacing(...values: number[]) {
-  return ({ theme }: { theme: Theme }): string => {
-    const unit = theme.spacing.unit;
-    return cssValue(...values.map(n => n * unit));
-  };
 }
 
 /**
@@ -81,13 +71,14 @@ function getPalette(name: keyof Palette, sub: string = 'main') {
 function palette(name: keyof Palette, sub: string, opacities?: number) {
   if (!opacities) return getPalette(name, sub);
 
-  return ({ theme }: { theme: Theme }) => tinycolor(getPalette(name, sub)({ theme }))
-    .setAlpha(
-      String(opacities).indexOf('.') > -1
-        ? opacities
-        : theme.palette.action.hoverOpacity * opacities,
-    )
-    .toRgbString();
+  return ({ theme }: { theme: Theme }) =>
+    tinycolor(getPalette(name, sub)({ theme }))
+      .setAlpha(
+        String(opacities).indexOf('.') > -1
+          ? opacities
+          : theme.palette.action.hoverOpacity * opacities,
+      )
+      .toRgbString();
 }
 
 /**
@@ -119,13 +110,15 @@ function grey(sub: string, opacities?: number) {
 
 function activeOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) => 1 - theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) =>
+      1 - theme.palette.action.hoverOpacity * 2};
   `;
 }
 
 function disabledOpacity() {
   return css`
-    opacity: ${({ theme }: { theme: Theme }) => theme.palette.action.hoverOpacity * 2};
+    opacity: ${({ theme }: { theme: Theme }) =>
+      theme.palette.action.hoverOpacity * 2};
   `;
 }
 

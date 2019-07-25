@@ -13,7 +13,6 @@ import React, {
   MouseEvent,
   Children,
 } from 'react';
-import MoreHoriz from '@material-ui/icons/MoreHoriz';
 import { StyledTabs } from './StyledTabs';
 import { StyledTab, StyledTabProps } from './StyledTab';
 import { StyledContainer } from './StyledContainer';
@@ -22,6 +21,7 @@ import { JuiTabProps } from './Tab';
 import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
 import { RuiTooltip } from 'rcui/components/Tooltip';
+import { JuiIconography } from '../../foundation/Iconography';
 
 type States = {
   openMenu: boolean;
@@ -46,12 +46,6 @@ type Props = {
 
 const CLASSES = {
   tabs: { root: 'root' },
-  tab: {
-    root: 'root',
-    selected: 'selected',
-    labelContainer: 'labelContainer',
-    label: 'label',
-  },
 };
 
 const MORE = 10000; // more tab mui auto add child index
@@ -61,15 +55,27 @@ const STYLE: CSSProperties = {
   right: 0,
 };
 
+const MoreIcon = ({
+  title,
+  tooltipForceHide,
+}: {
+  title?: string;
+  tooltipForceHide?: boolean;
+}) => (
+  <RuiTooltip title={title} tooltipForceHide={tooltipForceHide}>
+    <JuiIconography>more_horiz</JuiIconography>
+  </RuiTooltip>
+);
+
 class JuiTabs extends PureComponent<Props, States> {
   // not include more tab
   private _tabTitles: (string | JSX.Element)[] = [];
-  private _tabRefs: RefObject<HTMLElement>[] = [];
+  private _tabRefs: RefObject<HTMLDivElement>[] = [];
   private _tabWidths: number[] = [];
   private _tabWidthsTotal: number = 0;
   private _automationIds: string[] = []; // automation ids, not include more tab
   // more tab
-  private _moreRef: RefObject<HTMLElement>;
+  private _moreRef: RefObject<HTMLDivElement>;
   private _moreWidth: number = 0;
   // right rail container
   private _containerRef: RefObject<any>;
@@ -115,7 +121,9 @@ class JuiTabs extends PureComponent<Props, States> {
   componentWillReceiveProps(nextProps: Props) {
     const { children } = nextProps;
     const newTabTitles: (string | JSX.Element)[] = [];
-    Children.map(children, (child: ReactElement<JuiTabProps>) => newTabTitles.push(child.props.title));
+    Children.map(children, (child: ReactElement<JuiTabProps>) =>
+      newTabTitles.push(child.props.title),
+    );
     // force update after i18n ready
     if (difference(newTabTitles, this._tabTitles).length !== 0) {
       this._moreWidth = 0;
@@ -277,11 +285,7 @@ class JuiTabs extends PureComponent<Props, States> {
     const { tag, moreText } = this.props;
     return this._renderStyledTab({
       value: MORE,
-      icon: (
-        <RuiTooltip title={moreText} tooltipForceHide={tooltipForceHide}>
-          <MoreHoriz />
-        </RuiTooltip>
-      ),
+      icon: <MoreIcon title={moreText} tooltipForceHide={tooltipForceHide} />,
       onClick: this._showMenuList,
       style: STYLE,
       ref: this._moreRef,
@@ -322,7 +326,6 @@ class JuiTabs extends PureComponent<Props, States> {
         label={label}
         icon={icon}
         onClick={onClick}
-        classes={CLASSES.tab}
         style={style}
         ref={ref}
       />

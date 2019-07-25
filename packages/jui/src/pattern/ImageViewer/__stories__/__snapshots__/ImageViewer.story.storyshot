@@ -147,7 +147,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 
 .c12.c12 .c2,
 .c12.c12 .c2 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c12.c12:hover .c2 {
@@ -168,11 +168,11 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 }
 
 .c13.c13:hover .c2 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c13.c13:active .c2 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c13.c13.c13.c13.disabled .c2 {
@@ -181,15 +181,15 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 
 .c14.c14 .c2,
 .c14.c14 .c2 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c14.c14:hover .c2 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c14.c14:active .c2 {
-  color: #fff;
+  color: #212121;
 }
 
 .c14.c14.c14.c14.disabled .c2 {
@@ -198,35 +198,18 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
 
 .c15.c15 .c2,
 .c15.c15 .c2 svg {
-  font-size: 32px;
-}
-
-.c15.c15:hover .c2 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c15.c15:active .c2 {
-  color: #212121;
-}
-
-.c15.c15.c15.c15.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c16.c16 .c2,
-.c16.c16 .c2 svg {
   font-size: 20px;
 }
 
-.c16.c16:hover .c2 {
+.c15.c15:hover .c2 {
   color: rgba(255,255,255,0.88);
 }
 
-.c16.c16:active .c2 {
+.c15.c15:active .c2 {
   color: #fff;
 }
 
-.c16.c16.c16.c16.disabled .c2 {
+.c15.c15.c15.c15.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -283,7 +266,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -294,8 +277,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -334,7 +316,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -345,8 +327,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"
@@ -379,7 +360,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -390,8 +371,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        size="medium"
-        tabIndex="0"
+        tabIndex={0}
         title={null}
         type="button"
         variant="plain"

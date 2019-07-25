@@ -27,9 +27,8 @@ function getKnobs() {
     {
       small: 'small',
       medium: 'medium',
-      large: 'large',
     },
-    'large',
+    'medium',
   );
   const color = select<JuiCheckboxButtonProps['color']>(
     'color',
@@ -61,18 +60,18 @@ storiesOf('Components/CheckboxButton', module)
     return (
       <Wrapper>
         <JuiCheckboxButton
-          className='checkboxButtonWrapper'
+          className="checkboxButtonWrapper"
           icon={starBorder}
           checkedIcon={star}
-          tooltipTitle='like'
+          tooltipTitle="like"
           checked
           {...rest}
         />
         <JuiCheckboxButton
-          className='checkboxButtonWrapper'
+          className="checkboxButtonWrapper"
           icon={unlock}
           checkedIcon={lock}
-          tooltipTitle='lock'
+          tooltipTitle="lock"
           {...rest}
         />
       </Wrapper>

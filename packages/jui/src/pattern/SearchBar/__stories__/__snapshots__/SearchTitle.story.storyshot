@@ -43,7 +43,7 @@ exports[`Storyshots Pattern/SearchBar SearchTitle: Pattern/SearchBar SearchTitle
     className="c0"
   >
     <p
-      className="MuiTypography-root MuiTypography-body2 c1"
+      className="MuiTypography-root c1 MuiTypography-body1"
     >
       People
     </p>

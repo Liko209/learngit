@@ -37,7 +37,7 @@ const StyledCustomReply = styled(JuiTextarea)`
 const JuiCustomReply = React.memo((props: JuiCustomReplyProps) => (
     <StyledCustomReply
       InputLabelProps={{
-        FormLabelClasses: {
+        classes: {
           root: 'form-label-root',
         },
       }}
