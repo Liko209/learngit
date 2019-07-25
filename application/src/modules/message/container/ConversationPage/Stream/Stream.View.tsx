@@ -76,7 +76,7 @@ class StreamViewComponent extends Component<Props> {
   @observable private _jumpToFirstUnreadLoading = false;
 
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
-  private _isPerformanceTracerExecuted: boolean = false;
+
   private _RENDERER_MAP = {
     [StreamItemType.POST]: this._renderPost,
     [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
@@ -101,6 +101,7 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
+      loadingStatus: preLoadingStatus,
     } = prevProps;
     const {
       postIds,
@@ -136,12 +137,11 @@ class StreamViewComponent extends Component<Props> {
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
-    if (loadingStatus === STATUS.SUCCESS && !this._isPerformanceTracerExecuted) {
+    if (loadingStatus === STATUS.SUCCESS && preLoadingStatus === STATUS.PENDING) {
       this._performanceTracer.end({
         key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
         count: postIds.length,
       });
-      this._isPerformanceTracerExecuted = true;
     }
   }
 
