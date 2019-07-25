@@ -67,7 +67,7 @@ test.meta(<ITestMeta> {
     const postCard = conversationPage.postItemById(notePostId);
     await t.expect(postCard.name.textContent).eql(otherUserName);
     await t.expect(postCard.itemCardActivity.withText(noteAction).exists).ok();
-    await t.expect(await postCard.textContent).contains(noteTitle);
+    await t.expect(postCard.textContent).contains(noteTitle);
   });
   noteTitle = uuid();
   await h(t).withLog(`When User B update a note ${noteTitle}`, async () => {
@@ -78,8 +78,8 @@ test.meta(<ITestMeta> {
     const postCard = conversationPage.postItemById(notePostId);
     await t.expect(postCard.name.textContent).eql(otherUserName);
     await t.expect(postCard.itemCardActivity.withText(noteAction).exists).ok();
-    await t.expect(await postCard.textContent).contains(noteTitle);
-    await t.expect(await postCard.textContent).contains(noteBody);
+    await t.expect(postCard.textContent).contains(noteTitle);
+    await t.expect(postCard.textContent).contains(noteBody);
   });
 });
 

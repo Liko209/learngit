@@ -149,7 +149,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(15);
+      ).toEqual(13);
     });
     it('should return default team admin permission level when there is not permissions info', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -160,7 +160,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(63);
     });
     it('should return team permission level when permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -171,7 +171,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(63);
     });
     it('should return team permission level when admin permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -185,7 +185,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(63);
     });
     it('should return team permission level when admin uids is empty and level is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -200,7 +200,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(31);
+      ).toEqual(63);
     });
     it('should return team permission level when admin uids is empty and level is defined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -325,6 +325,7 @@ describe('TeamPermissionController', () => {
         PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
         PERMISSION_ENUM.TEAM_PIN_POST,
         PERMISSION_ENUM.TEAM_ADMIN,
+        PERMISSION_ENUM.TEAM_MENTION,
       ]);
     });
   });
@@ -473,7 +474,7 @@ describe('TeamPermissionController', () => {
       const permission: TeamPermission = {
         admin: {
           uids: [1, 2, 3],
-          level: 31,
+          level: 63,
         },
         user: {
           uids: [1, 2, 3, 4],
@@ -523,6 +524,10 @@ describe('TeamPermissionController', () => {
           key: 'TEAM_POST',
           mask: PERMISSION_ENUM.TEAM_POST,
         },
+        {
+          key: 'TEAM_MENTION',
+          mask: PERMISSION_ENUM.TEAM_MENTION,
+        },
       ];
       const getTotalLevel = (indexs: number[]) => {
         let level = 0;
@@ -537,36 +542,42 @@ describe('TeamPermissionController', () => {
       };
       it.each`
         level                          | trueFlagsKeys            | falseFlagsKeys
-        ${getTotalLevel([0])}          | ${getKeys([0])}          | ${getKeys([1, 2, 3, 4])}
-        ${getTotalLevel([1])}          | ${getKeys([1])}          | ${getKeys([0, 2, 3, 4])}
-        ${getTotalLevel([2])}          | ${getKeys([2])}          | ${getKeys([0, 1, 3, 4])}
-        ${getTotalLevel([3])}          | ${getKeys([3])}          | ${getKeys([0, 1, 2, 4])}
-        ${getTotalLevel([4])}          | ${getKeys([4])}          | ${getKeys([0, 1, 2, 3])}
-        ${getTotalLevel([0, 1])}       | ${getKeys([0, 1])}       | ${getKeys([2, 3, 4])}
-        ${getTotalLevel([0, 2])}       | ${getKeys([0, 2])}       | ${getKeys([1, 3, 4])}
-        ${getTotalLevel([0, 3])}       | ${getKeys([0, 3])}       | ${getKeys([1, 2, 4])}
-        ${getTotalLevel([0, 4])}       | ${getKeys([0, 4])}       | ${getKeys([1, 2, 3])}
-        ${getTotalLevel([1, 2])}       | ${getKeys([1, 2])}       | ${getKeys([0, 3, 4])}
-        ${getTotalLevel([1, 3])}       | ${getKeys([1, 3])}       | ${getKeys([0, 2, 4])}
-        ${getTotalLevel([1, 4])}       | ${getKeys([1, 4])}       | ${getKeys([0, 2, 3])}
-        ${getTotalLevel([2, 3])}       | ${getKeys([2, 3])}       | ${getKeys([0, 1, 4])}
-        ${getTotalLevel([2, 4])}       | ${getKeys([2, 4])}       | ${getKeys([0, 1, 3])}
-        ${getTotalLevel([3, 4])}       | ${getKeys([3, 4])}       | ${getKeys([0, 1, 2])}
-        ${getTotalLevel([0, 1, 2])}    | ${getKeys([0, 1, 2])}    | ${getKeys([3, 4])}
-        ${getTotalLevel([0, 1, 3])}    | ${getKeys([0, 1, 3])}    | ${getKeys([2, 4])}
-        ${getTotalLevel([0, 1, 4])}    | ${getKeys([0, 1, 4])}    | ${getKeys([2, 3])}
-        ${getTotalLevel([0, 2, 3])}    | ${getKeys([0, 2, 3])}    | ${getKeys([1, 4])}
-        ${getTotalLevel([0, 2, 4])}    | ${getKeys([0, 2, 4])}    | ${getKeys([1, 3])}
-        ${getTotalLevel([0, 3, 4])}    | ${getKeys([0, 3, 4])}    | ${getKeys([1, 2])}
-        ${getTotalLevel([1, 2, 3])}    | ${getKeys([1, 2, 3])}    | ${getKeys([0, 4])}
-        ${getTotalLevel([1, 2, 4])}    | ${getKeys([1, 2, 4])}    | ${getKeys([0, 3])}
-        ${getTotalLevel([1, 3, 4])}    | ${getKeys([1, 3, 4])}    | ${getKeys([0, 2])}
-        ${getTotalLevel([2, 3, 4])}    | ${getKeys([2, 3, 4])}    | ${getKeys([0, 1])}
-        ${getTotalLevel([0, 1, 2, 3])} | ${getKeys([0, 1, 2, 3])} | ${getKeys([4])}
-        ${getTotalLevel([0, 1, 2, 4])} | ${getKeys([0, 1, 2, 4])} | ${getKeys([3])}
-        ${getTotalLevel([0, 1, 3, 4])} | ${getKeys([0, 1, 3, 4])} | ${getKeys([2])}
-        ${getTotalLevel([0, 2, 3, 4])} | ${getKeys([0, 2, 3, 4])} | ${getKeys([1])}
-        ${getTotalLevel([1, 2, 3, 4])} | ${getKeys([1, 2, 3, 4])} | ${getKeys([0])}
+        ${getTotalLevel([0])}          | ${getKeys([0])}          | ${getKeys([1, 2, 3, 4, 5])}
+        ${getTotalLevel([1])}          | ${getKeys([1])}          | ${getKeys([0, 2, 3, 4, 5])}
+        ${getTotalLevel([2])}          | ${getKeys([2])}          | ${getKeys([0, 1, 3, 4, 5])}
+        ${getTotalLevel([3])}          | ${getKeys([3])}          | ${getKeys([0, 1, 2, 4, 5])}
+        ${getTotalLevel([4])}          | ${getKeys([4])}          | ${getKeys([0, 1, 2, 3, 5])}
+        ${getTotalLevel([0, 1])}       | ${getKeys([0, 1])}       | ${getKeys([2, 3, 4, 5])}
+        ${getTotalLevel([0, 2])}       | ${getKeys([0, 2])}       | ${getKeys([1, 3, 4, 5])}
+        ${getTotalLevel([0, 3])}       | ${getKeys([0, 3])}       | ${getKeys([1, 2, 4, 5])}
+        ${getTotalLevel([0, 4])}       | ${getKeys([0, 4])}       | ${getKeys([1, 2, 3, 5])}
+        ${getTotalLevel([1, 2])}       | ${getKeys([1, 2])}       | ${getKeys([0, 3, 4, 5])}
+        ${getTotalLevel([1, 3])}       | ${getKeys([1, 3])}       | ${getKeys([0, 2, 4, 5])}
+        ${getTotalLevel([1, 4])}       | ${getKeys([1, 4])}       | ${getKeys([0, 2, 3, 5])}
+        ${getTotalLevel([2, 3])}       | ${getKeys([2, 3])}       | ${getKeys([0, 1, 4, 5])}
+        ${getTotalLevel([2, 4])}       | ${getKeys([2, 4])}       | ${getKeys([0, 1, 3, 5])}
+        ${getTotalLevel([3, 4])}       | ${getKeys([3, 4])}       | ${getKeys([0, 1, 2, 5])}
+        ${getTotalLevel([4, 5])}       | ${getKeys([4, 5])}       | ${getKeys([0, 1, 2, 3])}
+        ${getTotalLevel([0, 1, 2])}    | ${getKeys([0, 1, 2])}    | ${getKeys([3, 4, 5])}
+        ${getTotalLevel([0, 1, 3])}    | ${getKeys([0, 1, 3])}    | ${getKeys([2, 4, 5])}
+        ${getTotalLevel([0, 1, 4])}    | ${getKeys([0, 1, 4])}    | ${getKeys([2, 3, 5])}
+        ${getTotalLevel([0, 2, 3])}    | ${getKeys([0, 2, 3])}    | ${getKeys([1, 4, 5])}
+        ${getTotalLevel([0, 2, 4])}    | ${getKeys([0, 2, 4])}    | ${getKeys([1, 3, 5])}
+        ${getTotalLevel([0, 3, 4])}    | ${getKeys([0, 3, 4])}    | ${getKeys([1, 2, 5])}
+        ${getTotalLevel([0, 4, 5])}    | ${getKeys([0, 4, 5])}    | ${getKeys([1, 2, 3])}
+        ${getTotalLevel([1, 2, 3])}    | ${getKeys([1, 2, 3])}    | ${getKeys([0, 4, 5])}
+        ${getTotalLevel([1, 2, 4])}    | ${getKeys([1, 2, 4])}    | ${getKeys([0, 3, 5])}
+        ${getTotalLevel([1, 3, 4])}    | ${getKeys([1, 3, 4])}    | ${getKeys([0, 2, 5])}
+        ${getTotalLevel([1, 4, 5])}    | ${getKeys([1, 4, 5])}    | ${getKeys([0, 2, 3])}
+        ${getTotalLevel([2, 3, 4])}    | ${getKeys([2, 3, 4])}    | ${getKeys([0, 1, 5])}
+        ${getTotalLevel([2, 3, 4])}    | ${getKeys([2, 3, 4])}    | ${getKeys([0, 1, 5])}
+        ${getTotalLevel([2, 4, 5])}    | ${getKeys([2, 4, 5])}    | ${getKeys([0, 1, 3])}
+        ${getTotalLevel([0, 1, 2, 3])} | ${getKeys([0, 1, 2, 3])} | ${getKeys([4, 5])}
+        ${getTotalLevel([0, 1, 2, 4])} | ${getKeys([0, 1, 2, 4])} | ${getKeys([3, 5])}
+        ${getTotalLevel([0, 1, 3, 4])} | ${getKeys([0, 1, 3, 4])} | ${getKeys([2, 5])}
+        ${getTotalLevel([0, 2, 3, 4])} | ${getKeys([0, 2, 3, 4])} | ${getKeys([1, 5])}
+        ${getTotalLevel([1, 2, 3, 4])} | ${getKeys([1, 2, 3, 4])} | ${getKeys([0, 5])}
+        ${getTotalLevel([1, 2, 4, 5])} | ${getKeys([1, 2, 4, 5])} | ${getKeys([0, 3])}
       `(
         'level = $level, $trueFlagsKeys = true',
         async ({ level, trueFlagsKeys, falseFlagsKeys }) => {
