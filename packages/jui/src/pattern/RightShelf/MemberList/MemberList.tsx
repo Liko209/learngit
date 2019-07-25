@@ -13,7 +13,7 @@ import {
 } from '../../../foundation/utils';
 import { palette } from 'rcui/foundation/shared/theme';
 import React, { PureComponent } from 'react';
-import { withLoading } from 'src/hoc';
+import { withLoading } from '../../../hoc/withLoading';
 
 const RightShellMemberListHeader = styled.div`
   padding: ${spacing(0, 4)};
