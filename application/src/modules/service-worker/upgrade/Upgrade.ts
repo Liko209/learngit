@@ -39,18 +39,15 @@ class Upgrade {
     );
 
     this._resetQueryTimer();
-    setInterval(
-      this._backgroundTimerHandler.bind(this),
-      BACKGROUND_TIMER_INTERVAL,
-    );
-    window.addEventListener('online', this._onlineHandler.bind(this));
+    setInterval(this._backgroundTimerHandler, BACKGROUND_TIMER_INTERVAL);
+    window.addEventListener('online', this._onlineHandler);
     document.addEventListener(
       'mousemove',
-      _.debounce(this._mouseMoveHandler.bind(this), USER_ACTION_EVENT_DEBOUNCE),
+      _.debounce(this._mouseMoveHandler, USER_ACTION_EVENT_DEBOUNCE),
     );
     document.addEventListener(
       'keypress',
-      _.debounce(this._keyPressHandler.bind(this), USER_ACTION_EVENT_DEBOUNCE),
+      _.debounce(this._keyPressHandler, USER_ACTION_EVENT_DEBOUNCE),
     );
 
     // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
@@ -155,7 +152,7 @@ class Upgrade {
     window.sessionStorage.removeItem(WAITING_WORKER_FLAG);
   }
 
-  private async _queryIfHasNewVersion() {
+  private _queryIfHasNewVersion = async () => {
     if (!window.navigator.onLine) {
       this.logInfo('Ignore update due to offline');
       return;
@@ -163,7 +160,7 @@ class Upgrade {
 
     const registration = await this._getRegistration('Update');
     this._startServiceWorkerUpdate(registration);
-  }
+  };
 
   private async _serviceWorkerSkipWaiting() {
     const registration = await this._getRegistration('Skip Waiting');
@@ -247,14 +244,14 @@ class Upgrade {
     return this._intervalToNow(fromDate) > interval;
   }
 
-  private _onlineHandler() {
+  private _onlineHandler = () => {
     if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckUpdateTime)) {
       this._resetQueryTimer();
       this._queryIfHasNewVersion();
     } else {
       mainLogger.info(`${logTag}Ignore online immediately update`);
     }
-  }
+  };
 
   private _distanceToLastBackgroundTimerFire() {
     return this._intervalToNow(this._lastBackgroundTimerFire);
@@ -266,7 +263,7 @@ class Upgrade {
     );
   }
 
-  private _backgroundTimerHandler() {
+  private _backgroundTimerHandler = () => {
     if (this._isNearToPowerSavingByTimerDetection()) {
       mainLogger.info(
         `${logTag}Reset user action time due to power saving by timer detection: ${this._distanceToLastBackgroundTimerFire() /
@@ -279,7 +276,7 @@ class Upgrade {
     this._lastBackgroundTimerFire = new Date();
 
     this._tryUpgradeIfAvailable('Timer upgrade');
-  }
+  };
 
   private _tryUpgradeIfAvailable(triggerSource: string) {
     this.reloadIfAvailable(triggerSource);
@@ -287,13 +284,13 @@ class Upgrade {
     this.skipWaitingIfAvailable(triggerSource);
   }
 
-  private _mouseMoveHandler() {
+  private _mouseMoveHandler = () => {
     this._lastUserActionTime = new Date();
-  }
+  };
 
-  private _keyPressHandler() {
+  private _keyPressHandler = () => {
     this._lastUserActionTime = new Date();
-  }
+  };
 
   private _resetQueryTimer() {
     if (this._queryTimer) {
@@ -301,7 +298,7 @@ class Upgrade {
     }
 
     this._queryTimer = setInterval(
-      this._queryIfHasNewVersion.bind(this),
+      this._queryIfHasNewVersion,
       this.queryInterval,
     );
   }
