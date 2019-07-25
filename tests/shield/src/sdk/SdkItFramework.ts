@@ -29,7 +29,7 @@ import assert = require('assert');
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
-type ItContext = {
+export type ItContext = {
   // ACCOUNT user info
   userContext: {
     glipUserId: () => number;
