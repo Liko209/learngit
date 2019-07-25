@@ -284,6 +284,17 @@ export class EmojiMatchList extends BaseWebComponent {
     return this.getComponent(EmojiMatchItem, this.items.nth(n));
   }
 
+  async itemFullMatch(value: string) {
+    const text = value.replace(':', '');
+    const items = await this.items;
+    const count = await items.count;
+    await H.retryUntilPass(async () => {
+      for (let i = 0 ; i< count; i++) {
+        await this.t.expect(items.nth(i).textContent).contains(text);
+      }
+    })
+  }
+
 }
 
 class EmojiMatchItem extends BaseWebComponent {
