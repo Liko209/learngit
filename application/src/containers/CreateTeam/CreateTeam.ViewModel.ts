@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed, observable } from 'mobx';
-
+import _ from 'lodash';
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
-
+import { dataAnalysis } from 'sdk';
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue, getSingleEntity } from '@/store/utils';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
@@ -60,11 +60,11 @@ class CreateTeamViewModel extends AbstractViewModel {
     this.disabledOkBtn = name === '';
     this.errorMsg = '';
     this.nameError = false;
-  }
+  };
 
   handleDescChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.description = e.target.value.trim();
-  }
+  };
 
   handleSearchContactChange = (items: any) => {
     const members = items.map((item: any) => {
@@ -76,7 +76,7 @@ class CreateTeamViewModel extends AbstractViewModel {
     this.emailErrorMsg = '';
     this.emailError = false;
     this.members = members;
-  }
+  };
 
   @action
   create = async (
@@ -100,6 +100,9 @@ class CreateTeamViewModel extends AbstractViewModel {
         personIds,
         options,
       );
+      if (_.get(options, 'permissionFlags.TEAM_MENTION')) {
+        dataAnalysis.track('Jup_Web/DT_Messaging_Team_teamMentionSetting');
+      }
       this.loading = false;
       return result;
     } catch (error) {
@@ -110,7 +113,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       }
       return null;
     }
-  }
+  };
 
   createErrorHandler(error: JError) {
     let serverUnknownError = false;

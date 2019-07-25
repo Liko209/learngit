@@ -7,6 +7,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { CreateTeamView } from '../CreateTeam.View';
 import { Notification } from '@/containers/Notification';
+import { INIT_ITEMS } from '../types';
 
 jest.mock('@/containers/Notification');
 
@@ -41,7 +42,7 @@ describe('CreateTeamView', () => {
   });
 
   describe('createTeam()', () => {
-    it('should call create with correct teamSetting', () => {
+    it('should call create with correct teamSetting [JPT-892]', () => {
       const mockCreate = jest.fn();
       const props: any = {
         create: mockCreate,
@@ -52,23 +53,28 @@ describe('CreateTeamView', () => {
       const view = new CreateTeamView(props);
       const items = [
         {
-          type: 'isPublic',
+          type: INIT_ITEMS.IS_PUBLIC,
           text: 'people.team.SetAsPublicTeam',
           checked: false,
         },
         {
-          type: 'canPost',
+          type: INIT_ITEMS.CAN_POST,
           text: 'people.team.MembersMayPostMessages',
 
           checked: true,
         },
         {
-          type: 'canAddMember',
+          type: INIT_ITEMS.CAN_ADD_MEMBER,
           text: 'people.team.MembersMayAddOtherMembers',
           checked: true,
         },
         {
-          type: 'canPin',
+          type: INIT_ITEMS.CAN_AT_TEAM_MENTION,
+          text: 'people.team.MembersCanAtTeamMention',
+          checked: false,
+        },
+        {
+          type: INIT_ITEMS.CAN_PIN,
           text: 'people.team.MembersMayPinPosts',
           checked: true,
         },
@@ -85,6 +91,7 @@ describe('CreateTeamView', () => {
           TEAM_ADD_MEMBER: true,
           TEAM_POST: true,
           TEAM_PIN_POST: true,
+          TEAM_MENTION: false,
         },
       };
       expect(mockCreate).toHaveBeenCalledWith(props.members, expectResult);
