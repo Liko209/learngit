@@ -13,6 +13,7 @@ import {
 } from '../../../foundation/utils';
 import { palette } from 'rcui/foundation/shared/theme';
 import React, { PureComponent } from 'react';
+import { withLoading } from 'src/hoc';
 
 const RightShellMemberListHeader = styled.div`
   padding: ${spacing(0, 4)};
@@ -29,6 +30,7 @@ const RightShellMemberListTitle = styled.span`
   ${typography('caption1')};
   color: ${palette('common', 'black')};
   padding-right: ${spacing(3)};
+  position: relative;
 `;
 
 const RightShellMemberListSubTitle = styled.div`
@@ -41,8 +43,13 @@ const RightShellMemberListSubTitle = styled.div`
   border-bottom: 1px solid ${grey('300')};
 `;
 
-const RightShellMemberListBody = styled.div`
+type BodyProps = { loading: boolean; [attr: string]: any };
+const RightShellMemberListBody = styled(({ loading, ...rest }: BodyProps) => (
+  <div {...rest} />
+))`
+  height: ${({ loading, theme }) => (loading ? height(56)({ theme }) : 'auto')};
   padding: ${spacing(4, 3, 2)};
+  position: relative;
 `;
 
 const RightShellMemberListAvatarWrapper = styled.div`
@@ -64,6 +71,19 @@ const RightShellMemberListMoreCount = styled.div`
   line-height: ${height(8)};
   text-align: center;
 `;
+
+const JuiRightShellMemberListBody = ({
+  loading,
+  children,
+  ...rest
+}: BodyProps) => {
+  const Loading = withLoading(() => <div />);
+  return (
+    <RightShellMemberListBody loading={loading} {...rest}>
+      {loading ? <Loading loading /> : children}
+    </RightShellMemberListBody>
+  );
+};
 
 class JuiRightShellMemberListMoreCount extends PureComponent<{
   count: number;
@@ -100,7 +120,7 @@ export {
   RightShellMemberListHeader as JuiRightShellMemberListHeader,
   RightShellMemberListTitle as JuiRightShellMemberListTitle,
   RightShellMemberListSubTitle as JuiRightShellMemberListSubTitle,
-  RightShellMemberListBody as JuiRightShellMemberListBody,
+  JuiRightShellMemberListBody,
   RightShellMemberListAvatarWrapper as JuiRightShellMemberListAvatarWrapper,
   JuiRightShellMemberListMoreCount,
 };

@@ -7,7 +7,7 @@ import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
 
-import { text, number } from '@storybook/addon-knobs';
+import { text, number, boolean } from '@storybook/addon-knobs';
 import {
   JuiRightShellMemberListHeader,
   JuiRightShellMemberListTitle,
@@ -23,6 +23,7 @@ import { JuiLink } from '../../../components/Link';
 import { JuiIconButton } from '../../../components/Buttons';
 import { JuiAvatar } from '../../../components/Avatar';
 import { JuiPresence, PRESENCE } from '../../../components/Presence/Presence';
+import { Loading } from '../../../hoc/withLoading';
 
 storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
   const title = text('title', 'Members');
@@ -35,6 +36,7 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
   const memberCount = number('member count', 10);
   const guestCount = number('guest count', 4);
   const moreCount = number('more count', 15);
+  const loading = boolean('loading', false);
   // const content = text(
   //   'content',
   //   'Files that get shared in your conversation automatically show up here.',
@@ -48,7 +50,9 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
       <JuiRightShellMemberListHeader>
         <div>
           <JuiRightShellMemberListTitle>{title}</JuiRightShellMemberListTitle>
-          <JuiLink size="small">Show all {memberCount + guestCount}</JuiLink>
+          {loading ? null : (
+            <JuiLink size="small">Show all {memberCount + guestCount}</JuiLink>
+          )}
         </div>
         <JuiIconButton
           variant="plain"
@@ -59,7 +63,7 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
           addmember_border
         </JuiIconButton>
       </JuiRightShellMemberListHeader>
-      <JuiRightShellMemberListBody>
+      <JuiRightShellMemberListBody loading={loading}>
         <JuiRightShellMemberListAvatarWrapper>
           {Array(memberCount)
             .fill(1)
