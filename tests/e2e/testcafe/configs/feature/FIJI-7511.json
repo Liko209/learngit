@@ -1,10 +1,9 @@
 {
   "on_merge": {
     "include_tags": [
-        "JPT-1643",
-        "JPT-1537",
-        "JPT-1584",
-        "JPT-1354"
+        "P0",
+        "P1",
+        "P2"
     ],
     "browsers": [
       "selenium:chrome"
