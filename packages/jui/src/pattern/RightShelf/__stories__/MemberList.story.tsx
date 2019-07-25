@@ -67,11 +67,12 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
         <JuiRightShellMemberListAvatarWrapper>
           {Array(memberCount)
             .fill(1)
-            .map(() => (
+            .map((i, index) => (
               <JuiAvatar
                 size="medium"
                 color="lake"
                 tooltip="Some Person"
+                key={index}
                 presence={
                   <JuiPresence
                     presence={PRESENCE.AVAILABLE}
@@ -95,11 +96,12 @@ storiesOf('Pattern/ConversationRightShelf', module).add('MemberList', () => {
             <JuiRightShellMemberListAvatarWrapper>
               {Array(guestCount)
                 .fill(1)
-                .map(() => (
+                .map((i, index) => (
                   <JuiAvatar
                     size="medium"
                     color="lake"
                     tooltip="Some Person"
+                    key={index}
                     presence={
                       <JuiPresence
                         presence={PRESENCE.AVAILABLE}

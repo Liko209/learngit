@@ -100,6 +100,9 @@ class JuiRightShellMemberListMoreCount extends PureComponent<{
   }
 
   fitText() {
+    if (!this._ref.current) {
+      return;
+    }
     if (this._ref.current.scrollWidth > this.MAX_WIDTH) {
       this._ref.current.firstChild.style.transform = `scale(${this.MAX_WIDTH /
         this._ref.current.scrollWidth})`;
