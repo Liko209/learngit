@@ -10,7 +10,7 @@ enum CALL_SESSION_STATE {
   ERROR = 'callSessionError',
   PROGRESS = 'callSessionProgress',
   REINVITE_ACCEPTED = 'callSessionReinviteAccepted',
-  REINVITE_FAILED = 'callSessionReinviteFailed'
+  REINVITE_FAILED = 'callSessionReinviteFailed',
 }
 
 enum CALL_FSM_NOTIFY {
@@ -51,7 +51,7 @@ enum CALL_FSM_NOTIFY {
   DTMF_ACTION = 'dtmfAction',
   START_REPLY_ACTION = 'startReplyAction',
   REPLY_WITH_PATTERN_ACTION = 'replyWithPatternAction',
-  REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction'
+  REPLY_WITH_MESSAGE_ACTION = 'replyWithMessageAction',
 }
 
 export { CALL_SESSION_STATE, CALL_FSM_NOTIFY };

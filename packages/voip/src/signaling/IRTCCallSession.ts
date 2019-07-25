@@ -32,7 +32,7 @@ interface IRTCCallSession extends EventEmitter2 {
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void;
   replyWithMessage(message: string): void;
   reconnectMedia(options: any): void;
