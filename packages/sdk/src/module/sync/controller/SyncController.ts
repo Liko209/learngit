@@ -45,6 +45,7 @@ import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _isFetchingRemaining: boolean;
+  private _isDataSyncing: boolean = false;
   private _syncListener: SyncListener;
   private _progressBar: {
     start: () => void;
@@ -88,7 +89,12 @@ class SyncController {
     return null;
   }
 
+  isDataSyncing() {
+    return this._isDataSyncing;
+  }
+
   async syncData(syncListener?: SyncListener) {
+    this._isDataSyncing = true;
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
     mainLogger.log(LOG_TAG, `start syncData time: ${lastIndexTimestamp}`);
@@ -102,6 +108,7 @@ class SyncController {
     } catch (e) {
       mainLogger.log(LOG_TAG, 'syncData fail', e);
     }
+    this._isDataSyncing = false;
   }
 
   handleStoppingSocketEvent() {
@@ -337,7 +344,9 @@ class SyncController {
       .then(() => this._handleIncomingProfile(transProfile, source, changeMap))
       .then(() => this._handleIncomingPerson(people, source, changeMap))
       .then(() => this._handleIncomingGroup(mergedGroups, source, changeMap))
-      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap))
+      .then(() =>
+        this._handleIncomingPost(posts, maxPostsExceeded, source, changeMap),
+      )
       .then(() => {
         mainLogger.debug(
           LOG_INDEX_DATA,
