@@ -7,9 +7,8 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@material-ui/core": "4.1.3",
-    "@material-ui/styles": "4.1.2",
-    "@material-ui/icons": "3.0.2",
+    "@material-ui/core": "4.2.1",
+    "@material-ui/styles": "4.2.1",
     "codemirror": "5.42.2",
     "downshift": "3.1.4",
     "emoji-mart": "2.11.0",
