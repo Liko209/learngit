@@ -81,13 +81,13 @@ class LaunchDarklyController extends AbstractPermissionController
   }
 
   async hasPermission(type: UserPermissionType): Promise<boolean> {
-    return (this.isClientReady && this.launchDarklyClient.hasFlags())
+    return this._isClientFlagsReady()
       ? this.launchDarklyClient.hasPermission(type)
       : this._defaultPermission(type);
   }
 
   async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
-    if (this.isClientReady && this.launchDarklyClient.hasFlags()) {
+    if (this._isClientFlagsReady()) {
       return this.launchDarklyClient.getFeatureFlag(type);
     }
     return this._defaultFeatureFlag(type);
@@ -99,6 +99,10 @@ class LaunchDarklyController extends AbstractPermissionController
       LaunchDarklyDefaultPermissions,
       type,
     );
+  }
+
+  private _isClientFlagsReady() {
+    return this.isClientReady && this.launchDarklyClient.hasFlags();
   }
 
   private _defaultPermission(type: UserPermissionType) {

@@ -7,7 +7,6 @@ import { LaunchDarklyClient } from '../LaunchDarklyClient';
 import { initialize } from 'launchdarkly-js-client-sdk';
 
 jest.mock('launchdarkly-js-client-sdk');
-// @ts-ignore
 initialize = jest.fn().mockReturnValue({
   on: jest.fn(),
   off: jest.fn(),

@@ -6,11 +6,12 @@
 
 import { IPermissionController } from '../controller/IPermissionController';
 import { UserPermission } from '../entity';
+import { FeatureFlagType } from '../types';
 import { UserPermissionType } from '..';
 import { mainLogger } from 'foundation';
-import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
-import { notificationCenter, ENTITY } from '../../../service';
-import { AccountService } from '../../account/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { notificationCenter, ENTITY } from 'sdk/service';
+import { AccountService } from 'sdk/module/account/service';
 
 const DEFAULT_FEATURE_FLAG = -1;
 
@@ -30,7 +31,7 @@ class PermissionServiceHelper {
     };
   }
 
-  async getFeatureFlag(type: UserPermissionType): Promise<number | string> {
+  async getFeatureFlag(type: UserPermissionType): Promise<FeatureFlagType> {
     const controller = this._getController(type);
     if (controller) {
       return controller.getFeatureFlag(type);
@@ -76,14 +77,9 @@ class PermissionServiceHelper {
   }
 
   private _getController(type: UserPermissionType) {
-    let controller;
-    for (const c of this.controllers) {
-      if (c.isFlagSupported(type)) {
-        controller = c;
-        break;
-      }
-    }
-    return controller;
+    return this.controllers.find(con => {
+      return con.isFlagSupported(type);
+    });
   }
 }
 

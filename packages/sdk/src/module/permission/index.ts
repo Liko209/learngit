@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PermissionService } from './service/PermissionService';
-import UserPermissionType from './types';
+import UserPermissionType, { FeatureFlagType } from './types';
 import { IPermissionController } from './controller/IPermissionController';
 
-export { PermissionService, UserPermissionType, IPermissionController };
+export {
+  PermissionService,
+  UserPermissionType,
+  IPermissionController,
+  FeatureFlagType,
+};
