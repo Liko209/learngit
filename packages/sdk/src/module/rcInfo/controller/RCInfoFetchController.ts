@@ -18,6 +18,8 @@ import {
   GetBlockNumberListParams,
   BlockNumberItem,
   BLOCK_STATUS,
+  IStateRequest,
+  CountryState,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -224,10 +226,17 @@ class RCInfoFetchController {
     await this.rcInfoUserConfig.setExtensionCallerId(extensionCallerId);
     notificationCenter.emit(RC_INFO.EXTENSION_CALLER_ID, extensionCallerId);
   };
+
   requestDialingPlan = async (): Promise<void> => {
     const dialingPlan = await RCInfoApi.getDialingPlan();
     await this.rcInfoUserConfig.setDialingPlan(dialingPlan);
     notificationCenter.emit(RC_INFO.DIALING_PLAN, dialingPlan);
+  };
+
+  requestCountryState = async (
+    request?: IStateRequest,
+  ): Promise<CountryState> => {
+    return await RCInfoApi.getCountryState(request);
   };
 
   requestAccountServiceInfo = async (): Promise<void> => {
@@ -254,7 +263,9 @@ class RCInfoFetchController {
     const response = await RCInfoApi.getBlockNumberList(params);
     response.records &&
       result.push(
-        ...response.records.filter(data => data.status === BLOCK_STATUS.BLOCKED),
+        ...response.records.filter(
+          data => data.status === BLOCK_STATUS.BLOCKED,
+        ),
       );
     if (
       response.paging &&
@@ -314,7 +325,7 @@ class RCInfoFetchController {
   }
 
   private async _getAllSpecialNumberRules(): Promise<
-  SpecialNumberRuleModel | ISpecialServiceNumber | undefined
+    SpecialNumberRuleModel | ISpecialServiceNumber | undefined
   > {
     return (await this.rcInfoUserConfig.getSpecialNumberRules()) || undefined;
   }
@@ -347,7 +358,7 @@ class RCInfoFetchController {
   }
 
   async getExtensionPhoneNumberList(): Promise<
-  IExtensionPhoneNumberList | undefined
+    IExtensionPhoneNumberList | undefined
   > {
     return (
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
