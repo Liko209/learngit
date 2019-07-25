@@ -101,7 +101,7 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
-      loadingStatus: preLoadingStatus,
+      loadingStatus: prevLoadingStatus,
     } = prevProps;
     const {
       postIds,
@@ -137,7 +137,7 @@ class StreamViewComponent extends Component<Props> {
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
-    if (loadingStatus === STATUS.SUCCESS && preLoadingStatus === STATUS.PENDING) {
+    if (loadingStatus === STATUS.SUCCESS && prevLoadingStatus === STATUS.PENDING) {
       this._performanceTracer.end({
         key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
         count: postIds.length,
