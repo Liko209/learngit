@@ -239,7 +239,7 @@ describe('GroupModel', () => {
       } as Group);
       expect(gmAdmin.canMentionTeam).toBeTruthy();
     });
-    it('should return true when group data is not ready', () => {
+    it('should return false when group data is not ready', () => {
       const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
       expect(gmAdmin.canMentionTeam).toBeFalsy();
     });
