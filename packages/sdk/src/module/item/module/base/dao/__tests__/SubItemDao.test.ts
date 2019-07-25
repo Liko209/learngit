@@ -8,6 +8,13 @@ import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
 import { SanitizedItem, Item } from '../../entity';
 import { QUERY_DIRECTION } from '../../../../../../dao/constants';
+import { DatabaseType } from 'foundation/src';
+
+const Dexie = require('dexie');
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 
 jest.mock('sdk/service/utils', () => {
   return {
@@ -26,7 +33,7 @@ describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
 
   function setUp() {
-    const { database } = setup();
+    const { database } = setup(DatabaseType.DexieDB);
     dao = new SubItemDao<SanitizedItem>('eventItem', database);
   }
 

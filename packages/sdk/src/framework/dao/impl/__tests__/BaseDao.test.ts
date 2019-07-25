@@ -3,7 +3,7 @@
  * @Date: 2018-03-01 14:31:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { DBManager, IDatabase } from 'foundation';
+import { DBManager, IDatabase, DatabaseType } from 'foundation';
 import BaseDao from '../BaseDao';
 import Query from '../Query';
 
@@ -22,18 +22,21 @@ let dao: Dao;
 
 describe('BaseDao', () => {
   beforeAll(async () => {
-    await dbManager.initDatabase({
-      name: 'DB',
-      version: 1,
-      schema: {
-        1: {
-          mock: {
-            unique: 'id',
-            indices: [],
+    await dbManager.initDatabase(
+      {
+        name: 'DB',
+        version: 1,
+        schema: {
+          1: {
+            mock: {
+              unique: 'id',
+              indices: [],
+            },
           },
         },
       },
-    });
+      DatabaseType.LokiDB,
+    );
 
     dao = new Dao(dbManager.getDatabase());
   });
@@ -269,12 +272,12 @@ describe('BaseDao', () => {
   });
 
   it('should put if updating item not exists', async () => {
-    await dao.update([
+    await dao.update(
       {
         id: -1,
         name: 'NAME1',
       },
-    ]);
+    );
     await expect(dao.get(-1)).resolves.toMatchObject({
       id: -1,
       name: 'NAME1',

@@ -7,6 +7,12 @@ import DexieDB from '../DexieDB';
 import DexieCollection from '../DexieCollection';
 import { ISchema } from '../../../db';
 
+const Dexie = require('dexie');
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
 // jest.mock('../DexieCollection');
 const upgrader = jest.fn();
 const schema: ISchema = {

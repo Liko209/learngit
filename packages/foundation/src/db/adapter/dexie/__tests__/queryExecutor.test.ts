@@ -8,6 +8,11 @@ import {
   IPerson,
 } from '../../__tests__/utils';
 
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
 describe('execQuery<IPerson>()', () => {
   let table: Dexie.Table<IPerson>;
 
@@ -94,7 +99,12 @@ describe('execQuery<IPerson>()', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
-          { key: 'firstName', name: 'equal', value: 'cooler', ignoreCase: true },
+          {
+            key: 'firstName',
+            name: 'equal',
+            value: 'cooler',
+            ignoreCase: true,
+          },
         ],
       });
       const result = await extractCollectionsToFirstNames(collections);
@@ -124,7 +134,12 @@ describe('execQuery<IPerson>()', () => {
     it('should return strict matched data', async () => {
       const collections = await execQuery<IPerson>(table, {
         criteria: [
-          { key: 'firstName', name: 'startsWith', value: 'C', ignoreCase: true },
+          {
+            key: 'firstName',
+            name: 'startsWith',
+            value: 'C',
+            ignoreCase: true,
+          },
         ],
       });
       const result = await extractCollectionsToFirstNames(collections);
