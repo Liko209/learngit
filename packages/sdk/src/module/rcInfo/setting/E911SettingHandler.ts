@@ -39,6 +39,13 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     this._rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
     );
+    this._subscribe();
+  }
+
+  private _subscribe() {
+    // this.on<RCExtensionInfo>(RC_INFO.CLIENT_INFO, async () => {
+    //   await this.getUserSettingEntity();
+    // });
   }
 
   private async _assignLine(emergencyAddress: EmergencyServiceAddress) {
@@ -80,10 +87,10 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   }
 
   async fetchUserSettingEntity() {
-    return this._getE911Setting();
+    return await this._getE911Setting();
   }
 
-  async _getDefaultAddr() {
+  async _getDefaultEmergencyAddress() {
     let emergencyAddr: EmergencyServiceAddress = {} as EmergencyServiceAddress;
     const localAddr = this._telephonyService.getLocalEmergencyAddress();
     if (localAddr) {
@@ -100,14 +107,18 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   private async _getE911Setting(): Promise<
     UserSettingEntity<EmergencyServiceAddress>
   > {
-    const emergencyAddr = await this._getDefaultAddr();
+    const hasCallPermission = await this._rcInfoService.isVoipCallingAvailable();
+    const emergencyAddr = await this._getDefaultEmergencyAddress();
     return {
       id: SettingEntityIds.Phone_E911,
       value: emergencyAddr,
       weight: SettingModuleIds.ExtensionSetting.weight,
       valueType: ESettingValueType.LINK,
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
-      state: ESettingItemState.ENABLE,
+      state: hasCallPermission
+        ? ESettingItemState.ENABLE
+        : ESettingItemState.INVISIBLE,
+      valueSetter: value => this.updateValue(value),
     };
   }
 }
