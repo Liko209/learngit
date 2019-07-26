@@ -6,6 +6,8 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
+import { ImageCard } from './style';
+import { Wrapper as AttachmentItemWrapper } from '../../MessageInput/AttachmentItem';
 
 type JuiFileWrapperProps = {
   children?: React.ReactNode;
@@ -23,9 +25,28 @@ const JuiFileSection = styled.div`
   }
 `;
 
+const JuiFileImageSection = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+
+  ${ImageCard} {
+    order: 1;
+  }
+
+  ${AttachmentItemWrapper} {
+    width: 100%;
+    order: 2;
+  }
+`;
+
 const JuiFileWrapper = React.memo((props: JuiFileWrapperProps) => {
   const { children } = props;
   return <Wrapper>{children}</Wrapper>;
 });
 
-export { JuiFileWrapper, JuiFileSection, JuiFileWrapperProps };
+export {
+  JuiFileWrapper,
+  JuiFileSection,
+  JuiFileImageSection,
+  JuiFileWrapperProps,
+};

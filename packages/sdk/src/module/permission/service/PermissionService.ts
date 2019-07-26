@@ -6,10 +6,12 @@
 
 import { IPermissionService } from './IPermissionService';
 import { EntityBaseService } from '../../../framework';
-import { PermissionController } from '../controller/PermissionController';
 import UserPermissionType from '../types';
 import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { IPermissionController } from '../controller/IPermissionController';
+
+import { PermissionServiceHelper } from './PermissionServiceHelper';
 
 type UserPermission = {
   id: number;
@@ -18,11 +20,15 @@ type UserPermission = {
 
 class PermissionService extends EntityBaseService<UserPermission>
   implements IPermissionService {
-  private permissionController: PermissionController;
+  private permissionServiceHelper: PermissionServiceHelper;
 
   constructor() {
     super({ isSupportedCache: false });
-    this.permissionController = new PermissionController();
+    this.permissionServiceHelper = new PermissionServiceHelper();
+  }
+
+  injectControllers(controller: IPermissionController) {
+    this.permissionServiceHelper.injectControllers(controller);
   }
 
   async getUserPermission() {
@@ -34,15 +40,15 @@ class PermissionService extends EntityBaseService<UserPermission>
   }
 
   async hasPermission(type: UserPermissionType) {
-    return this.permissionController.hasPermission(type);
+    return this.permissionServiceHelper.hasPermission(type);
   }
 
-  getFeatureFlag(type: UserPermissionType) {
-    return this.permissionController.getFeatureFlag(type);
+  async getFeatureFlag(type: UserPermissionType) {
+    return this.permissionServiceHelper.getFeatureFlag(type);
   }
 
   async getById(id: number): Promise<UserPermission> {
-    return this.permissionController.getById(id);
+    return this.permissionServiceHelper.getById(id);
   }
 }
 

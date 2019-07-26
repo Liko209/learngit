@@ -591,7 +591,7 @@ test(formalName('Show empty page when there are no posts in AtMention list', ['P
     });
 
     await h(t).withLog('Then I can see this post instead of empty page in the mentions page', async () => {
-      await t.expect(emptyPage.exists).notOk();
+      await t.expect(emptyPage.exists).notOk({ timeout: 20e3 });
       const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
       await t.expect(atMentionPostCard.exists).ok();
     }, true);
@@ -604,4 +604,3 @@ test(formalName('Show empty page when there are no posts in AtMention list', ['P
       await t.expect(emptyPage.exists).ok();
     }, true);
   });
-
