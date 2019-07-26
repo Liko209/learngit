@@ -3,6 +3,7 @@ import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { CreateTeamModal, ConvertToTeamDialog } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
+import { NewConversationDialog } from './NewConversation';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
@@ -99,6 +100,10 @@ export class HomePage extends BaseWebComponent {
 
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
+  }
+
+  get newConversationDialog() {
+    return this.getComponent(NewConversationDialog)
   }
 
   get miniProfile() {

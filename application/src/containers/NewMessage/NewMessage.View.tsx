@@ -5,13 +5,13 @@
  */
 /* eslint-disable */
 import React, { createRef } from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
-import { JuiTextWithLink } from 'jui/components/TextWithLink';
+import { JuiBottomText } from 'jui/pattern/ConvertToTeam';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
@@ -23,6 +23,8 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
+import JuiLink from 'jui/components/Link';
+
 type State = {
   message: string;
 };
@@ -30,12 +32,6 @@ type State = {
 const StyledSnackbarsContent = styled<any>(JuiSnackbarContent)`
   && {
     margin: 0 0 ${spacing(4)} 0;
-  }
-`;
-
-const StyledTextWithLink = styled.div`
-  && {
-    margin-top: ${spacing(4)};
   }
 `;
 
@@ -115,7 +111,12 @@ class NewMessageComponent extends React.Component<Props, State> {
     }
     return (
       <JuiModal
-        modalProps={{ scroll: 'body' }}
+        modalProps={{
+          classes: {
+            paper: 'overflow-y',
+          },
+          scroll: 'body',
+        }}
         open={true}
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}
@@ -132,9 +133,9 @@ class NewMessageComponent extends React.Component<Props, State> {
         }
         cancelText={t('common.dialog.cancel')}
       >
-        {
-          // temporary: ContactAndGroupSearch contain group and person
-          canMentionTeam ? <ContactAndGroupSearch
+        {// temporary: ContactAndGroupSearch contain group and person
+        canMentionTeam ? (
+          <ContactAndGroupSearch
             onSelectChange={handleSearchContactChange}
             label={t('people.team.Members')}
             placeholder={t('people.team.SearchContactPlaceholder')}
@@ -144,18 +145,20 @@ class NewMessageComponent extends React.Component<Props, State> {
             messageRef={this.messageRef}
             multiple={true}
             autoSwitchEmail={true}
-          /> : <ContactSearch
-              onSelectChange={handleSearchContactChange}
-              label={t('people.team.Members')}
-              placeholder={t('people.team.SearchContactPlaceholder')}
-              error={emailError}
-              helperText={emailError ? t(emailErrorMsg) : ''}
-              errorEmail={errorEmail}
-              messageRef={this.messageRef}
-              multiple={true}
-              autoSwitchEmail={true}
-            />
-        }
+          />
+        ) : (
+          <ContactSearch
+            onSelectChange={handleSearchContactChange}
+            label={t('people.team.Members')}
+            placeholder={t('people.team.SearchContactPlaceholder')}
+            error={emailError}
+            helperText={emailError ? t(emailErrorMsg) : ''}
+            errorEmail={errorEmail}
+            messageRef={this.messageRef}
+            multiple={true}
+            autoSwitchEmail={true}
+          />
+        )}
         <JuiTextarea
           id={t('message.action.typeNewMessage')}
           label={t('message.action.typeNewMessage')}
@@ -173,13 +176,16 @@ class NewMessageComponent extends React.Component<Props, State> {
             handleChange={this.props.handleCheckboxChange}
           />
         )}
-        <StyledTextWithLink>
-          <JuiTextWithLink
-            text={t('message.prompt.newMessageTip')}
-            linkText={t('message.prompt.newMessageTipLink')}
-            onClick={this.openCreateTeam}
+        <JuiBottomText>
+          <Trans
+            i18nKey='message.prompt.newMessageTip'
+            components={[
+              <JuiLink handleOnClick={this.openCreateTeam}>
+                create a Team
+              </JuiLink>,
+            ]}
           />
-        </StyledTextWithLink>
+        </JuiBottomText>
       </JuiModal>
     );
   }

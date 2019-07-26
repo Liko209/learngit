@@ -517,10 +517,10 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
 
-  const emptyDiv = <div style={{ height: minRowHeight }} />;
+  const EmptyDiv = () => <div style={{ height: minRowHeight }} />;
   const childrenToRender = children
     .filter((_, i) => startIndex <= i && i <= stopIndex)
-    .map(child => (child.type ? child : emptyDiv));
+    .map(child => (child.type ? child : <EmptyDiv key={child.key || 0} />));
 
   let childrenNode: React.ReactNode = childrenToRender;
   if (!shouldUseNativeImplementation) {
