@@ -106,8 +106,7 @@
     "jest-styled-components": "6.3.1",
     "cache-loader": "1.2.0",
     "btoa": "1.2.1",
-    "form-data": "2.5.0",
-    "weak": "1.0.1"
+    "form-data": "2.5.0"
   },
   "husky": {
     "hooks": {
