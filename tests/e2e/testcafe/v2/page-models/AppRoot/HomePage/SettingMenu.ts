@@ -46,6 +46,22 @@ export class SettingMenu extends BaseWebComponent {
     await this.t.click(this.presenceSubMenuDndButton);
   }
 
+  get presenceSubMenuAvailableButton() {
+    return this.getSelectorByAutomationId('presence-submenu-available');
+  }
+
+  async clickPresenceSubMenuAvailableButton() {
+    await this.t.click(this.presenceSubMenuAvailableButton);
+  }
+
+  get presenceSubMenuInvisibleButton() {
+    return this.getSelectorByAutomationId('presence-submenu-invisible');
+  }
+
+  async clickPresenceSubMenuInvisibleButton() {
+    await this.t.click(this.presenceSubMenuInvisibleButton);
+  }
+
   get dndTopBanner() {
     return this.getSelectorByAutomationId('dnd-top-banner');
   }
