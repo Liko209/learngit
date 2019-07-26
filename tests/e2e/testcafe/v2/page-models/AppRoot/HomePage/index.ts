@@ -8,7 +8,7 @@ import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
 import { PostDeleteConfirmDialog } from './PostDeleteConfirmDialog';
-import { Header } from './header';
+import { Header, TopBarAvatar } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
@@ -78,6 +78,10 @@ export class HomePage extends BaseWebComponent {
 
   get header() {
     return this.getComponent(Header);
+  }
+
+  get avatar() {
+    return this.getComponent(TopBarAvatar);
   }
 
   get addActionButton() {
