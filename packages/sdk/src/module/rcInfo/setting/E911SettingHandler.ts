@@ -23,6 +23,7 @@ import {
   IUpdateLineRequest,
 } from 'sdk/module/rcInfo/types';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
+import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 
 export class E911SettingHandler extends AbstractSettingEntityHandler<
   EmergencyServiceAddress
@@ -42,10 +43,15 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
     this._subscribe();
   }
 
+  private _emergencyAddressChanged = async () => {
+    await this.getUserSettingEntity();
+  };
+
   private _subscribe() {
-    // this.on<RCExtensionInfo>(RC_INFO.CLIENT_INFO, async () => {
-    //   await this.getUserSettingEntity();
-    // });
+    this.on(
+      `${TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS}.*`,
+      this._emergencyAddressChanged,
+    );
   }
 
   private async _assignLine(emergencyAddress: EmergencyServiceAddress) {
