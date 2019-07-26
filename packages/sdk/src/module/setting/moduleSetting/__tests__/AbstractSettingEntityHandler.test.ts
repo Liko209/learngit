@@ -51,7 +51,7 @@ describe('AbstractSettingEntityHandler', () => {
         expect(payload).toEqual('payload');
         done();
       });
-      expect(notificationCenter.on).toBeCalled();
+      expect(notificationCenter.on).toHaveBeenCalled();
       notificationCenter.emit('test', 'payload');
     });
     it('should add to subscriptions array', () => {
@@ -101,9 +101,9 @@ describe('AbstractSettingEntityHandler', () => {
     it('should off subscriptions', () => {
       mockSettingEntityHandler['userSettingEntityCache'] = {} as any;
       mockSettingEntityHandler.on('test', async payload => {});
-      expect(notificationCenter.off).not.toBeCalled();
+      expect(notificationCenter.off).not.toHaveBeenCalled();
       mockSettingEntityHandler.dispose();
-      expect(notificationCenter.off).toBeCalled();
+      expect(notificationCenter.off).toHaveBeenCalled();
     });
   });
 
@@ -119,7 +119,7 @@ describe('AbstractSettingEntityHandler', () => {
     it('should call notificationCenter emitEntityUpdate(ENTITY.USER_SETTING)', () => {
       mockSettingEntityHandler['userSettingEntityCache'] = {} as any;
       mockSettingEntityHandler.notifyUserSettingEntityUpdate({} as any);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledWith(
         ENTITY.USER_SETTING,
         [{}],
       );
@@ -188,6 +188,19 @@ describe('AbstractSettingEntityHandler', () => {
     afterEach(() => {
       cleanUp();
     });
+    it('should update cache, once getUserSettingEntity be called', async () => {
+      mockSettingEntityHandler.fetchUserSettingEntity = jest
+        .fn()
+        .mockResolvedValue('');
+      expect(
+        mockSettingEntityHandler['userSettingEntityCache'],
+      ).toBeUndefined();
+      const promise = mockSettingEntityHandler.getUserSettingEntity({} as any);
+      expect(
+        mockSettingEntityHandler['userSettingEntityCache'],
+      ).not.toBeUndefined();
+      await promise;
+    });
     it('should update cache', () => {
       mockSettingEntityHandler.updateUserSettingEntityCache({} as any);
       expect(mockSettingEntityHandler['userSettingEntityCache']).toEqual({});
@@ -207,7 +220,9 @@ describe('AbstractSettingEntityHandler', () => {
       expect(
         await mockSettingEntityHandler.getUserSettingEntity(false),
       ).toEqual('from fetch');
-      expect(mockSettingEntityHandler.fetchUserSettingEntity).toBeCalled();
+      expect(
+        mockSettingEntityHandler.fetchUserSettingEntity,
+      ).toHaveBeenCalled();
     });
     it('should fetchUserSettingEntity when cache not available', async () => {
       mockSettingEntityHandler['userSettingEntityCache'] = undefined;
@@ -217,7 +232,9 @@ describe('AbstractSettingEntityHandler', () => {
       expect(await mockSettingEntityHandler.getUserSettingEntity(true)).toEqual(
         'from fetch',
       );
-      expect(mockSettingEntityHandler.fetchUserSettingEntity).toBeCalled();
+      expect(
+        mockSettingEntityHandler.fetchUserSettingEntity,
+      ).toHaveBeenCalled();
     });
   });
 
