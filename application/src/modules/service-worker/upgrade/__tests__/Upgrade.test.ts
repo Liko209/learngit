@@ -118,6 +118,13 @@ describe('Upgrade limitation', () => {
     upgradeHandler._lastUserActionTime = 0;
     expect(upgradeHandler._canDoReload()).toBeTruthy();
   });
+  it('Should not allow to reload when app is not focused', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_appInFocus').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
   it('Should not allow to reload when syncing index', () => {
     upgradeHandler = new Upgrade();
     upgradeHandler._lastUserActionTime = 0;
