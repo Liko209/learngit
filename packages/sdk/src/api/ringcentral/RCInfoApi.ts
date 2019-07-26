@@ -34,6 +34,9 @@ import {
   BlockNumberListResponse,
   BlockNumberItem,
   AddBlockNumberParams,
+  IDeviceRequest,
+  IAssignLineRequest,
+  IUpdateLineRequest,
 } from './types';
 
 class RCInfoApi extends Api {
@@ -140,6 +143,14 @@ class RCInfoApi extends Api {
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
+  static getDeviceInfo(request?: IDeviceRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_DEVICE_INFO,
+      params: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
+  }
+
   static getForwardingNumbers(request?: IForwardingNumberRequest) {
     const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_FORWARDING_NUMBERS,
@@ -179,6 +190,24 @@ class RCInfoApi extends Api {
       path: RINGCENTRAL_API.BLOCKED_NUMBER,
     };
     return RCInfoApi.rcNetworkClient.http<BlockNumberItem>(query);
+  }
+
+  static assignLine(deviceId: string, data: IAssignLineRequest) {
+    const query = {
+      data,
+      method: NETWORK_METHOD.POST,
+      path: `${RINGCENTRAL_API.API_UPDATE_DEVICE}/${deviceId}/assign-line`,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
+  }
+
+  static updateLine(deviceId: string, data: IUpdateLineRequest) {
+    const query = {
+      data,
+      method: NETWORK_METHOD.PUT,
+      path: `${RINGCENTRAL_API.API_UPDATE_DEVICE}/${deviceId}`,
+    };
+    return RCInfoApi.rcNetworkClient.http(query);
   }
 }
 

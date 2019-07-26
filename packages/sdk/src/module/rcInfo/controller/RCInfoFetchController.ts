@@ -18,6 +18,9 @@ import {
   GetBlockNumberListParams,
   BlockNumberItem,
   BLOCK_STATUS,
+  IDeviceRequest,
+  DeviceInfo,
+  DeviceRecord,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -81,6 +84,11 @@ class RCInfoFetchController {
         JOB_KEY.FETCH_ROLE_PERMISSIONS,
         this.requestRCRolePermissions,
         this._shouldIgnoreFirstTime,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_DEVICE_INFO,
+        this.requestDeviceInfo,
+        false,
       );
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
@@ -236,6 +244,14 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
   };
 
+  requestDeviceInfo = async (): Promise<void> => {
+    const request: IDeviceRequest = {
+      linePooling: 'Host',
+    };
+    const deviceInfo = await RCInfoApi.getDeviceInfo(request);
+    await this.rcInfoUserConfig.setDeviceInfo(deviceInfo);
+  };
+
   requestBlockNumberList = async (): Promise<void> => {
     const params: GetBlockNumberListParams = {
       page: 1,
@@ -254,7 +270,9 @@ class RCInfoFetchController {
     const response = await RCInfoApi.getBlockNumberList(params);
     response.records &&
       result.push(
-        ...response.records.filter(data => data.status === BLOCK_STATUS.BLOCKED),
+        ...response.records.filter(
+          data => data.status === BLOCK_STATUS.BLOCKED,
+        ),
       );
     if (
       response.paging &&
@@ -314,7 +332,7 @@ class RCInfoFetchController {
   }
 
   private async _getAllSpecialNumberRules(): Promise<
-  SpecialNumberRuleModel | ISpecialServiceNumber | undefined
+    SpecialNumberRuleModel | ISpecialServiceNumber | undefined
   > {
     return (await this.rcInfoUserConfig.getSpecialNumberRules()) || undefined;
   }
@@ -347,7 +365,7 @@ class RCInfoFetchController {
   }
 
   async getExtensionPhoneNumberList(): Promise<
-  IExtensionPhoneNumberList | undefined
+    IExtensionPhoneNumberList | undefined
   > {
     return (
       (await this.rcInfoUserConfig.getExtensionPhoneNumberList()) || undefined
@@ -368,6 +386,11 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getDigitalLines(): Promise<DeviceRecord[]> {
+    const deviceInfo: DeviceInfo = await this.rcInfoUserConfig.getDeviceInfo();
+    return deviceInfo ? deviceInfo.records : [];
   }
 
   async getForwardingFlipNumbers(

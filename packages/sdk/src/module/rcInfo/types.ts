@@ -4,7 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISpecialServiceNumber, DialingCountryInfo } from 'sdk/api';
+import {
+  ISpecialServiceNumber,
+  DialingCountryInfo,
+  IAssignLineRequest,
+  AddressInfo,
+  DeviceRecord,
+  IUpdateLineRequest,
+} from 'sdk/api';
 
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
@@ -145,4 +152,8 @@ export {
   EForwardingFlipNumberType,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  IAssignLineRequest,
+  AddressInfo,
+  DeviceRecord,
+  IUpdateLineRequest,
 };

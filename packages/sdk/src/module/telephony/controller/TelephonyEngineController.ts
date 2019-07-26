@@ -26,6 +26,7 @@ import { AccountService } from 'sdk/module/account';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
+import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -116,7 +117,7 @@ class TelephonyEngineController {
       telephonyLogger.info('voip calling permission is revoked');
       this.logout();
     }
-  }
+  };
 
   subscribeNotifications() {
     notificationCenter.on(ENTITY.USER_PERMISSION, () => {
@@ -200,6 +201,20 @@ class TelephonyEngineController {
 
   getRingerDevicesList() {
     return this.mediaDevicesController.getRingerDevicesList();
+  }
+
+  getLocalEmergencyAddress() {
+    return TelephonyGlobalConfig.getEmergencyAddress();
+  }
+
+  getRemoteEmergencyAddress() {
+    return this._accountController.getEmergencyAddress();
+  }
+
+  isEmergencyAddrConfirmed() {
+    return (
+      !!this.getRemoteEmergencyAddress() && !!this.getLocalEmergencyAddress()
+    );
   }
 }
 
