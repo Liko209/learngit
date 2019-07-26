@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RTCSipUserAgent } from '../RTCSipUserAgent';
-import { ProvisionDataOptions, UA_EVENT } from '../../signaling/types';
+import { ProvisionDataOptions, UA_EVENT } from '../types';
 import { RTCCallOptions } from '../../api/types';
 import { EventEmitter2 } from 'eventemitter2';
 import { opusModifier } from '../../utils/utils';
