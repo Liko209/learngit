@@ -64,5 +64,9 @@ class HomeViewModel extends StoreViewModel {
   openE911 = () => {
     this._telephonyService.openE911();
   };
+
+  needConfirmE911 = async () => {
+    return await this._telephonyService.needConfirmE911();
+  };
 }
 export { HomeViewModel };

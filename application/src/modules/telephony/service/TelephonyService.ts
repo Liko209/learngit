@@ -981,6 +981,12 @@ class TelephonyService {
   openE911 = () => {
     OpenDialogE911();
   }
+
+  needConfirmE911 = async () => {
+    const lines = await this._rcInfoService.getDigitalLines();
+    const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed()
+    return lines.length > 0 && !isEmergency;
+  }
 }
 
 export { TelephonyService };

@@ -38,7 +38,7 @@ class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
 
   componentDidMount() {
-    const { t, openE911 } = this.props;
+    const { t, openE911, needConfirmE911 } = this.props;
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -48,21 +48,34 @@ class HomeViewComponent extends Component<Props> {
       window.jupiterElectron.onCheckNativeUpgrade();
     }
 
-    Notification.flagToast({
-      message: (
-        <>
-          {`${t('home.confirmEmergencyAddress')} `}
-          <RuiLink underline color="white">
-            Confirm address now.
-          </RuiLink>
-        </>
-      ),
-      type: ToastType.ERROR,
-      messageAlign: ToastMessageAlign.LEFT,
-      fullWidth: false,
-      dismissible: true,
-    });
-    openE911();
+    setTimeout(async () => {
+      const need = await needConfirmE911();
+      console.log(need, '---nello needConfirmE911');
+      if (!need) {
+        return;
+      }
+      const flagToast = Notification.flagToast({
+        message: (
+          <>
+            {`${t('home.confirmEmergencyAddress')} `}
+            <RuiLink
+              underline
+              color="white"
+              handleOnClick={() => {
+                openE911();
+                flagToast.dismiss && flagToast.dismiss();
+              }}
+            >
+              Confirm address now.
+            </RuiLink>
+          </>
+        ),
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: true,
+      });
+    }, 3000);
   }
 
   componentWillUnmount() {

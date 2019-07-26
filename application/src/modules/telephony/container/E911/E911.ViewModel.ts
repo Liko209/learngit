@@ -3,28 +3,57 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { UserSettingEntity } from 'sdk/module/setting';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store/constants';
+import SettingModel from '@/store/models/UserSetting';
+import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
+import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
+import { catchError } from '@/common/catchError';
 
 import { E911Props, E911ViewProps, Country, State } from './types';
 
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
-  @observable countryList: Country[] = [
-    { callingCode: '1', id: '1', isoCode: 'US', name: 'United States' },
-    { callingCode: '12', id: '2', isoCode: 'US2', name: 'United States2' },
-  ];
+  @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
 
-  @observable state: string = '';
-  @observable country: string = '';
-  @observable customerName: string = '';
-  @observable street: string = '';
-  @observable street2: string = ''; // additional address
-  @observable city: string = '';
-  @observable zipCode: string = '';
+  @observable value: E911SettingInfo = {
+    street: '',
+    street2: '',
+    city: '',
+    state: '',
+    stateId: '',
+    stateIsoCode: '',
+    stateName: '',
+    country: '',
+    countryId: '',
+    countryIsoCode: '',
+    countryName: '',
+    zip: '',
+    customerName: '',
+    outOfCountry: false,
+  };
+
+  constructor(props: E911Props) {
+    super(props);
+    this.reaction(
+      () => this.settingItemEntity.value,
+      (value: E911SettingInfo, dispose: any) => {
+        if (value) {
+          const cloneValue = { ...value };
+          delete cloneValue.country;
+          this.value = cloneValue;
+          this.getCountryInfo();
+          dispose();
+        }
+      },
+    );
+  }
 
   get rcInfoService() {
     return ServiceLoader.getInstance<RCInfoService>(
@@ -32,53 +61,68 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     );
   }
 
+  @computed
+  get settingItemEntity() {
+    const userConfig = getEntity<
+      UserSettingEntity,
+      SettingModel<E911SettingInfo>
+    >(ENTITY_NAME.USER_SETTING, SettingEntityIds.Phone_E911);
+    return userConfig;
+  }
+
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
-    this.state = stateList[0].name;
+    this.saveStateOrCountry('state', stateList[0]);
   }
 
-  getCountryInfo = async () => {
-    const countryList = await this.rcInfoService.getCountryList();
-    const currentCountry = await this.rcInfoService.getCurrentCountry();
-    this.country = currentCountry.name
-      ? currentCountry.name
-      : countryList[0].name;
+  async getCountryInfo() {
+    const [countryList, currentCountry] = await Promise.all([
+      this.rcInfoService.getCountryList(),
+      this.rcInfoService.getCurrentCountry(),
+    ]);
     this.countryList = countryList;
-    const countryId = currentCountry.id ? currentCountry.id : countryList[0].id;
-    this.getState(countryId);
+    const current = currentCountry.name ? currentCountry : countryList[0];
+    this.saveStateOrCountry('country', current);
+    this.getState(current.id);
   };
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    const select = this.countryList.find(
+    const country = this.countryList.find(
       (item: Country) => item.name === value,
     );
-    this.country = value;
-    this.getState(select!.id);
+    this.saveStateOrCountry('country', country!);
+    this.getState(country!.id);
   };
 
   stateOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    this.state = value;
+    const state = this.stateList.find((item: State) => item.name === value);
+    this.saveStateOrCountry('state', state!);
   };
+
+  saveStateOrCountry(type: 'state' | 'country', data: State | Country) {
+    const { id, name, isoCode } = data;
+    this.value[type] = isoCode;
+    this.value[`${type}Name`] = name;
+    this.value[`${type}Id`] = id;
+    this.value[`${type}IsoCode`] = isoCode;
+  }
 
   handleFieldChange = (type: string) => (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    this[type] = value;
+    this.value[type] = value;
   };
 
+  @catchError.flash({
+    network: 'message.prompt.updateRegionalSettingsNetworkError',
+    server: 'message.prompt.updateRegionalSettingsBackendError',
+  })
   onSubmit = () => {
-    const data = {
-      country: this.country,
-      state: this.state,
-      customerName: this.customerName,
-      street: this.street,
-      street2: this.street2,
-      zipCode: this.zipCode,
-      city: this.city,
-    };
-    console.log(data, '---nello 222');
+    // this.settingItemEntity.valueSetter &&
+    // this.settingItemEntity.valueSetter(this.value);
+    console.log(this.value, '---nello 222');
   };
 }
 

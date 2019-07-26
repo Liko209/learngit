@@ -5,6 +5,7 @@
  */
 import { ChangeEvent } from 'react';
 import { DialingCountryInfo, StateRecord } from 'sdk/api/ringcentral/types';
+import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 
 type E911Props = {};
 
@@ -12,14 +13,12 @@ type E911ViewProps = E911Props & {
   handleFieldChange: (
     type: string,
   ) => (e: ChangeEvent<HTMLInputElement>) => void;
-  getCountryInfo: () => void;
   countryList: Country[];
   stateList: State[];
-  country: string;
-  state: string;
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSubmit: () => void;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  value: E911SettingInfo;
 };
 
 type Country = DialingCountryInfo;

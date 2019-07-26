@@ -27,21 +27,16 @@ type Props = E911ViewProps & WithTranslation;
 class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
 
-  componentDidMount() {
-    const { getCountryInfo } = this.props;
-    getCountryInfo();
-  }
-
   get renderState() {
-    const { stateList, stateOnChange, t, state } = this.props;
-
+    const { stateList, stateOnChange, t, value } = this.props;
+    const { stateName } = value;
     return stateList.length > 0 ? (
       <JuiLineSelect
         // menuProps={this.lineSelectProps}
         onChange={stateOnChange}
         label={t('telephony.e911.stateProvince')}
         automationId="e911-state-select"
-        value={state}
+        value={stateName}
       >
         {stateList.map((item: State) => (
           <JuiMenuItem
@@ -77,10 +72,10 @@ class E911ViewComponent extends Component<Props> {
       t,
       handleFieldChange,
       countryList,
-      country,
       countryOnChange,
+      value,
     } = this.props;
-
+    const { countryName, customerName, city, zip, street, street2 } = value;
     return (
       <Wrapper>
         <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
@@ -96,6 +91,7 @@ class E911ViewComponent extends Component<Props> {
               maxLength: 100,
               'data-test-automation-id': 'e911-customerName',
             }}
+            value={customerName}
             // inputRef={this.teamNameRef}
             onChange={handleFieldChange('customerName')}
           />
@@ -104,7 +100,7 @@ class E911ViewComponent extends Component<Props> {
             onChange={countryOnChange}
             label={t('common.country')}
             automationId="e911-country-select"
-            value={country}
+            value={countryName}
           >
             {countryList.map((item: Country) => (
               <JuiMenuItem
@@ -125,6 +121,7 @@ class E911ViewComponent extends Component<Props> {
               maxLength: 100,
               'data-test-automation-id': 'e911-streetAddress',
             }}
+            value={street}
             onChange={handleFieldChange('street')}
           />
           <JuiTextField
@@ -136,6 +133,7 @@ class E911ViewComponent extends Component<Props> {
               maxLength: 100,
               'data-test-automation-id': 'e911-additionalAddress',
             }}
+            value={street2}
             onChange={handleFieldChange('street2')}
           />
           <JuiTextField
@@ -147,6 +145,7 @@ class E911ViewComponent extends Component<Props> {
               maxLength: 100,
               'data-test-automation-id': 'e911-city',
             }}
+            value={city}
             onChange={handleFieldChange('city')}
           />
           {this.renderState}
@@ -159,7 +158,8 @@ class E911ViewComponent extends Component<Props> {
               maxLength: 100,
               'data-test-automation-id': 'e911-zipCode',
             }}
-            onChange={handleFieldChange('zipCode')}
+            value={zip}
+            onChange={handleFieldChange('zip')}
           />
         </JuiDialogContent>
         <JuiDialogActions data-test-automation-id="DialogActions">
