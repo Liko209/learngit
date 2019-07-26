@@ -5,9 +5,9 @@ import styled from '../../../../foundation/styled-components';
 import MuiTextField from '@material-ui/core/TextField';
 import { alignCenterDecorator } from '../../../../storybook/decorators';
 import { RuiIconography } from '../../../Iconography';
-import { RuiSliderNoStyled, RuiSliderProps } from '../Slider';
+import { RuiSlider } from '../Slider';
+import { Grid } from '@material-ui/core';
 
-const RuiSlider = RuiSliderNoStyled;
 (RuiSlider as any).displayName = 'RuiSlider';
 const Wrapper = styled.div`
   overflow: visible;
@@ -44,19 +44,10 @@ storiesOf('Forms/Slider', module)
       components: { RuiSlider },
     },
   })
-  .add('Base slider', () => {
-    const { min, max, value } = getKnobs();
-
-    return (
-      <Wrapper>
-        <RuiSlider min={min} max={max} value={value} onChange={() => {}} />
-      </Wrapper>
-    );
-  })
-  .add('Continuous slider', () => {
+  .add('Base slider', function() {
     const { min, max } = getKnobs();
 
-    const SliderDemo: React.ComponentType<RuiSliderProps> = () => {
+    function SliderDemo() {
       const { value, handleChange } = useSliderState(10);
       return (
         <Wrapper>
@@ -68,7 +59,7 @@ storiesOf('Forms/Slider', module)
           />
         </Wrapper>
       );
-    };
+    }
 
     return (
       <Wrapper>
@@ -76,118 +67,147 @@ storiesOf('Forms/Slider', module)
       </Wrapper>
     );
   })
-  .add('Discrete slider', () => {
+  .add('Continuous slider', function() {
     const { min, max } = getKnobs();
 
-    const SliderDemo = () => {
+    function SliderDemo() {
       const { value, handleChange } = useSliderState(10);
       return (
         <Wrapper>
           <RuiSlider
             min={min}
             max={max}
-            step={1}
             value={value}
             onChange={handleChange}
           />
         </Wrapper>
       );
-    };
+    }
+
+    return (
+      <Wrapper>
+        <SliderDemo />
+      </Wrapper>
+    );
+  })
+  .add('Discrete slider', function() {
+    const { min, max } = getKnobs();
+
+    function SliderDemo() {
+      const { value, handleChange } = useSliderState(10);
+      return (
+        <Wrapper>
+          <RuiSlider
+            min={min}
+            max={max}
+            value={value}
+            onChange={handleChange}
+          />
+        </Wrapper>
+      );
+    }
 
     return <SliderDemo />;
   })
-  .add('With icon', () => {
-    const { min, max } = getKnobs();
-
-    const SliderDemo = () => {
+  .add('With icon', function() {
+    function SliderDemo() {
       const { value, handleChange } = useSliderState(10);
       return (
-        <RuiSlider
-          min={min}
-          max={max}
-          value={value}
-          onChange={handleChange}
-          Left={props => (
+        <Grid container spacing={4} alignItems="center">
+          <Grid item>
             <RuiIconography
               icon="star"
-              iconColor={props.color}
-              iconSize={props.size}
+              iconColor={['primary', 'main']}
+              iconSize="m"
             />
-          )}
-          Right={props => (
+          </Grid>
+          <Grid item xs>
+            <RuiSlider
+              value={value}
+              onChange={handleChange}
+              aria-labelledby="input-slider"
+            />
+          </Grid>
+          <Grid item>
             <RuiIconography
               icon="star"
-              iconColor={props.color}
-              iconSize={props.size}
+              iconColor={['primary', 'main']}
+              iconSize="m"
             />
-          )}
-        />
+          </Grid>
+        </Grid>
       );
-    };
+    }
 
     return <SliderDemo />;
   })
   .add('With field', () => {
-    const { min, max } = getKnobs();
-
-    const SliderDemo = () => {
+    function SliderDemo() {
       const { value, handleChange } = useSliderState(10);
       return (
-        <RuiSlider
-          min={min}
-          max={max}
-          value={value}
-          onChange={handleChange}
-          Left={props => (
+        <Grid container spacing={4} alignItems="center">
+          <Grid item>
             <RuiIconography
               icon="star"
-              iconColor={props.color}
-              iconSize={props.size}
+              iconColor={['primary', 'main']}
+              iconSize="m"
             />
-          )}
-          Right={props => (
+          </Grid>
+          <Grid item xs>
+            <RuiSlider
+              value={value}
+              onChange={handleChange}
+              aria-labelledby="input-slider"
+            />
+          </Grid>
+          <Grid item>
             <MuiTextField
+              value={value}
               style={{ width: '2em' }}
-              value={Math.ceil(props.value)}
               InputProps={{
                 readOnly: true,
               }}
             />
-          )}
-        />
+          </Grid>
+        </Grid>
       );
-    };
+    }
     return <SliderDemo />;
   })
   .add('Volume slider', () => {
     const { min, max } = getKnobs();
 
-    const SliderDemo = () => {
+    function SliderDemo() {
       const { value, handleChange } = useSliderState(10);
       return (
-        <RuiSlider
-          min={min}
-          max={max}
-          value={value}
-          onChange={handleChange}
-          tipRenderer={({ value }) => `${Math.ceil(value)}%`}
-          Left={props => (
+        <Grid container spacing={4} alignItems="center">
+          <Grid item>
             <RuiIconography
               icon="speaker-mute"
-              iconColor={props.color}
-              iconSize={props.size}
+              iconColor={['primary', 'main']}
+              iconSize="m"
             />
-          )}
-          Right={props => (
+          </Grid>
+          <Grid item xs>
+            <RuiSlider
+              min={min}
+              max={max}
+              value={value}
+              onChange={handleChange}
+              aria-labelledby="input-slider"
+              valueLabelFormat={x => `${x}%`}
+            />
+          </Grid>
+          <Grid item>
             <RuiIconography
               icon="speaker"
-              iconColor={props.color}
-              iconSize={props.size}
+              iconColor={['primary', 'main']}
+              iconSize="m"
             />
-          )}
-        />
+          </Grid>
+        </Grid>
       );
-    };
+    }
 
     return <SliderDemo />;
   });

@@ -11,10 +11,11 @@ import { SliderSettingItemViewProps, SliderSettingItemProps } from './types';
 import { JuiSettingSectionItem } from 'jui/pattern/SettingSectionItem';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { catchError } from '@/common/catchError';
+import { Grid } from '@material-ui/core';
 
 type Props = SliderSettingItemViewProps &
-SliderSettingItemProps &
-WithTranslation;
+  SliderSettingItemProps &
+  WithTranslation;
 
 @observer
 class SliderSettingItemViewComponent extends Component<Props> {
@@ -32,33 +33,34 @@ class SliderSettingItemViewComponent extends Component<Props> {
   private _renderSlider() {
     const { disabled, settingItem, settingItemEntity } = this.props;
 
-    const { value } = settingItemEntity;
-    const {
-      min, max, step, tipRenderer, Left, Right,
-    } = settingItem;
+    const { value = 0 } = settingItemEntity;
+    const { min, max, step, valueLabelFormat, Left, Right } = settingItem;
 
     return (
-      <RuiSlider
-        onChange={this._handleChange}
-        disabled={disabled}
-        min={min}
-        max={max}
-        step={step}
-        tipRenderer={tipRenderer}
-        Left={Left}
-        Right={Right}
-        value={value}
-        data-test-automation-id={`settingItemSlider-${
-          settingItem.automationId
-        }`}
-        data-test-automation-value={value}
-      />
+      <Grid container spacing={4} alignItems="center">
+        <Grid item>{Left}</Grid>
+        <Grid item xs>
+          <RuiSlider
+            onChange={this._handleChange}
+            disabled={disabled}
+            min={min}
+            max={max}
+            step={step || (max - min) / 100}
+            valueLabelFormat={valueLabelFormat}
+            value={value}
+            data-test-automation-id={`settingItemSlider-${
+              settingItem.automationId
+            }`}
+            data-test-automation-value={value}
+            aria-labelledby="input-slider"
+          />
+        </Grid>
+        <Grid item>{Right}</Grid>
+      </Grid>
     );
   }
   render() {
-    const {
-      t, id, disabled, settingItem,
-    } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}
