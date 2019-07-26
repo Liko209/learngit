@@ -279,7 +279,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   getIcon(
     {
-      id, headshotVersion = '', headshot = '', hasHeadShot,
+      id, headshotVersion, headshot = '', hasHeadShot,
     }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
@@ -298,9 +298,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       );
       headshotUrl = personService.getHeadShotWithSize(
         id,
-        headshotVersion,
         headshot,
         150,
+        headshotVersion,
       );
     }
     return headshotUrl || '/icon/defaultAvatar.png';

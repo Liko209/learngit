@@ -141,11 +141,11 @@ class SendPostController implements ISendPostController {
       ...backup,
     });
     if (backup.id) {
-      return this.postActionController.partialModifyController.updatePartially(
-        backup.id,
-        preHandlePartial,
-        async (newPost: Post) => newPost,
-        (
+      return this.postActionController.partialModifyController.updatePartially({
+        entityId: backup.id,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newPost: Post) => newPost,
+        doPartialNotify: (
           originalEntities: Post[],
           updatedEntities: Post[],
           partialEntities: Partial<Raw<Post>>[],
@@ -156,7 +156,7 @@ class SendPostController implements ISendPostController {
             partialEntities,
           );
         },
-      );
+      });
     }
     throw new Error('updateLocalPost error invalid id');
   }

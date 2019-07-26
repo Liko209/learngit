@@ -50,11 +50,12 @@ class SettingsActionController {
         };
         return result;
       };
-      await this._partialModifyController.updatePartially(
-        profileId,
-        preHandlePartial,
-        async (newProfile: Profile) => await this._requestController.put(newProfile),
-      );
+      await this._partialModifyController.updatePartially({
+        entityId: profileId,
+        preHandlePartialEntity: preHandlePartial,
+        doUpdateEntity: async (newProfile: Profile) =>
+          await this._requestController.put(newProfile),
+      });
     }
   }
 }

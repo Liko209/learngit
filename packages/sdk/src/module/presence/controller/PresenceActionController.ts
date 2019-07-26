@@ -47,11 +47,13 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    this._partialModifyController.updatePartially(
-      currentId,
-      preHandlePartial,
-      async (newData: Presence) => PresenceAPI.setPresence(newData),
-    );
+    this._partialModifyController.updatePartially({
+      entityId: currentId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newData: Presence) => {
+        return PresenceAPI.setPresence(newData);
+      },
+    });
   }
 }
 export { PresenceActionController };

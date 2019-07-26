@@ -14,6 +14,7 @@ import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 import { ItemDao } from 'sdk/module/item/dao';
 import Api from 'sdk/api/api';
+import { ProgressCallback, RequestHolder } from 'sdk/api/glip/item';
 
 class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   private _fileItemController: FileItemController;
@@ -27,7 +28,9 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
         networkClient: Api.glipNetworkClient,
       },
     );
-    this.setCheckTypeFunc((id: number) => GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE));
+    this.setCheckTypeFunc((id: number) =>
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE),
+    );
   }
 
   protected get fileItemController() {
@@ -132,8 +135,21 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   async editFileName(itemId: number, newName: string): Promise<void> {
     await this.fileActionController.editFileName(itemId, newName);
   }
+
   async deleteFile(itemId: number, version: number): Promise<void> {
     await this.fileActionController.deleteFile(itemId, version);
+  }
+
+  async uploadFileToServer(
+    file: File,
+    progressCallback?: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return this.fileUploadController.uploadFileToAmazonServer(
+      file,
+      progressCallback,
+      requestHolder,
+    );
   }
 }
 
