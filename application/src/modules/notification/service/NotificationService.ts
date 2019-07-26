@@ -97,7 +97,6 @@ class NotificationService implements INotificationService {
         this.buildUINotification(title, opts, force);
       }
     }
-    this.buildUINotification(title, opts, force);
   }
 
   async buildUINotification(
