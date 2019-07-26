@@ -6,6 +6,7 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -26,7 +27,7 @@ const SQUARE_SIZE = 36;
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
-  private _thumbnailRef: React.RefObject<any> = React.createRef();
+  @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, modifiedTime, downloadUrl } = this.props;
     return (
@@ -57,6 +58,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   };
 
   _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
+    if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
     const { id, groupId } = this.props;
     const target = event.currentTarget;
     showImageViewer(groupId, id, {
@@ -74,7 +76,12 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     }
     return (
       <JuiListItemWithHover
-        onClick={this._handleImageClick}
+        onClick={
+          this._thumbnailRef.current &&
+          this._thumbnailRef.current.vm.thumbsUrlWithSize
+            ? this._handleImageClick
+            : undefined
+        }
         render={this._renderItem}
         data-test-automation-id="rightRail-image-item"
       />
