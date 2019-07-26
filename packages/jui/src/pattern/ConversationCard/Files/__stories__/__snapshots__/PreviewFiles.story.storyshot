@@ -376,7 +376,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
 
 <div>
   <div>
-
+    
     <img
       className="c0"
       onError={[Function]}
@@ -388,7 +388,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         }
       }
     />
-
+    
     <img
       className="c0"
       onError={[Function]}
@@ -400,7 +400,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
         }
       }
     />
-
+    
     <img
       className="c0"
       onError={[Function]}
@@ -415,7 +415,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   </div>
   <div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
       data-test-automation-id="fileCard"
     >
       <div
@@ -517,7 +517,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
       data-test-automation-id="fileCard"
     >
       <div
@@ -619,7 +619,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
       data-test-automation-id="fileCard"
     >
       <div
@@ -721,7 +721,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
       </div>
     </div>
     <div
-      className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c1"
+      className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
       data-test-automation-id="fileCard"
     >
       <div
@@ -1266,7 +1266,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
-
+            
             <img
               className="c0"
               onError={[Function]}
@@ -1414,7 +1414,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
-
+            
             <img
               className="c0"
               onError={[Function]}
@@ -1562,7 +1562,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
-
+            
             <img
               className="c0"
               onError={[Function]}
@@ -1710,7 +1710,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
           <div
             className="MuiCollapse-wrapperInner"
           >
-
+            
             <img
               className="c0"
               onError={[Function]}

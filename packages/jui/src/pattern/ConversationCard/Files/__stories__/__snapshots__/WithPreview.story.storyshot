@@ -336,7 +336,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
 
 <div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
     data-test-automation-id="fileCard"
   >
     <div
@@ -438,7 +438,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
     data-test-automation-id="fileCard"
   >
     <div
@@ -540,7 +540,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
     data-test-automation-id="fileCard"
   >
     <div
@@ -642,7 +642,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c0 MuiPaper-rounded"
     data-test-automation-id="fileCard"
   >
     <div
