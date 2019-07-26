@@ -37,7 +37,7 @@ ServiceLoader.getInstance = jest
     return null;
   });
 
-describe('Upgrade', () => {
+describe('Upgrade trigger', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -104,5 +104,39 @@ describe('Upgrade', () => {
     jest.spyOn(upgradeHandler, 'logInfo').mockImplementation(mockFn);
     upgradeHandler._queryIfHasNewVersion();
     expect(upgradeHandler.logInfo).toHaveBeenCalled();
+  });
+});
+
+describe('Upgrade limitation', () => {
+  let upgradeHandler: Upgrade | undefined;
+
+  afterEach(() => {
+    upgradeHandler = undefined;
+  });
+  it('Should allow to reload when in idle', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+  });
+  it('Should not allow to reload when syncing index', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_isInDataSyncing').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
+  it('Should not allow to reload when uploading file', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_isInFileUploading').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
+  });
+  it('Should not allow to reload when has call in progress', () => {
+    upgradeHandler = new Upgrade();
+    upgradeHandler._lastUserActionTime = 0;
+    expect(upgradeHandler._canDoReload()).toBeTruthy();
+    jest.spyOn(upgradeHandler, '_hasInProgressCall').mockReturnValue(true);
+    expect(upgradeHandler._canDoReload()).toBeFalsy();
   });
 });
