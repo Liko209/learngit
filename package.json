@@ -103,7 +103,9 @@
     "babel-plugin-macros": "2.5.1",
     "babel-plugin-require-context-hook": "1.0.0",
     "jest-styled-components": "6.3.1",
-    "cache-loader": "1.2.0"
+    "cache-loader": "1.2.0",
+    "btoa": "1.2.1",
+    "form-data": "2.5.0"
   },
   "husky": {
     "hooks": {

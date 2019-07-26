@@ -8,31 +8,14 @@ import './jest/setup/setupHTMLElement';
 import './jest/setup/setupTimezone';
 import './jest/setup/setupMobx';
 import './jest/setup/setupStyledTheme';
+import {
+  FakeStorage
+} from './utils';
 /* eslint-disable */
 
 const log = (reason) => {
   throw reason;
 };
-
-// Create a localStorage and sessionStorage at window
-class FakeStorage {
-  store = {};
-  getItem(key) {
-    return this.store[key] || null;
-  }
-  setItem(key, value) {
-    this.store[key] = value.toString();
-  }
-  removeItem(key) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-  get length() {
-    return Object.keys(this.store).length;
-  }
-}
 
 beforeAll(() => {
 

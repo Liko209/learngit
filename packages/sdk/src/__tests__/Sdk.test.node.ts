@@ -28,6 +28,7 @@ jest.mock('../api');
 jest.mock('../utils');
 jest.mock('../framework');
 jest.mock('../service/notificationCenter');
+jest.mock('foundation/src/analysis');
 
 describe('Sdk', () => {
   let sdk: Sdk;
@@ -70,9 +71,9 @@ describe('Sdk', () => {
       accountManager.on = jest.fn();
 
       await sdk.init({ api: {}, db: {} });
-      expect(notificationCenter.on).toBeCalledTimes(1);
-      expect(accountManager.on).toBeCalledTimes(4);
-      expect(accountManager.syncLogin).toBeCalledTimes(1);
+      expect(notificationCenter.on).toHaveBeenCalledTimes(1);
+      expect(accountManager.on).toHaveBeenCalledTimes(4);
+      expect(accountManager.syncLogin).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -81,10 +82,10 @@ describe('Sdk', () => {
       sdk['_sdkConfig'] = { api: {}, db: {} };
       jest.spyOn(Foundation, 'init');
       await sdk.onStartLogin();
-      expect(Foundation.init).toBeCalled();
-      expect(Api.init).toBeCalled();
-      expect(daoManager.initDatabase).toBeCalled();
-      expect(serviceManager.startService).toBeCalled();
+      expect(Foundation.init).toHaveBeenCalled();
+      expect(Api.init).toHaveBeenCalled();
+      expect(daoManager.initDatabase).toHaveBeenCalled();
+      expect(serviceManager.startService).toHaveBeenCalled();
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
         mockAccountService,
       );
@@ -105,10 +106,10 @@ describe('Sdk', () => {
         isRCOnlyMode: false,
         isFirstLogin: true,
       } as any);
-      expect(sdk.updateNetworkToken).toBeCalled();
-      expect(accountManager.updateSupportedServices).toBeCalled();
-      expect(PhoneParserUtility.loadModule).toBeCalled();
-      expect(syncService.syncData).toBeCalled();
+      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+      expect(accountManager.updateSupportedServices).toHaveBeenCalled();
+      expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
+      expect(syncService.syncData).toHaveBeenCalled();
     });
     it('should not sync data when in rc only mode', async () => {
       syncService.syncData.mockImplementation(() => {});
@@ -116,11 +117,13 @@ describe('Sdk', () => {
         isRCOnlyMode: true,
         isFirstLogin: true,
       } as any);
-      expect(sdk.updateNetworkToken).toBeCalled();
-      expect(accountManager.updateSupportedServices).toBeCalled();
-      expect(PhoneParserUtility.loadModule).toBeCalled();
-      expect(syncService.syncData).not.toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
+      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+      expect(accountManager.updateSupportedServices).toHaveBeenCalled();
+      expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
+      expect(syncService.syncData).not.toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+        SERVICE.RC_LOGIN,
+      );
     });
     it('should notify glip login when timestamp is valid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});
@@ -129,11 +132,11 @@ describe('Sdk', () => {
         isRCOnlyMode: false,
         isFirstLogin: false,
       } as any);
-      expect(sdk.updateNetworkToken).toBeCalled();
-      expect(accountManager.updateSupportedServices).toBeCalled();
-      expect(PhoneParserUtility.loadModule).toBeCalled();
-      expect(syncService.syncData).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
+      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+      expect(accountManager.updateSupportedServices).toHaveBeenCalled();
+      expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
+      expect(syncService.syncData).toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
         true,
       );
@@ -147,11 +150,13 @@ describe('Sdk', () => {
         isRCOnlyMode: false,
         isFirstLogin: false,
       } as any);
-      expect(sdk.updateNetworkToken).toBeCalled();
-      expect(accountManager.updateSupportedServices).toBeCalled();
-      expect(PhoneParserUtility.loadModule).toBeCalled();
-      expect(syncService.syncData).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.RC_LOGIN);
+      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+      expect(accountManager.updateSupportedServices).toHaveBeenCalled();
+      expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
+      expect(syncService.syncData).toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
+        SERVICE.RC_LOGIN,
+      );
     });
     it('should notify start loading when timestamp is inValid and isFirstLogin is false', async () => {
       syncService.syncData.mockImplementation(() => {});
@@ -160,10 +165,10 @@ describe('Sdk', () => {
         isRCOnlyMode: false,
         isFirstLogin: false,
       } as any);
-      expect(sdk.updateNetworkToken).toBeCalled();
-      expect(accountManager.updateSupportedServices).toBeCalled();
-      expect(PhoneParserUtility.loadModule).toBeCalled();
-      expect(syncService.syncData).toBeCalled();
+      expect(sdk.updateNetworkToken).toHaveBeenCalled();
+      expect(accountManager.updateSupportedServices).toHaveBeenCalled();
+      expect(PhoneParserUtility.loadModule).toHaveBeenCalled();
+      expect(syncService.syncData).toHaveBeenCalled();
       expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.START_LOADING,
       );
