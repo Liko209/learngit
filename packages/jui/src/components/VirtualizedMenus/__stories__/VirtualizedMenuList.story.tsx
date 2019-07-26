@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React, { useRef, useState, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiVirtualizedMenu } from '../VirtualizedMenu';
