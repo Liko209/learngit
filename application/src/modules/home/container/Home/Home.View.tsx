@@ -5,8 +5,7 @@
  */
 import { container } from 'framework';
 import { HomeStore } from '@/modules/home/store'; // TELEPHONY_SERVICE
-import { TelephonyService } from '@/modules/telephony/service';
-import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { ToastWrapper } from '@/containers/ToastWrapper';
@@ -37,12 +36,9 @@ type Props = WithTranslation & HomeViewProps;
 @observer
 class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
-  private _telephonyService: TelephonyService = container.get(
-    TELEPHONY_SERVICE,
-  );
 
   componentDidMount() {
-    const { t } = this.props;
+    const { t, openE911 } = this.props;
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -54,17 +50,19 @@ class HomeViewComponent extends Component<Props> {
 
     Notification.flagToast({
       message: (
-        <div>
-          {t('home.confirmEmergencyAddress')}
-          <RuiLink>Confirm address now.</RuiLink>
-        </div>
+        <>
+          {`${t('home.confirmEmergencyAddress')} `}
+          <RuiLink underline color="white">
+            Confirm address now.
+          </RuiLink>
+        </>
       ),
       type: ToastType.ERROR,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: true,
     });
-    this._telephonyService.openE911();
+    openE911();
   }
 
   componentWillUnmount() {

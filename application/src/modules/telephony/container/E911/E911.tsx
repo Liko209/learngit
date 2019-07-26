@@ -3,7 +3,6 @@
  * @Date: 2019-07-23 14:26:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
 import { buildContainer } from '@/base';
 import { Dialog } from '@/containers/Dialog';
 import { E911View } from './E911.View';
@@ -15,14 +14,8 @@ const E911 = buildContainer<E911Props>({
   ViewModel: E911ViewModel,
 });
 
-const OpenE911 = () => {
-  Dialog.confirm({
-    title: 'Confirm address for emergency calls',
-    content: <E911 />,
-    modalProps: {
-      scroll: 'body',
-    },
-  });
+const OpenDialogE911 = () => {
+  Dialog.simple(E911);
 };
 
-export { E911, OpenE911 };
+export { E911, OpenDialogE911 };

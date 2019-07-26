@@ -6,7 +6,8 @@
     "paths": {
       "@/*": ["../../application/src/*"],
       "sdk/*": ["../../packages/sdk/src/*"],
-      "jui/*": ["../../packages/jui/src/*"]
+      "jui/*": ["../../packages/jui/src/*"],
+      "framework/*": ["../../packages/framework/src/*"]
     }
   },
   "include": ["src/**/*"],

@@ -68,9 +68,9 @@ function zIndex(name: keyof ZIndex) {
   };
 }
 
-/********************************************
+/** ******************************************
  *                 Colors                   *
- ********************************************/
+ ******************************************* */
 
 /**
  * colors
@@ -87,9 +87,18 @@ function palette<T extends keyof Palette, K extends keyof Palette[T]>(
   };
 }
 
-/********************************************
+/**
+ * grey
+ * @param sub
+ * @param opacities
+ */
+function grey(sub: keyof Palette['grey']) {
+  return palette('grey', sub);
+}
+
+/** ******************************************
  *              Font                  *
- ********************************************/
+ ******************************************* */
 
 /**
  * Font
@@ -136,4 +145,4 @@ function fontProp<T extends keyof Typography, K extends keyof Typography[T]>(
   };
 }
 
-export { spacing, opacity, radius, shadows, zIndex, palette, typography };
+export { spacing, opacity, radius, shadows, zIndex, palette, typography, grey };

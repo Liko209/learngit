@@ -7,6 +7,7 @@ type HomeViewProps = {
   indexLoaded: boolean;
   showGlobalSearch: boolean;
   canRenderDialer: boolean;
+  openE911: () => void;
 } & RouteComponentProps;
 
 export { HomeProps, HomeViewProps };

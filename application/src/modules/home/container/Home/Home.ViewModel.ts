@@ -10,12 +10,18 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { Action, Location, UnregisterCallback } from 'history';
 import { action, observable, computed } from 'mobx';
 import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
+import { TelephonyService } from '@/modules/telephony/service';
+import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 
 class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
   private _globalSearchStore: GlobalSearchStore = container.get(
-    GlobalSearchStore
+    GlobalSearchStore,
+  );
+
+  private _telephonyService: TelephonyService = container.get(
+    TELEPHONY_SERVICE,
   );
 
   private _unListen: UnregisterCallback;
@@ -54,5 +60,9 @@ class HomeViewModel extends StoreViewModel {
   dispose() {
     this._unListen();
   }
+
+  openE911 = () => {
+    this._telephonyService.openE911();
+  };
 }
 export { HomeViewModel };
