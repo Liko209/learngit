@@ -12,10 +12,13 @@ type RegionSettingInfo = {
 };
 
 type E911SettingInfo = {
-  countryInfo: DialingCountryInfo;
+  countryId: string;
+  country: string;
+  countryIsoCode: string;
   street: string;
   street2: string;
   city: string;
+  outOfCountry: boolean;
   state: string;
   stateId: string;
   stateIsoCode: string;
