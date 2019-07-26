@@ -271,9 +271,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   isMyselfAtMentioned(post: PostModel) {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const isTeamMention = post.isTeamMention;
     return (
       post.atMentionNonItemIds &&
-      post.atMentionNonItemIds.includes(currentUserId)
+      post.atMentionNonItemIds.includes(currentUserId) ||
+      isTeamMention
     );
   }
 
