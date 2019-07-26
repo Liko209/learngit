@@ -62,13 +62,6 @@ const PaperComponent = ({
 );
 
 const StyledDraggableDialog = styled(JuiDialog)`
-  &.root {
-    bottom: auto;
-    right: auto;
-    top: auto;
-    left: auto;
-    position: static;
-  }
   && .react-draggable {
     position: fixed;
     z-index: ${({ theme }) => theme.zIndex.modal};
@@ -129,6 +122,13 @@ class DraggableDialog extends PureComponent<JuiDraggableDialogProps> {
 
     return (
       <StyledDraggableDialog
+        style={{
+          position: 'static',
+          right: '0',
+          left: '0',
+          top: '0',
+          bottom: '0',
+        }}
         PaperComponent={PaperComponent}
         TransitionComponent={Transition}
         disableBackdropClick

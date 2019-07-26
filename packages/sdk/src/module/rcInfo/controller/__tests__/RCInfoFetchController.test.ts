@@ -205,8 +205,8 @@ describe('RCInfoFetchController', () => {
   });
 
   describe('requestCountryState', () => {
-    it('should call api to get stats', async () => {
-      RCInfoApi.getCountryState = jest.fn();
+    it('should call api to get state', async () => {
+      RCInfoApi.getCountryState = jest.fn().mockReturnValue({ records: [] });
       const request: IStateRequest = { countryId: '1', perPage: 400, page: 1 };
       await rcInfoFetchController.requestCountryState(request);
       expect(RCInfoApi.getCountryState).toHaveBeenCalledWith(request);

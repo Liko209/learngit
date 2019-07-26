@@ -108,6 +108,7 @@ const StyledListItem = styled(MuiListItem)`
 
 const StyledListItemIcon = styled(MuiListItemIcon)`
   width: ${width(16)};
+  min-width: unset;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -201,7 +202,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
     const { icons, expand, selectedPath } = this.props;
     return icons.map((arr, idx) => {
       return (
-        <MuiList component='nav' disablePadding key={idx}>
+        <MuiList component="nav" disablePadding key={idx}>
           {arr.map((item, index) => {
             const navUrl = item.url;
             const navPath = navUrl.split('/')[1];
@@ -236,7 +237,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
             return expand ? (
               NavItem
             ) : (
-              <RuiTooltip title={item.title} key={index} placement='right'>
+              <RuiTooltip title={item.title} key={index} placement="right">
                 {NavItem}
               </RuiTooltip>
             );
@@ -250,10 +251,10 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
     return (
       <Left
         expand={expand}
-        variant='permanent'
+        variant="permanent"
         classes={{ paper: 'left-paper' }}
         open={expand}
-        data-test-automation-id='leftPanel'
+        data-test-automation-id="leftPanel"
       >
         {this.renderNavItems()}
       </Left>

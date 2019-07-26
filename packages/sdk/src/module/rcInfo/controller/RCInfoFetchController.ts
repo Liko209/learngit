@@ -19,7 +19,6 @@ import {
   BlockNumberItem,
   BLOCK_STATUS,
   IStateRequest,
-  CountryState,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';
@@ -35,7 +34,10 @@ import {
 } from '../types';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
 import { RCInfoForwardingNumberController } from './RCInfoForwardingNumberController';
-import { IExtensionCallerId } from 'sdk/api/ringcentral/types/common';
+import {
+  IExtensionCallerId,
+  StateRecord,
+} from 'sdk/api/ringcentral/types/common';
 import { Nullable } from 'sdk/types';
 
 const OLD_EXIST_SPECIAL_NUMBER_COUNTRY = 1; // in old version, we only store US special number
@@ -234,10 +236,29 @@ class RCInfoFetchController {
   };
 
   requestCountryState = async (
-    request?: IStateRequest,
-  ): Promise<CountryState> => {
-    return await RCInfoApi.getCountryState(request);
+    request: IStateRequest,
+  ): Promise<StateRecord[]> => {
+    const result: StateRecord[] = [];
+    await this._requestCountryStateByPage(request, result);
+    return result;
   };
+
+  private async _requestCountryStateByPage(
+    request: IStateRequest,
+    result: StateRecord[],
+  ) {
+    const response = await RCInfoApi.getCountryState(request);
+    response.records && result.push(...response.records.map(data => data));
+    if (
+      response.paging &&
+      response.paging.page &&
+      response.paging.totalPages &&
+      response.paging.page < response.paging.totalPages
+    ) {
+      request.page += 1;
+      await this._requestCountryStateByPage(request, result);
+    }
+  }
 
   requestAccountServiceInfo = async (): Promise<void> => {
     const accountServiceInfo = await RCInfoApi.getAccountServiceInfo();

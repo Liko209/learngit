@@ -14,18 +14,11 @@ import { css } from '../styled-components';
  */
 function spacing(...values: number[]) {
   return ({ theme }: any): string => {
-    const unit = theme.spacing.unit;
-    return cssValue(...values.map(n => n * unit));
+    if (values.length === 1) {
+      return `${theme.spacing(...values)}px`;
+    }
+    return theme.spacing(...values);
   };
-}
-
-/**
- * add px for values
- * cssValue(1, 2, 3, 4); // returns: 1px 2px 3px 4px
- * @param values
- */
-function cssValue(...values: number[]): string {
-  return values.map(n => `${n}px`).join(' ');
 }
 
 /**

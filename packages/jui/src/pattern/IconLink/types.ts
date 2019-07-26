@@ -8,7 +8,7 @@ import { MouseEventHandler } from 'react';
 type JuiIconLinkProps = {
   disabled?: boolean;
   iconName?: string;
-  onClick?: MouseEventHandler<HTMLBaseElement>;
+  onClick?: MouseEventHandler<any>;
   children: string;
 };
 

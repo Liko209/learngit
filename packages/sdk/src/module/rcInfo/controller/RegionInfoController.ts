@@ -10,7 +10,6 @@ import {
   DialingCountryInfo,
   StateRecord,
   IStateRequest,
-  CountryState,
 } from 'sdk/api/ringcentral/types';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { RCInfoFetchController } from './RCInfoFetchController';
@@ -53,6 +52,7 @@ const DefaultBrandId = RC_BRAND_NAME_TO_BRAND_ID.RC;
 class RegionInfoController {
   private _currentCountryInfo: DialingCountryInfo;
   private _notificationKeys: string[];
+  private _stateListMap: Map<string, StateRecord[]> = new Map();
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
@@ -111,11 +111,16 @@ class RegionInfoController {
   }
 
   async getStateList(countryId: string): Promise<StateRecord[]> {
+    const list = this._stateListMap.get(countryId);
+    if (list) {
+      return list;
+    }
     const request: IStateRequest = { countryId, page: 1, perPage: 400 };
-    const res: CountryState = await this._rcInfoFetchController.requestCountryState(
+    const result = await this._rcInfoFetchController.requestCountryState(
       request,
     );
-    return res && res.records ? res.records : [];
+    result.length && this._stateListMap.set(countryId, result);
+    return result;
   }
 
   async getCurrentCountry(): Promise<DialingCountryInfo> {

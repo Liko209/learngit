@@ -287,23 +287,31 @@ describe('RegionInfoController', () => {
   });
 
   describe('getStateList', () => {
+    it('should get state list from cache', async () => {
+      regionInfoController._stateListMap.get = jest
+        .fn()
+        .mockReturnValueOnce([1]);
+      const res = await regionInfoController.getStateList('1');
+      expect(res).toEqual([1]);
+    });
+
     it('should return state list according to country', async () => {
       _rcInfoFetchController.requestCountryState = jest
         .fn()
-        .mockReturnValue({ records: 1 });
+        .mockReturnValue([2]);
       const res = await regionInfoController.getStateList('1');
       expect(_rcInfoFetchController.requestCountryState).toHaveBeenCalledWith({
         countryId: '1',
         perPage: 400,
         page: 1,
       });
-      expect(res).toBe(1);
+      expect(res).toEqual([2]);
     });
 
     it('should return empty list when no data', async () => {
       _rcInfoFetchController.requestCountryState = jest
         .fn()
-        .mockReturnValue({});
+        .mockReturnValue([]);
       const res = await regionInfoController.getStateList('1');
       expect(_rcInfoFetchController.requestCountryState).toHaveBeenCalledWith({
         countryId: '1',

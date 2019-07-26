@@ -102,10 +102,11 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
 
 <div>
   <li
-    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters search-items c0"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root search-items c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -147,10 +148,11 @@ exports[`Storyshots Pattern/SearchBar JuiSearchItem: Pattern/SearchBar JuiSearch
     </div>
   </li>
   <li
-    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters search-items c0"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root search-items c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}

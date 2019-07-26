@@ -3,6 +3,9 @@ import { mountWithTheme } from 'shield/utils';
 import { JuiVirtualizedList } from '../../VirtualizedList';
 import { JuiDownshiftSuggestionList } from '../SuggestionList';
 
+jest.mock('jui/components/AutoSizer/AutoSizer');
+jest.mock('jui/components/VirtualizedList/InfiniteList');
+
 const baseProps = {
   suggestionItems: [],
   MenuItem: () => <div>Item</div>,
