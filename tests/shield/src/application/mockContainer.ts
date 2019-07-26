@@ -12,12 +12,13 @@ type MockMethod = { method: string; data: any; type?: 'resolve' | 'reject' };
 type MockMethodType = string | MockMethod[];
 
 const _getMockInstance = function(
+  key: any,
   methods?: MockMethodType,
   mockData?: any,
   methodType?: 'resolve' | 'reject',
 ) {
   // we don't use real instance only fake a object
-  const instance = {};
+  const instance = typeof key === 'function' ? {} : key;
 
   if (Array.isArray(methods)) {
     methods.forEach(({ method, data, type }) => {
@@ -26,11 +27,14 @@ const _getMockInstance = function(
   } else if (typeof methods === 'string') {
     mockMethods(instance, methods, mockData, methodType);
   } else {
-    // we shouldn't use @mockContainer(key)
+    // we shouldn't use @mockService(service)
     // throw Error('methods must be array or string');
   }
 
-  return instance;
+  return {
+    name: key,
+    service: instance,
+  };
 };
 
 const _mockContainer = function(
@@ -39,9 +43,11 @@ const _mockContainer = function(
   mockData?: any,
   methodType?: 'resolve' | 'reject',
 ) {
-  const getInstance = _getMockInstance(method, mockData, methodType);
+  const getInstance = _getMockInstance(key, method, mockData, methodType);
   const name = typeof key === 'function' ? key : key.name;
-  mockContainerCache.set(name, getInstance);
+
+  mockContainerCache.set(name, getInstance.service);
+
   container.get = jest.fn().mockImplementation((serviceName: string) => {
     if (mockContainerCache.get(serviceName)) {
       return mockContainerCache.get(serviceName);

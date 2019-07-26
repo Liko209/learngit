@@ -8,39 +8,26 @@ import { mockService } from 'shield/sdk';
 import React from 'react';
 import { PhoneLink } from '..';
 import * as helper from '../helper';
-import { ServiceConfig } from 'sdk/module/serviceLoader';
-import { registerModule } from 'shield/utils';
 
-import { config as featureFlagConfig } from '@/modules/featuresFlags/module.config';
-import { config as telephonyConfig } from '@/modules/telephony/module.config';
-import { config as commonConfig } from '@/modules/common/module.config';
-import { mountWithTheme } from 'shield/utils';
+import { mountWithTheme, asyncMountWithTheme } from 'shield/utils';
 import { PermissionService } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ProfileService } from 'sdk/module/profile';
-import { container } from 'framework';
-import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import {
+  mockContainer,
   mockSingleEntity,
   mockEntity,
   mockGlobalValue,
 } from 'shield/application';
 
-registerModule(commonConfig);
-registerModule(featureFlagConfig);
-registerModule(telephonyConfig);
-
 window['RTCPeerConnection'] = true;
-
-const _telephonyService: TelephonyService = container.get(TELEPHONY_SERVICE);
 
 describe('PhoneLinkView', () => {
   const telephonyService = {
-    name: ServiceConfig.TELEPHONY_SERVICE,
-    makeCall() {},
-    getAllCallCount() {},
-    makeRCPhoneCall() {},
+    name: TELEPHONY_SERVICE,
+    directCall() {},
   };
   @testable
   class TestIsRCUserOrNot {
@@ -48,13 +35,14 @@ describe('PhoneLinkView', () => {
     @mockService(PermissionService, 'hasPermission', true)
     @mockService.resolve(ProfileService, 'getProfile', {})
     @mockSingleEntity({})
+    @mockContainer(FeaturesFlagsService, 'canUseTelephony')
     beforeEach() {}
 
     @mockGlobalValue(true)
     @test('should render JuiConversationNumberLink when is rc user')
     t1() {
       const wrapper = mountWithTheme(
-        <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
+        <PhoneLink text="123-123-12-211">123-123-12-211</PhoneLink>,
       );
       expect(wrapper.find('a').exists()).toBe(true);
     }
@@ -63,7 +51,7 @@ describe('PhoneLinkView', () => {
     @test('should not render JuiConversationNumberLink when is not rc user')
     t2() {
       const wrapper = mountWithTheme(
-        <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
+        <PhoneLink text="123-123-12-211">123-123-12-211</PhoneLink>,
       );
       expect(wrapper.find('a').exists()).toBe(false);
       expect(wrapper.text().includes('123-123-12-211')).toBe(true);
@@ -75,26 +63,25 @@ describe('PhoneLinkView', () => {
     @mockSingleEntity({})
     @mockEntity({})
     @mockGlobalValue(true)
+    @mockContainer(FeaturesFlagsService, 'canUseTelephony', true)
     beforeEach() {
       jest.spyOn(helper, 'isSupportWebRTC').mockReturnValue(true);
-      jest.spyOn(_telephonyService, 'makeCall').mockResolvedValue(true);
     }
 
     @test('should direct call when can use telephony and user click')
     @mockService(RCInfoService, 'isVoipCallingAvailable', true)
     @mockService(PermissionService, 'hasPermission', true)
     @mockService(PermissionService, 'hasPermission', true)
+    @mockContainer(telephonyService, 'directCall', true)
     async t1() {
-      const wrapper = mountWithTheme(
-        <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
+      const wrapper = await asyncMountWithTheme(
+        <PhoneLink text="123-123-12-211">123-123-12-211</PhoneLink>,
       );
-      // needed to defer wrapper.update() till after the promise resolves
-      await new Promise(resolve => setTimeout(resolve, 0));
-      wrapper.update();
+      await wrapper.update();
       const link = wrapper.find('a[href="javascript:;"]');
       expect(link.exists()).toBe(true);
       link.simulate('click', { preventDefault: jest.fn() });
-      expect(_telephonyService.makeCall).toHaveBeenCalled();
+      expect(telephonyService.directCall).toHaveBeenCalled();
     }
 
     @test('should direct call when can NOT use telephony')
@@ -102,7 +89,7 @@ describe('PhoneLinkView', () => {
     @mockService(PermissionService, 'hasPermission', true)
     t2() {
       let wrapper = mountWithTheme(
-        <PhoneLink text='123-123-12-211'>123-123-12-211</PhoneLink>,
+        <PhoneLink text="123-123-12-211">123-123-12-211</PhoneLink>,
       );
       wrapper = wrapper.update();
       expect(
