@@ -27,6 +27,7 @@ type JuiMenuItemProps = {
   avatar?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
+  searchString?: string;
 } & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -56,6 +57,7 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     padding: ${spacing(1, 4)};
     box-sizing: border-box;
 
+    &:focus,
     &:hover {
       background-color: ${palette('grey', '500', 1)};
     }
