@@ -6,4 +6,5 @@
 export * from './mockEntity';
 export * from './mockGlobalValue';
 export * from './mockSingleEntity';
+export * from './mockPresence';
 export * from './mockStore';

@@ -137,6 +137,10 @@ export class HomePage extends BaseWebComponent {
     await this.t.click(this.topBarAvatar);
   }
 
+  async hoverSettingMenu() {
+    await this.t.hover(this.topBarAvatar);
+  }
+
   async openDialer() {
     await this.t.hover('html').click(this.dialpadButton);
   }
