@@ -42,7 +42,10 @@ type JuiIconButtonProps = {
   icon?: SvgSymbol;
   stretchIcon?: boolean;
   tooltipPlacement?: TooltipProps['placement'];
-} & Omit<MuiIconButtonProps, 'color' | 'children'> &
+  component?: React.ElementType;
+  download?: boolean;
+  href?: string;
+} & Omit<MuiIconButtonProps, 'color' | 'children' | 'size'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
@@ -78,24 +81,31 @@ type StyledIconButtonProps = JuiIconButtonProps & {
   colorName: string;
   colorScope: keyof Palette;
 };
-const WrappedMuiIconButton = ({
-  invisible,
-  awake,
-  color,
-  colorName,
-  colorScope,
-  alwaysEnableTooltip,
-  tooltipForceHide,
-  tooltipPlacement,
-  stretchIcon,
-  shouldPersistBg,
-  ...rest
-}: StyledIconButtonProps) => (
-  <MuiIconButton
-    {...rest}
-    classes={{ disabled: 'disabled' }}
-    TouchRippleProps={{ classes: touchRippleClasses }}
-  />
+const WrappedMuiIconButton = React.forwardRef(
+  (
+    {
+      invisible,
+      awake,
+      color,
+      colorName,
+      colorScope,
+      alwaysEnableTooltip,
+      tooltipForceHide,
+      tooltipPlacement,
+      stretchIcon,
+      shouldPersistBg,
+      size,
+      ...rest
+    }: StyledIconButtonProps,
+    ref,
+  ) => (
+    <MuiIconButton
+      {...rest}
+      ref={ref as any}
+      classes={{ disabled: 'disabled' }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
+    />
+  ),
 );
 
 const StyledIconButton = styled(WrappedMuiIconButton)`
@@ -257,7 +267,9 @@ JuiIconButtonComponent.defaultProps = {
   stretchIcon: false,
 };
 
-const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
+const JuiIconButton = styled<JuiIconButtonProps>(
+  memo(JuiIconButtonComponent),
+)``;
 export {
   JuiIconButton,
   JuiIconButtonProps,

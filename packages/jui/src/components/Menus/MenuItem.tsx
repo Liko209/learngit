@@ -19,15 +19,19 @@ import {
   palette,
 } from '../../foundation/utils';
 
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiMenuItemProps & { button?: any };
+
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
-} & MuiMenuItemProps;
+} & MuiListItemPropsFixed;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {
+    min-width: unset;
     margin-right: ${spacing(2)};
     ${typography('subheading1')};
     color: ${grey('700')};
@@ -58,9 +62,11 @@ const StyledMenuItem = styled(WrappedMenuItem)`
 
     &:active {
       background-color: ${palette('primary', 'main')};
-      color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+      color: ${({ theme }) =>
+        theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       ${StyledMuiListItemIcon} {
-        color: ${({ theme }) => theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
+        color: ${({ theme }) =>
+          theme.palette.getContrastText(palette('primary', 'main')({ theme }))};
       }
     }
   }

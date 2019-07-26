@@ -114,15 +114,15 @@ describe('RegionInfoController', () => {
     it('should call notification center to subscribe notification ', () => {
       notificationCenter.on = jest.fn();
       regionInfoController.init();
-      expect(notificationCenter.on).toBeCalledWith(
+      expect(notificationCenter.on).toHaveBeenCalledWith(
         'RC_INFO.EXTENSION_PHONE_NUMBER_LIST',
         expect.anything(),
       );
-      expect(notificationCenter.on).toBeCalledWith(
+      expect(notificationCenter.on).toHaveBeenCalledWith(
         'RC_INFO.ACCOUNT_INFO',
         expect.anything(),
       );
-      expect(notificationCenter.on).toBeCalledWith(
+      expect(notificationCenter.on).toHaveBeenCalledWith(
         'RC_INFO.RC_SERVICE_INFO',
         expect.anything(),
       );
@@ -138,15 +138,15 @@ describe('RegionInfoController', () => {
     it('should call notification center to unsubscribe notification ', () => {
       notificationCenter.off = jest.fn();
       regionInfoController.dispose();
-      expect(notificationCenter.off).toBeCalledWith(
+      expect(notificationCenter.off).toHaveBeenCalledWith(
         'RC_INFO.EXTENSION_PHONE_NUMBER_LIST',
         expect.anything(),
       );
-      expect(notificationCenter.off).toBeCalledWith(
+      expect(notificationCenter.off).toHaveBeenCalledWith(
         'RC_INFO.ACCOUNT_INFO',
         expect.anything(),
       );
-      expect(notificationCenter.off).toBeCalledWith(
+      expect(notificationCenter.off).toHaveBeenCalledWith(
         'RC_INFO.RC_SERVICE_INFO',
         expect.anything(),
       );
@@ -163,7 +163,7 @@ describe('RegionInfoController', () => {
       regionInfoController['_currentCountryInfo'] = { id: '2' } as any;
       PhoneParserUtility.isAreaCodeValid = jest.fn().mockResolvedValue(false);
       const res = await regionInfoController.isAreaCodeValid('123');
-      expect(PhoneParserUtility.isAreaCodeValid).toBeCalledWith(2, '123');
+      expect(PhoneParserUtility.isAreaCodeValid).toHaveBeenCalledWith(2, '123');
       expect(res).toBeFalsy();
     });
 
@@ -171,7 +171,7 @@ describe('RegionInfoController', () => {
       regionInfoController['_currentCountryInfo'] = undefined as any;
       PhoneParserUtility.isAreaCodeValid = jest.fn().mockResolvedValue(true);
       const res = await regionInfoController.isAreaCodeValid('123');
-      expect(PhoneParserUtility.isAreaCodeValid).toBeCalledWith(1, '123');
+      expect(PhoneParserUtility.isAreaCodeValid).toHaveBeenCalledWith(1, '123');
       expect(res).toBeTruthy();
     });
   });
@@ -215,7 +215,7 @@ describe('RegionInfoController', () => {
         { callingCode: '54', id: '11', isoCode: 'AR', name: 'Argentina' },
       ]);
 
-      expect(PhoneParserUtility.getPhoneParser).toBeCalledWith(
+      expect(PhoneParserUtility.getPhoneParser).toHaveBeenCalledWith(
         '+868552198030',
         false,
       );
@@ -237,7 +237,7 @@ describe('RegionInfoController', () => {
         { callingCode: '86', id: '46', isoCode: 'CN', name: 'China' },
       ]);
 
-      expect(PhoneParserUtility.getPhoneParser).toBeCalledWith(
+      expect(PhoneParserUtility.getPhoneParser).toHaveBeenCalledWith(
         '+868552198030',
         false,
       );
@@ -265,7 +265,7 @@ describe('RegionInfoController', () => {
         { id: '109', name: 'Italy', isoCode: 'IT', callingCode: '39' },
       ]);
 
-      expect(PhoneParserUtility.getPhoneParser).toBeCalledWith(
+      expect(PhoneParserUtility.getPhoneParser).toHaveBeenCalledWith(
         '+12052770634',
         false,
       );
@@ -282,7 +282,43 @@ describe('RegionInfoController', () => {
       expect(await regionInfoController.getCountryList()).toEqual([
         { callingCode: '1', id: '1', isoCode: 'US', name: 'United States' },
       ]);
-      expect(PhoneParserUtility.getPhoneParser).not.toBeCalled();
+      expect(PhoneParserUtility.getPhoneParser).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getStateList', () => {
+    it('should get state list from cache', async () => {
+      regionInfoController._stateListMap.get = jest
+        .fn()
+        .mockReturnValueOnce([1]);
+      const res = await regionInfoController.getStateList('1');
+      expect(res).toEqual([1]);
+    });
+
+    it('should return state list according to country', async () => {
+      _rcInfoFetchController.requestCountryState = jest
+        .fn()
+        .mockReturnValue([2]);
+      const res = await regionInfoController.getStateList('1');
+      expect(_rcInfoFetchController.requestCountryState).toHaveBeenCalledWith({
+        countryId: '1',
+        perPage: 400,
+        page: 1,
+      });
+      expect(res).toEqual([2]);
+    });
+
+    it('should return empty list when no data', async () => {
+      _rcInfoFetchController.requestCountryState = jest
+        .fn()
+        .mockReturnValue([]);
+      const res = await regionInfoController.getStateList('1');
+      expect(_rcInfoFetchController.requestCountryState).toHaveBeenCalledWith({
+        countryId: '1',
+        perPage: 400,
+        page: 1,
+      });
+      expect(res).toEqual([]);
     });
   });
 
@@ -308,10 +344,10 @@ describe('RegionInfoController', () => {
       expect(await regionInfoController.getCurrentCountry()).toEqual(
         validDialingPlan.records[0],
       );
-      expect(regionInfoController['loadRegionInfo']).toBeCalled();
+      expect(regionInfoController['loadRegionInfo']).toHaveBeenCalled();
       expect(
         regionInfoController['_getCountryFromAccountInfo'],
-      ).not.toBeCalled();
+      ).not.toHaveBeenCalled();
     });
 
     it('should return country from account info when has no dialing plan', async () => {
@@ -370,7 +406,7 @@ describe('RegionInfoController', () => {
       setUpNormalEnv();
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.setDefaultCountry('US');
-      expect(regionInfoController['_setStationLocation']).toBeCalledWith({
+      expect(regionInfoController['_setStationLocation']).toHaveBeenCalledWith({
         areaCode: '',
         areaCodeByManual: false,
         newCountryInfo: {
@@ -399,7 +435,7 @@ describe('RegionInfoController', () => {
       };
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.setAreaCode('123');
-      expect(regionInfoController['_setStationLocation']).toBeCalledWith({
+      expect(regionInfoController['_setStationLocation']).toHaveBeenCalledWith({
         areaCode: '123',
         newCountryInfo: {
           id: '53',
@@ -437,7 +473,7 @@ describe('RegionInfoController', () => {
         .mockReturnValue(undefined);
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.loadRegionInfo();
-      expect(regionInfoController['_setStationLocation']).toBeCalledWith({
+      expect(regionInfoController['_setStationLocation']).toHaveBeenCalledWith({
         newCountryInfo: DefaultCountryInfo,
         areaCode: '',
         updateSpecialNumber: true,
@@ -462,7 +498,7 @@ describe('RegionInfoController', () => {
         .mockReturnValue(setting);
       regionInfoController['_setStationLocation'] = jest.fn();
       await regionInfoController.loadRegionInfo();
-      expect(regionInfoController['_setStationLocation']).toBeCalledWith({
+      expect(regionInfoController['_setStationLocation']).toHaveBeenCalledWith({
         areaCode: '123',
         areaCodeByManual: false,
         countryByManual: true,
@@ -521,7 +557,7 @@ describe('RegionInfoController', () => {
         '',
         false,
       );
-      expect(PhoneParserUtility.getRegionalInfo).toBeCalledWith(46, '');
+      expect(PhoneParserUtility.getRegionalInfo).toHaveBeenCalledWith(46, '');
       expect(res).toEqual('123');
     });
 
@@ -559,8 +595,16 @@ describe('RegionInfoController', () => {
         '199',
         true,
       );
-      expect(PhoneParserUtility.getRegionalInfo).nthCalledWith(1, 46, '199');
-      expect(PhoneParserUtility.getRegionalInfo).nthCalledWith(2, 46, '888');
+      expect(PhoneParserUtility.getRegionalInfo).toHaveBeenNthCalledWith(
+        1,
+        46,
+        '199',
+      );
+      expect(PhoneParserUtility.getRegionalInfo).toHaveBeenNthCalledWith(
+        2,
+        46,
+        '888',
+      );
       expect(res).toEqual('666');
     });
 
@@ -653,7 +697,7 @@ describe('RegionInfoController', () => {
         areaCodeByManual: false,
         countryByManual: false,
       });
-      expect(PhoneParserUtility.setStationLocation).not.toBeCalled();
+      expect(PhoneParserUtility.setStationLocation).not.toHaveBeenCalled();
     });
 
     it('should set default country for ATT user', async () => {
@@ -670,7 +714,7 @@ describe('RegionInfoController', () => {
         countryByManual: true,
         updateSpecialNumber: false,
       });
-      expect(PhoneParserUtility.setStationLocation).toBeCalledWith({
+      expect(PhoneParserUtility.setStationLocation).toHaveBeenCalledWith({
         brandId: 3420,
         maxShortLen: 7,
         outboundCallPrefix: '9',
@@ -690,7 +734,7 @@ describe('RegionInfoController', () => {
         areaCode: '',
         newCountryInfo: myCountryInfo,
       });
-      expect(RCInfoGlobalConfig.setStationLocation).toBeCalledWith({
+      expect(RCInfoGlobalConfig.setStationLocation).toHaveBeenCalledWith({
         1: {
           areaCode: '021',
           areaCodeByManual: true,
@@ -701,7 +745,7 @@ describe('RegionInfoController', () => {
       expect(regionInfoController['_currentCountryInfo']).toEqual(
         myCountryInfo,
       );
-      expect(PhoneParserUtility.setStationLocation).toBeCalledWith({
+      expect(PhoneParserUtility.setStationLocation).toHaveBeenCalledWith({
         brandId: 1210,
         maxShortLen: 7,
         outboundCallPrefix: '9',
@@ -710,7 +754,9 @@ describe('RegionInfoController', () => {
         szAreaCode: '021',
         szCountryCode: '86',
       });
-      expect(_rcInfoFetchController.requestSpecialNumberRule).toBeCalledWith();
+      expect(
+        _rcInfoFetchController.requestSpecialNumberRule,
+      ).toHaveBeenCalledWith();
     });
   });
 });

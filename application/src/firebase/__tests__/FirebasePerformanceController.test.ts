@@ -6,12 +6,12 @@
 import { FirebasePerformanceController } from '../FirebasePerformanceController';
 import {
   FirebasePerformance,
-  KVStorageManager
+  KVStorageManager,
 } from '../../../../packages/foundation/src';
 import config from '@/config';
 
 jest.mock('@/config', () => ({
-  isProductionAccount: jest.fn(() => true)
+  isProductionAccount: jest.fn(() => true),
 }));
 
 describe('FirebasePerformanceController', () => {
@@ -22,6 +22,7 @@ describe('FirebasePerformanceController', () => {
     jest.restoreAllMocks();
 
     firebasePerformance.initialize = jest.fn();
+    window.indexedDB = {};
   });
 
   describe('initialize', () => {

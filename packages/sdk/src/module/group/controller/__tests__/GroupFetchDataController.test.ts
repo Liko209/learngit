@@ -35,6 +35,8 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { GroupConfigService } from '../../../groupConfig';
 import { SearchService } from 'sdk/module/search';
 import { PermissionService } from 'sdk/module/permission';
+import { PresenceService } from 'sdk/module/presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 const soundex = require('soundex-code');
 jest.mock('../../../../dao');
@@ -69,6 +71,7 @@ describe('GroupFetchDataController', () => {
   const postService = new PostService();
   const profileService = new ProfileService();
   const personService = new PersonService();
+  const presenceService = new PresenceService();
   const companyService = new CompanyService();
   const groupConfigService = new GroupConfigService();
   const searchService = new SearchService();
@@ -246,6 +249,7 @@ describe('GroupFetchDataController', () => {
 
     const serviceMap: Map<string, any> = new Map([
       [ServiceConfig.PERSON_SERVICE, personService as any],
+      [ServiceConfig.PRESENCE_SERVICE, presenceService as any],
       [ServiceConfig.PROFILE_SERVICE, profileService as any],
       [ServiceConfig.POST_SERVICE, postService as any],
       [ServiceConfig.COMPANY_SERVICE, companyService as any],
@@ -1337,6 +1341,53 @@ describe('GroupFetchDataController', () => {
         [],
       );
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('getMembersAndGuestIds', () => {
+    it('should return sorted ids when onlineFirst is true, JPT-2686', async () => {
+      groupFetchDataController.entitySourceController.getEntityLocally = jest.fn().mockResolvedValue(
+        {
+          members: [123, 234, 345, 456],
+          guest_user_company_ids: [333, 444],
+        },
+      );
+      personService.getPersonsByIds = jest.fn().mockResolvedValue(
+        [
+          {
+            id: 123,
+            company_id: 666,
+            name: 'B',
+          },
+          {
+            id: 234,
+            company_id: 666,
+            name: 'A',
+          },
+          {
+            id: 345,
+            company_id: 444,
+            name: 'D',
+          },
+          {
+            id: 456,
+            company_id: 333,
+            name: 'C',
+          },
+        ],
+      );
+      presenceService.getSynchronously = jest.fn().mockImplementation((id: number) => {
+        if (id === 123) {
+          return { presence: PRESENCE.AVAILABLE };
+        }
+        return { presence: PRESENCE.NOTREADY };
+      });
+      personService.getFullName = jest.fn().mockImplementation((person: any) => {
+        return person.name;
+      });
+
+      const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
+      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234] });
     });
   });
 });

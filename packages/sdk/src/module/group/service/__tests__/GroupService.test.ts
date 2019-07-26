@@ -45,6 +45,7 @@ describe('GroupService', () => {
     getOrCreateGroupByMemberList: jest.fn(),
     isFavored: jest.fn(),
     getGroupEmail: jest.fn(),
+    getMembersAndGuestIds: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -101,7 +102,7 @@ describe('GroupService', () => {
           isInTeam: mockFn,
         });
       await groupService.isInTeam(mockUserId, mockTeam);
-      expect(mockFn).toBeCalledWith(mockUserId, mockTeam);
+      expect(mockFn).toHaveBeenCalledWith(mockUserId, mockTeam);
     });
   });
 
@@ -122,7 +123,7 @@ describe('GroupService', () => {
           isInGroup: mockFn,
         });
       await groupService.isInGroup(mockUserId, mockTeam);
-      expect(mockFn).toBeCalledWith(mockUserId, mockTeam);
+      expect(mockFn).toHaveBeenCalledWith(mockUserId, mockTeam);
     });
   });
   describe('canJoinTeam()', () => {
@@ -141,7 +142,7 @@ describe('GroupService', () => {
           canJoinTeam: mockFn,
         });
       await groupService.canJoinTeam(mockTeam);
-      expect(mockFn).toBeCalledWith(mockTeam);
+      expect(mockFn).toHaveBeenCalledWith(mockTeam);
     });
   });
   describe('joinTeam()', () => {
@@ -161,7 +162,7 @@ describe('GroupService', () => {
           joinTeam: mockJoinTeam,
         });
       await groupService.joinTeam(mockUserId, mockTeamId);
-      expect(mockJoinTeam).toBeCalledWith(mockUserId, mockTeamId);
+      expect(mockJoinTeam).toHaveBeenCalledWith(mockUserId, mockTeamId);
     });
   });
 
@@ -171,7 +172,7 @@ describe('GroupService', () => {
       await groupService.getTeamUserPermissionFlags(mockPermission);
       expect(
         mockTeamPermissionController.getTeamUserPermissionFlags,
-      ).toBeCalledWith(mockPermission);
+      ).toHaveBeenCalledWith(mockPermission);
     });
   });
 
@@ -188,7 +189,7 @@ describe('GroupService', () => {
         },
       };
       await groupService.updateTeamSetting(mockTeamId, mockTeamSetting);
-      expect(mockGroupActionController.updateTeamSetting).toBeCalledWith(
+      expect(mockGroupActionController.updateTeamSetting).toHaveBeenCalledWith(
         mockTeamId,
         mockTeamSetting,
       );
@@ -211,7 +212,7 @@ describe('GroupService', () => {
           leaveTeam: mockLeaveTeam,
         });
       await groupService.leaveTeam(mockUserId, mockTeamId);
-      expect(mockLeaveTeam).toBeCalledWith(mockUserId, mockTeamId);
+      expect(mockLeaveTeam).toHaveBeenCalledWith(mockUserId, mockTeamId);
     });
   });
   describe('addTeamMembers()', () => {
@@ -231,7 +232,7 @@ describe('GroupService', () => {
           addTeamMembers: mockAddTeamMembers,
         });
       await groupService.addTeamMembers(mockMembers, mockTeamId);
-      expect(mockAddTeamMembers).toBeCalledWith(mockMembers, mockTeamId);
+      expect(mockAddTeamMembers).toHaveBeenCalledWith(mockMembers, mockTeamId);
     });
   });
   describe('removeTeamMembers()', () => {
@@ -251,7 +252,7 @@ describe('GroupService', () => {
           removeTeamMembers: mockRemoveTeamMembers,
         });
       await groupService.removeTeamMembers(mockMembers, mockTeamId);
-      expect(mockRemoveTeamMembers).toBeCalledWith(mockMembers, mockTeamId);
+      expect(mockRemoveTeamMembers).toHaveBeenCalledWith(mockMembers, mockTeamId);
     });
   });
   describe('isCurrentUserHasPermission()', () => {
@@ -276,7 +277,7 @@ describe('GroupService', () => {
         mockPermissionType,
         mockParams,
       );
-      expect(mockIsCurrentUserHasPermission).toBeCalledWith(
+      expect(mockIsCurrentUserHasPermission).toHaveBeenCalledWith(
         mockPermissionType,
         mockParams,
       );
@@ -299,7 +300,7 @@ describe('GroupService', () => {
           isTeamAdmin: mockIsTeamAdmin,
         });
       groupService.isTeamAdmin(mockPersonId, mockPermission);
-      expect(mockIsTeamAdmin).toBeCalledWith(mockPersonId, mockPermission);
+      expect(mockIsTeamAdmin).toHaveBeenCalledWith(mockPersonId, mockPermission);
     });
   });
   describe('archiveTeam()', () => {
@@ -320,7 +321,7 @@ describe('GroupService', () => {
           archiveTeam: mockArchiveTeam,
         });
       await groupService.archiveTeam(mockTeam.id);
-      expect(mockArchiveTeam).toBeCalledWith(mockTeam.id);
+      expect(mockArchiveTeam).toHaveBeenCalledWith(mockTeam.id);
     });
   });
 
@@ -339,7 +340,7 @@ describe('GroupService', () => {
           makeOrRevokeAdmin,
         });
       await groupService.makeAdmin(1, 2);
-      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, true);
+      expect(makeOrRevokeAdmin).toHaveBeenCalledWith(1, 2, true);
     });
   });
 
@@ -358,7 +359,7 @@ describe('GroupService', () => {
           pinPost,
         });
       await groupService.pinPost(1, 2, true);
-      expect(pinPost).toBeCalledWith(1, 2, true);
+      expect(pinPost).toHaveBeenCalledWith(1, 2, true);
     });
   });
 
@@ -377,7 +378,7 @@ describe('GroupService', () => {
           makeOrRevokeAdmin,
         });
       await groupService.revokeAdmin(1, 2);
-      expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, false);
+      expect(makeOrRevokeAdmin).toHaveBeenCalledWith(1, 2, false);
     });
   });
 
@@ -391,12 +392,12 @@ describe('GroupService', () => {
       await groupService.doFuzzySearchALlGroups('123', true, false, true);
       expect(
         mockGroupFetchDataController.doFuzzySearchAllGroups,
-      ).toBeCalledWith('123', true, false, true);
+      ).toHaveBeenCalledWith('123', true, false, true);
     });
 
     it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {
       await groupService.doFuzzySearchGroups('123', true, true);
-      expect(mockGroupFetchDataController.doFuzzySearchGroups).toBeCalledWith(
+      expect(mockGroupFetchDataController.doFuzzySearchGroups).toHaveBeenCalledWith(
         '123',
         true,
         true,
@@ -405,7 +406,7 @@ describe('GroupService', () => {
 
     it('should call getGroupFetchDataController when call doFuzzySearchTeams  ', async () => {
       await groupService.doFuzzySearchTeams('123', false);
-      expect(mockGroupFetchDataController.doFuzzySearchTeams).toBeCalledWith(
+      expect(mockGroupFetchDataController.doFuzzySearchTeams).toHaveBeenCalledWith(
         '123',
         false,
         undefined,
@@ -414,7 +415,7 @@ describe('GroupService', () => {
 
     it('should call getGroupFetchDataController when call getGroupsByType', async () => {
       await groupService.getGroupsByType(GROUP_QUERY_TYPE.ALL, 1, 1);
-      expect(mockGroupFetchDataController.getGroupsByType).toBeCalledWith(
+      expect(mockGroupFetchDataController.getGroupsByType).toHaveBeenCalledWith(
         GROUP_QUERY_TYPE.ALL,
         1,
         1,
@@ -423,7 +424,7 @@ describe('GroupService', () => {
 
     it('should call getGroupFetchDataController when call getGroupsByIds', async () => {
       await groupService.getGroupsByIds([1], true);
-      expect(mockGroupFetchDataController.getGroupsByIds).toBeCalledWith(
+      expect(mockGroupFetchDataController.getGroupsByIds).toHaveBeenCalledWith(
         [1],
         true,
       );
@@ -432,25 +433,34 @@ describe('GroupService', () => {
       await groupService.getPersonIdsBySelectedItem([1]);
       expect(
         mockGroupFetchDataController.getPersonIdsBySelectedItem,
-      ).toBeCalledWith([1]);
+      ).toHaveBeenCalledWith([1]);
     });
     it('should call getGroupFetchDataController when call getLocalGroup', async () => {
       await groupService.getLocalGroup([1]);
-      expect(mockGroupFetchDataController.getLocalGroup).toBeCalledWith([1]);
+      expect(mockGroupFetchDataController.getLocalGroup).toHaveBeenCalledWith([1]);
     });
     it('should call getGroupFetchDataController when call getOrCreateGroupByMemberList', async () => {
       await groupService.getOrCreateGroupByMemberList([1]);
       expect(
         mockGroupFetchDataController.getOrCreateGroupByMemberList,
-      ).toBeCalledWith([1]);
+      ).toHaveBeenCalledWith([1]);
     });
     it('should call getGroupFetchDataController when call isFavored', async () => {
       await groupService.isFavored(1, 1);
-      expect(mockGroupFetchDataController.isFavored).toBeCalledWith(1, 1);
+      expect(mockGroupFetchDataController.isFavored).toHaveBeenCalledWith(1, 1);
     });
     it('should call getGroupFetchDataController when call isFavored', async () => {
       await groupService.getGroupEmail(1);
-      expect(mockGroupFetchDataController.getGroupEmail).toBeCalledWith(1);
+      expect(mockGroupFetchDataController.getGroupEmail).toHaveBeenCalledWith(1);
+    });
+
+    it('should call getGroupFetchDataController when call getMembersAndGuestIds  ', async () => {
+      await groupService.getMembersAndGuestIds(123, true);
+      expect(mockGroupFetchDataController.getMembersAndGuestIds).toHaveBeenCalledWith(
+        123,
+        true,
+        undefined,
+      );
     });
   });
 
@@ -462,12 +472,11 @@ describe('GroupService', () => {
 
     it('should call with right parameters', async () => {
       await groupService.handleGroupFetchedPosts(1, []);
-      expect(mockHandleDataController.handleGroupFetchedPost).toBeCalledWith(
+      expect(mockHandleDataController.handleGroupFetchedPost).toHaveBeenCalledWith(
         1,
         [],
       );
     });
-
   });
 
   describe('getById', () => {
@@ -483,33 +492,36 @@ describe('GroupService', () => {
   describe('GroupActionController', () => {
     it('should call with right parameters', async () => {
       await groupService.createTeam(1, [1, 2], {});
-      expect(mockGroupActionController.createTeam).toBeCalledWith(
-        1, [1, 2], {}
+      expect(mockGroupActionController.createTeam).toHaveBeenCalledWith(
+        1,
+        [1, 2],
+        {},
       );
     });
     it('should call with right parameters', async () => {
       await groupService.convertToTeam(1, [1, 2], {});
-      expect(mockGroupActionController.convertToTeam).toBeCalledWith(
-        1, [1, 2], {}
+      expect(mockGroupActionController.convertToTeam).toHaveBeenCalledWith(
+        1,
+        [1, 2],
+        {},
       );
     });
     it('should call with right parameters', async () => {
       await groupService.updateGroupPrivacy({ id: 1, privacy: '1' });
-      expect(mockGroupActionController.updateGroupPrivacy).toBeCalledWith(
-        { id: 1, privacy: '1' }
-      );
+      expect(mockGroupActionController.updateGroupPrivacy).toHaveBeenCalledWith({
+        id: 1,
+        privacy: '1',
+      });
     });
     it('should call with right parameters', async () => {
       await groupService.isGroupCanBeShown(1);
-      expect(mockGroupActionController.isGroupCanBeShown).toBeCalledWith(
-        1
-      );
+      expect(mockGroupActionController.isGroupCanBeShown).toHaveBeenCalledWith(1);
     });
     it('should call with right parameters', async () => {
       await groupService.updateGroupLastAccessedTime({ id: 1, timestamp: 1 });
-      expect(mockGroupActionController.updateGroupLastAccessedTime).toBeCalledWith(
-        { id: 1, timestamp: 1 }
-      );
+      expect(
+        mockGroupActionController.updateGroupLastAccessedTime,
+      ).toHaveBeenCalledWith({ id: 1, timestamp: 1 });
     });
-  })
+  });
 });

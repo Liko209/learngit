@@ -43,13 +43,15 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
       ${typography('caption1')};
       ${ellipsis()};
     }
+
+    &.multiline {
+      margin: 0;
+    }
   }
 `;
 
 const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
-  const {
-    primary, primaryColor, secondary, ...rest
-  } = props;
+  const { primary, primaryColor, secondary, ...rest } = props;
   return (
     <StyledListItemText
       primaryColor={primaryColor}
@@ -58,6 +60,7 @@ const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
       classes={{
         primary: 'list-item-primary',
         secondary: 'list-item-secondary',
+        multiline: 'multiline',
       }}
       {...rest}
     />

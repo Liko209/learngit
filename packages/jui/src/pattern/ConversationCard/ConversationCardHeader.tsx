@@ -67,7 +67,15 @@ type ConversationCardHeaderProps = {
   children?: React.ReactNode;
   from?: JSX.Element;
   notification?: React.ReactNode;
+  repliedEntity?: React.ReactNode;
 };
+
+const JuiConversationCardHeaderAction = styled.span`
+  flex: none;
+  margin: ${spacing(0, 1)};
+  color: ${grey('500')};
+  ${typography('caption1')};
+`;
 
 class JuiConversationCardHeader extends React.PureComponent<
   ConversationCardHeaderProps
@@ -128,7 +136,15 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 
   render() {
-    const { name, status, notification, from, time, children } = this.props;
+    const {
+      name,
+      status,
+      notification,
+      repliedEntity,
+      from,
+      time,
+      children,
+    } = this.props;
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
@@ -143,6 +159,7 @@ class JuiConversationCardHeader extends React.PureComponent<
               {notification}
             </StyledNotification>
           ) : null}
+          {repliedEntity}
           {from}
         </StyledLeftSection>
         {(time || children) && (
@@ -156,5 +173,9 @@ class JuiConversationCardHeader extends React.PureComponent<
   }
 }
 
-export { JuiConversationCardHeader, StyledTime };
+export {
+  JuiConversationCardHeader,
+  JuiConversationCardHeaderAction,
+  StyledTime,
+};
 export default JuiConversationCardHeader;
