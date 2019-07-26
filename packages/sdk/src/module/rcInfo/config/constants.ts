@@ -23,6 +23,7 @@ const RC_INFO_KEYS = {
   ACCOUNT_SERVICE_INFO: 'account_service_info',
   FORWARDING_NUMBERS: 'forwarding_numbers',
   BLOCK_NUMBER: 'block_number',
+  DEVICE_INFO: 'device_info',
 };
 
 const RC_INFO_GLOBAL_KEYS = {

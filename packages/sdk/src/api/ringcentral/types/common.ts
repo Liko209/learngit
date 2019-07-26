@@ -250,7 +250,6 @@ type RCAuthCodeInfo = {
   uri: string;
   code: string;
 };
-
 interface ITokenModel extends Token {
   access_token: string;
   endpoint_id: string;
@@ -320,4 +319,5 @@ export {
   CountryState,
   StateRecord,
   IStateRequest,
+  ICountryInfo,
 };

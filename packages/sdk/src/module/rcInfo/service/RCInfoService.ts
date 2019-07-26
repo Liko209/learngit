@@ -14,6 +14,8 @@ import {
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
   StateRecord,
+  IAssignLineRequest,
+  IUpdateLineRequest,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
@@ -314,6 +316,24 @@ class RCInfoService extends EntityBaseService<IdModel>
     await this.getRCInfoController().blockNumberController.addBlockedNumber(
       phoneNumber,
     );
+  }
+
+  async getDigitalLines() {
+    return await this.getRCInfoController()
+      .getRCInfoFetchController()
+      .getDigitalLines();
+  }
+
+  async assignLine(deviceId: string, data: IAssignLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .assignLine(deviceId, data);
+  }
+
+  async updateLine(deviceId: string, data: IUpdateLineRequest) {
+    await this.getRCInfoController()
+      .getRCDeviceController()
+      .updateLine(deviceId, data);
   }
 }
 

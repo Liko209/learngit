@@ -117,6 +117,11 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return undefined;
   }
 
+  getSipProvision() {
+    const sipProv = this._rtcAccount.getSipProv();
+    return sipProv ? sipProv : undefined;
+  }
+
   setLastCalledNumber(num: string) {
     const telephonyConfig = ServiceLoader.getInstance<TelephonyService>(
       ServiceConfig.TELEPHONY_SERVICE,

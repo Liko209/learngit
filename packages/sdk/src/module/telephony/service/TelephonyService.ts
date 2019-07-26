@@ -13,7 +13,7 @@ import {
 
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
-import { MAKE_CALL_ERROR_CODE } from '../types';
+import { MAKE_CALL_ERROR_CODE, SipProvisionInfo } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -70,13 +70,6 @@ class TelephonyService extends EntityBaseService<Call>
 
   getVoipCallPermission = async () =>
     this.telephonyController.getVoipCallPermission();
-
-  getEmergencyAddress = () => {
-    const accountController = this.telephonyController.getAccountController();
-    return accountController
-      ? accountController.getEmergencyAddress()
-      : undefined;
-  };
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
@@ -205,6 +198,25 @@ class TelephonyService extends EntityBaseService<Call>
     }
     return this._phoneSetting;
   }
+
+  isEmergencyAddrConfirmed = () => {
+    return this.telephonyController.isEmergencyAddrConfirmed();
+  };
+
+  getSipProvision = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController
+      ? (accountController.getSipProvision() as SipProvisionInfo)
+      : undefined;
+  };
+
+  getRemoteEmergencyAddress = () => {
+    return this.telephonyController.getRemoteEmergencyAddress();
+  };
+
+  getLocalEmergencyAddress = () => {
+    return this.telephonyController.getLocalEmergencyAddress();
+  };
 }
 
 export { TelephonyService };
