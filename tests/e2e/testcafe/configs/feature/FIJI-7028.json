@@ -2,10 +2,14 @@
 {
     "on_merge": {
         "fixtures": [
-          "./fixtures/**/Conversation*.ts"
+          "./fixtures/**/Conversation*.ts",
+          "./fixtures/JumpToRecentButton.ts",
+          "./fixtures/JumpToUnreadButton.ts"
         ],
         "browsers": [
             "selenium:chrome"
         ]
     }
 }
+
+

@@ -12,7 +12,7 @@ const StyledDiv = styled.div`
 `;
 
 const JuiAnchorButtonWrapper = memo((props: JuiAnchorButtonWrapperProps) => (
-  <StyledDiv {...props} data-test-automation-id="jump-to-first-unread-button" />
+  <StyledDiv {...props} />
 ));
 
 export { JuiAnchorButtonWrapper, JuiAnchorButtonWrapperProps };
