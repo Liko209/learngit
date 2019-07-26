@@ -45,7 +45,7 @@ class SliderSettingItemViewComponent extends Component<Props> {
             disabled={disabled}
             min={min}
             max={max}
-            step={step || (max - min) / 100}
+            step={step}
             valueLabelFormat={valueLabelFormat}
             value={value}
             data-test-automation-id={`settingItemSlider-${

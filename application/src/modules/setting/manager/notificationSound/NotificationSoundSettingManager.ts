@@ -98,6 +98,7 @@ class NotificationSoundSettingManager {
               valueLabelFormat: value => `${Math.ceil(value * 100)}%`,
               min: 0,
               max: 1,
+              step: 0.01,
               weight: 300,
             } as SliderSettingItem,
           ],
