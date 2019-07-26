@@ -8,19 +8,22 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
-import { kRTCAnonymous, kRTCProvisioningOptions } from '../account/constants';
-
+import {
+  kRTCAnonymous,
+  kRTCProvisioningOptions,
+  kRetryIntervalList
+} from '../account/constants';
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
   REGISTRATION_EVENT,
   RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
+  RTC_PROV_EVENT
 } from '../account/types';
 import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
-  RTCUserInfo,
+  RTCUserInfo
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -29,8 +32,9 @@ import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCen
 import {
   RTC_NETWORK_EVENT,
   RTC_NETWORK_STATE,
-  RTC_SLEEP_MODE_EVENT,
+  RTC_SLEEP_MODE_EVENT
 } from '../utils/types';
+import { randomBetween } from '../utils/utils';
 
 const LOG_TAG = 'RTCAccount';
 
@@ -39,12 +43,14 @@ class RTCAccount implements IRTCAccount {
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
   private _postponeProvisioning: RTCSipProvisionInfo | null;
-  private _postponeSwitchBackProxy: boolean = false;
+  private _postponeReregister: boolean = false;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
   private _userInfo: RTCUserInfo;
   private _sleepModeListener: Listener;
+  private _retryTimer: NodeJS.Timeout | null = null;
+  private _failedTimes: number = 0;
 
   constructor(listener: IRTCAccountDelegate, userInfo: RTCUserInfo) {
     this._state = RTC_ACCOUNT_STATE.IDLE;
@@ -65,11 +71,11 @@ class RTCAccount implements IRTCAccount {
   destroy() {
     RTCNetworkNotificationCenter.instance().removeListener(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
-      this._networkListener,
+      this._networkListener
     );
     RTCNetworkNotificationCenter.instance().removeListener(
       RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
+      this._sleepModeListener
     );
   }
 
@@ -84,7 +90,7 @@ class RTCAccount implements IRTCAccount {
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
-    options?: RTCCallOptions,
+    options?: RTCCallOptions
   ): RTCCall | null {
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
@@ -97,7 +103,7 @@ class RTCAccount implements IRTCAccount {
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
       rtcLogger.warn(
         LOG_TAG,
-        'Failed to make call. Account is in Unregistered state',
+        'Failed to make call. Account is in Unregistered state'
       );
       return null;
     }
@@ -115,7 +121,7 @@ class RTCAccount implements IRTCAccount {
       this,
       delegate,
       callOption,
-      this._userInfo,
+      this._userInfo
     );
     this._callManager.addCall(call);
     if (this.isReady()) {
@@ -129,7 +135,7 @@ class RTCAccount implements IRTCAccount {
   public makeAnonymousCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
-    options?: RTCCallOptions,
+    options?: RTCCallOptions
   ): RTCCall | null {
     let optionsWithAnonymous: RTCCallOptions;
     if (options) {
@@ -176,20 +182,20 @@ class RTCAccount implements IRTCAccount {
       if (this._postponeProvisioning) {
         rtcLogger.debug(
           LOG_TAG,
-          "There's no active call. Process postpone provisioning info",
+          "There's no active call. Process postpone provisioning info"
         );
         this._regManager.provisionReady(
           this._postponeProvisioning,
-          kRTCProvisioningOptions,
+          kRTCProvisioningOptions
         );
         this._postponeProvisioning = null;
-      } else if (this._postponeSwitchBackProxy) {
+      } else if (this._postponeReregister) {
         rtcLogger.debug(
           LOG_TAG,
-          "There's no active call. Process postpone switch back to main proxy",
+          "There's no active call. Process postpone re-register"
         );
-        this._regManager.reRegister(true);
-        this._postponeSwitchBackProxy = false;
+        this._postponeReregister = false;
+        this._reRegister();
       }
     }
   }
@@ -199,13 +205,13 @@ class RTCAccount implements IRTCAccount {
       REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE,
       (session: any) => {
         this._onReceiveInvite(session);
-      },
+      }
     );
     this._regManager.on(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       (state: RTC_ACCOUNT_STATE) => {
         this._onAccountStateChanged(state);
-      },
+      }
     );
     this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
       this._onLogoutAction();
@@ -222,11 +228,11 @@ class RTCAccount implements IRTCAccount {
     });
     RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
-      this._networkListener,
+      this._networkListener
     );
     RTCNetworkNotificationCenter.instance().on(
       RTC_SLEEP_MODE_EVENT.WAKE_UP_FROM_SLEEP_MODE,
-      this._sleepModeListener,
+      this._sleepModeListener
     );
   }
 
@@ -236,11 +242,59 @@ class RTCAccount implements IRTCAccount {
     }
     this._state = state;
     if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
+      this._failedTimes = 0;
+      this._clearRegisterRetryTimer();
       this._callManager.notifyAccountReady();
       this._provManager.initRefreshState();
+    } else if (this._state === RTC_ACCOUNT_STATE.FAILED) {
+      this._scheduleRegisterRetryTimer();
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
+    }
+  }
+
+  private _scheduleRegisterRetryTimer() {
+    const interval = this._calculateNextRetryInterval();
+    this._failedTimes++;
+    rtcLogger.debug(
+      LOG_TAG,
+      `Schedule retry registration in ${interval} seconds`
+    );
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = setTimeout(() => {
+      this._reRegister();
+    }, interval * 1000);
+  }
+
+  private _clearRegisterRetryTimer() {
+    rtcLogger.debug(LOG_TAG, 'Clear retry registration timer');
+    if (this._retryTimer) {
+      clearTimeout(this._retryTimer);
+    }
+    this._retryTimer = null;
+  }
+
+  private _calculateNextRetryInterval(): number {
+    const index =
+      this._failedTimes < kRetryIntervalList.length
+        ? this._failedTimes
+        : kRetryIntervalList.length - 1;
+    return randomBetween(
+      kRetryIntervalList[index].min,
+      kRetryIntervalList[index].max
+    );
+  }
+
+  private _reRegister() {
+    if (this.callCount()) {
+      rtcLogger.debug(LOG_TAG, "There're active calls. Postpone Re-register");
+      this._postponeReregister = true;
+    } else {
+      rtcLogger.debug(LOG_TAG, 'Reregister');
+      this._regManager.reRegister();
     }
   }
 
@@ -253,14 +307,14 @@ class RTCAccount implements IRTCAccount {
     if (session === null) {
       rtcLogger.error(
         LOG_TAG,
-        'Failed to receive incoming call. Session is null',
+        'Failed to receive incoming call. Session is null'
       );
       return;
     }
     if (!this._callManager.allowCall()) {
       rtcLogger.warn(
         LOG_TAG,
-        'Failed to receive incoming call. Max call count is reached',
+        'Failed to receive incoming call. Max call count is reached'
       );
       return;
     }
@@ -271,7 +325,7 @@ class RTCAccount implements IRTCAccount {
       this,
       null,
       undefined,
-      this._userInfo,
+      this._userInfo
     );
     this._callManager.addCall(call);
     this._delegate.onReceiveIncomingCall(call);
@@ -284,13 +338,13 @@ class RTCAccount implements IRTCAccount {
     if (this._callManager.callCount() === 0) {
       rtcLogger.debug(
         LOG_TAG,
-        "There's no active call. Process new provisioning info",
+        "There's no active call. Process new provisioning info"
       );
       this._regManager.provisionReady(sipProv, kRTCProvisioningOptions);
     } else {
       rtcLogger.debug(
         LOG_TAG,
-        "There're active calls. Postpone new provisioning info",
+        "There're active calls. Postpone new provisioning info"
       );
       this._postponeProvisioning = sipProv;
     }
@@ -298,15 +352,13 @@ class RTCAccount implements IRTCAccount {
 
   private _onNetworkChange(params: any) {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
-      this._regManager.networkChangeToOnline();
+      this._reRegister();
     }
   }
 
   private _onWakeUpFromSleepMode() {
     rtcLogger.debug(LOG_TAG, 'wake up from sleep mode');
-    if (this._callManager.callCount() === 0) {
-      this._regManager.reRegister();
-    }
+    this._reRegister();
   }
 
   getSipProvFlags(): RTCSipFlags | null {
@@ -323,16 +375,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   private _switchBackProxy() {
-    if (this.callCount()) {
-      rtcLogger.debug(
-        LOG_TAG,
-        "There're active calls. Postpone switch back to main proxy",
-      );
-      this._postponeSwitchBackProxy = true;
-    } else {
-      rtcLogger.debug(LOG_TAG, 'Switch back to main proxy');
-      this._regManager.reRegister(true);
-    }
+    this._reRegister();
   }
 }
 
