@@ -17,6 +17,7 @@ const List = withAutoSizer(JuiVirtualizedList);
 
 type JuiVirtualizedMenuListProps = {
   focusOnHover?: boolean;
+  initialFocusedIndex?: number;
   loop?: boolean;
   autoFocus?: boolean;
   children: JSX.Element[];
@@ -36,6 +37,7 @@ function filterElementChildren(children: React.ReactNode) {
 const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   const {
     focusOnHover,
+    initialFocusedIndex = -1,
     menuItemHeight = DEFAULT_MENU_ITEM_HEIGHT,
     autoFocus = false,
     loop = true,
@@ -50,10 +52,19 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
     };
   });
 
-  const { focusedIndex, setFocusedIndex, onKeyPress } = useFocusHelper({
+  const {
+    focusedIndex,
+    onKeyPress,
+    setFocusedIndex: _setFocusedIndex,
+  } = useFocusHelper({
+    initialFocusedIndex,
     loop,
     items,
   });
+
+  const setFocusedIndex = (index: number) => {
+    listRef.current && _setFocusedIndex(index);
+  };
 
   const handleKeyPress = useCallback(
     (event: React.KeyboardEvent<HTMLUListElement>) => {

@@ -43,6 +43,7 @@ const WrappedMenuItem = ({
   icon,
   avatar,
   maxWidth,
+  searchString,
   ...rest
 }: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
 

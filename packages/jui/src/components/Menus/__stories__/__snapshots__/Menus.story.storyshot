@@ -60,6 +60,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   box-sizing: border-box;
 }
 
+.c0.c0:focus,
 .c0.c0:hover {
   background-color: rgba(158,158,158,0.12);
 }
@@ -198,6 +199,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   box-sizing: border-box;
 }
 
+.c4.c4:focus,
 .c4.c4:hover {
   background-color: rgba(158,158,158,0.12);
 }
@@ -224,6 +226,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   box-sizing: border-box;
 }
 
+.c1.c1:focus,
 .c1.c1:hover {
   background-color: rgba(158,158,158,0.12);
 }
@@ -386,6 +389,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   box-sizing: border-box;
 }
 
+.c0.c0:focus,
 .c0.c0:hover {
   background-color: rgba(158,158,158,0.12);
 }
@@ -453,6 +457,7 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   box-sizing: border-box;
 }
 
+.c0.c0:focus,
 .c0.c0:hover {
   background-color: rgba(158,158,158,0.12);
 }

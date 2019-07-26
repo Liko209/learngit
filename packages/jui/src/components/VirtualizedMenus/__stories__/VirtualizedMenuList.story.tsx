@@ -4,67 +4,88 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React from 'react';
+import React, { useRef, useState, useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiVirtualizedMenu } from '../VirtualizedMenu';
 import { JuiVirtualizedMenuList } from '../VirtualizedMenuList';
+import { ClickAwayListener } from '@material-ui/core';
 
 storiesOf('Components/VirtualizedMenuList', module).add(
   'VirtualizedMenuList',
   () => {
-    const items = [
-      <JuiMenuItem
-        key="cut"
-        searchString="Cut"
-        onClick={() => {
-          console.log('Cut');
-        }}
-      >
-        Cut
-      </JuiMenuItem>,
-      <JuiMenuItem
-        key="copy"
-        searchString="Copy"
-        onClick={() => {
-          console.log('Copy');
-        }}
-      >
-        Copy
-      </JuiMenuItem>,
-      <JuiMenuItem
-        key="paste"
-        searchString="Paste"
-        onClick={() => {
-          console.log('Paste');
-        }}
-      >
-        Paste
-      </JuiMenuItem>,
-      <JuiMenuItem
-        key="translate"
-        searchString="Translate"
-        onClick={() => {
-          console.log('Translate');
-        }}
-        disabled
-      >
-        Translate
-      </JuiMenuItem>,
-    ];
+    const Demo = () => {
+      const buttonRef = useRef<HTMLButtonElement | null>(null);
+      const [open, setOpen] = useState(false);
 
-    const otherItems = _.range(0, 1000).map(n => (
-      <JuiMenuItem key={`item_${n}`} searchString={`Item-${n}`}>
-        Item-{n}
-      </JuiMenuItem>
-    ));
+      const items = [
+        <JuiMenuItem
+          key="cut"
+          searchString="Cut"
+          onClick={() => {
+            console.log('Click:Cut');
+            setOpen(false);
+          }}
+        >
+          Cut
+        </JuiMenuItem>,
+        <JuiMenuItem
+          key="copy"
+          searchString="Copy"
+          onClick={() => {
+            console.log('Click:Copy');
+            setOpen(false);
+          }}
+        >
+          Copy
+        </JuiMenuItem>,
+        <JuiMenuItem
+          key="paste"
+          searchString="Paste"
+          onClick={() => {
+            console.log('Click:Paste');
+            setOpen(false);
+          }}
+        >
+          Paste
+        </JuiMenuItem>,
+        <JuiMenuItem key="translate" searchString="Translate" disabled>
+          Translate
+        </JuiMenuItem>,
+      ];
 
-    items.push(...otherItems);
+      const otherItems = _.range(0, 1000).map(n => (
+        <JuiMenuItem
+          key={`item_${n}`}
+          searchString={`Item-${n}`}
+          onClick={() => {
+            console.log(`Click:Item-${n}`);
+            setOpen(false);
+          }}
+        >
+          Item-{n}
+        </JuiMenuItem>
+      ));
 
-    return (
-      <JuiVirtualizedMenu open>
-        <JuiVirtualizedMenuList focusOnHover>{items}</JuiVirtualizedMenuList>
-      </JuiVirtualizedMenu>
-    );
+      items.push(...otherItems);
+
+      return (
+        <>
+          <button ref={buttonRef} onClick={() => setOpen(true)}>
+            Open
+          </button>
+          <JuiVirtualizedMenu
+            open={open}
+            anchorEl={buttonRef.current}
+            onClose={() => setOpen(false)}
+          >
+            <JuiVirtualizedMenuList focusOnHover>
+              {items}
+            </JuiVirtualizedMenuList>
+          </JuiVirtualizedMenu>
+        </>
+      );
+    };
+    return <Demo />;
   },
 );
