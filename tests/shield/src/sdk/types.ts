@@ -13,6 +13,8 @@ import {
   IResponse as IJResponse,
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
+import { ItContext } from '.';
+import { GlipInitialDataHelper } from './mocks/server/glip/data/data';
 
 interface IApiPath<T extends IApiContract> {
   host: T['host'];
@@ -166,6 +168,11 @@ interface IScenarioDataHelper<T> {
   factory: IFactory<T>;
 }
 
+type ScenarioFactory = (
+  context: ItContext,
+  glipIndexDataHelper: GlipInitialDataHelper,
+) => any;
+
 export {
   IJRequest,
   IJResponse,
@@ -193,4 +200,5 @@ export {
   ISocketInfo,
   IFactory,
   IScenarioDataHelper,
+  ScenarioFactory,
 };

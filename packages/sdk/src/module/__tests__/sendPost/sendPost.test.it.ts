@@ -16,11 +16,11 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let postService: PostService;
   let stateService: StateService;
 
-  const glipData = helper.useInitialData(template.BASIC);
+  const glipInitialDataHelper = helper.useInitialData(template.BASIC);
   const team1 = helper
     .glipDataHelper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
-  glipData.teams.push(team1);
+  glipInitialDataHelper.teams.insertOrUpdate(team1);
   beforeAll(async () => {
     await sdk.setup('glip');
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);

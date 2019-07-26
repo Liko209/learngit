@@ -6,6 +6,7 @@
 import { IApiContract, defineApiPath } from 'shield/sdk';
 import { GlipPost } from '../../types';
 
+
 export interface IGlipPostPost extends IApiContract {
   host: 'glip';
   path: '/api/post';
@@ -17,7 +18,6 @@ export interface IGlipPostPost extends IApiContract {
     data: GlipPost;
   };
 }
-
 
 export const IGlipPostPost = defineApiPath<IGlipPostPost>({
   host: 'glip',

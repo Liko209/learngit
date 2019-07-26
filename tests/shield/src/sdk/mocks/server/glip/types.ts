@@ -114,14 +114,14 @@ export type InitialData = {
   company_id: number;
   profile: GlipProfile;
   companies: GlipCompany[];
-  items?: GlipItem[];
+  items: GlipItem[];
   // presences?: Presence[];
   state: GlipState;
   people: GlipPerson[];
-  public_teams?: GlipGroup[];
+  public_teams: GlipGroup[];
   groups: GlipGroup[];
   teams: GlipGroup[];
-  posts?: GlipPost[];
+  posts: GlipPost[];
   max_posts_exceeded?: boolean;
   timestamp?: number;
   scoreboard: string;

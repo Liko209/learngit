@@ -14,7 +14,11 @@ import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { wait } from '../utils';
 import { globalConfig } from './globalConfig';
-import { GlipDataHelper } from './mocks/server/glip/data/data';
+import {
+  GlipDataHelper,
+  createInitialDataHelper,
+  GlipInitialDataHelper,
+} from './mocks/server/glip/data/data';
 import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
 import { GlipData, InitialData } from './mocks/server/glip/types';
 import { parseInitialData } from './mocks/server/glip/utils';
@@ -22,10 +26,17 @@ import { InstanceManager } from './mocks/server/InstanceManager';
 import { MockSocketServer } from './mocks/server/MockSocketServer';
 import { ProxyServer } from './mocks/server/ProxyServer';
 import { SocketServerManager } from './mocks/server/SocketServerManager';
-import { IMockRequestResponse, MockApi, MockResponse } from './types';
+import {
+  IMockRequestResponse,
+  MockApi,
+  MockResponse,
+  ScenarioFactory,
+} from './types';
 import { blockExternalRequest, createApiResponse } from './utils';
+import { createResponse } from './mocks/server/utils';
 
 import assert = require('assert');
+// import { IGlipIndex } from './mocks/server/glip/api/index/index.get.contract';
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
@@ -43,7 +54,7 @@ export type ItContext = {
   // some useful helper for  test
   helper: {
     // apply template
-    useInitialData: (initialData: InitialData) => GlipData;
+    useInitialData: (initialData: InitialData) => GlipInitialDataHelper;
     // model build helper
     glipDataHelper: () => GlipDataHelper;
     mockResponse: MockResponse;
@@ -52,6 +63,9 @@ export type ItContext = {
     // glip socketServer, use to send message to client.
     socketServer: MockSocketServer;
     clearMocks: () => void;
+    useScenario: <T extends ScenarioFactory>(
+      scenarioFactory: T,
+    ) => Promise<ReturnType<T>>;
   };
   // sdk setup/cleanUp
   sdk: {
@@ -119,11 +133,14 @@ export function itForSdk(
     return new GlipDataHelper(_companyId, _userId);
   };
   let glipData: GlipData;
+  let glipInitialData: InitialData;
   let glipDataHelper: GlipDataHelper;
   const useInitialData = (initialData: InitialData) => {
+    glipInitialData = initialData;
     glipData = parseInitialData(initialData);
     glipDataHelper = useAccount(initialData.company_id, initialData.user_id);
-    return glipData;
+    return createInitialDataHelper(initialData);
+    // return glipData;
   };
 
   const getGlipDataHelper = () => {
@@ -147,10 +164,11 @@ export function itForSdk(
       ? extractor(requestResponse as any)
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
+    const pathRegexp = pathToRegexp(requestResponse.path);
     pool.push({
       ...requestResponse,
       mapper,
-      pathRegexp: pathToRegexp(requestResponse.path),
+      pathRegexp,
     });
     return extractResult;
   };
@@ -163,6 +181,30 @@ export function itForSdk(
     );
   };
 
+  const useScenario: ItContext['helper']['useScenario'] = async scenarioFactory => {
+    const emptyIndexData: InitialData = _.cloneDeep({
+      ...glipInitialData,
+      companies: [],
+      items: [],
+      people: [],
+      public_teams: [],
+      groups: [],
+      teams: [],
+      posts: [],
+    });
+    const result = scenarioFactory(
+      itCtx,
+      createInitialDataHelper(emptyIndexData),
+    );
+    return new Promise(resolve => {
+      sdk.syncService.syncData({
+        onIndexHandled: async () => {
+          console.warn('useScenario ->> onIndexHandled');
+          resolve(result);
+        },
+      });
+    });
+  };
   // provide for it case to mock data.
   const itCtx: ItContext = {
     helper: {
@@ -172,6 +214,7 @@ export function itForSdk(
       useInitialData,
       socketServer: SocketServerManager.get('glip'),
       glipDataHelper: getGlipDataHelper,
+      useScenario,
     },
     userContext: {
       glipUserId: () => userId,
@@ -190,6 +233,7 @@ export function itForSdk(
     },
   };
   describe(name, () => {
+    useInitialData(itCtx.template.BASIC);
     caseExecutor(itCtx);
   });
 }

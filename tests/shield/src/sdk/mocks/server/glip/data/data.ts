@@ -11,6 +11,8 @@ import {
   GlipPost,
   GlipProfile,
   GlipState,
+  InitialData,
+  GlipBase,
 } from '../types';
 import {
   groupFactory,
@@ -21,6 +23,11 @@ import {
   stateFactory,
   teamFactory,
 } from './factories';
+import { UndefinedAble } from 'sdk/types';
+import { createDebug } from 'sdk/__tests__/utils';
+import _ from 'lodash';
+
+const debug = createDebug('DataHelper');
 
 class AccountDataFactory {
   private _factoryMap: Map<string, any> = new Map();
@@ -166,6 +173,59 @@ class GroupStateScenarioDataHelper
   }
 }
 
+interface ICollection<T> {
+  find(obj: T): UndefinedAble<T>;
+  replace(obj: T): void;
+  put(obj: T): void;
+}
+
+class ObjectCollection<T extends GlipBase> implements ICollection<T> {
+  constructor(public collection: T, public setter: (obj: T) => void) {}
+
+  find(obj: GlipBase): UndefinedAble<T> {
+    return obj._id === this.collection._id ? this.collection : undefined;
+  }
+
+  replace(obj: T): void {
+    this.setter(obj);
+  }
+
+  put(obj: T): void {
+    this.setter(obj);
+  }
+}
+
+class ArrayCollection<T extends GlipBase> implements ICollection<T> {
+  constructor(public collection: T[]) {}
+
+  find(obj: T): UndefinedAble<T> {
+    return _.find(this.collection, it => it._id === obj._id);
+  }
+
+  replace(obj: T): void {
+    const index = _.findIndex(this.collection, it => it._id === obj._id);
+    this.collection[index] = obj;
+  }
+
+  put(obj: T): void {
+    this.collection.push(obj);
+  }
+}
+
+class DataOperator<T> {
+  constructor(public collection: ICollection<T>) {}
+
+  insertOrUpdate(obj: T) {
+    const target = this.collection.find(obj);
+    if (target) {
+      debug('replace Entity: ', target, ' with:', obj);
+      this.collection.replace(obj);
+    } else {
+      this.collection.put(obj);
+    }
+  }
+}
+
 export class GlipDataHelper {
   group: GroupScenarioDataHelper;
   team: TeamScenarioDataHelper;
@@ -187,3 +247,34 @@ export class GlipDataHelper {
     );
   }
 }
+
+export const createInitialDataHelper = (initialData: InitialData) => {
+  return {
+    profile: new DataOperator(
+      new ObjectCollection(initialData.profile, value => {
+        initialData.profile = value;
+      }),
+    ),
+    companies: new DataOperator(new ArrayCollection(initialData.companies)),
+    items: new DataOperator(new ArrayCollection(initialData.items)),
+    state: new DataOperator(
+      new ObjectCollection(initialData.state, value => {
+        initialData.state = value;
+      }),
+    ),
+    people: new DataOperator(new ArrayCollection(initialData.people)),
+    publicTeams: new DataOperator(
+      new ArrayCollection(initialData.public_teams),
+    ),
+    groups: new DataOperator(new ArrayCollection(initialData.groups)),
+    teams: new DataOperator(new ArrayCollection(initialData.teams)),
+    posts: new DataOperator(new ArrayCollection(initialData.posts)),
+    clientConfig: new DataOperator(
+      new ObjectCollection(initialData.client_config, value => {
+        initialData.client_config = value;
+      }),
+    ),
+  };
+};
+
+export type GlipInitialDataHelper = ReturnType<typeof createInitialDataHelper>

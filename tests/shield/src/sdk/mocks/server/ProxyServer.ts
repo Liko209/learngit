@@ -32,7 +32,8 @@ export class ProxyServer implements IMockServer {
   }) {
     const { host, method, path } = request;
     const pool = this.getRequestResponsePool();
-    return pool.find(
+    return _.findLast(
+      pool,
       item =>
         item.host === host &&
         item.request.method === method &&
