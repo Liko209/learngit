@@ -68,6 +68,7 @@ const JuiAudioProgress = ({
       {elProgressClock}
       <StyledSlider
         max={duration}
+        step={0.1}
         value={value}
         onChange={onChange}
         onDragStart={onDragStart}
