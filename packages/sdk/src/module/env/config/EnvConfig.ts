@@ -16,8 +16,8 @@ class EnvConfig extends CommonGlobalConfig {
     this.put(CONFIG_KEYS.ENV, env);
   }
 
-  static getDisableLD() {
-    return this.get(CONFIG_KEYS.DISABLE_LD);
+  static getIsRunningE2E() {
+    return this.get(CONFIG_KEYS.RUNNING_E2E);
   }
 }
 

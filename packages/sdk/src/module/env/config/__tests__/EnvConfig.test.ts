@@ -40,12 +40,12 @@ describe('EnvConfig', () => {
     );
   });
 
-  describe('getDisableLD', () => {
-    it('should call get when try to getDisableLD', () => {
-      EnvConfig.getDisableLD();
+  describe('getIsRunningE2E', () => {
+    it('should call get when try to getIsRunningE2E', () => {
+      EnvConfig.getIsRunningE2E();
       expect(mockConfigService.get).toHaveBeenCalledWith(
         MODULE,
-        CONFIG_KEYS.DISABLE_LD,
+        CONFIG_KEYS.RUNNING_E2E,
       );
     });
   });

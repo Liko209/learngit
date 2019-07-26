@@ -1,13 +1,15 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
- * @Date: 2019-01-21 13:27:24
+ * @Date: 2019-07-22 14:21:12
  * Copyright © RingCentral. All rights reserved.
  */
-import UserPermissionType from '../../types';
+
+import { UserPermissionType } from 'sdk/module/permission';
 import { SplitFactory } from '@splitsoftware/splitio';
 import { mainLogger } from 'foundation';
 
 type SplitIOClientParams = {
+  prefix: string;
   authKey: string;
   userId: string;
   attributes: Object;
@@ -42,6 +44,10 @@ class SplitIOClient {
         requestTimeoutBeforeReady: 5, // 5 seconds
         readyTimeout: 5, // 5 seconds
         retriesOnFailureBeforeReady: 2, // 2 retries
+      },
+      storage: {
+        type: 'LOCALSTORAGE', // hard configuration
+        prefix: params.prefix,
       },
     };
     this.client = SplitFactory(settings).client();
