@@ -46,12 +46,12 @@ import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
-import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
 // import { Dialog } from '@/containers/Dialog';
 import { OpenDialogE911 } from '../container/E911';
+import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -275,7 +275,7 @@ class TelephonyService {
         // prettier-ignore
         const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
           ENTITY_NAME.USER_SETTING,
-          SETTING_ITEM__PHONE_CALLER_ID,
+          PHONE_SETTING_ITEM.PHONE_CALLER_ID,
         ).value;
         return {
           defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,

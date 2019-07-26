@@ -20,6 +20,9 @@ import { RCInfoService } from 'sdk/module/rcInfo';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { ERCServiceFeaturePermission } from 'sdk/module/rcInfo/types';
 import { ITelephonyService } from '../../service/ITelephonyService';
+import { telephonyLogger } from 'foundation';
+
+const TAG = '[DeviceSetting][Ringer]';
 
 export class RingerSourceSettingHandler extends AbstractSettingEntityHandler<
 MediaDeviceInfo
@@ -80,6 +83,7 @@ MediaDeviceInfo
   };
 
   private _onDevicesChange = async () => {
+    telephonyLogger.tags(TAG).info('received device changed.');
     await this.getUserSettingEntity();
   };
 
@@ -97,6 +101,7 @@ MediaDeviceInfo
 
   async fetchUserSettingEntity() {
     const devices = this._telephonyService.getRingerDevicesList();
+    telephonyLogger.tags(TAG).info('fetchUserSettingEntity', devices);
     const settingItem: UserSettingEntity<MediaDeviceInfo> = {
       weight: 0,
       valueType: 0,

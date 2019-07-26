@@ -58,7 +58,9 @@ class Jupiter {
     loader: () => Promise<{ config: ModuleConfig }>,
     afterBootstrap?: () => void,
   ) {
-    const promise = loader().then(m => this.registerModule(m.config, afterBootstrap));
+    const promise = loader().then(m =>
+      this.registerModule(m.config, afterBootstrap),
+    );
     this._asyncModulePromises.push(promise);
     return promise;
   }
@@ -186,24 +188,30 @@ class Jupiter {
   }
 
   emitModuleInitial(identifier: interfaces.ServiceIdentifier<any>) {
-    this._findListenerKeyByIdentifier(identifier, this._initializedListenerMap)
+    this._findListenerKeyByIdentifier(
+      this._getRealId(identifier),
+      this._initializedListenerMap,
+    )
       .filter(identifiers => this._areModulesBound(identifiers))
       .forEach(identifiers => this._executeModulesInitialCallback(identifiers));
   }
 
   emitModuleDispose(identifier: interfaces.ServiceIdentifier<any>) {
-    this._findListenerKeyByIdentifier(identifier, this._disposedListenerMap)
+    this._findListenerKeyByIdentifier(
+      this._getRealId(identifier),
+      this._disposedListenerMap,
+    )
       .filter(identifiers => this._areModulesUnBound(identifiers))
       .forEach(identifiers => this._executeModulesDisposeCallback(identifiers));
   }
 
   onInitialized<T>(
     identifier:
-    | interfaces.ServiceIdentifier<T>
-    | interfaces.ServiceIdentifier<T>[],
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
     callback: (...args: any[]) => void,
   ) {
-    const identifiers = this._formatIdentifier(identifier);
+    const identifiers = this._formatIdentifier(identifier).map(identifier => this._getRealId(identifier));
     const areIdentifierModuleInitialized = this._areModulesBound(identifiers);
 
     if (areIdentifierModuleInitialized) {
@@ -219,11 +227,11 @@ class Jupiter {
 
   onDisposed<T>(
     identifier:
-    | interfaces.ServiceIdentifier<T>
-    | interfaces.ServiceIdentifier<T>[],
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
     callback: () => void,
   ) {
-    const identifiers = this._formatIdentifier(identifier);
+    const identifiers = this._formatIdentifier(identifier).map(identifier => this._getRealId(identifier));
     const areModulesUnBound = this._areModulesUnBound(identifiers);
     const areModulesBoundBefore = this._areModulesBoundBefore(identifiers);
 
@@ -250,8 +258,8 @@ class Jupiter {
 
   private _formatIdentifier<T>(
     identifier:
-    | interfaces.ServiceIdentifier<T>
-    | interfaces.ServiceIdentifier<T>[],
+      | interfaces.ServiceIdentifier<T>
+      | interfaces.ServiceIdentifier<T>[],
   ) {
     return !Array.isArray(identifier) ? [identifier] : identifier;
   }
