@@ -69,14 +69,14 @@ describe('PartialModelController', () => {
         .spyOn(notificationCenter, 'emitEntityUpdate')
         .mockImplementationOnce(() => {});
 
-      const result = await partialModifyController.updatePartially(
-        1,
-        preHandlePartialFunc,
-        doUpdateFunc,
-      );
+      const result = await partialModifyController.updatePartially({
+        entityId: 1,
+        preHandlePartialEntity: preHandlePartialFunc,
+        doUpdateEntity: doUpdateFunc,
+      });
 
       expect(result).toEqual(updatedEntity);
-      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
     });
 
     it('should not trigger partial update event once, when no changes', async () => {
@@ -105,12 +105,12 @@ describe('PartialModelController', () => {
         .spyOn(entitySourceController, 'bulkUpdate')
         .mockImplementation(() => {});
 
-      const result = await partialModifyController.updatePartially(
-        1,
-        preHandlePartialFunc,
-        doUpdateFunc,
-      );
-      expect(notificationCenter.emitEntityUpdate).not.toBeCalled();
+      const result = await partialModifyController.updatePartially({
+        entityId: 1,
+        preHandlePartialEntity: preHandlePartialFunc,
+        doUpdateEntity: doUpdateFunc,
+      });
+      expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
       expect(result).toEqual({ id: 1, name: 'someone', note: 'a player' });
     });
 
@@ -141,11 +141,11 @@ describe('PartialModelController', () => {
         .mockImplementation(() => {});
 
       expect(
-        partialModifyController.updatePartially(
-          1,
-          preHandlePartialFunc,
-          doUpdateFunc,
-        ),
+        partialModifyController.updatePartially({
+          entityId: 1,
+          preHandlePartialEntity: preHandlePartialFunc,
+          doUpdateEntity: doUpdateFunc,
+        }),
       ).rejects.toThrow();
     });
   });

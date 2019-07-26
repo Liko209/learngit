@@ -9,7 +9,7 @@ import { ItemServiceController } from '../../controller/ItemServiceController';
 import { FileItemService } from '../../module/file';
 import { NoteItemService } from '../../module/note/service';
 import { daoManager } from '../../../../dao';
-import { ItemFile, Item } from '../../entity';
+import { ItemFile } from '../../entity';
 import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
 import { transform, baseHandleData } from '../../../../service/utils';
@@ -81,7 +81,9 @@ describe('ItemService', () => {
     it('requestSyncGroupItems', async () => {
       const groupId = 11;
       itemService.requestSyncGroupItems(groupId);
-      expect(itemSyncController.requestSyncGroupItems).toBeCalledWith(groupId);
+      expect(itemSyncController.requestSyncGroupItems).toHaveBeenCalledWith(
+        groupId,
+      );
     });
   });
 
@@ -109,14 +111,21 @@ describe('ItemService', () => {
         });
     });
 
+    describe('uploadFileToServer', () => {
+      it('should call with right parameter', async () => {
+        await itemService.uploadFileToServer({} as any);
+        expect(fileItemService.uploadFileToServer).toHaveBeenCalled();
+      });
+    });
+
     describe('initialUploadItemsFromDraft', () => {
       it('should call file item service with correct parameter', async () => {
         expect.assertions(1);
         fileItemService.initialUploadItemsFromDraft = jest.fn();
         await itemService.initialUploadItemsFromDraft(groupId);
-        expect(fileItemService.initialUploadItemsFromDraft).toBeCalledWith(
-          groupId,
-        );
+        expect(
+          fileItemService.initialUploadItemsFromDraft,
+        ).toHaveBeenCalledWith(groupId);
       });
     });
 
@@ -125,7 +134,11 @@ describe('ItemService', () => {
         expect.assertions(2);
         fileItemService.getThumbsUrlWithSize = jest.fn().mockResolvedValue('a');
         const res = await itemService.getThumbsUrlWithSize(1, 2, 3);
-        expect(fileItemService.getThumbsUrlWithSize).toBeCalledWith(1, 2, 3);
+        expect(fileItemService.getThumbsUrlWithSize).toHaveBeenCalledWith(
+          1,
+          2,
+          3,
+        );
         expect(res).toBe('a');
       });
     });
@@ -133,7 +146,7 @@ describe('ItemService', () => {
       it('should call with correct parameter', async () => {
         fileItemService.editFileName = jest.fn();
         await itemService.editFileName(1, 'newName');
-        expect(fileItemService.editFileName).toBeCalledWith(1, 'newName');
+        expect(fileItemService.editFileName).toHaveBeenCalledWith(1, 'newName');
       });
     });
 
@@ -141,7 +154,7 @@ describe('ItemService', () => {
       it('should call with correct parameter', async () => {
         fileItemService.deleteFile = jest.fn();
         await itemService.deleteFile(1, 1);
-        expect(fileItemService.deleteFile).toBeCalledWith(1, 1);
+        expect(fileItemService.deleteFile).toHaveBeenCalledWith(1, 1);
       });
     });
 
@@ -150,7 +163,7 @@ describe('ItemService', () => {
         expect.assertions(1);
         fileItemService.sendItemData = jest.fn();
         await itemService.sendItemFile(groupId, file, false);
-        expect(fileItemService.sendItemFile).toBeCalledWith(
+        expect(fileItemService.sendItemFile).toHaveBeenCalledWith(
           groupId,
           file,
           false,
@@ -163,7 +176,7 @@ describe('ItemService', () => {
         const itemId = -1;
         fileItemService.deleteFileCache = jest.fn();
         itemService.deleteFileItemCache(itemId);
-        expect(fileItemService.deleteFileCache).toBeCalledWith(itemId);
+        expect(fileItemService.deleteFileCache).toHaveBeenCalledWith(itemId);
       });
     });
 
@@ -171,7 +184,9 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', async () => {
         fileItemService.getFileItemVersion = jest.fn();
         await itemService.getItemVersion(itemFile);
-        expect(fileItemService.getFileItemVersion).toBeCalledWith(itemFile);
+        expect(fileItemService.getFileItemVersion).toHaveBeenCalledWith(
+          itemFile,
+        );
       });
     });
 
@@ -179,7 +194,7 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', async () => {
         fileItemService.cancelUpload = jest.fn();
         await itemService.cancelUpload(itemFile.id);
-        expect(fileItemService.cancelUpload).toBeCalledWith(itemFile.id);
+        expect(fileItemService.cancelUpload).toHaveBeenCalledWith(itemFile.id);
       });
     });
 
@@ -187,7 +202,7 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', () => {
         fileItemService.getUploadItems = jest.fn();
         itemService.getUploadItems(groupId);
-        expect(fileItemService.getUploadItems).toBeCalledWith(groupId);
+        expect(fileItemService.getUploadItems).toHaveBeenCalledWith(groupId);
       });
     });
 
@@ -200,7 +215,7 @@ describe('ItemService', () => {
           .mockResolvedValueOnce(true)
           .mockResolvedValueOnce(false);
         await itemService.canResendFailedItems(ids);
-        expect(fileItemService.hasValidItemFile).toBeCalledTimes(2);
+        expect(fileItemService.hasValidItemFile).toHaveBeenCalledTimes(2);
       });
     });
 
@@ -209,7 +224,7 @@ describe('ItemService', () => {
         const ids = [-2078572554, -801456138, -1];
         fileItemService.resendFailedFile = jest.fn();
         await itemService.resendFailedItems(ids);
-        expect(fileItemService.resendFailedFile).toBeCalledTimes(2);
+        expect(fileItemService.resendFailedFile).toHaveBeenCalledTimes(2);
       });
     });
 
@@ -217,7 +232,10 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', async () => {
         fileItemService.isFileExists = jest.fn();
         await itemService.isFileExists(groupId, file.name);
-        expect(fileItemService.isFileExists).toBeCalledWith(groupId, file.name);
+        expect(fileItemService.isFileExists).toHaveBeenCalledWith(
+          groupId,
+          file.name,
+        );
       });
     });
 
@@ -225,7 +243,7 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', () => {
         fileItemService.canUploadFiles = jest.fn();
         itemService.canUploadFiles(groupId, [file], true);
-        expect(fileItemService.canUploadFiles).toBeCalledWith(
+        expect(fileItemService.canUploadFiles).toHaveBeenCalledWith(
           groupId,
           [file],
           true,
@@ -237,7 +255,9 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', () => {
         fileItemService.getUploadProgress = jest.fn();
         itemService.getUploadProgress(itemFile.id);
-        expect(fileItemService.getUploadProgress).toBeCalledWith(itemFile.id);
+        expect(fileItemService.getUploadProgress).toHaveBeenCalledWith(
+          itemFile.id,
+        );
       });
     });
 
@@ -245,7 +265,7 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', () => {
         fileItemService.getItemsSendingStatus = jest.fn();
         itemService.getItemsSendingStatus([itemFile.id]);
-        expect(fileItemService.getItemsSendingStatus).toBeCalledWith([
+        expect(fileItemService.getItemsSendingStatus).toHaveBeenCalledWith([
           itemFile.id,
         ]);
       });
@@ -255,9 +275,10 @@ describe('ItemService', () => {
       it('should call file item service with correct parameter', () => {
         fileItemService.cleanUploadingFiles = jest.fn();
         itemService.cleanUploadingFiles(groupId, [itemFile.id]);
-        expect(fileItemService.cleanUploadingFiles).toBeCalledWith(groupId, [
-          itemFile.id,
-        ]);
+        expect(fileItemService.cleanUploadingFiles).toHaveBeenCalledWith(
+          groupId,
+          [itemFile.id],
+        );
       });
     });
 
@@ -265,7 +286,7 @@ describe('ItemService', () => {
       it('should call file item service', () => {
         fileItemService.hasUploadingFiles = jest.fn().mockReturnValue(true);
         expect(itemService.hasUploadingFiles()).toBeTruthy();
-        expect(fileItemService.hasUploadingFiles).toBeCalled();
+        expect(fileItemService.hasUploadingFiles).toHaveBeenCalled();
       });
     });
   });
@@ -289,7 +310,7 @@ describe('ItemService', () => {
 
       itemService.getItems(options);
 
-      expect(itemServiceController.getItems).toBeCalledWith(options);
+      expect(itemServiceController.getItems).toHaveBeenCalledWith(options);
     });
   });
 
@@ -315,7 +336,7 @@ describe('ItemService', () => {
       await itemService.getByPosts([
         postFactory.build({ item_ids: undefined }),
       ]);
-      expect(entitySourceController.batchGet).not.toBeCalled();
+      expect(entitySourceController.batchGet).not.toHaveBeenCalled();
     });
 
     it('should call dao method with right id array', async () => {
@@ -370,7 +391,7 @@ describe('ItemService', () => {
       itemActionController.doNotRenderItem = jest.fn();
       const itemId = 1;
       await itemService.doNotRenderItem(itemId, 'file');
-      expect(itemActionController.doNotRenderItem).toBeCalled();
+      expect(itemActionController.doNotRenderItem).toHaveBeenCalled();
     });
   });
 
@@ -395,7 +416,7 @@ describe('ItemService', () => {
         TypeDictionary.TYPE_ID_PAGE,
       );
       expect(res).toBe(cnt);
-      expect(itemServiceController.getGroupItemsCount).toBeCalledWith(
+      expect(itemServiceController.getGroupItemsCount).toHaveBeenCalledWith(
         gId,
         TypeDictionary.TYPE_ID_PAGE,
         undefined,
@@ -446,7 +467,7 @@ describe('ItemService', () => {
     });
     it('should call note item service to get note body', async () => {
       await itemService.getNoteBody(1);
-      expect(noteItemService.getNoteBody).toBeCalledWith(1);
+      expect(noteItemService.getNoteBody).toHaveBeenCalledWith(1);
     });
   });
 });

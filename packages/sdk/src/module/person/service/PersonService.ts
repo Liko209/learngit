@@ -29,7 +29,7 @@ import { IPersonService } from './IPersonService';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SyncUserConfig } from 'sdk/module/sync/config/SyncUserConfig';
 import { PERSON_PERFORMANCE_KEYS } from '../config/performanceKeys';
-import { PerformanceTracer, mainLogger } from 'foundation';
+import { PerformanceTracer } from 'foundation';
 import { EditablePersonInfo, HeadShotInfo } from '../types';
 
 class PersonService extends EntityBaseService<Person>
@@ -106,15 +106,15 @@ class PersonService extends EntityBaseService<Person>
 
   getHeadShotWithSize(
     uid: number,
-    headshot_version: string,
     headshot: HeadShotModel,
     size: number,
+    headshotVersion?: number,
   ): string | null {
     return this.getPersonController().getHeadShotWithSize(
       uid,
-      headshot_version,
       headshot,
       size,
+      headshotVersion,
     );
   }
 
@@ -182,15 +182,18 @@ class PersonService extends EntityBaseService<Person>
     const syncConfig = ServiceLoader.getInstance<EntityBaseService<IdModel>>(
       ServiceConfig.SYNC_SERVICE,
     ).getUserConfig() as SyncUserConfig;
+
     return syncConfig && syncConfig.getFetchedRemaining();
   }
 
   async editPersonalInfo(
-    info: EditablePersonInfo,
+    basicInfo?: EditablePersonInfo,
     headshotInfo?: HeadShotInfo,
   ) {
-    mainLogger.error('no implementation', { info, headshotInfo });
-    return undefined;
+    await this.getPersonController().personActionController.editPersonalInfo(
+      basicInfo,
+      headshotInfo,
+    );
   }
 }
 
