@@ -3,8 +3,13 @@
  * @Date: 2019-02-18 14:54:09
  * Copyright © RingCentral. All rights reserved.
  */
-import { initialize, LDUser, LDFlagSet } from 'launchdarkly-js-client-sdk';
-import UserPermissionType from '../../types';
+import {
+  initialize,
+  LDUser,
+  LDFlagSet,
+  LDClient,
+} from 'launchdarkly-js-client-sdk';
+import { UserPermissionType } from 'sdk/module/permission';
 import { mainLogger } from 'foundation';
 
 type Options = {
@@ -15,7 +20,7 @@ type Options = {
 };
 
 class LaunchDarklyClient {
-  private _ldclient: any;
+  private _ldclient: LDClient;
   private _flags: LDFlagSet = {};
   constructor(options: Options) {
     this._initLDClient(options);
@@ -34,14 +39,17 @@ class LaunchDarklyClient {
   }
 
   shutdown() {
-    this._ldclient && this._ldclient.off('change');
-    this._ldclient && this._ldclient.off('ready');
-    this._ldclient && this._ldclient.setStreaming(false);
+    if (this._ldclient) {
+      this._ldclient.off('change', () => {});
+      this._ldclient.off('ready', () => {});
+      this._ldclient.setStreaming(false);
+    }
   }
 
   private _initLDClient(options: Options) {
     this._ldclient = initialize(options.clientId, options.user, {
       streaming: true,
+      bootstrap: 'localStorage',
     });
     this._ldclient.on('change', (settings: LDFlagSet) => {
       this._flags = this._ldclient.allFlags();
@@ -52,6 +60,12 @@ class LaunchDarklyClient {
       this._flags = this._ldclient.allFlags();
       mainLogger.log('launchDarkly ready event flags', this._flags);
       options.readyCallback();
+    });
+    this._ldclient.on('failed', () => {
+      mainLogger.log('launchDarkly init failed');
+    });
+    this._ldclient.on('error', () => {
+      mainLogger.log('launchDarkly init error');
     });
   }
 }
