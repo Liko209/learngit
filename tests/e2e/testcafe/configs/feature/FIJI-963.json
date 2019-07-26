@@ -2,6 +2,7 @@
   "on_merge": {
     "fixtures": [
       "./fixtures/Profile",
+      "./fixtures/PresenceSetting",
       "./fixtures/ConversationStream/PageHeader.ts",
       "./telephony/Forward.ts",
       "./telephony/Dialer.ts"
