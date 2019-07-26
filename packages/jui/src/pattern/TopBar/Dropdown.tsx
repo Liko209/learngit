@@ -37,7 +37,7 @@ const StyledContactInfoName = styled(JuiTypography)`
   && {
     ${typography('subheading2')};
     ${ellipsis()};
-    color: ${({ theme }) => theme.palette.primary['900']};
+    color: ${({ theme }) => theme.palette.grey['900']};
   }
 `;
 
