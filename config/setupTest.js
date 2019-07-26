@@ -41,4 +41,6 @@ afterAll(() => {
 
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;
+
+  global.gc();
 })

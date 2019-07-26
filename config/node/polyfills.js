@@ -13,7 +13,7 @@ const fetch = require('jest-fetch-mock');
 const {
   copyProps,
   FakeStorage
-} = require('./utils');
+} = require('../utils');
 const {
   performance,
 } = require('perf_hooks');
