@@ -151,6 +151,7 @@ const name2icon = {
   dial: 'dial',
   forwardcall: 'forwardcall',
   speaker: 'speaker',
+  'speaker-mute': 'speaker-mute',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

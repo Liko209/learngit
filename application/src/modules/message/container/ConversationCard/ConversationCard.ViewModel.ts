@@ -17,13 +17,15 @@ import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { ENTITY_NAME } from '@/store';
 import { postTimestamp, dateFormatter } from '@/utils/date';
 import PersonModel from '@/store/models/Person';
+import ItemModel from '@/store/models/Item';
 import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
-import { IntegrationItem } from 'sdk/module/item/entity';
+import { IntegrationItem, Item } from 'sdk/module/item/entity';
 import IntegrationItemModel from '@/store/models/IntegrationItem';
 import { i18nP } from '@/utils/i18nT';
+import { repliedEntityHandlers } from './utils';
 
 class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
@@ -96,7 +98,9 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get integrationItems() {
     if (this.post.itemIds) {
-      return this.post.itemIds.filter((id: number) => GlipTypeUtil.isIntegrationType(id));
+      return this.post.itemIds.filter((id: number) =>
+        GlipTypeUtil.isIntegrationType(id),
+      );
     }
     return [];
   }
@@ -142,7 +146,26 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
 
   @computed
   get showActivityStatus() {
-    return !!(this.post.parentId || this.post.existItemIds.length);
+    const { parentId, existItemIds } = this.post;
+  
+    return !parentId && Boolean(existItemIds.length);
+  }
+
+  @computed
+  get repliedEntity() {
+    const { parentId } = this.post;
+
+    if (!parentId) {
+      return null;
+    }
+
+    const { typeId, ...rest } = getEntity<Item, ItemModel>(ENTITY_NAME.ITEM, parentId);
+
+    if (!repliedEntityHandlers[typeId]) {
+      return null;
+    }
+
+    return repliedEntityHandlers[typeId](rest);
   }
 }
 

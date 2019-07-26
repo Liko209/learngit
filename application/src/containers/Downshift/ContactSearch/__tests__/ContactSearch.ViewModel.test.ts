@@ -24,10 +24,10 @@ const props = {
 };
 
 describe('ContactSearchVM', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   describe('fetchPersons', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
     it('List shows/no shows if enter text matched/no matched any contact in posted by input filed [JPT-1554]', async () => {
       const contactSearchViewModel = new ContactSearchViewModel(props);
       let value = 'aaa';
@@ -53,7 +53,7 @@ describe('ContactSearchVM', () => {
       expect(contactSearchViewModel.groupMembers).toEqual(members);
     });
   });
-  describe('_setSelectedItems()', () => {
+  describe('_setArrangeMembers()', () => {
     it('group members should be empty if there is no group Id', async () => {
       const members = [1, 2, 3];
       (getEntity as jest.Mock).mockReturnValue({
@@ -63,8 +63,20 @@ describe('ContactSearchVM', () => {
       const contactSearchViewModel = new ContactSearchViewModel(
         Object.assign(props, { groupId: null }),
       );
-      contactSearchViewModel._setSelectedItems();
+      contactSearchViewModel._setArrangeMembers();
       expect(contactSearchViewModel.groupMembers).toEqual([]);
+    });
+  });
+  describe('_setSelectedItems()', () => {
+    it('should be called when there are prefillMembers', async () => {
+      const prefillMembers = [1, 2];
+      ContactSearchViewModel.prototype._setSelectedItems = jest.fn();
+      const contactSearchViewModel = new ContactSearchViewModel({
+        prefillMembers,
+      });
+      expect(contactSearchViewModel._setSelectedItems).toHaveBeenCalledWith(
+        prefillMembers,
+      );
     });
   });
 });
