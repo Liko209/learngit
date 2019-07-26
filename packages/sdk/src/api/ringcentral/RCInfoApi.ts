@@ -34,6 +34,8 @@ import {
   BlockNumberListResponse,
   BlockNumberItem,
   AddBlockNumberParams,
+  IStateRequest,
+  CountryState,
 } from './types';
 
 class RCInfoApi extends Api {
@@ -109,6 +111,14 @@ class RCInfoApi extends Api {
       params: request,
     });
     return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
+  }
+
+  static getCountryState(request?: IStateRequest) {
+    const query = this._getInfoRequestParams({
+      path: RINGCENTRAL_API.API_STATE_INFO,
+      params: request,
+    });
+    return RCInfoApi.rcNetworkClient.http<CountryState>(query);
   }
 
   static getExtensionPhoneNumberList(request?: IPhoneNumberRequest) {

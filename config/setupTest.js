@@ -36,7 +36,6 @@ beforeAll(() => {
 })
 
 afterAll(() => {
-
   delete window.localStorage;
   delete window.sessionStorage;
 

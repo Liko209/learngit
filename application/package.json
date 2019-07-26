@@ -22,7 +22,7 @@
     "glipdown": "0.0.54",
     "hoist-non-react-statics": "3.1.0",
     "i18next": "15.0.7",
-    "i18next-browser-languagedetector": "3.0.1",
+    "i18next-browser-languagedetector": "git+ssh://git@git.ringcentral.com:Fiji/i18next-browser-languagedetector.git#Jupiter-3.0.1",
     "i18next-intervalplural-postprocessor": "1.0.2",
     "i18next-xhr-backend": "1.5.1",
     "jszip": "3.2.1",
