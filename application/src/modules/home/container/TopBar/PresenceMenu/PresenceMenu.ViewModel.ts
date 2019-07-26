@@ -9,19 +9,15 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { catchError } from '@/common/catchError';
 import { action, observable } from 'mobx';
 import { CompanyService } from 'sdk/module/company';
-import { PresenceService } from 'sdk/module/presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { analyticsCollector } from '@/AnalyticsCollector';
+import { setPresence } from '@/store/utils';
 import { PresenceMenuProps, PresenceMenuViewProps } from './types';
 
 type Props = PresenceMenuProps & PresenceMenuViewProps;
 
 class PresenceMenuViewModel extends StoreViewModel<Props> {
   @observable isFreyja?: boolean = false;
-
-  private _presenceService = ServiceLoader.getInstance<PresenceService>(
-    ServiceConfig.PRESENCE_SERVICE,
-  );
 
   private _companyService = ServiceLoader.getInstance<CompanyService>(
     ServiceConfig.COMPANY_SERVICE,
@@ -47,13 +43,14 @@ class PresenceMenuViewModel extends StoreViewModel<Props> {
   @action
   setPresence = async (toPresence: PRESENCE) => {
     const { presence } = this.props;
+
     analyticsCollector.setPresence(toPresence);
 
     if (presence === toPresence) {
       return;
     }
 
-    await this._presenceService.setPresence(toPresence);
+    await setPresence(toPresence);
   };
 
   @action
