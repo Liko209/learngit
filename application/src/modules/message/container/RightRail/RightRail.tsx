@@ -3,7 +3,6 @@
  * @Date: 2019-01-02 14:35:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { observer, Observer } from 'mobx-react';
@@ -19,9 +18,8 @@ import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
-
 import { PinnedList } from './PinnedList';
-import { MessageStore } from '@/modules/message/store';
+import { IMessageStore } from '@/modules/message/interface';
 
 type Props = {
   id: number;
@@ -53,7 +51,8 @@ class TriggerButtonComponent extends React.Component<
   TriggerButtonProps,
   TriggerButtonState
 > {
-  private _messageStore: MessageStore = container.get(MessageStore);
+  @IMessageStore private _messageStore: IMessageStore;
+
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
     return isOpen
