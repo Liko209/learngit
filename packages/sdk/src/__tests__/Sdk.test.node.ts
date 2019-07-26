@@ -19,6 +19,7 @@ import { AccountUserConfig } from '../module/account/config/AccountUserConfig';
 import { ServiceLoader } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
+import { PermissionService } from 'sdk/module/permission';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
@@ -36,6 +37,7 @@ describe('Sdk', () => {
   let serviceManager: ServiceManager;
   let networkManager: NetworkManager;
   let syncService: SyncService;
+  let permissionService: PermissionService;
   const mockAccountService = {
     startLoginGlip: jest.fn(),
     userConfig: AccountUserConfig.prototype,
@@ -53,12 +55,15 @@ describe('Sdk', () => {
     networkManager = new NetworkManager();
     jest.spyOn(networkManager, 'clearToken');
     syncService = new SyncService();
+    permissionService = new PermissionService();
+
     sdk = new Sdk(
       daoManager,
       accountManager,
       serviceManager,
       networkManager,
       syncService,
+      permissionService,
     );
   });
 

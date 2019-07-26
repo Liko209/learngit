@@ -4,6 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PermissionService } from './service/PermissionService';
-import UserPermissionType from './types';
+import UserPermissionType, { FeatureFlagType } from './types';
+import { IPermissionController } from './controller/IPermissionController';
+import { LaunchDarklyController } from './controller/Launchdarkly/LaunchDarklyController';
+import { SplitIOController } from './controller/SplitIO/SplitIOController';
 
-export { PermissionService, UserPermissionType };
+export {
+  PermissionService,
+  UserPermissionType,
+  IPermissionController,
+  FeatureFlagType,
+  LaunchDarklyController,
+  SplitIOController,
+};

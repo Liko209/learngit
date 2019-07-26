@@ -7,13 +7,13 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { EditViewModel } from '../Edit.ViewModel';
 import { container, decorate, injectable } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
 decorate(injectable(), MessageService);
-container.bind(MESSAGE_SERVICE).to(MessageService);
+container.bind(IMessageService).to(MessageService);
 decorate(injectable(), MessageStore);
-container.bind(MessageStore).to(MessageStore);
+container.bind(IMessageStore).to(MessageStore);
 let editViewModel: EditViewModel;
 beforeEach(() => {
   editViewModel = new EditViewModel({ id: 1, disabled: true });

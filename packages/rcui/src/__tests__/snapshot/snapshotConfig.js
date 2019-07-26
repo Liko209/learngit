@@ -26,8 +26,8 @@
   */
 
 const excludeDomSnapshot = {
-  kind: [],
-  name: ['SuffixFollowTextField', 'IconList'],
+  kind: ['Forms/Slider'],
+  name: ['SuffixFollowTextField', 'IconList', 'Iconography', 'Tooltip'],
   matchFunction: ({ name, kind }) => {
     return /HoC/.test(kind);
   },
