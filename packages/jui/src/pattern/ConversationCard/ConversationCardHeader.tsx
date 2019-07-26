@@ -70,7 +70,7 @@ type ConversationCardHeaderProps = {
 };
 
 class JuiConversationCardHeader extends React.PureComponent<
-ConversationCardHeaderProps
+  ConversationCardHeaderProps
 > {
   leftSection: HTMLDivElement | null;
   constructor(props: ConversationCardHeaderProps) {
@@ -109,7 +109,8 @@ ConversationCardHeaderProps
       }
     });
     shareChildren.forEach(
-      shareChild => ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
+      shareChild =>
+        ((shareChild as HTMLElement).style.maxWidth = `${sharedWidth}px`),
     );
   }
 
@@ -127,9 +128,7 @@ ConversationCardHeaderProps
   }
 
   render() {
-    const {
-      name, status, notification, from, time, children,
-    } = this.props;
+    const { name, status, notification, from, time, children } = this.props;
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
@@ -147,7 +146,7 @@ ConversationCardHeaderProps
           {from}
         </StyledLeftSection>
         {(time || children) && (
-          <RightSection>
+          <RightSection data-test-automation-id="cardHeaderRightSection">
             {time && <StyledTime data-name="time">{time}</StyledTime>}
             {children}
           </RightSection>

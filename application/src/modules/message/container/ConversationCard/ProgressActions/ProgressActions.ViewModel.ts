@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
 import { PostService } from 'sdk/module/post';
@@ -13,11 +13,15 @@ import { Post } from 'sdk/module/post/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import ProgressModel from '@/store/models/Progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, NOTIFICATION_TYPE } from '@/common/catchError';
 import { RESENT_ERROR_FILE_NO_EXISTS } from './constant';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { container } from 'framework';
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { MessageService } from '@/modules/message/service';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
@@ -28,8 +32,11 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     ServiceConfig.ITEM_SERVICE,
   );
   private _timer: NodeJS.Timer;
+  private _timer2: NodeJS.Timer;
   @observable
   postStatus?: PROGRESS_STATUS;
+  @observable
+  inEditProcess: boolean = false;
 
   constructor(props: ProgressActionsProps) {
     super(props);
@@ -43,6 +50,14 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
         } else {
           this.postStatus = this.postProgress;
         }
+        if (this.isEditMode) {
+          this.inEditProcess = true;
+        } else {
+          clearTimeout(this._timer2);
+          this._timer2 = setTimeout(() => {
+            this.inEditProcess = false;
+          }, 200);
+        }
       });
     }
   }
@@ -50,6 +65,11 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   @computed
   get id() {
     return this.props.id; // post id
+  }
+
+  @computed
+  get isEditMode() {
+    return this.props.isEditMode;
   }
 
   @computed
@@ -71,7 +91,8 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
 
   @catchError([
     {
-      condition: (error: Error) => error.message === RESENT_ERROR_FILE_NO_EXISTS,
+      condition: (error: Error) =>
+        error.message === RESENT_ERROR_FILE_NO_EXISTS,
       action: NOTIFICATION_TYPE.FLASH,
       message: 'item.prompt.fileNoLongerExists',
     },
@@ -85,11 +106,22 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     } else {
       throw new Error(RESENT_ERROR_FILE_NO_EXISTS);
     }
-  }
+  };
+
+  @action
+  edit = () => {
+    const globalStore = storeManager.getGlobalStore();
+    const inEditModePostIds = globalStore.get(
+      GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS,
+    );
+    inEditModePostIds.push(this.id);
+    globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
+    container.get<MessageService>(MESSAGE_SERVICE).setEditInputFocus(this.id);
+  };
 
   deletePost = async () => {
     await this._postService.deletePost(this.id);
-  }
+  };
 }
 
 export { ProgressActionsViewModel };

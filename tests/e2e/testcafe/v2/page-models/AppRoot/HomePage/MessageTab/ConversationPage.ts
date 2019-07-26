@@ -42,6 +42,24 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class ProgressActions extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('cardHeaderRightSection');
+  }
+
+  get resendPost() {
+    return this.getSelectorByIcon('reload', this.self);
+  }
+
+  get editPost() {
+    return this.getSelectorByIcon('edit', this.self);
+  }
+
+  get deletePost() {
+    return this.getSelectorByIcon('delete', this.self);
+  }
+}
+
 class HeaderMoreMenu extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="menu"]');
@@ -701,6 +719,10 @@ export class PostItem extends BaseWebComponent {
 
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
+  }
+
+  get progressActions() {
+    return this.getComponent(ProgressActions);
   }
 
   get avatar() {

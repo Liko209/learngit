@@ -9,6 +9,17 @@ import { getEntity } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import storeManager from '@/store';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { MessageService } from '@/modules/message/service';
+import { MessageStore } from '@/modules/message/store';
+import { container, decorate, injectable } from 'framework';
+
+decorate(injectable(), MessageService);
+container.bind(MESSAGE_SERVICE).to(MessageService);
+decorate(injectable(), MessageStore);
+container.bind(MessageStore).to(MessageStore);
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
@@ -104,6 +115,16 @@ describe('ProgressActionsViewModel', () => {
       await nvm.resend();
       expect(postService.reSendPost).toHaveBeenCalledTimes(0);
       expect(Notification.flashToast).toHaveBeenCalled();
+    });
+  });
+
+  describe('edit()', () => {
+    it('should enter edit mode when being called [JPT-2545]', async () => {
+      await nvm.edit();
+      const globalStore = storeManager.getGlobalStore();
+      expect(
+        globalStore.get(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS).includes(nvm.id),
+      ).toBeTruthy();
     });
   });
 

@@ -167,7 +167,7 @@ export class ConversationCard extends React.Component<
           notification={showActivityStatus && activity}
           from={from}
         >
-          {showProgressActions && <ProgressActions id={id} />}
+          {showProgressActions && <ProgressActions id={id} isEditMode={isEditMode} />}
           {!showProgressActions && isHover && (
             <Actions postId={id} groupId={post.groupId} />
           )}

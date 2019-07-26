@@ -132,6 +132,19 @@ describe('EditMessageInputViewModel', () => {
       handler();
       expect(postService.editPost).not.toBeCalled();
     });
+    it('Delete the message after deleting all content in edit box. [JPT-2547]', () => {
+      const markdownFromDeltaRes = {
+        content: '',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
+      jest.spyOn(editMessageInputViewModel, '_handleDelete');
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(editMessageInputViewModel._handleDelete).toBeCalled();
+    });
     it('should edit post failure when content is illegal', () => {
       const markdownFromDeltaRes = {
         content: CONTENT_ILLEGAL,
