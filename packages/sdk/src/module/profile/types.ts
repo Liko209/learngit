@@ -11,6 +11,7 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
 } from './constants';
+import { SettingEntityIds } from '../setting';
 
 type SettingValue =
   | number
@@ -26,4 +27,11 @@ type SettingOption = {
   value: SettingValue;
 };
 
-export { SettingValue, SettingOption };
+type SettingItemConfig<T> = {
+  id: SettingEntityIds;
+  setting_key: SETTING_KEYS;
+  source?: T[];
+  defaultValue?: T;
+};
+
+export { SettingValue, SettingOption, SettingItemConfig };

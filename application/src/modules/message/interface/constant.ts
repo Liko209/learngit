@@ -13,6 +13,9 @@ enum MESSAGE_SETTING_ITEM {
   NOTIFICATION_TEAMS = SettingEntityIds.Notification_Teams,
   NOTIFICATION_DAILY_DIGEST = SettingEntityIds.Notification_DailyDigest,
   NEW_MESSAGE_BADGE_COUNT = SettingEntityIds.Notification_NewMessageBadgeCount,
+  SOUND_DIRECT_MESSAGES = SettingEntityIds.Audio_DirectMessage,
+  SOUND_MENTIONS = SettingEntityIds.Audio_Mentions,
+  SOUND_TEAM_MESSAGES = SettingEntityIds.Audio_TeamMessages,
 }
 
 export {

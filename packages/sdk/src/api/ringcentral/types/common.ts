@@ -136,6 +136,35 @@ type DialingPlan = {
   navigation: INavigationInfo;
 };
 
+type IStateRequest = {
+  page: number;
+  perPage: number;
+  countryId: string;
+};
+
+type StateCountryInfo = {
+  uri: string;
+  id: string;
+};
+
+type StateInfo = {
+  id: string;
+  name: string;
+  isoCode: string;
+  country: StateCountryInfo;
+};
+
+type StateRecord = StateInfo & {
+  uri: string;
+};
+
+type CountryState = {
+  uri: string;
+  records: StateRecord[];
+  paging: PagingInfo;
+  navigation: INavigationInfo;
+};
+
 type IPhoneNumberRequest = IForwardingNumberRequest & {
   usageType?: string;
 };
@@ -288,4 +317,7 @@ export {
   RCBrandInfo,
   RCAuthCodeInfo,
   IForwardingNumberRequest,
+  CountryState,
+  StateRecord,
+  IStateRequest,
 };

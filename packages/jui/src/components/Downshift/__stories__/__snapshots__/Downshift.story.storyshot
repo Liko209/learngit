@@ -88,7 +88,7 @@ exports[`Storyshots Components/Downshift Downshift: Components/Downshift Downshi
   role="combobox"
 >
   <div
-    className="MuiFormControl-root MuiFormControl-fullWidth c1 c2"
+    className="MuiFormControl-root MuiTextField-root c1 c2 MuiFormControl-fullWidth"
     onKeyDown={[Function]}
   >
     <label

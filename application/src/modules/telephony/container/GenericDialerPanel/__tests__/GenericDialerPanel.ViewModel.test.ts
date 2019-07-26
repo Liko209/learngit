@@ -3,7 +3,7 @@
  * @Date: 2019-06-27 11:03:37
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import { Fragment } from 'react';
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { GenericDialerPanelViewModel } from '../GenericDialerPanel.ViewModel';
@@ -26,7 +26,7 @@ beforeEach(() => {
   genericDialerPanelViewModel = new GenericDialerPanelViewModel({
     inputStringProps: 'inputString',
     onInputEnterKeyDown: jest.fn(),
-    CallActionBtn: () => <></>,
+    CallActionBtn: Fragment,
     displayCallerIdSelector: true,
     onContactSelected: jest.fn(),
     onAfterMount: jest.fn(),
@@ -269,7 +269,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -287,7 +287,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -305,7 +305,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -324,7 +324,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -343,7 +343,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -361,7 +361,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -387,7 +387,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -408,7 +408,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -430,7 +430,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -448,7 +448,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -468,7 +468,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),
@@ -488,7 +488,7 @@ describe('GenericDialerPanelViewModel', () => {
           genericDialerPanelViewModel = new GenericDialerPanelViewModel({
             inputStringProps: 'forwardString',
             onInputEnterKeyDown: jest.fn(),
-            CallActionBtn: () => <></>,
+            CallActionBtn: Fragment,
             displayCallerIdSelector: true,
             onContactSelected: jest.fn(),
             onAfterMount: jest.fn(),

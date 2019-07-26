@@ -518,6 +518,24 @@ describe('glipdown text', () => {
           }),
         ).toEqual('😂hahahah');
       });
+      
+      it('should return woman NOT family when enter :woman:', ()=> {
+        expect(postParser(':woman:', {
+          emoji: {},
+        }),).toEqual([
+          <Emoji
+            emoji='woman'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
+            👩
+          </Emoji>
+        ])
+      })
+
 
       it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: {} })).toEqual([

@@ -1,5 +1,5 @@
 import React from 'react';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import SettingModel from '@/store/models/UserSetting';
 import { SETTING_ITEM_TYPE } from '@/interface/setting';
 import { Notification } from '@/containers/Notification';

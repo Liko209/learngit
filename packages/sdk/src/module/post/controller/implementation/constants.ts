@@ -26,4 +26,5 @@ const EmptySearchRes = {
   requestId: NULL_REQUEST_ID,
   contentCount: {},
 };
+
 export { SearchFilterTypes, TYPE_ID_OF_ALL, EmptySearchRes };

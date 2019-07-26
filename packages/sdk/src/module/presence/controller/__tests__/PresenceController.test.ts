@@ -7,6 +7,7 @@ import { PresenceController } from '../PresenceController';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ENTITY } from '../../../../service/eventKey';
 import { PRESENCE } from '../../constant';
+import { EntityCacheController } from 'sdk/framework/controller/impl/EntityCacheController';
 
 jest.mock('../SubscribeController');
 jest.mock('../../../../service/notificationCenter');
@@ -16,7 +17,11 @@ let presenceController: PresenceController;
 
 describe('Presence Controller', () => {
   beforeEach(() => {
-    presenceController = new PresenceController(5, _INTERVAL);
+    presenceController = new PresenceController(
+      new EntityCacheController(),
+      5,
+      _INTERVAL,
+    );
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });
@@ -32,11 +37,11 @@ describe('Presence Controller', () => {
         presence: PRESENCE.AVAILABLE,
       },
     ]);
-    expect(presenceController.getCaches().get(1)).toEqual({
+    expect(presenceController['_cacheController'].getSynchronously(1)).toEqual({
       id: 1,
       presence: 'Unavailable',
     });
-    expect(presenceController.getCaches().get(2)).toEqual({
+    expect(presenceController['_cacheController'].getSynchronously(2)).toEqual({
       id: 2,
       presence: 'Available',
     });
@@ -70,7 +75,7 @@ describe('Presence Controller', () => {
     ]);
   });
 
-  it('should call reset() when socket disconnect', () => {
+  it('should call reset() when socket disconnect', async () => {
     presenceController.saveToMemory([
       {
         id: 1,
@@ -82,7 +87,9 @@ describe('Presence Controller', () => {
       },
     ]);
     presenceController.reset();
-    expect(presenceController.getCaches().size).toEqual(0);
+    expect(
+      await presenceController['_cacheController'].getTotalCount(),
+    ).toEqual(0);
   });
 
   it('should return data when call getById from memory', async () => {
@@ -107,12 +114,15 @@ describe('Presence Controller', () => {
     ).toHaveBeenCalledWith(1);
   });
 
-  it('should clear caches when call reset() ', () => {
-    presenceController
-      .getCaches()
-      .set(1, { id: 1, presence: PRESENCE.UNAVAILABLE });
+  it('should clear caches when call reset() ', async () => {
+    presenceController['_cacheController'].put({
+      id: 1,
+      presence: PRESENCE.UNAVAILABLE,
+    });
     presenceController.reset();
-    expect(presenceController.getCaches().size).toBe(0);
+    expect(await presenceController['_cacheController'].getTotalCount()).toBe(
+      0,
+    );
     expect(
       presenceController.getSubscribeController().reset,
     ).toHaveBeenCalled();
@@ -130,7 +140,6 @@ describe('Presence Controller', () => {
       expect(result).toBeUndefined();
     });
     it('should call save and notify when passing an array', async () => {
-      presenceController = new PresenceController(5, _INTERVAL);
       presenceController.reset();
       presenceController.saveToMemory = jest.fn();
       await presenceController.handlePresenceIncomingData([

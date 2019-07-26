@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity } from '@/store/utils';
+import * as utils from '@/store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
 import { LinkItemProps } from '../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
@@ -21,6 +22,7 @@ const linkItemVM = new LinkItemViewModel({
 } as LinkItemProps);
 const mockItemValue = {
   deactivated: false,
+  creatorId: 107913219,
   id: 24936465,
   image: null,
   summary: "React Components that Implement Google\\'s Material Design.",
@@ -28,6 +30,9 @@ const mockItemValue = {
   url: 'https://material-ui.com/',
 };
 describe('LinkItemViewModel', () => {
+  function setUp(userId: number) {
+    jest.spyOn(utils, 'getGlobalValue').mockReturnValue(userId);
+  }
   beforeEach(() => {
     jest.resetAllMocks();
     (getEntity as jest.Mock).mockReturnValue({
@@ -46,5 +51,13 @@ describe('LinkItemViewModel', () => {
   it('while delete item and item id not exist should not update item', () => {
     linkItemVM.onLinkItemClose(1);
     expect(linkItemVM.postItems).toHaveLength(3);
+  });
+  it('Should Only uploader can close the link/video card JPT-2592', () => {
+    setUp(mockItemValue.creatorId);
+    expect(linkItemVM.canClosePreview).toBeTruthy();
+  });
+  it('while non-uploader can not close the link/video card JPT-2592', () => {
+    setUp(123321);
+    expect(linkItemVM.canClosePreview).toBeFalsy();
   });
 });
