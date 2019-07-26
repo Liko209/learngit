@@ -6,13 +6,14 @@
 
 import React from 'react';
 import { mountWithTheme } from 'shield/utils';
-import { shallow } from 'enzyme';
 import { testable, test } from 'shield';
-import { mockGlobalValue, mockEntity } from 'shield/application';
+import { mockService } from 'shield/sdk';
+import { mockGlobalValue, mockPresence } from 'shield/application';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { Avatar } from '@/containers/Avatar';
 import { AvatarActions } from '../AvatarActions';
-import { AvatarActionsView } from '../AvatarActions.View';
+
+jest.mock('sdk/module/person');
 
 describe('AvatarActions', () => {
 
@@ -20,10 +21,7 @@ describe('AvatarActions', () => {
   class tooltip {
     @test('should be presence.available when presence is PRESENCE.AVAILABLE')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.AVAILABLE,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.AVAILABLE)
     t1() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.available');
@@ -31,10 +29,7 @@ describe('AvatarActions', () => {
 
     @test('should be presence.doNotDisturb when presence is PRESENCE.DND')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.DND,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.DND)
     t2() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.doNotDisturb');
@@ -42,10 +37,7 @@ describe('AvatarActions', () => {
 
     @test('should be presence.offline when presence is PRESENCE.UNAVAILABLE')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.UNAVAILABLE,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.UNAVAILABLE)
     t3() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.offline');
@@ -53,10 +45,7 @@ describe('AvatarActions', () => {
 
     @test('should be presence.inMeeting when presence is PRESENCE.INMEETING')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.INMEETING,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.INMEETING)
     t4() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.inMeeting');
@@ -64,10 +53,7 @@ describe('AvatarActions', () => {
 
     @test('should be presence.onCall when presence is PRESENCE.ONCALL')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.ONCALL,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.ONCALL)
     t5() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.onCall');
@@ -75,10 +61,7 @@ describe('AvatarActions', () => {
 
     @test('should be presence.offline when presence is PRESENCE.NOTREADY')
     @mockGlobalValue(1)
-    @mockEntity({
-      presence: PRESENCE.NOTREADY,
-      deactivated: false
-    })
+    @mockPresence(PRESENCE.NOTREADY)
     t6() {
       const wrapper = mountWithTheme(<AvatarActions />);
       expect(wrapper.find(Avatar).props().tooltip).toBe('presence.offline');
