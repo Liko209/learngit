@@ -48,13 +48,11 @@ describe('PresenceActionController', () => {
         presenceActionController['_partialModifyController'];
       partialModifyController.updatePartially = jest
         .fn()
-        .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(prehandleFunc({ id: normalId })).toEqual(presence);
-            doUpdateFunc(presence);
-          },
-        );
+        .mockImplementation((p: any) => {
+          expect(p.entityId).toBe(normalId);
+          expect(p.preHandlePartialEntity({ id: normalId })).toEqual(presence);
+          p.doUpdateEntity(presence);
+        });
       await presenceActionController.setPresence(state);
       expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
       expect(PresenceAPI.setPresence).toHaveBeenCalledWith(presence);

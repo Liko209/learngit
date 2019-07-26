@@ -9,10 +9,14 @@ import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { IPartialEntitySourceController } from '../interface/IPartialEntitySourceController';
 import notificationCenter from '../../../service/notificationCenter';
-import { IPartialModifyController } from '../interface/IPartialModifyController';
+import {
+  IPartialModifyController,
+  PartialUpdateParams,
+  PartialNotifyFunc,
+  UpdateEntityFunc,
+} from '../interface/IPartialModifyController';
 import { transform } from '../../../service/utils';
 
-/* eslint-disable */
 class PartialModifyController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
@@ -21,19 +25,18 @@ class PartialModifyController<
     public entitySourceController: IPartialEntitySourceController<T, IdType>,
   ) {}
 
+  /* eslint-disable */
   async updatePartially(
-    entityId: IdType,
-    preHandlePartialEntity?: (
-      partialEntity: Partial<Raw<T>>,
-      originalEntity: T,
-    ) => Partial<Raw<T>>,
-    doUpdateEntity?: (updatedEntity: T) => Promise<T>,
-    doPartialNotify?: (
-      originalEntities: T[],
-      updatedEntities: T[],
-      partialEntities: Partial<Raw<T>>[],
-    ) => void,
+    params: PartialUpdateParams<T, IdType>,
   ): Promise<T | null> {
+    const {
+      entityId,
+      preHandlePartialEntity,
+      doUpdateEntity,
+      doPartialNotify,
+      saveLocalFirst = true,
+    } = params;
+
     const id: IdType = entityId;
     let result: T | null = null;
 
@@ -64,6 +67,7 @@ class PartialModifyController<
         originalEntity,
         doUpdateEntity,
         doPartialNotify,
+        saveLocalFirst,
       );
     } while (false);
 
@@ -116,12 +120,9 @@ class PartialModifyController<
   private async _handlePartialUpdateWithOriginal(
     partialEntity: Partial<Raw<T>>,
     originalEntity: T,
-    doUpdateEntity: (updatedEntity: T) => Promise<T>,
-    doPartialNotify?: (
-      originalEntities: T[],
-      updatedEntities: T[],
-      partialEntities: Partial<Raw<T>>[],
-    ) => void,
+    doUpdateEntity: UpdateEntityFunc<T>,
+    doPartialNotify?: PartialNotifyFunc<T>,
+    saveLocalFirst = true,
   ): Promise<T> {
     let result: T;
     do {
@@ -144,12 +145,13 @@ class PartialModifyController<
       const mergedEntity = this.getMergedEntity(partialEntity, originalEntity);
 
       mainLogger.info('handlePartialUpdate: trigger partial update');
-      await this._doPartialSaveAndNotify(
-        originalEntity,
-        mergedEntity,
-        partialEntity,
-        doPartialNotify,
-      );
+      saveLocalFirst &&
+        (await this._doPartialSaveAndNotify(
+          originalEntity,
+          mergedEntity,
+          partialEntity,
+          doPartialNotify,
+        ));
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateEntity');
 
@@ -179,11 +181,7 @@ class PartialModifyController<
     originalEntity: T,
     updatedEntity: T,
     partialEntity: Partial<Raw<T>>,
-    doPartialNotify?: (
-      originalEntities: T[],
-      updatedEntities: T[],
-      partialEntities: Partial<Raw<T>>[],
-    ) => void,
+    doPartialNotify?: PartialNotifyFunc<T>,
   ): Promise<void> {
     const transformedModel = transform<T>(partialEntity);
     await this.entitySourceController.update(transformedModel);

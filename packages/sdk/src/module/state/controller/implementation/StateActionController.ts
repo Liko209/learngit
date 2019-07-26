@@ -61,9 +61,9 @@ class StateActionController {
     const lastPostId = group.most_recent_post_id;
     const myStateId = this._stateFetchDataController.getMyStateId();
     if (lastPostId && myStateId > 0) {
-      await this._partialModifyController.updatePartially(
-        groupId,
-        (partialEntity: Partial<Raw<GroupState>>) => {
+      await this._partialModifyController.updatePartially({
+        entityId: groupId,
+        preHandlePartialEntity: (partialEntity: Partial<Raw<GroupState>>) => {
           if (isUnread) {
             return {
               ...partialEntity,
@@ -82,7 +82,7 @@ class StateActionController {
             marked_as_unread: false,
           };
         },
-        async (updatedEntity: GroupState) => {
+        doUpdateEntity: async (updatedEntity: GroupState) => {
           try {
             if (isUnread) {
               return await this._requestController.put(
@@ -100,7 +100,7 @@ class StateActionController {
             throw e;
           }
         },
-      );
+      });
     }
   }
 

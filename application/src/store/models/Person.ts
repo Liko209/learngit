@@ -28,7 +28,7 @@ export default class PersonModel extends Base<Person> {
   @observable
   headshot?: HeadShotModel;
   @observable
-  headshotVersion?: string;
+  headshotVersion?: number;
   @observable
   email: string;
   @observable

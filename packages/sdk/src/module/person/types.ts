@@ -17,7 +17,7 @@ type EditablePersonInfo = {
 };
 
 type HeadShotInfo = {
-  file?: File;
+  file: File;
   offset: string;
   crop: string;
 };

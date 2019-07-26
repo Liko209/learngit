@@ -11,6 +11,7 @@ import { Person } from '../../entity';
 import { SYNC_SOURCE } from '../../../sync';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { object } from '@storybook/addon-knobs';
 
 jest.mock('../../controller/PersonController');
 jest.mock('../../../../api');
@@ -145,12 +146,12 @@ describe('PersonService', () => {
 
   describe('getHeadShotWithSize', () => {
     it('should call controller with correct parameter', async () => {
-      personService.getHeadShotWithSize(1, '1111', '', 150);
+      personService.getHeadShotWithSize(1, '', 150, 1111);
       expect(personController.getHeadShotWithSize).toHaveBeenCalledWith(
         1,
-        '1111',
         '',
         150,
+        1111,
       );
     });
   });
@@ -213,6 +214,26 @@ describe('PersonService', () => {
         person,
         eachPhoneNumberFunc,
       );
+    });
+  });
+
+  describe('editPersonalInfo', () => {
+    const mockAction = {
+      editPersonalInfo: jest.fn(),
+    };
+    beforeEach(() => {
+      Object.defineProperty(personController, 'personActionController', {
+        get() {
+          return mockAction;
+        },
+      });
+    });
+    it('should call api in person action controller', async () => {
+      const data = { first_name: 'good' };
+      await personService.editPersonalInfo(data);
+      expect(
+        personController.personActionController.editPersonalInfo,
+      ).toHaveBeenCalledWith(data, undefined);
     });
   });
 });
