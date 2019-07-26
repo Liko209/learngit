@@ -5,6 +5,8 @@
  */
 // Array.prototype.flatMap
 require("core-js/features/array/flat-map");
+require("reflect-metadata");
+
 const btoa = require('btoa');
 const FormData = require('form-data');
 const fetch = require('jest-fetch-mock');
@@ -31,6 +33,7 @@ const window = {
   clearTimeout,
   console,
   fetch,
+  Reflect,
   localStorage: new FakeStorage(),
   sessionStorage: new FakeStorage(),
   addEventListener: () => {}
@@ -42,6 +45,7 @@ const document = {
 
 window.navigator = {
   userAgent: 'node',
+  platform: 'Mac',
   onLine: true
 };
 global.document = document;

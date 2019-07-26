@@ -6,6 +6,7 @@
 
 import { generateModifiedImageURL, RULE } from '../generateModifiedImageURL';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 const url = 'URL';
 const id = 1;
 
