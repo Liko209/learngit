@@ -6,6 +6,8 @@
 
 import { ReactNode } from 'react';
 import { inject } from 'framework';
+import portalManager from '@/common/PortalManager';
+import { EditProfile } from '../container/ProfileEdit';
 import { MessageStore } from '../store';
 
 class MessageService {
@@ -29,7 +31,12 @@ class MessageService {
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );
-  }
+  };
+
+  open = (uid: number) => {
+    portalManager.dismissLast();
+    EditProfile.show({ id: uid });
+  };
 
   blurEditInputFocus() {
     this._messageStore.currentFocusedInput = undefined;
