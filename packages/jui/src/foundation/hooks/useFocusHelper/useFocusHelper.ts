@@ -128,11 +128,12 @@ const useFocusHelper = ({
   const _handleOtherKeyPress = (key: string) => {
     criteria.current += key.toLowerCase();
 
-    const matchedIndex = items.findIndex(
-      item =>
+    const matchedIndex = items.findIndex(item =>
+      Boolean(
         !item.disabled &&
-        item.text &&
-        item.text.toLowerCase().startsWith(criteria.current),
+          item.text &&
+          item.text.toLowerCase().startsWith(criteria.current),
+      ),
     );
 
     window.clearTimeout(timeoutRef.current);
