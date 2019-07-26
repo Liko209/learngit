@@ -246,6 +246,7 @@ exports[`Storyshots Pattern/Emoji Emoji Button: Pattern/Emoji Emoji Button 1`] =
     >
       <button
         aria-describedby={null}
+        aria-label=""
         className="MuiButtonBase-root MuiIconButton-root c1"
         data-test-automation-id="conversation-chatbar-emoji-button"
         disabled={false}

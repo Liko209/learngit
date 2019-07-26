@@ -243,6 +243,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
       >
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -582,6 +583,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -625,6 +627,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
@@ -674,6 +677,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -719,6 +723,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
@@ -1184,6 +1189,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1227,6 +1233,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1276,6 +1283,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1321,6 +1329,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1427,6 +1436,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1470,6 +1480,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1519,6 +1530,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1564,6 +1576,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}

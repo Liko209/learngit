@@ -392,6 +392,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
@@ -492,6 +493,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
@@ -592,6 +594,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
@@ -692,6 +695,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithPreview: Pattern/Conversati
           >
             <button
               aria-describedby={null}
+              aria-label="download"
               className="MuiButtonBase-root MuiIconButton-root c12"
               disabled={false}
               onBlur={[Function]}
