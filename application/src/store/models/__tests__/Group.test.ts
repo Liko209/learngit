@@ -6,7 +6,7 @@
 import { observable, when } from 'mobx';
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
-import { PERMISSION_ENUM } from 'sdk/service';
+import { PERMISSION_ENUM } from 'sdk/module/group';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AccountUserConfig } from 'sdk/module/account/config/AccountUserConfig';
@@ -153,6 +153,95 @@ describe('GroupModel', () => {
     it('should return true when group data is not ready', () => {
       const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
       expect(gmAdmin.canPost).toBeTruthy();
+    });
+  });
+  describe('canMentionTeam', () => {
+    it('should return false when user is guest||user or user permission setting disabled TEAM_MENTION', () => {
+      const gmGuest = GroupModel.fromJS({
+        id: 1,
+        guest_user_company_ids: [mockUserCompanyId], // guest
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [2],
+          },
+          user: {
+            level: 0,
+          },
+        },
+      } as Group);
+      expect(gmGuest.canMentionTeam).toBeFalsy();
+      // normal user
+      const gmUser = GroupModel.fromJS({
+        id: 1,
+        is_team: true,
+        guest_user_company_ids: [],
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [2],
+          },
+          user: {
+            level: 0,
+          },
+        },
+      } as Group);
+      expect(gmUser.canMentionTeam).toBeFalsy();
+    });
+    it('should return true when user is guest||user and user permission setting enabled TEAM_POST', () => {
+      const gmGuest = GroupModel.fromJS({
+        id: 1,
+        guest_user_company_ids: [mockUserCompanyId], // guest
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [2],
+          },
+          user: {
+            level: PERMISSION_ENUM.TEAM_MENTION,
+          },
+        },
+      } as Group);
+      expect(gmGuest.canMentionTeam).toBeTruthy();
+      // normal user
+      const gmUser = GroupModel.fromJS({
+        id: 1,
+        guest_user_company_ids: [],
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [2],
+          },
+          user: {
+            level: PERMISSION_ENUM.TEAM_MENTION,
+          },
+        },
+      } as Group);
+      expect(gmUser.canMentionTeam).toBeTruthy();
+    });
+    it('should return true when user is admin', () => {
+      const gmAdmin = GroupModel.fromJS({
+        id: 1,
+        guest_user_company_ids: [],
+        is_team: true,
+        members: [mockUserId],
+        permissions: {
+          admin: {
+            uids: [mockUserId], // admin
+          },
+          user: {
+            level: 0,
+          },
+        },
+      } as Group);
+      expect(gmAdmin.canMentionTeam).toBeTruthy();
+    });
+    it('should return false when group data is not ready', () => {
+      const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
+      expect(gmAdmin.canMentionTeam).toBeFalsy();
     });
   });
   describe('isAdmin', () => {

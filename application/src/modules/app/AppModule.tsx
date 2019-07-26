@@ -39,7 +39,6 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { IApplicationInfo } from 'sdk/pal/applicationInfo';
 import history from '@/history';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
-
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped
@@ -189,7 +188,7 @@ class AppModule extends AbstractModule {
     await sdk.init({
       api,
       db,
-    });
+    });    
   }
 }
 

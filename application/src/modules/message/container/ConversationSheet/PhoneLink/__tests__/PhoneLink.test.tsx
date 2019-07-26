@@ -14,8 +14,7 @@ import { registerModule } from 'shield/utils';
 import { config as featureFlagConfig } from '@/modules/featuresFlags/module.config';
 import { config as telephonyConfig } from '@/modules/telephony/module.config';
 import { config as commonConfig } from '@/modules/common/module.config';
-import { mountWithTheme } from '@/__tests__/utils';
-
+import { mountWithTheme } from 'shield/utils';
 import { PermissionService } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { ProfileService } from 'sdk/module/profile';

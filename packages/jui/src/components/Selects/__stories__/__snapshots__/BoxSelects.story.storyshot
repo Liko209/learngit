@@ -98,37 +98,33 @@ exports[`Storyshots Components/Selects BoxSelect: Components/Selects BoxSelect 1
         style={Object {}}
       >
         <div
-          className="MuiSelect-root root"
+          aria-haspopup="true"
+          aria-pressed="false"
+          className="MuiSelect-root root MuiSelect-select MuiSelect-selectMenu selectMenu MuiInputBase-input MuiInputBase-inputSelect"
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          role="button"
+          tabIndex={0}
         >
-          <div
-            aria-haspopup="true"
-            aria-pressed="false"
-            className="MuiSelect-select MuiSelect-selectMenu selectMenu MuiInputBase-input"
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onKeyDown={[Function]}
-            role="button"
-            tabIndex={0}
-          >
-            One
-          </div>
-          <input
-            type="hidden"
-            value={1}
-          />
-          <svg
-            aria-hidden="true"
-            className="MuiSvgIcon-root MuiSelect-icon icon"
-            focusable="false"
-            role="presentation"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M7 10l5 5 5-5z"
-            />
-          </svg>
+          One
         </div>
+        <input
+          type="hidden"
+          value={1}
+        />
+        <svg
+          aria-hidden="true"
+          className="MuiSvgIcon-root MuiSelect-icon icon"
+          focusable="false"
+          role="presentation"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M7 10l5 5 5-5z"
+          />
+        </svg>
       </div>
     </div>
   </div>

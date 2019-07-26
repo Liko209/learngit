@@ -25,7 +25,8 @@ import {
   DEFAULT_AUDIO_OUTPUT_DEVICES,
 } from './audioSource/constant';
 
-const deviceIdExtractor = (device?: MediaDeviceInfo) => (device ? device.deviceId : '');
+const deviceIdExtractor = (device?: MediaDeviceInfo) =>
+  device ? device.deviceId : '';
 
 class NotificationSoundSettingManager {
   private _scope = Symbol('NotificationSoundSettingManager');
@@ -94,9 +95,10 @@ class NotificationSoundSettingManager {
               type: SETTING_ITEM_TYPE.SLIDER,
               Left: SpeakerMuteIcon,
               Right: SpeakerIcon,
-              tipRenderer: ({ value }) => `${Math.ceil(value * 100)}%`,
+              valueLabelFormat: value => `${Math.ceil(value * 100)}%`,
               min: 0,
               max: 1,
+              step: 0.01,
               weight: 300,
             } as SliderSettingItem,
           ],

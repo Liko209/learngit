@@ -1,4 +1,4 @@
-/// <reference path="../../../../../__tests__/types.d.ts" />
+// / <reference path="../../../../../__tests__/types.d.ts" />
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-01-15 11:17:32
@@ -25,6 +25,7 @@ import { AccountUserConfig } from '../../../../../module/account/config/AccountU
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 import { PostDataController } from '../../PostDataController';
 import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/src';
+import { GroupService } from 'sdk/module/group/service';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
@@ -37,6 +38,16 @@ jest.mock('../../../../../dao');
 jest.mock('../../../../groupConfig/dao');
 jest.mock('../../../dao/PostDao');
 jest.mock('../../PostDataController');
+jest.mock('sdk/module/group/service', () => {
+  return {
+    GroupService: () => {
+      return {
+        getById: jest.fn(),
+        isCurrentUserHasPermission: jest.fn(),
+      };
+    },
+  };
+});
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -45,6 +56,10 @@ class MockPreInsertController<T extends ExtendedBaseModel>
   }
 
   delete(entity: T): void {
+    return;
+  }
+
+  async update(entity: T): Promise<void> {
     return;
   }
 
@@ -75,19 +90,27 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 describe('SendPostController', () => {
   let sendPostController: SendPostController;
   let postDataController: PostDataController;
+  let postActionController: PostActionController;
   const groupConfigService: GroupConfigService = new GroupConfigService();
   const postDao = new PostDao(null);
   const accountDao = new AccountDao(null);
-  beforeEach(() => {
-    const actionController = new PostActionController(
+  const groupService = new GroupService();
+  let preInsertController: IPreInsertController;
+  function doMock() {
+    postActionController = new PostActionController(
       null,
       null,
       null,
       null,
       null,
     );
-    const preInsertController = new MockPreInsertController<Post>();
-    postDataController = new PostDataController(null, null, null, null);
+    preInsertController = new MockPreInsertController<Post>();
+    postDataController = new PostDataController(
+      groupService,
+      groupConfigService,
+      null,
+      null,
+    );
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
@@ -99,10 +122,14 @@ describe('SendPostController', () => {
         }
       });
     sendPostController = new SendPostController(
-      actionController,
+      postActionController,
       preInsertController,
       postDataController,
+      groupService,
     );
+  }
+  beforeEach(() => {
+    doMock();
   });
   afterEach(() => {
     jest.restoreAllMocks();
@@ -152,6 +179,18 @@ describe('SendPostController', () => {
     });
   });
 
+  describe('editFailedPost', () => {
+    it('should call PostActionController editFailedPost api when edit failed post', async () => {
+      const spy = jest.spyOn(postActionController, 'editFailedPost');
+      await sendPostController.editFailedPost({
+        postId: -1,
+        groupId: 1,
+        text: '123',
+      });
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('innerSendPost', () => {
     it('should not call buildItemVersionMap when is resend or has not item_ids', async () => {
       jest
@@ -163,11 +202,11 @@ describe('SendPostController', () => {
         _postItemController: { waiting4ItemsReady: () => {} },
       });
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(0);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(0);
 
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, true);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(0);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(0);
     });
     it('should call buildItemVersionMap when it is not resend and has item_ids', async () => {
       jest
@@ -182,7 +221,7 @@ describe('SendPostController', () => {
         },
       });
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController._cleanUploadingFiles).toBeCalledTimes(1);
+      expect(sendPostController._cleanUploadingFiles).toHaveBeenCalledTimes(1);
     });
     it('should send post to sever when post is valid and call back success', async () => {
       Object.assign(sendPostController, {
@@ -200,7 +239,7 @@ describe('SendPostController', () => {
       data['text'] = '2323';
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController.sendPostToServer).toBeCalledTimes(1);
+      expect(sendPostController.sendPostToServer).toHaveBeenCalledTimes(1);
     });
     it('should delete post when post is invalid', async () => {
       let shouldBeCalled = false;
@@ -237,11 +276,134 @@ describe('SendPostController', () => {
       data['text'] = '2323';
       data['item_ids'] = [];
       await sendPostController.innerSendPost(data, false);
-      expect(sendPostController.handleSendPostFail).toBeCalledTimes(1);
+      expect(sendPostController.handleSendPostFail).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('sendPostToServer', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest.clearAllMocks();
+      doMock();
+    });
+    it('should transform to plain text when is_team_mention and has not permission', async () => {
+      const data = _.cloneDeep(localPostJson4UnitTest);
+      data.is_team_mention = true;
+      data.text =
+        "<a class='at_mention_compose' rel='{\"id\":-1}'>@Team </a>ojbk";
+      groupService.getById.mockResolvedValue({});
+      groupService.isCurrentUserHasPermission.mockReturnValue(false);
+      jest.spyOn(preInsertController, 'update');
+      Object.assign(sendPostController, {
+        postActionController: {
+          requestController: {
+            post: () => {
+              return serverPostJson4UnitTest;
+            },
+          },
+        },
+      });
+      jest.spyOn(
+        sendPostController.postActionController.requestController,
+        'post',
+      );
+      postDao.put.mockResolvedValueOnce(null);
+      daoManager.getDao.mockReturnValueOnce(postDao);
+
+      await sendPostController.sendPostToServer(data);
+      expect(preInsertController.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          is_team_mention: false,
+          text: '@Team ojbk',
+        }),
+      );
+      expect(
+        sendPostController.postActionController.requestController.post,
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          is_team_mention: false,
+          text: '@Team ojbk',
+        }),
+        expect.objectContaining({}),
+      );
+    });
+    it('should transform to plain text when match mention regexp has not permission', async () => {
+      const data = _.cloneDeep(localPostJson4UnitTest);
+      data.is_team_mention = false;
+      data.text =
+        "<a class='at_mention_compose' rel='{\"id\":-1}'>@Team </a>ojbk";
+      groupService.getById.mockResolvedValue({});
+      groupService.isCurrentUserHasPermission.mockReturnValue(false);
+      jest.spyOn(preInsertController, 'update');
+      Object.assign(sendPostController, {
+        postActionController: {
+          requestController: {
+            post: () => {
+              return serverPostJson4UnitTest;
+            },
+          },
+        },
+      });
+      jest.spyOn(
+        sendPostController.postActionController.requestController,
+        'post',
+      );
+      postDao.put.mockResolvedValueOnce(null);
+      daoManager.getDao.mockReturnValueOnce(postDao);
+
+      await sendPostController.sendPostToServer(data);
+      expect(preInsertController.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          is_team_mention: false,
+          text: '@Team ojbk',
+        }),
+      );
+      expect(
+        sendPostController.postActionController.requestController.post,
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          is_team_mention: false,
+          text: '@Team ojbk',
+        }),
+        expect.objectContaining({}),
+      );
+    });
+    it('should send mention_team post when has permission', async () => {
+      const data = _.cloneDeep(localPostJson4UnitTest);
+      data.is_team_mention = true;
+      data.text =
+        "<a class='at_mention_compose' rel='{\"id\":-1}'>@Team </a>ojbk";
+      groupService.getById.mockResolvedValue({});
+      groupService.isCurrentUserHasPermission.mockReturnValue(true);
+      jest.spyOn(preInsertController, 'update');
+      Object.assign(sendPostController, {
+        postActionController: {
+          requestController: {
+            post: () => {
+              return serverPostJson4UnitTest;
+            },
+          },
+        },
+      });
+      jest.spyOn(
+        sendPostController.postActionController.requestController,
+        'post',
+      );
+      postDao.put.mockResolvedValueOnce(null);
+      daoManager.getDao.mockReturnValueOnce(postDao);
+
+      await sendPostController.sendPostToServer(data);
+      expect(preInsertController.update).not.toHaveBeenCalled();
+      expect(
+        sendPostController.postActionController.requestController.post,
+      ).toHaveBeenCalledWith(
+        expect.objectContaining({
+          is_team_mention: true,
+          text: data.text,
+        }),
+        expect.objectContaining({}),
+      );
+    });
     it('should call return PostData when send post success', async () => {
       Object.assign(sendPostController, {
         postActionController: {
@@ -261,9 +423,9 @@ describe('SendPostController', () => {
         'post',
       );
       const result = await sendPostController.sendPostToServer(data);
-      expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      expect(result).toEqual(serverPostJson4UnitTest);
       delete data.id;
-      expect(spy).toBeCalledWith(data, {
+      expect(spy).toHaveBeenCalledWith(data, {
         priority: REQUEST_PRIORITY.HIGH,
         retryCount: DEFAULT_RETRY_COUNT,
       });
@@ -285,7 +447,7 @@ describe('SendPostController', () => {
       const data = _.cloneDeep(localPostJson4UnitTest);
       data['id'] = -999;
       const result = await sendPostController.sendPostToServer(data);
-      expect(result[0].data).toEqual(serverPostJson4UnitTest);
+      expect(result).toEqual(serverPostJson4UnitTest);
       expect(retryCount).toEqual(3);
     });
     it('should throw error when send post failed', async () => {
@@ -315,7 +477,7 @@ describe('SendPostController', () => {
       daoManager.getDao.mockReturnValueOnce(postDao);
       await sendPostController.handleSendPostSuccess(data, { id: -999 });
       expect(notificationCenter.emitEntityReplace).toHaveBeenCalledTimes(1);
-      expect(postDataController.deletePreInsertPosts).toBeCalledWith([
+      expect(postDataController.deletePreInsertPosts).toHaveBeenCalledWith([
         {
           id: -999,
         },
@@ -328,7 +490,16 @@ describe('SendPostController', () => {
       groupConfigService.addPostId.mockResolvedValueOnce(null);
       const result = await sendPostController.handleSendPostFail(-1, 2);
       expect(result.length).toBe(0);
-      expect(groupConfigService.addPostId).toBeCalledTimes(1);
+      expect(groupConfigService.addPostId).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('_convertTeamMentionToPlainText', () => {
+    it('should convert TeamMention correctly', async () => {
+      const text =
+        "<a class='at_mention_compose' rel='{\"id\":-1}'>@Team </a>ojbk";
+      expect(
+        sendPostController['_convertTeamMentionToPlainText'](text),
+      ).toEqual('@Team ojbk');
     });
   });
 });

@@ -15,6 +15,9 @@ export {
   IForwardingNumberRequest,
   IExtensionCallerId,
   IExtensionCallerIdRequest,
+  CountryState,
+  IStateRequest,
+  StateRecord,
 } from './common';
 export { RCAccountInfo } from './RCAccountInfo';
 export { RCClientInfo } from './RCClientInfo';

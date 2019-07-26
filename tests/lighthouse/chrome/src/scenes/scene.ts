@@ -36,6 +36,10 @@ class Scene {
     this.appVersion = appVersion;
   }
 
+  tags(): Array<string> {
+    return [];
+  }
+
   /**
    * @description: run scene. don't override this method
    */

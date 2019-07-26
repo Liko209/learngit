@@ -238,6 +238,8 @@ describe('VoIPMediaDevicesDelegate', () => {
       jest.spyOn(deviceDelegate, '_initDevicesState');
       deviceDelegate.onMediaDevicesInitialed();
       expect(deviceDelegate['_initDevicesState']).toBeCalled();
+      expect(notificationCenter.emit).toHaveBeenCalledWith(RTC_MEDIA_ACTION.INPUT_DEVICE_LIST_CHANGED, expect.arrayContaining([]));
+      expect(notificationCenter.emit).toHaveBeenCalledWith(RTC_MEDIA_ACTION.OUTPUT_DEVICE_LIST_CHANGED, expect.arrayContaining([]));
     });
   });
 

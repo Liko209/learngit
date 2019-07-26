@@ -19,4 +19,5 @@ enum UserPermissionType {
   CAN_SHOW_ALL_GROUP = 'CAN_SHOW_ALL_GROUP',
 }
 
+export type FeatureFlagType = string | number;
 export default UserPermissionType;

@@ -6,7 +6,7 @@ import GroupStateModel from '@/store/models/GroupState';
 import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { ConversationInitialPost } from '../../../ConversationInitialPost';
-import { theme } from '@/__tests__/utils';
+import { theme } from 'shield/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { StreamViewComponent as StreamView } from '../Stream.View';
