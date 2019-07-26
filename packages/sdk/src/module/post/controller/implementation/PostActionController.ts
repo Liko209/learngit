@@ -80,6 +80,7 @@ class PostActionController implements IPostActionController {
   private _editPost(
     params: EditPostType,
     doUpdateEntity: (newPost: Post) => Promise<any>,
+    forceDoUpdateEntity?: boolean,
   ) {
     const preHandlePartial = (
       partialPost: Partial<Raw<Post>>,
@@ -94,6 +95,7 @@ class PostActionController implements IPostActionController {
       preHandlePartial,
       doUpdateEntity,
       this._doPartialNotify.bind(this),
+      forceDoUpdateEntity,
     );
   }
 
@@ -109,7 +111,11 @@ class PostActionController implements IPostActionController {
     params: EditPostType,
     reSendFunc: (post: Post, isResend: boolean) => Promise<Post>,
   ) {
-    this._editPost(params, async (newPost: Post) => reSendFunc(newPost, true));
+    this._editPost(
+      params,
+      async (newPost: Post) => reSendFunc(newPost, true),
+      true,
+    );
   }
 
   /**
