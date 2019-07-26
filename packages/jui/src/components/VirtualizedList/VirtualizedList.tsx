@@ -186,7 +186,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     rememberScrollPosition(position);
     setVisibleRange(
       createRange({
-        startIndex: position.index,
+        startIndex: position.options
+          ? position.index
+          : position.index - visibleRangeSize,
         size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,

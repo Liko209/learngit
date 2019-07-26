@@ -3,16 +3,16 @@
  * @Date: 2019-07-23 13:39:23
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect, useCallback } from 'react';
 import { useFocusHelper } from '../../foundation/hooks/useFocusHelper';
 import { JuiMenuItemProps } from '../Menus';
 import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
-} from '../VirtualizedList/VirtualizedList';
+} from '../VirtualizedList';
 import { withAutoSizer } from '../AutoSizer';
 
-const MENU_ITEM_HEIGHT = 32;
+const DEFAULT_MENU_ITEM_HEIGHT = 32;
 const List = withAutoSizer(JuiVirtualizedList);
 
 type JuiVirtualizedMenuListProps = {
@@ -20,26 +20,30 @@ type JuiVirtualizedMenuListProps = {
   loop?: boolean;
   autoFocus?: boolean;
   children: JSX.Element[];
+  menuItemHeight?: number;
 };
 
-function mapElementChild<T>(
-  children: React.ReactNode,
-  cb: (elementChild: React.ReactElement<JuiMenuItemProps>, i: number) => T,
-) {
-  return React.Children.map(children, (child, i) => {
-    if (!React.isValidElement<JuiMenuItemProps>(child)) {
-      throw new Error('Error: Invalid Element');
+function filterElementChildren(children: React.ReactNode) {
+  const elementChildren: React.ReactElement<JuiMenuItemProps>[] = [];
+  React.Children.forEach(children, child => {
+    if (React.isValidElement<JuiMenuItemProps>(child)) {
+      elementChildren.push(child);
     }
-    return cb(child, i);
   });
+  return elementChildren;
 }
 
 const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
-  const { focusOnHover, autoFocus = false, loop = true } = props;
+  const {
+    focusOnHover,
+    menuItemHeight = DEFAULT_MENU_ITEM_HEIGHT,
+    autoFocus = false,
+    loop = true,
+  } = props;
 
   const listRef = useRef<JuiVirtualizedListHandles>();
-
-  const items = mapElementChild(props.children, child => {
+  const elementChildren = filterElementChildren(props.children);
+  const items = elementChildren.map(child => {
     return {
       text: child.props.searchString,
       disabled: child.props.disabled,
@@ -51,35 +55,46 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
     items,
   });
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLUListElement>) => {
-    event.preventDefault();
-    onKeyPress(event.key);
-  };
+  const handleKeyPress = useCallback(
+    (event: React.KeyboardEvent<HTMLUListElement>) => {
+      event.preventDefault();
+      onKeyPress(event.key);
+    },
+    [onKeyPress],
+  );
 
   useLayoutEffect(() => {
-    if (listRef.current) {
+    if (listRef.current && focusedIndex !== -1) {
       listRef.current.scrollIntoViewIfNeeded(focusedIndex);
     }
   }, [focusedIndex]);
 
-  const children = mapElementChild(
-    props.children,
-    (child: React.ReactElement<JuiMenuItemProps>, i: number) => {
-      return React.cloneElement(child, {
-        autoFocus: i === focusedIndex,
-        onMouseEnter: () => focusOnHover && setFocusedIndex(i),
-        onClick: (event: React.MouseEvent<HTMLLIElement>) => {
-          setFocusedIndex(i);
-          child.props.onClick && child.props.onClick(event);
-        },
-      });
-    },
-  );
+  const children = elementChildren.map((child, i) => {
+    return React.cloneElement(child, {
+      autoFocus: i === focusedIndex,
+      onMouseEnter: (event: React.MouseEvent<HTMLLIElement>) => {
+        focusOnHover && setFocusedIndex(i);
+        child.props.onMouseEnter && child.props.onMouseEnter(event);
+      },
+      onBlur: (event: React.FocusEvent<HTMLLIElement>) => {
+        setTimeout(() => {
+          if (document.activeElement === document.body) {
+            setFocusedIndex(-1);
+          }
+        });
+        child.props.onBlur && child.props.onBlur(event);
+      },
+      onClick: (event: React.MouseEvent<HTMLLIElement>) => {
+        setFocusedIndex(i);
+        child.props.onClick && child.props.onClick(event);
+      },
+    });
+  });
 
   return (
     <List
       ref={listRef as any}
-      minRowHeight={MENU_ITEM_HEIGHT}
+      minRowHeight={menuItemHeight}
       onKeyDown={handleKeyPress}
       tabIndex={autoFocus ? 0 : -1}
     >
