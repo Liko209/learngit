@@ -15,8 +15,8 @@ import _ from 'lodash';
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
 const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
-const IDLE_THRESHOLD = 5 * 60 * 1000;
-const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 3;
+const IDLE_THRESHOLD = 3 * 60 * 1000;
+const BACKGROUND_TIMER_INTERVAL = IDLE_THRESHOLD / 2;
 const USER_ACTION_EVENT_DEBOUNCE = 500;
 const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
