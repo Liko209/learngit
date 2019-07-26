@@ -18,9 +18,10 @@ import {
   primary,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
-import { JuiIconography } from '../../foundation/Iconography';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
+
+import { JuiIconButton } from '../Buttons';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -113,14 +114,32 @@ const StyledPresenceWrapper = styled.div`
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   const { presence, cover, tooltip, mask, ...rest } = props;
+  const maskWithIcon = (
+    <StyledMask>
+      <JuiIconButton
+        variant="plain"
+        size="small"
+        color="common.white"
+        disableToolTip
+      >
+        edit
+      </JuiIconButton>
+    </StyledMask>
+  );
 
   if (cover) {
-    return tooltip ? (
-      <RuiTooltip title={tooltip}>
+    const coverWithMask = mask ? (
+      <StyledMaskWrapper>
         <StyledCoverAvatar {...rest} />
-      </RuiTooltip>
+        {maskWithIcon}
+      </StyledMaskWrapper>
     ) : (
       <StyledCoverAvatar {...rest} />
+    );
+    return tooltip ? (
+      <RuiTooltip title={tooltip}>{coverWithMask}</RuiTooltip>
+    ) : (
+      coverWithMask
     );
   }
 
@@ -133,22 +152,19 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
     <StyledAvatar {...rest} />
   );
 
-  return tooltip ? (
-    <RuiTooltip title={tooltip}>
-      <StyledMaskWrapper>
-        {avatar}
-        <StyledMask>
-          <JuiIconography iconSize="extraSmall">edit</JuiIconography>
-        </StyledMask>
-      </StyledMaskWrapper>
-    </RuiTooltip>
-  ) : (
+  const avatarWithMask = mask ? (
     <StyledMaskWrapper>
       {avatar}
-      <StyledMask>
-        <JuiIconography iconSize="extraSmall">edit</JuiIconography>
-      </StyledMask>
+      {maskWithIcon}
     </StyledMaskWrapper>
+  ) : (
+    avatar
+  );
+
+  return tooltip ? (
+    <RuiTooltip title={tooltip}>{avatarWithMask}</RuiTooltip>
+  ) : (
+    avatarWithMask
   );
 });
 
