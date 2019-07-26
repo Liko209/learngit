@@ -58,7 +58,10 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     padding: ${spacing(1, 4)};
     box-sizing: border-box;
 
-    &:focus,
+    &:focus {
+      background-color: ${palette('grey', '0', 0.12)};
+    }
+
     &:hover {
       background-color: ${palette('grey', '500', 1)};
     }
