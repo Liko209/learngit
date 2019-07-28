@@ -1,42 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip with Avatar & DeleteIcon 1`] = `
-.c1.c1 {
-  width: 24px;
-  height: 24px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 16px;
-  background-color: #f5f6fb;
-}
-
-.c1.c1:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c1.c1:active {
-  opacity: 0.76;
-}
-
-.c1 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -53,6 +17,40 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   fill: currentColor;
   pointer-events: none;
   font-size: 24px;
+}
+
+.c6.c6 .c3,
+.c6.c6 .c3 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c3 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c6.c6:active .c3 {
+  color: #9e9e9e;
+}
+
+.c6.c6.c6.c6.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c7.c7 .c3,
+.c7.c7 .c3 svg {
+  font-size: 20px;
+}
+
+.c7.c7:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c7.c7:active .c3 {
+  color: #0684bd;
+}
+
+.c7.c7.c7.c7.disabled .c3 {
+  color: rgba(0,0,0,0.12);
 }
 
 .c2.c2 {
@@ -96,40 +94,6 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   animation-name: cBKRfH;
 }
 
-.c6.c6 .c3,
-.c6.c6 .c3 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c3 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c6.c6:active .c3 {
-  color: #9e9e9e;
-}
-
-.c6.c6.c6.c6.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c7.c7 .c3,
-.c7.c7 .c3 svg {
-  font-size: 20px;
-}
-
-.c7.c7:hover .c3 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c7.c7:active .c3 {
-  color: #0684bd;
-}
-
-.c7.c7.c7.c7.disabled .c3 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c8.c8 .c3,
 .c8.c8 .c3 svg {
   font-size: 20px;
@@ -145,6 +109,59 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
 
 .c8.c8.c8.c8.disabled .c3 {
   color: rgba(0,0,0,0.12);
+}
+
+.c9.c9 .c3,
+.c9.c9 .c3 svg {
+  font-size: 20px;
+}
+
+.c9.c9:hover .c3 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c9.c9:active .c3 {
+  color: #0684bd;
+}
+
+.c9.c9.c9.c9.disabled .c3 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c1.c1 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c1.c1:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c1.c1:active {
+  opacity: 0.76;
+}
+
+.c1 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c0.c0 {
@@ -363,6 +380,40 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   font-size: 24px;
 }
 
+.c5.c5 .c2,
+.c5.c5 .c2 svg {
+  font-size: 20px;
+}
+
+.c5.c5:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c5.c5:active .c2 {
+  color: #9e9e9e;
+}
+
+.c5.c5.c5.c5.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #0684bd;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c1.c1 {
   padding: 0;
   width: 20px;
@@ -404,40 +455,6 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   animation-name: cBKRfH;
 }
 
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #0684bd;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c7.c7 .c2,
 .c7.c7 .c2 svg {
   font-size: 20px;
@@ -452,6 +469,23 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
 }
 
 .c7.c7.c7.c7.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c8.c8 .c2,
+.c8.c8 .c2 svg {
+  font-size: 20px;
+}
+
+.c8.c8:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c8.c8:active .c2 {
+  color: #0684bd;
+}
+
+.c8.c8.c8.c8.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 

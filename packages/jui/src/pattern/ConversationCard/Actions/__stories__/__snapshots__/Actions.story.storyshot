@@ -20,6 +20,40 @@ Array [
   font-size: 24px;
 }
 
+.c5.c5 .c2,
+.c5.c5 .c2 svg {
+  font-size: 20px;
+}
+
+.c5.c5:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c5.c5:active .c2 {
+  color: #9e9e9e;
+}
+
+.c5.c5.c5.c5.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #0684bd;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c1.c1 {
   padding: 0;
   width: 20px;
@@ -61,40 +95,6 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #0684bd;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c7.c7 .c2,
 .c7.c7 .c2 svg {
   font-size: 20px;
@@ -118,11 +118,11 @@ Array [
 }
 
 .c8.c8:hover .c2 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c8.c8:active .c2 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c8.c8.c8.c8.disabled .c2 {
@@ -131,15 +131,15 @@ Array [
 
 .c9.c9 .c2,
 .c9.c9 .c2 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c9.c9:hover .c2 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c9.c9:active .c2 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c9.c9.c9.c9.disabled .c2 {
@@ -148,15 +148,15 @@ Array [
 
 .c10.c10 .c2,
 .c10.c10 .c2 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c10.c10:hover .c2 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c10.c10:active .c2 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c10.c10.c10.c10.disabled .c2 {
@@ -301,6 +301,40 @@ Array [
   font-size: 24px;
 }
 
+.c5.c5 .c2,
+.c5.c5 .c2 svg {
+  font-size: 20px;
+}
+
+.c5.c5:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c5.c5:active .c2 {
+  color: #9e9e9e;
+}
+
+.c5.c5.c5.c5.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #0684bd;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c1.c1 {
   padding: 0;
   width: 20px;
@@ -342,40 +376,6 @@ Array [
   animation-name: cBKRfH;
 }
 
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #0684bd;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c7.c7 .c2,
 .c7.c7 .c2 svg {
   font-size: 20px;
@@ -399,11 +399,11 @@ Array [
 }
 
 .c8.c8:hover .c2 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c8.c8:active .c2 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c8.c8.c8.c8.disabled .c2 {
@@ -412,15 +412,15 @@ Array [
 
 .c9.c9 .c2,
 .c9.c9 .c2 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c9.c9:hover .c2 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c9.c9:active .c2 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c9.c9.c9.c9.disabled .c2 {
@@ -429,15 +429,15 @@ Array [
 
 .c10.c10 .c2,
 .c10.c10 .c2 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c10.c10:hover .c2 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c10.c10:active .c2 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c10.c10.c10.c10.disabled .c2 {

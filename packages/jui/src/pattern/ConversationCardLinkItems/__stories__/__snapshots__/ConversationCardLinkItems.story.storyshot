@@ -19,6 +19,40 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   font-size: 24px;
 }
 
+.c13.c13 .c10,
+.c13.c13 .c10 svg {
+  font-size: 20px;
+}
+
+.c13.c13:hover .c10 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c13.c13:active .c10 {
+  color: #9e9e9e;
+}
+
+.c13.c13.c13.c13.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c14.c14 .c10,
+.c14.c14 .c10 svg {
+  font-size: 20px;
+}
+
+.c14.c14:hover .c10 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c14.c14:active .c10 {
+  color: #0684bd;
+}
+
+.c14.c14.c14.c14.disabled .c10 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c9.c9 {
   padding: 0;
   width: 20px;
@@ -60,40 +94,6 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   animation-name: cBKRfH;
 }
 
-.c13.c13 .c10,
-.c13.c13 .c10 svg {
-  font-size: 20px;
-}
-
-.c13.c13:hover .c10 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c13.c13:active .c10 {
-  color: #9e9e9e;
-}
-
-.c13.c13.c13.c13.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c14.c14 .c10,
-.c14.c14 .c10 svg {
-  font-size: 20px;
-}
-
-.c14.c14:hover .c10 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c14.c14:active .c10 {
-  color: #0684bd;
-}
-
-.c14.c14.c14.c14.disabled .c10 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c15.c15 .c10,
 .c15.c15 .c10 svg {
   font-size: 20px;
@@ -117,11 +117,11 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 }
 
 .c16.c16:hover .c10 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c16.c16:active .c10 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c16.c16.c16.c16.disabled .c10 {
@@ -130,15 +130,15 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 
 .c17.c17 .c10,
 .c17.c17 .c10 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c17.c17:hover .c10 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c17.c17:active .c10 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c17.c17.c17.c17.disabled .c10 {
@@ -147,15 +147,15 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
 
 .c18.c18 .c10,
 .c18.c18 .c10 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c18.c18:hover .c10 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c18.c18:active .c10 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c18.c18.c18.c18.disabled .c10 {

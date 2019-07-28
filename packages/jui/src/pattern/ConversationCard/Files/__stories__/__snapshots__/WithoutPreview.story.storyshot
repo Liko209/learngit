@@ -30,29 +30,38 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   font-size: 36px;
 }
 
-.c6 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
+.c10.c10 .c8,
+.c10.c10 .c8 svg {
+  font-size: 20px;
 }
 
-.c6.c6 > *:nth-child(n + 2) {
-  margin-left: 8px;
+.c10.c10:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c10.c10:active .c8 {
+  color: #9e9e9e;
+}
+
+.c10.c10.c10.c10.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c11.c11 .c8,
+.c11.c11 .c8 svg {
+  font-size: 20px;
+}
+
+.c11.c11:hover .c8 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c11.c11:active .c8 {
+  color: #0684bd;
+}
+
+.c11.c11.c11.c11.disabled .c8 {
+  color: rgba(0,0,0,0.12);
 }
 
 .c7.c7 {
@@ -96,40 +105,6 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
   animation-name: cBKRfH;
 }
 
-.c10.c10 .c8,
-.c10.c10 .c8 svg {
-  font-size: 20px;
-}
-
-.c10.c10:hover .c8 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c10.c10:active .c8 {
-  color: #9e9e9e;
-}
-
-.c10.c10.c10.c10.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c11.c11 .c8,
-.c11.c11 .c8 svg {
-  font-size: 20px;
-}
-
-.c11.c11:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c11.c11:active .c8 {
-  color: #0684bd;
-}
-
-.c11.c11.c11.c11.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c12.c12 .c8,
 .c12.c12 .c8 svg {
   font-size: 20px;
@@ -153,11 +128,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 }
 
 .c13.c13:hover .c8 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c13.c13:active .c8 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c13.c13.c13.c13.disabled .c8 {
@@ -166,15 +141,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c14.c14 .c8,
 .c14.c14 .c8 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c14.c14:hover .c8 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c14.c14:active .c8 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c14.c14.c14.c14.disabled .c8 {
@@ -183,15 +158,15 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c15.c15 .c8,
 .c15.c15 .c8 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c15.c15:hover .c8 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c15.c15:active .c8 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c15.c15.c15.c15.disabled .c8 {
@@ -264,6 +239,31 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
 
 .c19.c19.c19.c19.disabled .c8 {
   color: rgba(0,0,0,0.12);
+}
+
+.c6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c6.c6 > *:nth-child(n + 2) {
+  margin-left: 8px;
 }
 
 .c0.c0 {

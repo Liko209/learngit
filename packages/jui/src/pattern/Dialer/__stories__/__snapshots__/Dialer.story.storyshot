@@ -1,42 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
-.c12.c12 {
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  background-color: #f5f6fb;
-}
-
-.c12.c12:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c12.c12:active {
-  opacity: 0.76;
-}
-
-.c12 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -127,11 +91,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c26.c26:hover .c8 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c26.c26:active .c8 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c26.c26.c26.c26.disabled .c8 {
@@ -144,11 +108,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c27.c27:hover .c8 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c27.c27:active .c8 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c27.c27.c27.c27.disabled .c8 {
@@ -178,11 +142,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c29.c29:hover .c8 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c29.c29:active .c8 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c29.c29.c29.c29.disabled .c8 {
@@ -191,15 +155,15 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 
 .c30.c30 .c8,
 .c30.c30 .c8 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c30.c30:hover .c8 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c30.c30:active .c8 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c30.c30.c30.c30.disabled .c8 {
@@ -208,15 +172,15 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 
 .c31.c31 .c8,
 .c31.c31 .c8 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c31.c31:hover .c8 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c31.c31:active .c8 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c31.c31.c31.c31.disabled .c8 {
@@ -320,6 +284,42 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c12.c12 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #f5f6fb;
+}
+
+.c12.c12:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c12.c12:active {
+  opacity: 0.76;
+}
+
+.c12 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c2.c2 {

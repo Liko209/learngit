@@ -554,48 +554,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   fill: #0684bd;
 }
 
-.c7 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c7.c7 > *:nth-child(n + 2) {
-  margin-left: -8px;
-}
-
-.c18.c18 .c9,
-.c18.c18 .c9 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c9 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c9 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c9 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c8.c8 {
   padding: 0;
   width: 40px;
@@ -637,17 +595,34 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   animation-name: cBKRfH;
 }
 
+.c18.c18 .c9,
+.c18.c18 .c9 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c9 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c18.c18:active .c9 {
+  color: #0684bd;
+}
+
+.c18.c18.c18.c18.disabled .c9 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c19.c19 .c9,
 .c19.c19 .c9 svg {
   font-size: 20px;
 }
 
 .c19.c19:hover .c9 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c19.c19:active .c9 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c19.c19.c19.c19.disabled .c9 {
@@ -677,11 +652,11 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 }
 
 .c21.c21:hover .c9 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c21.c21:active .c9 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c21.c21.c21.c21.disabled .c9 {
@@ -690,15 +665,15 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c22.c22 .c9,
 .c22.c22 .c9 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c22.c22:hover .c9 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c22.c22:active .c9 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c22.c22.c22.c22.disabled .c9 {
@@ -707,15 +682,15 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c23.c23 .c9,
 .c23.c23 .c9 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c23.c23:hover .c9 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c23.c23:active .c9 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c23.c23.c23.c23.disabled .c9 {
@@ -788,6 +763,31 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c27.c27.c27.c27.disabled .c9 {
   color: rgba(0,0,0,0.12);
+}
+
+.c7 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.c7.c7 > *:nth-child(n + 2) {
+  margin-left: -8px;
 }
 
 .c17 {
@@ -1301,6 +1301,40 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   font-size: 20px;
 }
 
+.c23.c23 .c21,
+.c23.c23 .c21 svg {
+  font-size: 20px;
+}
+
+.c23.c23:hover .c21 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c23.c23:active .c21 {
+  color: #9e9e9e;
+}
+
+.c23.c23.c23.c23.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c24.c24 .c21,
+.c24.c24 .c21 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c21 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c24.c24:active .c21 {
+  color: #0684bd;
+}
+
+.c24.c24.c24.c24.disabled .c21 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c20.c20 {
   padding: 0;
   width: 20px;
@@ -1342,40 +1376,6 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
   animation-name: cBKRfH;
 }
 
-.c23.c23 .c21,
-.c23.c23 .c21 svg {
-  font-size: 20px;
-}
-
-.c23.c23:hover .c21 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c23.c23:active .c21 {
-  color: #9e9e9e;
-}
-
-.c23.c23.c23.c23.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c24.c24 .c21,
-.c24.c24 .c21 svg {
-  font-size: 20px;
-}
-
-.c24.c24:hover .c21 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c24.c24:active .c21 {
-  color: #0684bd;
-}
-
-.c24.c24.c24.c24.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c25.c25 .c21,
 .c25.c25 .c21 svg {
   font-size: 20px;
@@ -1399,11 +1399,11 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 }
 
 .c26.c26:hover .c21 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c26.c26:active .c21 {
-  color: #edb63c;
+  color: #0684bd;
 }
 
 .c26.c26.c26.c26.disabled .c21 {
@@ -1412,15 +1412,15 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c27.c27 .c21,
 .c27.c27 .c21 svg {
-  font-size: 16px;
+  font-size: 20px;
 }
 
 .c27.c27:hover .c21 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c27.c27:active .c21 {
-  color: #9e9e9e;
+  color: #edb63c;
 }
 
 .c27.c27.c27.c27.disabled .c21 {
@@ -1429,15 +1429,15 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c28.c28 .c21,
 .c28.c28 .c21 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c28.c28:hover .c21 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c28.c28:active .c21 {
-  color: #0684bd;
+  color: #9e9e9e;
 }
 
 .c28.c28.c28.c28.disabled .c21 {
