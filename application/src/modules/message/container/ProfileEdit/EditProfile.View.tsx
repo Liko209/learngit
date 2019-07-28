@@ -79,7 +79,7 @@ class EditProfileViewComponent extends Component<
   };
 
   _renderItem = (section: EditItemSourceType[]) => {
-    const { t } = this.props;
+    const { t, isLoading } = this.props;
     return section.map(({ key, automationId, isLastItem, maxLength }) => {
       const errorKey = `${key}Error`;
       const isInError = this.props[errorKey];
@@ -96,6 +96,7 @@ class EditProfileViewComponent extends Component<
                 maxLength,
               },
             }}
+            disabled={isLoading}
             data-test-automation-id={automationId}
             value={this.props[key]}
             fullWidth
@@ -111,7 +112,7 @@ class EditProfileViewComponent extends Component<
     });
   };
   render() {
-    const { t, id, handleProfileEdit, webpageError } = this.props;
+    const { t, id, handleProfileEdit, webpageError, isLoading } = this.props;
     console.log('looper', id);
     return (
       <JuiModal
@@ -123,6 +124,7 @@ class EditProfileViewComponent extends Component<
         okBtnProps={{
           disabled: webpageError,
         }}
+        loading={isLoading}
         okText={t('common.dialog.save')}
         cancelText={t('common.dialog.cancel')}
         modalProps={{

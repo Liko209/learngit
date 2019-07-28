@@ -5,6 +5,7 @@
  */
 
 import { computed, observable, action, Reaction } from 'mobx';
+import { catchError } from '@/common/catchError';
 import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
@@ -13,6 +14,7 @@ import { ENTITY_NAME } from '@/store';
 import { trimStringBothSides, matchEmail } from '@/utils/string';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import portalManager from '@/common/PortalManager';
 import {
   EditProfileProps,
   EditProfileViewModelProps,
@@ -28,6 +30,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @observable webpage?: string;
   @observable webpageError: boolean;
   @observable currentPersonInfo: PersonModel;
+  @observable isLoading: boolean;
 
   constructor(props: EditProfileProps) {
     super(props);
@@ -70,25 +73,38 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     return Object.keys(info).length ? info : undefined;
   };
 
+  @catchError.flash({
+    network: 'people.profile.edit.editProfileNetworkError',
+    server: 'people.profile.edit.editProfileBackendError',
+  })
   @action
   handleProfileEdit = async () => {
     if (this.webpage) {
       this.webpageError = !matchEmail(this.webpage);
     }
-    console.log('looper', this.webpageError);
     if (this.webpageError) return;
     const info = this.getUpdateInfo();
-    if (!info) return;
-    console.log('looper', info);
+    if (!info) {
+      portalManager.dismissAll();
+      return;
+    }
+    this.isLoading = true;
     const personService = ServiceLoader.getInstance<PersonService>(
-      ServiceConfig.PROFILE_SERVICE,
+      ServiceConfig.PERSON_SERVICE,
     );
-    await personService.editPersonalInfo(info);
+    await personService.editPersonalInfo(info).catch(e => {
+      this.isLoading = false;
+      throw e;
+    });
+    this.isLoading && portalManager.dismissLast();
+    this.isLoading = false;
   };
 
   @action
   updateInfo = (key: EditItemSourceType['key'], value: string) => {
-    console.log('looper', key, value, trimStringBothSides(value));
+    if (key === 'webpage') {
+      this.webpageError = false;
+    }
     this[key] = trimStringBothSides(value);
   };
 }
