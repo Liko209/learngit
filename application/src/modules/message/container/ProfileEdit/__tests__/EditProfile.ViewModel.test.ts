@@ -84,7 +84,7 @@ describe('EditProfileViewModel', () => {
       await vm.handleProfileEdit();
       expect(Notification.flashToast).not.toHaveBeenCalled();
     });
-    it('Should show a flash toast after the user clicks Save button on profile edit dialog in offline mode [JPT-2076]', async () => {
+    it('Should show a flash toast after the user clicks Save button on profile edit dialog in offline mode [JPT-2675]', async () => {
       personService.editPersonalInfo = jest
         .fn()
         .mockRejectedValueOnce(
@@ -98,7 +98,7 @@ describe('EditProfileViewModel', () => {
         toastParamsBuilder('people.profile.edit.editProfileNetworkError'),
       );
     });
-    it('Should show a flash toast after the user clicks Save button on profile edit dialog when backend error [JPT-2077]', async () => {
+    it('Should show a flash toast after the user clicks Save button on profile edit dialog when backend error [JPT-2670]', async () => {
       personService.editPersonalInfo = jest
         .fn()
         .mockRejectedValueOnce(
