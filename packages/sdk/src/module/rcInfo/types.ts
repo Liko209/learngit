@@ -52,6 +52,7 @@ enum ERCServiceFeaturePermission {
   CALL_FORWARDING,
   READ_CALLLOG,
   READ_MESSAGES,
+  WEB_PHONE,
 }
 
 enum PermissionId {
@@ -80,6 +81,7 @@ enum RCServiceFeatureName {
   VIDEO_CONFERENCING = 'VideoConferencing',
   CONFERENCING = 'Conferencing',
   CALL_FORWARDING = 'CallForwarding',
+  WEB_PHONE = 'WebPhone',
 }
 
 enum RCBrandType {

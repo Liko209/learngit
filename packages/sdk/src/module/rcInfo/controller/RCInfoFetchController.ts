@@ -250,6 +250,7 @@ class RCInfoFetchController {
     };
     const deviceInfo = await RCInfoApi.getDeviceInfo(request);
     await this.rcInfoUserConfig.setDeviceInfo(deviceInfo);
+    notificationCenter.emit(RC_INFO.DEVICE_INFO, deviceInfo);
   };
 
   requestBlockNumberList = async (): Promise<void> => {
