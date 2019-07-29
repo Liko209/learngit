@@ -15,7 +15,7 @@ const JuiEditProfileSectionContent = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin: ${spacing(2)} 0 ${spacing(-4)};
+  margin: ${spacing(2, 0, -4)};
 `;
 
 const JuiEditProfileSection = styled.div`

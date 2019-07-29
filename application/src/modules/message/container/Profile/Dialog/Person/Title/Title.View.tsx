@@ -23,6 +23,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
 > {
   @IMessageService private _messageService: IMessageService;
   onClick = () => portalManager.dismissLast();
+  handleEditClick = () => this._messageService.open(this.props.id);
   render() {
     const { id, t } = this.props;
     return (
@@ -30,9 +31,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
           <JuiIconButton
-            onClick={() => {
-              this._messageService.open(id);
-            }}
+            onClick={this.handleEditClick}
             tooltipTitle={t('common.dialog.edit')}
             ariaLabel={t('common.dialog.edit')}
           >
