@@ -1,8 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ConversationList/UMI.ts",
-      "./telephony/Dialer.ts"
+      "./fixtures/PhoneTab/**/*.ts"
     ],
     "browsers": [
       "selenium:chrome"
