@@ -377,10 +377,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then people search resutls order is alphabetical order`, async () => {
     await checkInAlphabeticalOrder();
-  });
+  }, true);
 
   await h(t).withLog(`When I search userC and open conversation with userC ${nameUserC}`, async () => {
-    await searchBar.clickSelf();
+    await searchDialog.clickClearButton();
     await searchDialog.typeSearchKeyword(nameUserC);
     await searchDialog.instantPage.nthPeople(0).enter();
   }, true);
