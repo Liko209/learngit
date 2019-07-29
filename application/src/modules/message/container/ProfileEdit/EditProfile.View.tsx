@@ -85,7 +85,7 @@ class EditProfileViewComponent extends Component<
       const isInError = this.props[errorKey];
       const { currentFocusItem } = this.state;
       return (
-        <>
+        <div key={key}>
           <JuiTextField
             key={key}
             label={t(`people.profile.edit.${key}`)}
@@ -107,13 +107,12 @@ class EditProfileViewComponent extends Component<
             onBlur={this._updateFocusState()}
           />
           {isLastItem && <div />}
-        </>
+        </div>
       );
     });
   };
   render() {
     const { t, id, handleProfileEdit, webpageError, isLoading } = this.props;
-    console.log('looper', id);
     return (
       <JuiModal
         open

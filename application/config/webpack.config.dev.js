@@ -188,7 +188,7 @@ module.exports = {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        exclude: /\.test.node.(ts|tsx)$/,
+        exclude: /\.test.(ts|tsx)$/,
         enforce: 'pre',
         include: [
           paths.appSrc,
