@@ -3,36 +3,35 @@
  * @Date: 2019-01-14 08:54:37
  * Copyright © RingCentral. All rights reserved.
  */
+import { DEFAULT_RETRY_COUNT, mainLogger, REQUEST_PRIORITY } from 'foundation';
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
+import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { daoManager } from '../../../../dao';
+import { Raw } from '../../../../framework/model';
+import { ENTITY } from '../../../../service/eventKey';
+import notificationCenter from '../../../../service/notificationCenter';
+import { AccountService } from '../../../account/service';
+import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
+import { GroupConfigService } from '../../../groupConfig';
+import { ItemService } from '../../../item/service';
+import { PROGRESS_STATUS } from '../../../progress';
+import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
+import { AT_MENTION_GROUPED_REGEXP } from '../../constant';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import {
-  SendPostType,
-  PostItemsReadyCallbackType,
   EditPostType,
+  PostItemsReadyCallbackType,
+  SendPostType,
 } from '../../types';
-import SendPostControllerHelper from './SendPostControllerHelper';
-import { ItemService } from '../../../item/service';
-
-import notificationCenter from '../../../../service/notificationCenter';
-import { GroupConfigService } from '../../../groupConfig';
-import { ENTITY } from '../../../../service/eventKey';
-import { ErrorParserHolder } from '../../../../error';
-import { PostActionController } from './PostActionController';
-import { PostItemController } from './PostItemController';
 import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
-import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
-import { Raw } from '../../../../framework/model';
-import { AccountService } from '../../../account/service';
-import { PostControllerUtils } from './PostControllerUtils';
-import { PROGRESS_STATUS } from '../../../progress';
-import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { PostDataController } from '../PostDataController';
-import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
-import { AT_MENTION_GROUPED_REGEXP } from '../../constant';
+import { ErrorParserHolder } from '../../../../error';
+import { PostActionController } from './PostActionController';
+import { PostControllerUtils } from './PostControllerUtils';
+import { PostItemController } from './PostItemController';
+import SendPostControllerHelper from './SendPostControllerHelper';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -81,8 +80,8 @@ class SendPostController implements ISendPostController {
     return null;
   }
 
-  async editFailedPost(params: EditPostType) {
-    this.postActionController.editFailedPost(params, this.innerSendPost);
+  editFailedPost(params: EditPostType) {
+    return this.postActionController.editFailedPost(params, this.innerSendPost);
   }
 
   /**
