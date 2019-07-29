@@ -51,7 +51,10 @@ class SearchPersonController {
   }> {
     const performanceTracer = PerformanceTracer.start();
 
-    const persons = await this._doFuzzySearchPersons(options);
+    const persons = await this._doFuzzySearchPersons({
+      ...options,
+      ignoreEmail: true,
+    });
 
     const phoneContacts: PhoneContactEntity[] = [];
     const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
@@ -180,6 +183,7 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       asIdsOrder,
       recentFirst,
+      ignoreEmail,
     } = options;
 
     const sortFunc =
@@ -188,6 +192,7 @@ class SearchPersonController {
       excludeSelf,
       fetchAllIfSearchKeyEmpty,
       recentFirst,
+      ignoreEmail,
     );
 
     const genFormattedTermsFunc = (originalTerms: string[]) => {
@@ -329,6 +334,7 @@ class SearchPersonController {
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
+    ignoreEmail?: boolean,
   ) {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -405,6 +411,7 @@ class SearchPersonController {
               }
             }
           } else if (
+            !ignoreEmail &&
             person.email &&
             SearchUtils.isFuzzyMatched(
               person.email.toLowerCase(),

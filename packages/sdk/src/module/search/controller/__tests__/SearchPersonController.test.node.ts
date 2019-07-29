@@ -796,6 +796,22 @@ describe('SearchPersonController', () => {
         expect(item.phoneNumber.id.startsWith('65022700')).toBeTruthy();
       });
     });
+
+    it('should not match email when search phone contact', async () => {
+      await initTestData();
+
+      const userConfig = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      ).userConfig;
+      jest.spyOn(userConfig, 'getCurrentCompanyId').mockReturnValue(1);
+      jest.spyOn(userConfig, 'getGlipUserId').mockReturnValue(Infinity);
+      const result = await searchPersonController.doFuzzySearchPhoneContacts({
+        searchKey: 'ringcentral',
+        excludeSelf: false,
+      });
+
+      expect(result).toEqual({ phoneContacts: [], terms: ['ringcentral'] });
+    });
   });
 
   describe('duFuzzySearchPersonAndGroup', () => {
@@ -820,7 +836,7 @@ describe('SearchPersonController', () => {
         terms: '1',
         sortableModels: [...persons, ...groups],
       });
-      expect(groupService.doFuzzySearchALlGroups).toBeCalled();
+      expect(groupService.doFuzzySearchALlGroups).toHaveBeenCalled();
     });
     it('should return person value when not search key', async () => {
       const persons = [];
@@ -839,7 +855,7 @@ describe('SearchPersonController', () => {
         terms: '',
         sortableModels: persons,
       });
-      expect(groupService.doFuzzySearchALlGroups).not.toBeCalled();
+      expect(groupService.doFuzzySearchALlGroups).not.toHaveBeenCalled();
     });
   });
 });
