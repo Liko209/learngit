@@ -75,7 +75,7 @@ class HomeViewComponent extends Component<Props> {
         fullWidth: false,
         dismissible: true,
       });
-    }, 3000);
+    }, 10000);
   }
 
   componentWillUnmount() {

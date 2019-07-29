@@ -16,9 +16,10 @@ type E911ViewProps = E911Props & {
   countryList: Country[];
   stateList: State[];
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onSubmit: () => void;
+  onSubmit: () => Promise<void>;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   value: E911SettingInfo;
+  disabled: boolean;
 };
 
 type Country = DialingCountryInfo;

@@ -731,7 +731,11 @@
       "streetAddressPlaceholder": "e.g.120 1st St SW",
       "additionalAddress": "Additional Address",
       "additionalAddressPlaceholder": "e.g. Suite 500 or Building A, Floor 3",
-      "stateProvince": "State/Province"
+      "stateProvince": "State/Province",
+      "prompt": {
+        "backendError": "Sorry, something went wrong on our end, we weren't able to save the update. Try again later.",
+        "networkError": "Sorry, we weren't able to save the update. Check your network connection, then try again."
+      }
     }
   },
   "phone": {

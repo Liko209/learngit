@@ -16,9 +16,9 @@ import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
 
-import { E911Props, E911ViewProps, Country, State } from './types';
+import { E911ViewProps, Country, State } from './types';
 
-class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
+class E911ViewModel extends StoreViewModel implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
 
@@ -39,8 +39,8 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     outOfCountry: false,
   };
 
-  constructor(props: E911Props) {
-    super(props);
+  constructor() {
+    super();
     this.reaction(
       () => this.settingItemEntity.value,
       (value: E911SettingInfo, dispose: any) => {
@@ -70,6 +70,15 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     return userConfig;
   }
 
+  @computed
+  get disabled() {
+    const checkField = ['customerName', 'country', 'street', 'city', 'zip'];
+    if (this.stateList.length > 0) {
+      checkField.push('state');
+    }
+    return checkField.some((field: string) => !this.value[field]);
+  }
+
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
@@ -85,7 +94,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     const current = currentCountry.name ? currentCountry : countryList[0];
     this.saveStateOrCountry('country', current);
     this.getState(current.id);
-  };
+  }
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
@@ -116,13 +125,13 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   };
 
   @catchError.flash({
-    network: 'message.prompt.updateRegionalSettingsNetworkError',
-    server: 'message.prompt.updateRegionalSettingsBackendError',
+    network: 'telephony.e911.prompt.backendError',
+    server: 'telephony.e911.prompt.networkError',
   })
-  onSubmit = () => {
-    // this.settingItemEntity.valueSetter &&
-    // this.settingItemEntity.valueSetter(this.value);
-    console.log(this.value, '---nello 222');
+  onSubmit = async () => {
+    console.log(this.settingItemEntity.valueSetter);
+    await (this.settingItemEntity.valueSetter &&
+      this.settingItemEntity.valueSetter(this.value));
   };
 }
 

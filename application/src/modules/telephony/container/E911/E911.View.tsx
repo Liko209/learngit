@@ -34,7 +34,7 @@ class E911ViewComponent extends Component<Props> {
       <JuiLineSelect
         // menuProps={this.lineSelectProps}
         onChange={stateOnChange}
-        label={t('telephony.e911.stateProvince')}
+        label={`${t('telephony.e911.stateProvince')} *`}
         automationId="e911-state-select"
         value={stateName}
       >
@@ -74,6 +74,7 @@ class E911ViewComponent extends Component<Props> {
       countryList,
       countryOnChange,
       value,
+      disabled,
     } = this.props;
     const { countryName, customerName, city, zip, street, street2 } = value;
     return (
@@ -98,7 +99,7 @@ class E911ViewComponent extends Component<Props> {
           <JuiLineSelect
             // menuProps={this.lineSelectProps}
             onChange={countryOnChange}
-            label={t('common.country')}
+            label={`${t('common.country')} *`}
             automationId="e911-country-select"
             value={countryName}
           >
@@ -179,7 +180,7 @@ class E911ViewComponent extends Component<Props> {
             variant="contained"
             autoFocus={false}
             data-test-automation-id="DialogOKButton"
-            // disabled={loading}
+            disabled={disabled}
           >
             confirm
           </JuiButton>
