@@ -5,7 +5,6 @@
  */
 import React, { ReactNode, memo } from 'react';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
-// import MuiLock from '@material-ui/icons/Lock';
 import { JuiSearchItemValue } from '../SearchItemValue';
 import styled from '../../../foundation/styled-components';
 import {
@@ -50,12 +49,6 @@ const SearchItemWrapper = styled<MuiMenuItemPropsFixed>(MenuItem)`
     }
   }
 `;
-
-const PrivateIcon = () => (
-  <JuiIconography iconColor={['grey', '500']} iconSize="medium">
-    lock
-  </JuiIconography>
-);
 
 const SearchItemAvatar = styled.div`
   display: flex;
@@ -123,7 +116,13 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           data-test-automation-id="search-item-text"
         />
         {isPrivate && (
-          <PrivateIcon data-test-automation-id="search-item-private" />
+          <JuiIconography
+            data-test-automation-id="search-item-private"
+            iconColor={['grey', '500']}
+            iconSize="medium"
+          >
+            lock
+          </JuiIconography>
         )}
         {isJoined && (
           <Joined data-test-automation-id="search-item-joined">
