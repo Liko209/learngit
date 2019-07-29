@@ -36,7 +36,8 @@ class PresenceActionController {
       entitySourceController,
     );
   }
-  setPresence(status: PRESENCE) {
+
+  async setPresence(status: PRESENCE) {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
