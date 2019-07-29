@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /* eslint-disable */
+// Array.prototype.flatMap
+import "core-js/features/array/flat-map";
 // polyfill require.context
 import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
 
