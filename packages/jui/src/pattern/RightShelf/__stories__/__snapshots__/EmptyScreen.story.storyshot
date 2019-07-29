@@ -15,11 +15,11 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c6.c6.containedButtonStyle {
   color: #fff;
-  box-shadow: unset;
   background-color: #0684bd;
 }
 
@@ -30,10 +30,6 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
 .c6.c6.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: #fff;
-}
-
-.c6.c6.containedButtonStyle:active {
-  box-shadow: unset;
 }
 
 .c6.c6.textButtonStyle.disabled {
@@ -182,10 +178,10 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
       className="c5"
     >
       <button
-        className="MuiButtonBase-root MuiButton-root MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge c6"
+        className="MuiButtonBase-root MuiButton-root c6 MuiButton-outlined outlineButtonStyle MuiButton-sizeLarge"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -195,7 +191,7 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         <span
@@ -203,9 +199,6 @@ exports[`Storyshots Pattern/ConversationRightShelf EmptyScreen: Pattern/Conversa
         >
           Share a file
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </button>
     </div>
   </div>

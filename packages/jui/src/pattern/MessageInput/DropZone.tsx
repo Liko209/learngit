@@ -59,12 +59,6 @@ class TargetBox extends PureComponent<
     return showHoverStyle ? theme.palette.action.hoverOpacity * 2 : 1;
   };
 
-  private _handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    const { clearFolderDetection } = this.props;
-    clearFolderDetection && clearFolderDetection();
-    event.stopPropagation();
-  };
-
   render() {
     const {
       hidden = false,
@@ -94,7 +88,7 @@ class TargetBox extends PureComponent<
       <div
         style={style}
         onDrop={this._checkFolder}
-        onDragOver={this._handleDragOver}
+        onDragOver={this.props.clearFolderDetection}
       >
         {children}
       </div>

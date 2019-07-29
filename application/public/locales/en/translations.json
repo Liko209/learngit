@@ -283,8 +283,7 @@
       "MessageLoadingErrorTipForNetworkIssue": "We aren't able to open this conversation. Check your network connection, ",
       "MessageLoadingErrorTipForServerIssue": "Sorry, something went wrong on our end and we aren't able to open this conversation. ",
       "NewMessage": "New Message",
-      "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
-      "newMessageTipLink": "create a Team instead.",
+      "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should <0>create a Team</0> instead.",
       "newMessageDirectlyTip": "Send the message to the selected contacts individually.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
       "disabledText": "This team is read-only",
@@ -343,6 +342,7 @@
       "started a audio conference": "started an audio conference",
       "started a video chat": "started a video chat",
       "replied": "replied",
+      "reply": "replied to",
       "via": "via"
     },
     "meeting": {
@@ -475,6 +475,9 @@
         "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later."
       }
     },
+    "group": {
+      "addPeople": "Add people"
+    },
     "team": {
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
@@ -591,7 +594,11 @@
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
       "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
       "conversationArchived": "This team was archived. To know more, contact the team administrator.",
-      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator."
+      "conversationPrivate": "Sorry, you're not a member of this Team. To join, contact the team administrator.",
+      "newConversationTitle": "New conversation",
+      "newConversationTip": "Adding people will start a new conversation without the current message history. If you'd like to keep the history, you can <0>convert to a team</0> instead.",
+      "newConversationBackendError": "Sorry, something went wrong on our end and we weren't able to add people. Try again later.",
+      "newConversationNetworkError": "Sorry, we weren't able to add people. Check your network connection, then try again."
     }
   },
   "contact": {
@@ -801,6 +808,7 @@
   },
   "integration": {},
   "setting": {
+    "playSound": "Play sound",
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
       "network": "We weren't able to save your settings. Check your network connection, then try again.",
@@ -822,6 +830,63 @@
           "label": "New message badge count"
         }
       },
+      "sounds": {
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Choose sound for new direct messages"
+        },
+        "teamMessages": {
+          "label": "Team messages",
+          "description": "Choose a sound for new team messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Choose sound for when you are mentioned"
+        },
+        "incomingCall": {
+          "label": "Incoming voice calls",
+          "description": "Choose a sound for incoming voice calls"
+        },
+        "voiceMail": {
+          "label": "New voicemail",
+          "description": "Choose a sound for new voicemail"
+        },
+        "options": {
+          "2Beep": "2 Beeps",
+          "3Beep": "3 Beeps",
+          "Alert1": "Alert",
+          "Alert2": "Alert 2",
+          "Alert3": "Alert 3",
+          "BingBong": "Bing Bong",
+          "Ching": "Ching",
+          "LogDrum2": "Log Drum",
+          "Snap": "Snap",
+          "Button9": "Squirt",
+          "Whoosh": "Whoosh",
+          "Whoosh2": "Whoosh 2",
+          "default": "Default",
+          "PhoneRing": "Phone Ring",
+          "air-raid-ring": "Air Raid",
+          "allusive-ring": "Allusive",
+          "attention-ring": "Attention",
+          "blub-blub-ring": "Blub Blub",
+          "buzzy-ring": "Buzzy",
+          "communication-channel-ring": "Channel Open",
+          "disco-ring": "Disco",
+          "door-bell-ring": "Door Bell",
+          "fab-ring": "Fairy",
+          "fast-bells-ring": "Fast Bells",
+          "high-gong-ring": "High Gong",
+          "indeed-ring": "Indeed",
+          "nice-ring": "Nice",
+          "ringing-bells-ring": "Ringing Bells",
+          "ring-ring": "Ring",
+          "simple-ring": "Simple",
+          "soothing-ring": "Soothing",
+          "0": "Off"
+        }
+      },
+
       "desktopNotifications": {
         "title": "Desktop notifications",
         "notificationsForBrowser": {

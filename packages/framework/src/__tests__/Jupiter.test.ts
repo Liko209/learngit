@@ -1,5 +1,5 @@
 import { Jupiter } from '../Jupiter';
-import { container } from '../ioc';
+import { container, createDecorator } from '../ioc';
 
 describe('Jupiter', () => {
   afterEach(() => {
@@ -146,40 +146,42 @@ describe('Jupiter', () => {
   });
 });
 
-describe('JupiterModule', () => {
+describe('Jupiter initial/dispose events', () => {
   afterEach(() => {
     container.unbindAll();
   });
 
   const _jupiter = new Jupiter();
-  const MESSAGE_SERVICE = 'MESSAGE_SERVICE';
-  const TELEPHONY_SERVICE = 'TELEPHONY_SERVICE';
+  const IMessageService = createDecorator('IMessageService');
+  const ITelephonyService = createDecorator('ITelephonyService');
+  interface IMessageService {}
+  interface ITelephonyService {}
 
   class MessageModule {
     bootstrap() {
-      _jupiter.emitModuleInitial(MESSAGE_SERVICE);
+      _jupiter.emitModuleInitial(IMessageService);
     }
     disposed() {
-      _jupiter.emitModuleDispose(MESSAGE_SERVICE);
+      _jupiter.emitModuleDispose(IMessageService);
     }
   }
-  class MessageService {}
-  class TelephonyService {}
+  class MessageService implements IMessageService {}
+  class TelephonyService implements ITelephonyService {}
 
   describe('onInitialized()', () => {
     it('should execute callback when modules already initialized', () => {
       const jupiter = new Jupiter();
       jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
       jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
 
       const messageServiceCallback = jest.fn();
-      jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+      jupiter.onInitialized(IMessageService, messageService => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
@@ -187,7 +189,7 @@ describe('JupiterModule', () => {
 
       const messageNTelephonyServiceCallback = jest.fn();
       jupiter.onInitialized(
-        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        [IMessageService, ITelephonyService],
         (messageService, telephonyService) => {
           expect(messageService).toBeInstanceOf(MessageService);
           expect(telephonyService).toBeInstanceOf(TelephonyService);
@@ -201,7 +203,7 @@ describe('JupiterModule', () => {
       const jupiter = new Jupiter();
 
       const messageServiceCallback = jest.fn();
-      jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+      jupiter.onInitialized(IMessageService, messageService => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
@@ -211,9 +213,9 @@ describe('JupiterModule', () => {
     it('should add initial listener when modules not all initialized', () => {
       const jupiter = new Jupiter();
 
-      jupiter.onInitialized(MESSAGE_SERVICE, () => {});
+      jupiter.onInitialized(IMessageService, () => {});
 
-      jupiter.onInitialized([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
+      jupiter.onInitialized([IMessageService, ITelephonyService], () => {});
 
       const initializedListeners = jupiter.initializedListener;
       expect(Array.from(initializedListeners).length).toEqual(2);
@@ -223,20 +225,20 @@ describe('JupiterModule', () => {
   describe('emitModuleInitial()', () => {
     it('should execute callback when module emit initial', () => {
       const messageServiceCallback = jest.fn();
-      _jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+      _jupiter.onInitialized(IMessageService, messageService => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
 
       const messageServiceCallback1 = jest.fn();
-      _jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+      _jupiter.onInitialized(IMessageService, messageService => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback1();
       });
 
       const messageNTelephonyServiceCallback = jest.fn();
       _jupiter.onInitialized(
-        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        [IMessageService, ITelephonyService],
         (messageService, telephonyService) => {
           expect(messageService).toBeInstanceOf(MessageService);
           expect(telephonyService).toBeInstanceOf(TelephonyService);
@@ -246,7 +248,7 @@ describe('JupiterModule', () => {
 
       const messageNTelephonyServiceCallback1 = jest.fn();
       _jupiter.onInitialized(
-        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        [IMessageService, ITelephonyService],
         (messageService, telephonyService) => {
           expect(messageService).toBeInstanceOf(MessageService);
           expect(telephonyService).toBeInstanceOf(TelephonyService);
@@ -255,41 +257,41 @@ describe('JupiterModule', () => {
       );
 
       _jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
-      _jupiter.emitModuleInitial(MESSAGE_SERVICE);
+      _jupiter.emitModuleInitial(IMessageService);
       expect(messageServiceCallback).toHaveBeenCalledTimes(1);
       expect(messageServiceCallback1).toHaveBeenCalledTimes(1);
 
       _jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
-      _jupiter.emitModuleInitial(TELEPHONY_SERVICE);
+      _jupiter.emitModuleInitial(ITelephonyService);
       expect(messageNTelephonyServiceCallback).toHaveBeenCalledTimes(1);
       expect(messageNTelephonyServiceCallback1).toHaveBeenCalledTimes(1);
     });
     it('should execute callback once when module are initialized', () => {
       _jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
 
       _jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
 
       const messageServiceCallback = jest.fn();
-      _jupiter.onInitialized(MESSAGE_SERVICE, messageService => {
+      _jupiter.onInitialized(IMessageService, messageService => {
         expect(messageService).toBeInstanceOf(MessageService);
         messageServiceCallback();
       });
 
       const messageNTelephonyServiceCallback = jest.fn();
       _jupiter.onInitialized(
-        [MESSAGE_SERVICE, TELEPHONY_SERVICE],
+        [IMessageService, ITelephonyService],
         (messageService, telephonyService) => {
           expect(messageService).toBeInstanceOf(MessageService);
           expect(telephonyService).toBeInstanceOf(TelephonyService);
@@ -297,11 +299,11 @@ describe('JupiterModule', () => {
         },
       );
 
-      _jupiter.emitModuleInitial(MESSAGE_SERVICE);
+      _jupiter.emitModuleInitial(IMessageService);
       expect(messageServiceCallback).toHaveBeenCalled();
       expect(messageServiceCallback).toHaveBeenCalledTimes(1);
 
-      _jupiter.emitModuleInitial(TELEPHONY_SERVICE);
+      _jupiter.emitModuleInitial(ITelephonyService);
       expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
       expect(messageNTelephonyServiceCallback).toHaveBeenCalledTimes(1);
     });
@@ -311,19 +313,19 @@ describe('JupiterModule', () => {
     it('should execute callback when modules already unregister', () => {
       const jupiter = new Jupiter();
       jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
 
       const msgModuleConfig = {
         entry: MessageModule,
-        provides: [{ name: MESSAGE_SERVICE, value: MessageService }],
+        provides: [{ name: IMessageService, value: MessageService }],
       };
 
       jupiter.unRegisterModule(msgModuleConfig);
 
       const messageServiceCallback = jest.fn();
-      jupiter.onDisposed(MESSAGE_SERVICE, () => {
+      jupiter.onDisposed(IMessageService, () => {
         messageServiceCallback();
       });
       expect(messageServiceCallback).toHaveBeenCalled();
@@ -332,29 +334,29 @@ describe('JupiterModule', () => {
     it('should not execute callback when modules not all unregister', () => {
       const jupiter = new Jupiter();
       jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
       jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
 
       const msgModuleConfig = {
         entry: MessageModule,
-        provides: [{ name: MESSAGE_SERVICE, value: MessageService }],
+        provides: [{ name: IMessageService, value: MessageService }],
       };
 
       jupiter.unRegisterModule(msgModuleConfig);
 
       const messageServiceCallback = jest.fn();
-      jupiter.onDisposed(MESSAGE_SERVICE, () => {
+      jupiter.onDisposed(IMessageService, () => {
         messageServiceCallback();
       });
       expect(messageServiceCallback).toHaveBeenCalled();
 
       const messageNTelephonyServiceCallback = jest.fn();
-      jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {
+      jupiter.onDisposed([IMessageService, ITelephonyService], () => {
         messageNTelephonyServiceCallback();
       });
       expect(messageNTelephonyServiceCallback).not.toHaveBeenCalled();
@@ -363,24 +365,24 @@ describe('JupiterModule', () => {
     it('should add dispose listener when modules not all unregister', () => {
       const jupiter = new Jupiter();
       jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
       jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
 
       const msgModuleConfig = {
         entry: MessageModule,
-        provides: [{ name: MESSAGE_SERVICE, value: MessageService }],
+        provides: [{ name: IMessageService, value: MessageService }],
       };
 
       jupiter.unRegisterModule(msgModuleConfig);
 
-      jupiter.onDisposed(MESSAGE_SERVICE, () => {});
+      jupiter.onDisposed(IMessageService, () => {});
 
-      jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
+      jupiter.onDisposed([IMessageService, ITelephonyService], () => {});
 
       const disposedListeners = jupiter.disposedListener;
 
@@ -390,9 +392,9 @@ describe('JupiterModule', () => {
     it('should add dispose listener when has module not bound before', () => {
       const jupiter = new Jupiter();
 
-      jupiter.onDisposed(MESSAGE_SERVICE, () => {});
+      jupiter.onDisposed(IMessageService, () => {});
 
-      jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {});
+      jupiter.onDisposed([IMessageService, ITelephonyService], () => {});
 
       const disposedListeners = jupiter.disposedListener;
 
@@ -403,65 +405,65 @@ describe('JupiterModule', () => {
   describe('emitModuleDispose()', () => {
     it('should execute callback when module emit dispose', () => {
       _jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
       _jupiter.unbindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
-      _jupiter.emitModuleDispose(MESSAGE_SERVICE);
+      _jupiter.emitModuleDispose(IMessageService);
       const messageServiceCallback = jest.fn();
-      _jupiter.onDisposed(MESSAGE_SERVICE, () => {
+      _jupiter.onDisposed(IMessageService, () => {
         messageServiceCallback();
       });
       expect(messageServiceCallback).toHaveBeenCalled();
 
       _jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
       const messageNTelephonyServiceCallback = jest.fn();
-      _jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {
+      _jupiter.onDisposed([IMessageService, ITelephonyService], () => {
         messageNTelephonyServiceCallback();
       });
       _jupiter.unbindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
-      _jupiter.emitModuleDispose(TELEPHONY_SERVICE);
+      _jupiter.emitModuleDispose(ITelephonyService);
       expect(messageNTelephonyServiceCallback).toHaveBeenCalled();
     });
     it('should execute callback once when module are disposed', () => {
       _jupiter.bindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
       _jupiter.bindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
 
       const messageServiceCallback = jest.fn();
-      _jupiter.onDisposed(MESSAGE_SERVICE, () => {
+      _jupiter.onDisposed(IMessageService, () => {
         messageServiceCallback();
       });
       const messageNTelephonyServiceCallback = jest.fn();
-      _jupiter.onDisposed([MESSAGE_SERVICE, TELEPHONY_SERVICE], () => {
+      _jupiter.onDisposed([IMessageService, ITelephonyService], () => {
         messageNTelephonyServiceCallback();
       });
 
       _jupiter.unbindProvide({
-        name: MESSAGE_SERVICE,
+        name: IMessageService,
         value: MessageService,
       });
-      _jupiter.emitModuleDispose(MESSAGE_SERVICE);
+      _jupiter.emitModuleDispose(IMessageService);
 
       _jupiter.unbindProvide({
-        name: TELEPHONY_SERVICE,
+        name: ITelephonyService,
         value: TelephonyService,
       });
-      _jupiter.emitModuleDispose(TELEPHONY_SERVICE);
+      _jupiter.emitModuleDispose(ITelephonyService);
 
       expect(messageServiceCallback).toHaveBeenCalled();
       expect(messageServiceCallback).toHaveBeenCalledTimes(1);

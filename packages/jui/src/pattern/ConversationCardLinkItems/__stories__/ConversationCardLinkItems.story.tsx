@@ -19,6 +19,7 @@ storiesOf('Pattern', module).add('ConversationCardLinkItems', () => {
   return (
     <React.Fragment>
       <JuiConversationCardLinkItems
+        isShowCloseBtn
         url="http://www.zhihu.com"
         faviconName="Zhihu"
         favicon="https://i.embed.ly/1/image?url=https%3A%2F%2Fstatic.zhihu.com%2Fstatic%2Ffavicon.ico&key=4527f263d6e64d7a8251b007b1ba9972"

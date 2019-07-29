@@ -34,6 +34,7 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
+import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -432,6 +433,18 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getTypingIndicatorController().sendTypingEvent(
       groupId,
       isClear,
+    );
+  }
+
+  async getMembersAndGuestIds(
+    groupId: number,
+    onlineFirst: boolean = true,
+    sortFunc?: (lhs: Person, rhs: Person) => number,
+  ) {
+    return this._groupFetchDataController.getMembersAndGuestIds(
+      groupId,
+      onlineFirst,
+      sortFunc,
     );
   }
 }

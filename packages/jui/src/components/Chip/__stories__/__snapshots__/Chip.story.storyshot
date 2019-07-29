@@ -164,6 +164,42 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   align-items: center;
 }
 
+.c1.c1 {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 16px;
+  background-color: #f5f6fb;
+}
+
+.c1.c1:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c1.c1:active {
+  opacity: 0.76;
+}
+
+.c1 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
 .c0.c0 {
   margin: 4px;
   padding: 4px;
@@ -200,7 +236,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
 }
 
 <div
-  className="MuiChip-root MuiChip-deletable c0"
+  className="MuiChip-root c0 MuiChip-deletable"
   onKeyDown={[Function]}
   onKeyUp={[Function]}
   role="button"
@@ -226,7 +262,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     disabled={false}
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -237,8 +273,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    size="medium"
-    tabIndex="0"
+    tabIndex={0}
     title={null}
     type="button"
     variant="plain"
@@ -341,8 +376,6 @@ exports[`Storyshots Components/Chip with Avatar: Components/Chip with Avatar 1`]
   className="MuiChip-root c0"
   onKeyDown={[Function]}
   onKeyUp={[Function]}
-  role="button"
-  tabIndex={-1}
 >
   <div
     className="MuiAvatar-root MuiChip-avatar avatar c1"
@@ -525,7 +558,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
 }
 
 <div
-  className="MuiChip-root MuiChip-deletable c0"
+  className="MuiChip-root c0 MuiChip-deletable"
   onKeyDown={[Function]}
   onKeyUp={[Function]}
   role="button"
@@ -542,7 +575,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     disabled={false}
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -553,8 +586,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
     onTouchEnd={[Function]}
     onTouchMove={[Function]}
     onTouchStart={[Function]}
-    size="medium"
-    tabIndex="0"
+    tabIndex={0}
     title={null}
     type="button"
     variant="plain"
@@ -621,8 +653,6 @@ exports[`Storyshots Components/Chip with nothing: Components/Chip with nothing 1
   className="MuiChip-root c0"
   onKeyDown={[Function]}
   onKeyUp={[Function]}
-  role="button"
-  tabIndex={-1}
 >
   <span
     className="MuiChip-label label"

@@ -130,10 +130,11 @@ const StyledInputContainer = styled('div')`
   }
 `;
 
-const colorTransition = ({ theme }: { theme: Theme }) => theme.transitions.create(['color'], {
-  easing: theme.transitions.easing.easeInOut,
-  duration: theme.transitions.duration.standard,
-});
+const colorTransition = ({ theme }: { theme: Theme }) =>
+  theme.transitions.create(['color'], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.standard,
+  });
 
 const SearchInput = styled(JuiTextField)<any>`
   && {
@@ -202,9 +203,7 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _renderCallInfo() {
     const { showHoverActions } = this.state;
-    const {
-      Back, Avatar, name, phone, HoverActions,
-    } = this.props;
+    const { Back, Avatar, name, phone, HoverActions } = this.props;
     return (
       <>
         <StyledLeft>
@@ -234,8 +233,9 @@ class JuiHeader extends PureComponent<Props, State> {
     );
   }
 
-  private _handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
-    if (e.button) { // Only handle the primary key
+  private _handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.button) {
+      // Only handle the primary key
       return;
     }
     e.preventDefault();
@@ -252,8 +252,9 @@ class JuiHeader extends PureComponent<Props, State> {
     }, 1000);
   };
   /* eslint-disable react/no-find-dom-node */
-  private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
-    if (e.button) { // Only handle the primary key
+  private _handleMounseUp = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.button) {
+      // Only handle the primary key
       return;
     }
     e.preventDefault();

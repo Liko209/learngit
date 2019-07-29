@@ -47,6 +47,18 @@ implements IPreInsertController<T> {
     }
   }
 
+  async update(entity: T): Promise<void> {
+    notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(entity), [
+      entity,
+    ]);
+    const preInsertKey = this._getPreInsertKey(entity);
+    if (preInsertKey && !this.isInPreInsert(preInsertKey)) {
+      this.dao && (await this.dao.update([entity]));
+    } else {
+      mainLogger.tags(LOG_TAG).info(`update() ${entity.id} not exists pre-insert`);
+    }
+  }
+
   async delete(entity: T): Promise<void> {
     const originalEntityId = this._deleteEntity(entity);
     if (originalEntityId) {

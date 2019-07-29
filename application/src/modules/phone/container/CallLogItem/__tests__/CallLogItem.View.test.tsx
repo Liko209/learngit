@@ -7,7 +7,7 @@ import React from 'react';
 import { test, testable } from 'shield';
 import { shallow } from 'enzyme';
 import { READ_STATUS } from 'sdk/module/RCItems/constants';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { JuiListItemText } from 'jui/components';
 import { CallLogStatus } from 'jui/pattern/Phone/CallLog';
 import { CallLogItemView } from '../CallLogItem.View';

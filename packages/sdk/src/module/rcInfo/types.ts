@@ -5,6 +5,7 @@
  */
 
 import { ISpecialServiceNumber, DialingCountryInfo } from 'sdk/api';
+import { StateRecord } from 'sdk/api/ringcentral/types';
 
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
@@ -145,4 +146,5 @@ export {
   EForwardingFlipNumberType,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  StateRecord,
 };

@@ -396,7 +396,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -469,7 +469,7 @@ Array [
             data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -479,8 +479,7 @@ Array [
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="small"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="plain"
           >
@@ -647,6 +646,8 @@ Array [
   color: rgba(0,0,0,0.12);
 }
 
+=======
+>>>>>>> feature/FIJI-1061
 .c14.c14 {
   padding: 0;
   width: 16px;
@@ -904,7 +905,7 @@ Array [
       className="c1"
     >
       <div
-        className="MuiAvatar-root MuiAvatar-colorDefault c2"
+        className="MuiAvatar-root c2 MuiAvatar-colorDefault"
         color="lake"
         size="medium"
       >
@@ -977,7 +978,7 @@ Array [
             data-test-automation-id="actionBarLike"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -987,8 +988,7 @@ Array [
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="small"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="plain"
           >

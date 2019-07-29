@@ -233,7 +233,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -244,8 +244,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="small"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="plain"
@@ -276,7 +275,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -287,8 +286,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="small"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="plain"
@@ -319,7 +317,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -330,8 +328,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="small"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="plain"
@@ -362,7 +359,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -373,8 +370,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="small"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="plain"

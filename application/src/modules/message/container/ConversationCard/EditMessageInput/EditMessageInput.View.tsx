@@ -13,9 +13,7 @@ import { Mention } from '@/modules/message/container/ConversationPage/MessageInp
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
 import { handleAtMention } from 'jui/pattern/MessageInput/Mention/handleAtMention';
-import { container } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { MessageService } from '@/modules/message/service';
+import { IMessageService } from '@/modules/message/interface';
 import { reaction, IReactionDisposer } from 'mobx';
 
 type State = {
@@ -24,11 +22,12 @@ type State = {
 type Props = EditMessageInputViewProps & WithTranslation;
 @observer
 class EditMessageInputViewComponent extends Component<Props, State> {
+  @IMessageService private _messageService: IMessageService;
+
   private _messageInputRef: React.RefObject<
     JuiMessageInput
   > = React.createRef();
   private _mentionRef: React.RefObject<any> = React.createRef();
-  private _messageService = container.get<MessageService>(MESSAGE_SERVICE);
   private _disposer: IReactionDisposer;
   state = {
     modules: {},

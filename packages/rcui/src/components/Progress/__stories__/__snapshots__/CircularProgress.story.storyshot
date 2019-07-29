@@ -26,7 +26,7 @@ exports[`Storyshots Progress CircularProgress: Progress CircularProgress 1`] = `
   className="c0"
 >
   <div
-    className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate c1 "
+    className="MuiCircularProgress-root c1 MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style={
       Object {
@@ -51,7 +51,7 @@ exports[`Storyshots Progress CircularProgress: Progress CircularProgress 1`] = `
     </svg>
   </div>
   <div
-    className="MuiCircularProgress-root MuiCircularProgress-colorSecondary MuiCircularProgress-indeterminate c1 "
+    className="MuiCircularProgress-root c1 MuiCircularProgress-colorSecondary MuiCircularProgress-indeterminate"
     role="progressbar"
     style={
       Object {
