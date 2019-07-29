@@ -143,7 +143,6 @@ export class JupiterHelper {
       .click(envSelect)
       .click(envOption.withText(env))
       .expect(envSelect.value).eql(env);
-
-    await ClientFunction(() => localStorage.setItem('RUNNING_E2E', 'true'))();
+    await ClientFunction(() => localStorage.setItem('global.config.RUNNING_E2E', 'true'))();
   }
 }
