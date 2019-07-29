@@ -159,7 +159,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   min-width: 0;
 }
 
-.c1.c1 h6 {
+.c1.c1 h2 {
   color: #212121;
   text-align: left;
   white-space: nowrap;
@@ -490,7 +490,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   min-width: 0;
 }
 
-.c1.c1 h6 {
+.c1.c1 h2 {
   color: #212121;
   text-align: left;
   white-space: nowrap;
@@ -1002,7 +1002,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   min-width: 0;
 }
 
-.c6.c6 h6 {
+.c6.c6 h2 {
   color: #212121;
   text-align: center;
   white-space: nowrap;
