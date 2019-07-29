@@ -32,7 +32,7 @@ class MentionItemViewModel extends StoreViewModel<MentionProps> {
 
   @computed
   get item() {
-    if (GlipTypeUtil.extractTypeId(this.id) === TypeDictionary.TYPE_ID_TEAM) {
+    if (this.isTeam) {
       return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
     }
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
