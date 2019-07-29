@@ -11,7 +11,7 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
-import { trimStringBothSides, matchEmail } from '@/utils/string';
+import { trimStringBothSides, matchUrl } from '@/utils/string';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import portalManager from '@/common/PortalManager';
@@ -80,7 +80,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @action
   handleProfileEdit = async () => {
     if (this.webpage) {
-      this.webpageError = !matchEmail(this.webpage);
+      this.webpageError = !matchUrl(this.webpage);
     }
     if (this.webpageError) return;
     const info = this.getUpdateInfo();

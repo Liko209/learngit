@@ -44,7 +44,7 @@ function toastParamsBuilder(message: string) {
 const personInfo = {
   firstName: 'firstName',
   lastName: 'firstName',
-  homepage: '1@qq.com',
+  homepage: 'http://1.com',
   location: 'firstName',
   jobTitle: 'firstName',
 };

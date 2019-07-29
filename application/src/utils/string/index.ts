@@ -42,8 +42,8 @@ function matchInvalidEmail(value: string) {
 /**
  * Match email
  */
-function matchEmail(value: string) {
-  return /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/.test(
+function matchUrl(value: string) {
+  return /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-.,@?^=%&:/~+#]*[\w\-@?^=%&/~+#])?/.test(
     value,
   );
 }
@@ -55,4 +55,4 @@ function trimStringBothSides(str: string) {
   return str.replace(/(^\s*)|(\s*$)/g, '');
 }
 
-export { toTitleCase, matchInvalidEmail, trimStringBothSides, matchEmail };
+export { toTitleCase, matchInvalidEmail, trimStringBothSides, matchUrl };
