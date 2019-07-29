@@ -28,7 +28,7 @@ describe('E911ViewModel', () => {
       }),
     )
     t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       expect(vm.disabled).toBeTruthy();
     }
 
@@ -44,7 +44,7 @@ describe('E911ViewModel', () => {
     )
     @mockService(RCInfoService, 'getStateList', [1])
     async t2() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       await vm.getState('1');
       expect(vm.disabled).toBeTruthy();
     }
@@ -60,7 +60,7 @@ describe('E911ViewModel', () => {
       }),
     )
     t3() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       expect(vm.disabled).toBeTruthy();
     }
   }
@@ -71,7 +71,7 @@ describe('E911ViewModel', () => {
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, 'getStateList', [1])
     async t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry');
       await vm.getState('1');
       expect(vm.stateList).toEqual([1]);
@@ -97,7 +97,7 @@ describe('E911ViewModel', () => {
       },
     ])
     async t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       await vm.getCountryInfo();
@@ -127,7 +127,7 @@ describe('E911ViewModel', () => {
       },
     ])
     async t2() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       await vm.getCountryInfo();
@@ -165,7 +165,7 @@ describe('E911ViewModel', () => {
       },
     ])
     async t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       await vm.getCountryInfo();
@@ -188,7 +188,7 @@ describe('E911ViewModel', () => {
       },
     ])
     async t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry');
       await vm.getState('1');
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('state', {
@@ -202,7 +202,7 @@ describe('E911ViewModel', () => {
     @test('should be save state if state change')
     @mockEntity(createUserInfo())
     t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       vm.saveStateOrCountry('state', {
         id: 'id',
         name: 'name',
@@ -222,7 +222,7 @@ describe('E911ViewModel', () => {
     @test('should be save value if field change')
     @mockEntity(createUserInfo())
     t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       vm.handleFieldChange('customerName')({
         target: { value: 'customerName' },
       } as any);
@@ -239,7 +239,7 @@ describe('E911ViewModel', () => {
       valueSetter,
     })
     t1() {
-      const vm = new E911ViewModel();
+      const vm = new E911ViewModel({});
       vm.onSubmit();
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
     }

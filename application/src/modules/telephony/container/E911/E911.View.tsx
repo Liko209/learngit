@@ -28,7 +28,13 @@ class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
 
   get renderState() {
-    const { stateList, stateOnChange, t, value, handleFieldChange } = this.props;
+    const {
+      stateList,
+      stateOnChange,
+      t,
+      value,
+      handleFieldChange,
+    } = this.props;
     const { stateName } = value;
     return stateList.length > 0 ? (
       <JuiLineSelect
@@ -62,9 +68,10 @@ class E911ViewComponent extends Component<Props> {
     );
   }
 
-  onSubmit = () => {
+  onSubmit = async () => {
     const { onSubmit } = this.props;
-    onSubmit();
+    await onSubmit();
+    this.context();
   };
 
   render() {
@@ -172,7 +179,7 @@ class E911ViewComponent extends Component<Props> {
             onClick={this.context}
             // disabled={loading}
           >
-            cancel
+            {t('common.dialog.cancel')}
           </JuiButton>
           <JuiButton
             onClick={this.onSubmit}
@@ -182,7 +189,7 @@ class E911ViewComponent extends Component<Props> {
             data-test-automation-id="DialogOKButton"
             disabled={disabled}
           >
-            confirm
+            {t('common.dialog.confirm')}
           </JuiButton>
         </JuiDialogActions>
       </Wrapper>

@@ -16,6 +16,7 @@
       "send": "Send",
       "delete": "Delete",
       "close": "Close",
+      "confirm": "Confirm",
       "deleteAll": "Delete all"
     },
     "prompt": {
