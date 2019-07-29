@@ -147,7 +147,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c11.c11 .c2,
 .c11.c11 .c2 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c11.c11:hover .c2 {
@@ -168,11 +168,11 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 }
 
 .c12.c12:hover .c2 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c12.c12:active .c2 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c12.c12.c12.c12.disabled .c2 {
@@ -181,15 +181,15 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c13.c13 .c2,
 .c13.c13 .c2 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c13.c13:hover .c2 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c13.c13:active .c2 {
-  color: #fff;
+  color: #212121;
 }
 
 .c13.c13.c13.c13.disabled .c2 {
@@ -198,35 +198,18 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c14.c14 .c2,
 .c14.c14 .c2 svg {
-  font-size: 32px;
-}
-
-.c14.c14:hover .c2 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c14.c14:active .c2 {
-  color: #212121;
-}
-
-.c14.c14.c14.c14.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c15.c15 .c2,
-.c15.c15 .c2 svg {
   font-size: 20px;
 }
 
-.c15.c15:hover .c2 {
+.c14.c14:hover .c2 {
   color: rgba(255,255,255,0.88);
 }
 
-.c15.c15:active .c2 {
+.c14.c14:active .c2 {
   color: #fff;
 }
 
-.c15.c15.c15.c15.disabled .c2 {
+.c14.c14.c14.c14.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -262,7 +245,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -273,8 +256,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      size="medium"
-      tabIndex="0"
+      tabIndex={0}
       title={null}
       type="button"
       variant="round"
@@ -472,7 +454,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c23.c23 .c12,
 .c23.c23 .c12 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c23.c23:hover .c12 {
@@ -493,11 +475,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 }
 
 .c24.c24:hover .c12 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c24.c24:active .c12 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c24.c24.c24.c24.disabled .c12 {
@@ -506,15 +488,15 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c25.c25 .c12,
 .c25.c25 .c12 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c25.c25:hover .c12 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c25.c25:active .c12 {
-  color: #fff;
+  color: #212121;
 }
 
 .c25.c25.c25.c25.disabled .c12 {
@@ -523,48 +505,31 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c26.c26 .c12,
 .c26.c26 .c12 svg {
-  font-size: 32px;
+  font-size: 20px;
 }
 
 .c26.c26:hover .c12 {
-  color: rgba(33,33,33,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c26.c26:active .c12 {
-  color: #212121;
+  color: #fff;
 }
 
 .c26.c26.c26.c26.disabled .c12 {
   color: rgba(0,0,0,0.12);
 }
 
-.c27.c27 .c12,
-.c27.c27 .c12 svg {
-  font-size: 20px;
-}
-
-.c27.c27:hover .c12 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c27.c27:active .c12 {
-  color: #fff;
-}
-
-.c27.c27.c27.c27.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c28.lozengeButtonLoading .c17 {
+.c27.lozengeButtonLoading .c17 {
   margin-left: 4px;
 }
 
-.c28.lozengeButtonLoading .c29,
-.c28.lozengeButtonWithArrow .c29,
-.c28.lozengeButtonLoading .c17,
-.c28.lozengeButtonWithArrow .c17,
-.c28.lozengeButtonLoading span,
-.c28.lozengeButtonWithArrow span {
+.c27.lozengeButtonLoading .c28,
+.c27.lozengeButtonWithArrow .c28,
+.c27.lozengeButtonLoading .c17,
+.c27.lozengeButtonWithArrow .c17,
+.c27.lozengeButtonLoading span,
+.c27.lozengeButtonWithArrow span {
   vertical-align: middle;
 }
 
@@ -737,7 +702,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
       className="c1"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c2"
+        className="MuiListItem-root c2 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -779,7 +744,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
-                  onContextMenu={[Function]}
+                  onDragLeave={[Function]}
                   onFocus={[Function]}
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
@@ -790,8 +755,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
-                  size="medium"
-                  tabIndex="0"
+                  tabIndex={0}
                   title={null}
                   type="button"
                   variant="plain"
@@ -830,7 +794,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
       className="c1"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c2"
+        className="MuiListItem-root c2 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -872,7 +836,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
-                  onContextMenu={[Function]}
+                  onDragLeave={[Function]}
                   onFocus={[Function]}
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
@@ -883,8 +847,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
-                  size="medium"
-                  tabIndex="0"
+                  tabIndex={0}
                   title={null}
                   type="button"
                   variant="plain"
@@ -923,7 +886,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
       className="c1"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c2"
+        className="MuiListItem-root c2 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -962,7 +925,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <div
                   aria-valuenow={0}
-                  className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-static c17 "
+                  className="MuiCircularProgress-root c17 MuiCircularProgress-colorPrimary MuiCircularProgress-static"
                   role="progressbar"
                   style={
                     Object {
@@ -1001,7 +964,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
-                  onContextMenu={[Function]}
+                  onDragLeave={[Function]}
                   onFocus={[Function]}
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
@@ -1012,8 +975,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
-                  size="medium"
-                  tabIndex="0"
+                  tabIndex={0}
                   title={null}
                   type="button"
                   variant="plain"
@@ -1055,7 +1017,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
       className="c1"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c2"
+        className="MuiListItem-root c2 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1097,7 +1059,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
-                  onContextMenu={[Function]}
+                  onDragLeave={[Function]}
                   onFocus={[Function]}
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
@@ -1108,8 +1070,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
-                  size="medium"
-                  tabIndex="0"
+                  tabIndex={0}
                   title={null}
                   type="button"
                   variant="plain"
@@ -1151,7 +1112,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
       className="c1"
     >
       <li
-        className="MuiListItem-root MuiListItem-default MuiListItem-gutters c2"
+        className="MuiListItem-root c2 MuiListItem-gutters"
         disabled={false}
       >
         <span
@@ -1193,7 +1154,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
-                  onContextMenu={[Function]}
+                  onDragLeave={[Function]}
                   onFocus={[Function]}
                   onKeyDown={[Function]}
                   onKeyUp={[Function]}
@@ -1204,8 +1165,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
-                  size="medium"
-                  tabIndex="0"
+                  tabIndex={0}
                   title={null}
                   type="button"
                   variant="plain"
@@ -1289,7 +1249,7 @@ exports[`Storyshots Pattern/MessageInput JuiInputFooter: Pattern/MessageInput Ju
   >
     <p
       aria-describedby={null}
-      className="MuiTypography-root MuiTypography-body2 c3 c4"
+      className="MuiTypography-root c3 c4 MuiTypography-body1"
       onBlur={[Function]}
       onFocus={[Function]}
       onMouseLeave={[Function]}

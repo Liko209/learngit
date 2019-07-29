@@ -563,9 +563,9 @@ class RTCCall {
       return;
     }
 
-    this._callInfo.callId = session.request.callId || '';
-    this._callInfo.fromTag = session.request.fromTag || '';
-    this._callInfo.toTag = session.request.toTag || '';
+    this._callInfo.callId = session.dialog.id.callId || '';
+    this._callInfo.fromTag = session.dialog.id.remoteTag || '';
+    this._callInfo.toTag = session.dialog.id.localTag || '';
 
     rtcLogger.info(
       LOG_TAG,

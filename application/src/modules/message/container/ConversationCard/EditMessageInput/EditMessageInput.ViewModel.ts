@@ -3,9 +3,8 @@
  * @Date: 2018-12-08 21:00:26
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { container } from 'framework';
+import Quill from 'quill';
+import { IMessageService } from '@/modules/message/interface';
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
 import { PostService } from 'sdk/module/post';
@@ -19,7 +18,6 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
-import { MessageService } from '@/modules/message/service';
 import { Dialog } from '@/containers/Dialog';
 import { mainLogger } from 'sdk';
 import i18nT from '@/utils/i18nT';
@@ -33,14 +31,14 @@ enum ERROR_TYPES {
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private messageService: MessageService = container.get(MESSAGE_SERVICE);
+  @IMessageService private _messageService: IMessageService;
   private _postService: PostService;
-  @computed
-  get id() {
+  @observable error: string = '';
+
+  @computed get id() {
     return this.props.id;
   }
-  @observable
-  error: string = '';
+
   keyboardEventHandler: {
     enter: {
       key: number;
@@ -65,11 +63,11 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this.keyboardEventHandler = {
       enter: {
         key: Keys.ENTER,
-        handler: this._enterHandler(this),
+        handler: this._buildEnterHandler(),
       },
       escape: {
         key: Keys.ESCAPE,
-        handler: this._escHandler(),
+        handler: this._buildEscHandler(),
       },
     };
   }
@@ -91,44 +89,42 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   @computed
   get draft() {
-    return this.messageService.getDraft(this.props.id);
+    return this._messageService.getDraft(this.props.id);
   }
 
   saveDraft(draft: string) {
-    return this.messageService.enterEditMode(this.props.id, draft);
+    return this._messageService.enterEditMode(this.props.id, draft);
   }
 
   removeDraft() {
-    return this.messageService.leaveEditMode(this.props.id);
+    return this._messageService.leaveEditMode(this.props.id);
   }
 
   @action
-  private _enterHandler(vm: EditMessageInputViewModel) {
-    return function () {
-      // @ts-ignore
-      const quill = (this as any).quill;
+  private _buildEnterHandler = () => {
+    const self = this;
+    return function (this: any) {
+      const quill: Quill = this.quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
       if (content.length > CONTENT_LENGTH) {
-        vm.error = ERROR_TYPES.CONTENT_LENGTH;
+        self.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
       }
       if (content.includes(CONTENT_ILLEGAL)) {
-        vm.error = ERROR_TYPES.CONTENT_ILLEGAL;
+        self.error = ERROR_TYPES.CONTENT_ILLEGAL;
         return;
       }
-      vm.error = '';
-      if (content.trim() || vm._post.itemIds.length) {
-        vm._editPost(content, mentionIds);
+      self.error = '';
+      if (content.trim() || self._post.itemIds.length) {
+        self._editPost(content, mentionIds);
       } else {
-        vm._handleDelete();
+        self._handleDelete();
       }
-      vm.removeDraft();
+      self.removeDraft();
     };
   }
 
-  private _escHandler() {
-    return this._exitEditMode;
-  }
+  private _buildEscHandler = () => this._exitEditMode;
 
   @action
   private _exitEditMode() {
@@ -161,7 +157,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   private _deletePost = async () => {
     await this._postService.deletePost(this.id);
-  }
+  };
 
   private _handleDelete = async () => {
     Dialog.confirm({
@@ -179,7 +175,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         });
       },
     });
-  }
+  };
 }
 
 export {

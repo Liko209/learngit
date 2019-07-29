@@ -20,6 +20,8 @@ import { Dialog } from '@/containers/Dialog';
 import { AddMembers } from '../../AddMembers';
 import { ProfileContext } from '../../../types';
 import RO from 'resize-observer-polyfill';
+import { NewConversation } from '@/containers/NewConversation';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 // padding of header
 const PADDING_FIX = 16 + 12;
@@ -53,20 +55,48 @@ class MemberHeader extends React.Component<
       height: height + PADDING_FIX,
     });
   };
+
   addTeamMembers = () => {
+    analyticsCollector.conversationAddPerson('team', 'Profile');
     const { group } = this.props;
     portalManager.dismissLast();
     Dialog.simple(<AddMembers group={group} />, {
       size: 'medium',
     });
   };
+  addGroupMembers = () => {
+    analyticsCollector.conversationAddPerson('group', 'Profile');
+    const { group } = this.props;
+    portalManager.dismissLast();
+    NewConversation.show({ group });
+  };
+
+  renderRightButton = (isTeam: boolean) => {
+    const {
+      t,
+      isCurrentUserHasPermissionAddMember,
+    } = this.props;
+    if (isTeam) {
+      return isCurrentUserHasPermissionAddMember ? (
+        <ButtonInRight onClick={this.addTeamMembers}>
+          <JuiIconography iconSize="medium">add_team</JuiIconography>
+          {t('people.team.AddTeamMembers')}
+        </ButtonInRight>
+      ) : null;
+    }
+    return (
+      <ButtonInRight onClick={this.addGroupMembers}>
+        <JuiIconography iconSize="medium">add_team</JuiIconography>
+        {t('people.group.addPeople')}
+      </ButtonInRight>
+    )
+  }
 
   render() {
     const {
       group,
       t,
       hasShadow,
-      isCurrentUserHasPermissionAddMember,
       onSearch,
       hasSearch,
     } = this.props;
@@ -80,12 +110,7 @@ class MemberHeader extends React.Component<
       >
         <JuiProfileDialogContentMemberHeaderTitle>
           {`${t(key)} (${members.length})`}
-          {isTeam && isCurrentUserHasPermissionAddMember && (
-            <ButtonInRight onClick={this.addTeamMembers}>
-              <JuiIconography iconSize="medium">add_team</JuiIconography>
-              {t('people.team.AddTeamMembers')}
-            </ButtonInRight>
-          )}
+          {this.renderRightButton(Boolean(isTeam))}
         </JuiProfileDialogContentMemberHeaderTitle>
         {hasSearch && (
           <JuiProfileDialogContentMemberHeaderSearch data-test-automation-id="profileDialogMemberSearch">

@@ -8,7 +8,8 @@ import { ellipsis } from '../../foundation/utils';
 import { Typography as MuiTypography } from '@material-ui/core';
 
 const JuiTextWithEllipsis = styled(MuiTypography)`
-  ${ellipsis()}
+  ${ellipsis()};
+  flex: 1 1 auto;
 `;
 
 export { JuiTextWithEllipsis };

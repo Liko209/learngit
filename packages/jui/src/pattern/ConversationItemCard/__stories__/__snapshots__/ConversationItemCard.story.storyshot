@@ -146,7 +146,7 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
   className=""
 >
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root conversation-item-cards c0 MuiPaper-rounded"
   >
     <div
       className="c1"
@@ -180,7 +180,7 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
     </div>
   </div>
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root conversation-item-cards c0 MuiPaper-rounded"
     titleClick={[Function]}
   >
     <div
@@ -188,9 +188,10 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
       onClick={[Function]}
     >
       <span
-        className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorSecondary c6"
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorSecondary c6 MuiIconButton-colorSecondary"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -218,7 +219,7 @@ exports[`Storyshots Pattern/ConversationItemCard JuiConversationItemCard: Patter
           </svg>
           <input
             checked={false}
-            className="MuiPrivateSwitchBase-input"
+            className="PrivateSwitchBase-input-108"
             data-indeterminate={false}
             onChange={[Function]}
             type="checkbox"
@@ -554,31 +555,6 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   fill: #0684bd;
 }
 
-.c7 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  white-space: nowrap;
-  -webkit-flex-wrap: nowrap;
-  -ms-flex-wrap: nowrap;
-  flex-wrap: nowrap;
-  -webkit-flex-shrink: 0;
-  -ms-flex-negative: 0;
-  flex-shrink: 0;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.c7.c7 > *:nth-child(n + 2) {
-  margin-left: -8px;
-}
-
 .c18.c18 .c9,
 .c18.c18 .c9 svg {
   font-size: 20px;
@@ -707,7 +683,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c23.c23 .c9,
 .c23.c23 .c9 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c23.c23:hover .c9 {
@@ -728,11 +704,11 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 }
 
 .c24.c24:hover .c9 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c24.c24:active .c9 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c24.c24.c24.c24.disabled .c9 {
@@ -741,15 +717,15 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c25.c25 .c9,
 .c25.c25 .c9 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c25.c25:hover .c9 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c25.c25:active .c9 {
-  color: #fff;
+  color: #212121;
 }
 
 .c25.c25.c25.c25.disabled .c9 {
@@ -758,36 +734,44 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
 
 .c26.c26 .c9,
 .c26.c26 .c9 svg {
-  font-size: 32px;
+  font-size: 20px;
 }
 
 .c26.c26:hover .c9 {
-  color: rgba(33,33,33,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c26.c26:active .c9 {
-  color: #212121;
+  color: #fff;
 }
 
 .c26.c26.c26.c26.disabled .c9 {
   color: rgba(0,0,0,0.12);
 }
 
-.c27.c27 .c9,
-.c27.c27 .c9 svg {
-  font-size: 20px;
+.c7 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  white-space: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
-.c27.c27:hover .c9 {
-  color: rgba(255,255,255,0.88);
-}
-
-.c27.c27:active .c9 {
-  color: #fff;
-}
-
-.c27.c27.c27.c27.disabled .c9 {
-  color: rgba(0,0,0,0.12);
+.c7.c7 > *:nth-child(n + 2) {
+  margin-left: -8px;
 }
 
 .c17 {
@@ -815,14 +799,14 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   pointer-events: none;
 }
 
-.c17.lozengeButtonLoading .c28 {
+.c17.lozengeButtonLoading .c27 {
   margin-left: 4px;
 }
 
-.c17.lozengeButtonLoading .c29,
-.c17.lozengeButtonWithArrow .c29,
 .c17.lozengeButtonLoading .c28,
 .c17.lozengeButtonWithArrow .c28,
+.c17.lozengeButtonLoading .c27,
+.c17.lozengeButtonWithArrow .c27,
 .c17.lozengeButtonLoading span,
 .c17.lozengeButtonWithArrow span {
   vertical-align: middle;
@@ -917,7 +901,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
   className="c0"
 >
   <div
-    className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c1"
+    className="MuiPaper-root MuiPaper-elevation1 MuiCard-root conversation-item-cards c1 MuiPaper-rounded"
   >
     <div
       className="c2"
@@ -946,6 +930,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
       <div
         className="c6 c7"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -954,7 +939,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           disabled={false}
           onBlur={[Function]}
           onClick={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -965,8 +950,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1000,7 +984,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           disabled={false}
           onBlur={[Function]}
           onClick={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -1011,8 +995,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="medium"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="round"
@@ -1200,7 +1183,7 @@ exports[`Storyshots Pattern/ConversationItemCard eventItemCard: Pattern/Conversa
 }
 
 <div
-  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+  className="MuiPaper-root MuiPaper-elevation1 MuiCard-root conversation-item-cards c0 MuiPaper-rounded"
 >
   <div
     className="c1"
@@ -1429,7 +1412,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c28.c28 .c21,
 .c28.c28 .c21 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c28.c28:hover .c21 {
@@ -1450,11 +1433,11 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 }
 
 .c29.c29:hover .c21 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(255,255,255,0.88);
 }
 
 .c29.c29:active .c21 {
-  color: #0684bd;
+  color: #fff;
 }
 
 .c29.c29.c29.c29.disabled .c21 {
@@ -1463,15 +1446,15 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c30.c30 .c21,
 .c30.c30 .c21 svg {
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .c30.c30:hover .c21 {
-  color: rgba(255,255,255,0.88);
+  color: rgba(33,33,33,0.88);
 }
 
 .c30.c30:active .c21 {
-  color: #fff;
+  color: #212121;
 }
 
 .c30.c30.c30.c30.disabled .c21 {
@@ -1480,35 +1463,18 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 
 .c31.c31 .c21,
 .c31.c31 .c21 svg {
-  font-size: 32px;
-}
-
-.c31.c31:hover .c21 {
-  color: rgba(33,33,33,0.88);
-}
-
-.c31.c31:active .c21 {
-  color: #212121;
-}
-
-.c31.c31.c31.c31.disabled .c21 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c32.c32 .c21,
-.c32.c32 .c21 svg {
   font-size: 20px;
 }
 
-.c32.c32:hover .c21 {
+.c31.c31:hover .c21 {
   color: rgba(255,255,255,0.88);
 }
 
-.c32.c32:active .c21 {
+.c31.c31:active .c21 {
   color: #fff;
 }
 
-.c32.c32.c32.c32.disabled .c21 {
+.c31.c31.c31.c31.disabled .c21 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -1703,16 +1669,17 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
 }
 
 <div
-  className="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded MuiCard-root conversation-item-cards c0"
+  className="MuiPaper-root MuiPaper-elevation1 MuiCard-root conversation-item-cards c0 MuiPaper-rounded"
 >
   <div
     className="c1"
     onClick={[Function]}
   >
     <span
-      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorSecondary c2"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiCheckbox-root MuiCheckbox-colorSecondary c2 MuiIconButton-colorSecondary"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -1740,7 +1707,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
         </svg>
         <input
           checked={false}
-          className="MuiPrivateSwitchBase-input"
+          className="PrivateSwitchBase-input-108"
           data-indeterminate={false}
           onChange={[Function]}
           type="checkbox"
@@ -1836,7 +1803,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
             className="c12"
           >
             <li
-              className="MuiListItem-root MuiListItem-default MuiListItem-gutters c13"
+              className="MuiListItem-root c13 MuiListItem-gutters"
               disabled={false}
             >
               <span
@@ -1873,7 +1840,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                     disabled={false}
                     onBlur={[Function]}
                     onClick={[Function]}
-                    onContextMenu={[Function]}
+                    onDragLeave={[Function]}
                     onFocus={[Function]}
                     onKeyDown={[Function]}
                     onKeyUp={[Function]}
@@ -1884,8 +1851,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                     onTouchEnd={[Function]}
                     onTouchMove={[Function]}
                     onTouchStart={[Function]}
-                    size="medium"
-                    tabIndex="0"
+                    tabIndex={0}
                     title={null}
                     type="button"
                     variant="plain"
@@ -1913,7 +1879,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
               </div>
             </li>
             <div
-              className="MuiCollapse-container"
+              className="MuiCollapse-container MuiCollapse-hidden"
               style={
                 Object {
                   "minHeight": "0px",

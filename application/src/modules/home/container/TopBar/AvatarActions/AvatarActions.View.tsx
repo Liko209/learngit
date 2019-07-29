@@ -20,6 +20,7 @@ import { Presence } from '@/containers/Presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { JuiDivider } from 'jui/components/Divider';
 import { dataAnalysis } from 'sdk';
+import { PresenceMenu } from '../PresenceMenu';
 
 type Props = ViewProps & WithTranslation;
 
@@ -43,21 +44,25 @@ class AvatarActionsComponent extends React.Component<Props> {
 
   private get _tooltip() {
     const { t, presence } = this.props;
-    switch (presence) {
-      case PRESENCE.AVAILABLE:
-        return t('presence.available');
-      case PRESENCE.DND:
-        return t('presence.doMotDisturb');
-      case PRESENCE.INMEETING:
-        return t('presence.inMeeting');
-      case PRESENCE.ONCALL:
-        return t('presence.onCall');
-      case PRESENCE.UNAVAILABLE:
-      case PRESENCE.NOTREADY:
-        return t('presence.offline');
-      default:
-        return t('presence.offline');
-    }
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+    };
+    return t(i18nMap[presence] || 'presence.offline');
+  }
+
+  private get title() {
+    const { t, presence } = this.props;
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
+    };
+    return t(i18nMap[presence] || 'presence.offline');
   }
 
   private _Anchor() {
@@ -90,7 +95,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   handleSendFeedback = () => this.props.handleSendFeedback();
 
   render() {
-    const { handleSignOut, person, t } = this.props;
+    const { handleSignOut, t, presence, person } = this.props;
 
     return (
       <JuiAvatarActions
@@ -114,6 +119,7 @@ class AvatarActionsComponent extends React.Component<Props> {
           />
           <JuiDivider key="divider-avatar-menu" />
           <JuiMenuList data-test-automation-id="avatarMenu">
+            <PresenceMenu presence={presence} title={this.title} />
             <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}

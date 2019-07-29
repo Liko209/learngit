@@ -8,7 +8,7 @@ import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import storeManager from '@/store';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getPresence } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
 import { container } from 'framework';
@@ -19,11 +19,8 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
-import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { Presence } from 'sdk/module/presence/entity';
-import PresenceModel from '@/store/models/Presence';
-import { PRESENCE } from 'sdk/module/presence/constant';
+import { ENTITY_NAME } from '@/store';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 
@@ -111,20 +108,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   @computed
   get presence() {
-    if (this.currentUserId === 0) {
-      return PRESENCE.NOTREADY;
-    }
-
-    if (this.person.deactivated) {
-      return PRESENCE.NOTREADY;
-    }
-
-    return (
-      getEntity<Presence, PresenceModel>(
-        ENTITY_NAME.PRESENCE,
-        this.currentUserId,
-      ).presence || PRESENCE.NOTREADY
-    );
+    return getPresence(this.currentUserId);
   }
 
   @computed

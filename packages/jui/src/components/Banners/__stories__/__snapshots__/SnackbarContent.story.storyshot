@@ -112,7 +112,7 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
 
 <div>
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c0 MuiTypography-body2"
     role="alertdialog"
   >
     <div
@@ -140,7 +140,7 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
   </div>
   <br />
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c5"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c5 MuiTypography-body2"
     role="alertdialog"
   >
     <div
@@ -168,7 +168,7 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
   </div>
   <br />
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c7"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c7 MuiTypography-body2"
     role="alertdialog"
   >
     <div
@@ -196,7 +196,7 @@ exports[`Storyshots Components/Banners JuiSnackbars: Components/Banners JuiSnack
   </div>
   <br />
   <div
-    className="MuiTypography-root MuiTypography-body2 MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c9"
+    className="MuiTypography-root MuiPaper-root MuiPaper-elevation6 MuiSnackbarContent-root c9 MuiTypography-body2"
     role="alertdialog"
   >
     <div
