@@ -112,8 +112,8 @@ test(formalName('Scale image', ['Foden.lin', 'P2', 'JPT-1248', 'JPT-1249', 'JPT-
     await imageTabEntry.enter();
   });
 
-  await h(t).withLog(`And I click the image item ${filesName[0]} thumbnail`, async () => {
-    await t.click(imageTab.nthItem(0).imageThumbnail)
+  await h(t).withLog(`And I click the image item ${filesName[0]}`, async () => {
+    await t.click(imageTab.nthItem(0).self)
   });
 
   await h(t).withLog('And I hover the image', async () => {

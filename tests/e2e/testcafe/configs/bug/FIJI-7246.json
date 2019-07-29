@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": [
-      "./fixtures/ActionBar/Edit.ts",
-      "./fixtures/ContentPanel/*.ts"
-    ],
-    "browsers": ["selenium:chrome"]
-  }
-}
