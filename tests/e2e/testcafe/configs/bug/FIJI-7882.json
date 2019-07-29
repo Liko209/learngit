@@ -1,0 +1,8 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/MessageInput"],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

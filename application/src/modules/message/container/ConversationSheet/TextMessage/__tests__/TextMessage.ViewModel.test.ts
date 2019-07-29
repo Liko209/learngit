@@ -15,6 +15,7 @@ import Backend from 'i18next-xhr-backend';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import i18next from 'i18next';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { observable, autorun, runInAction } from 'mobx';
 
 jest.mock('@/utils/i18nT', () => ({
   i18nP: (str: string) => str,
@@ -202,6 +203,32 @@ describe('TextMessageViewModel', () => {
       expect(renderToStaticMarkup(vm.renderText as React.ReactElement)).toBe(
         `MockJuiAtMention: @${originalText}`,
       );
+    });
+  });
+
+  describe('mobx', () => {
+    it('should update renderText when text type changed', () => {
+      // This case is created by FIJI-7882
+
+      // Given a string as post.text
+      let currentExpect = 'abcd';
+      const post  = observable({ id: 123, text: 'abcd' });
+      utils.getEntity.mockReturnValue(post);
+
+      vm = new TextMessageViewModel({ id: 123, keyword: '' });
+
+      expect.assertions(2);
+
+      const dispose = autorun(() => {
+        expect(renderToStaticMarkup(vm.renderText)).toBe(currentExpect);
+      });
+
+      currentExpect = 'abcd MockJuiAtMention: @Aaliyah Armstrong';
+      // Modify the post.text to a non-string content
+      // Then vm.renderText should be updated
+      post.text = `abcd <a class='at_mention_compose' rel='{"id":56868867}'>@Aaliyah Armstrong</a>`;
+
+      dispose();
     });
   });
 });
