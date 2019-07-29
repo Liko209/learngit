@@ -19,13 +19,12 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError, NOTIFICATION_TYPE } from '@/common/catchError';
 import { RESENT_ERROR_FILE_NO_EXISTS } from './constant';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { container } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { MessageService } from '@/modules/message/service';
+import { IMessageService } from '@/modules/message/interface';
 import { TypeDictionary } from 'sdk/utils';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
+  @IMessageService private _messageService: IMessageService;
   private _postService = ServiceLoader.getInstance<PostService>(
     ServiceConfig.POST_SERVICE,
   );
@@ -138,7 +137,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     );
     inEditModePostIds.push(this.id);
     globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
-    container.get<MessageService>(MESSAGE_SERVICE).setEditInputFocus(this.id);
+    this._messageService.setEditInputFocus(this.id);
   };
 
   deletePost = async () => {

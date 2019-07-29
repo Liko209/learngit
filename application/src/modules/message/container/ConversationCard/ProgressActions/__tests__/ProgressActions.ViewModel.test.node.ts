@@ -11,16 +11,14 @@ import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
+import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
-import { container, decorate, injectable } from 'framework';
+import { jupiter } from 'framework';
 import { TypeDictionary } from 'sdk/utils';
 
-decorate(injectable(), MessageService);
-container.bind(MESSAGE_SERVICE).to(MessageService);
-decorate(injectable(), MessageStore);
-container.bind(MessageStore).to(MessageStore);
+jupiter.registerService(IMessageService, MessageService);
+jupiter.registerService(IMessageStore, MessageStore);
 
 jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
@@ -142,6 +140,7 @@ describe('ProgressActionsViewModel', () => {
 
   describe('edit()', () => {
     it('should enter edit mode when being called [JPT-2545]', async () => {
+      window.requestAnimationFrame = jest.fn().mockImplementation(fn => fn());
       await nvm.edit();
       const globalStore = storeManager.getGlobalStore();
       expect(
