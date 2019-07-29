@@ -5,26 +5,30 @@
  */
 import { ModuleConfig } from 'framework';
 import {
-  MESSAGE_NOTIFICATION_MANAGER,
-  MESSAGE_SERVICE,
-} from './interface/constant';
+  IMessageStore,
+  IMessageService,
+  IMessageNotificationManager,
+  IMessageSettingManager,
+} from './interface';
 import { MessageService } from './service';
 import { MessageStore } from './store';
 import { MessageModule } from './MessageModule';
 import { MessageNotificationManager } from './MessageNotificationManager';
-import { IMessageSettingManager } from './interface';
 import { MessageSettingManager } from './MessageSettingManager';
 
 const config: ModuleConfig = {
   entry: MessageModule,
   provides: [
-    MessageStore,
     {
-      name: MESSAGE_SERVICE,
+      name: IMessageStore,
+      value: MessageStore,
+    },
+    {
+      name: IMessageService,
       value: MessageService,
     },
     {
-      name: MESSAGE_NOTIFICATION_MANAGER,
+      name: IMessageNotificationManager,
       value: MessageNotificationManager,
     },
     {

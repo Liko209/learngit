@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, createRef, RefObject } from 'react';
+import React, { Component } from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiListItemText } from 'jui/components/Lists';
@@ -16,10 +16,8 @@ import { ContactSearchItemContent as ItemContent } from 'jui/pattern/Dialer';
 import { ROW_HEIGHT } from '../ContactSearchList/constants';
 
 type Props = WithTranslation & ContactSearchItemViewProps;
-/* eslint-disable */
 @observer
 class ContactSearchItemViewComponent extends Component<Props> {
-  private _ref: RefObject<any> = createRef();
   private _frameId: number;
 
   componentWillUnmount() {
@@ -56,7 +54,6 @@ class ContactSearchItemViewComponent extends Component<Props> {
           />
         }
         onClick={onClick}
-        ref={this._ref}
         data-test-automation-id="telephony-contact-search-list_item"
       >
         <ItemContent>
@@ -71,7 +68,7 @@ class ContactSearchItemViewComponent extends Component<Props> {
               variant="plain"
               color="primary.600"
               size="medium"
-              disableToolTip={true}
+              disableToolTip
               data-test-automation-id="telephony-contact-search-list_item-dial_button"
             >
               dial

@@ -3,7 +3,7 @@
 exports[`RuiCircularProgress renders correctly 1`] = `
 <div>
   <div
-    className="MuiCircularProgress-root-1 MuiCircularProgress-colorPrimary-4 MuiCircularProgress-indeterminate-3 "
+    className="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style={
       Object {
@@ -13,11 +13,11 @@ exports[`RuiCircularProgress renders correctly 1`] = `
     }
   >
     <svg
-      className="MuiCircularProgress-svg-6"
+      className="MuiCircularProgress-svg"
       viewBox="22 22 44 44"
     >
       <circle
-        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
         cx={44}
         cy={44}
         fill="none"
@@ -28,7 +28,7 @@ exports[`RuiCircularProgress renders correctly 1`] = `
     </svg>
   </div>
   <div
-    className="MuiCircularProgress-root-1 MuiCircularProgress-colorSecondary-5 MuiCircularProgress-indeterminate-3 "
+    className="MuiCircularProgress-root MuiCircularProgress-colorSecondary MuiCircularProgress-indeterminate"
     role="progressbar"
     style={
       Object {
@@ -38,11 +38,11 @@ exports[`RuiCircularProgress renders correctly 1`] = `
     }
   >
     <svg
-      className="MuiCircularProgress-svg-6"
+      className="MuiCircularProgress-svg"
       viewBox="22 22 44 44"
     >
       <circle
-        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
         cx={44}
         cy={44}
         fill="none"
@@ -58,28 +58,28 @@ exports[`RuiCircularProgress renders correctly 1`] = `
 exports[`RuiLinearProgress renders correctly 1`] = `
 <div>
   <div
-    className="MuiLinearProgress-root-11 MuiLinearProgress-colorPrimary-12 MuiLinearProgress-indeterminate-15 "
+    className="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-indeterminate"
     role="progressbar"
   >
     <div
-      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorPrimary-22 MuiLinearProgress-bar1Indeterminate-24"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar1Indeterminate MuiLinearProgress-barColorPrimary"
       style={Object {}}
     />
     <div
-      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorPrimary-22 MuiLinearProgress-bar2Indeterminate-27"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar2Indeterminate MuiLinearProgress-barColorPrimary"
       style={Object {}}
     />
   </div>
   <div
-    className="MuiLinearProgress-root-11 MuiLinearProgress-colorSecondary-13 MuiLinearProgress-indeterminate-15 "
+    className="MuiLinearProgress-root MuiLinearProgress-colorSecondary MuiLinearProgress-indeterminate"
     role="progressbar"
   >
     <div
-      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorSecondary-23 MuiLinearProgress-bar1Indeterminate-24"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar1Indeterminate MuiLinearProgress-barColorSecondary"
       style={Object {}}
     />
     <div
-      className="MuiLinearProgress-bar-21 MuiLinearProgress-barColorSecondary-23 MuiLinearProgress-bar2Indeterminate-27"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar2Indeterminate MuiLinearProgress-barColorSecondary"
       style={Object {}}
     />
   </div>

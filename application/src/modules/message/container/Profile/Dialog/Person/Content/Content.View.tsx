@@ -37,15 +37,13 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
-
-import { MessageStore } from '@/modules/message/store';
-import { container } from 'framework';
+import { IMessageStore } from '@/modules/message/interface';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
   WithTranslation & ProfileDialogPersonContentViewProps
 > {
-  private _messageStore: MessageStore = container.get(MessageStore);
+  @IMessageStore private _messageStore: IMessageStore;
 
   renderPresence = () => {
     const { id } = this.props;

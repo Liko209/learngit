@@ -3,12 +3,11 @@
  * @Date: 2018-09-17 14:00:44
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import { observable, action, IObservableArray } from 'mobx';
-import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
 import { mainLogger } from 'sdk';
-import { QUERY_DIRECTION } from '../../../../../packages/sdk/src/dao/constants';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { HasMore } from './types';
 
 export class ListStore<T> extends BaseNotificationSubscribe {
@@ -38,16 +37,14 @@ export class ListStore<T> extends BaseNotificationSubscribe {
       if (this._limit && this._items.length > this._limit) {
         this._items.splice(this._limit, this._items.length);
       }
+    } else if (this._limit) {
+      const items =
+        newItems.length > this._limit
+          ? newItems.slice(0, this._limit)
+          : newItems;
+      this._items.push(...items);
     } else {
-      if (this._limit) {
-        const items =
-          newItems.length > this._limit
-            ? newItems.slice(0, this._limit)
-            : newItems;
-        this._items.push(...items);
-      } else {
-        this._items.push(...newItems);
-      }
+      this._items.push(...newItems);
     }
   }
 
@@ -111,26 +108,30 @@ export class ListStore<T> extends BaseNotificationSubscribe {
         this._setHasMore(hasMore, direction);
         break;
       }
-      case 'object': {
-        const _hasMore = {
-          older: false,
-          newer: false,
-          both: false,
-          ...hasMore,
-        };
-        if (direction === QUERY_DIRECTION.BOTH) {
-          this._setHasMore(
-            _hasMore[QUERY_DIRECTION.OLDER] || false,
-            QUERY_DIRECTION.OLDER,
-          );
-          this._setHasMore(
-            _hasMore[QUERY_DIRECTION.NEWER] || false,
-            QUERY_DIRECTION.NEWER,
-          );
-        } else {
-          this._setHasMore(_hasMore[direction], direction);
+      case 'object':
+        {
+          const _hasMore = {
+            older: false,
+            newer: false,
+            both: false,
+            ...hasMore,
+          };
+          if (direction === QUERY_DIRECTION.BOTH) {
+            this._setHasMore(
+              _hasMore[QUERY_DIRECTION.OLDER] || false,
+              QUERY_DIRECTION.OLDER,
+            );
+            this._setHasMore(
+              _hasMore[QUERY_DIRECTION.NEWER] || false,
+              QUERY_DIRECTION.NEWER,
+            );
+          } else {
+            this._setHasMore(_hasMore[direction], direction);
+          }
         }
-      }
+        break;
+      default:
+        return;
     }
   }
 

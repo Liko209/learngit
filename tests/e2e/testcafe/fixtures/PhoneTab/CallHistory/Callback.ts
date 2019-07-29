@@ -20,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2364'],
+  caseIds: ['JPT-2364'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Call back from the call history', async (t) => {
