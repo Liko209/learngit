@@ -6,4 +6,5 @@
 export * from './electron';
 export * from './registerModule';
 export * from './mountWithTheme';
+export * from './renderHooks';
 export * from './mockErrorEvent';
