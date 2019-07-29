@@ -1,6 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/Search/*.ts", "./fixtures/RightRail/*.ts", "./fixtures/PhoneTab/**/*.ts"],
-    "browsers": ["selenium:chrome"]
-  }
-}

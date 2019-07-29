@@ -384,6 +384,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -476,6 +477,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -568,6 +570,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -660,6 +663,7 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}

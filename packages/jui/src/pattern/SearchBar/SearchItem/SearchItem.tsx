@@ -5,7 +5,7 @@
  */
 import React, { ReactNode, memo } from 'react';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
-import MuiLock from '@material-ui/icons/Lock';
+// import MuiLock from '@material-ui/icons/Lock';
 import { JuiSearchItemValue } from '../SearchItemValue';
 import styled from '../../../foundation/styled-components';
 import {
@@ -16,6 +16,7 @@ import {
   typography,
   primary,
 } from '../../../foundation/utils/styles';
+import { JuiIconography } from '../../../foundation/Iconography';
 
 type MuiMenuItemPropsFixed = MenuItemProps & {
   button?: boolean | undefined;
@@ -50,13 +51,11 @@ const SearchItemWrapper = styled<MuiMenuItemPropsFixed>(MenuItem)`
   }
 `;
 
-const PrivateIcon = styled(MuiLock)`
-  && {
-    font-size: ${spacing(4)};
-    color: ${grey('500')};
-    margin: ${spacing(0, 0, 0, 1)};
-  }
-`;
+const PrivateIcon = () => (
+  <JuiIconography iconColor={['grey', '500']} iconSize="medium">
+    lock
+  </JuiIconography>
+);
 
 const SearchItemAvatar = styled.div`
   display: flex;
@@ -73,7 +72,8 @@ const SearchItemValueWrapper = styled.div`
 
 const Joined = styled.span`
   padding: ${spacing(0, 1)};
-  color: ${({ theme }) => theme.palette.getContrastText(primary('700', 2)({ theme }))};
+  color: ${({ theme }) =>
+    theme.palette.getContrastText(primary('700', 2)({ theme }))};
   border-radius: ${shape('borderRadius', 4)};
   background: ${primary('700', 2)};
   ${typography('caption1')}

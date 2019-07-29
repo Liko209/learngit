@@ -3,7 +3,8 @@
     "button": {
       "ariaToggleOn": "On, click to turn off",
       "ariaToggleOff": "Off, click to turn on",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "unblock": "Unblock"
     },
     "dialog": {
       "OK": "OK",
@@ -78,12 +79,13 @@
   },
   "presence": {
     "available": "Available",
-    "doMotDisturb": "Do not disturb",
+    "doNotDisturb": "Do not disturb",
     "inMeeting": "In a meeting",
     "onCall": "On a call",
     "offline": "Offline",
     "invisible": "Invisible",
     "prompt": {
+      "topBannerInfoWhenDnd": "All incoming calls and notifications are blocked.",
       "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
       "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
     }
@@ -794,6 +796,7 @@
   },
   "integration": {},
   "setting": {
+    "playSound": "Play sound",
     "errorText": {
       "server": "Sorry, something went wrong on our end and we weren't able to save your settings. Try again later.",
       "network": "We weren't able to save your settings. Check your network connection, then try again.",
@@ -815,6 +818,63 @@
           "label": "New message badge count"
         }
       },
+      "sounds": {
+        "directMessages": {
+          "label": "Direct messages",
+          "description": "Choose sound for new direct messages"
+        },
+        "teamMessages": {
+          "label": "Team messages",
+          "description": "Choose a sound for new team messages"
+        },
+        "mentions": {
+          "label": "Mentions",
+          "description": "Choose sound for when you are mentioned"
+        },
+        "incomingCall": {
+          "label": "Incoming voice calls",
+          "description": "Choose a sound for incoming voice calls"
+        },
+        "voiceMail": {
+          "label": "New voicemail",
+          "description": "Choose a sound for new voicemail"
+        },
+        "options": {
+          "2Beep": "2 Beeps",
+          "3Beep": "3 Beeps",
+          "Alert1": "Alert",
+          "Alert2": "Alert 2",
+          "Alert3": "Alert 3",
+          "BingBong": "Bing Bong",
+          "Ching": "Ching",
+          "LogDrum2": "Log Drum",
+          "Snap": "Snap",
+          "Button9": "Squirt",
+          "Whoosh": "Whoosh",
+          "Whoosh2": "Whoosh 2",
+          "default": "Default",
+          "PhoneRing": "Phone Ring",
+          "air-raid-ring": "Air Raid",
+          "allusive-ring": "Allusive",
+          "attention-ring": "Attention",
+          "blub-blub-ring": "Blub Blub",
+          "buzzy-ring": "Buzzy",
+          "communication-channel-ring": "Channel Open",
+          "disco-ring": "Disco",
+          "door-bell-ring": "Door Bell",
+          "fab-ring": "Fairy",
+          "fast-bells-ring": "Fast Bells",
+          "high-gong-ring": "High Gong",
+          "indeed-ring": "Indeed",
+          "nice-ring": "Nice",
+          "ringing-bells-ring": "Ringing Bells",
+          "ring-ring": "Ring",
+          "simple-ring": "Simple",
+          "soothing-ring": "Soothing",
+          "0": "Off"
+        }
+      },
+
       "desktopNotifications": {
         "title": "Desktop notifications",
         "notificationsForBrowser": {

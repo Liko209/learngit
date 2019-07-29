@@ -258,11 +258,11 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   width: 336px;
   height: 272px;
   margin: 0px 12px 12px 0px;
+  cursor: default;
 }
 
 .c2 {
   height: 200px;
-  cursor: default;
   background-color: #bfbfbf;
   opacity: 0.36;
 }
@@ -416,6 +416,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
   <div>
     <div
       className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -468,6 +469,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <div
               className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
@@ -517,6 +519,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     </div>
     <div
       className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -569,6 +572,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <div
               className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
@@ -618,6 +622,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     </div>
     <div
       className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -670,6 +675,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <div
               className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}
@@ -719,6 +725,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
     </div>
     <div
       className="MuiPaper-root MuiPaper-elevation1 MuiCard-root c1 MuiPaper-rounded"
+      data-test-automation-id="fileCard"
     >
       <div
         className="MuiCardMedia-root c2 "
@@ -771,6 +778,7 @@ exports[`Storyshots Pattern/ConversationCard PreviewFiles: Pattern/ConversationC
             <div
               className="c12"
               direction="horizontal"
+              onClick={[Function]}
             >
               <button
                 aria-describedby={null}

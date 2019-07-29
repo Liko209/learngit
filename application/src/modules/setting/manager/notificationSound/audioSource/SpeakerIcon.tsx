@@ -1,21 +1,16 @@
 import React from 'react';
-import { RuiIconography } from 'rcui/components/Iconography';
-import { RuiSliderChildProps } from 'rcui/components/Forms/Slider';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
-const SpeakerMuteIcon = (props: RuiSliderChildProps) => (
-  <RuiIconography
-    icon="speaker-mute"
-    iconColor={props.color}
-    iconSize={props.size}
-  />
+const SpeakerMuteIcon = (
+  <JuiIconography iconColor={['grey', '600']} iconSize="medium">
+    speaker-mute
+  </JuiIconography>
 );
 
-const SpeakerIcon = (props: RuiSliderChildProps) => (
-  <RuiIconography
-    icon="speaker"
-    iconColor={props.color}
-    iconSize={props.size}
-  />
+const SpeakerIcon = (
+  <JuiIconography iconColor={['grey', '600']} iconSize="medium">
+    speaker
+  </JuiIconography>
 );
 
 export { SpeakerMuteIcon, SpeakerIcon };

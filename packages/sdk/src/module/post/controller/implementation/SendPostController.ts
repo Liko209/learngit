@@ -5,7 +5,6 @@
  */
 import { DEFAULT_RETRY_COUNT, mainLogger, REQUEST_PRIORITY } from 'foundation';
 import _ from 'lodash';
-import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { ENTITY } from '../../../../service/eventKey';
@@ -16,7 +15,6 @@ import { GroupConfigService } from '../../../groupConfig';
 import { ItemService } from '../../../item/service';
 import { PROGRESS_STATUS } from '../../../progress';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
-import { AT_MENTION_GROUPED_REGEXP } from '../../constant';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import {
@@ -32,6 +30,8 @@ import { PostActionController } from './PostActionController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PostItemController } from './PostItemController';
 import SendPostControllerHelper from './SendPostControllerHelper';
+import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
+import { AT_TEAM_MENTION_REGEXP } from '../../constant';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -169,8 +169,7 @@ class SendPostController implements ISendPostController {
     try {
       const group = await this.groupService.getById(sendPost.group_id);
       const containMentionTeam =
-        sendPost.is_team_mention ||
-        AT_MENTION_GROUPED_REGEXP.test(sendPost.text);
+        sendPost.is_team_mention || AT_TEAM_MENTION_REGEXP.test(sendPost.text);
       if (
         group &&
         containMentionTeam &&
@@ -231,12 +230,9 @@ class SendPostController implements ISendPostController {
   }
 
   private _convertTeamMentionToPlainText(text: string): string {
-    return text.replace(
-      AT_MENTION_GROUPED_REGEXP,
-      (match, ...[, , content]) => {
-        return content;
-      },
-    );
+    return text.replace(AT_TEAM_MENTION_REGEXP, (match, ...[, content]) => {
+      return content;
+    });
   }
 }
 

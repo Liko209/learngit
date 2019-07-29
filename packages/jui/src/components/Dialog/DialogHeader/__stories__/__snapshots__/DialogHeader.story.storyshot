@@ -227,12 +227,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -240,6 +240,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -567,12 +568,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -580,6 +581,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -1171,14 +1173,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Bulldog friendship.jpegdddddddddddddddddddd
          
         (1 / 20)
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1186,6 +1188,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -1414,7 +1417,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         <span>
@@ -1425,7 +1428,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           (1 / 20)
         </span>
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1433,6 +1436,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
