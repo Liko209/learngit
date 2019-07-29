@@ -38,6 +38,7 @@ import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { PostDataController } from '../PostDataController';
 import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { AT_TEAM_MENTION_REGEXP } from '../../constant';
+import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -55,7 +56,7 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const sendPostTracer = Performance.instance.getTracer('SendPost');
+    const sendPostTracer = Performance.instance.getTracer(POST_PERFORMANCE_KEYS.SEND_POST);
     sendPostTracer.start();
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
