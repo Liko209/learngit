@@ -16,9 +16,9 @@ import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
 
-import { E911ViewProps, Country, State } from './types';
+import { E911Props, E911ViewProps, Country, State } from './types';
 
-class E911ViewModel extends StoreViewModel implements E911ViewProps {
+class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
 
@@ -39,8 +39,8 @@ class E911ViewModel extends StoreViewModel implements E911ViewProps {
     outOfCountry: false,
   };
 
-  constructor() {
-    super();
+  constructor(props: E911Props) {
+    super(props);
     this.reaction(
       () => this.settingItemEntity.value,
       (value: E911SettingInfo, dispose: any) => {
@@ -51,6 +51,9 @@ class E911ViewModel extends StoreViewModel implements E911ViewProps {
           this.getCountryInfo();
           dispose();
         }
+      },
+      {
+        fireImmediately: true,
       },
     );
   }
@@ -63,12 +66,12 @@ class E911ViewModel extends StoreViewModel implements E911ViewProps {
 
   @computed
   get settingItemEntity() {
-    return getEntity<
-    UserSettingEntity,
-    SettingModel<E911SettingInfo>
-  >(ENTITY_NAME.USER_SETTING, SettingEntityIds.Phone_E911);;
+    return getEntity<UserSettingEntity, SettingModel<E911SettingInfo>>(
+      ENTITY_NAME.USER_SETTING,
+      SettingEntityIds.Phone_E911,
+    );
   }
-  
+
   @computed
   get disabled() {
     const checkField = ['customerName', 'country', 'street', 'city', 'zip'];

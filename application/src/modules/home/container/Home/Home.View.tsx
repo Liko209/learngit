@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { container } from 'framework';
-import { HomeStore } from '@/modules/home/store'; // TELEPHONY_SERVICE
+import { HomeStore } from '@/modules/home/store';
 import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { observer } from 'mobx-react';
@@ -56,14 +56,14 @@ class HomeViewComponent extends Component<Props> {
     window.removeEventListener('storage', this._storageEventHandler);
     notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
   }
-
+ 
   showE911Confirm = async () => {
     const { openE911,t ,needConfirmE911 } = this.props;
     const need = await needConfirmE911();
-    console.log(need, '---nello needConfirmE911');
     if (!need) {
       return;
     }
+
     const flagToast = Notification.flagToast({
       message: (
         <>

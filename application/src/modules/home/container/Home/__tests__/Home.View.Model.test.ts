@@ -38,7 +38,7 @@ describe('HomeViewModel', () => {
 
   @testable
   class openE911 {
-    @test('should be call openE911 if openE911')
+    @test('should be call openE911 if openE911 [JPT-2628]')
     @mockContainer(telephonyService, 'openE911')
     t1() {
       const vm = new HomeViewModel();
@@ -49,7 +49,7 @@ describe('HomeViewModel', () => {
 
   @testable
   class needConfirmE911 {
-    @test('should be call needConfirmE911 if needConfirmE911')
+    @test('should be call needConfirmE911 if needConfirmE911 [JPT-2628]')
     @mockContainer(telephonyService, 'needConfirmE911')
     async t1() {
       const vm = new HomeViewModel();

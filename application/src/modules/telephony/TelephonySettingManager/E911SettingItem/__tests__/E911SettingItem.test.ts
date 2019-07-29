@@ -51,8 +51,8 @@ describe('E911SettingItemViewModel', () => {
   }
 
   @testable
-  class needConfirmE911 {
-    @test('should be call needConfirmE911 if needConfirmE911')
+  class openE911 {
+    @test('should be call openE911 if openE911 [JPT-2667]')
     @mockContainer(telephonyService, 'openE911')
     t1() {
       const vm = new E911SettingItemViewModel();

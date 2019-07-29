@@ -128,7 +128,6 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
       (await this._rcInfoService.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.WEB_PHONE,
       ));
-    const hasAssignedLine = !!this._telephonyService.getRemoteEmergencyAddress();
     const emergencyAddr = await this._getDefaultEmergencyAddress();
     return {
       id: SettingEntityIds.Phone_E911,
@@ -137,7 +136,7 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
       valueType: ESettingValueType.LINK,
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
       state:
-        hasCallPermission && hasAssignedLine
+        hasCallPermission
           ? ESettingItemState.ENABLE
           : ESettingItemState.INVISIBLE,
       valueSetter: value => this.updateValue(value),
