@@ -122,7 +122,7 @@ export class GroupFetchDataController {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
-    const maxCount = (permissionService.getFeatureFlag(
+    const maxCount = await (permissionService.getFeatureFlag(
       UserPermissionType.LEFT_RAIL_MAX_COUNT,
     )) as number;
     mainLogger

@@ -704,7 +704,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then I can see this post instead of empty page in the bookmark page', async () => {
     await bookmarkEntry.enter();
-    await t.expect(emptyPage.exists).notOk();
+    await t.expect(emptyPage.exists).notOk({ timeout: 20e3 });
     const bookmarkPostCard = bookmarkPage.postItemById(bookmarkPostId);
     await t.expect(bookmarkPostCard.exists).ok();
   }, true);
