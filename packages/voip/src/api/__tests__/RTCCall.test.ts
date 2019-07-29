@@ -19,7 +19,6 @@ import { WEBPHONE_SESSION_STATE, RC_REFER_EVENT} from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 import { RTCMediaStatsManager } from '../../signaling/RTCMediaStatsManager';
-import resolve = require('resolve');
 
 describe('RTC call', () => {
   afterEach(() => {

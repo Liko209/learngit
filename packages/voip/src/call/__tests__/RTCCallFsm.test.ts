@@ -715,7 +715,7 @@ describe('Call FSM UT', () => {
           jest.spyOn(callFsm, 'onWarmTransferAction');
           callFsm.warmTransfer(targetSession);
           setImmediate(() => {
-            expect(callFsm.state()).toBe('connected');
+            expect(callFsm.state()).toBe('holding');
             expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
               targetSession,
             );
@@ -734,7 +734,7 @@ describe('Call FSM UT', () => {
           jest.spyOn(callFsm, 'onWarmTransferAction');
           callFsm.warmTransfer(targetSession);
           setImmediate(() => {
-            expect(callFsm.state()).toBe('connected');
+            expect(callFsm.state()).toBe('holded');
             expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
               targetSession,
             );
@@ -754,7 +754,7 @@ describe('Call FSM UT', () => {
           jest.spyOn(callFsm, 'onWarmTransferAction');
           callFsm.warmTransfer(targetSession);
           setImmediate(() => {
-            expect(callFsm.state()).toBe('connected');
+            expect(callFsm.state()).toBe('unholding');
             expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
               targetSession,
             );
