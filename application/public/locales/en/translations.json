@@ -117,6 +117,7 @@
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
     "openDialer": "Open the dialer",
+    "confirmAddressNow": "Confirm address now.",
     "confirmEmergencyAddress": "To enable outbound calls outside your organization, confirm your emergency address."
   },
   "globalSearch": {

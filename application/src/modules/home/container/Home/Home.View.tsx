@@ -5,6 +5,7 @@
  */
 import { container } from 'framework';
 import { HomeStore } from '@/modules/home/store'; // TELEPHONY_SERVICE
+import { notificationCenter, SERVICE } from 'sdk/service';
 
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
@@ -36,9 +37,11 @@ type Props = WithTranslation & HomeViewProps;
 @observer
 class HomeViewComponent extends Component<Props> {
   private _homeStore: HomeStore = container.get(HomeStore);
-
+  constructor(props: Props) {
+    super(props)
+    notificationCenter.on(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+  }
   componentDidMount() {
-    const { t, openE911, needConfirmE911 } = this.props;
     window.addEventListener('storage', this._storageEventHandler);
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -47,39 +50,41 @@ class HomeViewComponent extends Component<Props> {
     if (window.jupiterElectron && window.jupiterElectron.onCheckNativeUpgrade) {
       window.jupiterElectron.onCheckNativeUpgrade();
     }
-
-    setTimeout(async () => {
-      const need = await needConfirmE911();
-      console.log(need, '---nello needConfirmE911');
-      if (!need) {
-        return;
-      }
-      const flagToast = Notification.flagToast({
-        message: (
-          <>
-            {`${t('home.confirmEmergencyAddress')} `}
-            <RuiLink
-              underline
-              color="white"
-              handleOnClick={() => {
-                openE911();
-                flagToast.dismiss && flagToast.dismiss();
-              }}
-            >
-              Confirm address now.
-            </RuiLink>
-          </>
-        ),
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: true,
-      });
-    }, 10000);
   }
 
   componentWillUnmount() {
     window.removeEventListener('storage', this._storageEventHandler);
+    notificationCenter.off(SERVICE.RC_INFO_SERVICE.E911_UPDATED, this.showE911Confirm);
+  }
+
+  showE911Confirm = async () => {
+    const { openE911,t ,needConfirmE911 } = this.props;
+    const need = await needConfirmE911();
+    console.log(need, '---nello needConfirmE911');
+    if (!need) {
+      return;
+    }
+    const flagToast = Notification.flagToast({
+      message: (
+        <>
+          {`${t('home.confirmEmergencyAddress')} `}
+          <RuiLink
+            underline
+            color="white"
+            handleOnClick={() => {
+              openE911();
+              flagToast.dismiss && flagToast.dismiss();
+            }}
+          >
+            {t('home.confirmAddressNow')}
+          </RuiLink>
+        </>
+      ),
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: true,
+    });
   }
 
   private _storageEventHandler = (event: StorageEvent) => {
