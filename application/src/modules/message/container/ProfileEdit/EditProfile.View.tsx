@@ -85,7 +85,7 @@ class EditProfileViewComponent extends Component<
       const isInError = this.props[errorKey];
       const { currentFocusItem } = this.state;
       return (
-        <div key={key}>
+        <React.Fragment key={key}>
           <JuiTextField
             key={key}
             label={t(`people.profile.edit.${key}`)}
@@ -107,7 +107,7 @@ class EditProfileViewComponent extends Component<
             onBlur={this._updateFocusState()}
           />
           {isLastItem && <div />}
-        </div>
+        </React.Fragment>
       );
     });
   };

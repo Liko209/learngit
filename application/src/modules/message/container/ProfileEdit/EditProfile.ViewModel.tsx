@@ -11,9 +11,10 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
-import { trimStringBothSides, matchUrl } from '@/utils/string';
+import { trimStringBothSides } from '@/utils/string';
 import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Markdown } from 'glipdown';
 import portalManager from '@/common/PortalManager';
 import {
   EditProfileProps,
@@ -80,7 +81,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @action
   handleProfileEdit = async () => {
     if (this.webpage) {
-      this.webpageError = !matchUrl(this.webpage);
+      this.webpageError = !new RegExp(Markdown.global_url_regex).test(
+        this.webpage,
+      );
     }
     if (this.webpageError) return;
     const info = this.getUpdateInfo();
