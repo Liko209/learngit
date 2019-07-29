@@ -19,6 +19,23 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   font-size: 24px;
 }
 
+.c6.c6 .c2,
+.c6.c6 .c2 svg {
+  font-size: 20px;
+}
+
+.c6.c6:hover .c2 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c6.c6:active .c2 {
+  color: #9e9e9e;
+}
+
+.c6.c6.c6.c6.disabled .c2 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c1.c1 {
   padding: 0;
   width: 40px;
@@ -60,34 +77,17 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   animation-name: cBKRfH;
 }
 
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #0684bd;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c7.c7 .c2,
 .c7.c7 .c2 svg {
   font-size: 20px;
 }
 
 .c7.c7:hover .c2 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c7.c7:active .c2 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c7.c7.c7.c7.disabled .c2 {
@@ -117,11 +117,11 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 }
 
 .c9.c9:hover .c2 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c9.c9:active .c2 {
-  color: #0684bd;
+  color: #edb63c;
 }
 
 .c9.c9.c9.c9.disabled .c2 {
@@ -130,15 +130,15 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 
 .c10.c10 .c2,
 .c10.c10 .c2 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c10.c10:hover .c2 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c10.c10:active .c2 {
-  color: #edb63c;
+  color: #9e9e9e;
 }
 
 .c10.c10.c10.c10.disabled .c2 {
@@ -151,11 +151,11 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
 }
 
 .c11.c11:hover .c2 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c11.c11:active .c2 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c11.c11.c11.c11.disabled .c2 {
@@ -326,40 +326,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   font-size: 20px;
 }
 
-.c18.c18 .c12,
-.c18.c18 .c12 svg {
-  font-size: 20px;
-}
-
-.c18.c18:hover .c12 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c18.c18:active .c12 {
-  color: #9e9e9e;
-}
-
-.c18.c18.c18.c18.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c19.c19 .c12,
-.c19.c19 .c12 svg {
-  font-size: 20px;
-}
-
-.c19.c19:hover .c12 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c19.c19:active .c12 {
-  color: #0684bd;
-}
-
-.c19.c19.c19.c19.disabled .c12 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c11.c11 {
   padding: 0;
   width: 20px;
@@ -401,6 +367,40 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
   animation-name: cBKRfH;
 }
 
+.c18.c18 .c12,
+.c18.c18 .c12 svg {
+  font-size: 20px;
+}
+
+.c18.c18:hover .c12 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c18.c18:active .c12 {
+  color: #9e9e9e;
+}
+
+.c18.c18.c18.c18.disabled .c12 {
+  color: rgba(0,0,0,0.12);
+}
+
+.c19.c19 .c12,
+.c19.c19 .c12 svg {
+  font-size: 20px;
+}
+
+.c19.c19:hover .c12 {
+  color: rgba(6,132,189,0.88);
+}
+
+.c19.c19:active .c12 {
+  color: #0684bd;
+}
+
+.c19.c19.c19.c19.disabled .c12 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c20.c20 .c12,
 .c20.c20 .c12 svg {
   font-size: 20px;
@@ -424,11 +424,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 }
 
 .c21.c21:hover .c12 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c21.c21:active .c12 {
-  color: #0684bd;
+  color: #edb63c;
 }
 
 .c21.c21.c21.c21.disabled .c12 {
@@ -437,15 +437,15 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 
 .c22.c22 .c12,
 .c22.c22 .c12 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c22.c22:hover .c12 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c22.c22:active .c12 {
-  color: #edb63c;
+  color: #9e9e9e;
 }
 
 .c22.c22.c22.c22.disabled .c12 {
@@ -458,11 +458,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
 }
 
 .c23.c23:hover .c12 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c23.c23:active .c12 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c23.c23.c23.c23.disabled .c12 {

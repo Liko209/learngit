@@ -342,40 +342,6 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
   font-size: 24px;
 }
 
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #9e9e9e;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #0684bd;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
 .c1.c1 {
   padding: 0;
   width: 20px;
@@ -655,6 +621,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
 .c5.c5.c5.c5.disabled .c2 {
   color: rgba(0,0,0,0.12);
 }
+
 .c1.c1 {
   padding: 0;
   width: 40px;
@@ -694,40 +661,6 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
-}
-
-.c5.c5 .c2,
-.c5.c5 .c2 svg {
-  font-size: 20px;
-}
-
-.c5.c5:hover .c2 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c5.c5:active .c2 {
-  color: #0684bd;
-}
-
-.c5.c5.c5.c5.disabled .c2 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c6.c6 .c2,
-.c6.c6 .c2 svg {
-  font-size: 20px;
-}
-
-.c6.c6:hover .c2 {
-  color: rgba(158,158,158,0.88);
-}
-
-.c6.c6:active .c2 {
-  color: #9e9e9e;
-}
-
-.c6.c6.c6.c6.disabled .c2 {
-  color: rgba(0,0,0,0.12);
 }
 
 .c0 {
