@@ -13,7 +13,6 @@ import {
   mapUnescape,
 } from '@/common/emojiHelpers';
 import moize from 'moize';
-import { AT_MENTION_GROUPED_REGEXP } from 'sdk/module/post/constant';
 
 const isInRange = (index: number, range: TextRange) =>
   index >= range.startIndex && index < range.startIndex + range.length;
@@ -202,6 +201,7 @@ const EMOJI_SIZE_MAP = {
 // modified from Markdown.global_url_regex
 /* eslint-disable max-len */
 const URL_REGEX = /(([a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\%\_\`\{\|\}\~\.]+@)?)(((ftp|https?):\/\/)?[-\w]+\.?([-\w]+\.)*(\d+\.\d+\.\d+|[-A-Za-z]+)(:\d+)?(((\/([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=])*)+)\??([A-Za-z0-9-\._~:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%])*)?)([^A-Za-z]|$)/gi;
+const AT_MENTION_GROUPED_REGEXP = /(<a class='at_mention_compose' rel='{"id":([-?\d]*?)}'>)(.*?)(<\/a>)/gi;
 
 const VALID_PHONE_REG = /\+?(\d{1,4} ?)?((\(\d{1,4}\)|\d(( |\-)?\d){0,3})(( |\-)?\d){2,}|(\(\d{2,4}\)|\d(( |\-)?\d){1,3})(( |\-)?\d){1,})(( x| ext.?)\d{1,5}){0,1}/g;
 const NUMBER_WITH_PLUS = 10;

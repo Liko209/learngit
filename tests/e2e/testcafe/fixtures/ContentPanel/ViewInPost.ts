@@ -71,7 +71,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog('When I open image viewer from right rail', async () => {
       await rightRail.imagesEntry.enter()
       await rightRail.imagesEntry.shouldBeOpened();
-      await t.click(imageItem.imageThumbnail)
+      await t.click(imageItem.self)
       await viewerDialog.ensureLoaded();
   })
 
