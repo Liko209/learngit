@@ -15,14 +15,13 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 import { CONVERSATION_TYPES } from '@/constants';
+import {TEAM_TEXT} from './constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type searchMember = {
   displayName: string;
   id: number;
 };
-
-const TEAM_TEXT = 'Team';
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   if (vm.members.length && vm.open) {
@@ -228,7 +227,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @computed
   get searchTermMatchTeam() {
-    const searchTerm = this.searchTerm ? this.searchTerm : '';
+    const searchTerm = this.searchTerm || '';
     return searchTerm.trim() === '' || (TEAM_TEXT.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
   }
 

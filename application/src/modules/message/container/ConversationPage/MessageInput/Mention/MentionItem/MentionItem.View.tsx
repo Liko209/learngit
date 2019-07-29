@@ -4,6 +4,7 @@ import { MentionItemViewProps } from './types';
 import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { JuiMentionPanelSectionItem } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionItem';
 import { i18nP } from '@/utils/i18nT';
+import { TEAM_TEXT } from '../constants';
 
 @observer
 class MentionItemView extends Component<MentionItemViewProps, {}> {
@@ -12,7 +13,7 @@ class MentionItemView extends Component<MentionItemViewProps, {}> {
     const { id } = item;
     const TEAM_SUFFIX_TEXT = i18nP('message.atMentionTeamSuffix');
     const displayName = isTeam
-      ? `Team ${TEAM_SUFFIX_TEXT}`
+      ? `${TEAM_TEXT} ${TEAM_SUFFIX_TEXT}`
       : item.userDisplayName;
     const avatar = isTeam ? (
       <GroupAvatar cid={id} size="small" />
