@@ -20,7 +20,7 @@ class MockUserAgent extends EventEmitter2 {
   public mockIncomingCall() {
     const session = {
       displayName: 'test',
-      uri: { aor: 'test@ringcentral.com' },
+      uri: { aor: 'test@ringcentral.com' }
     };
     this.emit(UA_EVENT.RECEIVE_INVITE, session);
   }
@@ -109,40 +109,12 @@ describe('RTCRegistrationManager', () => {
       regManager._initUserAgentListener();
       regManager.provisionReady(provisionData, options);
     }
-
-    it('Should send reRegister when retry timer reached. [JPT-812]', done => {
-      jest.useFakeTimers();
-      setup();
-      jest.spyOn(regManager, 'reRegister');
-      ua.mockSignal(UA_EVENT.REG_FAILED);
-      setImmediate(() => {
-        jest.advanceTimersByTime(60 * 1000);
-        expect(regManager.reRegister).toBeCalled();
-        done();
-      });
-    });
-
-    it('Should follow back off algorithm for register retry interval[JPT-2304]', () => {
-      setup();
-      let interval = 0;
-      for (let i = 0; i < 20; i++) {
-        interval = regManager._calculateNextRetryInterval();
-        if (i < kRetryIntervalList.length) {
-          expect(interval).toBeGreaterThanOrEqual(kRetryIntervalList[i].min);
-          expect(interval).toBeLessThanOrEqual(kRetryIntervalList[i].max);
-        } else {
-          expect(interval).toBeGreaterThanOrEqual(1920);
-          expect(interval).toBeLessThanOrEqual(3840);
-        }
-        regManager._failedTimes++;
-      }
-    });
   });
 
   describe('networkChangeToOnline()', () => {
     function initRegManager(
       regManager: RTCRegistrationManager,
-      ua: MockUserAgent,
+      ua: MockUserAgent
     ) {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
@@ -229,7 +201,7 @@ describe('RTCRegistrationManager', () => {
       regManager.createOutgoingCallSession(phoneNumber, options);
       expect(regManager._userAgent.makeCall).toHaveBeenCalledWith(
         phoneNumber,
-        options,
+        options
       );
     });
   });
