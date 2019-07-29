@@ -63,13 +63,12 @@ class E911ViewModel extends StoreViewModel implements E911ViewProps {
 
   @computed
   get settingItemEntity() {
-    const userConfig = getEntity<
-      UserSettingEntity,
-      SettingModel<E911SettingInfo>
-    >(ENTITY_NAME.USER_SETTING, SettingEntityIds.Phone_E911);
-    return userConfig;
+    return getEntity<
+    UserSettingEntity,
+    SettingModel<E911SettingInfo>
+  >(ENTITY_NAME.USER_SETTING, SettingEntityIds.Phone_E911);;
   }
-
+  
   @computed
   get disabled() {
     const checkField = ['customerName', 'country', 'street', 'city', 'zip'];

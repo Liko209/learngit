@@ -7,20 +7,10 @@ import { test, testable } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
-import { networkErrorFunc, serverErrorFunc } from 'shield/utils';
-import { Notification } from '@/containers/Notification';
 
 import { E911ViewModel } from '../E911.ViewModel';
-jest.mock('@/containers/Notification');
 
-const checkNotification = (message: string) => ({
-  message,
-  autoHideDuration: 3000,
-  dismissible: false,
-  fullWidth: false,
-  messageAlign: 'left',
-  type: 'error',
-});
+jest.mock('@/containers/Notification');
 
 describe('E911ViewModel', () => {
   function createUserInfo(value: any = {}) {
@@ -253,6 +243,5 @@ describe('E911ViewModel', () => {
       vm.onSubmit();
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
     }
- 
   }
 });

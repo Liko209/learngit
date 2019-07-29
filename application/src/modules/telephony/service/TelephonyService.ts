@@ -47,7 +47,6 @@ import SettingModel from '@/store/models/UserSetting';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
-// import { Dialog } from '@/containers/Dialog';
 import { OpenDialogE911 } from '../container/E911';
 import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 
