@@ -192,6 +192,10 @@ class AnalyticsCollector {
       source,
     });
   }
+
+  e911Setting() {
+    dataAnalysis.track('Jup_Web/DT_settings_updateE911Address');
+  }
 }
 
 export { AnalyticsCollector };

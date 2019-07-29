@@ -15,6 +15,7 @@ import { E911SettingItemProps } from './types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { TelephonyService } from '@/modules/telephony/service';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class E911SettingItemViewModel extends StoreViewModel<E911SettingItemProps> {
   private _telephonyService: TelephonyService = container.get(
@@ -56,6 +57,7 @@ class E911SettingItemViewModel extends StoreViewModel<E911SettingItemProps> {
 
   openE911 = () => {
     this._telephonyService.openE911();
+    analyticsCollector.e911Setting();
   };
 }
 
