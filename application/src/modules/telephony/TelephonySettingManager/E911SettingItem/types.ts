@@ -13,6 +13,7 @@ type E911SettingItemProps = {
 
 type E911SettingItemViewProps = E911SettingItemProps & {
   showUserE911: string;
+  openE911: () => void;
 };
 
 export { E911SettingItemViewProps, E911SettingItemProps };

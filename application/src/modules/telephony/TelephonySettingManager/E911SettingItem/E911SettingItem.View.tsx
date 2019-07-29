@@ -27,7 +27,7 @@ class E911SettingItemViewComponent extends Component<Props, State> {
   // };
 
   render() {
-    const { t, settingItemEntity, showUserE911 } = this.props;
+    const { t, settingItemEntity, showUserE911, openE911 } = this.props;
     const { state } = settingItemEntity;
     const regionText = t('setting.phone.general.e911Setting.e911Address');
 
@@ -46,7 +46,7 @@ class E911SettingItemViewComponent extends Component<Props, State> {
       >
         <JuiButton
           color="primary"
-          // onClick={this.handleClicked}
+          onClick={openE911}
           disabled={disabled}
           data-test-automation-id="settingItemButton-e911Setting"
         >
