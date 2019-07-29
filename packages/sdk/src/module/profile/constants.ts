@@ -129,6 +129,13 @@ const RingsList = ringsTypeList.map(id => ({
   url: `${AudioSourceUrl}${id}`,
 }));
 
+type conversation_notifications = {
+  desktop_notifications: boolean;
+  mute: boolean;
+  push_notifications: boolean;
+  email_notifications: EMAIL_NOTIFICATION_OPTIONS;
+};
+
 enum SETTING_KEYS {
   // call settings
   CALL_OPTION = 'calling_option',
@@ -186,4 +193,5 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
+  conversation_notifications,
 };
