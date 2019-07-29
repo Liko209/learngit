@@ -6,6 +6,11 @@ import {
   extractCollectionToIds,
 } from '../../__tests__/utils';
 
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
+
 describe('CollectionWhereClause', () => {
   let table: Dexie.Table;
   let coll: Dexie.Collection;
