@@ -13,7 +13,6 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   SETTING_KEYS,
   NEW_MESSAGE_BADGES_OPTIONS,
-  conversation_notifications,
 } from '../constants';
 
 type Profile = ExtendedBaseModel & {
