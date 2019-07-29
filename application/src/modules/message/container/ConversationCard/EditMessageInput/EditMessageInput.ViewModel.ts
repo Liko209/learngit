@@ -104,7 +104,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   @action
   private _enterHandler(vm: EditMessageInputViewModel) {
-    return function () {
+    return function() {
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
@@ -145,13 +145,13 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     server: 'message.prompt.editPostFailedForServerIssue',
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
-  private _handleEditPost(content: string, ids: number[]) {
-    return this._postService.editPost({
-      text: content,
-      groupId: this.gid,
-      postId: this.id,
-      mentionNonItemIds: ids,
-    });
+  private async _handleEditPost(content: string, ids: number[]) {
+    return await this._postService.editPost({
+        text: content,
+        groupId: this.gid,
+        postId: this.id,
+        mentionNonItemIds: ids,
+      });
   }
 
   private async _editPost(content: string, ids: number[]) {
@@ -161,7 +161,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   private _deletePost = async () => {
     await this._postService.deletePost(this.id);
-  }
+  };
 
   private _handleDelete = async () => {
     Dialog.confirm({
@@ -179,7 +179,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         });
       },
     });
-  }
+  };
 }
 
 export {

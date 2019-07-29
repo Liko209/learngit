@@ -15,6 +15,7 @@ type ProgressActionsProps = {
 type ProgressActionsViewProps = {
   id: number;
   inEditProcess: boolean;
+  showEditAction: boolean;
   post: PostModel;
   resend: Function;
   edit: Function;

@@ -15,6 +15,7 @@ import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
 import { container, decorate, injectable } from 'framework';
+import { TypeDictionary } from 'sdk/utils';
 
 decorate(injectable(), MessageService);
 container.bind(MESSAGE_SERVICE).to(MessageService);
@@ -52,6 +53,8 @@ const mockPostData = {
   id: -123,
   progressStatus: PROGRESS_STATUS.FAIL,
   itemIds: [1],
+  text: '',
+  itemTypeIds: {},
 };
 
 const nprops = {
@@ -94,6 +97,25 @@ describe('ProgressActionsViewModel', () => {
     it('should be get PROGRESS_STATUS.SUCCESS when postId > 0', () => {
       expect(pvm.postProgress).toEqual(PROGRESS_STATUS.SUCCESS);
     });
+  });
+
+  describe('showEditAction', () => {
+    it.each`
+      _isText  | _isEventOrTask | expected
+      ${true}  | ${true}        | ${false}
+      ${true}  | ${false}       | ${true}
+      ${false} | ${true}        | ${false}
+      ${false} | ${false}       | ${false}
+    `(
+      'should be $expected when _isText is $_isText and _isEventOrTask is $_isEventOrTask',
+      ({ _isText, _isEventOrTask, expected }) => {
+        mockPostData.text = _isText ? 'test' : '';
+        mockPostData.itemTypeIds = _isEventOrTask
+          ? { [TypeDictionary.TYPE_ID_TASK]: true }
+          : {};
+        expect(nvm.showEditAction).toBe(expected);
+      },
+    );
   });
 
   describe('resend()', () => {

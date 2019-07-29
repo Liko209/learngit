@@ -83,8 +83,8 @@ class PostService extends EntityBaseService<Post> {
 
   async editPost(params: EditPostType) {
     this._isFailedPost(params)
-      ? this._editFailedPost(params)
-      : this._editSuccessPost(params);
+      ? await this._editFailedPost(params)
+      : await this._editSuccessPost(params);
   }
 
   private _isFailedPost(params: EditPostType) {

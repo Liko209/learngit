@@ -22,6 +22,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { container } from 'framework';
 import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
 import { MessageService } from '@/modules/message/service';
+import { TypeDictionary } from 'sdk/utils';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
@@ -32,7 +33,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     ServiceConfig.ITEM_SERVICE,
   );
   private _timer: NodeJS.Timer;
-  private _timer2: NodeJS.Timer;
+  private _editProcessTimer: NodeJS.Timer;
   @observable
   postStatus?: PROGRESS_STATUS;
   @observable
@@ -53,8 +54,8 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
         if (this.isEditMode) {
           this.inEditProcess = true;
         } else {
-          clearTimeout(this._timer2);
-          this._timer2 = setTimeout(() => {
+          clearTimeout(this._editProcessTimer);
+          this._editProcessTimer = setTimeout(() => {
             this.inEditProcess = false;
           }, 200);
         }
@@ -75,6 +76,27 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   @computed
   get post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
+  }
+
+  @computed
+  private get _isText() {
+    const { text } = this.post;
+    return !!text && text.trim().length > 0;
+  }
+
+  @computed
+  private get _isEventOrTask() {
+    const { itemTypeIds } = this.post;
+    return (
+      itemTypeIds &&
+      (!!itemTypeIds[TypeDictionary.TYPE_ID_TASK] ||
+        !!itemTypeIds[TypeDictionary.TYPE_ID_EVENT])
+    );
+  }
+
+  @computed
+  get showEditAction() {
+    return this._isText && !this._isEventOrTask;
   }
 
   @computed

@@ -81,8 +81,8 @@ class ProgressActionsViewComponent extends Component<Props> {
   };
 
   private _renderEdit = () => {
-    const { postStatus, t } = this.props;
-    if (postStatus === PROGRESS_STATUS.FAIL) {
+    const { postStatus, t, showEditAction } = this.props;
+    if (postStatus === PROGRESS_STATUS.FAIL && showEditAction) {
       return (
         <JuiIconButton
           variant="plain"
