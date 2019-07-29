@@ -351,19 +351,19 @@ export class SoundsSection extends BaseWebComponent{
     return this.getSelectorByAutomationId('settingItemSelectBox-soundIncomingCall').find('div').find('p');
   }
 
-  async showSoundInDirectMessagesSelectBox(sound:string){
-    await this.t.expect(this.soundDirectMessages.textContent).eql(sound)
+  async showSoundInCurrentDirectMessagesSetting(sound:string){
+    await this.t.expect(this.soundDirectMessages.withText(sound).exists).ok();
   }
 
-  async showSoundInMentionsSelectBox(sound:string){
-    await this.t.expect(this.soundMentions.textContent).eql(sound);
+  async showSoundInCurrentMentionsSetting(sound:string){
+    await this.t.expect(this.soundMentions.withText(sound).exists).ok();
   }
 
-  async showSoundInTeamsMessagesSelectBox(sound:string){
-    await this.t.expect(this.soundTeamMessages.textContent).eql(sound);
+  async showSoundInCurrentTeamsMessagesSetting(sound:string){
+    await this.t.expect(this.soundTeamMessages.withText(sound).exists).ok();
   }
 
-  async showSoundInIncomingCallSelectBox(sound:string){
-    await this.t.expect(this.soundIncomingCall.textContent).eql(sound);
+  async showSoundInCurrentIncomingCallSetting(sound:string){
+    await this.t.expect(this.soundIncomingCall.withText(sound).exists).ok();
   }
 }

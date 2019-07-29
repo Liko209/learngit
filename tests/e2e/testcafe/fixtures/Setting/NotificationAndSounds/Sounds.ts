@@ -64,10 +64,10 @@ test.meta(<ITestMeta>{
 
   // Check the setting value for every item
   await h(t).withLog(`Then I can see the settings sync`, async () => {
-    await notificationAndSoundsPage.soundsSection.showSoundInDirectMessagesSelectBox(SOUNDS_FOR_OTHERS.name);
-    await notificationAndSoundsPage.soundsSection.showSoundInMentionsSelectBox(SOUNDS_FOR_OTHERS.name);
-    await notificationAndSoundsPage.soundsSection.showSoundInTeamsMessagesSelectBox(SOUNDS_FOR_OTHERS.name);
-    await notificationAndSoundsPage.soundsSection.showSoundInIncomingCallSelectBox(SOUNDS_FOR_RINGTONE.name);
+    await notificationAndSoundsPage.soundsSection.showSoundInCurrentDirectMessagesSetting(SOUNDS_FOR_OTHERS.name);
+    await notificationAndSoundsPage.soundsSection.showSoundInCurrentMentionsSetting(SOUNDS_FOR_OTHERS.name);
+    await notificationAndSoundsPage.soundsSection.showSoundInCurrentTeamsMessagesSetting(SOUNDS_FOR_OTHERS.name);
+    await notificationAndSoundsPage.soundsSection.showSoundInCurrentIncomingCallSetting(SOUNDS_FOR_RINGTONE.name);
   });
 
 });
