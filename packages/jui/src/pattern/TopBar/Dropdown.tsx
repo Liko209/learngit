@@ -7,6 +7,7 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiTypography } from '../../foundation/Typography';
+import { JuiMenuItem } from '../../components/Menus';
 import { spacing, width, typography, ellipsis } from '../../foundation/utils';
 
 type JuiDropdownContactInfoProps = {
@@ -26,6 +27,12 @@ const StyledContactWrapper = styled('div')`
   align-items: center;
   padding: ${spacing(3, 4)};
   background: ${({ theme }) => theme.palette.grey['100']};
+`;
+
+const JuiStyledDropdownMenuItem = styled(JuiMenuItem)`
+  && {
+    font-size: ${spacing(3.5)};
+  }
 `;
 
 const StyledContactInfoWrapper = styled('div')`
@@ -73,4 +80,5 @@ export {
   JuiStyledDropdown,
   JuiDropdownContactInfoProps,
   JuiDropdownContactInfo,
+  JuiStyledDropdownMenuItem,
 };

@@ -8,15 +8,15 @@ import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { ViewProps } from './types';
-import { JuiMenuList, JuiMenuItem } from 'jui/components';
+import { JuiMenuList } from 'jui/components';
 import {
   JuiAvatarActions,
   JuiDropdownContactInfo,
   JuiStyledDropdown,
+  JuiStyledDropdownMenuItem,
 } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
-import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { JuiDivider } from 'jui/components/Divider';
 import { dataAnalysis } from 'sdk';
@@ -90,7 +90,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   handleSendFeedback = () => this.props.handleSendFeedback();
 
   render() {
-    const { handleSignOut, currentUserId, person, t } = this.props;
+    const { handleSignOut, person, t } = this.props;
 
     return (
       <JuiAvatarActions
@@ -114,35 +114,27 @@ class AvatarActionsComponent extends React.Component<Props> {
           />
           <JuiDivider key="divider-avatar-menu" />
           <JuiMenuList data-test-automation-id="avatarMenu">
-            <OpenProfileDialog id={currentUserId}>
-              <JuiMenuItem
-                aria-label={t('home.viewYourProfile')}
-                data-test-automation-id="viewYourProfile"
-              >
-                {t('people.team.profile')}
-              </JuiMenuItem>
-            </OpenProfileDialog>
-            <JuiMenuItem
+            <JuiStyledDropdownMenuItem
               onClick={this.handleAboutPage}
               aria-label={t('home.aboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
               {t('home.aboutRingCentral')}
-            </JuiMenuItem>
-            <JuiMenuItem
+            </JuiStyledDropdownMenuItem>
+            <JuiStyledDropdownMenuItem
               onClick={this.handleSendFeedback}
               aria-label={t('home.sendFeedback')}
               data-test-automation-id="sendFeedback"
             >
               {t('home.sendFeedback')}
-            </JuiMenuItem>
-            <JuiMenuItem
+            </JuiStyledDropdownMenuItem>
+            <JuiStyledDropdownMenuItem
               onClick={handleSignOut}
               aria-label={t('auth.signOut')}
               data-test-automation-id="signOut"
             >
               {t('auth.signOut')}
-            </JuiMenuItem>
+            </JuiStyledDropdownMenuItem>
           </JuiMenuList>
         </JuiStyledDropdown>
       </JuiAvatarActions>
