@@ -385,15 +385,6 @@ test.meta(<ITestMeta>{
     await phoneTab.selectCallerIdByText(callerIdNumber);
   });
 
-  await h(t).withLog('When I refresh page', async () => {
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog('And I click the to diapad button', async () => {
-    await app.homePage.openDialer();
-  });
-
   await h(t).withLog(`Then should display ${callerIdNumber} in caller ID seclection of the dialer page`, async () => {
     await t.expect(app.homePage.telephonyDialog.callerIdSelector.textContent).eql(callerIdNumber);
   });
