@@ -37,7 +37,7 @@ class EditProfileViewComponent extends Component<
   _renderSection = () => {
     return editItemSource.map(section => {
       return (
-        <JuiEditProfileSection>
+        <JuiEditProfileSection key={section[0].key}>
           {this._renderItem(section)}
         </JuiEditProfileSection>
       );

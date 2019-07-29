@@ -6,9 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
-import { MESSAGE_SERVICE } from '@/modules/message/interface/constant';
-import { MessageService } from '@/modules/message/service';
+import { IMessageService } from '@/modules/message/interface';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonTitleViewProps } from './types';
 import {
@@ -23,7 +21,7 @@ import portalManager from '@/common/PortalManager';
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithTranslation & ProfileDialogPersonTitleViewProps
 > {
-  _messageService: MessageService = container.get(MESSAGE_SERVICE);
+  @IMessageService private _messageService: IMessageService;
   onClick = () => portalManager.dismissLast();
   render() {
     const { id, t } = this.props;
