@@ -82,7 +82,7 @@ class E911ViewComponent extends Component<Props> {
       value,
       disabled,
     } = this.props;
-    console.log(this.context, '---nello context');
+
     const { countryName, customerName, city, zip, street, street2 } = value;
     return (
       <>

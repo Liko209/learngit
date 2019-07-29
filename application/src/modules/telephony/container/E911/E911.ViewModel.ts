@@ -135,7 +135,6 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     server: 'telephony.e911.prompt.networkError',
   })
   onSubmit = async () => {
-    console.log(this.settingItemEntity.valueSetter);
     await (this.settingItemEntity.valueSetter &&
       this.settingItemEntity.valueSetter(this.value));
   };
