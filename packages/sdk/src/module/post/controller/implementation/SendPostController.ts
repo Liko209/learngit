@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, DEFAULT_RETRY_COUNT, REQUEST_PRIORITY } from 'foundation';
+import {
+  mainLogger,
+  DEFAULT_RETRY_COUNT,
+  REQUEST_PRIORITY,
+  Performance,
+} from 'foundation';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { Post } from '../../entity';
@@ -50,6 +55,8 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
+    const sendPostTracer = Performance.instance.getTracer('SendPost');
+    sendPostTracer.start();
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
@@ -65,6 +72,7 @@ class SendPostController implements ISendPostController {
       this.preInsertController.getAll(),
     );
     await this.innerSendPost(rawInfo, false);
+    sendPostTracer.stop();
   }
 
   async reSendPost(id: number) {
