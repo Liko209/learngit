@@ -141,6 +141,12 @@ describe('EditProfileViewModel', () => {
       vm.updateInfo('firstName', '1');
       expect(vm.firstName).toEqual('1');
     });
+    it('Should filter emoji when call updateInfo with firstName with emoji ', async () => {
+      (getEntity as jest.Mock).mockReturnValue(personInfo);
+      const vm = new EditProfileViewModel({ id: 1 });
+      vm.updateInfo('firstName', '1😯');
+      expect(vm.firstName).toEqual('1');
+    });
     it('Should change webpageError when call updateInfo with webpage', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         ...personInfo,

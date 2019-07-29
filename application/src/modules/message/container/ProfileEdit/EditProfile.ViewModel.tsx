@@ -105,6 +105,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     if (key === 'webpage') {
       this.webpageError = false;
     }
+    if (key === 'firstName' || key === 'lastName') {
+      value = value.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, '');
+    }
     this[key] = trimStringBothSides(value);
   };
 }
