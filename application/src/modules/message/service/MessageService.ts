@@ -5,10 +5,8 @@
  */
 
 import { ReactNode } from 'react';
-import { inject } from 'framework';
 import portalManager from '@/common/PortalManager';
 import { EditProfile } from '../container/ProfileEdit';
-import { MessageStore } from '../store';
 import { IMessageService, IMessageStore } from '../interface';
 
 class MessageService implements IMessageService {
