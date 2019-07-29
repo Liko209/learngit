@@ -10,12 +10,7 @@ import { Post } from 'sdk/module/post/entity';
 import { ENTITY_NAME } from '@/store';
 import { TextMessageProps } from './types';
 import { moizePostParser, ChildrenType } from '@/common/postParser';
-import {
-  action,
-  observable,
-  computed,
-  comparer
-} from 'mobx';
+import { action, observable, computed, comparer } from 'mobx';
 import { buildAtMentionMap } from '@/common/buildAtMentionMap';
 
 class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
@@ -25,25 +20,30 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   @observable
   private _text: string;
 
+  @observable
   private _textType: boolean;
 
   constructor(props: TextMessageProps) {
     super(props);
-    this.reaction(() => ({
-      text: this._post.text,
-      keyword: props.keyword,
-    }), ({ text, keyword }) => {
-      const res = this._getContent(text, keyword);
-      this._textType = typeof res === 'string';
-      if (this._textType) {
-        this._text = res as string;
-      } else {
-        this._content = res;
-      }
-    }, {
-      fireImmediately: true,
-      equals: comparer.structural
-    });
+    this.reaction(
+      () => ({
+        text: this._post.text,
+        keyword: props.keyword,
+      }),
+      ({ text, keyword }) => {
+        const res = this._getContent(text, keyword);
+        this._textType = typeof res === 'string';
+        if (this._textType) {
+          this._text = res as string;
+        } else {
+          this._content = res;
+        }
+      },
+      {
+        fireImmediately: true,
+        equals: comparer.structural,
+      },
+    );
   }
 
   @computed
@@ -57,17 +57,18 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
   }
 
   @action
-  private _getContent = (text: string, keyword?: string) => moizePostParser(text, {
-    keyword,
-    html: true,
-    atMentions: {
-      map: buildAtMentionMap(this._post),
-    },
-    emoji: {
-      unicodeOnly: false,
-    },
-    phoneNumber: true,
-  })
+  private _getContent = (text: string, keyword?: string) =>
+    moizePostParser(text, {
+      keyword,
+      html: true,
+      atMentions: {
+        map: buildAtMentionMap(this._post),
+      },
+      emoji: {
+        unicodeOnly: false,
+      },
+      phoneNumber: true,
+    });
 }
 
 export { TextMessageViewModel };
