@@ -12,6 +12,7 @@ import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Company } from 'sdk/module/company/entity';
 import CompanyModel from '@/store/models/Company';
+import { PRESENCE } from 'sdk/module/presence/constant';
 import { PHONE_TAB, PHONE_ITEM_ACTIONS } from './constants';
 import { ConversationType, NewConversationSource } from './types';
 
@@ -108,6 +109,13 @@ class AnalyticsCollector {
   // [FIJI-4687] Segment - Block/Unblock a number
   blockNumber(source: string) {
     dataAnalysis.track('Jup_Web/DT_phone_blockNumber', {
+      source,
+    });
+  }
+
+  // [FIJI-963] set presence
+  setPresence(source: PRESENCE) {
+    dataAnalysis.track('Jup_Web/DT_appOptions_setPresence', {
       source,
     });
   }
