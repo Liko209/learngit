@@ -27,6 +27,7 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
+jest.mock('../../controller/RCDeviceController');
 jest.mock('sdk/module/account');
 jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
@@ -69,7 +70,7 @@ describe('RCInfoService', () => {
     clearMocks();
 
     mockSettingService = new SettingService();
-    let rawGetInstance = (key: string) => ServiceLoader.getInstance(key);
+    const rawGetInstance = (key: string) => ServiceLoader.getInstance(key);
     ServiceLoader.getInstance = jest.fn().mockImplementation((key: any) => {
       if (key === ServiceConfig.SETTING_SERVICE) {
         return mockSettingService;
@@ -87,7 +88,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCClientInfo();
       expect(
         rcInfoController.getRCInfoFetchController().getRCClientInfo,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -96,7 +97,7 @@ describe('RCInfoService', () => {
       rcInfoService.requestRCInfo();
       expect(
         rcInfoController.getRCInfoFetchController().requestRCInfo,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -106,7 +107,7 @@ describe('RCInfoService', () => {
       expect(
         rcInfoController.getRCInfoFetchController()
           .requestRCAccountRelativeInfo,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -115,7 +116,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCAccountInfo();
       expect(
         rcInfoController.getRCInfoFetchController().getRCAccountInfo,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -124,7 +125,7 @@ describe('RCInfoService', () => {
       await rcInfoService.getRCBrandId();
       expect(
         rcInfoController.getRCAccountInfoController().getAccountBrandId,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -133,7 +134,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCAccountId();
       expect(
         rcInfoController.getRCAccountInfoController().getRCAccountId,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -142,7 +143,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCExtensionId();
       expect(
         rcInfoController.getRCInfoFetchController().getRCExtensionId,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -151,7 +152,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCExtensionInfo();
       expect(
         rcInfoController.getRCInfoFetchController().getRCExtensionInfo,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -160,7 +161,7 @@ describe('RCInfoService', () => {
       rcInfoService.getRCRolePermissions();
       expect(
         rcInfoController.getRCInfoFetchController().getRCRolePermissions,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -169,7 +170,7 @@ describe('RCInfoService', () => {
       rcInfoService.getSpecialNumberRule();
       expect(
         rcInfoController.getRCInfoFetchController().getSpecialNumberRule,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
   describe('getPhoneData()', () => {
@@ -177,7 +178,7 @@ describe('RCInfoService', () => {
       rcInfoService.getPhoneData();
       expect(
         rcInfoController.getRCInfoFetchController().getPhoneData,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -186,7 +187,7 @@ describe('RCInfoService', () => {
       rcInfoService.setPhoneData('1');
       expect(
         rcInfoController.getRCInfoFetchController().setPhoneData,
-      ).toBeCalledWith('1');
+      ).toHaveBeenCalledWith('1');
     });
   });
 
@@ -195,7 +196,7 @@ describe('RCInfoService', () => {
       rcInfoService.setPhoneDataVersion('1');
       expect(
         rcInfoController.getRCInfoFetchController().setPhoneDataVersion,
-      ).toBeCalledWith('1');
+      ).toHaveBeenCalledWith('1');
     });
   });
 
@@ -204,7 +205,7 @@ describe('RCInfoService', () => {
       rcInfoService.getCallerIdList();
       expect(
         rcInfoController.getRCCallerIdController().getCallerIdList,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -213,7 +214,7 @@ describe('RCInfoService', () => {
       rcInfoService.getDefaultCallerId();
       expect(
         rcInfoController.getRCCallerIdController().getDefaultCallerId,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -222,7 +223,7 @@ describe('RCInfoService', () => {
       rcInfoService.setDefaultCallerId(1);
       expect(
         rcInfoController.getRCCallerIdController().setDefaultCallerId,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
     });
   });
 
@@ -231,7 +232,7 @@ describe('RCInfoService', () => {
       rcInfoService.hasSetCallerId();
       expect(
         rcInfoController.getRCCallerIdController().hasSetCallerId,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -241,14 +242,16 @@ describe('RCInfoService', () => {
       expect(
         rcInfoController.getRCPermissionController()
           .isRCFeaturePermissionEnabled,
-      ).toBeCalledWith(1);
+      ).toHaveBeenCalledWith(1);
     });
   });
 
   describe('getCountryList()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getCountryList();
-      expect(rcInfoService['regionInfoController'].getCountryList).toBeCalled();
+      expect(
+        rcInfoService['regionInfoController'].getCountryList,
+      ).toHaveBeenCalled();
     });
   });
 
@@ -257,7 +260,7 @@ describe('RCInfoService', () => {
       rcInfoService.getCurrentCountry();
       expect(
         rcInfoService['regionInfoController'].getCurrentCountry,
-      ).toBeCalled();
+      ).toHaveBeenCalled();
     });
   });
 
@@ -266,30 +269,32 @@ describe('RCInfoService', () => {
       rcInfoService.setDefaultCountry('1');
       expect(
         rcInfoService['regionInfoController'].setDefaultCountry,
-      ).toBeCalledWith('1');
+      ).toHaveBeenCalledWith('1');
     });
   });
   describe('getAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.getAreaCode();
-      expect(rcInfoService['regionInfoController'].getAreaCode).toBeCalled();
+      expect(
+        rcInfoService['regionInfoController'].getAreaCode,
+      ).toHaveBeenCalled();
     });
   });
 
   describe('setAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.setAreaCode('1');
-      expect(rcInfoService['regionInfoController'].setAreaCode).toBeCalledWith(
-        '1',
-      );
+      expect(
+        rcInfoService['regionInfoController'].setAreaCode,
+      ).toHaveBeenCalledWith('1');
     });
   });
   describe('hasAreaCode()', () => {
     it('should call controller with correct parameter', () => {
       rcInfoService.hasAreaCode('1');
-      expect(rcInfoService['regionInfoController'].hasAreaCode).toBeCalledWith(
-        '1',
-      );
+      expect(
+        rcInfoService['regionInfoController'].hasAreaCode,
+      ).toHaveBeenCalledWith('1');
     });
   });
   describe('isAreaCodeValid()', () => {
@@ -297,7 +302,7 @@ describe('RCInfoService', () => {
       rcInfoService.isAreaCodeValid('1');
       expect(
         rcInfoService['regionInfoController'].isAreaCodeValid,
-      ).toBeCalledWith('1');
+      ).toHaveBeenCalledWith('1');
     });
   });
 
@@ -356,7 +361,7 @@ describe('RCInfoService', () => {
       rcInfoService['_rcInfoSettings'] = {} as any;
       // mockProfileSetting.unsubscribe = jest.fn();
       rcInfoService['onStarted']();
-      expect(mockSettingService.registerModuleSetting).toBeCalledWith({});
+      expect(mockSettingService.registerModuleSetting).toHaveBeenCalledWith({});
     });
   });
 
@@ -365,7 +370,9 @@ describe('RCInfoService', () => {
       rcInfoService['_rcInfoSettings'] = {} as any;
       // mockProfileSetting.unsubscribe = jest.fn();
       rcInfoService['onStopped']();
-      expect(mockSettingService.unRegisterModuleSetting).toBeCalledWith({});
+      expect(mockSettingService.unRegisterModuleSetting).toHaveBeenCalledWith(
+        {},
+      );
     });
   });
 
@@ -375,7 +382,37 @@ describe('RCInfoService', () => {
       expect(
         rcInfoService['getRCInfoController']().blockNumberController
           .isNumberBlocked,
-      ).toBeCalledWith('1123');
+      ).toHaveBeenCalledWith('1123');
+    });
+  });
+
+  describe('getDigitalLines()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDigitalLines();
+      expect(
+        rcInfoService['getRCInfoController']().getRCInfoFetchController()
+          .getDigitalLines,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('assignLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.assignLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .assignLine,
+      ).toHaveBeenCalledWith('1', 'test');
+    });
+  });
+
+  describe('updateLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.updateLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .updateLine,
+      ).toHaveBeenCalledWith('1', 'test');
     });
   });
 
@@ -385,7 +422,7 @@ describe('RCInfoService', () => {
       expect(
         rcInfoService['getRCInfoController']().blockNumberController
           .deleteBlockedNumbers,
-      ).toBeCalledWith(['1123', '6']);
+      ).toHaveBeenCalledWith(['1123', '6']);
     });
   });
 
@@ -395,7 +432,7 @@ describe('RCInfoService', () => {
       expect(
         rcInfoService['getRCInfoController']().blockNumberController
           .addBlockedNumber,
-      ).toBeCalledWith('1123');
+      ).toHaveBeenCalledWith('1123');
     });
   });
 });

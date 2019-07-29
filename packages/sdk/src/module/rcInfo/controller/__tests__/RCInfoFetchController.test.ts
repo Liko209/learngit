@@ -51,7 +51,7 @@ describe('RCInfoFetchController', () => {
         .fn()
         .mockReturnValueOnce('GLIP');
       rcInfoFetchController.requestRCInfo();
-      expect(rcInfoFetchController.scheduleRCInfoJob).toBeCalledTimes(0);
+      expect(rcInfoFetchController.scheduleRCInfoJob).toHaveBeenCalledTimes(0);
       expect(rcInfoFetchController['_isRCInfoJobScheduled']).toBeFalsy();
     });
 
@@ -160,7 +160,7 @@ describe('RCInfoFetchController', () => {
         () => {},
         false,
       );
-      expect(jobScheduler.scheduleDailyPeriodicJob).toBeCalled();
+      expect(jobScheduler.scheduleDailyPeriodicJob).toHaveBeenCalled();
     });
   });
 
@@ -169,11 +169,11 @@ describe('RCInfoFetchController', () => {
       RCInfoApi.requestRCClientInfo = jest.fn().mockReturnValue('rcClientInfo');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestRCClientInfo();
-      expect(RCInfoApi.requestRCClientInfo).toBeCalledTimes(1);
-      expect(RCInfoUserConfig.prototype.setClientInfo).toBeCalledWith(
+      expect(RCInfoApi.requestRCClientInfo).toHaveBeenCalledTimes(1);
+      expect(RCInfoUserConfig.prototype.setClientInfo).toHaveBeenCalledWith(
         'rcClientInfo',
       );
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.CLIENT_INFO,
         'rcClientInfo',
       );
@@ -187,11 +187,11 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('rcAccountInfo');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestRCAccountInfo();
-      expect(RCInfoApi.requestRCAccountInfo).toBeCalledTimes(1);
-      expect(RCInfoUserConfig.prototype.setAccountInfo).toBeCalledWith(
+      expect(RCInfoApi.requestRCAccountInfo).toHaveBeenCalledTimes(1);
+      expect(RCInfoUserConfig.prototype.setAccountInfo).toHaveBeenCalledWith(
         'rcAccountInfo',
       );
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.ACCOUNT_INFO,
         'rcAccountInfo',
       );
@@ -205,11 +205,11 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('rcExtensionInfo');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestRCExtensionInfo();
-      expect(RCInfoApi.requestRCExtensionInfo).toBeCalledTimes(1);
-      expect(RCInfoUserConfig.prototype.setExtensionInfo).toBeCalledWith(
+      expect(RCInfoApi.requestRCExtensionInfo).toHaveBeenCalledTimes(1);
+      expect(RCInfoUserConfig.prototype.setExtensionInfo).toHaveBeenCalledWith(
         'rcExtensionInfo',
       );
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.EXTENSION_INFO,
         'rcExtensionInfo',
       );
@@ -235,11 +235,11 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('rcRolePermission');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestRCRolePermissions();
-      expect(RCInfoApi.requestRCRolePermissions).toBeCalledTimes(1);
-      expect(RCInfoUserConfig.prototype.setRolePermissions).toBeCalledWith(
-        'rcRolePermission',
-      );
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(RCInfoApi.requestRCRolePermissions).toHaveBeenCalledTimes(1);
+      expect(
+        RCInfoUserConfig.prototype.setRolePermissions,
+      ).toHaveBeenCalledWith('rcRolePermission');
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.ROLE_PERMISSIONS,
         'rcRolePermission',
       );
@@ -260,11 +260,15 @@ describe('RCInfoFetchController', () => {
       notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
       await rcInfoFetchController.requestSpecialNumberRule();
 
-      expect(RCInfoApi.getSpecialNumbers).toBeCalledWith({ countryId: 2 });
-      expect(RCInfoUserConfig.prototype.setSpecialNumberRules).toBeCalledWith({
+      expect(RCInfoApi.getSpecialNumbers).toHaveBeenCalledWith({
+        countryId: 2,
+      });
+      expect(
+        RCInfoUserConfig.prototype.setSpecialNumberRules,
+      ).toHaveBeenCalledWith({
         2: 'specialNumbers',
       });
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.SPECIAL_NUMBER_RULE,
         { 2: 'specialNumbers' },
       );
@@ -277,9 +281,11 @@ describe('RCInfoFetchController', () => {
       RCInfoApi.getPhoneParserData = jest.fn().mockReturnValue('rcPhoneData');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestRCPhoneData();
-      expect(RCInfoApi.getPhoneParserData).toBeCalledTimes(1);
-      expect(rcInfoFetchController.getPhoneDataVersion).toBeCalledTimes(1);
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(RCInfoApi.getPhoneParserData).toHaveBeenCalledTimes(1);
+      expect(rcInfoFetchController.getPhoneDataVersion).toHaveBeenCalledTimes(
+        1,
+      );
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.PHONE_DATA,
         'rcPhoneData',
       );
@@ -291,12 +297,12 @@ describe('RCInfoFetchController', () => {
       RCInfoApi.getDialingPlan = jest.fn().mockResolvedValue('dialingPlan');
       notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
       await rcInfoFetchController.requestDialingPlan();
-      expect(RCInfoApi.getDialingPlan).toBeCalledTimes(1);
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(RCInfoApi.getDialingPlan).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.DIALING_PLAN,
         'dialingPlan',
       );
-      expect(RCInfoUserConfig.prototype.setDialingPlan).toBeCalledWith(
+      expect(RCInfoUserConfig.prototype.setDialingPlan).toHaveBeenCalledWith(
         'dialingPlan',
       );
     });
@@ -309,14 +315,14 @@ describe('RCInfoFetchController', () => {
         .mockResolvedValue('AccountServiceInfo');
       notificationCenter.emit = jest.fn().mockImplementationOnce(() => {});
       await rcInfoFetchController.requestAccountServiceInfo();
-      expect(RCInfoApi.getAccountServiceInfo).toBeCalledTimes(1);
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(RCInfoApi.getAccountServiceInfo).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.RC_SERVICE_INFO,
         'AccountServiceInfo',
       );
-      expect(RCInfoUserConfig.prototype.setAccountServiceInfo).toBeCalledWith(
-        'AccountServiceInfo',
-      );
+      expect(
+        RCInfoUserConfig.prototype.setAccountServiceInfo,
+      ).toHaveBeenCalledWith('AccountServiceInfo');
     });
   });
 
@@ -327,10 +333,10 @@ describe('RCInfoFetchController', () => {
       rcInfoFetchController.requestRCExtensionInfo = jest.fn();
       rcInfoFetchController.requestRCRolePermissions = jest.fn();
       await rcInfoFetchController.requestRCAccountRelativeInfo();
-      expect(rcInfoFetchController.requestRCClientInfo).toBeCalled();
-      expect(rcInfoFetchController.requestRCAccountInfo).toBeCalled();
-      expect(rcInfoFetchController.requestRCExtensionInfo).toBeCalled();
-      expect(rcInfoFetchController.requestRCRolePermissions).toBeCalled();
+      expect(rcInfoFetchController.requestRCClientInfo).toHaveBeenCalled();
+      expect(rcInfoFetchController.requestRCAccountInfo).toHaveBeenCalled();
+      expect(rcInfoFetchController.requestRCExtensionInfo).toHaveBeenCalled();
+      expect(rcInfoFetchController.requestRCRolePermissions).toHaveBeenCalled();
     });
   });
 
@@ -341,13 +347,13 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('extensionPhoneNumberList');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestExtensionPhoneNumberList();
-      expect(RCInfoApi.getExtensionPhoneNumberList).toBeCalledWith({
+      expect(RCInfoApi.getExtensionPhoneNumberList).toHaveBeenCalledWith({
         perPage: 1000,
       });
       expect(
         RCInfoUserConfig.prototype.setExtensionPhoneNumberList,
-      ).toBeCalledWith('extensionPhoneNumberList');
-      expect(notificationCenter.emit).toBeCalledWith(
+      ).toHaveBeenCalledWith('extensionPhoneNumberList');
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.EXTENSION_PHONE_NUMBER_LIST,
         'extensionPhoneNumberList',
       );
@@ -361,11 +367,11 @@ describe('RCInfoFetchController', () => {
         .mockReturnValue('extensionCallerId');
       notificationCenter.emit.mockImplementationOnce(() => {});
       await rcInfoFetchController.requestExtensionCallerId();
-      expect(RCInfoApi.getExtensionCallerId).toBeCalled();
-      expect(RCInfoUserConfig.prototype.setExtensionCallerId).toBeCalledWith(
-        'extensionCallerId',
-      );
-      expect(notificationCenter.emit).toBeCalledWith(
+      expect(RCInfoApi.getExtensionCallerId).toHaveBeenCalled();
+      expect(
+        RCInfoUserConfig.prototype.setExtensionCallerId,
+      ).toHaveBeenCalledWith('extensionCallerId');
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
         RC_INFO.EXTENSION_CALLER_ID,
         'extensionCallerId',
       );
@@ -387,13 +393,13 @@ describe('RCInfoFetchController', () => {
           paging: { page: 2, totalPages: 2 },
         });
       await rcInfoFetchController.requestBlockNumberList();
-      expect(RCInfoApi.getBlockNumberList).toBeCalledTimes(2);
+      expect(RCInfoApi.getBlockNumberList).toHaveBeenCalledTimes(2);
       expect(RCInfoApi.getBlockNumberList).toHaveBeenCalledWith({
         page: 2,
         perPage: 1000,
         status: BLOCK_STATUS.BLOCKED,
       });
-      expect(RCInfoUserConfig.prototype.setBlockNumbers).toBeCalledWith([
+      expect(RCInfoUserConfig.prototype.setBlockNumbers).toHaveBeenCalledWith([
         { id: 1, status: BLOCK_STATUS.BLOCKED },
         { id: 2, status: BLOCK_STATUS.BLOCKED },
         { id: 3, status: BLOCK_STATUS.BLOCKED },
@@ -528,7 +534,7 @@ describe('RCInfoFetchController', () => {
       await rcInfoFetchController.setPhoneData('phoneData');
       expect(
         rcInfoFetchController['rcInfoUserConfig'].setPhoneData,
-      ).toBeCalledWith('phoneData');
+      ).toHaveBeenCalledWith('phoneData');
     });
   });
 
@@ -562,7 +568,7 @@ describe('RCInfoFetchController', () => {
       await rcInfoFetchController.setExtensionCallerId('test');
       expect(
         rcInfoFetchController['rcInfoUserConfig'].setExtensionCallerId,
-      ).toBeCalledWith('test');
+      ).toHaveBeenCalledWith('test');
     });
   });
 
@@ -571,6 +577,15 @@ describe('RCInfoFetchController', () => {
       // prettier-ignore
       rcInfoFetchController['rcInfoUserConfig'].getDialingPlan = jest.fn().mockReturnValue('test');
       expect(await rcInfoFetchController.getDialingPlan()).toEqual('test');
+    });
+  });
+
+  describe('getDigitalLines', () => {
+    it('should get value from config', async () => {
+      // prettier-ignore
+      rcInfoFetchController['rcInfoUserConfig'].getDeviceInfo = jest.fn().mockReturnValue({records: 'test'});
+      const res = await rcInfoFetchController.getDigitalLines();
+      expect(res).toBe('test');
     });
   });
 
