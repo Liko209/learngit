@@ -468,7 +468,7 @@ class SearchItem extends BaseWebComponent {
   }
 
   get privateLabel() {
-    return this.getSelectorByAutomationId('search-item-private', this.self);
+    return this.findSelector('.lock.icon');
   }
 
   async shouldHavePrivateLabel() {
@@ -556,7 +556,7 @@ export class JoinTeamDialog extends BaseWebComponent {
     return this.buttonOfText('Join');
   }
 
-  get joinButtonByClass(){
+  get joinButtonByClass() {
     return this.getSelector('.containedButtonStyle');
   }
 
@@ -576,4 +576,3 @@ export class JoinTeamDialog extends BaseWebComponent {
     await this.t.click(this.cancelButtonByClass);
   }
 }
-
