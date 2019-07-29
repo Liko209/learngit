@@ -141,7 +141,9 @@ export class JupiterHelper {
     await this.t
       .navigateTo(url)
       .click(envSelect)
-      .click(envOption.withText(env));
+      .click(envOption.withText(env))
+      .expect(envSelect.value).eql(env);
+
     await ClientFunction(() => localStorage.setItem('RUNNING_E2E', 'true'))();
   }
 }
