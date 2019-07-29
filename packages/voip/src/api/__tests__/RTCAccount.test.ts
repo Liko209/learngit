@@ -12,6 +12,7 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
+  RTCSipProvisionInfo,
 } from '../types';
 import {
   kRTCAnonymous,
@@ -19,11 +20,7 @@ import {
   kRTCProvRefreshByRegFailedInterval,
   kRetryIntervalList,
 } from '../../account/constants';
-import {
-  REGISTRATION_FSM_STATE,
-  RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
-} from '../../account/types';
+import { REGISTRATION_FSM_STATE, RTC_PROV_EVENT } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 import { kProvisioningInfoKey } from '../../utils/constants';
@@ -143,8 +140,8 @@ class MockSession extends EventEmitter2 {
       callId: '100',
       remoteTag: '200',
       localTag: '300',
-    }
-  }
+    },
+  };
 }
 
 class MockLocalStorage implements ITelephonyDaoDelegate {

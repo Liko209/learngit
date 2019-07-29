@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-afterAll(() => global.gc());
+afterAll(() => global.gc && global.gc());
