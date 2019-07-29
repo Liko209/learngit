@@ -119,7 +119,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
           <JuiIconography
             data-test-automation-id="search-item-private"
             iconColor={['grey', '500']}
-            iconSize="medium"
+            iconSize="small"
           >
             lock
           </JuiIconography>
