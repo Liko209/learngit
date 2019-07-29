@@ -212,6 +212,10 @@ class TelephonyEngineController {
   }
 
   isEmergencyAddrConfirmed() {
+    if (!this._accountController.getSipProv()) {
+      // Sip Provision is not ready
+      return true;
+    }
     return (
       !!this.getRemoteEmergencyAddress() && !!this.getLocalEmergencyAddress()
     );

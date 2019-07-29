@@ -26,7 +26,7 @@ import { PhoneNumberService } from 'sdk/module/phoneNumber';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call, CALL_STATE } from '../entity';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { ENTITY } from 'sdk/service/eventKey';
+import { ENTITY, SERVICE } from 'sdk/service/eventKey';
 import notificationCenter, {
   NotificationEntityPayload,
 } from 'sdk/service/notificationCenter';
@@ -117,9 +117,16 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return undefined;
   }
 
-  getSipProvision() {
+  getSipProv() {
+    return this._rtcAccount.getSipProv();
+  }
+
+  getWebPhoneId() {
     const sipProv = this._rtcAccount.getSipProv();
-    return sipProv ? sipProv : undefined;
+    if (sipProv && sipProv.device) {
+      return sipProv.device.id;
+    }
+    return undefined;
   }
 
   setLastCalledNumber(num: string) {
@@ -374,7 +381,12 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return this._rtcAccount.callCount();
   }
 
-  onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
+  onReceiveNewProvFlags(sipFlags: RTCSipFlags) {
+    notificationCenter.emit(
+      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
+      sipFlags,
+    );
+  }
 
   private _processLogoutIfNeeded() {
     if (this._isDisposing && this._rtcAccount.callCount() === 1) {

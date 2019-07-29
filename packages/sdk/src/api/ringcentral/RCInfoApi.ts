@@ -12,6 +12,7 @@ import {
   HA_PRIORITY,
   REQUEST_HEADER_KEYS,
   CONTENT_TYPES,
+  REQUEST_PRIORITY,
 } from 'foundation';
 import {
   RCClientInfo,
@@ -157,6 +158,7 @@ class RCInfoApi extends Api {
     const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_DEVICE_INFO,
       params: request,
+      priority: REQUEST_PRIORITY.HIGH,
     });
     return RCInfoApi.rcNetworkClient.http<DialingPlan>(query);
   }
