@@ -54,7 +54,7 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
 
   private _subscribe() {
     notificationCenter.on(
-      `${TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS}.*`,
+      `global.${TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS}.*`,
       this._emergencyAddressChanged,
     );
     notificationCenter.on(
