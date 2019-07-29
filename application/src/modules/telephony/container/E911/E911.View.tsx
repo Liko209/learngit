@@ -17,6 +17,7 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 import dialogContext from '@/containers/Dialog/DialogContext';
+import { StyledTip, E911Description } from 'jui/pattern/E911';
 
 import { E911ViewProps, Country, State } from './types';
 
@@ -90,6 +91,7 @@ class E911ViewComponent extends Component<Props> {
           Confirm address for emergency calls
         </JuiDialogTitle>
         <JuiDialogContent>
+          <E911Description>{t('telephony.e911.dialogDescription')}</E911Description>
           <JuiTextField
             id={`${t('telephony.e911.customerName')} *`}
             label={`${t('telephony.e911.customerName')} *`}
@@ -169,6 +171,7 @@ class E911ViewComponent extends Component<Props> {
             value={zip}
             onChange={handleFieldChange('zip')}
           />
+          <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
         </JuiDialogContent>
         <JuiDialogActions data-test-automation-id="DialogActions">
           <JuiButton

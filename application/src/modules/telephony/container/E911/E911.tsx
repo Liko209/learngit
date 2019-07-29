@@ -15,7 +15,9 @@ const E911 = buildContainer<E911Props>({
 });
 
 const OpenDialogE911 = () => {
-  Dialog.simple(E911);
+  Dialog.simple(E911, {
+    scroll: 'body',
+  });
 };
 
 export { E911, OpenDialogE911 };
