@@ -3,7 +3,8 @@
     "button": {
       "ariaToggleOn": "On, click to turn off",
       "ariaToggleOff": "Off, click to turn on",
-      "tryAgain": "Try again"
+      "tryAgain": "Try again",
+      "unblock": "Unblock"
     },
     "dialog": {
       "OK": "OK",
@@ -83,12 +84,13 @@
   },
   "presence": {
     "available": "Available",
-    "doMotDisturb": "Do not disturb",
+    "doNotDisturb": "Do not disturb",
     "inMeeting": "In a meeting",
     "onCall": "On a call",
     "offline": "Offline",
     "invisible": "Invisible",
     "prompt": {
+      "topBannerInfoWhenDnd": "All incoming calls and notifications are blocked.",
       "updatePresenceFailedForServerIssue": "Sorry, something went wrong on our end, we weren't able to update your presence. Try again later.",
       "updatePresenceFailedForNetworkIssue": "Sorry, we weren't able to update your presence. Check your network connection, then try again."
     }

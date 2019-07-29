@@ -225,12 +225,6 @@ test.meta(<ITestMeta>{
     await profileDialog.ensureLoaded();
   });
 
-  title = 'And click memberButton.';
-
-  await h(t).withLog(title, async () => {
-    await conversationPage.clickMemberButton();
-  });
-
   title = 'And click member avatar.';
 
   await h(t).withLog(title, async () => {
