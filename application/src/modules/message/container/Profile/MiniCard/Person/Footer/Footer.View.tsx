@@ -16,14 +16,13 @@ import { JuiIconButton, JuiLinkButton } from 'jui/components/Buttons';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
-import { MessageStore } from '@/modules/message/store';
-import { container } from 'framework';
+import { IMessageStore } from '@/modules/message/interface';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
   WithTranslation & ProfileMiniCardPersonFooterViewProps
 > {
-  private _messageStore: MessageStore = container.get(MessageStore);
+  @IMessageStore private _messageStore: IMessageStore;
 
   onClickMessage = () => {
     const { id } = this.props;

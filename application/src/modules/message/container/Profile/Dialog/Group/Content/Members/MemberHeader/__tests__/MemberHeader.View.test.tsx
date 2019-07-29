@@ -22,6 +22,9 @@ describe('MemberHeaderView', () => {
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(Wrapper.find(ButtonInRight).exists()).toEqual(true);
+      expect(Wrapper.find(ButtonInRight).text()).toContain(
+        'people.team.AddTeamMembers',
+      );
     });
     it('should display none [AddTeamMembers] button when user has not permission to add team. [JPT-911]', () => {
       const props: any = {
@@ -32,6 +35,18 @@ describe('MemberHeaderView', () => {
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(Wrapper.find(ButtonInRight).exists()).toEqual(false);
+    });
+    it('should display [AddGroupMembers] button when isTeam is false', () => {
+      const props: any = {
+        group: {
+          isTeam: false,
+        },
+      };
+      const Wrapper = shallow(<MemberHeaderView {...props} />);
+      expect(Wrapper.find(ButtonInRight).exists()).toEqual(true);
+      expect(Wrapper.find(ButtonInRight).text()).toContain(
+        'people.group.addPeople',
+      );
     });
   });
 

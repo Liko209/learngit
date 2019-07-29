@@ -151,7 +151,7 @@ class RawCallerIdSelector extends PureComponent<
     return (
       <JuiBoxSelect
         {...rest}
-        automationId='caller-id-selector'
+        automationId="caller-id-selector"
         renderValue={renderValue}
         MenuProps={styleProp}
         ref={this._containerRef}
@@ -189,25 +189,26 @@ class RawCallerIdSelector extends PureComponent<
 }
 
 const CallerIdSelectorWithLazyFormat = CallerIdContainer(
-  (props: CallerIdSelectorProps) => (
+  React.forwardRef((props: CallerIdSelectorProps, ref) => (
     <RawCallerIdSelector
       {...props}
+      ref={ref as any}
       renderValue={(i: any) => <LazyFormatPhone value={i} />}
     />
-  ),
+  )),
 );
 
 const CallerIdSelector = withTranslation('translations')(
   ({ tooltipProps, callerIdProps, t }: CallerIdViewProps & WithTranslation) => {
     return (
       <RuiTooltip
-        placement='bottom'
+        placement="bottom"
         {...tooltipProps}
         title={t('telephony.callerIdSelector.tooltip')}
       >
         <CallerIdSelectorWithLazyFormat
           {...callerIdProps}
-          heightSize='default'
+          heightSize="default"
           label={t('telephony.callFrom')}
         />
       </RuiTooltip>

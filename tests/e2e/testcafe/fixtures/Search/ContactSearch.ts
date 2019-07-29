@@ -30,25 +30,25 @@ test.meta(<ITestMeta>{
   const searchKeyword = `Team-${H.uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithoutMe`,
+    name: `${searchKeyword} A`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let publicTeamWithMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithMe`,
+    name: `${searchKeyword} B`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
   let privateTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithoutMe`,
+    name: `${searchKeyword} C`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let privateTeamWithMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithMe`,
+    name: `${searchKeyword} D`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
@@ -151,25 +151,25 @@ test.meta(<ITestMeta>{
   const searchKeyword = `Team-${H.uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithoutMe`,
+    name: `${searchKeyword} A`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let publicTeamWithMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithMe`,
+    name: `${searchKeyword} B`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
   let privateTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithoutMe`,
+    name: `${searchKeyword} C`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let privateTeamWithMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithMe`,
+    name: `${searchKeyword} D`,
     owner: anotherUser,
     members: [me, anotherUser],
   };

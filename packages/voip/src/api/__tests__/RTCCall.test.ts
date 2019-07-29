@@ -64,10 +64,6 @@ describe('RTC call', () => {
         },
       ],
     };
-
-    public callId =  '100';
-    public fromTag =  '200';
-    public toTag =  '300';
   }
   class MockResponse {
     public headers: any = {
@@ -170,6 +166,15 @@ describe('RTC call', () => {
     reject = jest.fn();
     toVoicemail = jest.fn();
     warmTransfer = jest.fn();
+
+
+    dialog = {
+      id: {
+        callId: '100',
+        remoteTag: '200',
+        localTag: '300',
+      }
+    }
 
     mockSignal(signal: string, response?: any): void {
       this.emit(signal, response);

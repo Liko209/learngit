@@ -8,12 +8,14 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
+import { IMessageStore } from '@/modules/message/interface';
 import { StoreViewModel } from '@/store/ViewModel';
 import { MemberProps, MemberViewProps } from './types';
 import { CONVERSATION_TYPES } from '@/constants';
 
 class MemberViewModel extends StoreViewModel<MemberProps>
   implements MemberViewProps {
+  @IMessageStore private _messageStore: IMessageStore;
   private _showTypes = [
     CONVERSATION_TYPES.TEAM,
     CONVERSATION_TYPES.NORMAL_GROUP,
@@ -38,7 +40,10 @@ class MemberViewModel extends StoreViewModel<MemberProps>
 
   @computed
   get showMembersCount() {
-    return this._showTypes.includes(this._group.type);
+    return (
+      this._showTypes.includes(this._group.type) &&
+      !this._messageStore.isRightRailOpen
+    );
   }
 }
 

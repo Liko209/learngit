@@ -18,12 +18,12 @@ class FirebasePerformance {
     return this._instance;
   }
 
-  initialize() {
+  async initialize() {
+    await import('firebase/performance');
     // Initialize Firebase
     firebase.initializeApp(firebaseConfigProEnv);
     this._performance = firebase.performance();
     // Add the Performance Monitoring library
-    import('firebase/performance');
   }
 
   getPerformance() {

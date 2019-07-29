@@ -5,18 +5,19 @@
  */
 
 import { ReactNode } from 'react';
-import { inject } from 'framework';
-import { MessageStore } from '../store';
+import { IMessageService, IMessageStore } from '../interface';
 
-class MessageService {
-  @inject(MessageStore) private _messageStore: MessageStore;
+class MessageService implements IMessageService {
+  @IMessageStore private _messageStore: IMessageStore;
 
   registerConversationHeaderExtension(extension: ReactNode) {
     this._messageStore.addConversationHeaderExtension(extension);
   }
+
   enterEditMode(id: number, draft: string) {
     this._messageStore.savePostDraft(id, draft);
   }
+
   leaveEditMode(id: number) {
     this._messageStore.removePostDraft(id);
   }
@@ -29,11 +30,12 @@ class MessageService {
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );
-  }
+  };
 
   blurEditInputFocus() {
     this._messageStore.currentFocusedInput = undefined;
   }
+
   getCurrentInputFocus() {
     return this._messageStore.currentFocusedInput;
   }

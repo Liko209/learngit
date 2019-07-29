@@ -1,7 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean, select, text } from '@storybook/addon-knobs';
-import { RuiButton } from '../';
+import { RuiButton } from "..";
 import { alignCenterDecorator } from '../../../../storybook/decorators';
 
 function getKnobs() {

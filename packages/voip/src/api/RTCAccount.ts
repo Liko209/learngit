@@ -11,16 +11,13 @@ import { RTCCall } from './RTCCall';
 import { kRTCAnonymous, kRTCProvisioningOptions } from '../account/constants';
 
 import { IRTCCallDelegate } from './IRTCCallDelegate';
-import {
-  REGISTRATION_EVENT,
-  RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
-} from '../account/types';
+import { REGISTRATION_EVENT, RTC_PROV_EVENT } from '../account/types';
 import {
   RTC_ACCOUNT_STATE,
   RTCCallOptions,
   RTCSipFlags,
   RTCUserInfo,
+  RTCSipProvisionInfo,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -310,9 +307,18 @@ class RTCAccount implements IRTCAccount {
   }
 
   getSipProvFlags(): RTCSipFlags | null {
-    const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
-    if (SipProvisionInfo) {
-      return SipProvisionInfo.sipFlags;
+    const sipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+    if (sipProvisionInfo) {
+      return sipProvisionInfo.sipFlags;
+    }
+
+    return null;
+  }
+
+  getSipProv(): RTCSipProvisionInfo | null {
+    const sipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+    if (sipProvisionInfo) {
+      return sipProvisionInfo;
     }
 
     return null;

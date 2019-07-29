@@ -68,12 +68,12 @@ test.meta(<ITestMeta>{
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('Then I  should be able to see an indicator on the file thumbnail.', async () => {
     await conversationPage.waitUntilPostsBeLoaded();
-    await t.expect(conversationPage.postItemById(postId).fileThumbnail.exists).ok();
+    await t.expect(conversationPage.postItemById(postId).fileItem.exists).ok();
   });
 
   /** conversation entry point */
   await h(t).withLog('When I click the file thumbnail', async () => {
-    await t.click(conversationPage.postItemById(postId).fileThumbnail);
+    await t.click(conversationPage.postItemById(postId).fileItem);
   });
 
   const viewerDialog = app.homePage.viewerDialog;
@@ -98,7 +98,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I click the file thumbnail of the file`, async () => {
-    await t.click(fileTab.nthItem(0).fileThumbnail)
+    await t.click(fileTab.nthItem(0).self)
   });
 
   await h(t).withLog('Then the file viewer dialog show up and full screen', async () => {
