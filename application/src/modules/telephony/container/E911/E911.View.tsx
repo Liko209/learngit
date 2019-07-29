@@ -13,7 +13,6 @@ import {
   JuiDialogActions,
 } from 'jui/components/Dialog';
 import { JuiButton } from 'jui/components/Buttons/Button';
-import { Wrapper } from 'jui/pattern/E911';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
@@ -83,9 +82,10 @@ class E911ViewComponent extends Component<Props> {
       value,
       disabled,
     } = this.props;
+    console.log(this.context, '---nello context');
     const { countryName, customerName, city, zip, street, street2 } = value;
     return (
-      <Wrapper>
+      <>
         <JuiDialogTitle data-test-automation-id={'DialogTitle'}>
           Confirm address for emergency calls
         </JuiDialogTitle>
@@ -192,7 +192,7 @@ class E911ViewComponent extends Component<Props> {
             {t('common.dialog.confirm')}
           </JuiButton>
         </JuiDialogActions>
-      </Wrapper>
+      </>
     );
   }
 }
