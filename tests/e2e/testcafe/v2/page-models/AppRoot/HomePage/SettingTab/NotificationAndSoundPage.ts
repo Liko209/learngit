@@ -323,4 +323,47 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   async clickNewMessageBadgeCountDropDown() {
     await this.t.click(this.newMessageBadgeCountDropDown);
   }
+
+  // sounds section
+  get soundsSection() {
+    return this.getComponent(SoundsSection);
+  }
+}
+
+export class SoundsSection extends BaseWebComponent{
+  get self(){
+    return this.getSelectorByAutomationId('settingSection-sounds');
+  }
+
+  get soundDirectMessages(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundDirectMessages').find('div').find('p');
+  }
+
+  get soundMentions(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundMentions').find('div').find('p');
+  }
+
+  get soundTeamMessages(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundTeamMessages').find('div').find('p');
+  }
+
+  get soundIncomingCall(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundIncomingCall').find('div').find('p');
+  }
+
+  async showSoundInDirectMessagesSelectBox(sound:string){
+    await this.t.expect(this.soundDirectMessages.textContent).eql(sound)
+  }
+
+  async showSoundInMentionsSelectBox(sound:string){
+    await this.t.expect(this.soundMentions.textContent).eql(sound);
+  }
+
+  async showSoundInTeamsMessagesSelectBox(sound:string){
+    await this.t.expect(this.soundTeamMessages.textContent).eql(sound);
+  }
+
+  async showSoundInIncomingCallSelectBox(sound:string){
+    await this.t.expect(this.soundIncomingCall.textContent).eql(sound);
+  }
 }
