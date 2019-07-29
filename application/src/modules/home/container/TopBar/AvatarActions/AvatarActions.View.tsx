@@ -47,18 +47,6 @@ class AvatarActionsComponent extends React.Component<Props> {
     return t(i18nMap[presence] || 'presence.offline');
   }
 
-  private get title() {
-    const { t, presence } = this.props
-    const i18nMap = {
-      [PRESENCE.AVAILABLE]: 'presence.available',
-      [PRESENCE.DND]: 'presence.doNotDisturb',
-      [PRESENCE.INMEETING]: 'presence.inMeeting',
-      [PRESENCE.ONCALL]: 'presence.onCall',
-      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
-    }
-    return t(i18nMap[presence] || 'presence.offline');
-  }
-
   private _Anchor() {
     const { currentUserId } = this.props;
     return (
@@ -100,7 +88,7 @@ class AvatarActionsComponent extends React.Component<Props> {
               {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
-          <PresenceMenu presence={presence} title={this.title} />
+          <PresenceMenu presence={presence} title={this._tooltip} />
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}
