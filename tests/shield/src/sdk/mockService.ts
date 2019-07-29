@@ -1,65 +1,13 @@
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
 import { descriptorAOP } from '../core/utils';
+import { mockMethods } from '../shared';
 
 const mockServiceCache = new Map();
 type MockMethod = { method: string; data: any; type?: 'resolve' | 'reject' };
 type MockMethodType = string | MockMethod[];
 
-const _mockMethod = function (
-  mockObject: any,
-  method: string,
-  mockData?: any,
-  methodType?: 'resolve' | 'reject',
-) {
-  const fakeData = (...args: any[]) => {
-    const dataIsFunction = typeof mockData === 'function';
-    if (dataIsFunction) {
-      return mockData(...args);
-    }
-    return mockData;
-  };
-
-  const mockImplementation = (...args: any[]) => {
-    if (methodType === 'resolve') {
-      return Promise.resolve(fakeData(...args));
-    }
-    if (methodType === 'reject') {
-      return Promise.reject(fakeData(...args));
-    }
-    return fakeData(...args);
-  };
-  const [methodName, accessType] = method.split('.');
-
-  if (accessType) {
-    const base = {
-      enumerable: true,
-      configurable: true,
-    };
-    if (accessType === 'get') {
-      Object.defineProperty(mockObject, methodName, {
-        ...base,
-        get() {
-          return fakeData(null);
-        },
-      });
-    } else if (accessType === 'set') {
-      Object.defineProperty(mockObject, methodName, {
-        ...base,
-        set: fakeData,
-      });
-    } else {
-      throw new Error('accessType must be get or set');
-    }
-    jest
-      .spyOn(mockObject, methodName, accessType as any)
-      .mockImplementation(mockImplementation);
-  } else {
-    mockObject[method] = jest.fn().mockImplementation(mockImplementation);
-  }
-};
-
-const _getMockService = function (
+const _getMockService = function(
   mockObject: any,
   methods?: MockMethodType,
   mockData?: any,
@@ -71,10 +19,10 @@ const _getMockService = function (
 
   if (Array.isArray(methods)) {
     methods.forEach(({ method, data, type }) => {
-      _mockMethod(serviceClass, method, data, type);
+      mockMethods(serviceClass, method, data, type);
     });
   } else if (typeof methods === 'string') {
-    _mockMethod(serviceClass, methods, mockData, methodType);
+    mockMethods(serviceClass, methods, mockData, methodType);
   } else {
     // we shouldn't use @mockService(service)
     // throw Error('methods must be array or string');
@@ -86,7 +34,7 @@ const _getMockService = function (
   };
 };
 
-const _mockServiceClass = function (
+const _mockServiceClass = function(
   ServiceClass: any,
   method?: MockMethodType,
   mockData?: any,
@@ -110,13 +58,13 @@ const _mockServiceClass = function (
     });
 };
 
-const _fakeService = function (
+const _fakeService = function(
   mockObject: any,
   method?: MockMethodType,
   mockData?: any,
   methodType?: 'resolve' | 'reject',
 ) {
-  return function (
+  return function(
     target: any,
     property: string,
     descriptor: PropertyDescriptor,
@@ -201,7 +149,7 @@ const _enhanceMethod = (methods: MockMethod[], type: 'resolve' | 'reject') => {
 testFunction() {}
 ```
  */
-mockService.resolve = function (
+mockService.resolve = function(
   mockObject: any,
   methods: MockMethodType,
   mockData?: any,
@@ -225,7 +173,7 @@ mockService.resolve = function (
 testFunction() {}
 ```
  */
-mockService.reject = function (
+mockService.reject = function(
   mockObject: any,
   methods: MockMethodType,
   mockData?: any,

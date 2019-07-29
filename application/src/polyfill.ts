@@ -9,6 +9,3 @@ import { EventSource } from 'event-source-polyfill';
 if (!window['EventSource']) {
   window['EventSource'] = EventSource;
 }
-if (!window['EventTarget']) {
-  window['EventTarget'] = EventTarget;
-}

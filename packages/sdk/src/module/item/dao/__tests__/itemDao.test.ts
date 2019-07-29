@@ -15,12 +15,19 @@ import { EventItemDao } from '../../module/event/dao';
 import { NoteItemDao } from '../../module/note/dao';
 import { LinkItemDao } from '../../module/link/dao';
 import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
+import { DatabaseType } from 'foundation';
 
 jest.mock('../../module/file/dao');
 jest.mock('../../module/task/dao');
 jest.mock('../../module/event/dao');
 jest.mock('../../module/note/dao');
 jest.mock('../../module/link/dao');
+
+const Dexie = require('dexie');
+// Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
+// Make IDBKeyRange global so your code can create key ranges.
+Dexie.dependencies.indexedDB = require('fake-indexeddb');
+Dexie.dependencies.IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -45,7 +52,7 @@ describe('Item Dao', () => {
 
   beforeAll(() => {
     clearMocks();
-    const { database } = setup();
+    const { database } = setup(DatabaseType.DexieDB);
     itemDao = new ItemDao(database);
   });
 
@@ -95,7 +102,7 @@ describe('Item Dao', () => {
   describe('isFileItemExist()', () => {
     const items: Item[] = buildTestItems();
     beforeEach(async () => {
-      const { database } = setup();
+      const { database } = setup(DatabaseType.DexieDB);
       itemDao = new ItemDao(database);
       await itemDao.bulkPut(items);
     });
@@ -124,7 +131,7 @@ describe('Item Dao', () => {
   describe('getExistGroupFilesByName()', () => {
     const items: Item[] = buildTestItems();
     beforeEach(async () => {
-      const { database } = setup();
+      const { database } = setup(DatabaseType.DexieDB);
       itemDao = new ItemDao(database);
       await itemDao.bulkPut(items);
     });
