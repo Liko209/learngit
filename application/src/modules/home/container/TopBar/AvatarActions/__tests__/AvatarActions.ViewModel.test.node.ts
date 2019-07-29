@@ -6,9 +6,6 @@
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-import { testable, test } from 'shield';
-import { mockGlobalValue, mockEntity } from 'shield/application';
-import { PRESENCE } from 'sdk/module/presence/constant';
 import { AvatarActionsViewModel } from '../AvatarActions.ViewModel';
 
 let ViewModel: AvatarActionsViewModel;
@@ -34,56 +31,6 @@ describe('AvatarActionsVM', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
-  @testable
-  class presence {
-    @test('should be PRESENCE.NOTREADY when currentUserId is 0')
-    @mockGlobalValue(0)
-    async t1() {
-      const vm = new AvatarActionsViewModel();
-      expect(vm.presence).toEqual(PRESENCE.NOTREADY);
-    }
-
-    @test('should be PRESENCE.NOTREADY when user is deactivated')
-    @mockEntity({
-      deactivated: true,
-    })
-    @mockGlobalValue(1)
-    async t2() {
-      const vm = new AvatarActionsViewModel();
-      expect(vm.presence).toEqual(PRESENCE.NOTREADY);
-    }
-
-    @test('should be PRESENCE.NOTREADY when presence is undefined')
-    @mockEntity.multi([
-      {
-        deactivated: false,
-      },
-      {
-        presence: undefined,
-      },
-    ])
-    @mockGlobalValue(1)
-    async t3() {
-      const vm = new AvatarActionsViewModel();
-      expect(vm.presence).toEqual(PRESENCE.NOTREADY);
-    }
-
-    @test('should be correct when presence is PRESENCE')
-    @mockEntity.multi([
-      {
-        deactivated: false,
-      },
-      {
-        presence: PRESENCE.UNAVAILABLE,
-      },
-    ])
-    @mockGlobalValue(1)
-    async t4() {
-      const vm = new AvatarActionsViewModel();
-      expect(vm.presence).toEqual(PRESENCE.UNAVAILABLE);
-    }
-  }
 
   describe('handleAboutPage()', () => {
     const globalStore = storeManager.getGlobalStore();

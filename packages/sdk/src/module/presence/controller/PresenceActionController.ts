@@ -36,7 +36,8 @@ class PresenceActionController {
       entitySourceController,
     );
   }
-  setPresence(status: PRESENCE) {
+
+  async setPresence(status: PRESENCE) {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
@@ -47,7 +48,7 @@ class PresenceActionController {
       partialModel.presence = status;
       return partialModel;
     };
-    this._partialModifyController.updatePartially(
+    await this._partialModifyController.updatePartially(
       currentId,
       preHandlePartial,
       async (newData: Presence) => PresenceAPI.setPresence(newData),

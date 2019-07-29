@@ -4,6 +4,7 @@ import { MediaModule } from '@/modules/media';
 import { INotificationService, NotificationStrategy } from '../interface';
 import * as userAgent from '@/common/isUserAgent';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import * as utils from '../utils';
 
 jest.mock('@/common/isUserAgent');
 jest.mock('@/store/utils/entities');
@@ -68,10 +69,12 @@ function setUpMock(
 describe('NotificationService', () => {
   beforeEach(() => {
     container.snapshot();
-    Notification.permission = 'default';
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
+    Notification.permission = 'default';
+    document.hasFocus = jest.fn().mockReturnValue(false);
+    jest.spyOn(utils, 'isDND').mockReturnValue(false);
     jest.spyOn(Notification, 'requestPermission').mockImplementation(() => {
       Notification.permission = permissionAfterRequest;
       return Promise.resolve(permissionAfterRequest);
@@ -80,33 +83,41 @@ describe('NotificationService', () => {
   afterEach(() => {
     container.restore();
   });
-  describe('shouldShowNotification', () => {
-    it('shouldShowNotification should be false when document.hasFocus is true [JPT-2570]', async () => {
+  describe('shouldShowUINotification', () => {
+    it('shouldShowUINotification should be false when DND is true [JPT-2572]', async () => {
+      Notification.permission = 'granted';
+      jest.spyOn(utils, 'isDND').mockReturnValue(true);
+      setUpMock(false, 'granted', true);
+      const shouldShowUINotification = await service.shouldShowUINotification();
+      expect(shouldShowUINotification).toBeFalsy();
+    });
+
+    it('shouldShowUINotification should be false when document.hasFocus is true [JPT-2570]', async () => {
       Notification.permission = 'granted';
       document.hasFocus = jest.fn().mockReturnValueOnce(true);
       setUpMock(true, 'granted', true);
-      const shouldShowNotification = await service.shouldShowNotification();
-      expect(shouldShowNotification).toBeFalsy();
+      const shouldShowUINotification = await service.shouldShowUINotification();
+      expect(shouldShowUINotification).toBeFalsy();
     });
-    it('shouldShowNotification should be true when isElectron is true', async () => {
+    it('shouldShowUINotification should be true when isElectron is true', async () => {
       Notification.permission = 'granted';
       setUpMock(true, 'granted', true);
-      const shouldShowNotification = await service.shouldShowNotification();
-      expect(shouldShowNotification).toBeTruthy();
+      const shouldShowUINotification = await service.shouldShowUINotification();
+      expect(shouldShowUINotification).toBeTruthy();
     });
-    it('shouldShowNotification should be true when wantNotifications is true', async () => {
+    it('shouldShowUINotification should be true when wantNotifications is true', async () => {
       setUpMock(false, 'granted', true);
       Notification.permission = 'granted';
-      const shouldShowNotification = await service.shouldShowNotification();
+      const shouldShowUINotification = await service.shouldShowUINotification();
 
-      expect(shouldShowNotification).toBeTruthy();
+      expect(shouldShowUINotification).toBeTruthy();
     });
-    it('shouldShowNotification should be false when isElectron is false and wantNotifications is false', async () => {
+    it('shouldShowUINotification should be false when isElectron is false and wantNotifications is false', async () => {
       setUpMock(false, 'granted', false);
-      const shouldShowNotification = await service.shouldShowNotification();
-      expect(shouldShowNotification).toBeFalsy();
+      const shouldShowUINotification = await service.shouldShowUINotification();
+      expect(shouldShowUINotification).toBeFalsy();
     });
-    it('should not show notification when shouldShowNotification is false', async () => {
+    it('should not show notification when shouldShowUINotification is false', async () => {
       setUpMock(false, 'granted', false);
       await service.show('', {
         strategy: NotificationStrategy.UI_NOTIFICATION_ONLY,

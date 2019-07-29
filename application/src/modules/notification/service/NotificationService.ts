@@ -20,6 +20,7 @@ import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { isDND } from '../utils';
 
 const logger = mainLogger.tags('AbstractNotificationManager');
 
@@ -38,8 +39,8 @@ class NotificationService implements INotificationService {
     this._uiNotificationDistributors.set('desktop', new DeskTopNotification());
   }
 
-  async shouldShowNotification() {
-    if (document.hasFocus()) {
+  async shouldShowUINotification() {
+    if (document.hasFocus() || isDND()) {
       return false;
     }
     if (!this._permission.isGranted) {
@@ -78,7 +79,7 @@ class NotificationService implements INotificationService {
     } = NotificationStrategy;
     switch (strategy) {
       case SOUND_AND_UI_NOTIFICATION: {
-        if (await this.shouldShowNotification()) {
+        if (await this.shouldShowUINotification()) {
           await this.buildSoundNotification(opts);
           this.buildUINotification(title, opts, force);
         }
@@ -104,7 +105,7 @@ class NotificationService implements INotificationService {
     opts: NotificationOpts,
     force?: boolean,
   ) {
-    const shouldShowNotification = await this.shouldShowNotification();
+    const shouldShowNotification = await this.shouldShowUINotification();
     if (!shouldShowNotification && !force) {
       return;
     }
