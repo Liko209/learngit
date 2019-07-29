@@ -105,15 +105,35 @@ describe('AudioPhoneSoundsSettingHandler', () => {
   });
 
   describe('fetchUserSettingEntity()', () => {
-    it('should get new messages setting value JPT-2540', async () => {
+    it('should get new messages setting value', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({
         [SETTING_KEYS.AUDIO_INCOMING_CALLS]: RINGS_TYPE.High_Gong,
       });
       const result = await settingHandler.fetchUserSettingEntity();
       expect(result).toEqual(mockDefaultSettingItem);
-      const source = result.source || [];
-      expect(source.length).toEqual(19);
-      expect(source[source.length - 1].id).toEqual(RINGS_TYPE.Off);
+    });
+    it('should return correct sort of sounds JPT-2540', async () => {
+      const result = await settingHandler.fetchUserSettingEntity();
+      const sounds = result.source;
+      expect(sounds[0].id).toEqual(RINGS_TYPE.Phone_Ring);
+      expect(sounds[1].id).toEqual(RINGS_TYPE.Air_Raid);
+      expect(sounds[2].id).toEqual(RINGS_TYPE.Allusive);
+      expect(sounds[3].id).toEqual(RINGS_TYPE.Attention);
+      expect(sounds[4].id).toEqual(RINGS_TYPE.Blub_Blub);
+      expect(sounds[5].id).toEqual(RINGS_TYPE.Buzzy);
+      expect(sounds[6].id).toEqual(RINGS_TYPE.Channel_Open);
+      expect(sounds[7].id).toEqual(RINGS_TYPE.Disco);
+      expect(sounds[8].id).toEqual(RINGS_TYPE.Door_Bell);
+      expect(sounds[9].id).toEqual(RINGS_TYPE.Fairy);
+      expect(sounds[10].id).toEqual(RINGS_TYPE.Fast_Bells);
+      expect(sounds[11].id).toEqual(RINGS_TYPE.High_Gong);
+      expect(sounds[12].id).toEqual(RINGS_TYPE.Indeed);
+      expect(sounds[13].id).toEqual(RINGS_TYPE.Nice);
+      expect(sounds[14].id).toEqual(RINGS_TYPE.Ringing_Bells);
+      expect(sounds[15].id).toEqual(RINGS_TYPE.Ring);
+      expect(sounds[16].id).toEqual(RINGS_TYPE.Simple);
+      expect(sounds[17].id).toEqual(RINGS_TYPE.Soothing);
+      expect(sounds[18].id).toEqual(RINGS_TYPE.Off);
     });
     it('should return value is default High_Gong when profile is undefined JPT-2538', async () => {
       profileService.getProfile = jest.fn().mockReturnValue({

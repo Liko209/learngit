@@ -13,6 +13,7 @@ import {
   ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  StateRecord,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';
@@ -279,6 +280,10 @@ class RCInfoService extends EntityBaseService<IdModel>
     return this.getRCInfoController()
       .getRCAccountInfoController()
       .getAccountId();
+  }
+
+  async getStateList(countryId: string): Promise<StateRecord[]> {
+    return this.regionInfoController.getStateList(countryId);
   }
 
   async getForwardingNumberList(): Promise<ForwardingFlipNumberModel[]> {

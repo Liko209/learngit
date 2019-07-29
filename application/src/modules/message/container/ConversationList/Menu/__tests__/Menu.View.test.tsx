@@ -184,11 +184,14 @@ describe('MenuView', () => {
           expect.objectContaining({
             message: 'people.prompt.markAsRead',
             type: ToastType.ERROR,
+            dismissible: false,
+            fullWidth: false,
+            messageAlign: 'left',
           }),
         );
         done();
       }, 0);
-    }, 2);
+    });
 
     it('should display flash toast notification when unread conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
       const props: any = {

@@ -3,20 +3,19 @@
  * @Date: 2019-03-12 13:25:35,
  * Copyright © RingCentral. All rights reserved.
  */
-import { container } from 'framework';
 import { computed } from 'mobx';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
+import { IMessageStore } from '@/modules/message/interface';
 import { StoreViewModel } from '@/store/ViewModel';
 import { MemberProps, MemberViewProps } from './types';
 import { CONVERSATION_TYPES } from '@/constants';
-import { MessageStore } from '@/modules/message/store';
 
 class MemberViewModel extends StoreViewModel<MemberProps>
   implements MemberViewProps {
-  private _messageStore: MessageStore = container.get(MessageStore);
+  @IMessageStore private _messageStore: IMessageStore;
   private _showTypes = [
     CONVERSATION_TYPES.TEAM,
     CONVERSATION_TYPES.NORMAL_GROUP,

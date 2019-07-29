@@ -19,11 +19,10 @@ module.exports = {
   transform: {
     '^.+\\.(jsx?|tsx?)$': '<rootDir>/config/jest/typescriptTransform.js',
     '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
-    '^(?!.*\\.(js|jsx|mjs|css|json)$)': '<rootDir>/config/jest/fileTransform.js',
+    '^(?!.*\\.(js|jsx|mjs|css|json)$)':
+      '<rootDir>/config/jest/fileTransform.js',
   },
-  transformIgnorePatterns: [
-    '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$',
-  ],
+  transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$'],
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
     '^@/(.*)$': '<rootDir>/application/src/$1',
@@ -35,6 +34,7 @@ module.exports = {
       '<rootDir>/config/jest/__mocks__/fileMock.js',
     '\\.(css|less)$': '<rootDir>/config/jest/__mocks__/cssMock.js',
   },
+  modulePathIgnorePatterns: [`${process.env.APP}/build`],
   moduleFileExtensions: [
     'web.ts',
     'ts',

@@ -45,6 +45,13 @@ describe('messageNotificationManager', () => {
     at_mention_non_item_ids: [otherUserId],
     text: '',
   };
+  const postWithMentionTeamMembers = {
+    id: 111,
+    isTeamMention: true,
+    group_id: 1,
+    at_mention_non_item_ids: [otherUserId],
+    text: '',
+  };
   const postWithMentionMe = {
     id: 4,
     group_id: 1,
@@ -383,6 +390,22 @@ sfdasfasd`);
       expect(val).toEqual({
         title: translation,
         body: postWithMentionOthers.text,
+      });
+    });
+    it('should build title and body for @team mention conversation', async () => {
+      const val = await notificationManager.buildNotificationBodyAndTitle(
+        new PostModel(postWithMentionOthers),
+        { userDisplayName: names.userDisplayName },
+        { members: [1, 2, 3], displayName: names.teamDisplayName },
+      );
+      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledWith(
+        'notification.group',
+        translationArgs,
+      );
+      expect(val).toEqual({
+        title: translation,
+        body: postWithMentionTeamMembers.text,
       });
     });
     it('should build title and body for mentioned conversation', async () => {

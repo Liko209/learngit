@@ -7,15 +7,18 @@
 
 import { ReactNode } from 'react';
 import { observable, action } from 'mobx';
+import { IMessageStore } from '../interface';
 
-class MessageStore {
+class MessageStore implements IMessageStore {
   @observable conversationHeaderExtensions: ReactNode[] = [];
   @observable draftMap: Map<number, string> = new Map();
   @observable currentFocusedInput?: number;
   @observable isRightRailOpen: boolean = true;
+
   addConversationHeaderExtension(extension: ReactNode) {
     this.conversationHeaderExtensions.push(extension);
   }
+
   savePostDraft(id: number, draft: string) {
     this.draftMap.set(id, draft);
   }

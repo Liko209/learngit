@@ -46,6 +46,7 @@ import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { IMessageNotificationManager } from './interface';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
@@ -61,7 +62,7 @@ isActivity: boolean;
 isOne2One:boolean;
 messageType:MESSAGE_TYPE
 }
-export class MessageNotificationManager extends AbstractNotificationManager {
+class MessageNotificationManager extends AbstractNotificationManager implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   private _vmQueue: {
@@ -316,9 +317,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   isMyselfAtMentioned(post: PostModel) {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const isTeamMention = post.isTeamMention;
     return (
       post.atMentionNonItemIds &&
-      post.atMentionNonItemIds.includes(currentUserId)
+      post.atMentionNonItemIds.includes(currentUserId) ||
+      isTeamMention
     );
   }
 
@@ -352,3 +355,5 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this._postService.removeEntityNotificationObserver(this._observer);
   }
 }
+
+export { MessageNotificationManager };

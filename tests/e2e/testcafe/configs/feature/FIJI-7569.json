@@ -2,8 +2,6 @@
   "on_merge": {
   "fixtures": ["./fixtures/Setting*/**/*.ts"],
   "include_tags": [
-    "JPT-1790",
-    "JPT-1798",
     "JPT-2054"
   ],
   "browsers": ["selenium:chrome"]
