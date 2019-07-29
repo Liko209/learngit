@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -81,12 +81,14 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     return checkField.some((field: string) => !this.value[field]);
   }
 
+  @action
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
     this.saveStateOrCountry('state', stateList[0]);
   }
 
+  @action
   async getCountryInfo() {
     const [countryList, currentCountry] = await Promise.all([
       this.rcInfoService.getCountryList(),
@@ -113,6 +115,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     this.saveStateOrCountry('state', state!);
   };
 
+  @action
   saveStateOrCountry(type: 'state' | 'country', data: State | Country) {
     const { id, name, isoCode } = data;
     this.value[type] = isoCode;
@@ -121,6 +124,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     this.value[`${type}IsoCode`] = isoCode;
   }
 
+  @action
   handleFieldChange = (type: string) => (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     this.value[type] = value;
