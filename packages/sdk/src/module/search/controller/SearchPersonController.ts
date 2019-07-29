@@ -77,9 +77,7 @@ class SearchPersonController {
 
         for (const phoneNumber of orderedPhoneNumbers) {
           if (
-            (nameMatchedOnly &&
-              persons.terms.searchKeyFormattedTerms.validFormattedKeys
-                .length === 0) ||
+            nameMatchedOnly ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
               item => phoneNumber.id.includes(item.formatted),
             )
