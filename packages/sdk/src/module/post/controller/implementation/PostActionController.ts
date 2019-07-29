@@ -107,13 +107,13 @@ class PostActionController implements IPostActionController {
     );
   }
 
-  async editFailedPost(
+  editFailedPost(
     params: EditPostType,
     reSendFunc: (post: Post, isResend: boolean) => Promise<Post>,
   ) {
-    this._editPost(
+    return this._editPost(
       params,
-      async (newPost: Post) => reSendFunc(newPost, true),
+      (newPost: Post) => reSendFunc(newPost, true),
       true,
     );
   }
