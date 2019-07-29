@@ -61,23 +61,21 @@ class SearchPersonController {
     ).userConfig;
     const myCompanyId = userConfig.getCurrentCompanyId();
     persons.sortableModels.forEach((sortablePerson: SortableModel<Person>) => {
-      const phoneNumbers = sortablePerson.extraData as PhoneNumber[];
-      if (phoneNumbers) {
+      const orderedPhoneNumbers = sortablePerson.extraData as PhoneNumber[]; // order as ext first
+      if (orderedPhoneNumbers && orderedPhoneNumbers.length) {
         //for co-workers, we should only show matched extension
         const isCoWorker = sortablePerson.entity.company_id === myCompanyId;
-        let showExtensionOnly = false;
-        if (isCoWorker) {
-          showExtensionOnly = phoneNumbers.some(
-            (value: PhoneNumber, index: number, array: PhoneNumber[]) => {
-              return value.phoneNumberType === PhoneNumberType.Extension;
-            },
-          );
-        }
-
-        phoneNumbers.forEach((phoneNumber: PhoneNumber) => {
+        let showExtensionOnly =
+          isCoWorker &&
+          orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
+        const nameMatch =
+          persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
+          
+        for (const phoneNumber of orderedPhoneNumbers) {
           if (
-            persons.terms.searchKeyFormattedTerms.validFormattedKeys.length ===
-              0 ||
+            (nameMatch &&
+              persons.terms.searchKeyFormattedTerms.validFormattedKeys
+                .length === 0) ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
               item => phoneNumber.id.includes(item.formatted),
             )
@@ -87,6 +85,8 @@ class SearchPersonController {
                 results.phoneContacts.push(
                   this._buildPhoneContact(phoneNumber, sortablePerson.entity),
                 );
+              } else {
+                break;
               }
             } else {
               results.phoneContacts.push(
@@ -94,7 +94,7 @@ class SearchPersonController {
               );
             }
           }
-        });
+        }
       }
     });
     mainLogger.debug(

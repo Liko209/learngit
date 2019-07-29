@@ -378,6 +378,7 @@ class PersonController {
     person: Person,
     eachPhoneNumber: (phoneNumber: PhoneNumber) => void,
   ): void {
+    // extension should at fist
     if (person.sanitized_rc_extension) {
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
