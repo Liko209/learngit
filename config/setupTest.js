@@ -8,17 +8,14 @@ import './jest/setup/setupHTMLElement';
 import './jest/setup/setupTimezone';
 import './jest/setup/setupMobx';
 import './jest/setup/setupStyledTheme';
-import {
-  FakeStorage
-} from './utils';
+import { FakeStorage } from './utils';
 /* eslint-disable */
 
-const log = (reason) => {
+const log = reason => {
   throw reason;
 };
 
 beforeAll(() => {
-
   if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
     process.on('unhandledRejection', log);
     // Avoid memory leak by adding too many listeners
@@ -27,13 +24,13 @@ beforeAll(() => {
 
   Object.defineProperty(window, 'localStorage', {
     value: new FakeStorage(),
-    writable: true
-  })
+    writable: true,
+  });
   Object.defineProperty(window, 'sessionStorage', {
     value: new FakeStorage(),
-    writable: true
-  })
-})
+    writable: true,
+  });
+});
 
 afterAll(() => {
   delete window.localStorage;
@@ -42,5 +39,5 @@ afterAll(() => {
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;
 
-  global.gc();
-})
+  global.gc && global.gc();
+});
