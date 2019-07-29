@@ -22,6 +22,12 @@ import tinycolor from 'tinycolor2';
 import { Theme } from '../../foundation/theme/theme';
 import MuiTypography from '@material-ui/core/Typography';
 
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiListItemProps & {
+  button?: any;
+  TouchRippleProps?: any;
+};
+
 const rippleEnter = (theme: Theme) => keyframes`
   from {
     transform: scale(0);
@@ -33,7 +39,7 @@ const rippleEnter = (theme: Theme) => keyframes`
   }
 `;
 
-type JuiListNavItemProps = MuiListItemProps & {
+type JuiListNavItemProps = MuiListItemPropsFixed & {
   type?: string;
 };
 
@@ -53,7 +59,7 @@ const JuiListNavItemText = styled(MuiTypography)`
   }
 `;
 
-const StyledNavListItem = styled(MuiListItem)`
+const StyledNavListItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     padding: ${spacing(2, 4, 2, 3)};
     color: ${grey('900')};
@@ -68,12 +74,14 @@ const StyledNavListItem = styled(MuiListItem)`
   }
 
   &&:hover {
-    background-color: ${({ theme }) => fade(palette('grey', '700')({ theme }), theme.opacity['1'] / 2)};
+    background-color: ${({ theme }) =>
+      fade(palette('grey', '700')({ theme }), theme.opacity['1'] / 2)};
   }
 
   &&.selected {
     &&:hover {
-      background-color: ${({ theme }) => fade(palette('grey', '700')({ theme }), theme.opacity['1'])};
+      background-color: ${({ theme }) =>
+        fade(palette('grey', '700')({ theme }), theme.opacity['1'])};
     }
 
     p {
@@ -87,9 +95,10 @@ const StyledNavListItem = styled(MuiListItem)`
 
   && > ${JuiListNavItemIconographyLeft} {
     font-size: 20px;
-    color: ${({ theme }: { theme: Theme }) => tinycolor(grey('600')({ theme }))
-    .setAlpha(0.4)
-    .toRgbString()};
+    color: ${({ theme }: { theme: Theme }) =>
+      tinycolor(grey('600')({ theme }))
+        .setAlpha(0.4)
+        .toRgbString()};
     z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
   }
 
@@ -119,12 +128,12 @@ const touchRippleClasses = {
 };
 
 const JuiListNavItemComponent = (props: JuiListNavItemProps) => (
-    <StyledNavListItem
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...props}
-    >
-      {props.children}
-    </StyledNavListItem>
+  <StyledNavListItem
+    TouchRippleProps={{ classes: touchRippleClasses }}
+    {...props}
+  >
+    {props.children}
+  </StyledNavListItem>
 );
 
 JuiListNavItemComponent.defaultProps = {

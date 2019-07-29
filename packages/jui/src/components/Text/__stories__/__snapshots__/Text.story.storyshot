@@ -18,7 +18,7 @@ exports[`Storyshots Components/Text Text: Components/Text Text 1`] = `
 
 <p
   aria-describedby={null}
-  className="MuiTypography-root MuiTypography-body2 c0"
+  className="MuiTypography-root c0 MuiTypography-body1"
   onBlur={[Function]}
   onFocus={[Function]}
   onMouseLeave={[Function]}

@@ -11,7 +11,7 @@ import { JuiTypography } from 'jui/foundation/Typography';
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';
 import { InstantSearchView } from '@/modules/GlobalSearch/container/InstantSearch/InstantSearch.View';
 import { JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { SearchItemTypes } from '../types';
 import { config } from '../../../module.config';
 

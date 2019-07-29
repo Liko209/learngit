@@ -19,6 +19,14 @@ type SelectSettingItem<T> = SettingItem & {
   sourceRenderer?: (args: { value: T; source?: T[] }) => React.ReactNode;
 
   /**
+   * Secondary action Renderer
+   */
+  secondaryActionRenderer?: (args: {
+    value: T;
+    source?: T[];
+  }) => React.ReactNode;
+
+  /**
    * Default source when source not given by sdk
    */
   defaultSource?: T[];

@@ -87,7 +87,7 @@ class JuiTextarea extends React.PureComponent<JuiTextFieldProps> {
         onKeyDown={this.handleKeyDown}
         InputProps={this.InputProps}
         InputLabelProps={{
-          FormLabelClasses: {
+          classes: {
             root: 'form-label-root',
             focused: 'form-label-focus',
           },

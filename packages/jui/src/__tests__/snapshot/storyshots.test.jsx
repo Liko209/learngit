@@ -3,10 +3,9 @@
  * @Date: 2019-05-15 13:43:37
  * Copyright © RingCentral. All rights reserved.
  */
-
 import path from 'path';
 import initStoryshots, {
-  Stories2SnapsConverter,
+  Stories2SnapsConverter
 } from '@storybook/addon-storyshots';
 import * as renderer from 'react-test-renderer';
 import { styleSheetSerializer } from 'jest-styled-components/serializer';
@@ -35,7 +34,7 @@ initStoryshots({
     }
 
     const converter = new Stories2SnapsConverter({
-      snapshotExtension: '.storyshot',
+      snapshotExtension: '.storyshot'
     });
     const snapshotFilename = converter.getSnapshotFileName(context);
 
@@ -43,8 +42,8 @@ initStoryshots({
     const wrapper = renderer.create(storyElement);
     expect(wrapper.toJSON()).toMatchSpecificSnapshot(
       snapshotFilename,
-      `${story.kind} ${story.name}`,
+      `${story.kind} ${story.name}`
     );
   },
-  configPath: path.resolve(__dirname, '../../../.storybook/config.test.js'),
+  configPath: path.resolve(__dirname, '../../../.storybook/config.test.js')
 });

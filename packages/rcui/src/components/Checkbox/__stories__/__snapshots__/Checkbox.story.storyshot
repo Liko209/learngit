@@ -19,6 +19,13 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
   font-size: 24px;
 }
 
+.c2.c2 {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 22px;
+  color: rgba(0,0,0,0.87);
+}
+
 <div
   style={
     Object {
@@ -30,9 +37,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
     className="MuiFormControlLabel-root"
   >
     <span
-      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-313 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -60,18 +68,15 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
           </svg>
         </span>
         <input
-          className="MuiPrivateSwitchBase-input"
+          className="PrivateSwitchBase-input-316"
           data-indeterminate={false}
           onChange={[Function]}
           type="checkbox"
         />
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </span>
     <span
-      className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+      className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
     >
       SecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondarySecondary
     </span>
@@ -81,9 +86,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
     className="MuiFormControlLabel-root"
   >
     <span
-      className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-indeterminate"
+      aria-disabled={false}
+      className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-313 MuiCheckbox-root MuiCheckbox-colorPrimary MuiCheckbox-indeterminate MuiIconButton-colorPrimary"
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -111,18 +117,15 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
           </svg>
         </span>
         <input
-          className="MuiPrivateSwitchBase-input"
+          className="PrivateSwitchBase-input-316"
           data-indeterminate={true}
           onChange={[Function]}
           type="checkbox"
         />
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </span>
     <span
-      className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+      className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
     >
       Indeterminate
     </span>
@@ -132,7 +135,7 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
     className="MuiFormControl-root"
   >
     <label
-      className="MuiFormLabel-root"
+      className="MuiFormLabel-root c2"
     >
       Pick two
     </label>
@@ -143,9 +146,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
         className="MuiFormControlLabel-root"
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-313 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -173,19 +177,16 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
               </svg>
             </span>
             <input
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-316"
               data-indeterminate={false}
               disabled={false}
               onChange={[Function]}
               type="checkbox"
             />
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </span>
         <span
-          className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+          className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
         >
           one
         </span>
@@ -194,9 +195,10 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
         className="MuiFormControlLabel-root"
       >
         <span
-          className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiCheckbox-root MuiCheckbox-colorPrimary"
+          aria-disabled={false}
+          className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-313 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -224,19 +226,16 @@ exports[`Storyshots CheckBox checkbox: CheckBox checkbox 1`] = `
               </svg>
             </span>
             <input
-              className="MuiPrivateSwitchBase-input"
+              className="PrivateSwitchBase-input-316"
               data-indeterminate={false}
               disabled={false}
               onChange={[Function]}
               type="checkbox"
             />
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </span>
         <span
-          className="MuiTypography-root MuiTypography-body1 MuiFormControlLabel-label"
+          className="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
         >
           two
         </span>

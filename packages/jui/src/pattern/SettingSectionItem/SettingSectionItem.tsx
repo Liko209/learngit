@@ -38,7 +38,8 @@ const LeftWrap = styled.div`
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
-    flex: 2;
+    flex: 2 1 0;
+    min-width: 0;
     padding-right: ${spacing(2.5)};
   }
 `;
@@ -73,9 +74,9 @@ const RightWrap = styled.div`
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    overflow: hidden;
     width: 100%;
-    flex: 1;
+    min-width: 0;
+    flex: 1 1 0;
     padding-left: ${spacing(2.5)};
   }
 
@@ -105,7 +106,7 @@ const SettingSectionItemWrap = styled.div`
 `;
 
 class JuiSettingSectionItem extends React.PureComponent<
-JuiSettingSectionItemProps
+  JuiSettingSectionItemProps
 > {
   render() {
     const {

@@ -5,7 +5,7 @@
  */
 import { computed, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { Item } from 'sdk/module/item/entity';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
@@ -13,6 +13,7 @@ import { ENTITY_NAME } from '@/store';
 import { ItemService } from 'sdk/module/item';
 import { LinkItemModel, LinkItemProps } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   private _itemService = ServiceLoader.getInstance<ItemService>(
@@ -44,6 +45,14 @@ class LinkItemViewModel extends StoreViewModel<LinkItemProps> {
   @action
   onLinkItemClose = async (itemId: number = 0) => {
     await this._itemService.doNotRenderItem(itemId, 'link');
+  };
+  @computed
+  get canClosePreview() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    if (this.postItems.length) {
+      return this.postItems[0].creatorId === currentUserId;
+    }
+    return false;
   }
 }
 export { LinkItemViewModel };

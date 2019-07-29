@@ -494,6 +494,7 @@ test.meta(<ITestMeta>{
   const emojiText = ':sm:'
   const prefix = ':fla';
   const mixPrefix = 'gr :gr'
+  const silPrefix = ':sil'
   const wrongPrefix = ':huhuhu';
   let currentInputAreaText = '';
 
@@ -576,6 +577,15 @@ test.meta(<ITestMeta>{
     step.setMetadata('value', firstEmoji);
     currentInputAreaText = `${firstEmoji} `;
     await t.expect(conversationPage.messageInputArea.textContent).eql(currentInputAreaText);
+  });
+
+  await h(t).withLog('When  I type text: {silPrefix}', async (step) => {
+    step.setMetadata('silPrefix', silPrefix);
+    await t.typeText(conversationPage.messageInputArea, silPrefix, { paste: false, replace: false });
+  });
+
+  await h(t).withLog('Then the Emojis that only matches search term can be shown, others should NOT show', async (step) => {
+    await emojiMatchList.itemFullMatch(silPrefix);
   });
 
   await h(t).withLog('When I type text: {mixPrefix}', async (step) => {
