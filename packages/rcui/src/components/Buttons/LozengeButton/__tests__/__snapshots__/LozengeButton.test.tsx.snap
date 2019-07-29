@@ -110,7 +110,7 @@ exports[`<Button /> should render with loading 1`] = `
      
   </span>
   <div
-    className="MuiCircularProgress-root-1 MuiCircularProgress-indeterminate-3 c1 "
+    className="MuiCircularProgress-root c1 MuiCircularProgress-indeterminate"
     role="progressbar"
     style={
       Object {
@@ -120,11 +120,11 @@ exports[`<Button /> should render with loading 1`] = `
     }
   >
     <svg
-      className="MuiCircularProgress-svg-6"
+      className="MuiCircularProgress-svg"
       viewBox="22 22 44 44"
     >
       <circle
-        className="MuiCircularProgress-circle-7 MuiCircularProgress-circleIndeterminate-9"
+        className="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
         cx={44}
         cy={44}
         fill="none"

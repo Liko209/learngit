@@ -66,6 +66,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I switch default phone app to Jupiter', async () => {
     await h(t).glip(loginUser).setDefaultPhoneApp('glip');
+    await t.wait(5000);
   });
 
   await h(t).withLog('When I click the call button', async () => {

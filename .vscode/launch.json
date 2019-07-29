@@ -18,6 +18,9 @@
       "name": "Jest Current File",
       "program": "${workspaceFolder}/scripts/test.js",
       "args": ["--no-cache", "${relativeFile}"],
+      "env": {
+        "LISTENING_TO_UNHANDLED_REJECTION": "true"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -27,6 +30,9 @@
       "name": "Jest Current File (With Coverage)",
       "program": "${workspaceFolder}/scripts/test.js",
       "args": ["--no-cache", "--watch", "--coverage", "${relativeFile}"],
+      "env": {
+        "LISTENING_TO_UNHANDLED_REJECTION": "true"
+      },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },

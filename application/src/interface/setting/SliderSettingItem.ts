@@ -3,7 +3,6 @@
  * @Date: 2019-05-20 11:47:23
  * Copyright © RingCentral. All rights reserved.
  */
-import { ComponentType } from 'react';
 import { SettingItem, SETTING_ITEM_TYPE } from './SettingItem';
 
 type SliderSettingItem = SettingItem & {
@@ -12,12 +11,12 @@ type SliderSettingItem = SettingItem & {
   /**
    * Decide how the Slider renders value
    */
-  Left?: ComponentType<any>;
+  Left?: React.ReactNode;
 
   /**
    * Decide how the Slider renders source
    */
-  Right?: ComponentType<any>;
+  Right?: React.ReactNode;
 
   /**
    * Minimum value
@@ -36,7 +35,9 @@ type SliderSettingItem = SettingItem & {
   /**
    * Tooltip on thumb
    */
-  tipRenderer?: ({ value }: { value: number }) => React.ReactNode;
+  valueLabelFormat?:
+    | string
+    | ((value: number, index: number) => React.ReactNode);
 };
 
 export { SliderSettingItem };

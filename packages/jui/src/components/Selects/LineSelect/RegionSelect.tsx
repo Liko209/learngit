@@ -21,7 +21,7 @@ type JuiRegionSelectProps = {
   selectStyle?: React.CSSProperties;
   regionList: RegionType[];
   onChange?: React.ChangeEventHandler<
-  HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >;
   automationId?: string;
 };
@@ -42,6 +42,10 @@ const StyledRegionSelectWrap = styled('div')`
   }
 `;
 
+const StyledListItemIcon = styled(MuiListItemIcon)`
+  min-width: unset;
+`;
+
 const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
   const [value, setValue] = useState(props.initialRegionValue);
 
@@ -54,9 +58,7 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
     [],
   );
 
-  const {
-    label, selectStyle, regionList = [], automationId,
-  } = props;
+  const { label, selectStyle, regionList = [], automationId } = props;
 
   const renderValue = useCallback(
     (value: string) => {
@@ -80,13 +82,13 @@ const JuiRegionSelect = React.memo((props: JuiRegionSelectProps) => {
       }
       return (
         <StyledRegionSelectWrap>
-          <MuiListItemIcon>
+          <StyledListItemIcon>
             <JuiIconography
               iconSize="large"
               symbol={selectRegion.regionIcon}
               desc={selectRegion.desc}
             />
-          </MuiListItemIcon>
+          </StyledListItemIcon>
           <JuiListItemText>{renderLabel}</JuiListItemText>
         </StyledRegionSelectWrap>
       );

@@ -9,6 +9,12 @@ import { NewMessageView } from '../NewMessage.View';
 import { Notification } from '@/containers/Notification';
 
 jest.mock('@/containers/Notification');
+jest.mock('react-i18next', () => {
+  return {
+    withTranslation: x => y => y,
+    Trans: ({ children }) => children,
+  };
+});
 
 describe('NewMessageView', () => {
   describe('render()', () => {

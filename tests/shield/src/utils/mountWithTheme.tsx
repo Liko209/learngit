@@ -6,8 +6,9 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { ThemeProvider } from 'styled-components';
+import { createMuiTheme } from '@material-ui/core/styles';
 
-const theme = {
+const rawTheme = {
   breakpoints: {
     keys: ['xs', 'sm', 'md', 'lg', 'xl'],
     values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
@@ -298,7 +299,7 @@ const theme = {
     border3: '1px solid rgba(0, 0, 0, 0.36)',
     border4: '1px solid #eee',
   },
-  spacing: { unit: 4 },
+  spacing: 4,
   transitions: {
     create: () => '',
     easing: {
@@ -355,10 +356,12 @@ const theme = {
   },
 };
 
+const theme = createMuiTheme(rawTheme as any);
+
 const mountWithTheme = (content: React.ReactNode) =>
   mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
 const asyncMountWithTheme = async (content: React.ReactNode) =>
   await mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
-export { mountWithTheme, asyncMountWithTheme };
+export { theme, mountWithTheme, asyncMountWithTheme };

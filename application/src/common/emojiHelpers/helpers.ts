@@ -115,6 +115,7 @@ const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
     const emoji = data.emojis[id];
 
     let emojiUnified = emoji.unified;
+    const emojiNonQualified = emoji.non_qualified;
 
     if (emoji.variations && emoji.variations.length) {
       emojiUnified = emoji.variations.shift();
@@ -124,9 +125,7 @@ const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
       emojiUnified = emoji.skin_variations[skinCode].unified;
     }
 
-    if (
-      emojiUnified.toLowerCase().indexOf(baseNativeString.toLowerCase()) > -1
-    ) {
+    if (isMatch(emojiUnified, baseNativeString, emojiNonQualified)) {
       emojiData = emoji;
     }
   }
@@ -138,6 +137,18 @@ const getEmojiDataFromUnicode = (nativeString: string, data: any) => {
   emojiData = sanitize(emojiData, data);
 
   return emojiData;
+};
+
+const isMatch = (
+  emojiUnified: string,
+  baseNativeString: string,
+  emojiNonQualified?: string,
+) => {
+  return (
+    emojiUnified.toLowerCase() === baseNativeString.toLowerCase() ||
+    (emojiNonQualified &&
+      emojiNonQualified.toLowerCase() === baseNativeString.toLowerCase())
+  );
 };
 
 const sanitize = (emoji: any, data: any) => {

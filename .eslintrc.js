@@ -67,7 +67,7 @@ module.exports = {
     'react/jsx-indent': 'off',
     'react/destructuring-assignment': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
-    "jsx-quotes": [1, "prefer-double"],
+    'jsx-quotes': [1, 'prefer-double'],
     'class-methods-use-this': 'off',
     'operator-assignment': 'off',
     'operator-linebreak': 'off',

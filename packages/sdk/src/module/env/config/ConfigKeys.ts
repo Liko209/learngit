@@ -7,4 +7,5 @@
 export const CONFIG_KEYS = {
   ENV: 'ENV',
   DISABLE_LD: 'DISABLE_LD',
+  RUNNING_E2E: 'RUNNING_E2E',
 };

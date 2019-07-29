@@ -376,7 +376,7 @@ test.meta(<ITestMeta>{
 
   const title = linkData.title || linkData.url;
   // todo: automation id for link card
-  
+
   await h(t).withLog(`And display link card: title "{title}" with link "{url1}"`, async (step) => {
     step.initMetadata({ title, url1 });
     await t.expect(lastPostItem.self.find('a').nth(1).textContent).eql(title);
@@ -399,7 +399,96 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then Can remove a link card from the message card.`, async () => {
     await t.expect(lastPostItem.self.find('a').count).eql(1);
   });
+});
 
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2596'],
+  maintainers: ['alvin.huang'],
+  keywords: ['itemCard','cardPreview'],
+})('Check the permission of close the link/video card', async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
 
+  await h(t).glip(loginUser).init()
+  await h(t).scenarioHelper.resetProfile(loginUser);
 
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  const NORMAL_LINK = 'https://www.baidu.com';
+  const VIDEO_LINK = 'https://www.loom.com/share/7188bccc52674b5caa63ac60291b1c7c';
+
+  await h(t).withLog(`Given I have 1:1 chat`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I enter the chat conversation`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const lastPostItem = conversationPage.lastPostItem;
+  const linkPreviewCloseBtn = lastPostItem.getSelectorByAutomationId('linkPreviewCloseBtn');
+  const linkItemsWrapper = lastPostItem.getSelectorByAutomationId('linkItemsWrapper')
+
+  await h(t).withLog(`When I send one normal link {NORMAL_LINK}`, async (step) => {
+    step.setMetadata('NORMAL_LINK', NORMAL_LINK);
+    await conversationPage.sendMessage(NORMAL_LINK);
+    await lastPostItem.waitForPostToSend();
+  });
+
+  await h(t).withLog(`When I click close button of the link card`, async () => {
+    await t.click(linkPreviewCloseBtn);
+  });
+
+  await h(t).withLog(`Then even reload page I can remove a link card from the message card.`, async () => {
+    await app.reload();
+    await t.expect(linkItemsWrapper.count).eql(0);
+  });
+
+  await h(t).withLog(`When I send one video link {VIDEO_LINK}`, async (step) => {
+    step.setMetadata('VIDEO_LINK', VIDEO_LINK);
+    await conversationPage.sendMessage(VIDEO_LINK);
+    await lastPostItem.waitForPostToSend();
+  });
+  await h(t).withLog(`When I click close button of the link card`, async () => {
+    await t.click(linkPreviewCloseBtn);
+  });
+
+  await h(t).withLog(`Then even reload page I can remove a link card from the message card.`, async () => {
+    await app.reload();
+    await t.expect(linkItemsWrapper.count).eql(0);
+  });
+
+  await h(t).withLog(`When I send two link`, async (step) => {
+    step.setMetadata('NORMAL_LINK', NORMAL_LINK);
+    step.setMetadata('VIDEO_LINK', VIDEO_LINK);
+    await conversationPage.sendMessage(NORMAL_LINK);
+    await conversationPage.sendMessage(VIDEO_LINK);
+    await lastPostItem.waitForPostToSend();
+  });
+  await h(t).withLog(`Given I logout and login Jupiter with another user ${otherUser.company.number}#${otherUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, otherUser);
+  });
+  await h(t).withLog(`And I enter the chat conversation`, async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chat.glipId).enter();
+  });
+  await h(t).withLog(`Then I can not remove a link card from the message card.`, async () => {
+    await t.expect(linkPreviewCloseBtn.count).eql(0);
+  });
 });
