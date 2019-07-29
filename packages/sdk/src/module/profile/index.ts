@@ -29,7 +29,6 @@ export {
   SOUNDS_TYPE,
   RingsList,
   SoundsList,
-  conversation_notifications,
 } from './constants';
 
 export { SettingValue, SettingOption } from './types';
