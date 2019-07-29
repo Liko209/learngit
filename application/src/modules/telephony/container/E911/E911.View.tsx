@@ -28,7 +28,7 @@ class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
 
   get renderState() {
-    const { stateList, stateOnChange, t, value } = this.props;
+    const { stateList, stateOnChange, t, value, handleFieldChange } = this.props;
     const { stateName } = value;
     return stateList.length > 0 ? (
       <JuiLineSelect
@@ -57,7 +57,7 @@ class E911ViewComponent extends Component<Props> {
           maxLength: 100,
           'data-test-automation-id': 'e911-stateProvince',
         }}
-        // onChange={handleNameChange}
+        onChange={handleFieldChange('state')}
       />
     );
   }
