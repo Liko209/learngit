@@ -64,13 +64,14 @@ class SearchPersonController {
       const orderedPhoneNumbers = sortablePerson.extraData as PhoneNumber[]; // order as ext first
       if (orderedPhoneNumbers && orderedPhoneNumbers.length) {
         //for co-workers, we should only show matched extension
-        const isCoWorker = sortablePerson.entity.company_id === myCompanyId;
-        let showExtensionOnly =
-          isCoWorker &&
-          orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
         const nameMatch =
           persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
-          
+
+        let showExtensionOnly =
+          nameMatch &&
+          sortablePerson.entity.company_id === myCompanyId &&
+          orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
+
         for (const phoneNumber of orderedPhoneNumbers) {
           if (
             (nameMatch &&
