@@ -335,9 +335,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
           ],
-          to: () => {
+          to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
-            return undefined;
+            return s;
           },
         },
         {
@@ -351,9 +351,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.FORWARDING,
             CallFsmState.REPLYING,
           ],
-          to: () => {
+          to: (targetSession: any, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.WARM_TRANSFER);
-            return undefined;
+            return s;
           },
         },
         {
@@ -369,9 +369,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
           ],
-          to: () => {
+          to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FORWARD);
-            return undefined;
+            return s;
           },
         },
         {
@@ -387,9 +387,9 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
           ],
-          to: () => {
+          to: (target: number, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
-            return undefined;
+            return s;
           },
         },
         {
