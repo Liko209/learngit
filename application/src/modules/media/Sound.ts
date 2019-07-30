@@ -160,6 +160,7 @@ class Sound {
 
     this._node.addEventListener('error', soundError, false);
     this._node.addEventListener('canplay', soundCanplay, false);
+    this._soundEventBind();
 
     this._node.src = this._url;
     this._node.preload = 'auto';
@@ -178,8 +179,6 @@ class Sound {
           this._hasSinkId = false;
         });
     }
-
-    this._soundEventBind();
 
     this._node.load();
   }

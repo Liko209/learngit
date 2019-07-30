@@ -19,10 +19,15 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 const globalStore = storeManager.getGlobalStore();
 
-class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps {
+class AvatarActionsViewModel extends StoreViewModel<Props>
+  implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
 
@@ -81,15 +86,19 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
   };
 
   private _doLogout = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     await accountService.logout();
     window.location.href = '/';
   };
 
   @action
   toggleAboutPage = (electronAppVersion?: string, electronVersion?: string) => {
-    electronAppVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
-    electronVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
+    electronAppVersion &&
+      globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
+    electronVersion &&
+      globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   };
 
@@ -100,6 +109,14 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
   @computed
   get presence() {
     return getPresence(this.currentUserId);
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
+    );
   }
 }
 

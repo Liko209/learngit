@@ -1,6 +1,11 @@
 import { IMediaService, MediaOptions } from '@/interface/media';
 import { ISoundNotification, Sounds } from '../interface';
-import { RingsList, SoundsList } from 'sdk/module/profile';
+import {
+  RingsList,
+  SoundsList,
+  SOUNDS_TYPE,
+  RINGS_TYPE,
+} from 'sdk/module/profile';
 import { mainLogger } from 'sdk';
 import { isDND } from '../utils';
 
@@ -9,7 +14,8 @@ export class SoundNotification implements ISoundNotification {
   private _library: Map<string, string> = new Map();
   constructor() {
     [...SoundsList, ...RingsList].forEach(item => {
-      this._library.set(item.id, item.url);
+      if (![SOUNDS_TYPE.Off, RINGS_TYPE.Off].includes(item.id))
+        this._library.set(item.id, item.url);
     });
   }
 

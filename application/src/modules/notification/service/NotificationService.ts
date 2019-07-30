@@ -142,6 +142,10 @@ class NotificationService implements INotificationService {
       return new Promise(resolve => {
         delete opts.sound;
         media.on('loadeddata', resolve);
+        media.on('error', () => {
+          logger.log('failed to load data');
+          resolve();
+        });
       });
     }
     return;
