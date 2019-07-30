@@ -471,8 +471,11 @@ class JupiterJob extends BaseJob {
                     'Unit Test' : {
                         stage(name: 'Unit Test') { unitTest() }
                     },
-                    'Static Analysis': {
-                        stage(name: 'Static Analysis') { staticAnalysis() }
+                    'tsc': {
+                        stage(name: 'Static Analysis: tsc') { tscCheck() }
+                    },
+                    'eslint': {
+                        stage(name: 'Static Analysis: eslint') { esLint() }
                     },
                 )
                 jenkins.parallel(
@@ -621,10 +624,16 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'npm run fixed:version cache || true'  // suppress error
     }
 
-    void staticAnalysis() {
+    void tscCheck() {
         if (isSkipStaticAnalysis) return
         jenkins.sh 'npm run tsc'
     }
+
+    void esLint() {
+        if (isSkipStaticAnalysis) return
+        jenkins.sh 'npm run lint-all'
+    }
+
 
     void unitTest() {
         if (isSkipUnitTest) return
