@@ -25,9 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import {
- reaction, IReactionDisposer, runInAction, action
-} from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -46,10 +44,10 @@ import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
-import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -273,7 +271,7 @@ class TelephonyService {
         // prettier-ignore
         const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
           ENTITY_NAME.USER_SETTING,
-          SETTING_ITEM__PHONE_CALLER_ID,
+          PHONE_SETTING_ITEM.PHONE_CALLER_ID,
         ).value;
         return {
           defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,

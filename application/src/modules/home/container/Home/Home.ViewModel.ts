@@ -15,7 +15,7 @@ class HomeViewModel extends StoreViewModel {
   @observable
   openCreateTeam: boolean = false;
   private _globalSearchStore: GlobalSearchStore = container.get(
-    GlobalSearchStore
+    GlobalSearchStore,
   );
 
   private _unListen: UnregisterCallback;

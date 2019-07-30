@@ -100,13 +100,22 @@ test.meta(<ITestMeta>{
     members: [loginUser, otherUser]
   }
 
-  await h(t).withLog(`Given I have an extension with one 1:1 conversation chat with ${otherUser.extension} and one conversation named: ${team.name}`, async () => {
+  await h(t).withLog(`Given I have an extension with one 1:1 conversation chat with {extension} and one conversation named: {teamName}`, async (step) => {
+    step.initMetadata({
+      extension: otherUser.extension,
+      teamName: team.name
+    });
     await h(t).scenarioHelper.createTeamsOrChats([chat, team]);
   });
 
+  await h(t).withLog(`And set last group is me chat`, async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).setLastGroupIdIsMeChatId();
+  });
+
+
   await h(t).withLog('And has one old message in 1:1 conversation chat', async () => {
     await h(t).scenarioHelper.sendTextPost('initial message', chat, loginUser);
-    await h(t).glip(loginUser).init();
     await h(t).glip(loginUser).markAsRead([chat.glipId]);
   });
 
@@ -122,7 +131,11 @@ test.meta(<ITestMeta>{
 
   const app = new AppRoot(t);
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });

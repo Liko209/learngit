@@ -32,7 +32,7 @@ class GroupSettingsComponent extends Component<Props> {
     this._handleClose();
   };
 
-  private _openConvertToTeam = (e: React.MouseEvent<HTMLInputElement>) => {
+  private _openConvertToTeam = (e: React.MouseEvent<any>) => {
     const { id } = this.props;
     this._handleClose();
     ConvertToTeam.show({ id });
@@ -55,11 +55,11 @@ class GroupSettingsComponent extends Component<Props> {
         <ButtonList>
           <JuiDivider />
           <ButtonListItem
-            data-test-automation-id='groupSettingsConvertToTeam'
-            color='primary'
+            data-test-automation-id="groupSettingsConvertToTeam"
+            color="primary"
             onClick={this._openConvertToTeam}
           >
-            <ButtonListItemText color='primary'>
+            <ButtonListItemText color="primary">
               {t('people.team.convertToTeam')}
             </ButtonListItemText>
           </ButtonListItem>

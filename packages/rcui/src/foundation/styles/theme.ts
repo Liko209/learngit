@@ -2,7 +2,6 @@ import palette from './theme/palette.json';
 import typography from './theme/typography.json';
 import opacity from './theme/opacity.json';
 import radius from './theme/radius.json';
-import spacing from './theme/spacing.json';
 import zIndex from './theme/zIndex.json';
 import breakpoints from './theme/breakpoints.json';
 
@@ -13,7 +12,6 @@ import {
 import { Transitions } from '@material-ui/core/styles/transitions';
 import { Shadows } from '@material-ui/core/styles/shadows';
 import { ZIndex as MuiZIndex } from '@material-ui/core/styles/zIndex';
-import { Spacing as MuiSpacing } from '@material-ui/core/styles/spacing';
 import {
   TypographyStyle,
   FontStyle,
@@ -54,7 +52,6 @@ export interface Typography
 
 export type Opacity = typeof opacity;
 export type Radius = typeof radius;
-export type Spacing = typeof spacing & MuiSpacing;
 export type ZIndex = typeof zIndex & MuiZIndex;
 
 export { Transitions, Shadows };
@@ -64,7 +61,6 @@ export type Theme = {
   typography: Typography;
   opacity: Opacity;
   radius: Radius;
-  spacing: Spacing;
   zIndex: ZIndex;
 } & MuiTheme;
 
@@ -72,7 +68,6 @@ export type PaletteOptions = typeof palette;
 export type TypographyOptions = typeof typography;
 export type OpacityOptions = Opacity;
 export type RadiusOptions = Radius;
-export type SpacingOptions = typeof spacing;
 export type ZIndexOptions = typeof zIndex;
 export type BreakpointsOptions = typeof breakpoints;
 export type Color = [
@@ -85,7 +80,6 @@ export type ThemeOptions = {
   typography: TypographyOptions;
   opacity: OpacityOptions;
   radius: OpacityOptions;
-  spacing: SpacingOptions;
   zIndex: ZIndexOptions;
   breakpoints: BreakpointsOptions;
 };

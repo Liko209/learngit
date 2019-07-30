@@ -593,7 +593,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(group.glipId).enter();
@@ -604,7 +604,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Then show UMI', async () => {
-      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(1);
+      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(0);
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
@@ -657,7 +657,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('When Open a conversation and receive new messages', async () => {
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
       await h(t).platform(otherUser).sendTextPost(postContent, pvtChatId);
@@ -712,6 +712,10 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
       await directMessagesSection.conversationEntryById(pvtChatId).enter();
     });
 
+    await h(t).withLog('And Enter the mentions', async () => {
+      await app.homePage.messageTab.mentionsEntry.enter();
+    });
+
     await h(t).withLog('WHen leave browser window', async () => {
       await h(t).interceptHasFocus(false);
     });
@@ -762,7 +766,7 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-  
+
     await h(t).withLog('Then the conversation should be opened and not has any UMI', async () => {
       await app.homePage.messageTab.conversationPage.groupIdShouldBe(teamId);
       await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).umi.shouldBeNumber(0);

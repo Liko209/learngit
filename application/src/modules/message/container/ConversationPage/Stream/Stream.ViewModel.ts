@@ -12,7 +12,8 @@ import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
 import { GroupState } from 'sdk/module/state/entity';
 import { Group } from 'sdk/module/group/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';

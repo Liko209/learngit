@@ -40,6 +40,30 @@ type ConversationCardViewProps = {
   showActivityStatus: boolean;
   beforeJump: Function;
   terms?: string[];
+  repliedEntity: RepliedEntity | null;
 };
 
-export { ConversationCardProps, ConversationCardViewProps };
+type RepliedEntity = {
+  title?: string;
+  iconName: string;
+};
+
+type RepliedItem = {
+  title?: string;
+  url?: string;
+  name?: string;
+  text?: string;
+  complete?: boolean;
+};
+
+type GetRepliedEntity = (item: RepliedItem) => RepliedEntity;
+
+type RepliedEntityHandlers = {
+  [typeId: number]: GetRepliedEntity;
+};
+
+export {
+  ConversationCardProps,
+  ConversationCardViewProps,
+  RepliedEntityHandlers,
+};

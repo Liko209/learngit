@@ -22,7 +22,7 @@ export async function ensuredOneMissCallLog(t: TestController, caller: IUser, ca
       })
       callerSession = await h(t).newWebphoneSession(caller);
     });
-    
+
     await addOneMissCallLog(t, callerSession, `${callee.company.number}#${callee.extension}`, app);
   }
 }
@@ -59,12 +59,16 @@ export async function addOneMissCallLog(t: TestController, callerSession: Webpho
     await t.wait(waitTime);
     await callerSession.hangup();
     await callerSession.waitForStatus('terminated');
-    await t.expect(callHistoryPage.items.count).gte(1, { timeout: 10e3 });
     await telephoneDialog.ensureDismiss();
+    await t.expect(callHistoryPage.items.count).gte(1, { timeout: 20e3 });
   });
 
   await h(t).withLog('And refresh page', async () => {
-    await h(t).reload();
+    const href = await h(t).href;
+    const originUrl = new URL(href).origin;
+    const voicemailUrl = originUrl + '/phone/callhistory';
+    await t.wait(5e3);
+    await t.navigateTo(voicemailUrl);
     await app.homePage.ensureLoaded();
   });
 

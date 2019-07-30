@@ -23,6 +23,8 @@ type Delta = { x: number; y: number; z: number };
 type VirtualizedListChild = JSX.Element | { key: string | number; type?: any };
 
 type JuiVirtualizedListProps = {
+  role?: string;
+  tabIndex?: number;
   height: number;
   minRowHeight: number;
   overscan?: number;
@@ -30,6 +32,7 @@ type JuiVirtualizedListProps = {
   stickToBottom?: boolean;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   before?: (() => JSX.Element) | null;

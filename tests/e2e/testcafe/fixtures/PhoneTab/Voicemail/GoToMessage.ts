@@ -20,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['JPT-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['voicemail']
 })('Go to conversation from the voicemail', async (t) => {

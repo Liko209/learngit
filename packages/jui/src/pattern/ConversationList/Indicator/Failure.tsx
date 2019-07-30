@@ -11,12 +11,12 @@ import { JuiIconography } from '../../../foundation/Iconography';
 const StyledIconographyFailure = styled(JuiIconography)``;
 
 const JuiIndicatorFailure = () => (
-    <StyledIconographyFailure
-      iconSize="medium"
-      iconColor={['semantic', 'negative']}
-    >
-      send_failure
-    </StyledIconographyFailure>
+  <StyledIconographyFailure
+    iconSize="small"
+    iconColor={['semantic', 'negative']}
+  >
+    send_failure
+  </StyledIconographyFailure>
 );
 
 export { StyledIconographyFailure, JuiIndicatorFailure };

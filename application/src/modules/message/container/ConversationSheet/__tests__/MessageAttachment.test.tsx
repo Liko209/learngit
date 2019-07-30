@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { getEntity } from '@/store/utils';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { MessageAttachment } from '../MessageAttachment';
 import { MessageAttachmentView } from '../MessageAttachment/MessageAttachment.View';
 import {

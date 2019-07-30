@@ -76,6 +76,7 @@ class StreamViewComponent extends Component<Props> {
   @observable private _jumpToFirstUnreadLoading = false;
 
   private _performanceTracer: PerformanceTracer = PerformanceTracer.start();
+
   private _RENDERER_MAP = {
     [StreamItemType.POST]: this._renderPost,
     [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
@@ -89,6 +90,7 @@ class StreamViewComponent extends Component<Props> {
       flexDirection: 'column',
     } as React.CSSProperties),
   );
+
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -99,6 +101,7 @@ class StreamViewComponent extends Component<Props> {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
       jumpToPostId: prevJumpToPostId,
+      loadingStatus: prevLoadingStatus,
     } = prevProps;
     const {
       postIds,
@@ -106,6 +109,7 @@ class StreamViewComponent extends Component<Props> {
       hasMore,
       lastPost,
       jumpToPostId,
+      loadingStatus,
     } = this.props;
 
     if (postIds.length && mostRecentPostId) {
@@ -133,11 +137,14 @@ class StreamViewComponent extends Component<Props> {
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
-    this._performanceTracer.end({
-      key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
-      count: postIds.length,
-    });
+    if (loadingStatus === STATUS.SUCCESS && prevLoadingStatus === STATUS.PENDING) {
+      this._performanceTracer.end({
+        key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
+        count: postIds.length,
+      });
+    }
   }
+
   /* eslint-disable react/sort-comp */
   componentWillUnmount() {
     this._disposers.forEach((disposer: Disposer) => disposer());

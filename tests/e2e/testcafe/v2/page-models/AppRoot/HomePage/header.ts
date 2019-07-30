@@ -104,3 +104,14 @@ class SearchBar extends BaseWebComponent {
     await this.t.click(this.closeIcon);
   }
 }
+
+export class TopBarAvatar extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('topBarAvatar');
+  }
+
+  async hoverTopBarAvatar() {
+    await this.t.hover(this.self);
+  }
+  
+}

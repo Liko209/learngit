@@ -4,11 +4,13 @@ import { observer } from 'mobx-react';
 import {
   JuiConversationCard,
   JuiConversationCardHeader,
+  JuiConversationCardHeaderAction,
   JuiConversationCardBody,
 } from 'jui/pattern/ConversationCard';
 import { Avatar } from '@/containers/Avatar';
 import { jumpToPost } from '@/common/jumpToPost';
 import { noop } from 'jui/foundation/utils';
+import { JuiIconLink } from 'jui/pattern/IconLink';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -113,6 +115,25 @@ export class ConversationCard extends React.Component<
     });
   }
 
+  private get _renderRepliedEntity() {
+    const { repliedEntity } = this.props;
+
+    if (!repliedEntity) {
+      return null;
+    }
+
+    const { title = '', iconName } = repliedEntity;
+
+    return (
+      <>
+        <JuiConversationCardHeaderAction>
+          {i18nP('item.activity.reply')}
+        </JuiConversationCardHeaderAction>
+        <JuiIconLink iconName={iconName}>{title}</JuiIconLink>
+      </>
+    );
+  }
+
   render() {
     const {
       id,
@@ -141,15 +162,15 @@ export class ConversationCard extends React.Component<
       <Avatar
         icon={post.icon}
         uid={creator.id}
-        size='medium'
-        data-name='avatar'
+        size="medium"
+        data-name="avatar"
         onClick={post.icon ? noop : this.onClickAvatar}
       />
     );
     const activity = <Activity id={id} />;
     return (
       <JuiConversationCard
-        data-name='conversation-card'
+        data-name="conversation-card"
         data-id={id}
         Avatar={avatar}
         onMouseOver={this.handleMouseOver}
@@ -160,19 +181,20 @@ export class ConversationCard extends React.Component<
         {...restNavigationProps}
       >
         <JuiConversationCardHeader
-          data-name='header'
+          data-name="header"
           name={name}
           time={showProgressActions ? '' : createTime}
           status={customStatus}
           notification={showActivityStatus && activity}
+          repliedEntity={this._renderRepliedEntity}
           from={from}
         >
-          {showProgressActions && <ProgressActions id={id} />}
+          {showProgressActions && <ProgressActions id={id} isEditMode={isEditMode} />}
           {!showProgressActions && isHover && (
             <Actions postId={id} groupId={post.groupId} />
           )}
         </JuiConversationCardHeader>
-        <JuiConversationCardBody data-name='body'>
+        <JuiConversationCardBody data-name="body">
           {!hideText && !isEditMode && (
             <TextMessage id={id} keyword={this.context.keyword} />
           )}

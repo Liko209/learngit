@@ -15,16 +15,17 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiTextWithEllipsis } from 'jui/components/Text/TextWithEllipsis';
 import { catchError } from '@/common/catchError';
 import { JuiText } from 'jui/components/Text';
+import { JuiListItemSecondaryAction } from 'jui/components';
 
 type SourceItemType =
   | {
-    id: number | string;
-  }
+      id: number | string;
+    }
   | string
   | number;
 type Props<T> = SelectSettingItemViewProps<T> &
-SelectSettingItemProps &
-WithTranslation;
+  SelectSettingItemProps &
+  WithTranslation;
 
 @observer
 class SelectSettingItemViewComponent<
@@ -87,6 +88,7 @@ class SelectSettingItemViewComponent<
     const itemValue = this.props.extractValue(sourceItem);
     return (
       <JuiMenuItem
+        hasSecondaryAction={!!this.props.settingItem.secondaryActionRenderer}
         key={itemValue}
         value={itemValue}
         disabled={itemValue === ''}
@@ -103,17 +105,29 @@ class SelectSettingItemViewComponent<
 
   private _renderMenuItemChildren(sourceItem: T, itemValue: string) {
     const { source, settingItem } = this.props;
-    const { sourceRenderer } = settingItem;
-    return sourceRenderer ? (
+    const { sourceRenderer, secondaryActionRenderer } = settingItem;
+    const option = sourceRenderer ? (
       sourceRenderer({ source, value: sourceItem })
     ) : (
       <JuiTextWithEllipsis>{itemValue}</JuiTextWithEllipsis>
     );
+    if (!secondaryActionRenderer) {
+      return option;
+    }
+    const secondaryAction = (
+      <JuiListItemSecondaryAction>
+        {secondaryActionRenderer({ source, value: sourceItem })}
+      </JuiListItemSecondaryAction>
+    );
+    return (
+      <>
+        {option}
+        {secondaryAction}
+      </>
+    );
   }
   render() {
-    const {
-      t, id, disabled, settingItem,
-    } = this.props;
+    const { t, id, disabled, settingItem } = this.props;
     return (
       <JuiSettingSectionItem
         id={id}

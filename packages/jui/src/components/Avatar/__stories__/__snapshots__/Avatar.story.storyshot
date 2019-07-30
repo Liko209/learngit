@@ -86,7 +86,7 @@ exports[`Storyshots Components/Avatar Name: Components/Avatar Name 1`] = `
 }
 
 <div
-  className="MuiAvatar-root MuiAvatar-colorDefault c0"
+  className="MuiAvatar-root c0 MuiAvatar-colorDefault"
   color="lake"
   size="medium"
 >
@@ -168,7 +168,7 @@ exports[`Storyshots Components/Avatar With presence: Components/Avatar With pres
   size="medium"
 >
   <div
-    className="MuiAvatar-root MuiAvatar-colorDefault c1"
+    className="MuiAvatar-root c1 MuiAvatar-colorDefault"
     color="lake"
     size="medium"
   >

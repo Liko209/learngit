@@ -3,14 +3,10 @@
  * @Date: 2019-04-22 09:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiConversationPostText } from 'jui/pattern/ConversationCard';
-import {
-  JuiConversationCardLinkItems,
-  JuiConversationCardVideoLink,
-} from 'jui/pattern/ConversationCardLinkItems';
+import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
 import { LinkItemModel, LinkItemViewProps } from './types';
 import { accelerateURL } from '@/common/accelerateURL';
 import { StreamContext } from '../../PostListPage/Stream/types';
@@ -42,7 +38,7 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
 
   renderLinkCard = (item: LinkItemModel) => {
     const { url, title, image, summary, id, favicon, providerName } = item;
-
+    const { canClosePreview } = this.props;
     const isUnableShow = !(title || image || summary);
 
     return isUnableShow ? null : (
@@ -55,6 +51,7 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
             thumbnail={this.formatUrlStamp(image)}
             url={this.formatLinkProtocol(url)}
             onLinkItemClose={this.onLinkItemClose(id)}
+            isShowCloseBtn={canClosePreview}
             favicon={this.formatUrlStamp(favicon)}
             faviconName={providerName}
           />
@@ -83,22 +80,25 @@ class LinkItemView extends React.Component<LinkItemViewProps> {
 
   renderContent = (item: LinkItemModel) => {
     const { doNotRender } = item;
-
     return doNotRender ? this.renderLinkText(item) : this.renderLinkCard(item);
   };
 
   renderVideo = (item: LinkItemModel) => {
-    const { id, url, data } = item;
-
+    const { id, url, data, doNotRender } = item;
+    const { canClosePreview } = this.props;
     if (!data || !this.context.isShow) return null;
 
     const { object, title } = data;
-    return (
+    return doNotRender ? (
+      this.renderLinkText(item)
+    ) : (
       <SearchHighlightContext.Consumer key={id}>
         {({ keyword }) => (
-          <JuiConversationCardVideoLink
+          <JuiConversationCardLinkItems
             key={id}
+            onLinkItemClose={this.onLinkItemClose(id)}
             title={postParser(title, { keyword })}
+            isShowCloseBtn={canClosePreview}
             url={url}
             html={object ? object.html : ''}
           />

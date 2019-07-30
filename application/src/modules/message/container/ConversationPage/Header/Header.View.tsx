@@ -7,7 +7,6 @@
 import React, { Component, ComponentType } from 'react';
 import { computed } from 'mobx';
 import { observer } from 'mobx-react';
-import { container } from 'framework';
 import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
@@ -16,7 +15,7 @@ import { JuiButtonBar } from 'jui/components/Buttons';
 import { Favorite, Privacy, Member } from '@/containers/common';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
-import { MessageStore } from '@/modules/message/store';
+import { IMessageStore } from '@/modules/message/interface';
 import { Menu } from './Menu';
 
 type HeaderProps = {
@@ -35,7 +34,7 @@ type HeaderProps = {
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
-  private _messageStore: MessageStore = container.get(MessageStore);
+  @IMessageStore private _messageStore: IMessageStore;
 
   constructor(props: HeaderProps) {
     super(props);

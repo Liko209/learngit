@@ -9,7 +9,7 @@ import * as i18nT from '@/utils/i18nT';
 import * as telephony from '@/modules/telephony/module.config';
 import * as notification from '@/modules/notification/module.config';
 import * as common from '@/modules/common/module.config';
-
+import * as media from '@/modules/media/module.config';
 import { NOTIFICATION_PRIORITY } from '@/modules/notification/interface';
 import { TelephonyStore } from '../store';
 import { getEntity } from '@/store/utils';
@@ -32,6 +32,7 @@ jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
+jupiter.registerModule(media.config);
 
 global.Notification = {
   permission: 'defalut',

@@ -1,7 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ContentPanel/JumpToUnreadButton.ts"],
-    "browsers": ["selenium:chrome"],
-    "include_tags": ["JPT-1212"]
- }
-}
