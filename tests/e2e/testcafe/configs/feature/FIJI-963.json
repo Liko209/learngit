@@ -3,9 +3,7 @@
     "fixtures": [
       "./fixtures/Profile/*.ts",
       "./fixtures/PresenceSetting/*.ts",
-      "./fixtures/ConversationStream/PageHeader.ts",
-      "./telephony/Forward.ts",
-      "./telephony/Dialer.ts"
+      "./telephony/Forward.ts"
     ],
     "browsers": ["selenium:chrome"]
   }

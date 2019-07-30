@@ -5,7 +5,7 @@
  */
 /* eslint-disable */
 import TypeDictionary from './types';
-import GlipTypeUtil from './util';
+import GlipTypeUtil, { TYPE_ID_MASK } from './util';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 
@@ -142,5 +142,6 @@ export {
   GlipTypeUtil,
   parseSocketMessage,
   getSocketMessageKey,
+  TYPE_ID_MASK,
   parseSocketData,
 };

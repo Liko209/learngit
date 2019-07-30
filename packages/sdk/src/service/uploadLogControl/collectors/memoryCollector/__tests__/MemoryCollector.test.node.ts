@@ -1,5 +1,5 @@
 import { MemoryCollector } from '../MemoryCollector';
-import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { logEntityFactory } from 'foundation/log/__tests__/factory';
 
 describe('MemoryCollector', () => {
   describe('onLog()', () => {

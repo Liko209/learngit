@@ -5,7 +5,7 @@
  */
 import { ConsumerCollector } from '../ConsumerCollector';
 import { FixSizeMemoryLogCollection } from '../../FixSizeMemoryLogCollection';
-import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { logEntityFactory } from 'foundation/log/__tests__/factory';
 import { ILogConsumer } from '../../types';
 import { spyOnTarget } from '../../../../../__tests__/utils';
 

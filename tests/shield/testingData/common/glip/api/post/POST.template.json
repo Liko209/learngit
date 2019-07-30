@@ -1,0 +1,68 @@
+{
+  "host": "glip",
+  "path": "/api/post",
+  "method": "post",
+  "type": "request-response",
+  "via": "socket",
+  "request": {
+    "host": "glip",
+    "path": "/api/post",
+    "method": "post",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2MjY1NjIyODQ1MywidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjI2NTYyMjgsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.Bb40wNWwPrWI-kCVCplawLHbK0rlgvkUmeO2-3UH72Lm_xFpmqsSQFxT4wd_96dssC1s-KZ6cFs5yBwkKGkwFw"
+    },
+    "data": {
+      "links": [],
+      "created_at": 1562684051280,
+      "modified_at": 1562684051280,
+      "creator_id": 187875331,
+      "version": 2328493502706041,
+      "new_version": 2328493502706041,
+      "unique_id": "2328493502706041",
+      "is_new": true,
+      "model_size": 0,
+      "text": ".",
+      "group_id": 44171270,
+      "from_group_id": 44171270,
+      "item_ids": [],
+      "post_ids": [],
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "request_id": "5"
+    }
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "387",
+      "X-Request-Id": "user_id:187875331;id:43a0e141-b9c2-4776-817b-798749388994",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 201,
+    "data": {
+      "created_at": 1562684051485,
+      "creator_id": 187875331,
+      "version": 2328493502706041,
+      "model_size": 0,
+      "is_new": true,
+      "item_ids": [],
+      "post_ids": [],
+      "modified_at": 1562684051485,
+      "unique_id": "2328493502706041",
+      "text": ".",
+      "group_id": 44171270,
+      "at_mention_item_ids": [],
+      "at_mention_non_item_ids": [],
+      "company_id": 401409,
+      "deactivated": false,
+      "source": "Jupiter",
+      "function_id": "post",
+      "items": [],
+      "_id": 2825109508
+    }
+  }
+}

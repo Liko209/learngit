@@ -27,7 +27,6 @@ import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './module/account';
-import { UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
 import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
@@ -80,7 +79,9 @@ class Sdk {
     );
 
     if (!loginResp || !loginResp.success) {
-      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      if (process.env.NODE_ENV !== 'test') {
+        window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      }
     }
     this._subscribeNotification();
     this._initDataAnalysis();
@@ -200,9 +201,6 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     this.daoManager.deleteDatabase();
-    ServiceLoader.getInstance<UserConfigService>(
-      ServiceConfig.USER_CONFIG_SERVICE,
-    ).clear();
     AccountGlobalConfig.removeUserDictionary();
     this._resetDataAnalysis();
   }

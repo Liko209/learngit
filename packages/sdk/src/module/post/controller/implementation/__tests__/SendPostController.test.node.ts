@@ -23,8 +23,8 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { AccountUserConfig } from '../../../../account/config/AccountUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation';
 import { PostDataController } from '../../PostDataController';
-import { REQUEST_PRIORITY, DEFAULT_RETRY_COUNT } from 'foundation/src';
 import { GroupService } from 'sdk/module/group/service';
 
 jest.mock('../../../../../module/config');
@@ -500,6 +500,15 @@ describe('SendPostController', () => {
       expect(
         sendPostController['_convertTeamMentionToPlainText'](text),
       ).toEqual('@Team ojbk');
+    });
+    it('should not convert Direct Mention', async () => {
+      const text =
+        "<a class='at_mention_compose' rel='{\"id\":2111}'>@Xiao Ming </a>ojbk";
+      expect(
+        sendPostController['_convertTeamMentionToPlainText'](text),
+      ).toEqual(
+        "<a class='at_mention_compose' rel='{\"id\":2111}'>@Xiao Ming </a>ojbk",
+      );
     });
   });
 });

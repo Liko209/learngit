@@ -170,7 +170,7 @@ test(formalName('Cancel the creation of a new group', ['P2', 'NewConversation', 
   });
 })
 
-test(formalName("Shouldn't create new group when the conversation existed", ['P2', 'NewConversation', 'alessia.li', 'JPT-2607']), async t => {
+test(formalName("Shouldn't create new group when the conversation existed", ['P1', 'NewConversation', 'alessia.li', 'JPT-2607']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[2];
   await h(t).resetGlipAccount(loginUser);
@@ -228,7 +228,7 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P2
   });
 })
 
-test(formalName('Create new group successfully', ['P2', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
+test(formalName('Create new group successfully', ['P0', 'NewConversation', 'alessia.li', 'JPT-2604']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[2];
   await h(t).resetGlipAccount(loginUser);

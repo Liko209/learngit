@@ -3,22 +3,22 @@
  * @Date: 2019-05-08 23:01:16
  * Copyright © RingCentral. All rights reserved.
  */
-import './jest/setup/setupConsole';
-import './jest/setup/setupHTMLElement';
-import './jest/setup/setupTimezone';
-import './jest/setup/setupMobx';
-import './jest/setup/setupStyledTheme';
-import {
-  FakeStorage
-} from './utils';
+import './jest/setup/console';
+import './jest/setup/timezone';
+import './jest/setup/mobx';
+import './jest/setup/styledTheme';
+import './jest/setup/media';
+import './jest/setup/selection';
+import './jest/setup/promise';
+
+import { FakeStorage } from './utils';
 /* eslint-disable */
 
-const log = (reason) => {
+const log = reason => {
   throw reason;
 };
 
 beforeAll(() => {
-
   if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
     process.on('unhandledRejection', log);
     // Avoid memory leak by adding too many listeners
@@ -27,13 +27,13 @@ beforeAll(() => {
 
   Object.defineProperty(window, 'localStorage', {
     value: new FakeStorage(),
-    writable: true
-  })
+    writable: true,
+  });
   Object.defineProperty(window, 'sessionStorage', {
     value: new FakeStorage(),
-    writable: true
-  })
-})
+    writable: true,
+  });
+});
 
 afterAll(() => {
   delete window.localStorage;
@@ -41,6 +41,5 @@ afterAll(() => {
 
   process.off('unhandledRejection', log);
   process.env.LISTENING_TO_UNHANDLED_REJECTION = false;
-
-  global.gc();
-})
+  global.gc && global.gc();
+});
