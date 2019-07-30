@@ -51,8 +51,13 @@ const StyledContactInfoName = styled(JuiTypography)`
 const StyledContactInfoEdit = styled('span')`
   && {
     ${typography('body1')};
-    color: ${({ theme }) => theme.palette.primary['600']};
+    color: ${({ theme }) => theme.palette.primary['700']};
     cursor: pointer;
+    transition: color 0.15s ease-in-out;
+  }
+
+  &&:hover {
+    color: ${({ theme }) => theme.palette.primary['900']};
   }
 `;
 
