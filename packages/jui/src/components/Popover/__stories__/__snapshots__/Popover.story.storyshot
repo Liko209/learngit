@@ -15,11 +15,11 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c0.c0.containedButtonStyle {
   color: #fff;
-  box-shadow: unset;
   background-color: #0684bd;
 }
 
@@ -30,10 +30,6 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
 .c0.c0.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: #fff;
-}
-
-.c0.c0.containedButtonStyle:active {
-  box-shadow: unset;
 }
 
 .c0.c0.textButtonStyle.disabled {
@@ -80,11 +76,11 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
 }
 
 <button
-  className="MuiButtonBase-root MuiButton-root MuiButton-contained containedButtonStyle MuiButton-raised MuiButton-sizeLarge c0"
+  className="MuiButtonBase-root MuiButton-root c0 MuiButton-contained containedButtonStyle MuiButton-sizeLarge"
   disabled={false}
   onBlur={[Function]}
   onClick={[Function]}
-  onContextMenu={[Function]}
+  onDragLeave={[Function]}
   onFocus={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -94,7 +90,7 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
   onTouchEnd={[Function]}
   onTouchMove={[Function]}
   onTouchStart={[Function]}
-  tabIndex="0"
+  tabIndex={0}
   type="button"
 >
   <span
@@ -102,8 +98,5 @@ exports[`Storyshots Components/Popover Popover: Components/Popover Popover 1`] =
   >
     Open Popover
   </span>
-  <span
-    className="MuiTouchRipple-root"
-  />
 </button>
 `;

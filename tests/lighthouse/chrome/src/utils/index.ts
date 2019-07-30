@@ -7,11 +7,13 @@ import { JupiterUtils } from './jupiterUtils';
 import { LogUtils } from './logUtils';
 import { PptrUtils } from './pptrUtils';
 import { DateUtils } from './dateUtils';
+import { TelephonyUtils } from './telephonyUtils';
 
 export {
   FunctionUtils,
   JupiterUtils,
   LogUtils,
   PptrUtils,
-  DateUtils
+  DateUtils,
+  TelephonyUtils
 }

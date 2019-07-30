@@ -1,9 +1,0 @@
-{
-  "on_merge": {
-  "fixtures": ["./fixtures/Setting/Phone/GeneralSettings.ts",
-    "./telephony/ToVoiceMail.ts",
-    "./telephony/phoneSettings/*.ts",
-    "./fixtures/ConversationStream/ConversationCard.ts"],
-  "browsers": ["selenium:chrome"]
-  }
-}

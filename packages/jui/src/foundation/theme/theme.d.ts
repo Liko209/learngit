@@ -13,7 +13,6 @@ export {
   Typography,
   Opacity,
   Radius,
-  Spacing,
   ZIndex,
   ThemeStyle,
 } from 'rcui/foundation/styles/theme';

@@ -11,17 +11,23 @@ import MuiMenuItem, {
 import { JuiMenu } from '../../components';
 import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import {
-  spacing, grey, palette, width, height,
-} from '../../foundation/utils';
+import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
 import { JuiIconButton, JuiIconButtonProps } from '../../components/Buttons';
 
+// can't get component and touchRippleClasses from MenuItemProps
+type MuiMenuItemPropsExtend = MuiMenuItemProps & {
+  component?: React.ElementType;
+  TouchRippleProps?: any;
+  isItemHover?: boolean;
+  // type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+  button?: any;
+};
+
 const StyledRightWrapper = styled.div`
-  width: ${width(5)};
   height: ${height(5)};
   display: flex;
   align-items: center;
@@ -42,13 +48,9 @@ const rippleEnter = (theme: Theme) => keyframes`
 
 const StyledIconButtonMore = styled(JuiIconButton)<JuiIconButtonProps>``;
 
-const WrapperListItem = ({
-  isItemHover,
-  ...rest
-}: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
-
 const hoverStyle = css`
-  background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
+  background-color: ${({ theme }) =>
+    fade(grey('700')({ theme }), theme.opacity['1'] / 2)};
   ${StyledIconButtonMore} {
     display: inline-flex;
   }
@@ -63,11 +65,18 @@ const JuiMenuContain = styled(JuiMenu)`
     }
   }
 `;
-const StyledListItem = styled(WrapperListItem)`
+
+const FilteredComponent = ({
+  isItemHover,
+  ...rest
+}: MuiMenuItemPropsExtend) => <MuiMenuItem {...rest} />;
+
+const StyledListItem = styled<MuiMenuItemPropsExtend>(FilteredComponent)`
   && {
     white-space: nowrap;
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
+    min-height: unset;
     line-height: ${height(8)};
     color: ${grey('900')};
     /**
@@ -75,10 +84,11 @@ const StyledListItem = styled(WrapperListItem)`
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      ${({ theme }) => theme.transitions.create('background-color', {
-    duration: theme.transitions.duration.shortest,
-    easing: theme.transitions.easing.easeInOut,
-  })};
+      ${({ theme }) =>
+        theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeInOut,
+        })};
   }
   &&&& {
     ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
@@ -103,7 +113,8 @@ const StyledListItem = styled(WrapperListItem)`
   }
 
   &&.selected {
-    background-color: ${({ theme }) => fade(grey('700')({ theme }), theme.opacity['1'])};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity['1'])};
     p {
       color: ${palette('primary', 'main')};
     }
@@ -125,7 +136,7 @@ const StyledListItem = styled(WrapperListItem)`
     animation-name: ${({ theme }) => rippleEnter(theme)};
     z-index: ${({ theme }) => theme.zIndex.ripple};
   }
-`;
+` as React.ComponentType<MuiMenuItemPropsExtend & { isItemHover?: boolean }>;
 
 const StyledPresenceWrapper = styled.div`
   width: ${width(2)};
@@ -136,17 +147,15 @@ const StyledPresenceWrapper = styled.div`
 
 type JuiConversationListItemProps = {
   title: string;
-  presence?: JSX.Element | null;
-  umi?: JSX.Element;
+  presence?: () => JSX.Element | null;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
   hidden?: boolean;
-  isItemHover?: boolean;
   moreTooltipTitle: string;
-} & MuiMenuItemProps;
+} & MuiMenuItemPropsExtend;
 
 type IConversationListItem = {
   dependencies?: React.ComponentType[];
@@ -163,7 +172,6 @@ const JuiConversationListItem: IConversationListItem = memo(
       title,
       indicator,
       presence,
-      umi,
       onClick,
       onMoreClick,
       component,
@@ -190,9 +198,10 @@ const JuiConversationListItem: IConversationListItem = memo(
         isItemHover={isItemHover}
         {...rest}
       >
-        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        {presence && (
+          <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
+        )}
         <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconButtonMore

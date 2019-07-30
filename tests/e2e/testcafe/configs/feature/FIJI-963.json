@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/*.ts",
+      "./fixtures/PresenceSetting/*.ts",
+      "./telephony/Forward.ts"
+    ],
+    "browsers": ["selenium:chrome"]
+  }
+}

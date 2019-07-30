@@ -57,6 +57,8 @@ class ConfigWrapper {
 
   /* scene config */
   public includeScene: Array<string>;
+  public includeTags: Array<string>;
+  public excludeTags: Array<string>;
   public switchConversationIds: Array<string>;
   public searchKeywords: Array<string>;
   public searchPhones: Array<string>;
@@ -96,7 +98,7 @@ class ConfigWrapper {
     this.jupiterDevelopHost = this.getValue("JUPITER_DEVELOP_HOST", "https://develop.fiji.gliprc.com");
     this.jupiterAppKey = this.getValue("JUPITER_APP_KEY", "YCWFuqW8T7-GtSTb6KBS6g");
     this.jupiterAppSecret = this.getValue("JUPITER_APP_SECRET", "vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA");
-    this.webPhoneUrl = this.getValue("WEBPHONE_URL", "http://xia01-i01-stg01.lab.rcch.ringcentral.com");
+    this.webPhoneUrl = this.getValue("WEBPHONE_URL", "https://jupiter-webphone.lab.rcch.ringcentral.com");
     this.webPhoneEnv = this.getValue("WEBPHONE_ENV", "xmnup");
     /* jupiter config */
 
@@ -115,6 +117,8 @@ class ConfigWrapper {
 
     /* scene config */
     this.includeScene = this.getArray("INCLUDE_SCENE", "");
+    this.includeTags = this.getArray("INCLUDE_TAGS", "");
+    this.excludeTags = this.getArray("EXCLUDE_TAGS", "");
     this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "2288713734,2288697350");
     this.searchKeywords = this.getArray("SEARCH_KEYWORD", "a,b,c,d");
     this.searchPhones = this.getArray("SEARCH_PHONE", "1,2,3,4,5,6,7,8,9,0");

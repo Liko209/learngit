@@ -150,6 +150,9 @@ const name2icon = {
   unread: 'unread',
   dial: 'dial',
   forwardcall: 'forwardcall',
+  addmember_border: 'add-member_border',
+  speaker: 'speaker',
+  'speaker-mute': 'speaker-mute',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -72,7 +72,8 @@ export default class Pseudo {
    */
   process(src: string, key: string, options: any, translator: any) {
     if (
-      (translator.language && this.options.languageToPseudo !== translator.language) ||
+      (translator.language &&
+        this.options.languageToPseudo !== translator.language) ||
       !this.options.enabled
     ) {
       return src;

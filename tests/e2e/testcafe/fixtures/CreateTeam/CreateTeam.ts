@@ -216,6 +216,9 @@ test(formalName('new team popup can be open', ['P2', 'JPT-88']), async t => {
   await h(t).withLog('And Post messages toggle is true by default', async () => {
     await t.expect(createTeamModal.mayPostMessageToggle.checked).ok();
   });
+  await h(t).withLog('And At tem mention toggle is false by default', async () => {
+    await t.expect(createTeamModal.mayAtTeamMentionToggle.checked).notOk();
+  });
   await h(t).withLog('And Pin pist toggle is true by default', async () => {
     await t.expect(createTeamModal.mayPinPostToggle.checked).ok();
   });
@@ -541,6 +544,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then the toggle can be turn off', async () => {
     await t.expect(createTeamModal.mayPostMessageToggle().checked).notOk();
+  });
+
+  await h(t).withLog('Then the at team mention toggle should be turned off', async () => {
+    await t.expect(createTeamModal.mayAtTeamMentionToggle().checked).notOk();
   });
 
   await h(t).withLog('And create a team', async () => {

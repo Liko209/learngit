@@ -47,11 +47,11 @@ test(formalName('Close the viewer and toast popup when the image being viewed is
   const postId = await conversationPage.nthPostItem(-1).postId;
   const posts = app.homePage.messageTab.conversationPage.posts;
   await h(t).withLog('Then I can find the image in post', async () => {
-    await t.expect(posts.nth(-1).find('img').exists).ok();
+    await t.expect(posts.nth(-1).find('[data-test-automation-class="image"]').exists).ok();
   });
 
   await h(t).withLog('When I click the image', async () => {
-    await t.click(posts.nth(-1).find('img'));
+    await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;
@@ -106,11 +106,11 @@ test(formalName('Go to blank page and show a toast when the team was deleted', [
 
   const posts = app.homePage.messageTab.conversationPage.posts;
   await h(t).withLog('Then I can find the image in post', async () => {
-    await t.expect(posts.nth(-1).find('img').exists).ok();
+    await t.expect(posts.nth(-1).find('[data-test-automation-class="image"]').exists).ok();
   });
 
   await h(t).withLog('When I click the image', async () => {
-    await t.click(posts.nth(-1).find('img'));
+    await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;
@@ -168,11 +168,11 @@ test(formalName('Go to blank page and show a toast when the team was archived', 
 
   const posts = app.homePage.messageTab.conversationPage.posts;
   await h(t).withLog('Then I can find the image in post', async () => {
-    await t.expect(posts.nth(-1).find('img').exists).ok();
+    await t.expect(posts.nth(-1).find('[data-test-automation-class="image"]').exists).ok();
   });
 
   await h(t).withLog('When I click the image', async () => {
-    await t.click(posts.nth(-1).find('img'));
+    await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;
@@ -230,11 +230,11 @@ test(formalName('Go to blank page and show a toast when the team was closed', ['
 
   const posts = app.homePage.messageTab.conversationPage.posts;
   await h(t).withLog('Then I can find the image in post', async () => {
-    await t.expect(posts.nth(-1).find('img').exists).ok();
+    await t.expect(posts.nth(-1).find('[data-test-automation-class="image"]').exists).ok();
   });
 
   await h(t).withLog('When I click the image', async () => {
-    await t.click(posts.nth(-1).find('img'));
+    await t.click(posts.nth(-1).find('[data-test-automation-class="image"]'));
   });
 
   const viewerDialog = app.homePage.fileAndImagePreviewer;

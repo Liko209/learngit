@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  action, observable, computed, comparer, runInAction,
-} from 'mobx';
+import { action, observable, computed, comparer, runInAction } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { SearchService } from 'sdk/module/search';
@@ -48,7 +46,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @observable
   searchTerm?: string;
 
-  private _canDoFuzzySearch: boolean = false;
+  private _canDoFuzzySearch: boolean = true;
 
   private _denotationChar?: string;
 
@@ -97,6 +95,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   reset() {
     this._canDoFuzzySearch = false;
+    this.searchTerm = undefined;
     this.open = false;
     this.currentIndex = 0;
     this.members = [];
@@ -131,9 +130,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       this.open = false;
       return;
     }
+    const data = { searchTerm: this.searchTerm, memberIds: this._memberIds };
+    this._doFuzzySearchPersons(data);
     this.open = true;
     this._denotationChar = denotationChar;
-  }
+  };
 
   private _doFuzzySearchPersons = async ({
     searchTerm,
@@ -159,11 +160,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         this.members = res.sortableModels;
       });
     }
-  }
+  };
 
   @action
   private _selectHandler(vm: MentionViewModel) {
-    return function () {
+    return function() {
       if (!vm.open || !vm.members.length) {
         return true;
       }
@@ -191,11 +192,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this._selectHandler(this).apply({
       quill: (document.querySelector(query) as any).__quill,
     });
-  }
+  };
 
   @action
   private _escapeHandler(vm: MentionViewModel) {
-    return function () {
+    return function() {
       if (vm.open) {
         vm.open = false;
       }
@@ -205,7 +206,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @action
   private _upHandler(vm: MentionViewModel) {
-    return function () {
+    return function() {
       const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + size - 1) % size;
       vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
@@ -215,7 +216,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @action
   private _downHandler(vm: MentionViewModel) {
-    return function () {
+    return function() {
       const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + 1) % size;
       vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;

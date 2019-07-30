@@ -13,13 +13,18 @@ import { AccountService } from '../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { PRESENCE } from '../constant/Presence';
 import { ChangeModel } from '../../sync/types';
+import { PresenceActionController } from '../controller/PresenceActionController';
 
 class PresenceService extends EntityBaseService<Presence> {
   private _presenceController: PresenceController;
-
+  private _presenceActionController: PresenceActionController;
   constructor(threshold: number = 29, interval: number = 200) {
-    super({ isSupportedCache: false });
-    this._presenceController = new PresenceController(threshold, interval);
+    super({ isSupportedCache: true });
+    this._presenceController = new PresenceController(
+      this.getEntityCacheController(),
+      threshold,
+      interval,
+    );
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PRESENCE]: this.presenceHandleData,
@@ -27,6 +32,15 @@ class PresenceService extends EntityBaseService<Presence> {
         [SERVICE.STOPPING_SOCKET]: this.resetPresence,
       }),
     );
+  }
+
+  getPresenceActionController(): PresenceActionController {
+    if (!this._presenceActionController) {
+      this._presenceActionController = new PresenceActionController(
+        this._presenceController,
+      );
+    }
+    return this._presenceActionController;
   }
 
   saveToMemory(presences: Presence[]): void {
@@ -62,14 +76,18 @@ class PresenceService extends EntityBaseService<Presence> {
       presences,
       changeMap,
     );
-  }
+  };
 
   handleSocketStateChange = ({ state }: { state: string }) => {
     this._presenceController.handleSocketStateChange(state);
-  }
+  };
 
   resetPresence = () => {
     this._presenceController.resetPresence();
+  };
+
+  async setPresence(status: PRESENCE) {
+    await this.getPresenceActionController().setPresence(status);
   }
 }
 

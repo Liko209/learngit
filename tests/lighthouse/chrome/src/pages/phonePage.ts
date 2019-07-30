@@ -4,8 +4,8 @@
  */
 import { Page } from "./page";
 import * as bluebird from "bluebird";
-import { PptrUtils } from '../utils';
-import { WebphoneSession } from 'webphone-client';
+import { WebPhone } from '../webphone';
+import { PptrUtils, TelephonyUtils } from '../utils';
 import { Config } from '../config';
 
 class PhonePage extends Page {
@@ -13,7 +13,7 @@ class PhonePage extends Page {
 
   private telephonyMinBtn: string = 'button[data-test-automation-id="telephony-minimize-btn"]';
 
-  private voiceMailTab: string = 'div[data-test-automation-id="phone-tab-voicemail"]';
+  private voiceMailTab: string = 'div[data-test-automation-id="phone-tab-voicemail"] p';
 
   private voiceMailItem: string = 'div[data-test-automation-class="voicemail-item"]';
 
@@ -34,36 +34,17 @@ class PhonePage extends Page {
     for (let i = 701; i <= 708; i++) {
       extension = i.toFixed(0);
 
-      if (Config.jupiterPin === extension) {
+      if (Config.jupiterPin !== extension) {
         this.otherExtensions.push(extension);
       }
     }
   }
 
-  private async _getSession(): Promise<WebphoneSession> {
+  private async _getPhone(): Promise<WebPhone> {
     let index = parseInt((Math.random() * 1000).toFixed(0));
     let extension: string = this.otherExtensions[index % this.otherExtensions.length];
 
-    let retryCnt = 5, session;
-    while (retryCnt-- > 0) {
-      try {
-        session = new WebphoneSession(Config.webPhoneUrl, Config.webPhoneEnv, {
-          phoneNumber: Config.jupiterUser,
-          extension,
-          password: Config.jupiterPassword,
-          mediaType: 'Tone',
-          frequency: 440
-        });
-
-        await session.init();
-      } catch {
-      }
-
-      if (session) {
-        return session;
-      }
-    }
-    return undefined;
+    return new WebPhone(Config.jupiterUser, extension);
   }
 
   async waitForCompleted(): Promise<boolean> {
@@ -76,9 +57,49 @@ class PhonePage extends Page {
     return await PptrUtils.waitForSelector(page, this.callHistoryAllBtn);
   }
 
+  async lookupRecentCallLog(): Promise<void> {
+    let page = await this.page();
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="telephony-dialpad-btn"]');
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="recentCallBtn"]', { timeout: 3000 });
+
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="dialer-container"] div[data-test-automation-id="virtualized-list"]', { timeout: 3000 })
+
+    await PptrUtils.click(page, 'div[data-test-automation-id="dialer-container"] button[data-test-automation-id="telephony-dialpad-btn"]');
+  }
+
+  async createCallLog(): Promise<void> {
+    let page = await this.page();
+
+    let session = await this._getPhone();
+
+    try {
+      await session.makeCall(Config.jupiterUser, Config.jupiterPin);
+      await PptrUtils.click(page, 'button[data-test-automation-id="telephony-answer-btn"]', { timeout: 10000 });
+      await bluebird.delay(3000);
+      await PptrUtils.click(page, 'button[data-test-automation-id="telephony-end-btn"]', { timeout: 3000 });
+    } catch {
+      return;
+    } finally {
+      await session.destroy();
+      await PptrUtils.click(page, this.telephonyMinBtn, { timeout: 3000 });
+    }
+  }
+
+  async deleteCallLog(): Promise<void> {
+    let page = await this.page();
+    await PptrUtils.hover(page, 'div[data-test-automation-class="call-history-item"]');
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="calllog-delete-button"]', { timeout: 3000 });
+
+    await PptrUtils.click(page, 'button[data-test-automation-id="deleteCallLogOkButton"]', { timeout: 3000 });
+  }
+
 
   async enterVoiceMailTab(): Promise<void> {
     let page = await this.page();
+    await bluebird.delay(2000);
 
     await PptrUtils.click(page, this.voiceMailTab);
 
@@ -88,29 +109,21 @@ class PhonePage extends Page {
   async createVoiceMail(): Promise<void> {
     let page = await this.page();
 
-    let session = await this._getSession();
-    if (!session) {
-      await bluebird.delay(15000);
-      await PptrUtils.click(page, this.telephonyMinBtn, { timeout: 3000 });
-      return;
-    }
+    await PptrUtils.click(page, 'button[data-test-automation-id="telephony-dialpad-btn"]');
 
-    try {
-      await session.makeCall([Config.jupiterUser, '#', Config.jupiterPin].join(''))
-    } catch {
-      await bluebird.delay(15000);
-      await PptrUtils.click(page, this.telephonyMinBtn, { timeout: 3000 });
-      return;
-    }
+    let session = await this._getPhone();
+
+    await session.makeCall(Config.jupiterUser, Config.jupiterPin);
 
     await PptrUtils.click(page, this.toVoiceMailBtn);
 
-    await bluebird.delay(15000);
+    await bluebird.delay(20000);
 
-    try {
-      await session.hangup();
-    } catch (err) {
-    }
+    await session.hangup();
+
+    await bluebird.delay(2000);
+
+    await session.destroy();
 
     await PptrUtils.click(page, this.telephonyMinBtn, { timeout: 3000 });
   }

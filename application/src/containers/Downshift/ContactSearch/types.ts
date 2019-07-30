@@ -12,10 +12,11 @@ type SelectedMember = {
 };
 
 type ContactSearchProps = {
-  groupId?: number;
-  onSelectChange?: (item: any) => void;
   label: string;
   placeholder: string;
+  prefillMembers?: number[];
+  groupId?: number;
+  onSelectChange?: (item: any) => void;
   error?: boolean;
   helperText?: string;
   errorEmail?: string;

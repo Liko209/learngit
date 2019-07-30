@@ -125,7 +125,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
       role="combobox"
     >
       <div
-        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        className="MuiFormControl-root MuiTextField-root c4 c5 MuiFormControl-fullWidth"
         onKeyDown={[Function]}
       >
         <label
@@ -173,7 +173,7 @@ exports[`Storyshots Pattern/SearchFilter SearchFilter: Pattern/SearchFilter Sear
       role="combobox"
     >
       <div
-        className="MuiFormControl-root MuiFormControl-fullWidth c4 c5"
+        className="MuiFormControl-root MuiTextField-root c4 c5 MuiFormControl-fullWidth"
         onKeyDown={[Function]}
       >
         <label

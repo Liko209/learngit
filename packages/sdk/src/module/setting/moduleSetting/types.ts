@@ -38,6 +38,7 @@ enum SettingEntityIds {
   Phone_SpeakerSource,
   Phone_RingerSource,
   Phone_Volume,
+  Phone_E911,
   Notification_DirectMessages,
   Notification_Mentions,
   Notification_Teams,
@@ -47,6 +48,11 @@ enum SettingEntityIds {
   Notification_IncomingCalls,
   Notification_MissCallAndNewVoiceMails,
   Notification_NewMessageBadgeCount,
+  Audio_TeamMessages,
+  Audio_DirectMessage,
+  Audio_Mentions,
+  Audio_IncomingCalls,
+  Audio_NewVoicemail,
 }
 
 export { IUserSettingHandler, SettingEntityIds, IModuleSetting };
