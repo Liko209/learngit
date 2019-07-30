@@ -35,7 +35,7 @@ class E911ViewComponent extends Component<Props> {
       value,
       handleFieldChange,
     } = this.props;
-    const { stateName } = value;
+    const { stateName, state } = value;
     return stateList.length > 0 ? (
       <JuiLineSelect
         // menuProps={this.lineSelectProps}
@@ -63,6 +63,7 @@ class E911ViewComponent extends Component<Props> {
           maxLength: 100,
           'data-test-automation-id': 'e911-stateProvince',
         }}
+        value={state}
         onChange={handleFieldChange('state')}
       />
     );
@@ -91,7 +92,9 @@ class E911ViewComponent extends Component<Props> {
           Confirm address for emergency calls
         </JuiDialogTitle>
         <JuiDialogContent>
-          <E911Description>{t('telephony.e911.dialogDescription')}</E911Description>
+          <E911Description>
+            {t('telephony.e911.dialogDescription')}
+          </E911Description>
           <JuiTextField
             id={`${t('telephony.e911.customerName')} *`}
             label={`${t('telephony.e911.customerName')} *`}

@@ -46,7 +46,6 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       (value: E911SettingInfo, dispose: any) => {
         if (value) {
           const cloneValue = { ...value };
-          delete cloneValue.country;
           this.value = cloneValue;
           this.getCountryInfo();
           dispose();
@@ -78,6 +77,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     if (this.stateList.length > 0) {
       checkField.push('state');
     }
+
     return checkField.some((field: string) => !this.value[field]);
   }
 
@@ -85,19 +85,28 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
-    this.saveStateOrCountry('state', stateList[0]);
+    if (stateList.length > 0) {
+      this.saveStateOrCountry('state', stateList[0]);
+    }
   }
 
   @action
   async getCountryInfo() {
-    const [countryList, currentCountry] = await Promise.all([
-      this.rcInfoService.getCountryList(),
-      this.rcInfoService.getCurrentCountry(),
-    ]);
+    const countryList = await this.rcInfoService.getCountryList();
     this.countryList = countryList;
-    const current = currentCountry.name ? currentCountry : countryList[0];
-    this.saveStateOrCountry('country', current);
-    this.getState(current.id);
+    const { countryName } = this.value;
+    let currentCountry;
+    if (countryName) {
+      currentCountry = this.countryList.find(
+        (item: Country) => item.name === countryName,
+      );
+    } else {
+      currentCountry = await this.rcInfoService.getCurrentCountry();
+    }
+    if (currentCountry) {
+      this.saveStateOrCountry('country', currentCountry);
+      this.getState(currentCountry.id);
+    }
   }
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
