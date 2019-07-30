@@ -1,8 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/FileViewer/*.ts",
-      "./fixtures/ImageViewer/*.ts"
+      "./fixtures/Setting/Phone/GeneralSettings.ts"
     ],
     "browsers": [
       "selenium:chrome"
