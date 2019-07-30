@@ -94,7 +94,11 @@ class DashboardService {
         item.k = new DashboardPair(currentSummary.k, lastSummary.k, '');
         item.b = new DashboardPair(currentSummary.b, lastSummary.b, 'MB');
         item.startMemory = new DashboardPair(currentSummary.startMemory, lastSummary.startMemory, 'MB');
-        item.endMemory = new DashboardPair(currentSummary.endMemory, lastSummary.endMemory, 'MB');
+        if (lastSummary.startMemory && lastSummary.endMemory) {
+          item.memoryGrowth = new DashboardPair(currentSummary.endMemory - currentSummary.startMemory, lastSummary.endMemory - lastSummary.startMemory, 'MB');
+        } else {
+          item.memoryGrowth = new DashboardPair(currentSummary.endMemory - currentSummary.startMemory, undefined, 'MB');
+        }
       }
       items[scene.name] = item;
     }
@@ -446,15 +450,15 @@ class DashboardService {
       htmlArray.push('<div class="dashboard-item-info">Env : <span>', envInfo, '</span></div>');
       htmlArray.push('<div class="dashboard-item-info">', 'Number of executions : <span>', Config.sceneRepeatCount.toFixed(0), '</span></div>');
 
-      if (item.startMemory && item.endMemory) {
+      if (item.startMemory && item.memoryGrowth) {
         const memoryUrl = DashboardService.getIframeUrl(252, { name: key });
         htmlArray.push('<div class="dashboard-item-memory">',
           '<div><a href="', memoryUrl, '" target="_blank">Memory Trend</a></div>',
           'Start memory usage:', item.startMemory.formatMemoryForHtml(),
-          'Last js memory usage:', item.endMemory.formatMemoryForHtml(),
+          'JS memory growth:', item.memoryGrowth.formatMemoryForHtml(),
           '</div>');
         const resultOfStart = item.startMemory.formatMemoryForGlip();
-        const resultOfEnd = item.endMemory.formatMemoryForGlip();
+        const resultOfEnd = item.memoryGrowth.formatMemoryForGlip();
         let icon;
         if (resultOfStart.level === 'warn' || resultOfEnd.level === 'warn') {
           icon = _config.icons.warning;

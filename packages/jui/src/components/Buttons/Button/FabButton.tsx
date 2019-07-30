@@ -8,7 +8,7 @@ import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 import Fab, { FabProps as MuiFabProps } from '@material-ui/core/Fab';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { RuiCircularProgress } from 'rcui/components/Progress';
-
+import RootRef from '@material-ui/core/RootRef';
 import styled from '../../../foundation/styled-components';
 import { Palette } from '../../../foundation/theme/theme';
 import {
@@ -46,14 +46,16 @@ type ButtonProps = {
 };
 
 type JuiFabProps = Omit<
-MuiFabProps,
-'innerRef' | 'variant' | 'color' | 'size'
+  MuiFabProps,
+  'innerRef' | 'variant' | 'color' | 'size'
 > &
-ButtonProps;
+  ButtonProps;
 
 type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   colorName: string;
   colorScope: keyof Palette;
+  ref?: React.Ref<any>;
+  children: React.ReactNode;
 };
 
 type Size = 'small' | 'medium' | 'large' | 'moreLarge';
@@ -85,12 +87,6 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 
-const StyledMuiFab = styled(Fab)`
-  && {
-    min-height: 0;
-  }
-`;
-
 const WrappedMuiFab = (props: StyledFabButtonProps) => {
   const {
     color,
@@ -102,12 +98,9 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
     ...restProps
   } = props;
   return (
-    <StyledMuiFab
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...restProps}
-    >
+    <Fab TouchRippleProps={{ classes: touchRippleClasses }} {...restProps}>
       {loading ? <RuiCircularProgress size={20} /> : children}
-    </StyledMuiFab>
+    </Fab>
   );
 };
 
@@ -115,32 +108,53 @@ const StyledFabButton = styled<StyledFabButtonProps>(
   ({ showShadow, ...rest }) => <WrappedMuiFab {...rest} />,
 )`
   && {
-    background-color: ${({ theme, colorScope, colorName }) => palette(colorScope, colorName)({ theme })};
-    width: ${({ size = 'large', theme }) => width(buttonSizes[size])({ theme })};
-    height: ${({ size = 'large', theme }) => height(buttonSizes[size])({ theme })};
-    box-shadow: ${({ showShadow, theme, size = 'large' }) => (showShadow ? theme.shadows[buttonShadows[size]] : 'none')};
+    min-height: 0;
+    background-color: ${({ theme, colorScope, colorName }) =>
+      palette(colorScope, colorName)({ theme })};
+    width: ${({ size = 'large', theme }) =>
+      width(buttonSizes[size])({ theme })};
+    height: ${({ size = 'large', theme }) =>
+      height(buttonSizes[size])({ theme })};
+    box-shadow: ${({ showShadow, theme, size = 'large' }) =>
+      showShadow ? theme.shadows[buttonShadows[size]] : 'none'};
     ${typography('caption1')};
-    color: ${({ theme, colorScope, colorName }) => theme.palette.getContrastText(palette(colorScope, colorName)({ theme }))};
+    color: ${({ theme, colorScope, colorName }) =>
+      theme.palette.getContrastText(palette(colorScope, colorName)({ theme }))};
     &:hover,
     &:active {
-      background-color: ${({ theme, colorScope, colorName }) => darken(palette(colorScope, colorName)({ theme }), 0.1)};
+      background-color: ${({ theme, colorScope, colorName }) =>
+        darken(palette(colorScope, colorName)({ theme }), 0.1)};
     }
     .rippleVisible {
-      color: ${({ theme, colorScope, colorName }) => lighten(palette(colorScope, colorName)({ theme }), 0.2)};
+      color: ${({ theme, colorScope, colorName }) =>
+        lighten(palette(colorScope, colorName)({ theme }), 0.2)};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
     }
     &[disabled] {
-      background-color: ${({ theme, colorScope, colorName }) => palette(colorScope, colorName)({ theme })};
-      color: ${({ theme, colorScope, colorName }) => theme.palette.getContrastText(
-    palette(colorScope, colorName)({ theme }),
-  )};
-      box-shadow: ${({ showShadow, theme }) => (showShadow ? theme.shadows[16] : 'none')};
+      background-color: ${({ theme, colorScope, colorName }) =>
+        palette(colorScope, colorName)({ theme })};
+      color: ${({ theme, colorScope, colorName }) =>
+        theme.palette.getContrastText(
+          palette(colorScope, colorName)({ theme }),
+        )};
+      box-shadow: ${({ showShadow, theme }) =>
+        showShadow ? theme.shadows[16] : 'none'};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity};
     }
   }
 `;
+
+const StyledFabButtonWithRef = React.forwardRef(
+  (props: StyledFabButtonProps, ref) => {
+    const FabButton = <StyledFabButton {...props} />;
+    if (ref) {
+      return <RootRef rootRef={ref}>{FabButton}</RootRef>;
+    }
+    return FabButton;
+  },
+);
 
 const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   props: JuiFabProps,
@@ -173,22 +187,20 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   if (!disabled && !disableToolTip && tooltipTitle) {
     return (
       <RuiTooltip title={tooltipTitle} placement={tooltipPlacement}>
-        {
-          <StyledFabButton
-            colorScope={colorScope}
-            colorName={colorName}
-            size={size}
-            {...rest}
+        <StyledFabButtonWithRef
+          colorScope={colorScope}
+          colorName={colorName}
+          size={size}
+          {...rest}
+        >
+          <JuiIconography
+            symbol={icon}
+            iconColor={iconColor}
+            iconSize={iconSizesMap[size]}
           >
-            <JuiIconography
-              symbol={icon}
-              iconColor={iconColor}
-              iconSize={iconSizesMap[size]}
-            >
-              {iconName}
-            </JuiIconography>
-          </StyledFabButton>
-        }
+            {iconName}
+          </JuiIconography>
+        </StyledFabButtonWithRef>
       </RuiTooltip>
     );
   }

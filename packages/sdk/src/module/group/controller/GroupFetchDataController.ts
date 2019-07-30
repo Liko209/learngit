@@ -43,6 +43,8 @@ import { LAST_ACCESS_VALID_PERIOD } from '../../search/constants';
 import { GROUP_PERFORMANCE_KEYS } from '../config/performanceKeys';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { SortUtils } from 'sdk/framework/utils';
+import { PresenceService } from 'sdk/module/presence';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 /* eslint-disable */
 const LOG_TAG = '[GroupFetchDataController]';
@@ -120,7 +122,7 @@ export class GroupFetchDataController {
     const permissionService = ServiceLoader.getInstance<PermissionService>(
       ServiceConfig.PERMISSION_SERVICE,
     );
-    const maxCount = (permissionService.getFeatureFlag(
+    const maxCount = await (permissionService.getFeatureFlag(
       UserPermissionType.LEFT_RAIL_MAX_COUNT,
     )) as number;
     mainLogger
@@ -178,6 +180,62 @@ export class GroupFetchDataController {
       return Array.from(personIds);
     }
     return [];
+  }
+
+  async getMembersAndGuestIds(
+    groupId: number,
+    onlineFirst: boolean = true,
+    sortFunc?: (A: Person, B: Person) => number,
+  ) {
+    const memberIds: number[] = [];
+    const guestIds: number[] = [];
+    const group = await this.entitySourceController.getEntityLocally(groupId);
+    if (group) {
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      let members = await personService.getPersonsByIds(group.members);
+      const presenceService = ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      );
+      members = members.sort((lPerson: Person, rPerson: Person) => {
+        let result = 0;
+        if (onlineFirst) {
+          const lPresence = presenceService.getSynchronously(lPerson.id);
+          const rPresence = presenceService.getSynchronously(rPerson.id);
+          if (
+            lPresence && lPresence.presence === PRESENCE.AVAILABLE &&
+            (!rPresence || rPresence.presence !== PRESENCE.AVAILABLE)
+            ) {
+            result = -1;
+          } else if (
+            (!lPresence || lPresence.presence !== PRESENCE.AVAILABLE) &&
+            rPresence && rPresence.presence === PRESENCE.AVAILABLE
+            ) {
+            result = 1;
+          }
+        }
+        if (!result) {
+          if (sortFunc) {
+            result = sortFunc(lPerson, rPerson);
+          } else {
+            const lName = personService.getFullName(lPerson).toLowerCase();
+            const rName = personService.getFullName(rPerson).toLowerCase();
+            result = lName < rName ? -1 : lName > rName ? 1 : 0;
+          }
+        }
+        return result;
+      });
+      const guestCompanyIds = new Set(group.guest_user_company_ids);
+      members.forEach((person: Person) => {
+        if (guestCompanyIds.has(person.company_id)) {
+          guestIds.push(person.id);
+        } else {
+          memberIds.push(person.id);
+        }
+      })
+    }
+    return { memberIds, guestIds };
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {

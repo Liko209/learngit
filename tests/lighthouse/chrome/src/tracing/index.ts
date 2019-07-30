@@ -22,31 +22,70 @@ const parseTracing = async (file: string) => {
   model.tracingComplete();
 
   let key, location;
+  let idToNode = {};
+  let programNodeId = -1, idleNodeId = -1, rootNodeId = -1, gcNodeId = -1;
+  let timeMap = {};
+  let set = new Set();
   for (const process of model._processById.values()) {
     for (const thread of process._threads.values()) {
       for (let event of thread._events) {
-        if (event.name === 'FunctionCall'
-          && event.duration && event.duration > Config.functionTimeout
-          && event.args && event.args.data) {
-          let { url, lineNumber, columnNumber } = event.args.data;
-          if (url && lineNumber >= 0 && columnNumber >= 0) {
-            key = `${url}:${lineNumber}:${columnNumber}`;
+        if (event.name !== 'ProfileChunk') {
+          continue;
+        }
 
-            location = <LocationOfCode>{
-              url, line: lineNumber, column: columnNumber, during: event.duration
+        if (event.args.data.cpuProfile) {
+          if (event.args.data.cpuProfile.nodes) {
+            for (let node of event.args.data.cpuProfile.nodes) {
+              if (idToNode[node.id]) {
+                throw new Error('!!!!!');
+              }
+              idToNode[node.id] = node;
+              timeMap[node.id] = { time: 0, name: node.callFrame.functionName };
             }
-            if (!timeoutCodeMap[key]) {
-              timeoutCodeMap[key] = location;
+          }
+          if (event.args.data.cpuProfile.samples && event.args.data.timeDeltas) {
+            let samples = event.args.data.cpuProfile.samples;
+            let timeDeltas = event.args.data.timeDeltas;
+            if (samples.length !== timeDeltas.length) {
+              throw new Error('-----');
             }
-
-            if (timeoutCodeMap[key].during < location.during) {
-              timeoutCodeMap[key].during = location.during;
+            for (let i = 0; i < samples.length; i++) {
+              timeMap[samples[i]].time += timeDeltas[i];
             }
           }
         }
+        // if (event.name === 'FunctionCall'
+        //   && event.duration && event.duration > Config.functionTimeout
+        //   && event.args && event.args.data) {
+        //   let { url, lineNumber, columnNumber } = event.args.data;
+        //   if (url && lineNumber >= 0 && columnNumber >= 0) {
+        //     key = `${url}:${lineNumber}:${columnNumber}`;
+
+        //     location = <LocationOfCode>{
+        //       url, line: lineNumber, column: columnNumber, during: event.duration
+        //     }
+        //     if (!timeoutCodeMap[key]) {
+        //       timeoutCodeMap[key] = location;
+        //     }
+
+        //     if (timeoutCodeMap[key].during < location.during) {
+        //       timeoutCodeMap[key].during = location.during;
+        //     }
+        //   }
+        // }
       }
     }
   }
+
+  for (let key of Object.keys(timeMap)) {
+    timeMap[key].time = timeMap[key].time / 1000.0;
+  }
+
+  let a = [];
+  a.push(...set);
+  a.sort((a, b) => a - b);
+  console.log(idToNode)
+  console.log(timeMap)
 }
 
 const summariseTracing = async (): Promise<Array<SourceCode>> => {

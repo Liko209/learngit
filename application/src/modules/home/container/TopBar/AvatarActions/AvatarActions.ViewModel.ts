@@ -8,7 +8,7 @@ import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import storeManager from '@/store';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getPresence } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
 import { container } from 'framework';
@@ -22,8 +22,7 @@ import { UploadRecentLogs } from '@/modules/feedback';
 
 const globalStore = storeManager.getGlobalStore();
 
-class AvatarActionsViewModel extends StoreViewModel<Props>
-  implements ViewProps {
+class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
 
@@ -82,25 +81,26 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   };
 
   private _doLogout = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    );
+    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
     await accountService.logout();
     window.location.href = '/';
   };
 
   @action
   toggleAboutPage = (electronAppVersion?: string, electronVersion?: string) => {
-    electronAppVersion &&
-      globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
-    electronVersion &&
-      globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
+    electronAppVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
+    electronVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   };
 
   handleSendFeedback = () => {
     UploadRecentLogs.show();
   };
+
+  @computed
+  get presence() {
+    return getPresence(this.currentUserId);
+  }
 }
 
 export { AvatarActionsViewModel };

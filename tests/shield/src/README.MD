@@ -22,10 +22,9 @@
 
 ## utils
 
-> Some methods like mountTheme or registerModule
+> Some methods like mountTheme
 
 ```javascript
-import { registerModule } from 'shield/utils';
+import { mountWithTheme } from 'shield/utils';
 
-registerModule(config);
 ```

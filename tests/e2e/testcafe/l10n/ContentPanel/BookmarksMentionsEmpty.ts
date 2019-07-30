@@ -10,7 +10,7 @@ fixture('ContentPanel/BookmarksMentionsEmpty')
 test(formalName('Enter Bookmarks page and Mentions page display empty', ['P2','BookmarksMentionsEmpty','Mentions','V1.6','Hanny.Han']),
 async t => {
 
-	const loginUser = h(t).rcData.mainCompany.users[7];
+	const loginUser = h(t).rcData.mainCompany.users[2];
 	const app = new AppRoot(t);
 
 	await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`,async () => {

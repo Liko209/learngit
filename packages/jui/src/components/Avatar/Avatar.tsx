@@ -19,12 +19,14 @@ import {
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
 
 type JuiAvatarProps = {
   size?: Size;
   color?: string;
+  tooltip?: string;
   presence?: JSX.Element;
   cover?: boolean;
 } & Omit<MuiAvatarProps, 'innerRef'>;
@@ -104,20 +106,28 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, ...rest } = props;
+  const { presence, cover, tooltip, ...rest } = props;
 
   if (cover) {
-    return <StyledCoverAvatar {...rest} />;
+    return (
+      tooltip
+        ? <RuiTooltip title={tooltip}><StyledCoverAvatar {...rest} /></RuiTooltip>
+        : <StyledCoverAvatar {...rest} />
+    );
   }
 
-  return presence ? (
-    <StyledWrapper size={rest.size} style={rest.style}>
-      <StyledAvatar {...rest} />
-      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-    </StyledWrapper>
-  ) : (
-    <StyledAvatar {...rest} />
-  );
+  const avatar = presence
+    ? (
+      <StyledWrapper size={rest.size} style={rest.style}>
+        <StyledAvatar {...rest} />
+        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+      </StyledWrapper>
+    )
+    : <StyledAvatar {...rest} />
+
+  return tooltip
+    ? <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>
+    : avatar
 });
 
 JuiAvatar.defaultProps = {

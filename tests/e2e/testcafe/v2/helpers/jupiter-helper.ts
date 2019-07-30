@@ -1,6 +1,6 @@
 import 'testcafe';
 import * as _ from 'lodash';
-import { Selector } from 'testcafe';
+import { Selector, ClientFunction } from 'testcafe';
 import axios from 'axios';
 import { URL } from 'url';
 import { IUser } from '../models';
@@ -141,6 +141,8 @@ export class JupiterHelper {
     await this.t
       .navigateTo(url)
       .click(envSelect)
-      .click(envOption.withText(env));
+      .click(envOption.withText(env))
+      .expect(envSelect.value).eql(env);
+    await ClientFunction(() => localStorage.setItem('global.config.RUNNING_E2E', 'true'))();
   }
 }

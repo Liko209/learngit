@@ -38,6 +38,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 }
 
 .c2.c2 {
+  min-width: unset;
   margin-right: 8px;
   font-size: 1rem;
   font-weight: 400;
@@ -47,6 +48,7 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
 }
 
 .c0.c0 {
+  padding: 4px 16px 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -55,8 +57,15 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   height: auto;
   min-height: 32px;
   min-width: 112px;
-  padding: 4px 16px;
   box-sizing: border-box;
+}
+
+.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+  padding-right: 48px;
+}
+
+.c0.c0:focus {
+  background-color: rgba(0,0,0,0.12);
 }
 
 .c0.c0:hover {
@@ -106,11 +115,16 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
   word-break: break-word;
 }
 
+.c4.c4.multiline {
+  margin: 0;
+}
+
 <li
-  className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c0"
+  aria-disabled={false}
+  className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
   onBlur={[Function]}
   onClick={[Function]}
-  onContextMenu={[Function]}
+  onDragLeave={[Function]}
   onFocus={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -137,22 +151,19 @@ exports[`Storyshots Components/Menus 2 Lines MenuItem With Avatar: Components/Me
     </div>
   </div>
   <div
-    className="MuiListItemText-root c4"
+    className="MuiListItemText-root c4 MuiListItemText-multiline multiline"
   >
     <span
-      className="MuiTypography-root MuiTypography-body1 MuiListItemText-primary list-item-primary"
+      className="MuiTypography-root MuiListItemText-primary list-item-primary MuiTypography-body1"
     >
       Two-line item name
     </span>
     <p
-      className="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary MuiListItemText-secondary list-item-secondary"
+      className="MuiTypography-root MuiListItemText-secondary list-item-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
     >
       Secondary text
     </p>
   </div>
-  <span
-    className="MuiTouchRipple-root"
-  />
 </li>
 `;
 
@@ -183,6 +194,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c4.c4 {
+  padding: 4px 16px 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -191,8 +203,15 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   height: auto;
   min-height: 32px;
   min-width: 112px;
-  padding: 4px 16px;
   box-sizing: border-box;
+}
+
+.c4.c4[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+  padding-right: 48px;
+}
+
+.c4.c4:focus {
+  background-color: rgba(0,0,0,0.12);
 }
 
 .c4.c4:hover {
@@ -209,6 +228,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 .c1.c1 {
+  padding: 4px 16px 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -217,8 +237,15 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
   height: auto;
   min-height: 32px;
   min-width: 112px;
-  padding: 4px 16px;
   box-sizing: border-box;
+}
+
+.c1.c1[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+  padding-right: 48px;
+}
+
+.c1.c1:focus {
+  background-color: rgba(0,0,0,0.12);
 }
 
 .c1.c1:hover {
@@ -246,8 +273,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
 }
 
 <ul
-  className="MuiList-root MuiList-padding c0"
-  onBlur={[Function]}
+  className="MuiList-root c0 MuiList-padding"
   onKeyDown={[Function]}
   role="menu"
   style={
@@ -255,6 +281,7 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
       "width": "180px",
     }
   }
+  tabIndex={-1}
 >
   <div
     onMouseEnter={[Function]}
@@ -264,9 +291,10 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
       onMouseDown={[Function]}
     >
       <li
-        className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c1"
+        aria-disabled={false}
+        className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c1 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -294,17 +322,15 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
             />
           </svg>
         </span>
-        <span
-          className="MuiTouchRipple-root"
-        />
       </li>
     </span>
   </div>
   <li
-    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c4"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c4 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -315,18 +341,16 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="menuitem"
-    tabIndex={-1}
+    tabIndex={0}
   >
     My account
-    <span
-      className="MuiTouchRipple-root"
-    />
   </li>
   <li
-    className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c4"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c4 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
     onBlur={[Function]}
     onClick={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -337,12 +361,9 @@ exports[`Storyshots Components/Menus SubMenu: Components/Menus SubMenu 1`] = `
     onTouchMove={[Function]}
     onTouchStart={[Function]}
     role="menuitem"
-    tabIndex={-1}
+    tabIndex={0}
   >
     Logout
-    <span
-      className="MuiTouchRipple-root"
-    />
   </li>
 </ul>
 `;
@@ -367,6 +388,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 }
 
 .c2.c2 {
+  min-width: unset;
   margin-right: 8px;
   font-size: 1rem;
   font-weight: 400;
@@ -376,6 +398,7 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 }
 
 .c0.c0 {
+  padding: 4px 16px 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -384,8 +407,15 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
   height: auto;
   min-height: 32px;
   min-width: 112px;
-  padding: 4px 16px;
   box-sizing: border-box;
+}
+
+.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+  padding-right: 48px;
+}
+
+.c0.c0:focus {
+  background-color: rgba(0,0,0,0.12);
 }
 
 .c0.c0:hover {
@@ -402,10 +432,11 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
 }
 
 <li
-  className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c0"
+  aria-disabled={false}
+  className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
   onBlur={[Function]}
   onClick={[Function]}
-  onContextMenu={[Function]}
+  onDragLeave={[Function]}
   onFocus={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -437,14 +468,12 @@ exports[`Storyshots Components/Menus Text MenuItem With Icon: Components/Menus T
     </span>
   </div>
   Profile
-  <span
-    className="MuiTouchRipple-root"
-  />
 </li>
 `;
 
 exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuItem 1`] = `
 .c0.c0 {
+  padding: 4px 16px 4px 16px;
   font-size: 0.75rem;
   font-weight: 400;
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
@@ -453,8 +482,15 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   height: auto;
   min-height: 32px;
   min-width: 112px;
-  padding: 4px 16px;
   box-sizing: border-box;
+}
+
+.c0.c0[class*='MuiListItem-secondaryAction'][role='menuitem'] {
+  padding-right: 48px;
+}
+
+.c0.c0:focus {
+  background-color: rgba(0,0,0,0.12);
 }
 
 .c0.c0:hover {
@@ -471,10 +507,11 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
 }
 
 <li
-  className="MuiButtonBase-root MuiListItem-root MuiListItem-default MuiListItem-gutters MuiListItem-button MuiMenuItem-root MuiMenuItem-gutters c0"
+  aria-disabled={false}
+  className="MuiButtonBase-root MuiListItem-root MuiMenuItem-root c0 MuiMenuItem-gutters MuiListItem-gutters MuiListItem-button"
   onBlur={[Function]}
   onClick={[Function]}
-  onContextMenu={[Function]}
+  onDragLeave={[Function]}
   onFocus={[Function]}
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -488,8 +525,5 @@ exports[`Storyshots Components/Menus Text MenuItem: Components/Menus Text MenuIt
   tabIndex={0}
 >
   Profile
-  <span
-    className="MuiTouchRipple-root"
-  />
 </li>
 `;

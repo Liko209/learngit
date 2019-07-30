@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import MuiListItem from '@material-ui/core/ListItem';
+import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiCardContent from '@material-ui/core/CardContent';
 import MuiCardActions from '@material-ui/core/CardActions';
@@ -38,7 +38,10 @@ type FileIconProps = {
   size?: 'small';
 } & JuiIconographyProps;
 
-const FileItem = styled(MuiListItem)`
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = ListItemProps & { button?: any };
+
+const FileItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     margin: ${spacing(0, 0, 3, 0)};
     padding: ${spacing(4)};
@@ -95,6 +98,7 @@ const FileCard = styled(JuiCard)`
   width: ${width(ITEM_WIDTH)};
   height: ${height(FILE_CARD_HEIGHT)};
   margin: ${spacing(0, 3, 3, 0)};
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 `;
 
 type FileCardMediaWrapperProps = JuiCardMediaProps & { disabled?: boolean };
@@ -106,9 +110,9 @@ const FileCardMediaWrapper = ({
 
 const FileCardMedia = styled(FileCardMediaWrapper)`
   height: ${height(50)};
-  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   background-color: ${palette('accent', 'ash')};
-  opacity: ${({ disabled, theme }) => (disabled ? theme.palette.action.hoverOpacity * 3 : 1)};
+  opacity: ${({ disabled, theme }) =>
+    disabled ? theme.palette.action.hoverOpacity * 3 : 1};
 `;
 
 const FileCardContent = styled(MuiCardContent)`
@@ -170,7 +174,6 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
   position: absolute;
   bottom: 0;
   left: 0;
-  cursor: default;
   width: 100%;
   height: ${height(9)};
   padding: ${spacing(2)};
@@ -197,7 +200,8 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
     border-radius: 0;
     align-items: center;
     justify-content: center;
-    background-color: ${props => (props.transparent ? null : palette('grey', '100'))};
+    background-color: ${props =>
+      props.transparent ? null : palette('grey', '100')};
     box-shadow: none;
   }
   &:hover ${ImageFileInfo} {
@@ -205,15 +209,13 @@ const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   }
 `;
 
-const ImageMedia = styled(FileCardMedia)``;
-
 const FileExpandItemWrapper = styled.div`
   &:not(:last-child) {
     margin: ${spacing(0, 0, 2, 0)};
   }
 `;
 
-const FileExpandItem = styled(MuiListItem)`
+const FileExpandItem = styled<MuiListItemPropsFixed>(MuiListItem)`
   && {
     height: ${height(13)};
     padding: ${spacing(4)};
@@ -237,7 +239,6 @@ export {
   CardFileInfo,
   ImageCard,
   ImageFileInfo,
-  ImageMedia,
   FileExpandItem,
   FileExpandItemWrapper,
 };

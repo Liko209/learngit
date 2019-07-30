@@ -1,16 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleButton 1`] = `
-.c0.c0 {
+.c0.custom-root {
+  padding: 0px;
   width: 36px;
+  height: 20px;
 }
 
-.c0 .custom-switchBase {
+.c0.c0 .custom-switchBase {
   width: 36px;
   height: 20px;
   -webkit-transform: translateX(-8px);
   -ms-transform: translateX(-8px);
   transform: translateX(-8px);
+  padding: 0;
+}
+
+.c0.c0 .custom-switchBase:hover {
+  background: none;
 }
 
 .c0:hover .custom-bar {
@@ -25,13 +32,7 @@ exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleBu
   opacity: 1;
   background: #bfbfbf;
   border-radius: 10px;
-  padding: 4px;
-  width: 36px;
-  height: 18px;
-  box-sizing: border-box;
-  -webkit-transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
-  transform: translate(-50%,-50%);
+  height: 20px;
   margin: 0;
 }
 
@@ -45,17 +46,17 @@ exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleBu
   background: #fff;
 }
 
-.c0 .custom-checked {
+.c0.c0 .custom-checked {
   -webkit-transform: translateX(8px);
   -ms-transform: translateX(8px);
   transform: translateX(8px);
 }
 
-.c0 .custom-checked .custom-icon {
+.c0.c0 .custom-checked .custom-icon {
   background: #fff;
 }
 
-.c0 .custom-checked + .custom-bar {
+.c0.c0 .custom-checked + .custom-bar {
   opacity: 1;
 }
 
@@ -74,9 +75,10 @@ exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleBu
   className="MuiSwitch-root custom-root c0"
 >
   <span
-    className="MuiButtonBase-root MuiIconButton-root MuiPrivateSwitchBase-root MuiSwitch-switchBase custom-switchBase MuiSwitch-colorPrimary"
+    aria-disabled={false}
+    className="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-105 MuiSwitch-switchBase custom-switchBase MuiSwitch-colorPrimary"
     onBlur={[Function]}
-    onContextMenu={[Function]}
+    onDragLeave={[Function]}
     onFocus={[Function]}
     onKeyDown={[Function]}
     onKeyUp={[Function]}
@@ -92,10 +94,10 @@ exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleBu
       className="MuiIconButton-label"
     >
       <span
-        className="MuiSwitch-icon custom-icon"
+        className="MuiSwitch-thumb custom-icon"
       />
       <input
-        className="MuiPrivateSwitchBase-input"
+        className="PrivateSwitchBase-input-108 MuiSwitch-input"
         disabled={false}
         onChange={[Function]}
         type="checkbox"
@@ -103,7 +105,7 @@ exports[`Storyshots Components/Buttons ToggleButton: Components/Buttons ToggleBu
     </span>
   </span>
   <span
-    className="MuiSwitch-bar custom-bar"
+    className="MuiSwitch-track custom-bar"
   />
 </span>
 `;

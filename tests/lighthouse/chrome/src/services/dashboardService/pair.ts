@@ -40,8 +40,6 @@ class DashboardPair {
     let text = [];
     if (this.current) {
       text.push(this.current.toFixed(2), this.unit);
-    } else {
-      console.log('wuyx...', JSON.stringify(this));
     }
 
     if (this.last) {
@@ -88,13 +86,13 @@ class DashboardPair {
   }
 
   formatMemoryForHtml() {
-    let { color, text } = this._calculate(this.last, 100, 50, 1.1, 1.2);
+    let { color, text } = this._calculate(this.last, 500, 50, 1.1, 1.2);
 
     return `<span style="color:${color};margin-left:10px;margin-right:40px;">${text}</span>`
   }
 
   formatMemoryForGlip() {
-    let { icon, level } = this._calculate(this.last, 100, 50, 1.1, 1.2);
+    let { icon, level } = this._calculate(this.last, 500, 50, 1.1, 1.2);
     return { icon, level }
   }
 

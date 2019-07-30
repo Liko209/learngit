@@ -47,6 +47,9 @@ class BaseTeamSetting extends BaseWebComponent {
     return this.getSelectorByAutomationId('CreateTeamCanPost').parent('li');
   }
 
+  get mayAtTeamMentionDiv() {
+    return this.getSelectorByAutomationId('CreateTeamCanAtTeamMention').parent('li');
+  }
   get mayPinPostDiv() {
     return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
   }
@@ -82,7 +85,9 @@ class BaseTeamSetting extends BaseWebComponent {
   get mayPostMessageToggle() {
     return this.checkboxOf(this.mayPostMessageDiv);
   }
-
+  get mayAtTeamMentionToggle() {
+    return this.checkboxOf(this.mayAtTeamMentionDiv)
+  }
   get mayPinPostToggle() {
     return this.checkboxOf(this.mayPinPostDiv);
   }
@@ -124,6 +129,13 @@ class BaseTeamSetting extends BaseWebComponent {
 
   async turnOffMayPinPost() {
     await this.toggle(this.mayPinPostToggle, false);
+  }
+  async turnOnAtTeamMentionToggle() {
+    await this.toggle(this.mayAtTeamMentionToggle, true);
+  }
+
+  async turnOffAtTeamMentionToggle() {
+    await this.toggle(this.mayAtTeamMentionToggle, false);
   }
 }
 
