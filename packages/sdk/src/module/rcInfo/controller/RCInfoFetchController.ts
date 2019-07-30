@@ -18,6 +18,9 @@ import {
   GetBlockNumberListParams,
   BlockNumberItem,
   BLOCK_STATUS,
+  IDeviceRequest,
+  DeviceInfo,
+  DeviceRecord,
   IStateRequest,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
@@ -85,6 +88,11 @@ class RCInfoFetchController {
         JOB_KEY.FETCH_ROLE_PERMISSIONS,
         this.requestRCRolePermissions,
         this._shouldIgnoreFirstTime,
+      );
+      this.scheduleRCInfoJob(
+        JOB_KEY.FETCH_DEVICE_INFO,
+        this.requestDeviceInfo,
+        false,
       );
       this.scheduleRCInfoJob(
         JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
@@ -266,6 +274,15 @@ class RCInfoFetchController {
     notificationCenter.emit(RC_INFO.RC_SERVICE_INFO, accountServiceInfo);
   };
 
+  requestDeviceInfo = async (): Promise<void> => {
+    const request: IDeviceRequest = {
+      linePooling: 'Host',
+    };
+    const deviceInfo = await RCInfoApi.getDeviceInfo(request);
+    await this.rcInfoUserConfig.setDeviceInfo(deviceInfo);
+    notificationCenter.emit(RC_INFO.DEVICE_INFO, deviceInfo);
+  };
+
   requestBlockNumberList = async (): Promise<void> => {
     const params: GetBlockNumberListParams = {
       page: 1,
@@ -400,6 +417,11 @@ class RCInfoFetchController {
 
   async getAccountServiceInfo(): Promise<AccountServiceInfo | undefined> {
     return (await this.rcInfoUserConfig.getAccountServiceInfo()) || undefined;
+  }
+
+  async getDigitalLines(): Promise<DeviceRecord[]> {
+    const deviceInfo: DeviceInfo = await this.rcInfoUserConfig.getDeviceInfo();
+    return deviceInfo ? deviceInfo.records : [];
   }
 
   async getForwardingFlipNumbers(

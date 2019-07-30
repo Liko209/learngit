@@ -6,17 +6,17 @@
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { EditViewModel } from '../Edit.ViewModel';
-import { container, decorate, injectable } from 'framework';
+import { jupiter } from 'framework';
 import { IMessageService, IMessageStore } from '@/modules/message/interface';
 import { MessageService } from '@/modules/message/service';
 import { MessageStore } from '@/modules/message/store';
-decorate(injectable(), MessageService);
-container.bind(IMessageService).to(MessageService);
-decorate(injectable(), MessageStore);
-container.bind(IMessageStore).to(MessageStore);
+
+jupiter.registerService(IMessageService, MessageService);
+jupiter.registerService(IMessageStore, MessageStore);
+const ID = 1;
 let editViewModel: EditViewModel;
 beforeEach(() => {
-  editViewModel = new EditViewModel({ id: 1, disabled: true });
+  editViewModel = new EditViewModel({ id: ID, disabled: true });
 });
 
 describe('EditViewModel', () => {
@@ -32,12 +32,11 @@ describe('EditViewModel', () => {
   });
   describe('edit()', () => {
     it('should edit success [JPT-479]', () => {
+      const messageService: IMessageService = jupiter.get(IMessageService);
+      jest.spyOn(messageService, 'setEditInputFocus');
       editViewModel.edit();
-      expect(
-        getGlobalValue(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS).includes(
-          editViewModel._id,
-        ),
-      ).toBeTruthy();
+      expect(getGlobalValue(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS)).toContain(ID);
+      expect(messageService.setEditInputFocus).toHaveBeenCalledWith(ID);
     });
   });
 });

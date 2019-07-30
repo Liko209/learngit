@@ -283,11 +283,4 @@ describe('TelephonyService', () => {
       expect(engineController.getRingerDevicesList).toHaveBeenCalled();
     });
   });
-
-  describe('getEmergencyAddress', () => {
-    it('should call getEmergencyAddress', () => {
-      telephonyService.getEmergencyAddress();
-      expect(accountController.getEmergencyAddress).toHaveBeenCalled();
-    });
-  });
 });

@@ -23,7 +23,10 @@ describe('RcInfoSetting ', () => {
     ServiceLoader.getInstance = jest
       .fn()
       .mockImplementation((config: string) => {
-        return {};
+        return {
+          subscribeEmergencyAddressChange: jest.fn(),
+          subscribeSipProvChange: jest.fn(),
+        };
       });
   }
 
