@@ -20,7 +20,7 @@ const editItemSource: EditItemSourceType[][] = [
   ],
   [
     {
-      key: 'title',
+      key: 'jobTitle',
       automationId: 'editProfileTitleItem',
       maxLength: 200,
     },
@@ -32,9 +32,9 @@ const editItemSource: EditItemSourceType[][] = [
   ],
   [
     {
-      key: 'webpage',
+      key: 'homepage',
       automationId: 'editProfileWebpageItem',
-      error: 'webpageError',
+      error: 'homePageError',
       maxLength: 200,
       isLastItem: true,
     },
