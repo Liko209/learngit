@@ -20,7 +20,6 @@ type MentionViewProps = {
   selectHandler: Function;
   isEditMode?: boolean;
   isOneToOneGroup: boolean;
-  initIndex: number;
 };
 
 export { MentionProps, MentionViewProps };
