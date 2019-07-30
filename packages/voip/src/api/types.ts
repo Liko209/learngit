@@ -112,7 +112,7 @@ type RTCSipInfo = {
 };
 
 type RTCSipProvisionInfo = {
-  device?: RTCSipDevice;
+  device: RTCSipDevice;
   sipInfo: RTCSipInfo[];
   sipFlags: RTCSipFlags;
   sipErrorCodes?: string[];

@@ -742,6 +742,14 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('fileCardMedia', this.self);
   }
 
+  get fileItem() {
+    return this.getSelectorByAutomationId('fileCard', this.self);
+  }
+
+  get imageItem() {
+    return this.getSelectorByAutomationId('imageCard', this.self);
+  }
+
   get editTextArea() {
     return this.self.find('.ql-editor');
   }

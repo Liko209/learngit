@@ -27,6 +27,7 @@ jest.mock('../../controller/RCAccountInfoController');
 jest.mock('../../controller/RCCallerIdController');
 jest.mock('../../controller/RCPermissionController');
 jest.mock('../../controller/RegionInfoController');
+jest.mock('../../controller/RCDeviceController');
 jest.mock('sdk/module/account');
 jest.mock('../../controller/BlockNumberController');
 jest.mock('sdk/module/company');
@@ -391,6 +392,36 @@ describe('RCInfoService', () => {
         rcInfoService['getRCInfoController']().blockNumberController
           .isNumberBlocked,
       ).toHaveBeenCalledWith('1123');
+    });
+  });
+
+  describe('getDigitalLines()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.getDigitalLines();
+      expect(
+        rcInfoService['getRCInfoController']().getRCInfoFetchController()
+          .getDigitalLines,
+      ).toHaveBeenCalled();
+    });
+  });
+
+  describe('assignLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.assignLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .assignLine,
+      ).toHaveBeenCalledWith('1', 'test');
+    });
+  });
+
+  describe('updateLine()', () => {
+    it('should call controller with correct parameter', () => {
+      rcInfoService.updateLine('1', 'test');
+      expect(
+        rcInfoService['getRCInfoController']().getRCDeviceController()
+          .updateLine,
+      ).toHaveBeenCalledWith('1', 'test');
     });
   });
 

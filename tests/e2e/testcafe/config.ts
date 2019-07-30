@@ -86,6 +86,7 @@ const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities
 const DISABLE_SCREENSHOT = process.env.DISABLE_SCREENSHOT === 'true';
 const ENABLE_NOTIFICATION = process.env.ENABLE_NOTIFICATION === 'true';
 const TESTS_LOG = process.env.TESTS_LOG || `tests-${new Date().toISOString().replace(/[:]/gm, '-')}.log`;
+const DEBUG_ON_FAIL = process.env.DEBUG_ON_FAIL === 'true';
 
 const GIT_SOURCE_BRANCH = process.env.BRANCH;
 const GIT_TARGET_BRANCH = process.env.TARGET_BRANCH;
@@ -115,6 +116,7 @@ const RUNNER_OPTS = {
   LANGUAGE_CODE,
   DISABLE_SCREENSHOT,
   TESTS_LOG,
+  DEBUG_ON_FAIL,
 }
 
 // beat dashboard configuration
