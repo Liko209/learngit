@@ -42,6 +42,7 @@ jest.mock('../../Profile/Dialog/Group/Content/AddMembers', () => ({
 }));
 
 const props = {
+  init: jest.fn(),
   groupId: 123,
   group: {
     type: CONVERSATION_TYPES.TEAM,
