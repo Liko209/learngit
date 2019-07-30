@@ -15,6 +15,8 @@ import { IPartialModifyController } from 'sdk/framework/controller/interface/IPa
 import { Raw } from 'sdk/framework/model';
 import { ItemService } from 'sdk/module/item';
 import { HeadShotData } from '../entity/Person';
+import _ from 'lodash';
+import { transform } from 'sdk/service/utils';
 
 const MODULE_NAME = 'PersonActionController';
 
@@ -25,15 +27,18 @@ class PersonActionController {
   ) {}
 
   async editPersonalInfo(
-    basicInfo?: EditablePersonInfo,
+    incomingInfo?: EditablePersonInfo,
     headshotInfo?: HeadShotInfo,
   ) {
-    if (!basicInfo || (headshotInfo && !headshotInfo.file)) {
+    if (!incomingInfo || (headshotInfo && !headshotInfo.file)) {
       mainLogger
         .tags(MODULE_NAME)
-        .error('invalid profile data', { basicInfo, headshotInfo });
+        .error('invalid profile data', { incomingInfo, headshotInfo });
       return;
     }
+
+    const basicInfo = this._purifyProperties(incomingInfo);
+
     const currentPerson = await this._entitySourceController.get(
       this.currentUserGlipId(),
     );
@@ -64,8 +69,10 @@ class PersonActionController {
     const doUpdateEntity = async (updatedEntity: Person) => {
       const requestController = this._entitySourceController.getRequestController()!;
       const result = await requestController.put(updatedEntity);
-      mainLogger.tags(MODULE_NAME).log('update person result', result);
-      await this._entitySourceController.update(result);
+      const transformData = transform<Person>(result);
+      mainLogger.tags(MODULE_NAME).log('update person result', transformData);
+
+      await this._entitySourceController.update(transformData);
       return result;
     };
 
@@ -105,6 +112,17 @@ class PersonActionController {
     );
     const accountConfig = accountService.userConfig;
     return accountConfig.getGlipUserId();
+  }
+
+  // protected no dirty data to server
+  private _purifyProperties(basicInfo: EditablePersonInfo) {
+    return _.pick(basicInfo, [
+      'first_name',
+      'last_name',
+      'homepage',
+      'job_title',
+      'location',
+    ]);
   }
 }
 
