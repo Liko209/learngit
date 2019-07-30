@@ -5,40 +5,52 @@
 
 class Node {
   id: number;
+  eventId: string;
   name: string;
+  url: string;
+  scriptId: number;
+  lineNumber: number;
+  columnNumber: number;
+  callFrame: any;
   parent: Node;
+  children: { [key: number]: Node };
   selfTime: number;
   totalTime: number;
-  children: { [key: number]: Node };
-
   _isAnoymous: boolean;
 
-  constructor(id: number, name: string) {
+  constructor(eventId: string, id: number, callFrame: any) {
     this.id = id;
-    if (!name || name === '') {
+    this.eventId = eventId;
+    this.callFrame = callFrame;
+    this.name = callFrame.functionName;
+    this.url = callFrame.url;
+    this.scriptId = callFrame.scriptId;
+    this.lineNumber = callFrame.lineNumber;
+    this.columnNumber = callFrame.columnNumber;
+
+    if (!this.name || this.name === '') {
       this.name = '(anoymous)';
       this._isAnoymous = true;
     } else {
-      this.name = name;
       this._isAnoymous = false;
     }
+
     this.selfTime = 0;
     this.totalTime = 0;
+
     this.children = {};
   }
 
-  static copy(node: Node): Node {
-    let mirror = new Node(node.id, node.name);
+  key(): string {
+    // let scriptId = this.scriptId || 0;
+    // let line = this.lineNumber || 0;
+    // let column = this.columnNumber || 0;
 
-    for (let key of Object.keys(node.children)) {
-      mirror.children[key] = node.children[key];
-    }
-
-    return mirror;
+    return [this.eventId, this.id].join('_');
   }
 
   isTop(): boolean {
-    return !this.isSystem() && this.parent && this.parent.isRoot();
+    return !this.isSystem() && (!this.parent || this.parent.isRoot());
   }
 
   isSystem(): boolean {
@@ -46,7 +58,7 @@ class Node {
   }
 
   isRoot(): boolean {
-    return this.name === '(idle)';
+    return this.name === '(root)';
   }
 
   isProgram(): boolean {
@@ -58,7 +70,7 @@ class Node {
   }
 
   isIdle(): boolean {
-    return this.name === '(root)';
+    return this.name === '(idle)';
   }
 
   isAnoymous(): boolean {
