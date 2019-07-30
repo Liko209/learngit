@@ -48,6 +48,10 @@ describe('PersonEntityCacheController', () => {
         first_name: 'tom',
         email: 'user01@rc.com',
       },
+      {
+        id: 5,
+        email: 'user01@rc.com',
+      },
     ] as Person[]);
   }
   beforeEach(() => {
@@ -107,13 +111,6 @@ describe('PersonEntityCacheController', () => {
       prepareForPersonData();
     });
 
-    it('should return soundex value of display_name as expected when person has display_name', () => {
-      expect(personEntityCacheController.getSoundexById(2)).toEqual([
-        soundex('bruce'),
-        soundex('wang'),
-      ]);
-    });
-
     it('should return soundex value of first_name and last_name when person has first_name and last_name but no display_name', () => {
       expect(personEntityCacheController.getSoundexById(3)).toEqual([
         soundex('tom'),
@@ -122,7 +119,7 @@ describe('PersonEntityCacheController', () => {
     });
 
     it('should return soundex value of email as expected when person has no name', () => {
-      expect(personEntityCacheController.getSoundexById(4)).toEqual([
+      expect(personEntityCacheController.getSoundexById(5)).toEqual([
         soundex('user01@rc.com'),
       ]);
     });
@@ -134,8 +131,12 @@ describe('PersonEntityCacheController', () => {
       personEntityCacheController['_setSoundexValue'] = jest.fn();
       personEntityCacheController['_addPhoneNumbers'] = jest.fn();
       personEntityCacheController['putInternal']({ id: 10 } as any);
-      expect(personEntityCacheController['_setSoundexValue']).not.toHaveBeenCalled();
-      expect(personEntityCacheController['_addPhoneNumbers']).not.toHaveBeenCalled();
+      expect(
+        personEntityCacheController['_setSoundexValue'],
+      ).not.toHaveBeenCalled();
+      expect(
+        personEntityCacheController['_addPhoneNumbers'],
+      ).not.toHaveBeenCalled();
     });
 
     it('should not put to phone number cache and soundex cache when is invalid person', async () => {
@@ -143,10 +144,14 @@ describe('PersonEntityCacheController', () => {
       personEntityCacheController['_setSoundexValue'] = jest.fn();
       personEntityCacheController['_addPhoneNumbers'] = jest.fn();
       personEntityCacheController['putInternal']({ id: 10 } as any);
-      expect(personEntityCacheController['_addPhoneNumbers']).toHaveBeenCalledWith({
+      expect(
+        personEntityCacheController['_addPhoneNumbers'],
+      ).toHaveBeenCalledWith({
         id: 10,
       });
-      expect(personEntityCacheController['_setSoundexValue']).toHaveBeenCalledWith({
+      expect(
+        personEntityCacheController['_setSoundexValue'],
+      ).toHaveBeenCalledWith({
         id: 10,
       });
     });
@@ -163,12 +168,14 @@ describe('PersonEntityCacheController', () => {
         {
           id: 4,
           display_name: 'rock chen',
+          first_name: 'a',
+          last_name: 'b',
         },
       ];
       personEntityCacheController.updateEx(entities);
       expect(personEntityCacheController.getSoundexById(4)).toEqual([
-        soundex('rock'),
-        soundex('chen'),
+        soundex('A000'),
+        soundex('B000'),
       ]);
     });
 
@@ -176,7 +183,8 @@ describe('PersonEntityCacheController', () => {
       const entities = [
         {
           id: 5,
-          display_name: 'rock chen',
+          first_name: 'rock',
+          last_name: 'chen',
         },
       ];
       personEntityCacheController.updateEx(entities);

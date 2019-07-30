@@ -28,7 +28,6 @@ type MuiMenuItemPropsExtend = MuiMenuItemProps & {
 };
 
 const StyledRightWrapper = styled.div`
-  width: ${width(5)};
   height: ${height(5)};
   display: flex;
   align-items: center;
@@ -149,7 +148,6 @@ const StyledPresenceWrapper = styled.div`
 type JuiConversationListItemProps = {
   title: string;
   presence?: () => JSX.Element | null;
-  umi?: () => JSX.Element | undefined;
   indicator: JSX.Element | null;
   fontWeight?: 'bold' | 'normal';
   onClick?: (e: React.MouseEvent) => any;
@@ -174,7 +172,6 @@ const JuiConversationListItem: IConversationListItem = memo(
       title,
       indicator,
       presence,
-      umi,
       onClick,
       onMoreClick,
       component,
@@ -205,7 +202,6 @@ const JuiConversationListItem: IConversationListItem = memo(
           <StyledPresenceWrapper>{presence()}</StyledPresenceWrapper>
         )}
         <ItemText style={{ fontWeight }}>{title}</ItemText>
-        {umi && umi()}
         <StyledRightWrapper tabIndex={-1}>
           {indicator}
           <StyledIconButtonMore

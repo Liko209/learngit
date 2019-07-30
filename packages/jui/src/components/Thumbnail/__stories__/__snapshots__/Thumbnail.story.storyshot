@@ -6,7 +6,6 @@ exports[`Storyshots Components/Thumbnail Thumbnail: Components/Thumbnail Thumbna
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  cursor: auto;
 }
 
 <span

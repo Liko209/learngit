@@ -240,6 +240,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -579,6 +580,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -1181,6 +1183,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
@@ -1424,6 +1427,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}

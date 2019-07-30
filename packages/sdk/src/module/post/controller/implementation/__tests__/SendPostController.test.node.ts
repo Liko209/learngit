@@ -501,5 +501,14 @@ describe('SendPostController', () => {
         sendPostController['_convertTeamMentionToPlainText'](text),
       ).toEqual('@Team ojbk');
     });
+    it('should not convert Direct Mention', async () => {
+      const text =
+        "<a class='at_mention_compose' rel='{\"id\":2111}'>@Xiao Ming </a>ojbk";
+      expect(
+        sendPostController['_convertTeamMentionToPlainText'](text),
+      ).toEqual(
+        "<a class='at_mention_compose' rel='{\"id\":2111}'>@Xiao Ming </a>ojbk",
+      );
+    });
   });
 });

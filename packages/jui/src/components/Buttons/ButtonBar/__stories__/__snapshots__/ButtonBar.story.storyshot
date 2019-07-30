@@ -96,6 +96,7 @@ exports[`Storyshots Components/ButtonBar Checkbox Button Bar: Components/ButtonB
     <div
       className="c0"
       direction="horizontal"
+      onClick={[Function]}
       size="medium"
     >
       <div
@@ -419,6 +420,7 @@ exports[`Storyshots Components/ButtonBar Plain Icon Button Bar: Components/Butto
     <div
       className="c0"
       direction="horizontal"
+      onClick={[Function]}
       size="medium"
     >
       <button
@@ -699,6 +701,7 @@ exports[`Storyshots Components/ButtonBar Round Icon Button Bar: Components/Butto
     <div
       className="c0"
       direction="horizontal"
+      onClick={[Function]}
       size="medium"
     >
       <button
