@@ -143,7 +143,7 @@ def deployStage(Context context) {
         //    "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
         // unpack package
         sshCmd(deployTarget, context.deployCredentialId,
-            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
+            "tar -xvmf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
     }]}
 }
 

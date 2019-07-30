@@ -372,7 +372,7 @@ class BaseJob {
         jenkins.sh "tar -czvf ${tarball} -C ${sourceDir} ."  // pack
         ssh(targetUri, "rm -rf ${targetDir} || true && mkdir -p ${targetDir}".toString())  // clean target
         scp(tarball, targetUri, targetDir)
-        ssh(targetUri, "tar -xzvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball} && chmod -R 755 ${targetDir}".toString()) // unpack
+        ssh(targetUri, "tar -xzmvf ${targetDir}/${tarball} -C ${targetDir} && rm ${targetDir}/${tarball} && chmod -R 755 ${targetDir}".toString()) // unpack
     }
 
     void copyRemoteDir(URI remoteUri, String sourceDir, String targetDir) {
@@ -514,7 +514,7 @@ class JupiterJob extends BaseJob {
         String tarball = "testcafe-${context.head}.tar.gz".toString()
         jenkins.sh "find ${E2E_DIRECTORY} -mindepth 1 -maxdepth 1 -not -name node_modules | xargs rm -rf"
         jenkins.unstash name: tarball
-        jenkins.sh "tar -xzvf ${tarball}"
+        jenkins.sh "tar -xmzvf ${tarball}"
     }
 
     void collectFacts() {
@@ -539,6 +539,9 @@ class JupiterJob extends BaseJob {
     }
 
     void checkout() {
+        // keep node_modules to speed up build process
+        // keep a lock file to help us decide if we need to upgrade dependencies
+        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
         jenkins.checkout ([
             $class: 'GitSCM',
             branches: [[name: "${context.gitlabSourceNamespace}/${context.gitlabSourceBranch}"]],
@@ -566,13 +569,8 @@ class JupiterJob extends BaseJob {
                 ]
             ]
         ])
-        // keep node_modules to speed up build process
-        // keep a lock file to help us decide if we need to upgrade dependencies
-        jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
-        // jenkins.sh "git clean -xdf"  // work around errors
 
         // update runtime context
-
         // get head
         context.head = jenkins.sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
 
