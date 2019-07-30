@@ -466,11 +466,11 @@ class TelephonyService {
             dismissible: true,
           });
         }
-        return;
+        return false;
       }
     }
 
-    this._makeCall(toNumber, callback);
+    return this._makeCall(toNumber, callback);
   };
 
   directCall = (toNumber: string) => {
