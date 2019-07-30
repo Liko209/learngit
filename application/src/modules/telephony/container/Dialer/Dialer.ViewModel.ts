@@ -53,11 +53,6 @@ class DialerViewModel extends StoreViewModel<DialerProps> implements DialerViewP
     );
   }
 
-  @computed
-  get isDetached() {
-    return this._telephonyStore.isDetached;
-  }
-
   @action
   showConfirmDialog() {
     alertE911Dialog({
