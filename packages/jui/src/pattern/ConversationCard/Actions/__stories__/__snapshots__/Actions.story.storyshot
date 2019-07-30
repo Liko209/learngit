@@ -226,6 +226,7 @@ Array [
   >
     <button
       aria-describedby={null}
+      aria-label="refresh"
       className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}
@@ -489,6 +490,7 @@ Array [
   >
     <button
       aria-describedby={null}
+      aria-label="delete"
       className="MuiButtonBase-root MuiIconButton-root c1"
       disabled={false}
       onBlur={[Function]}

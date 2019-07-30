@@ -110,6 +110,7 @@ exports[`Storyshots Components/Buttons/IconButtons plain: Components/Buttons/Ico
   >
     <button
       aria-describedby={null}
+      aria-label="add"
       className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
       disabled={false}
       onBlur={[Function]}
@@ -280,6 +281,7 @@ exports[`Storyshots Components/Buttons/IconButtons round: Components/Buttons/Ico
   >
     <button
       aria-describedby={null}
+      aria-label="I'm a star"
       className="MuiButtonBase-root MuiIconButton-root iconButtonWrapper c1"
       disabled={false}
       onBlur={[Function]}
