@@ -13,7 +13,7 @@ import { transform } from '../../../service/utils';
 import _ from 'lodash';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { PostDao } from '../dao';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class DiscontinuousPostController {

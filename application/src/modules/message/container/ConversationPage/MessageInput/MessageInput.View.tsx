@@ -189,6 +189,7 @@ class MessageInputViewComponent extends Component<
 
     return (
       <JuiMessageInput
+        data-test-automation-id="message-input"
         value={draft}
         onChange={contentChange}
         error={error ? t(error) : error}

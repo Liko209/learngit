@@ -2,6 +2,10 @@ const baseConfig = require('./jest-base.config');
 
 module.exports = {
   ...baseConfig,
+  displayName: {
+    name: 'UT',
+    color: 'blue',
+  },
   testMatch: [`${process.env.APP}/src/**/__test?(s)__/**/*.test.(j|t)s?(x)`],
   setupFiles: [
     '<rootDir>/config/jsdom.js',
@@ -10,5 +14,5 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['<rootDir>/config/setupTest.js'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  testEnvironment: 'jsdom',
+  testEnvironment: 'jest-environment-jsdom-fourteen',
 };

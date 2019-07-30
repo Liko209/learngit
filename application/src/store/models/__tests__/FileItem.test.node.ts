@@ -7,7 +7,7 @@
 import FileItemModel from '../FileItem';
 import { test, testable } from 'shield';
 import { PostService } from 'sdk/module/post';
-import { mockService } from 'shield/sdk';
+import { mockService } from 'shield/sdk/mockService';
 import { ServiceConfig } from 'sdk/module/serviceLoader';
 
 describe('FileItemModel', () => {
@@ -251,7 +251,7 @@ describe('FileItemModel', () => {
       await fileItemModel.getDirectRelatedPostInGroup(1);
       const result = await fileItemModel.getDirectRelatedPostInGroup(1);
       expect(result).toBe(123);
-      expect(postService.getLatestPostIdByItem).toBeCalledTimes(1);
+      expect(postService.getLatestPostIdByItem).toHaveBeenCalledTimes(1);
       done();
     }
   }

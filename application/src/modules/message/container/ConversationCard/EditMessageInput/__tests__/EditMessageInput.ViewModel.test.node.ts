@@ -140,7 +140,19 @@ describe('EditMessageInputViewModel', () => {
       editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
       expect(postService.editPost).not.toBeCalled();
     });
-
+    it('Delete the message after deleting all content in edit box. [JPT-2547]', () => {
+      const markdownFromDeltaRes = {
+        content: '',
+        mentionsIds: [],
+      };
+      const that = mockThis(markdownFromDeltaRes);
+      // @ts-ignore
+      markdownFromDelta = jest.fn().mockReturnValue(markdownFromDeltaRes);
+      jest.spyOn(editMessageInputViewModel, '_handleDelete');
+      const handler = enterHandler.bind(that);
+      handler();
+      expect(editMessageInputViewModel._handleDelete).toBeCalled();
+    });
     it('should edit post failure when content is illegal', () => {
       markdownFromDelta.mockReturnValue({
         content: CONTENT_ILLEGAL,
@@ -161,17 +173,15 @@ describe('EditMessageInputViewModel', () => {
       expect(postService.editPost).not.toBeCalled();
     });
 
-    it('Failed to edit post due to network disconnection. [JPT-1824]',  () => {
-      postService.editPost.mockImplementationOnce(() => {
+    it('Failed to edit post due to network disconnection. [JPT-1824]', async () => {
+      postService.editPost.mockImplementation(async () => {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
       });
       markdownFromDelta.mockReturnValue({
         content: 'text',
         mentionsIds: [],
       });
-
-      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
-
+      await editMessageInputViewModel['_handleEditPost']('', []);
       expect(postService.editPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -181,15 +191,14 @@ describe('EditMessageInputViewModel', () => {
     });
 
     it('Failed to edit post due to unexpected backend issue. [JPT-1823]', async () => {
-      postService.editPost.mockImplementationOnce(() => {
+      postService.editPost.mockImplementation(async () => {
         throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
       });
       markdownFromDelta.mockReturnValue({
         content: 'text',
         mentionsIds: [],
       });
-      editMessageInputViewModel.keyboardEventHandler.enter.handler.call(element);
-      
+      await editMessageInputViewModel['_handleEditPost']('', []);
       expect(postService.editPost).toBeCalled();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({

@@ -390,15 +390,20 @@ sfdasfasd`);
       jest.spyOn(i18n, 'default').mockResolvedValue(translation);
     });
     it('should build title and body for one2one conversation', async () => {
-      const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionOthers),
-        { userDisplayName: names.userDisplayName },
-        {
+      const datum = {
+        post: new PostModel(postWithMentionOthers),
+        person: { userDisplayName: names.userDisplayName },
+        group: {
           members: [1, 2],
           displayName: names.teamDisplayName,
           isTeam: false,
           type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
         },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
+      const val = await notificationManager.buildNotificationBodyAndTitle(
+        datum,
+        type,
       );
       expect(val).toEqual({
         title: names.teamDisplayName,
@@ -406,10 +411,15 @@ sfdasfasd`);
       });
     });
     it('should build title and body for group and team conversation', async () => {
+      const datum = {
+        post: new PostModel(postWithMentionOthers),
+        person: { userDisplayName: names.userDisplayName },
+        group: { members: [1, 2, 3], displayName: names.teamDisplayName },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
       const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionOthers),
-        { userDisplayName: names.userDisplayName },
-        { members: [1, 2, 3], displayName: names.teamDisplayName },
+        datum,
+        type,
       );
       expect(i18n.default).toHaveBeenCalledTimes(1);
       expect(i18n.default).toHaveBeenCalledWith(
@@ -438,10 +448,15 @@ sfdasfasd`);
       });
     });
     it('should build title and body for mentioned conversation', async () => {
+      const datum = {
+        post: new PostModel(postWithMentionMe),
+        person: { userDisplayName: names.userDisplayName },
+        group: { members: [1, 2, 3], displayName: names.teamDisplayName },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
       const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionMe),
-        { userDisplayName: names.userDisplayName },
-        { members: [1, 2, 3], displayName: names.teamDisplayName },
+        datum,
+        type,
       );
       expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
