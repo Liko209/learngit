@@ -2,7 +2,7 @@ import { setupCase, teardownCase } from "../../init";
 import { BrandTire, SITE_URL } from "../../config";
 import { h } from "../../v2/helpers";
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { addOneCallLogFromGuest } from "../../fixtures/PhoneTab/CallHistory/utils";
+import { addOneMissCallLogFromAnotherUser } from "../../fixtures/PhoneTab/CallHistory/utils";
 import { formalName } from "../../libs/filter";
 
 fixture('Phone/BlockAndUnblock')
@@ -50,7 +50,7 @@ test(formalName('Check block and unblock', ['P2', 'Phone', 'BlockAndUnblock', 'V
   });
 
   await h(t).withLog('And the guestUser call to loginUser', async () => {
-    await addOneCallLogFromGuest(t, guestUser, loginUser, app);
+    await addOneMissCallLogFromAnotherUser(t, guestUser, loginUser, app);
   });
 
   const callHistoryItem = callHistoryPage.callHistoryItemByNth(0);

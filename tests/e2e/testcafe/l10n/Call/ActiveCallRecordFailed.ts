@@ -16,14 +16,25 @@ test(formalName('Check Park for an active call', ['P2', 'Call', 'ActiveCallRecor
   let otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
-  //GLP-CI1-XMN
-  loginUser.company.number = '18772107725';
-  loginUser.extension = '101';
-  loginUser.password = 'Test!123';
+  if (SITE_ENV == 'XMN-UP') {
+    loginUser.company.number = '(888) 231-2542';
+    loginUser.extension = '101';
+    loginUser.password = 'Test!123';
 
-  otherUser.company.number = '18772107725';
-  otherUser.extension = '102';
-  otherUser.password = 'Test!123';
+    otherUser.company.number = '(888) 231-2542';
+    otherUser.extension = '102';
+    otherUser.password = 'Test!123';
+  } else {
+    //GLP-CI1-XMN
+    loginUser.company.number = '(866) 214-2268';
+    loginUser.extension = '101';
+    loginUser.password = 'Test!123';
+
+    otherUser.company.number = '(833) 214-1894';
+    otherUser.extension = '102';
+     otherUser.password = 'Test!123';
+  }
+
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -59,21 +70,24 @@ test(formalName('Check Park for an active call', ['P2', 'Call', 'ActiveCallRecor
   let otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
+  //Need account pool support
+  //For now, use fixed account to run this case
+
   if (SITE_ENV == 'XMN-UP') {
-    loginUser.company.number = '';
+    loginUser.company.number = '(888) 231-2632';
     loginUser.extension = '101';
     loginUser.password = 'Test!123';
 
-    otherUser.company.number = '';
+    otherUser.company.number = '(888) 231-2632';
     otherUser.extension = '102';
     otherUser.password = 'Test!123';
   } else {
     //GLP-CI1-XMN
-    loginUser.company.number = '18662141151';
+    loginUser.company.number = '(877) 214-6307';
     loginUser.extension = '101';
     loginUser.password = 'Test!123';
 
-    otherUser.company.number = '18662141151';
+    otherUser.company.number = '(877) 214-6307';
     otherUser.extension = '102';
     otherUser.password = 'Test!123';
   }
@@ -98,6 +112,7 @@ test(formalName('Check Park for an active call', ['P2', 'Call', 'ActiveCallRecor
   await h(t).withLog('And I click Record', async () => {
     await t.wait(1000);
     await t.click(telephonyDialog.recordToggle);
+    await t.wait(1000);
   })
 
   await h(t).log('Then I take screenshot', { screenshotPath: 'Jupiter_Call_ActiveCallRecordFailed_02'})

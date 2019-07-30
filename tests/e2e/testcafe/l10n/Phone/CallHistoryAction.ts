@@ -4,7 +4,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { ensuredOneCallLog } from '../../fixtures/PhoneTab/CallHistory/utils';
+import { ensuredOneMissCallLog } from '../../fixtures/PhoneTab/CallHistory/utils';
 
 fixture('Phone/CallHistoryAction')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -50,7 +50,7 @@ fixture('Phone/CallHistoryAction')
     });
 
     await h(t).withLog('And generate a new call log' ,async()=>{
-      await ensuredOneCallLog(t, otherUser, loginUser, app);
+      await ensuredOneMissCallLog(t, otherUser, loginUser, app);
       await h(t).reload();
       await callHistoryPage.ensureLoaded();
     })

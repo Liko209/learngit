@@ -16,6 +16,9 @@ test(formalName('Check Park for an active call', ['P2', 'Call', 'ActiveCallPark'
   let otherUser = h(t).rcData.mainCompany.users[5];
   const app = new AppRoot(t);
 
+  //Need account pool support
+  //For now, use fixed account to run this case
+
   if (SITE_ENV == 'XMN-UP') {
     loginUser.company.number = '(877) 226-2046';
     loginUser.extension = '101';
@@ -25,12 +28,12 @@ test(formalName('Check Park for an active call', ['P2', 'Call', 'ActiveCallPark'
     otherUser.extension = '102';
     otherUser.password = 'Test!123';
   } else {
-    //GLP-CI1-XMN
-    loginUser.company.number = '(833) 210-7501';
+    // GLP-CI1-XMN
+    loginUser.company.number = '(833) 214-1894';
     loginUser.extension = '101';
     loginUser.password = 'Test!123';
 
-    otherUser.company.number = '(833) 210-7501';
+    otherUser.company.number = '(833) 214-1894';
     otherUser.extension = '102';
     otherUser.password = 'Test!123';
   }
