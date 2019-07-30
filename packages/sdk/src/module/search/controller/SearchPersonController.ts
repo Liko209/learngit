@@ -28,8 +28,8 @@ import {
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
-import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation/src';
+import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
+import { mainLogger } from 'foundation';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
 
@@ -41,7 +41,7 @@ type MatchedInfo = {
 };
 
 class SearchPersonController {
-  constructor(private _searchService: ISearchService) { }
+  constructor(private _searchService: ISearchService) {}
 
   async doFuzzySearchPhoneContacts(
     options: FuzzySearchPersonOptions,
@@ -51,28 +51,53 @@ class SearchPersonController {
   }> {
     const performanceTracer = PerformanceTracer.start();
 
-    const persons = await this._doFuzzySearchPersons(options);
+    const persons = await this._doFuzzySearchPersons({
+      ...options,
+      ignoreEmail: true,
+    });
 
     const phoneContacts: PhoneContactEntity[] = [];
     const results = { phoneContacts, terms: persons.terms.searchKeyTerms };
 
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+    const myCompanyId = userConfig.getCurrentCompanyId();
     persons.sortableModels.forEach((sortablePerson: SortableModel<Person>) => {
-      sortablePerson.extraData &&
-        sortablePerson.extraData.forEach((phoneNumber: PhoneNumber) => {
+      const orderedPhoneNumbers = sortablePerson.extraData as PhoneNumber[]; // order as ext first
+      if (orderedPhoneNumbers && orderedPhoneNumbers.length) {
+        //for co-workers, we should only show matched extension
+        const nameMatchedOnly =
+          persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
+
+        let showExtensionOnly =
+          nameMatchedOnly &&
+          sortablePerson.entity.company_id === myCompanyId &&
+          orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
+
+        for (const phoneNumber of orderedPhoneNumbers) {
           if (
-            persons.terms.searchKeyFormattedTerms.validFormattedKeys.length ===
-            0 ||
+            nameMatchedOnly ||
             persons.terms.searchKeyFormattedTerms.validFormattedKeys.every(
               item => phoneNumber.id.includes(item.formatted),
             )
           ) {
-            results.phoneContacts.push({
-              phoneNumber,
-              id: `${sortablePerson.entity.id}.${phoneNumber.id}`,
-              person: sortablePerson.entity,
-            });
+            if (showExtensionOnly) {
+              if (phoneNumber.phoneNumberType === PhoneNumberType.Extension) {
+                results.phoneContacts.push(
+                  this._buildPhoneContact(phoneNumber, sortablePerson.entity),
+                );
+              } else {
+                break;
+              }
+            } else {
+              results.phoneContacts.push(
+                this._buildPhoneContact(phoneNumber, sortablePerson.entity),
+              );
+            }
           }
-        });
+        }
+      }
     });
     mainLogger.debug(
       'search_person',
@@ -84,6 +109,14 @@ class SearchPersonController {
 
     performanceTracer.end({ key: SEARCH_PERFORMANCE_KEYS.SEARCH_PHONE_NUMBER });
     return results;
+  }
+
+  private _buildPhoneContact(phoneNumber: PhoneNumber, person: Person) {
+    return {
+      phoneNumber,
+      person,
+      id: `${person.id}.${phoneNumber.id}`,
+    };
   }
 
   async doFuzzySearchPersons(
@@ -148,6 +181,7 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       asIdsOrder,
       recentFirst,
+      ignoreEmail,
     } = options;
 
     const sortFunc =
@@ -156,6 +190,7 @@ class SearchPersonController {
       excludeSelf,
       fetchAllIfSearchKeyEmpty,
       recentFirst,
+      ignoreEmail,
     );
 
     const genFormattedTermsFunc = (originalTerms: string[]) => {
@@ -297,6 +332,7 @@ class SearchPersonController {
     excludeSelf?: boolean,
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
+    ignoreEmail?: boolean,
   ) {
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
@@ -304,14 +340,14 @@ class SearchPersonController {
     const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
       ? await this._searchService.getRecentSearchRecordsByType(
-        RecentSearchTypes.PEOPLE,
-      )
+          RecentSearchTypes.PEOPLE,
+        )
       : undefined;
 
     const individualGroups = recentFirst
       ? ServiceLoader.getInstance<GroupService>(
-        ServiceConfig.GROUP_SERVICE,
-      ).getIndividualGroups()
+          ServiceConfig.GROUP_SERVICE,
+        ).getIndividualGroups()
       : undefined;
 
     const personService = ServiceLoader.getInstance<PersonService>(
@@ -373,6 +409,7 @@ class SearchPersonController {
               }
             }
           } else if (
+            !ignoreEmail &&
             person.email &&
             SearchUtils.isFuzzyMatched(
               person.email.toLowerCase(),
@@ -392,11 +429,11 @@ class SearchPersonController {
         }
         const recentViewTime = recentFirst
           ? this._getMostRecentViewTime(
-            person.id,
-            groupConfigService,
-            recentSearchedPersons!,
-            individualGroups!,
-          )
+              person.id,
+              groupConfigService,
+              recentSearchedPersons!,
+              individualGroups!,
+            )
           : 0;
         return {
           id: person.id,

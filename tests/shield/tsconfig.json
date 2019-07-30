@@ -5,10 +5,17 @@
     "target": "es6",
     "paths": {
       "@/*": ["../../application/src/*"],
+      "shield/*": ["./src/*"],
+      "foundation/*": ["../../packages/foundation/src/*"],
       "sdk/*": ["../../packages/sdk/src/*"],
       "jui/*": ["../../packages/jui/src/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*",
+    "src/**/*(.spec|.test).ts",
+    "src/**/__mocks__/*"
+  ]
 }

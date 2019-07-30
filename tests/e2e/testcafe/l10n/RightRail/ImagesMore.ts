@@ -54,7 +54,7 @@ test(formalName('Image files display more button on the right rail', ['P2', 'Mes
   const imagePreviewer = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('And I open image item and click more button', async() => {
 
-    await t.click(imageTab.nthItem(0).imageThumbnail)
+    await t.click(imageTab.nthItem(0).self)
     await t.click(imagePreviewer.moreButton);
   });
   await h(t).log('Then I capture a screenshot',{screenshotPath:'Jupiter_RightRail_ImagesMoreList'});

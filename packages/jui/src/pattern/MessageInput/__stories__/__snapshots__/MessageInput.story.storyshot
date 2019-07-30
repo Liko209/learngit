@@ -240,6 +240,7 @@ exports[`Storyshots Pattern/MessageInput Attachment Button: Pattern/MessageInput
   >
     <button
       aria-describedby={null}
+      aria-label="Attach file"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-test-automation-id="conversation-chatbar-attachment-button"
       disabled={false}
@@ -741,6 +742,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <button
                   aria-describedby={null}
+                  aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -833,6 +835,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <button
                   aria-describedby={null}
+                  aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -961,6 +964,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <button
                   aria-describedby={null}
+                  aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -1056,6 +1060,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <button
                   aria-describedby={null}
+                  aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}
@@ -1151,6 +1156,7 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
               >
                 <button
                   aria-describedby={null}
+                  aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
                   onBlur={[Function]}

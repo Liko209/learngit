@@ -1,0 +1,26 @@
+{
+  "host": "https://api.mixpanel.com",
+  "path": "/decide",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api.mixpanel.com",
+    "path": "/decide",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "statusText": "",
+    "data": {
+      "notifications": [],
+      "config": {
+        "enable_collect_everything": false
+      }
+    },
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache, no-store"
+    }
+  }
+}

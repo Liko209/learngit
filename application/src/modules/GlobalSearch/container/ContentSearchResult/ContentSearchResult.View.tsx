@@ -23,7 +23,7 @@ import { USED_HEIGHT, MIN_DIALOG_HEIGHT, MIN_HEIGHT_FIX } from './constants';
 import { JuiSizeDetector, Size } from 'jui/components/SizeDetector';
 
 type Props = ContentSearchResultViewProps &
-WithTranslation & { isShow: boolean };
+  WithTranslation & { isShow: boolean };
 
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
@@ -50,6 +50,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isShow,
       showResult,
       searchKey,
+      onSearchEnd,
       ...rest
     } = this.props;
     const { height } = this.state;

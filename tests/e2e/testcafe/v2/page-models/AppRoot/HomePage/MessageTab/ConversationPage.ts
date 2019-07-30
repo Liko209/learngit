@@ -42,6 +42,24 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class ProgressActions extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('cardHeaderRightSection');
+  }
+
+  get resendPost() {
+    return this.getSelectorByIcon('reload', this.self);
+  }
+
+  get editPost() {
+    return this.getSelectorByIcon('edit', this.self);
+  }
+
+  get deletePost() {
+    return this.getSelectorByIcon('delete', this.self);
+  }
+}
+
 class HeaderMoreMenu extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="menu"]');
@@ -712,6 +730,10 @@ export class PostItem extends BaseWebComponent {
     return this.getComponent(ActionBarMoreMenu);
   }
 
+  get progressActions() {
+    return this.getComponent(ProgressActions);
+  }
+
   get avatar() {
     return this.self.find(`[data-name="avatar"]`);
   }
@@ -749,6 +771,14 @@ export class PostItem extends BaseWebComponent {
 
   get fileThumbnail() {
     return this.getSelectorByAutomationId('fileCardMedia', this.self);
+  }
+
+  get fileItem() {
+    return this.getSelectorByAutomationId('fileCard', this.self);
+  }
+
+  get imageItem() {
+    return this.getSelectorByAutomationId('imageCard', this.self);
   }
 
   get editTextArea() {

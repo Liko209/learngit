@@ -1,0 +1,6 @@
+{
+  "on_merge": {
+    "fixtures": ["./fixtures/PresenceSetting/*.ts"],
+    "browsers": ["selenium:chrome"]
+  }
+}

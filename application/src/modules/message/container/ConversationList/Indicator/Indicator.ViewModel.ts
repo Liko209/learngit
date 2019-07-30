@@ -6,7 +6,7 @@
 
 import { observable, computed, action } from 'mobx';
 import { AbstractViewModel } from '@/base';
-import { IndicatorProps, IndicatorViewProps } from './types';
+import { IndicatorProps } from './types';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
@@ -15,8 +15,7 @@ import GroupConfigModel from '@/store/models/GroupConfig';
 import { Group } from 'sdk/module/group';
 import GroupModel from '@/store/models/Group';
 
-class IndicatorViewModel extends AbstractViewModel
-  implements IndicatorViewProps {
+class IndicatorViewModel extends AbstractViewModel {
   @observable id: number; // group id
 
   @action

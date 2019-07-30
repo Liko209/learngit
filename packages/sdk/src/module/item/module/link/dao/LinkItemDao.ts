@@ -6,7 +6,7 @@
 
 import { SanitizedLinkItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 
 class LinkItemDao extends SubItemDao<SanitizedLinkItem> {
   static COLLECTION_NAME = 'linkItem';

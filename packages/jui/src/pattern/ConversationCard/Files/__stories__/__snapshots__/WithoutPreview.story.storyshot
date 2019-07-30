@@ -384,9 +384,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -475,9 +477,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -566,9 +570,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
@@ -657,9 +663,11 @@ exports[`Storyshots Pattern/ConversationCard FileWithoutPreview: Pattern/Convers
       <div
         className="c6"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}

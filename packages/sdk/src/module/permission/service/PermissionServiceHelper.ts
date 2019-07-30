@@ -6,8 +6,7 @@
 
 import { IPermissionController } from '../controller/IPermissionController';
 import { UserPermission } from '../entity';
-import { FeatureFlagType } from '../types';
-import { UserPermissionType } from '..';
+import UserPermissionType, { FeatureFlagType } from '../types';
 import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { notificationCenter, ENTITY } from 'sdk/service';
