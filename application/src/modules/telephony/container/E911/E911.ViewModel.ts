@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, IReactionPublic } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -43,12 +43,12 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     super(props);
     this.reaction(
       () => this.settingItemEntity.value,
-      (value: E911SettingInfo, dispose: any) => {
+      (value: E911SettingInfo, reaction: IReactionPublic) => {
         if (value) {
           const cloneValue = { ...value };
           this.value = cloneValue;
           this.getCountryInfo();
-          dispose();
+          reaction.dispose();
         }
       },
       {
