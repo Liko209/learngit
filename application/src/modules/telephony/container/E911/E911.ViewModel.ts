@@ -74,8 +74,14 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @computed
   get disabled() {
     const checkField = ['customerName', 'country', 'street', 'city', 'zip'];
+    const { state, stateName } = this.value;
     if (this.stateList.length > 0) {
-      checkField.push('state');
+      if (state) {
+        checkField.push('state');
+      }
+      if (stateName) {
+        checkField.push('stateName');
+      }
     }
 
     return checkField.some((field: string) => !this.value[field]);
@@ -85,6 +91,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
+
     if (stateList.length > 0) {
       this.saveStateOrCountry('state', stateList[0]);
     }
@@ -114,6 +121,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     const country = this.countryList.find(
       (item: Country) => item.name === value,
     );
+
     this.saveStateOrCountry('country', country!);
     this.getState(country!.id);
   };
@@ -127,6 +135,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @action
   saveStateOrCountry(type: 'state' | 'country', data: State | Country) {
     const { id, name, isoCode } = data;
+
     this.value[type] = isoCode;
     this.value[`${type}Name`] = name;
     this.value[`${type}Id`] = id;

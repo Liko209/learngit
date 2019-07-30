@@ -32,7 +32,7 @@ describe('E911ViewModel', () => {
       expect(vm.disabled).toBeTruthy();
     }
 
-    @test('should be true and check state if state list > 0')
+    @test('should be check state if state api return name iso and id')
     @mockEntity(
       createUserInfo({
         country: 'country',
@@ -42,11 +42,17 @@ describe('E911ViewModel', () => {
         zip: 'zip',
       }),
     )
-    @mockService(RCInfoService, 'getStateList', [1])
+    @mockService(RCInfoService, 'getStateList', [
+      {
+        id: 'id',
+        isoCode: 'isoCode',
+        name: 'name',
+      },
+    ])
     async t2() {
       const vm = new E911ViewModel({});
       await vm.getState('1');
-      expect(vm.disabled).toBeTruthy();
+      expect(vm.disabled).toBeFalsy();
     }
 
     @test('should be true if has all check field')
@@ -61,6 +67,28 @@ describe('E911ViewModel', () => {
     )
     t3() {
       const vm = new E911ViewModel({});
+      expect(vm.disabled).toBeFalsy();
+    }
+
+    @test('should be check stateName if state api only return name')
+    @mockEntity(
+      createUserInfo({
+        country: 'country',
+        customerName: 'customerName',
+        street: 'street',
+        city: 'city',
+        zip: 'zip',
+      }),
+    )
+    @mockService(RCInfoService, 'getStateList', [
+      {
+        id: 1,
+        name: 'name',
+      },
+    ])
+    async t4() {
+      const vm = new E911ViewModel({});
+      await vm.getState('1');
       expect(vm.disabled).toBeFalsy();
     }
   }
