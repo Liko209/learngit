@@ -6,10 +6,9 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 
-const ArrowDropDownSvg = (props: any) => {
+const ArrowDropDownSvg = () => {
   return (
     <svg
-      {...props}
       focusable="false"
       viewBox="0 0 24 24"
       aria-hidden="true"

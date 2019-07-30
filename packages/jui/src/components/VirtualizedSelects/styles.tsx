@@ -3,7 +3,7 @@
  * @Date: 2019-07-30 09:38:13
  * Copyright © RingCentral. All rights reserved.
  */
-
+import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
 import styled from '../../foundation/styled-components';
 import {
   disabled,
@@ -16,7 +16,6 @@ import {
   palette,
 } from '../../foundation/utils/styles';
 import { ArrowDropDownIcon } from './ArrowDropDownIcon';
-import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
 
 const StyledSelect = styled<InputBaseProps>(InputBase)`
   position: relative;

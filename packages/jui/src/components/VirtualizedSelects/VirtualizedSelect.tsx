@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useEffect, useRef, useState } from 'react';
+
+import { Input } from '@material-ui/core';
 import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
 import { filterReactElement } from '../../foundation/utils/filterReactElement';
 import { JuiMenuItemProps } from '../Menus/MenuItem';
@@ -11,7 +13,6 @@ import { HeightSize } from '../Selects/BoxSelect/types';
 import { JuiVirtualizedMenu } from '../VirtualizedMenus';
 import { ArrowDropDownIcon } from './ArrowDropDownIcon';
 import { StyledInput } from './styles';
-import { Input } from '@material-ui/core';
 
 type JuiVirtualizedSelectProps<V = string | number | string[] | undefined> = {
   name?: string;
