@@ -379,6 +379,10 @@ class BaseJob {
         ssh(remoteUri, "mkdir -p ${targetDir} && cp -rf ${sourceDir}/* ${targetDir}/".toString())
     }
 
+    void removeRemoteDir(URI remoteUri, String dir) {
+        ssh(remoteUri, "rm -rf ${dir}".toString())
+    }
+
     // ssh based distributed file lock
     void lockKey(String credentialId, URI lockUri, String key) {
         jenkins.sshagent (credentials: [credentialId]) {
@@ -708,7 +712,8 @@ class JupiterJob extends BaseJob {
         jenkins.sshagent(credentials: [context.deployCredentialId]) {
             // update precache revision
             updateRemotePrecacheRevision()
-            // and create copy to branch name based folder, for release build, use replace instead of delete
+            // and create copy to branch name based folder
+            removeRemoteDir(context.deployUri, context.appLinkDir)
             copyRemoteDir(context.deployUri, context.appHeadHashDir, context.appLinkDir)
             // and update version info
             updateRemoteVersionInfo()
