@@ -1,5 +1,11 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-07-10 16:17:47
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { registerConfigs } from 'sdk/registerConfigs';
+
 import { descriptorAOP } from '../core/utils';
 import { mockMethods } from '../shared';
 

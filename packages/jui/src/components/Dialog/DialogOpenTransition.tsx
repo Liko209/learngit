@@ -17,21 +17,26 @@ const Wrapper = styled(Transition)`
   }
 `;
 
-const JuiDialogOpenTransition = ({
-  mountOnEnter,
-  unmountOnExit,
-  timeout,
-  addEndListener,
-  onEnter,
-  onEntering,
-  onEntered,
-  onExit,
-  onExiting,
-  onExited,
-  ...rest
-}: TransitionProps) => {
-  delete rest.in;
-  return <Wrapper timeout={0} {...rest} />;
-};
+const JuiDialogOpenTransition = React.forwardRef(
+  (
+    {
+      mountOnEnter,
+      unmountOnExit,
+      timeout,
+      addEndListener,
+      onEnter,
+      onEntering,
+      onEntered,
+      onExit,
+      onExiting,
+      onExited,
+      ...rest
+    }: TransitionProps,
+    ref,
+  ) => {
+    delete rest.in;
+    return <Wrapper ref={ref as any} timeout={0} {...rest} />;
+  },
+);
 
 export { JuiDialogOpenTransition };

@@ -1,0 +1,389 @@
+{
+  "host": "https://glpdevxmn.asialab.glip.net",
+  "path": "/api/posts",
+  "method": "get",
+  "type": "request-response",
+  "via": "socket",
+  "request": {
+    "host": "https://glpdevxmn.asialab.glip.net",
+    "path": "/api/posts",
+    "method": "get",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl9pZCI6MTU2MjYzOTE0NDQ0MywidHlwZSI6IndlYiIsInVpZCI6MTg3ODc1MzMxLCJpYXQiOjE1NjI2MzkxNDQsImlzcyI6ImdscGRldnhtbi5hc2lhbGFiLmdsaXAubmV0Iiwic3ViIjoiZ2xpcCJ9.eShMh7mjmnn_nUujgc0lzh5628GR8qIWr9NjByIEdHCVNC8PCc4rm9gmLQCF7V9E0auh1N15rAO1dkNr9-D27A"
+    },
+    "data": {
+      "limit": 20,
+      "direction": "older",
+      "group_id": 43655174,
+      "request_id": "16"
+    }
+  },
+  "response": {
+    "headers": {
+      "set_cookie": [],
+      "Content-Type": "application/json; charset=utf-8",
+      "x-original-content-length": "6260",
+      "X-Request-Id": "user_id:187875331;id:2bb964c7-c20a-4719-9aa8-edcc0013f73e",
+      "X-Frame-Options": "DENY"
+    },
+    "status": 200,
+    "data": {
+      "posts": [
+        {
+          "_id": 2732572676,
+          "created_at": 1560220075914,
+          "creator_id": 191356931,
+          "version": 7683910686468015,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "modified_at": 1560220075914,
+          "unique_id": "-413663236",
+          "text": "e",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": []
+        },
+        {
+          "_id": 2732564484,
+          "created_at": 1560220074008,
+          "creator_id": 191356931,
+          "version": 1366719309441379,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "modified_at": 1560220074008,
+          "unique_id": "-728473604",
+          "text": "ds",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": []
+        },
+        {
+          "_id": 2725076996,
+          "created_at": 1560144787858,
+          "creator_id": 191356931,
+          "version": 555968885501399,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "modified_at": 1560144787858,
+          "unique_id": "-1134608388",
+          "text": "Version: 1.4.0 (E. 5.0.2 - 1.0.58 Windows_NT)\n\nLast Commit: ca220ec2a\n\nDate: 2019-06-05 18:22:20",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": []
+        },
+        {
+          "_id": 2724945924,
+          "created_at": 1560143423685,
+          "creator_id": 191356931,
+          "version": 5717105729077248,
+          "model_size": 0,
+          "is_new": false,
+          "item_ids": [
+            138043409
+          ],
+          "post_ids": [],
+          "modified_at": 1560143423685,
+          "unique_id": "-1752088580",
+          "text": "https://mr-feature-fiji-6005.fiji.gliprc.com",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": [
+            {
+              "id": 138043409,
+              "type_id": 17
+            }
+          ]
+        },
+        {
+          "_id": 2724904964,
+          "created_at": 1560141573790,
+          "creator_id": 193953795,
+          "version": 7635059372720128,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "activity": "joined the team",
+          "text": "",
+          "group_id": 43655174,
+          "company_id": 401409,
+          "activity_data": {
+            "key": "members",
+            "value": [
+              187875331,
+              187973635,
+              191356931,
+              193953795
+            ],
+            "old_value": [
+              187875331,
+              187973635,
+              191356931
+            ],
+            "new_user_id": 193953795,
+            "inviter_id": 193953795
+          },
+          "at_mention_non_item_ids": [
+            193953795
+          ],
+          "items": [],
+          "modified_at": 1560141573790,
+          "deactivated": false
+        },
+        {
+          "_id": 2724896772,
+          "created_at": 1560140920783,
+          "creator_id": 187875331,
+          "version": 6262072375508992,
+          "model_size": 0,
+          "is_new": false,
+          "item_ids": [
+            138027025
+          ],
+          "post_ids": [],
+          "modified_at": 1560140920783,
+          "unique_id": "-141213700",
+          "text": "https://mr-feature-fiji-6005.fiji.gliprc.com/messages",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": [
+            {
+              "id": 138027025,
+              "type_id": 17
+            }
+          ]
+        },
+        {
+          "_id": 2724855812,
+          "created_at": 1560137088719,
+          "creator_id": 191356931,
+          "version": 7052053020934144,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "activity": "joined the team",
+          "text": "",
+          "group_id": 43655174,
+          "company_id": 401409,
+          "activity_data": {
+            "key": "members",
+            "value": [
+              187875331,
+              187973635,
+              191356931
+            ],
+            "old_value": [
+              187875331,
+              187973635
+            ],
+            "new_user_id": 191356931,
+            "inviter_id": 191356931
+          },
+          "at_mention_non_item_ids": [
+            191356931
+          ],
+          "items": [],
+          "modified_at": 1560137088719,
+          "deactivated": false
+        },
+        {
+          "_id": 2724839428,
+          "created_at": 1560136658609,
+          "creator_id": 187875331,
+          "version": 7345660391063552,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "activity": "changed the team name from **halou** to **FIJI-6005**",
+          "text": "",
+          "group_id": 43655174,
+          "company_id": 401409,
+          "activity_data": {
+            "key": "set_abbreviation",
+            "value": "**FIJI-6005**",
+            "old_value": "**halou**",
+            "changer_id": 187875331
+          },
+          "at_mention_non_item_ids": [
+            43655174
+          ],
+          "items": [],
+          "modified_at": 1560136658609,
+          "deactivated": false
+        },
+        {
+          "_id": 2724823044,
+          "created_at": 1560136593433,
+          "creator_id": 187973635,
+          "version": 8325635145894111,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [
+            1030275082
+          ],
+          "post_ids": [],
+          "modified_at": 1560136593433,
+          "unique_id": "-790470660",
+          "text": "",
+          "group_id": 43655174,
+          "at_mention_item_ids": [],
+          "at_mention_non_item_ids": [],
+          "company_id": 401409,
+          "deactivated": false,
+          "source": "Jupiter",
+          "function_id": "post",
+          "items": [
+            {
+              "id": 1030275082,
+              "type_id": 10
+            }
+          ]
+        },
+        {
+          "_id": 2724814852,
+          "created_at": 1560136552976,
+          "creator_id": 187973635,
+          "version": 3664767973588992,
+          "model_size": 0,
+          "is_new": true,
+          "item_ids": [],
+          "post_ids": [],
+          "activity": "joined the team",
+          "text": "",
+          "group_id": 43655174,
+          "company_id": 401409,
+          "activity_data": {
+            "key": "members",
+            "value": [
+              187875331,
+              187973635
+            ],
+            "old_value": [
+              187875331
+            ],
+            "new_user_id": 187973635,
+            "inviter_id": 187973635
+          },
+          "at_mention_non_item_ids": [
+            187973635
+          ],
+          "items": [],
+          "modified_at": 1560136552976,
+          "deactivated": false
+        }
+      ],
+      "items": [
+        {
+          "_id": 138027025,
+          "created_at": 1560140920762,
+          "creator_id": 187875331,
+          "version": 8218928528490496,
+          "model_size": 0,
+          "is_new": false,
+          "post_ids": [
+            2724896772
+          ],
+          "group_ids": [
+            43655174
+          ],
+          "url": "https://mr-feature-fiji-6005.fiji.gliprc.com/messages",
+          "company_id": 401409,
+          "fetching_preview": "done",
+          "type_id": 17,
+          "modified_at": 1560140930946,
+          "deactivated": false,
+          "old_version": 1884013641859072
+        },
+        {
+          "_id": 138043409,
+          "created_at": 1560143423675,
+          "creator_id": 191356931,
+          "version": 4501372852502528,
+          "model_size": 0,
+          "is_new": false,
+          "post_ids": [
+            2724945924
+          ],
+          "group_ids": [
+            43655174
+          ],
+          "url": "https://mr-feature-fiji-6005.fiji.gliprc.com",
+          "company_id": 401409,
+          "fetching_preview": "done",
+          "type_id": 17,
+          "modified_at": 1560143435093,
+          "deactivated": false,
+          "old_version": 4488005955878912
+        },
+        {
+          "_id": 1030275082,
+          "created_at": 1560136592979,
+          "creator_id": 187973635,
+          "version": 6224872285929472,
+          "model_size": 0,
+          "is_new": false,
+          "post_ids": [
+            2724823044
+          ],
+          "group_ids": [
+            43655174
+          ],
+          "name": "RingCentralJ Setup 1.0.58.exe",
+          "type": "exe",
+          "source": "upload",
+          "versions": [
+            {
+              "stored_file_id": 1491116044,
+              "url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/1491116044/RingCentralJ%20Setup%201.0.58.exe?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=liXOx7SplyBZ%2BklKMk1ipwjKqas%3D",
+              "download_url": "https://glipasialabnet-glpdevxmn.s3.amazonaws.com/web/customer_files/1491116044/RingCentralJ%20Setup%201.0.58.exe?Expires=2075494478&AWSAccessKeyId=AKIAIL2TEPKHU23FQHNQ&Signature=lT8w5smk%2FD2wlToZOn6U4wuRtGY%3D&response-content-disposition=attachment",
+              "date": 1560136592859,
+              "size": 47165972,
+              "creator_id": 187973635
+            }
+          ],
+          "function_id": "file",
+          "company_id": 401409,
+          "type_id": 10,
+          "modified_at": 1560136593447,
+          "deactivated": false,
+          "ignore_preview": [
+            1491116044
+          ]
+        }
+      ]
+    }
+  }
+}

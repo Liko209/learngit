@@ -83,7 +83,7 @@ class TelephonyModule extends AbstractModule {
     } else {
       this._disposeTelephony();
     }
-  }
+  };
 
   private _handleLeave = () => {
     if (this._telephonyService.getAllCallCount() > 0) {
@@ -95,7 +95,7 @@ class TelephonyModule extends AbstractModule {
       return true;
     }
     return false;
-  }
+  };
 }
 
 export { TelephonyModule };

@@ -5,7 +5,7 @@
  */
 /* eslint-disable */
 import history from '@/history';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,

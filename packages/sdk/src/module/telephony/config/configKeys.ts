@@ -15,6 +15,7 @@ const TELEPHONY_GLOBAL_KEYS = {
   USED_SPEAKER_HISTORY: 'used_speaker_history',
   USED_RINGER_HISTORY: 'used_ringer_history',
   CURRENT_VOLUME: 'current_volume',
+  EMERGENCY_ADDRESS: 'emergency_address',
 };
 
 export { TELEPHONY_KEYS, TELEPHONY_GLOBAL_KEYS };

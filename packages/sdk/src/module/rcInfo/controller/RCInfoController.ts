@@ -14,6 +14,7 @@ import { AccountServiceInfoController } from './AccountServiceInfoController';
 import { RCWebSettingInfoController } from './RCWebSettingInfoController';
 import { RCInfoUserConfig } from '../config';
 import { BlockNumberController } from './BlockNumberController';
+import { RCDeviceController } from './RCDeviceController';
 
 class RCInfoController {
   private _rcInfoFetchController: RCInfoFetchController;
@@ -25,6 +26,7 @@ class RCInfoController {
   private _accountServiceInfoController: AccountServiceInfoController;
   private _webSettingInfoController: RCWebSettingInfoController;
   private _blockNumberController: BlockNumberController;
+  private _rcDeviceController: RCDeviceController;
 
   constructor(private _DBConfig: RCInfoUserConfig) {}
 
@@ -33,6 +35,13 @@ class RCInfoController {
       this._rcInfoFetchController = new RCInfoFetchController();
     }
     return this._rcInfoFetchController;
+  }
+
+  getRCDeviceController(): RCDeviceController {
+    if (!this._rcDeviceController) {
+      this._rcDeviceController = new RCDeviceController();
+    }
+    return this._rcDeviceController;
   }
 
   getRCPermissionController(): RCPermissionController {
