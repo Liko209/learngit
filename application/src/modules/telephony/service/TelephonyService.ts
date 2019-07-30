@@ -362,7 +362,7 @@ class TelephonyService {
     return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
-  makeCall = async (toNumber: string, callback?: Function) => {
+  private _makeCall = async (toNumber: string, callback?: Function) => {
     // FIXME: move this logic to SDK and always using callerID
     const idx =
       this._telephonyStore.callerPhoneNumberList &&
@@ -446,6 +446,31 @@ class TelephonyService {
     }
 
     return true;
+  };
+
+  makeCall = async (toNumber: string, callback?: Function) => {
+    if (!(await this.isShortNumber(toNumber))) {
+      // is long number, need to check e911
+      if (!this._serverTelephonyService.isEmergencyAddrConfirmed()) {
+        const lines = await this._rcInfoService.getDigitalLines();
+        if (lines.length > 0) {
+          // prompt to confirm
+          this.openE911();
+        } else {
+          // toast error
+          Notification.flagToast({
+            message: '',
+            type: ToastType.ERROR,
+            messageAlign: ToastMessageAlign.CENTER,
+            fullWidth: false,
+            dismissible: true,
+          });
+        }
+        return;
+      }
+    }
+
+    this._makeCall(toNumber, callback);
   };
 
   directCall = (toNumber: string) => {
@@ -977,13 +1002,13 @@ class TelephonyService {
 
   openE911 = () => {
     OpenDialogE911();
-  }
+  };
 
   needConfirmE911 = async () => {
     const lines = await this._rcInfoService.getDigitalLines();
-    const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed()
+    const isEmergency = this._serverTelephonyService.isEmergencyAddrConfirmed();
     return lines.length > 0 && !isEmergency;
-  }
+  };
 }
 
 export { TelephonyService };

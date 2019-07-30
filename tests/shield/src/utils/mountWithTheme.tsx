@@ -364,4 +364,6 @@ const mountWithTheme = (content: React.ReactNode) =>
 const asyncMountWithTheme = async (content: React.ReactNode) =>
   await mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
-export { theme, mountWithTheme, asyncMountWithTheme };
+const delay = (duration: number = 0) => new Promise(resolve => setTimeout(resolve, duration));
+
+export { theme, mountWithTheme, asyncMountWithTheme, delay };
