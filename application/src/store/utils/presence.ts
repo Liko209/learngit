@@ -12,9 +12,8 @@ import PresenceModel from '@/store/models/Presence';
 import { Presence } from 'sdk/module/presence/entity';
 import { PRESENCE } from 'sdk/module/presence/constant';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
-import { getEntity } from './entities';
+import { getEntity, getGlobalValue } from './entities';
 
 function getPresence(uid: number) {
   if (uid === 0) {
