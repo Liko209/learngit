@@ -48,7 +48,9 @@ class RightShelfMemberListViewModel
 
   constructor(props: RightShelfMemberListProps) {
     super(props);
+  }
 
+  init = () => {
     this.reaction(
       () => this.allMemberLength,
 
@@ -86,7 +88,7 @@ class RightShelfMemberListViewModel
         this._getMemberAndGuestIds();
       },
     );
-  }
+  };
 
   // onReceiveProps({ groupId }: RightShelfMemberListProps) {
   //   if (groupId !== this.group.id) {

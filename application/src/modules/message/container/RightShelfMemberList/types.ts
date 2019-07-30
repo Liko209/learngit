@@ -20,6 +20,7 @@ type RightShelfMemberListViewProps = RightShelfMemberListProps & {
   isTeam?: boolean;
   personNameMap: { [id: string]: string };
   setWrapperWidth: (width: number) => void;
+  init: () => void;
 };
 
 export { RightShelfMemberListProps, RightShelfMemberListViewProps };

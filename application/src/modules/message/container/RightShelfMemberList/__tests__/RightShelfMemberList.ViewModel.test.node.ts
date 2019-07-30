@@ -50,6 +50,7 @@ describe('RightShelfMemberListViewModel', () => {
 
   it('should call group service api right after construction', (done: jest.DoneCallback) => {
     const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+    vm.init();
     expect(groupService.getMembersAndGuestIds).toHaveBeenCalledWith(1);
     expect(vm.isLoading).toBe(true);
     expect(vm.allMemberLength).toBe(5);
@@ -122,6 +123,7 @@ describe('RightShelfMemberListViewModel', () => {
         guestIds: [],
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+      vm.init();
       vm.setWrapperWidth(getRandomInt(348, 360));
       expect(vm.countPerRow).toBe(9);
       setTimeout(() => {
@@ -137,6 +139,7 @@ describe('RightShelfMemberListViewModel', () => {
         guestIds: [],
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+      vm.init();
       vm.setWrapperWidth(getRandomInt(348, 360));
       expect(vm.countPerRow).toBe(9);
       setTimeout(() => {
@@ -152,6 +155,7 @@ describe('RightShelfMemberListViewModel', () => {
         guestIds: Array(22).fill(1),
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+      vm.init();
       vm.setWrapperWidth(getRandomInt(348, 360));
       expect(vm.countPerRow).toBe(9);
       setTimeout(() => {
@@ -167,6 +171,7 @@ describe('RightShelfMemberListViewModel', () => {
         guestIds: Array(9).fill(1),
       });
       const vm = new RightShelfMemberListViewModel({ groupId: 1 });
+      vm.init();
       vm.setWrapperWidth(getRandomInt(348, 360));
       expect(vm.countPerRow).toBe(9);
       setTimeout(() => {

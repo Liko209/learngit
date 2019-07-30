@@ -56,6 +56,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   }
 
   componentDidMount() {
+    this.props.init()
     if (this._resizeObserver && this._header.current) {
       this._resizeObserver.observe(this._header.current);
     }
