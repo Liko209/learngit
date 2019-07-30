@@ -20,6 +20,7 @@ import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import { PinnedList } from './PinnedList';
 import { IMessageStore } from '@/modules/message/interface';
+import { RightShelfMemberList } from '../RightShelfMemberList';
 
 type Props = {
   id: number;
@@ -223,6 +224,7 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
+        <RightShelfMemberList groupId={id} />
         {this._renderTabs()}
       </JuiRightShelf>
     );

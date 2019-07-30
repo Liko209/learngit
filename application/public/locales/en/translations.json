@@ -155,6 +155,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "guests": "Guests",
     "showUnreads": "Show unread",
     "meGroup": "me",
     "mentionPosts": "Mentions",
@@ -465,6 +466,7 @@
       "addPeople": "Add people"
     },
     "team": {
+      "showAllCount": "Show all {{count}}",
       "Members": "Members",
       "SearchContactPlaceholder": "Enter names or email addresses",
       "CreateTeam": "Create Team",

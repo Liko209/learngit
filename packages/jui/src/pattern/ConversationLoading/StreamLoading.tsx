@@ -19,11 +19,11 @@ import { JuiLink } from '../../components/Link';
 
 const Progress = styled(RuiCircularProgress)`
   && {
-    width: ${width(9)} !important;
-    height: ${height(9)} !important;
+    width: ${width(6)} !important;
+    height: ${height(6)} !important;
     svg {
-      width: ${width(9)};
-      height: ${height(9)};
+      width: ${width(6)};
+      height: ${height(6)};
     }
   }
   margin: ${spacing(4)};
@@ -130,6 +130,4 @@ class JuiStreamLoading extends React.PureComponent<
   }
 }
 
-export {
- Loading, Progress, Tip, TipLink, JuiStreamLoading
-};
+export { Loading, Progress, Tip, TipLink, JuiStreamLoading };
