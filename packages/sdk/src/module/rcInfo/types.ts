@@ -155,9 +155,9 @@ export {
   EForwardingFlipNumberType,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
-  StateRecord,
   IAssignLineRequest,
   AddressInfo,
   DeviceRecord,
   IUpdateLineRequest,
+  StateRecord,
 };

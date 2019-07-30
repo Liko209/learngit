@@ -18,10 +18,10 @@ import {
   GetBlockNumberListParams,
   BlockNumberItem,
   BLOCK_STATUS,
-  IStateRequest,
   IDeviceRequest,
   DeviceInfo,
   DeviceRecord,
+  IStateRequest,
 } from 'sdk/api/ringcentral';
 import { jobScheduler, JOB_KEY } from 'sdk/framework/utils/jobSchedule';
 import { mainLogger } from 'foundation';

@@ -7,7 +7,7 @@
 import { GlobalConfig } from '../../config';
 import { TELEPHONY_GLOBAL_KEYS } from './configKeys';
 import { AccountGlobalConfig } from 'sdk/module/account/config';
-import { EmergencyServiceAddress } from '../types';
+import { EmergencyServiceAddress, notificationCallback } from '../types';
 
 class TelephonyGlobalConfig extends GlobalConfig {
   static moduleName = 'telephony';
@@ -82,6 +82,15 @@ class TelephonyGlobalConfig extends GlobalConfig {
       `${
         TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS
       }.${AccountGlobalConfig.getUserDictionary()}`,
+    );
+  }
+
+  static onEmergencyAddressChange(listener: notificationCallback) {
+    this.on(
+      `${
+        TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS
+      }.${AccountGlobalConfig.getUserDictionary()}`,
+      listener,
     );
   }
 }

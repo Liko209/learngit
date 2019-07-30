@@ -316,8 +316,8 @@ export {
   RCBrandInfo,
   RCAuthCodeInfo,
   IForwardingNumberRequest,
+  ICountryInfo,
   CountryState,
   StateRecord,
   IStateRequest,
-  ICountryInfo,
 };

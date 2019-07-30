@@ -13,9 +13,9 @@ import {
   ERCWebUris,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
-  StateRecord,
   IAssignLineRequest,
   IUpdateLineRequest,
+  StateRecord,
 } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountService } from '../../account/service';

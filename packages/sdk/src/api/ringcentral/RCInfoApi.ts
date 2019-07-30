@@ -35,11 +35,11 @@ import {
   BlockNumberListResponse,
   BlockNumberItem,
   AddBlockNumberParams,
-  IStateRequest,
-  CountryState,
   IDeviceRequest,
   IAssignLineRequest,
   IUpdateLineRequest,
+  IStateRequest,
+  CountryState,
 } from './types';
 
 class RCInfoApi extends Api {
@@ -154,7 +154,7 @@ class RCInfoApi extends Api {
     return RCInfoApi.rcNetworkClient.http<AccountServiceInfo>(query);
   }
 
-  static getDeviceInfo(request?: IDeviceRequest) {
+  static getDeviceInfo(request: IDeviceRequest) {
     const query = this._getInfoRequestParams({
       path: RINGCENTRAL_API.API_DEVICE_INFO,
       params: request,

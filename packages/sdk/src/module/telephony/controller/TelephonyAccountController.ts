@@ -43,7 +43,6 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   constructor(rtcEngine: RTCEngine) {
     this._rtcAccount = rtcEngine.createAccount(this);
-    this._rtcAccount.handleProvisioning();
     this._makeCallController = new MakeCallController();
     this._subscribeNotifications();
   }
@@ -72,6 +71,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   setAccountDelegate(delegate: ITelephonyDelegate) {
     this._telephonyAccountDelegate = delegate;
+    this._rtcAccount.handleProvisioning();
   }
 
   setDependentController(entityCacheController: IEntityCacheController<Call>) {

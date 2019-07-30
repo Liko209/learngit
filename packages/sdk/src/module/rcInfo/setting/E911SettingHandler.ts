@@ -21,7 +21,6 @@ import {
   ERCServiceFeaturePermission,
 } from 'sdk/module/rcInfo/types';
 import { TelephonyGlobalConfig } from 'sdk/module/telephony/config/TelephonyGlobalConfig';
-import { TELEPHONY_GLOBAL_KEYS } from 'sdk/module/telephony/config/configKeys';
 import { mainLogger } from 'foundation';
 import { notificationCenter } from 'sdk/service';
 import { SERVICE, RC_INFO } from 'sdk/service/eventKey';
@@ -30,17 +29,10 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   EmergencyServiceAddress
 > {
   id = SettingEntityIds.Phone_E911;
-  private _telephonyService: TelephonyService;
-  private _rcInfoService: RCInfoService;
+  private _e911UpdateEmitted = false;
 
   constructor() {
     super();
-    this._telephonyService = ServiceLoader.getInstance<TelephonyService>(
-      ServiceConfig.TELEPHONY_SERVICE,
-    );
-    this._rcInfoService = ServiceLoader.getInstance<RCInfoService>(
-      ServiceConfig.RC_INFO_SERVICE,
-    );
     this._subscribe();
   }
 
@@ -49,31 +41,45 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   };
 
   private _e911Updated = () => {
-    notificationCenter.emit(SERVICE.RC_INFO_SERVICE.E911_UPDATED);
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    if (
+      !telephonyService.isEmergencyAddrConfirmed() &&
+      !this._e911UpdateEmitted
+    ) {
+      notificationCenter.emit(SERVICE.RC_INFO_SERVICE.E911_UPDATED);
+      this._e911UpdateEmitted = true;
+    }
   };
 
   private _subscribe() {
-    notificationCenter.on(
-      `global.${TELEPHONY_GLOBAL_KEYS.EMERGENCY_ADDRESS}.*`,
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    telephonyService.subscribeEmergencyAddressChange(
       this._emergencyAddressChanged,
     );
-    notificationCenter.on(
-      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
-      this._e911Updated,
-    );
+    telephonyService.subscribeSipProvChange(this._e911Updated);
     notificationCenter.on(RC_INFO.DEVICE_INFO, this._e911Updated);
   }
 
   private async _assignLine(emergencyAddress: EmergencyServiceAddress) {
-    const line = await this._rcInfoService.getDigitalLines();
-    const webPhoneId = this._telephonyService.getWebPhoneId();
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const line = await rcInfoService.getDigitalLines();
+    const webPhoneId = telephonyService.getWebPhoneId();
     if (line.length && webPhoneId) {
       const deviceId: string = line[0].id;
       const assignLine: IAssignLineRequest = {
         emergencyServiceAddress: emergencyAddress,
         originalDeviceId: deviceId,
       };
-      await this._rcInfoService.assignLine(webPhoneId, assignLine);
+      await rcInfoService.assignLine(webPhoneId, assignLine);
       TelephonyGlobalConfig.setEmergencyAddress(emergencyAddress);
     } else {
       mainLogger.warn(
@@ -83,12 +89,18 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   }
 
   private async _updateLine(emergencyAddress: EmergencyServiceAddress) {
-    const webPhoneId = this._telephonyService.getWebPhoneId();
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const webPhoneId = telephonyService.getWebPhoneId();
     if (webPhoneId) {
       const request: IUpdateLineRequest = {
         emergencyServiceAddress: emergencyAddress,
       };
-      await this._rcInfoService.updateLine(webPhoneId, request);
+      await rcInfoService.updateLine(webPhoneId, request);
       TelephonyGlobalConfig.setEmergencyAddress(emergencyAddress);
     } else {
       mainLogger.warn(`Unable to update line`);
@@ -96,10 +108,14 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   }
 
   async updateValue(emergencyAddress: EmergencyServiceAddress) {
-    const emergencyAddr = this._telephonyService.getRemoteEmergencyAddress();
-    emergencyAddr
-      ? this._updateLine(emergencyAddress)
-      : this._assignLine(emergencyAddress);
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    const localAddr = telephonyService.getLocalEmergencyAddress();
+    const remoteAddr = telephonyService.getRemoteEmergencyAddress();
+    !localAddr && !remoteAddr
+      ? this._assignLine(emergencyAddress)
+      : this._updateLine(emergencyAddress);
   }
 
   async fetchUserSettingEntity() {
@@ -108,11 +124,17 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
 
   async _getDefaultEmergencyAddress() {
     let emergencyAddr: EmergencyServiceAddress = {} as EmergencyServiceAddress;
-    const localAddr = this._telephonyService.getLocalEmergencyAddress();
+    const telephonyService = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
+    const localAddr = telephonyService.getLocalEmergencyAddress();
     if (localAddr) {
       emergencyAddr = localAddr;
     } else {
-      const line = await this._rcInfoService.getDigitalLines();
+      const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+        ServiceConfig.RC_INFO_SERVICE,
+      );
+      const line = await rcInfoService.getDigitalLines();
       if (line.length) {
         emergencyAddr = line[0].emergencyServiceAddress;
       }
@@ -123,9 +145,12 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
   private async _getE911Setting(): Promise<
     UserSettingEntity<EmergencyServiceAddress>
   > {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     const hasCallPermission =
-      (await this._rcInfoService.isVoipCallingAvailable()) &&
-      (await this._rcInfoService.isRCFeaturePermissionEnabled(
+      (await rcInfoService.isVoipCallingAvailable()) &&
+      (await rcInfoService.isRCFeaturePermissionEnabled(
         ERCServiceFeaturePermission.WEB_PHONE,
       ));
     const emergencyAddr = await this._getDefaultEmergencyAddress();
@@ -135,10 +160,9 @@ export class E911SettingHandler extends AbstractSettingEntityHandler<
       weight: SettingModuleIds.ExtensionSetting.weight,
       valueType: ESettingValueType.LINK,
       parentModelId: SettingModuleIds.PhoneSetting_General.id,
-      state:
-        hasCallPermission
-          ? ESettingItemState.ENABLE
-          : ESettingItemState.INVISIBLE,
+      state: hasCallPermission
+        ? ESettingItemState.ENABLE
+        : ESettingItemState.INVISIBLE,
       valueSetter: value => this.updateValue(value),
     };
   }

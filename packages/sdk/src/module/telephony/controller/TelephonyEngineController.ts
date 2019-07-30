@@ -27,6 +27,7 @@ import { IEntityCacheController } from 'sdk/framework/controller/interface/IEnti
 import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
 import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
+import { notificationCallback } from '../types';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -201,6 +202,17 @@ class TelephonyEngineController {
 
   getRingerDevicesList() {
     return this.mediaDevicesController.getRingerDevicesList();
+  }
+
+  subscribeEmergencyAddressChange(listener: notificationCallback) {
+    TelephonyGlobalConfig.onEmergencyAddressChange(listener);
+  }
+
+  subscribeSipProvChange(listener: notificationCallback) {
+    notificationCenter.on(
+      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
+      listener,
+    );
   }
 
   getLocalEmergencyAddress() {

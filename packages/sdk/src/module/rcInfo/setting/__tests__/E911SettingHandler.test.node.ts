@@ -29,7 +29,10 @@ describe('E911SettingHandler', () => {
 
   function setUp() {
     clearMocks();
-    telephonyService = {} as any;
+    telephonyService = {
+      subscribeEmergencyAddressChange: jest.fn(),
+      subscribeSipProvChange: jest.fn(),
+    } as any;
     rcInfoService = {} as any;
     ServiceLoader.getInstance = jest
       .fn()
@@ -64,6 +67,9 @@ describe('E911SettingHandler', () => {
       telephonyService.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(emergencyAddr);
+      telephonyService.getLocalEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(null);
       rcInfoService.updateLine = jest.fn();
       telephonyService.getWebPhoneId = jest.fn().mockReturnValue(1);
       TelephonyGlobalConfig.setEmergencyAddress = jest.fn();
@@ -79,6 +85,9 @@ describe('E911SettingHandler', () => {
       telephonyService.getRemoteEmergencyAddress = jest
         .fn()
         .mockReturnValue(undefined);
+      telephonyService.getLocalEmergencyAddress = jest
+        .fn()
+        .mockReturnValue(null);
       rcInfoService.assignLine = jest.fn();
       telephonyService.getWebPhoneId = jest.fn().mockReturnValue(1);
       rcInfoService.getDigitalLines = jest.fn().mockReturnValue([{ id: 2 }]);

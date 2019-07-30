@@ -9,12 +9,10 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { EditProps, EditViewProps } from './types';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { container } from 'framework';
 import { IMessageService } from '@/modules/message/interface';
-import { MessageService } from '@/modules/message/service';
 
 class EditViewModel extends StoreViewModel<EditProps> implements EditViewProps {
-  @IMessageService _messageService: IMessageService;
+  @IMessageService private _messageService: IMessageService;
 
   @computed
   private get _id() {
@@ -34,7 +32,7 @@ class EditViewModel extends StoreViewModel<EditProps> implements EditViewProps {
     );
     inEditModePostIds.push(this._id);
     globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
-    container.get<MessageService>(IMessageService).setEditInputFocus(this._id);
+    this._messageService.setEditInputFocus(this._id);
   };
 }
 

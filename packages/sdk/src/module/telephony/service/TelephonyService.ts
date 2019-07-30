@@ -13,7 +13,7 @@ import {
 
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
-import { MAKE_CALL_ERROR_CODE } from '../types';
+import { MAKE_CALL_ERROR_CODE, notificationCallback } from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -214,6 +214,14 @@ class TelephonyService extends EntityBaseService<Call>
 
   getLocalEmergencyAddress = () => {
     return this.telephonyController.getLocalEmergencyAddress();
+  };
+
+  subscribeEmergencyAddressChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeEmergencyAddressChange(listener);
+  };
+
+  subscribeSipProvChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvChange(listener);
   };
 }
 

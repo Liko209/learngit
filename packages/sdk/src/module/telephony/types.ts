@@ -21,6 +21,8 @@ enum E911_STATUS {
   DISCLINED,
 }
 
+type notificationCallback = (...values: any[]) => void;
+
 type TelephonyCallInfo = {
   fromName?: string;
   fromNum: string;
@@ -79,4 +81,5 @@ export {
   CALL_ACTION_ERROR_CODE,
   EmergencyServiceAddress,
   SipProvisionInfo,
+  notificationCallback,
 };
