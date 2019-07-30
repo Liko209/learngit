@@ -29,7 +29,7 @@ import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
 

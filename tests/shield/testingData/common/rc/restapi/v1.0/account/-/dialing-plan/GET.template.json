@@ -1,0 +1,97 @@
+{
+  "host": "rc",
+  "path": "/restapi/v1.0/account/~/dialing-plan",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "path": "/restapi/v1.0/account/~/dialing-plan",
+    "method": "GET",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnaFhnQmVrWVlLVmQwNzVyblhVUnNCSV91RlY4U2s5T09LaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwRFM3bnlYT3JBTlRVVzVHdmJOUi04NHxURXctTnd8RWhDQVVad3ZHczZLdGUxMHJOYi1Hd3xBQQ",
+      "Content-Type": "application/json;charset=utf-8"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100",
+      "records": [
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/1",
+          "id": "1",
+          "name": "United States",
+          "isoCode": "US",
+          "callingCode": "1"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/143",
+          "id": "143",
+          "name": "Mexico",
+          "isoCode": "MX",
+          "callingCode": "52"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/15",
+          "id": "15",
+          "name": "Australia",
+          "isoCode": "AU",
+          "callingCode": "61"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/160",
+          "id": "160",
+          "name": "New Zealand",
+          "isoCode": "NZ",
+          "callingCode": "64"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/224",
+          "id": "224",
+          "name": "United Kingdom",
+          "isoCode": "GB",
+          "callingCode": "44"
+        },
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/dictionary/country/39",
+          "id": "39",
+          "name": "Canada",
+          "isoCode": "CA",
+          "callingCode": "1"
+        }
+      ],
+      "paging": {
+        "page": 1,
+        "totalPages": 1,
+        "perPage": 100,
+        "totalElements": 6,
+        "pageStart": 0,
+        "pageEnd": 5
+      },
+      "navigation": {
+        "firstPage": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100"
+        },
+        "lastPage": {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/dialing-plan?page=1&perPage=100"
+        }
+      }
+    },
+    "headers": {
+      "date": "Tue, 09 Jul 2019 02:25:33 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "60",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "59",
+      "content-length": "420",
+      "rcrequestid": "d44e1d4c-a1f0-11e9-98e6-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "heavy",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    }
+  }
+}

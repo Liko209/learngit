@@ -35,16 +35,11 @@ class ConfigManager {
   }
 
   mergeConfig(partialConfig: Partial<LogControlConfig>) {
-    const newConfig = _.mergeWith(
-      {},
-      this._config,
-      partialConfig,
-      (objValue, srcValue) => {
-        if (Array.isArray(objValue)) {
-          return srcValue;
-        }
-      },
-    );
+    const newConfig = _.mergeWith({}, this._config, partialConfig, (objValue, srcValue) => {
+      if (Array.isArray(objValue)) {
+        return srcValue;
+      }
+    });
     return this.setConfig(newConfig);
   }
 }

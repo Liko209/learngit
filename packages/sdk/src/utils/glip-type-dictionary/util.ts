@@ -7,7 +7,7 @@
 // http://git.ringcentral.com/Glip/glip-type-dictionary
 
 const INTEGRATION_LOWER_ID = 7000;
-const TYPE_ID_MASK = 0x1fff;
+export const TYPE_ID_MASK = 0x1fff;
 const MAX_PSEUDO_ID = 0x3ffff;
 
 export default class GlipTypeUtil {
