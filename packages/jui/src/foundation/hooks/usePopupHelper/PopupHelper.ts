@@ -125,6 +125,6 @@ class PopupHelper {
       tabIndex: 0,
     };
   }
-}¡
+}
 
 export { PopupHelper };
