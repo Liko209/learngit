@@ -265,6 +265,12 @@ class RCPermissionController {
           permissionId: PermissionId.READ_MESSAGES,
         },
       ],
+      [
+        ERCServiceFeaturePermission.WEB_PHONE,
+        {
+          featureName: RCServiceFeatureName.WEB_PHONE,
+        },
+      ],
     ]);
   }
 }

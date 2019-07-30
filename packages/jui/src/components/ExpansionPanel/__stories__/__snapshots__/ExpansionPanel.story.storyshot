@@ -221,6 +221,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
         >
           <button
             aria-describedby={null}
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c2"
             disabled={false}
             onBlur={[Function]}
@@ -345,6 +346,7 @@ exports[`Storyshots Components/ExpansionPanel JuiExpansionPanel: Components/Expa
         >
           <button
             aria-describedby={null}
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c2"
             disabled={false}
             onBlur={[Function]}

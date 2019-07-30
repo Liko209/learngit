@@ -1,13 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots Components/VirtualizedMenuList VirtualizedMenuList: Components/VirtualizedMenuList VirtualizedMenuList 1`] = `
-<button
-  onClick={[Function]}
->
-  Open
-</button>
-`;
-
 exports[`Storyshots Components/VirtualizedMenus VirtualizedMenu: Components/VirtualizedMenus VirtualizedMenu 1`] = `
 <button
   onClick={[Function]}

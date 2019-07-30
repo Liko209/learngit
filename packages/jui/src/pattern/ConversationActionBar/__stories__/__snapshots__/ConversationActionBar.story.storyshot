@@ -211,6 +211,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
   >
     <button
       aria-describedby={null}
+      aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
       disabled={false}
@@ -253,6 +254,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
     </button>
     <button
       aria-describedby={null}
+      aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
       disabled={false}
@@ -295,6 +297,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
     </button>
     <button
       aria-describedby={null}
+      aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
       disabled={false}
@@ -337,6 +340,7 @@ exports[`Storyshots Pattern ConversationActionBar: Pattern ConversationActionBar
     </button>
     <button
       aria-describedby={null}
+      aria-label="tooltip"
       className="MuiButtonBase-root MuiIconButton-root c1"
       data-name="actionBarLike"
       disabled={false}

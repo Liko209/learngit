@@ -121,4 +121,4 @@ const JuiMenuItem = React.memo(
   },
 );
 
-export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem };
+export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem, StyledMuiListItemIcon };

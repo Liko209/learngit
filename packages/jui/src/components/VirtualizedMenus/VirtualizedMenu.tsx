@@ -19,6 +19,12 @@ const StyledMenu = styled(JuiPopover)`
     display: flex;
     flex-direction: column;
   }
+
+  & .virtualized-menu-list {
+    height: 100%;
+    /* TODO support padding in virtualized menu */
+    padding: 0;
+  }
 `;
 
 const CLASSES = {

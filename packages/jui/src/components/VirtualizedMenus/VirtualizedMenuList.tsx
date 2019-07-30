@@ -61,7 +61,6 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
       event.preventDefault();
-      console.log('onKeyPress: ', event.key);
       onKeyPress(event.key);
     },
     [onKeyPress],
@@ -70,10 +69,8 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   useLayoutEffect(() => {
     if (listRef.current && focusedIndex !== -1) {
       listRef.current.scrollIntoViewIfNeeded(focusedIndex);
-      console.log('document.activeElement: ', document.activeElement);
     }
   }, [focusedIndex]);
-  console.log('focusedIndex: ', focusedIndex);
 
   useLayoutEffect(() => {
     if (listRef.current && autoFocus) {

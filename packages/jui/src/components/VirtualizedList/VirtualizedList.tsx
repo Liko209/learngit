@@ -280,10 +280,10 @@ const JuiVirtualizedList: RefForwardingComponent<
       getVisibleRange: computeVisibleRange,
       getPrevVisibleRange: () => prevVisibleRange,
       focus: () => {
-        if(ref.current) {
+        if (ref.current) {
           ref.current.focus();
         }
-      }
+      },
     }),
     [computeVisibleRange, jumpToPosition],
   );

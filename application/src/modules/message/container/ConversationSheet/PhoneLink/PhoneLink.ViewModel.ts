@@ -34,10 +34,10 @@ class PhoneLinkViewModel extends StoreViewModel<PhoneLinkProps> {
   @action
   updateCanUseTelephony = async () => {
     this.canUseTelephony = await this._featuresFlagsService.canUseTelephony();
-  }
+  };
 
   directCall = (phoneNumber: string) => {
     this._telephonyService.directCall(phoneNumber);
-  }
+  };
 }
 export { PhoneLinkViewModel };

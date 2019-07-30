@@ -24,7 +24,7 @@ import { StateService, GROUP_BADGE_TYPE } from 'sdk/module/state';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import BadgeModel from '@/store/models/Badge';
 import { NEW_MESSAGE_BADGES_OPTIONS } from 'sdk/module/profile/constants';
-import { MESSAGE_SETTING_ITEM } from '@/modules/message/interface/constant';
+import { MESSAGE_SETTING_ITEM } from '@/modules/message/interface';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
