@@ -7,7 +7,6 @@ import { test, testable } from 'shield';
 import { mockEntity } from 'shield/application';
 import { mockService } from 'shield/sdk';
 import { FileDeleteActionViewModel } from '../FileDeleteAction.ViewModel';
-import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ENTITY_NAME } from '@/store';
 import {
@@ -70,21 +69,12 @@ describe('FileDeleteActionViewModel', () => {
       };
     }
     if (name === ENTITY_NAME.GROUP) {
-      console.log('haha');
       return {
         isThePersonGuest: () => {
           return isThePersonGuest;
         },
       };
     }
-  };
-
-  const mockUserConfig = userId => () => {
-    return {
-      getGlipUserId() {
-        return userId;
-      },
-    };
   };
 
   @testable
@@ -105,7 +95,6 @@ describe('FileDeleteActionViewModel', () => {
     )
     @mockEntity(entityMock({ postFileVersion: 1, isThePersonGuest: false }))
     t2() {
-      // @ts-ignore
       getGlobalValue = jest.fn().mockReturnValue(userC);
       const vm = new FileDeleteActionViewModel({ postId: 123 });
       expect(vm.canDelete).toBe(false);
