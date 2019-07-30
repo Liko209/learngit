@@ -42,7 +42,9 @@ class RightShelfMemberListViewModel
   @observable
   fullGuestIds: number[] = [];
 
-  private _membersCache: number[] = [];
+  private _membersCache: {
+    [groupId: string]: number[];
+  } = {};
 
   constructor(props: RightShelfMemberListProps) {
     super(props);
@@ -52,10 +54,12 @@ class RightShelfMemberListViewModel
 
       (len: number) => {
         if (len === undefined) return;
-        if (len > this._membersCache.length) {
+        const cachedIdsLen = (this._membersCache[this.props.groupId] || [])
+          .length;
+        if (cachedIdsLen > 0 && len > cachedIdsLen) {
           const addedPersonCompanyIds = _.difference(
             this.group.members,
-            this._membersCache,
+            this._membersCache[this.props.groupId],
           ).map(
             id =>
               getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id).companyId,
@@ -66,11 +70,11 @@ class RightShelfMemberListViewModel
               this._isNewGuestCompanyId(companyId),
             )
           ) {
-            this._membersCache = this.group.members;
+            this._membersCache = { [this.props.groupId]: this.group.members };
             return;
           }
         }
-        this._membersCache = this.group.members;
+        this._membersCache = { [this.props.groupId]: this.group.members };
         this._getMemberAndGuestIds();
       },
       { fireImmediately: true },
@@ -83,6 +87,12 @@ class RightShelfMemberListViewModel
       },
     );
   }
+
+  // onReceiveProps({ groupId }: RightShelfMemberListProps) {
+  //   if (groupId !== this.group.id) {
+  //     this._membersCache = [];
+  //   }
+  // }
 
   @action
   private async _getMemberAndGuestIds() {
