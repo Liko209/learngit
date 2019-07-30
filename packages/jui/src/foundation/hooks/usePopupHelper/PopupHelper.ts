@@ -6,6 +6,8 @@
 import { isElementInPopup } from './utils';
 import { PopupState } from './types';
 
+const SELECT_TRIGGER_KEYS = ['ArrowUp', 'ArrowDown', 'Enter', ' '];
+
 class PopupHelper {
   private _popupId?: string;
   private _variant: string;
@@ -34,7 +36,7 @@ class PopupHelper {
       open: false,
       hovered: false,
     });
-  }
+  };
 
   open = (event: React.SyntheticEvent<any>) => {
     if (document.activeElement instanceof HTMLElement) {
@@ -45,7 +47,7 @@ class PopupHelper {
       open: true,
       hovered: event.type === 'mouseenter',
     });
-  }
+  };
 
   handleMouseLeave = (event: React.MouseEvent<any>) => {
     const { hovered, anchorEl } = this._state;
@@ -60,7 +62,7 @@ class PopupHelper {
     ) {
       this.close();
     }
-  }
+  };
 
   get PopoverProps() {
     const { open, anchorEl } = this._state;
@@ -93,6 +95,18 @@ class PopupHelper {
     };
   }
 
+  get SelectTriggerProps() {
+    return {
+      ...this.TriggerProps,
+      onKeyDown: (event: React.KeyboardEvent) => {
+        if (SELECT_TRIGGER_KEYS.includes(event.key)) {
+          event.preventDefault();
+          this.open(event);
+        }
+      },
+    };
+  }
+
   get HoverProps() {
     return {
       ...this._AccessabilityProps,
@@ -108,8 +122,9 @@ class PopupHelper {
         ? this._popupId
         : null,
       'aria-haspopup': this._variant === 'popover' ? true : undefined,
+      tabIndex: 0,
     };
   }
-}
+}¡
 
 export { PopupHelper };

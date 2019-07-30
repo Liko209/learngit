@@ -1,0 +1,83 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-07-30 09:38:13
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import styled from '../../foundation/styled-components';
+import {
+  disabled,
+  grey,
+  height,
+  primary,
+  spacing,
+  typography,
+  width,
+  palette,
+} from '../../foundation/utils/styles';
+import { ArrowDropDownIcon } from './ArrowDropDownIcon';
+import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
+
+const StyledSelect = styled<InputBaseProps>(InputBase)`
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: ${spacing(1)};
+  background-color: ${grey('200')};
+  border: 1px solid ${grey('200')};
+  ${typography('body1')};
+  color: ${grey('900')};
+  width: ${width(50)};
+  height: ${height(10)};
+
+  &&:hover {
+    background-color: ${grey('100')};
+    border: 1px solid ${grey('100')};
+  }
+
+  &&:focus,
+  &&.focused {
+    background-color: ${grey('200')};
+    border: 1px solid ${primary('700')};
+    outline: none;
+  }
+
+  &&.disabled {
+    ${disabled}
+  }
+
+  ${ArrowDropDownIcon} {
+    color: ${grey('500')};
+    position: absolute;
+    right: 0;
+    pointer-events: none;
+  }
+
+  .select-input {
+    height: 100%;
+    padding: 0;
+    box-sizing: border-box;
+  }
+`;
+
+const StyledInput = styled.div`
+  && {
+    font: inherit;
+    color: currentColor;
+    padding: ${spacing(1.5, 6, 1.5, 2)};
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  &:focus {
+    background-color: ${palette('grey', '0', 0.05)};
+    outline: none;
+  }
+`;
+
+export { StyledSelect, StyledInput };

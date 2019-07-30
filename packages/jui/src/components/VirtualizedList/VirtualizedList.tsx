@@ -45,6 +45,7 @@ import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
 type JuiVirtualizedListHandles = {
+  focus: () => void;
   scrollToTop: () => void;
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
@@ -278,6 +279,11 @@ const JuiVirtualizedList: RefForwardingComponent<
       },
       getVisibleRange: computeVisibleRange,
       getPrevVisibleRange: () => prevVisibleRange,
+      focus: () => {
+        if(ref.current) {
+          ref.current.focus();
+        }
+      }
     }),
     [computeVisibleRange, jumpToPosition],
   );

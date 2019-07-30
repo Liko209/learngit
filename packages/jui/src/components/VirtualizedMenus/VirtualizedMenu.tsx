@@ -5,30 +5,42 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiMenu, JuiMenuProps } from '../Menus/Menu';
+import { JuiMenuProps } from '../Menus/Menu';
+import { JuiVirtualizedMenuList } from './VirtualizedMenuList';
+import { JuiPopover } from '../Popover';
 
-type JuiVirtualizedMenuProps = JuiMenuProps;
+type JuiVirtualizedMenuProps = JuiMenuProps & {
+  children: JSX.Element[];
+  initialFocusedIndex?: number;
+};
 
-const StyledMenu = styled(JuiMenu)`
+const StyledMenu = styled(JuiPopover)`
   & .virtualized-menu-paper {
     display: flex;
     flex-direction: column;
-  }
-
-  & .virtualized-menu-list {
-    height: 100%;
-    /* TODO support padding in virtualized menu */
-    padding: 0;
   }
 `;
 
 const CLASSES = {
   paper: 'virtualized-menu-paper',
-  list: 'virtualized-menu-list',
 };
 
-const JuiVirtualizedMenu = (props: JuiVirtualizedMenuProps) => {
-  return <StyledMenu classes={CLASSES} {...props} />;
+const JuiVirtualizedMenu = ({
+  initialFocusedIndex,
+  children,
+  ...rest
+}: JuiVirtualizedMenuProps) => {
+  return (
+    <StyledMenu classes={CLASSES} {...rest}>
+      <JuiVirtualizedMenuList
+        initialFocusedIndex={initialFocusedIndex}
+        loop={false}
+        focusOnHover
+      >
+        {children}
+      </JuiVirtualizedMenuList>
+    </StyledMenu>
+  );
 };
 
 export { JuiVirtualizedMenu, JuiVirtualizedMenuProps };
