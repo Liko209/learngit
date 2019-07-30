@@ -6,11 +6,20 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import { ThemeProvider } from 'styled-components';
+import { createMuiTheme } from '@material-ui/core/styles';
 
-const theme = {
+const rawTheme = {
   breakpoints: {
     keys: ['xs', 'sm', 'md', 'lg', 'xl'],
     values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920 },
+  },
+  radius: {
+    circle: '50%',
+    zero: '0px',
+    sm: '2px',
+    md: '3px',
+    lg: '4px',
+    xl: '8px',
   },
   direction: 'ltr',
   mixins: {
@@ -298,7 +307,7 @@ const theme = {
     border3: '1px solid rgba(0, 0, 0, 0.36)',
     border4: '1px solid #eee',
   },
-  spacing: { unit: 4 },
+  spacing: 4,
   transitions: {
     create: () => '',
     easing: {
@@ -343,7 +352,18 @@ const theme = {
     val3: '0 3px 1px -2px rgba(0, 0, 0, 0.14)',
   },
   maxHeight: { dialog: '72vh' },
-  opacity: [0.1, 0.2],
+  opacity: {
+    1: 0.1,
+    2: 0.2,
+    3: 0.3,
+    4: 0.4,
+    5: 0.5,
+    6: 0.6,
+    7: 0.7,
+    8: 0.8,
+    9: 0.9,
+    '05': 0.05,
+  },
   radius: {
     circle: '50%',
     zero: '0px',
@@ -355,10 +375,12 @@ const theme = {
   },
 };
 
+const theme = createMuiTheme(rawTheme as any);
+
 const mountWithTheme = (content: React.ReactNode) =>
   mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
 const asyncMountWithTheme = async (content: React.ReactNode) =>
   await mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
 
-export { mountWithTheme, asyncMountWithTheme };
+export { theme, mountWithTheme, asyncMountWithTheme, theme as defaultTheme };

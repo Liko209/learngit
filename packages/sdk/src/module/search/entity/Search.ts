@@ -29,6 +29,7 @@ type FuzzySearchPersonOptions = {
   fetchAllIfSearchKeyEmpty?: boolean;
   asIdsOrder?: boolean;
   recentFirst?: boolean;
+  ignoreEmail?: boolean;
 };
 
 type PhoneContactEntity = {

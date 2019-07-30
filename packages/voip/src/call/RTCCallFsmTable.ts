@@ -73,6 +73,10 @@ interface IRTCCallFsmTableDependency {
   onStopRecordAction(): void;
   onMuteAction(): void;
   onUnmuteAction(): void;
+  onHoldSuccessAction(): void;
+  onHoldFailedAction(): void;
+  onUnholdSuccessAction(): void;
+  onUnholdFailedAction(): void;
   onReportCallActionFailed(name: string): void;
   onHoldAction(): void;
   onUnholdAction(): void;
@@ -420,12 +424,18 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.HOLD_SUCCESS,
           from: CallFsmState.HOLDING,
-          to: CallFsmState.HOLDED,
+          to: () => {
+            dependency.onHoldSuccessAction();
+            return CallFsmState.HOLDED;
+          },
         },
         {
           name: CallFsmEvent.HOLD_FAILED,
           from: CallFsmState.HOLDING,
-          to: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onHoldFailedAction();
+            return CallFsmState.CONNECTED;
+          },
         },
         {
           name: CallFsmEvent.UNHOLD,
@@ -438,12 +448,18 @@ class RTCCallFsmTable extends StateMachine {
         {
           name: CallFsmEvent.UNHOLD_SUCCESS,
           from: CallFsmState.UNHOLDING,
-          to: CallFsmState.CONNECTED,
+          to: () => {
+            dependency.onUnholdSuccessAction();
+            return CallFsmState.CONNECTED;
+          },
         },
         {
           name: CallFsmEvent.UNHOLD_FAILED,
           from: CallFsmState.UNHOLDING,
-          to: CallFsmState.HOLDED,
+          to: () => {
+            dependency.onUnholdFailedAction();
+            return CallFsmState.HOLDED;
+          },
         },
         {
           name: CallFsmEvent.DTMF,

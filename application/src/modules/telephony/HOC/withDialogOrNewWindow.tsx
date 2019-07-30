@@ -23,6 +23,7 @@ import { TELEPHONY_SERVICE } from '../interface/constant';
 const FOCUS_IN_EVT = 'focusin';
 const BLUR = 'blur';
 const SYNC_DIALER_ENTERED = 300;
+const RESIZE = 'resize';
 /*eslint-disable*/
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -106,6 +107,7 @@ function withDialogOrNewWindow<T>(
 
   @observer
   class ComponentWithDialogOrNewWindow extends React.Component<T> {
+    private _goToTop = false;
     private _window: Window | null = null;
     private _div = document.createElement('div');
     private _root = document.body;
@@ -222,6 +224,8 @@ function withDialogOrNewWindow<T>(
         (dragEl.children[0] as HTMLDivElement).style.overflow = '';
       }
 
+      window.removeEventListener(RESIZE, this._handleResize);
+
       setTimeout(() => {
         if (this._dragRef.current) {
           const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
@@ -232,9 +236,7 @@ function withDialogOrNewWindow<T>(
               dragEl.dispatchEvent(MOUSE_EVENT.UP);
             });
           };
-          window.addEventListener('resize', this._handleResize);
-        } else {
-          window.removeEventListener('resize', this._handleResize);
+          window.addEventListener(RESIZE, this._handleResize);
         }
       }, 300);
     }
@@ -243,6 +245,7 @@ function withDialogOrNewWindow<T>(
       this._telephonyStore.onDialerBlur();
       window.removeEventListener(FOCUS_IN_EVT, this._onFocus);
       window.removeEventListener(BLUR, this._onBlur);
+      window.removeEventListener(RESIZE, this._handleResize);
     }
 
     componentDidMount() {
@@ -251,7 +254,7 @@ function withDialogOrNewWindow<T>(
     }
 
     render() {
-      const { callWindowState } = this._telephonyStore;
+      const { callWindowState, isIncomingCall } = this._telephonyStore;
       const open =
         callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
       let container = this._root;
@@ -262,12 +265,20 @@ function withDialogOrNewWindow<T>(
         this._closeWindow();
       }
 
+      this._goToTop = open
+        ? this._goToTop
+          ? true
+          : isIncomingCall
+          ? true
+          : false
+        : false;
+
       return (
         <JuiDraggableDialog
           container={container}
           open={open}
           x={(document.body.clientWidth - 344) / 2}
-          y={(document.body.clientHeight - 504) / 2}
+          y={(document.body.clientHeight - 552) / 2}
           dragRef={this._dragRef}
           TransitionComponent={DialerTransitionComponent}
           onStart={this._handleStart}
@@ -275,6 +286,9 @@ function withDialogOrNewWindow<T>(
           ref={this._containerRef}
           onEntered={this._handleEntered}
           onExited={this._handleExited}
+          role="dialer"
+          goToTop={this._goToTop}
+          forceToTop={isIncomingCall}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

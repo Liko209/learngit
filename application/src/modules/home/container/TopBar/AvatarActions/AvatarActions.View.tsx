@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import * as React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -14,6 +13,8 @@ import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { PRESENCE } from 'sdk/module/presence/constant';
+import { PresenceMenu } from '../PresenceMenu';
 
 type Props = ViewProps & WithTranslation;
 
@@ -32,7 +33,30 @@ class AvatarActionsComponent extends React.Component<Props> {
   private get _presence() {
     const { currentUserId } = this.props;
 
-    return <Presence uid={currentUserId} size='large' borderSize='large' />;
+    return <Presence uid={currentUserId} size="large" borderSize="large" />;
+  }
+
+  private get _tooltip() {
+    const { t, presence } = this.props
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+    }
+    return t(i18nMap[presence] || 'presence.offline');
+  }
+
+  private get title() {
+    const { t, presence } = this.props
+    const i18nMap = {
+      [PRESENCE.AVAILABLE]: 'presence.available',
+      [PRESENCE.DND]: 'presence.doNotDisturb',
+      [PRESENCE.INMEETING]: 'presence.inMeeting',
+      [PRESENCE.ONCALL]: 'presence.onCall',
+      [PRESENCE.UNAVAILABLE]: 'presence.invisible',
+    }
+    return t(i18nMap[presence] || 'presence.offline');
   }
 
   private _Anchor() {
@@ -41,8 +65,9 @@ class AvatarActionsComponent extends React.Component<Props> {
       <Avatar
         uid={currentUserId}
         presence={this._presence}
-        size='large'
-        automationId='topBarAvatar'
+        size="large"
+        automationId="topBarAvatar"
+        tooltip={this._tooltip}
       />
     );
   }
@@ -52,7 +77,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   handleSendFeedback = () => this.props.handleSendFeedback();
 
   render() {
-    const { handleSignOut, currentUserId, t } = this.props;
+    const { handleSignOut, currentUserId, t, presence } = this.props;
 
     return (
       <JuiAvatarActions
@@ -66,33 +91,34 @@ class AvatarActionsComponent extends React.Component<Props> {
           horizontal: 'center',
         }}
       >
-        <JuiMenuList data-test-automation-id='avatarMenu'>
+        <JuiMenuList data-test-automation-id="avatarMenu">
           <OpenProfileDialog id={currentUserId}>
             <JuiMenuItem
               aria-label={t('home.viewYourProfile')}
-              data-test-automation-id='viewYourProfile'
+              data-test-automation-id="viewYourProfile"
             >
               {t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
+          <PresenceMenu presence={presence} title={this.title} />
           <JuiMenuItem
             onClick={this.handleAboutPage}
             aria-label={t('home.aboutRingCentral')}
-            data-test-automation-id='aboutPage'
+            data-test-automation-id="aboutPage"
           >
             {t('home.aboutRingCentral')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={this.handleSendFeedback}
             aria-label={t('home.sendFeedback')}
-            data-test-automation-id='sendFeedback'
+            data-test-automation-id="sendFeedback"
           >
             {t('home.sendFeedback')}
           </JuiMenuItem>
           <JuiMenuItem
             onClick={handleSignOut}
             aria-label={t('auth.signOut')}
-            data-test-automation-id='signOut'
+            data-test-automation-id="signOut"
           >
             {t('auth.signOut')}
           </JuiMenuItem>

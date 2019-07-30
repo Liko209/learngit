@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { MediaTrack } from '../MediaTrack';
+import { MediaEventType, MediaEventName } from '@/interface/media';
 
 const trackBaseOpts = {
   id: 'testTrackId',
@@ -28,6 +29,13 @@ describe('MediaTrack', () => {
     jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
     jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
     jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
+    jest
+      .spyOn<HTMLAudioElement, any>(
+        HTMLMediaElement.prototype,
+        'readyState',
+        'get',
+      )
+      .mockReturnValue('5');
   });
   afterEach(() => {
     jest.restoreAllMocks();
@@ -47,6 +55,8 @@ describe('MediaTrack', () => {
         expect(mediaTrack.src).toEqual([]);
         expect(mediaTrack.volume).toEqual(1);
         expect(mediaTrack.muted).toBeFalsy();
+        expect(mediaTrack.loop).toBeFalsy();
+        expect(mediaTrack.autoplay).toBeFalsy();
         expect(mediaTrack.currentTime).toEqual(0);
         expect(mediaTrack.outputDevices).toEqual([]);
         expect(mediaTrack.masterVolume).toEqual(1);
@@ -159,6 +169,7 @@ describe('MediaTrack', () => {
       expect(mediaTrack.playing).toBeTruthy();
       mediaTrack.stop();
       expect(mediaTrack.playing).toBeFalsy();
+      expect(mediaTrack.currentTime).toEqual(0);
     });
   });
 
@@ -190,6 +201,18 @@ describe('MediaTrack', () => {
       expect(mediaTrack.volume).toEqual(0.1);
       mediaTrack.setVolume(1.5);
       expect(mediaTrack.volume).toEqual(0.1);
+    });
+  });
+
+  describe('media track set loop', () => {
+    it('should set sound loop when track setLoop called', () => {
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts),
+      );
+      mediaTrack.setLoop(false);
+      expect(mediaTrack.loop).toBeFalsy();
+      mediaTrack.setLoop(true);
+      expect(mediaTrack.loop).toBeTruthy();
     });
   });
 
@@ -307,6 +330,74 @@ describe('MediaTrack', () => {
       expect(mediaTrack.id).toEqual(newMediaInfo.id);
       expect(mediaTrack.currentMediaId).toEqual(newMediaInfo.mediaId);
       expect(mediaTrack.src).toEqual(newMediaInfo.src);
+    });
+    it('should not change the master volume when setOptions argument not masterVolume', () => {
+      const newMediaInfo = {
+        id: trackBaseOpts.id,
+        mediaId: 'newMediaId',
+        src: ['newMediaId.mp3'],
+      };
+      const masterVolume = 0.51;
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts, {
+          masterVolume,
+        }),
+      );
+      expect(mediaTrack.masterVolume).toEqual(masterVolume);
+
+      mediaTrack.setOptions(newMediaInfo);
+      expect(mediaTrack.id).toEqual(newMediaInfo.id);
+      expect(mediaTrack.masterVolume).toEqual(masterVolume);
+    });
+  });
+
+  describe('media track bind event', () => {
+    it('should bind event to current media', () => {
+      const loadedEvent = {
+        name: 'loadeddata' as MediaEventName,
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts, {
+          mediaEvents: [],
+        }),
+      );
+      expect(mediaTrack.currentMediaId).toEqual(hasMediaOpts.mediaId);
+      expect(mediaTrack.currentMediaEvent.length).toEqual(0);
+
+      mediaTrack.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(mediaTrack.currentMediaEvent.length).toEqual(1);
+      expect(mediaTrack.currentMediaEvent[0].name).toEqual(loadedEvent.name);
+
+      const sound = mediaTrack.sounds[0];
+      const bindFn = jest.spyOn(sound, 'bindEvent');
+      mediaTrack.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(bindFn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('media track unbind event', () => {
+    it('should unbind event to current media', () => {
+      const loadedEvent = {
+        name: 'loadeddata' as MediaEventName,
+        type: MediaEventType.OFF,
+        handler: () => {},
+      };
+      const mediaTrack = new MediaTrack(
+        Object.assign({}, trackBaseOpts, hasMediaOpts, {
+          mediaEvents: [],
+        }),
+      );
+      expect(mediaTrack.currentMediaId).toEqual(hasMediaOpts.mediaId);
+      mediaTrack.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(mediaTrack.currentMediaEvent.length).toEqual(1);
+      expect(mediaTrack.currentMediaEvent[0].name).toEqual(loadedEvent.name);
+
+      const sound = mediaTrack.sounds[0];
+      const unbindFn = jest.spyOn(sound, 'unbindEvent');
+      mediaTrack.unbindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(unbindFn).toHaveBeenCalled();
     });
   });
 

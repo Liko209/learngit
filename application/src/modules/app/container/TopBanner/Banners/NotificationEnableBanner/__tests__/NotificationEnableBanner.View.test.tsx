@@ -7,7 +7,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import { NotificationEnableBannerView } from '../NotificationEnableBanner.View';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '@/__tests__/utils';
+import { theme } from 'shield/utils';
 import { Jupiter, container } from 'framework';
 import { config } from '@/modules/notification/module.config';
 

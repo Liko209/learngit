@@ -13,6 +13,8 @@ import { JuiAvatar } from '../../Avatar';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
 
 import { JuiListItemText } from '../../Lists';
+import { JuiIconButton } from 'src/components/Buttons';
+import { JuiIconography } from 'src/foundation/Iconography';
 
 const Avatar = <JuiAvatar src={avatar} />;
 
@@ -34,7 +36,7 @@ storiesOf('Components/Menus', module)
     <JuiMenuItem onClick={action('onClick Profile')}>Profile</JuiMenuItem>
   ))
   .add('Text MenuItem With Icon', () => (
-    <JuiMenuItem onClick={action('onClick Profile')} icon='star'>
+    <JuiMenuItem onClick={action('onClick Profile')} icon="star">
       Profile
     </JuiMenuItem>
   ))
@@ -50,7 +52,7 @@ storiesOf('Components/Menus', module)
   .add('SubMenu', () => {
     return (
       <JuiMenuList style={{ width: '180px' }}>
-        <JuiSubMenu title='Sub Menu' disabled={boolean('disabled', false)}>
+        <JuiSubMenu title="Sub Menu" disabled={boolean('disabled', false)}>
           <JuiMenuItem disabled>Profile</JuiMenuItem>
           <JuiMenuItem>My account</JuiMenuItem>
           <JuiMenuItem>Logout</JuiMenuItem>

@@ -8,5 +8,6 @@ import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from 'voip';
 
 export { TelephonyService } from './TelephonyService';
 export * from './ITelephonyDelegate';
+export * from './ITelephonyService';
 
 export { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT };

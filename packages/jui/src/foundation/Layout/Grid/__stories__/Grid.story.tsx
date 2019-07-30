@@ -11,7 +11,7 @@ import { JuiPaper } from '../../../../components/Paper';
 
 storiesOf('Foundation/Layout', module).add('Grid', () => (
   <div>
-    <JuiGrid container spacing={24}>
+    <JuiGrid container spacing={9}>
       <JuiGrid item xs={12}>
         <JuiPaper>xs=12</JuiPaper>
       </JuiGrid>

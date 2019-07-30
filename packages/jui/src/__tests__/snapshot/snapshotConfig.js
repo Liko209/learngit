@@ -40,7 +40,7 @@ const excludeDomSnapshot = {
     'Pattern/Viewer',
     'Components/Tabs',
     'Pattern/TeamSetting',
-    'Pattern/ToastWrapper',
+    'Pattern/ToastWrapper'
   ],
   name: [
     'JuiAlert',
@@ -101,10 +101,18 @@ const excludeDomSnapshot = {
      *     Warning: Failed prop type: Material-UI: you are using a deprecated typography variant: `title` that will be removed in the next major release.
      */
     'ConversationPageHeader',
+    /**
+     * mui slider use ref
+     */
+    'AudioPlayer',
+    'TopBar',
+    'Minimized Call',
+    'Incoming Call',
+    'Fab Button'
   ],
   matchFunction: ({ name, kind }) => {
     return /HoC/.test(kind);
-  },
+  }
 };
 
 export { excludeDomSnapshot };

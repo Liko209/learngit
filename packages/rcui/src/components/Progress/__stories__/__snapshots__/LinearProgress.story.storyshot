@@ -3,29 +3,29 @@
 exports[`Storyshots Progress LinearProgress: Progress LinearProgress 1`] = `
 <div>
   <div
-    className="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-indeterminate "
+    className="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-indeterminate"
     role="progressbar"
   >
     <div
-      className="MuiLinearProgress-bar MuiLinearProgress-barColorPrimary MuiLinearProgress-bar1Indeterminate"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar1Indeterminate MuiLinearProgress-barColorPrimary"
       style={Object {}}
     />
     <div
-      className="MuiLinearProgress-bar MuiLinearProgress-barColorPrimary MuiLinearProgress-bar2Indeterminate"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar2Indeterminate MuiLinearProgress-barColorPrimary"
       style={Object {}}
     />
   </div>
   <br />
   <div
-    className="MuiLinearProgress-root MuiLinearProgress-colorSecondary MuiLinearProgress-indeterminate "
+    className="MuiLinearProgress-root MuiLinearProgress-colorSecondary MuiLinearProgress-indeterminate"
     role="progressbar"
   >
     <div
-      className="MuiLinearProgress-bar MuiLinearProgress-barColorSecondary MuiLinearProgress-bar1Indeterminate"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar1Indeterminate MuiLinearProgress-barColorSecondary"
       style={Object {}}
     />
     <div
-      className="MuiLinearProgress-bar MuiLinearProgress-barColorSecondary MuiLinearProgress-bar2Indeterminate"
+      className="MuiLinearProgress-bar MuiLinearProgress-bar2Indeterminate MuiLinearProgress-barColorSecondary"
       style={Object {}}
     />
   </div>

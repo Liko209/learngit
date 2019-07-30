@@ -47,15 +47,7 @@ class FileItemView extends Component<FileItemViewProps> {
           <JuiLeftRailListItemIcon
             disabled={supportFileViewer && !fileReadyForViewer}
           >
-            <Thumbnail
-              id={id}
-              type='file'
-              onClick={
-                supportFileViewer && fileReadyForViewer
-                  ? this._handleFileClick(file)
-                  : undefined
-              }
-            />
+            <Thumbnail id={id} type="file" />
           </JuiLeftRailListItemIcon>
           <JuiListItemText
             primary={
@@ -69,7 +61,7 @@ class FileItemView extends Component<FileItemViewProps> {
           />
           {hover && (
             <JuiListItemSecondaryAction>
-              <JuiButtonBar overlapSize={-2}>
+              <JuiButtonBar isStopPropagation overlapSize={-2}>
                 <Download url={downloadUrl} />
                 <FileActionMenu fileId={id} disablePortal={true} />
               </JuiButtonBar>
@@ -81,10 +73,20 @@ class FileItemView extends Component<FileItemViewProps> {
   };
 
   render() {
+    const { file } = this.props;
+    const fileInfo = file || {};
+    const { status, type } = fileInfo;
+    const supportFileViewer = isSupportFileViewer(type);
+    const fileReadyForViewer = isFileReadyForViewer(status);
     return (
       <JuiListItemWithHover
         render={this._renderItem()}
-        data-test-automation-id='rightRail-file-item'
+        onClick={
+          supportFileViewer && fileReadyForViewer
+            ? this._handleFileClick(file)
+            : undefined
+        }
+        data-test-automation-id="rightRail-file-item"
       />
     );
   }

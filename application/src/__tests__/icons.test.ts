@@ -6,7 +6,7 @@ import _ from 'lodash';
 function getIconList(svgData: string): string[] {
   const re = /<title>(.+?)<\/title>/g;
   const matches: any = [];
-  svgData.replace(re, function (m: any, p1: any) {
+  svgData.replace(re, function(m: any, p1: any) {
     matches.push(p1);
   } as any);
   return matches;

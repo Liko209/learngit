@@ -4,7 +4,7 @@ import {
   Opacity,
   Radius,
   Shadows,
-  ZIndex,
+  ZIndex
 } from '../styles';
 import { css } from '../styled-components';
 
@@ -14,18 +14,11 @@ import { css } from '../styled-components';
  */
 function spacing(...values: number[]) {
   return ({ theme }: any): string => {
-    const unit = theme.spacing.unit;
-    return cssValue(...values.map(n => n * unit));
+    if (values.length === 1) {
+      return `${theme.spacing(...values)}px`;
+    }
+    return theme.spacing(...values);
   };
-}
-
-/**
- * add px for values
- * cssValue(1, 2, 3, 4); // returns: 1px 2px 3px 4px
- * @param values
- */
-function cssValue(...values: number[]): string {
-  return values.map(n => `${n}px`).join(' ');
 }
 
 /**
@@ -68,9 +61,9 @@ function zIndex(name: keyof ZIndex) {
   };
 }
 
-/********************************************
+/** ******************************************
  *                 Colors                   *
- ********************************************/
+ ******************************************* */
 
 /**
  * colors
@@ -80,16 +73,16 @@ function zIndex(name: keyof ZIndex) {
  */
 function palette<T extends keyof Palette, K extends keyof Palette[T]>(
   name: T,
-  sub?: K,
+  sub?: K
 ) {
   return ({ theme }: any) => {
     return sub ? theme.palette[name][sub] : theme.palette[name];
   };
 }
 
-/********************************************
+/** ******************************************
  *              Font                  *
- ********************************************/
+ ******************************************* */
 
 /**
  * Font
@@ -97,7 +90,7 @@ function palette<T extends keyof Palette, K extends keyof Palette[T]>(
  */
 function typography<T extends keyof Typography, K extends keyof Typography[T]>(
   name: T,
-  sub?: K,
+  sub?: K
 ) {
   if (name === 'fontFamily' || name === 'codeFontFamily') {
     return css`
@@ -128,7 +121,7 @@ function typography<T extends keyof Typography, K extends keyof Typography[T]>(
 function fontProp<T extends keyof Typography, K extends keyof Typography[T]>(
   name: T,
   sub?: K,
-  key?: any,
+  key?: any
 ) {
   return ({ theme }: any) => {
     const font = sub ? theme.typography[name][sub] : theme.typography[name];

@@ -42,8 +42,11 @@ type JuiIconButtonProps = {
   icon?: SvgSymbol;
   stretchIcon?: boolean;
   tooltipPlacement?: TooltipProps['placement'];
-} & Omit<MuiIconButtonProps, 'color' | 'children'> &
-Omit<JuiIconographyProps, 'color' | 'children'>;
+  component?: React.ElementType;
+  download?: boolean;
+  href?: string;
+} & Omit<MuiIconButtonProps, 'color' | 'children' | 'size'> &
+  Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
   xxlarge: 8,
@@ -78,96 +81,107 @@ type StyledIconButtonProps = JuiIconButtonProps & {
   colorName: string;
   colorScope: keyof Palette;
 };
-const WrappedMuiIconButton = ({
-  invisible,
-  awake,
-  color,
-  colorName,
-  colorScope,
-  alwaysEnableTooltip,
-  tooltipForceHide,
-  tooltipPlacement,
-  stretchIcon,
-  shouldPersistBg,
-  ...rest
-}: StyledIconButtonProps) => (
-  <MuiIconButton
-    {...rest}
-    classes={{ disabled: 'disabled' }}
-    TouchRippleProps={{ classes: touchRippleClasses }}
-  />
+const WrappedMuiIconButton = React.forwardRef(
+  (
+    {
+      invisible,
+      awake,
+      color,
+      colorName,
+      colorScope,
+      alwaysEnableTooltip,
+      tooltipForceHide,
+      tooltipPlacement,
+      stretchIcon,
+      shouldPersistBg,
+      size,
+      ...rest
+    }: StyledIconButtonProps,
+    ref,
+  ) => (
+    <MuiIconButton
+      {...rest}
+      ref={ref as any}
+      classes={{ disabled: 'disabled' }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
+    />
+  ),
 );
 
 const StyledIconButton = styled(WrappedMuiIconButton)`
   && {
     padding: 0;
-    width: ${({ variant, size = 'medium', theme }) => width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-    theme,
-  })};
-    height: ${({ variant, size = 'medium', theme }) => width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-    theme,
-  })};
-    ${({
-    variant, size = 'medium', theme, stretchIcon,
-  }) => (stretchIcon
-    ? `font-size: ${width(
-      variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
-    )({
-      theme,
-    })};`
-    : '')}
-    /* color: ${({ awake }) => (awake ? grey('500') : palette('accent', 'ash'))}; */
-    color: ${({ theme, colorScope, colorName }) => palette(colorScope, colorName)({ theme })};
+    width: ${({ variant, size = 'medium', theme }) =>
+      width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+        theme,
+      })};
+    height: ${({ variant, size = 'medium', theme }) =>
+      width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+        theme,
+      })};
+    ${({ variant, size = 'medium', theme, stretchIcon }) =>
+      stretchIcon
+        ? `font-size: ${width(
+            variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
+          )({
+            theme,
+          })};`
+        : ''}
+    /* color: ${({ awake }) =>
+      awake ? grey('500') : palette('accent', 'ash')}; */
+    color: ${({ theme, colorScope, colorName }) =>
+      palette(colorScope, colorName)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
-    background-color: ${({
-    shouldPersistBg, theme, colorScope, colorName,
-  }) => (shouldPersistBg
-    ? tinycolor(palette(colorScope, colorName)({ theme }))
-      .setAlpha(theme.palette.action.hoverOpacity)
-      .toRgbString()
-    : 'inherit')};
+    background-color: ${({ shouldPersistBg, theme, colorScope, colorName }) =>
+      shouldPersistBg
+        ? tinycolor(palette(colorScope, colorName)({ theme }))
+            .setAlpha(theme.palette.action.hoverOpacity)
+            .toRgbString()
+        : 'inherit'};
     ${StyledIcon} {
       &, svg {
-        font-size: ${({
-    size = 'medium', theme, stretchIcon, variant,
-  }) => (stretchIcon
-    ? width(
-      variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
-    )({
-      theme,
-    })
-    : width(iconSizes[size])({ theme }))};
+        font-size: ${({ size = 'medium', theme, stretchIcon, variant }) =>
+          stretchIcon
+            ? width(
+                variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
+              )({
+                theme,
+              })
+            : width(iconSizes[size])({ theme })};
       }
     }
     &:hover {
-      background-color: ${({
-    theme, variant, colorScope, colorName,
-  }) => (variant === 'plain'
-    ? 'transparent'
-    : tinycolor(palette(colorScope, colorName)({ theme }))
-      .setAlpha(theme.palette.action.hoverOpacity)
-      .toRgbString())};
+      background-color: ${({ theme, variant, colorScope, colorName }) =>
+        variant === 'plain'
+          ? 'transparent'
+          : tinycolor(palette(colorScope, colorName)({ theme }))
+              .setAlpha(theme.palette.action.hoverOpacity)
+              .toRgbString()};
       ${StyledIcon} {
-        color: ${({ theme, colorScope, colorName }) => tinycolor(palette(colorScope, colorName)({ theme }))
-    .setAlpha(1 - theme.palette.action.hoverOpacity)
-    .toRgbString()};
+        color: ${({ theme, colorScope, colorName }) =>
+          tinycolor(palette(colorScope, colorName)({ theme }))
+            .setAlpha(1 - theme.palette.action.hoverOpacity)
+            .toRgbString()};
       }
     }
     &:active {
       ${StyledIcon} {
-        color: ${({ theme, colorScope, colorName }) => palette(colorScope, colorName)({ theme })};
+        color: ${({ theme, colorScope, colorName }) =>
+          palette(colorScope, colorName)({ theme })};
       }
     }
 
     &&.disabled {
       ${StyledIcon} {
-        color: ${({ theme }) => palette('action', 'disabledBackground')({ theme })};
+        color: ${({ theme }) =>
+          palette('action', 'disabledBackground')({ theme })};
       }
     }
 
     .rippleVisible {
-      color: ${({ theme, colorScope, colorName }) => palette(colorScope, colorName)({ theme })};
+      color: ${({ theme, colorScope, colorName }) =>
+        palette(colorScope, colorName)({ theme })};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
@@ -191,9 +205,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     symbol,
     ...rest
   } = props;
-  const {
-    size, variant, awake, disabled, invisible,
-  } = rest;
+  const { size, variant, awake, disabled, invisible } = rest;
   let colorScope: keyof Palette = 'primary';
   let colorName: string = 'main';
   if (color && color.indexOf('.') >= 0) {
@@ -207,25 +219,25 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     }
   }
   const renderToolTip = () => (
-      <StyledIconButton
-        disableRipple={rest.variant === 'plain'}
-        colorScope={colorScope}
-        colorName={colorName}
-        aria-label={ariaLabel}
-        className={className}
-        {...rest}
+    <StyledIconButton
+      disableRipple={rest.variant === 'plain'}
+      colorScope={colorScope}
+      colorName={colorName}
+      aria-label={ariaLabel || tooltipTitle}
+      className={className}
+      {...rest}
+    >
+      <StyledIcon
+        size={size}
+        variant={variant}
+        awake={awake}
+        disabled={disabled}
+        invisible={invisible}
+        symbol={symbol}
       >
-        <StyledIcon
-          size={size}
-          variant={variant}
-          awake={awake}
-          disabled={disabled}
-          invisible={invisible}
-          symbol={symbol}
-        >
-          {children}
-        </StyledIcon>
-      </StyledIconButton>
+        {children}
+      </StyledIcon>
+    </StyledIconButton>
   );
   let renderToolTipWrapper = renderToolTip;
   if (alwaysEnableTooltip) {
@@ -255,7 +267,9 @@ JuiIconButtonComponent.defaultProps = {
   stretchIcon: false,
 };
 
-const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
+const JuiIconButton = styled<JuiIconButtonProps>(
+  memo(JuiIconButtonComponent),
+)``;
 export {
   JuiIconButton,
   JuiIconButtonProps,

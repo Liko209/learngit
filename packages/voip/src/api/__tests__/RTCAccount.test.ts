@@ -12,21 +12,19 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
+  RTCSipProvisionInfo,
 } from '../types';
 import {
   kRTCAnonymous,
   kRTCProvisioningOptions,
   kRTCProvRefreshByRegFailedInterval,
+  kRetryIntervalList,
 } from '../../account/constants';
-import {
-  REGISTRATION_FSM_STATE,
-  RTCSipProvisionInfo,
-  RTC_PROV_EVENT,
-} from '../../account/types';
+import { REGISTRATION_FSM_STATE, RTC_PROV_EVENT } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
 import { kProvisioningInfoKey } from '../../utils/constants';
-import { ITelephonyDaoDelegate } from 'foundation/src';
+import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
 
@@ -136,6 +134,14 @@ class MockSession extends EventEmitter2 {
   mute = jest.fn();
   unmute = jest.fn();
   terminate = jest.fn();
+
+  dialog = {
+    id: {
+      callId: '100',
+      remoteTag: '200',
+      localTag: '300',
+    },
+  };
 }
 
 class MockLocalStorage implements ITelephonyDaoDelegate {
@@ -189,6 +195,22 @@ function setupAccount() {
 }
 
 describe('Telephony HA', () => {
+  it('Should follow back off algorithm for register retry interval[JPT-2304]', () => {
+    setupAccount();
+    let interval = 0;
+    for (let i = 0; i < 20; i++) {
+      interval = account._calculateNextRetryInterval();
+      if (i < kRetryIntervalList.length) {
+        expect(interval).toBeGreaterThanOrEqual(kRetryIntervalList[i].min);
+        expect(interval).toBeLessThanOrEqual(kRetryIntervalList[i].max);
+      } else {
+        expect(interval).toBeGreaterThanOrEqual(1920);
+        expect(interval).toBeLessThanOrEqual(3840);
+      }
+      account._failedTimes++;
+    }
+  });
+
   it('Should set postponeSwitchBackProxy to true when timer reached and receive switchBackProxy and has active call. [JPT-2306]', done => {
     setupAccount();
     const listener = new MockCallListener();
@@ -196,7 +218,7 @@ describe('Telephony HA', () => {
     ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
     setImmediate(() => {
       expect(account.callCount()).toBe(1);
-      expect(account._postponeSwitchBackProxy).toBe(true);
+      expect(account._postponeReregister).toBe(true);
       done();
     });
   });
@@ -206,7 +228,7 @@ describe('Telephony HA', () => {
     jest.spyOn(account._regManager, 'reRegister');
     ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
     setImmediate(() => {
-      expect(account._regManager.reRegister).toBeCalledWith(true);
+      expect(account._regManager.reRegister).toHaveBeenCalled();
       done();
     });
   });
@@ -216,7 +238,19 @@ describe('Telephony HA', () => {
     jest.spyOn(account._provManager, 'refreshSipProv');
     ua.mockSignal(UA_EVENT.PROVISION_UPDATE);
     setImmediate(() => {
-      expect(account._provManager.refreshSipProv).toBeCalled();
+      expect(account._provManager.refreshSipProv).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('Should send reRegister when retry timer reached. [JPT-812]', done => {
+    jest.useFakeTimers();
+    setupAccount();
+    jest.spyOn(account._regManager, 'reRegister');
+    ua.mockSignal(UA_EVENT.REG_FAILED);
+    setImmediate(() => {
+      jest.advanceTimersByTime(60 * 1000);
+      expect(account._regManager.reRegister).toHaveBeenCalled();
       done();
     });
   });
@@ -229,11 +263,11 @@ describe('Telephony HA', () => {
     ua.mockSignal(UA_EVENT.SWITCH_BACK_PROXY);
     setImmediate(() => {
       expect(account.callCount()).toBe(1);
-      expect(account._postponeSwitchBackProxy).toBe(true);
+      expect(account._postponeReregister).toBe(true);
       call.hangup();
       setImmediate(() => {
         expect(account.callCount()).toBe(0);
-        expect(account._regManager.reRegister).toBeCalledWith(true);
+        expect(account._regManager.reRegister).toHaveBeenCalled();
         done();
       });
     });
@@ -246,12 +280,12 @@ describe('Telephony HA', () => {
     const call = account.makeCall('123', listener);
     setImmediate(() => {
       expect(account.callCount()).toBe(1);
-      expect(account._postponeSwitchBackProxy).toBe(false);
+      expect(account._postponeReregister).toBe(false);
       call.hangup();
       setImmediate(() => {
         expect(account.callCount()).toBe(0);
-        expect(account._regManager.reRegister).not.toBeCalledWith(true);
-        expect(account._postponeSwitchBackProxy).toBe(false);
+        expect(account._regManager.reRegister).not.toHaveBeenCalled();
+        expect(account._postponeReregister).toBe(false);
         done();
       });
     });
@@ -264,7 +298,7 @@ describe('RTCAccount', () => {
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
-      expect(account._regManager._failedTimes).toBe(0);
+      expect(account._failedTimes).toBe(0);
       expect(account._state).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       expect(mockListener.onAccountStateChanged).toHaveBeenCalledWith(
         RTC_ACCOUNT_STATE.REGISTERED,
@@ -339,7 +373,7 @@ describe('RTCAccount', () => {
     ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
       expect(call).not.toBe(null);
-      expect(mockListener.onReceiveIncomingCall).not.toBeCalled();
+      expect(mockListener.onReceiveIncomingCall).not.toHaveBeenCalled();
       done();
     });
   });
@@ -351,7 +385,7 @@ describe('RTCAccount', () => {
     account.makeCall('123', listener);
     account._onWakeUpFromSleepMode();
     setImmediate(() => {
-      expect(account._regManager.reRegister).not.toBeCalled();
+      expect(account._regManager.reRegister).not.toHaveBeenCalled();
       done();
     });
   });
@@ -371,11 +405,11 @@ describe('RTCAccount', () => {
         );
         account._onWakeUpFromSleepMode();
         setImmediate(() => {
-          expect(account._regManager.reRegister).toBeCalled();
+          expect(account._regManager.reRegister).toHaveBeenCalled();
           expect(account._regManager._fsm.state).toBe(
             REGISTRATION_FSM_STATE.IN_PROGRESS,
           );
-          expect(account._regManager._userAgent.reRegister).toBeCalled();
+          expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
           done();
         });
       });
@@ -392,11 +426,11 @@ describe('RTCAccount', () => {
       );
       account._onWakeUpFromSleepMode();
       setImmediate(() => {
-        expect(account._regManager.reRegister).toBeCalled();
+        expect(account._regManager.reRegister).toHaveBeenCalled();
         expect(account._regManager._fsm.state).toBe(
           REGISTRATION_FSM_STATE.IN_PROGRESS,
         );
-        expect(account._regManager._userAgent.reRegister).toBeCalled();
+        expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
         done();
       });
     });
@@ -417,11 +451,11 @@ describe('RTCAccount', () => {
         );
         account._onWakeUpFromSleepMode();
         setImmediate(() => {
-          expect(account._regManager.reRegister).toBeCalled();
+          expect(account._regManager.reRegister).toHaveBeenCalled();
           expect(account._regManager._fsm.state).toBe(
             REGISTRATION_FSM_STATE.IN_PROGRESS,
           );
-          expect(account._regManager._userAgent.reRegister).toBeCalled();
+          expect(account._regManager._userAgent.reRegister).toHaveBeenCalled();
           done();
         });
       });
@@ -445,7 +479,7 @@ describe('RTCAccount', () => {
     setImmediate(() => {
       ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
       expect(account.callCount()).toBe(1);
-      expect(mockListener.onReceiveIncomingCall).toBeCalled();
+      expect(mockListener.onReceiveIncomingCall).toHaveBeenCalled();
       done();
     });
   });
@@ -501,7 +535,7 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(account._callManager.endAllCalls).toBeCalled();
+      expect(account._callManager.endAllCalls).toHaveBeenCalled();
       done();
     });
   });
@@ -516,7 +550,7 @@ describe('RTCAccount', () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
-      expect(account._provManager.clearProvInfo).toBeCalled();
+      expect(account._provManager.clearProvInfo).toHaveBeenCalled();
       expect(account._provManager._sipProvisionInfo).toBe(null);
       expect(localStorage.get(kProvisioningInfoKey)).toBe(null);
       done();
@@ -531,7 +565,7 @@ describe('RTCAccount', () => {
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
       setImmediate(() => {
-        expect(ua.unregister).toBeCalled();
+        expect(ua.unregister).toHaveBeenCalled();
         done();
       });
     });
@@ -615,7 +649,7 @@ describe('RTCAccount', () => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.FAILED);
       account.makeCall('123', listener);
       setImmediate(() => {
-        expect(ua.reRegister).toBeCalled();
+        expect(ua.reRegister).toHaveBeenCalled();
         expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
         done();
       });
@@ -698,7 +732,7 @@ describe('RTCAccount', () => {
       expect(account.callCount()).toBe(0);
       account._onNewProv(mockProvisionData2);
       setImmediate(() => {
-        expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+        expect(account._regManager._fsm.provisionReady).toHaveBeenCalledWith(
           mockProvisionData2,
           kRTCProvisioningOptions,
         );
@@ -713,7 +747,7 @@ describe('RTCAccount', () => {
     const listener = new MockCallListener();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
-      expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+      expect(account._regManager._fsm.provisionReady).toHaveBeenCalledWith(
         mockProvisionData,
         kRTCProvisioningOptions,
       );
@@ -729,10 +763,9 @@ describe('RTCAccount', () => {
         setImmediate(() => {
           expect(account.callCount()).toBe(0);
           setImmediate(() => {
-            expect(account._regManager._fsm.provisionReady).toBeCalledWith(
-              mockProvisionData2,
-              kRTCProvisioningOptions,
-            );
+            expect(
+              account._regManager._fsm.provisionReady,
+            ).toHaveBeenCalledWith(mockProvisionData2, kRTCProvisioningOptions);
             done();
           });
         });
@@ -744,7 +777,7 @@ describe('RTCAccount', () => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
-      expect(ua.restartUA).toBeCalledTimes(1);
+      expect(ua.restartUA).toHaveBeenCalledTimes(1);
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       account.logout();
       setImmediate(() => {
@@ -752,7 +785,7 @@ describe('RTCAccount', () => {
         account._onNewProv(mockProvisionData2);
         setImmediate(() => {
           expect(account.state()).toBe(RTC_ACCOUNT_STATE.UNREGISTERED);
-          expect(ua.restartUA).toBeCalledTimes(1);
+          expect(ua.restartUA).toHaveBeenCalledTimes(1);
           done();
         });
       });
@@ -764,7 +797,7 @@ describe('RTCAccount', () => {
     account._onNewProv({});
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
-      expect(ua.restartUA).toBeCalledTimes(2);
+      expect(ua.restartUA).toHaveBeenCalledTimes(2);
       done();
     });
   });
@@ -835,7 +868,7 @@ describe('RTCAccount', () => {
       account._provManager.emit(RTC_PROV_EVENT.NEW_PROV, {
         info: mockProvisionData,
       });
-      expect(mockListener.onReceiveNewProvFlags).toBeCalledWith(
+      expect(mockListener.onReceiveNewProvFlags).toHaveBeenCalledWith(
         mockProvisionData.sipFlags,
       );
     });
@@ -851,6 +884,15 @@ describe('RTCAccount', () => {
       setupAccount();
       const expectSipFlags = account.getSipProvFlags();
       expect(expectSipFlags).toBeNull();
+    });
+  });
+
+  describe('get sip prov', () => {
+    it('should return sip prov', () => {
+      setupAccount();
+      account._provManager._sipProvisionInfo = mockProvisionData;
+      const expectSipFlags = account.getSipProv();
+      expect(expectSipFlags).toEqual(mockProvisionData);
     });
   });
 

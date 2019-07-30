@@ -6,24 +6,19 @@
 import * as React from 'react';
 import { JuiPresence } from 'jui/components/Presence';
 import { observer } from 'mobx-react';
-import { PresenceViewProps } from './types';
+import { PresenceViewProps, PresenceProps } from './types';
 
 @observer
-class PresenceView extends React.Component<PresenceViewProps> {
+class PresenceView extends React.Component<PresenceViewProps & PresenceProps> {
   render() {
-    const {
-      presence, size, borderSize, ...rest
-    } = this.props;
-
+    const { presence, size, borderSize, uid, ...rest } = this.props;
     return (
-      presence && (
-        <JuiPresence
-          presence={presence}
-          size={size}
-          borderSize={borderSize}
-          {...rest}
-        />
-      )
+      <JuiPresence
+        presence={presence}
+        size={size}
+        borderSize={borderSize}
+        {...rest}
+      />
     );
   }
 }
