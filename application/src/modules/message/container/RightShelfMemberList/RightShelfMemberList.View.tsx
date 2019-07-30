@@ -39,14 +39,13 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   constructor(props: Props) {
     super(props);
 
-    this._resizeObserver = new ResizeObserver(entries => {
+    this._resizeObserver = new ResizeObserver((entries, observer) => {
       if (
         !entries[0] ||
         !entries[0].target ||
         entries[0].target.clientWidth === 0
       ) {
-        this._resizeObserver && this._resizeObserver.disconnect();
-        this._resizeObserver = null;
+        observer.disconnect();
         return;
       }
       props.setWrapperWidth(entries[0].target.clientWidth);

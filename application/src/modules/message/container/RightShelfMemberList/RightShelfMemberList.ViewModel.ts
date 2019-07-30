@@ -26,7 +26,7 @@ class RightShelfMemberListViewModel
   implements RightShelfMemberListViewProps {
   groupId: number;
 
-  private groupService = ServiceLoader.getInstance<GroupService>(
+  private _groupService = ServiceLoader.getInstance<GroupService>(
     ServiceConfig.GROUP_SERVICE,
   );
 
@@ -76,12 +76,11 @@ class RightShelfMemberListViewModel
       { fireImmediately: true },
     );
     this.reaction(
-      () => this._guestCompanyIds,
+      () => this._guestCompanyIdsLen,
       (len: number) => {
         if (len === undefined) return;
         this._getMemberAndGuestIds();
       },
-      { fireImmediately: false },
     );
   }
 
@@ -90,7 +89,7 @@ class RightShelfMemberListViewModel
     const {
       memberIds,
       guestIds,
-    } = await this.groupService.getMembersAndGuestIds(this.props.groupId);
+    } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
     this.isLoading = false;
     this.fullMemberIds = memberIds;
     this.fullGuestIds = guestIds;
@@ -114,7 +113,7 @@ class RightShelfMemberListViewModel
   }
 
   @computed
-  private get _guestCompanyIds() {
+  private get _guestCompanyIdsLen() {
     return this.group.guestUserCompanyIds
       ? this.group.guestUserCompanyIds.length
       : 0;
