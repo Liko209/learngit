@@ -39,7 +39,6 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
       () => this.person,
       (person: PersonModel, reaction: Reaction) => {
         const { firstName, lastName, homepage, location, jobTitle } = person;
-        console.log('looper', person);
         this.currentPersonInfo = person;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -97,7 +96,6 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
       portalManager.dismissAll();
       return;
     }
-    console.log('looper', info);
     this.isLoading = true;
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
