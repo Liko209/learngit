@@ -9,12 +9,16 @@ import { PROGRESS_STATUS } from 'sdk/module/progress';
 
 type ProgressActionsProps = {
   id: number; // post id
+  isEditMode: boolean;
 };
 
 type ProgressActionsViewProps = {
   id: number;
+  inEditProcess: boolean;
+  showEditAction: boolean;
   post: PostModel;
   resend: Function;
+  edit: Function;
   deletePost: Function;
   postStatus?: PROGRESS_STATUS;
 };

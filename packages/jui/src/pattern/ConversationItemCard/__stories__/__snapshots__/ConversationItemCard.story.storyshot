@@ -934,6 +934,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
       >
         <button
           aria-describedby={null}
+          aria-label="copy"
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="copy"
           disabled={false}
@@ -979,6 +980,7 @@ exports[`Storyshots Pattern/ConversationItemCard code snippet: Pattern/Conversat
         </button>
         <button
           aria-describedby={null}
+          aria-label="download"
           className="MuiButtonBase-root MuiIconButton-root c8"
           date-test-automation-id="download"
           disabled={false}
@@ -1835,6 +1837,7 @@ exports[`Storyshots Pattern/ConversationItemCard taskItemCard: Pattern/Conversat
                   <div />
                   <button
                     aria-describedby={null}
+                    aria-label="common.expand"
                     className="MuiButtonBase-root MuiIconButton-root c20"
                     data-test-automation-id="expand-button"
                     disabled={false}

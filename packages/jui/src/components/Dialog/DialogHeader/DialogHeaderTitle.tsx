@@ -103,7 +103,7 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
     padding: 0;
     flex: 1;
     min-width: 0;
-    h6 {
+    h2 {
       color: ${palette('grey', '900')};
       text-align: ${({ variant }) =>
         variant === 'responsive' ? 'center' : 'left'};

@@ -13,10 +13,10 @@ import {
 } from 'foundation';
 import { errorHandler } from '../errors/handler';
 import { IQueryOpt } from '../interface/IQueryOpt';
-import { IdModel, ModelIdType } from '../../model';
+import { ModelIdType, IdModel } from '../../model';
 
 class Query<T extends IdModel<IdType>, IdType extends ModelIdType = number>
-implements IQueryOpt<T, IdType> {
+  implements IQueryOpt<T, IdType> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 

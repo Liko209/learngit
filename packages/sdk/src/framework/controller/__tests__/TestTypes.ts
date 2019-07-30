@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IdModel, ModelIdType } from '../../../framework/model';
-import { IDatabaseCollection, IDatabase } from 'foundation/src/db';
+import { IDatabaseCollection, IDatabase } from 'foundation/db';
 
 export type TestEntity = IdModel & {
   name: string;

@@ -1,13 +1,16 @@
-import { Factory } from 'factory.ts';
 import { IEntitySourceController } from '../../controller/interface/IEntitySourceController';
 import { EntityCacheController } from '../../controller/impl/EntityCacheController';
 import { IdModel } from '../../model';
+import { IRequestController } from 'sdk/framework/controller/interface/IRequestController';
 
-export class TestEntitySourceController<T extends IdModel = IdModel>
-implements IEntitySourceController<T> {
+export class TestEntitySourceController<T extends IdModel = IdModel> implements IEntitySourceController<T> {
+  getRequestController(): IRequestController<T, number> | null {
+    throw new Error('Method not implemented.');
+  }
+  saveToMemory?: ((entities: T[]) => void) | undefined;
   entityCache: EntityCacheController<T>;
 
-  constructor(public factory: Factory<T>) {
+  constructor() {
     this.entityCache = new EntityCacheController();
   }
 
@@ -15,31 +18,17 @@ implements IEntitySourceController<T> {
 
   getEntityLocally = jest.fn().mockImplementation(async (id: number) => await this.entityCache.get(id));
 
-  getEntitiesLocally = jest
-    .fn()
-    .mockImplementation(async (ids: number[]) => await this.entityCache.getEntities((entity: T) => ids.includes(entity.id)));
+  getEntitiesLocally = jest.fn().mockImplementation(async (ids: number[]) => await this.entityCache.getEntities((entity: T) => ids.includes(entity.id)));
 
-  getEntityNotificationKey = jest
-    .fn()
-    .mockImplementation(() => this.entityCache.getEntityName());
+  getEntityNotificationKey = jest.fn().mockImplementation(() => this.entityCache.getEntityName());
 
-  getEntities = jest
-    .fn()
-    .mockImplementation(
-      async (filterFunc?: ((entity: T) => boolean) | undefined) => await this.entityCache.getEntities(filterFunc),
-    );
+  getEntities = jest.fn().mockImplementation(async (filterFunc?: ((entity: T) => boolean) | undefined) => await this.entityCache.getEntities(filterFunc));
 
-  getAll = jest
-    .fn()
-    .mockImplementation(async () => await this.entityCache.getAll());
+  getAll = jest.fn().mockImplementation(async () => await this.entityCache.getAll());
 
-  getTotalCount = jest
-    .fn()
-    .mockImplementation(async () => await this.entityCache.getTotalCount());
+  getTotalCount = jest.fn().mockImplementation(async () => await this.entityCache.getTotalCount());
 
-  getEntityName = jest
-    .fn()
-    .mockImplementation(() => this.entityCache.getEntityName());
+  getEntityName = jest.fn().mockImplementation(() => this.entityCache.getEntityName());
 
   put = jest.fn().mockImplementation(async (item: T | T[]) => {
     await this.entityCache.put(item);
@@ -64,19 +53,15 @@ implements IEntitySourceController<T> {
     await this.entityCache.bulkDelete(ids);
   });
 
-  update = jest
-    .fn()
-    .mockImplementation(async (item: Partial<T> | Partial<T>[]) => {
-      await this.entityCache.update(item);
-    });
+  update = jest.fn().mockImplementation(async (item: Partial<T> | Partial<T>[]) => {
+    await this.entityCache.update(item);
+  });
 
   bulkUpdate = jest.fn().mockImplementation(async (array: Partial<T>[]) => {
     await this.entityCache.bulkUpdate(array);
   });
 
-  batchGet = jest
-    .fn()
-    .mockImplementation(async (ids: number[], order?: boolean) => await this.entityCache.batchGet(ids, order));
+  batchGet = jest.fn().mockImplementation(async (ids: number[], order?: boolean) => await this.entityCache.batchGet(ids, order));
   // get = jest.fn().mockImplementation((id: number) => {
   //   return this.getEntityLocally(id);
   // });

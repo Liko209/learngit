@@ -3,7 +3,7 @@
  * @Date: 2019-02-25 13:28:35
  * Copyright © RingCentral. All rights reserved.
  */
-import storeManager, { ENTITY_NAME } from '@/store';
+import { storeManager, ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service/eventKey';
 import { IEntityDataProvider } from '../base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
@@ -21,19 +21,14 @@ enum DiscontinuousPostListType {
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    const postService = ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    );
+    const postService = ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE);
     const { posts, items } = await postService.getPostsByIds(ids);
     // set items to store.
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items, false);
     return posts;
   }
 }
-class DiscontinuousPosListHandler extends IdListPaginationHandler<
-Post,
-PostModel
-> {
+class DiscontinuousPosListHandler extends IdListPaginationHandler<Post, PostModel> {
   constructor(sourceIds: number[], postProvider?: IEntityDataProvider<Post>) {
     const filterFunc = (post: PostModel) => !post.deactivated;
 
