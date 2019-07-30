@@ -22,8 +22,8 @@ import { HandleByRingCentral } from '../handlers';
 import { RequestHolder } from '../glip/item';
 
 // Using manual mock to improve mock priority.
-jest.mock('foundation/src/network', () =>
-  jest.genMockFromModule<any>('foundation/src/network'),
+jest.mock('foundation/network', () =>
+  jest.genMockFromModule<any>('foundation/network'),
 );
 const networkManager = new NetworkManager(new OAuthTokenManager());
 const mockRequest: any = {};

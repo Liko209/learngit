@@ -8,7 +8,7 @@ import { RCAuthApi } from '../RCAuthApi';
 import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
 import { ApiConfiguration } from '../../config';
 jest.mock('../../api');
-jest.mock('foundation/src/network/NetworkRequestExecutor');
+jest.mock('foundation/network/NetworkRequestExecutor');
 
 function clearMocks() {
   jest.clearAllMocks();

@@ -89,6 +89,10 @@ class PresenceService extends EntityBaseService<Presence> {
   async setPresence(status: PRESENCE) {
     await this.getPresenceActionController().setPresence(status);
   }
+
+  async setAutoPresence(presence: PRESENCE) {
+    await this.getPresenceActionController().setAutoPresence(presence);
+  }
 }
 
 export { PresenceService };

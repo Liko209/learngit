@@ -1,6 +1,7 @@
 import { testable, test } from 'shield';
 import { PRESENCE } from 'sdk/module/presence/constant';
-import { mockGlobalValue, mockEntity } from 'shield/application';
+import { mockGlobalValue } from 'shield/application/mockGlobalValue';
+import { mockEntity } from 'shield/application/mockEntity';
 import { AbstractNotificationManager } from '../manager';
 import { Jupiter, container } from 'framework';
 import { config } from '../module.config';
@@ -70,7 +71,9 @@ describe('AbstractNotificationManager', () => {
       expect(service.show).toHaveBeenCalled();
     }
 
-    @test('should not call notificationService.show when call show and document.hasFocus is true')
+    @test(
+      'should not call notificationService.show when call show and document.hasFocus is true',
+    )
     @mockGlobalValue(0)
     @mockEntity({
       deactivated: false,
