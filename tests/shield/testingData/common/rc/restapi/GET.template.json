@@ -1,0 +1,43 @@
+{
+  "host": "rc",
+  "path": "/restapi",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "path": "/restapi",
+    "method": "GET",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnaFhnQmVrWVlLVmQwNzVyblhVUnNCSV91RlY4U2s5T09LaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwRFM3bnlYT3JBTlRVVzVHdmJOUi04NHxURXctTnd8RWhDQVVad3ZHczZLdGUxMHJOYi1Hd3xBQQ",
+      "Content-Type": "application/json;charset=utf-8"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi",
+      "apiVersions": [
+        {
+          "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0",
+          "versionString": "1.0.37",
+          "releaseDate": "2018-11-09T00:00:00.000Z",
+          "uriString": "v1.0"
+        }
+      ],
+      "serverVersion": "10.3.1.953",
+      "serverRevision": "d04237f5"
+    },
+    "headers": {
+      "date": "Tue, 09 Jul 2019 02:25:28 GMT",
+      "content-encoding": "gzip",
+      "rcrequestid": "d12df8a8-a1f0-11e9-b1b6-005056beb634",
+      "routingkey": "XMN02P01PAS01",
+      "content-language": "en-US",
+      "content-type": "application/json; charset=UTF-8",
+      "content-length": "202"
+    }
+  }
+}

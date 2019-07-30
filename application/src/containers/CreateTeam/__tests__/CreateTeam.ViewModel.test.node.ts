@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { testable, test } from 'shield';
-import { mockGlobalValue } from 'shield/application';
-import { mockService } from 'shield/sdk';
+import { mockGlobalValue } from 'shield/application/mockGlobalValue';
+import { mockService } from 'shield/sdk/mockService';
 import { GroupService, TeamSetting } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 import {
