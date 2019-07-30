@@ -6,9 +6,10 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 
-const ArrowDropDownSvg = () => {
+const ArrowDropDownSvg = (props: { className?: string }) => {
   return (
     <svg
+      className={props.className}
       focusable="false"
       viewBox="0 0 24 24"
       aria-hidden="true"
@@ -27,6 +28,7 @@ const ArrowDropDownIcon = styled(ArrowDropDownSvg)`
   height: 1em;
   font-size: 1.5rem;
   fill: currentColor;
+  pointer-events: none;
 `;
 
 export { ArrowDropDownIcon };

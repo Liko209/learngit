@@ -6,13 +6,13 @@
 import React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiMenuProps } from '../Menus/Menu';
-import { JuiVirtualizedMenuList } from './VirtualizedMenuList';
+import {
+  JuiVirtualizedMenuList,
+  JuiVirtualizedMenuListProps,
+} from './VirtualizedMenuList';
 import { JuiPopover } from '../Popover';
 
-type JuiVirtualizedMenuProps = JuiMenuProps & {
-  children: JSX.Element[];
-  initialFocusedIndex?: number;
-};
+type JuiVirtualizedMenuProps = JuiVirtualizedMenuListProps & JuiMenuProps;
 
 const StyledMenu = styled(JuiPopover)`
   & .virtualized-menu-paper {
@@ -34,14 +34,16 @@ const CLASSES = {
 const JuiVirtualizedMenu = ({
   initialFocusedIndex,
   children,
+  loop = false,
+  focusOnHover = true,
   ...rest
 }: JuiVirtualizedMenuProps) => {
   return (
     <StyledMenu classes={CLASSES} {...rest}>
       <JuiVirtualizedMenuList
         initialFocusedIndex={initialFocusedIndex}
-        loop={false}
-        focusOnHover
+        loop={loop}
+        focusOnHover={focusOnHover}
       >
         {children}
       </JuiVirtualizedMenuList>

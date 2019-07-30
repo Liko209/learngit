@@ -6,15 +6,18 @@
 import _ from 'lodash';
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
+import { number } from '@storybook/addon-knobs';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiVirtualizedBoxSelect } from '../VirtualizedBoxSelect';
 
 storiesOf('Components/VirtualizedSelects', module).add(
   'VirtualizedBoxSelect',
   () => {
+    const itemCount = number('itemCount', 1000);
+
     const Demo = () => {
       const disabledIndexes = [5];
-      const items = _.range(0, 1000).map(index => (
+      const items = _.range(0, itemCount).map(index => (
         <JuiMenuItem
           disabled={disabledIndexes.includes(index)}
           key={`item_${index}`}

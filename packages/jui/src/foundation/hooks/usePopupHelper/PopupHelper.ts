@@ -11,21 +11,25 @@ const SELECT_TRIGGER_KEYS = ['ArrowUp', 'ArrowDown', 'Enter', ' '];
 class PopupHelper {
   private _popupId?: string;
   private _variant: string;
+  private _minWidth: number;
   private _state: PopupState;
   private _setState: React.Dispatch<React.SetStateAction<PopupState>>;
 
   constructor({
+    minWidth = 120,
     popupId,
     variant,
     state,
     setState,
   }: {
+    minWidth?: number;
     popupId?: string;
     variant: string;
     state: PopupState;
     setState: React.Dispatch<React.SetStateAction<PopupState>>;
   }) {
     this._popupId = popupId;
+    this._minWidth = minWidth;
     this._variant = variant;
     this._state = state;
     this._setState = setState;
@@ -92,6 +96,13 @@ class PopupHelper {
     return {
       ...this._AccessabilityProps,
       onClick: this.open,
+    };
+  }
+
+  get SelectMenuProps() {
+    return {
+      ...this.MenuProps,
+      PaperProps: { style: { minWidth: this._minWidth } },
     };
   }
 

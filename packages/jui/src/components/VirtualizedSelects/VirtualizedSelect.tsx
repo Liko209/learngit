@@ -3,7 +3,7 @@
  * @Date: 2019-07-26 18:33:10
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 
 import { Input } from '@material-ui/core';
 import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
@@ -38,7 +38,8 @@ const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
   const { name, value, renderValue, input = defaultInput } = props;
   const elementChildren = filterReactElement<JuiMenuItemProps>(props.children);
   const displayRef = useRef<HTMLDivElement>(null);
-  const popupHelper = usePopupHelper({ variant: 'popper' });
+  const [minWidth, setMinWidth] = useState(120);
+  const popupHelper = usePopupHelper({ minWidth, variant: 'popper' });
   const selectHelper = useSingleSelectHelper(value);
 
   const buildItemClickHandler = (
@@ -71,6 +72,12 @@ const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
     }
   }, [popupHelper.PopperProps.open]);
 
+  useLayoutEffect(() => {
+    if (displayRef.current) {
+      setMinWidth(displayRef.current.clientWidth);
+    }
+  }, [displayRef.current]);
+
   return React.cloneElement(input, {
     inputComponent: (props: { children: React.ReactNode }) => (
       <>
@@ -82,7 +89,7 @@ const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
           {renderValue ? renderValue(value) : value}
         </StyledInput>
         <JuiVirtualizedMenu
-          {...popupHelper.MenuProps}
+          {...popupHelper.SelectMenuProps}
           initialFocusedIndex={Math.max(selectedIndex, 0)}
         >
           {children}

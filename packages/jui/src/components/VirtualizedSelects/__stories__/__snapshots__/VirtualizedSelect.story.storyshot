@@ -1,6 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Components/VirtualizedSelects VirtualizedBoxSelect 1`] = `
+.c3 {
+  position: absolute;
+  top: calc(50% - 0.5em);
+  right: 0;
+  width: 1em;
+  height: 1em;
+  font-size: 1.5rem;
+  fill: currentColor;
+  pointer-events: none;
+}
+
 .c0 {
   position: relative;
   display: -webkit-box;
@@ -95,6 +106,7 @@ exports[`Storyshots Components/VirtualizedSelects VirtualizedBoxSelect: Componen
   </div>
   <svg
     aria-hidden="true"
+    className="c2 c3"
     focusable="false"
     role="presentation"
     viewBox="0 0 24 24"

@@ -8,9 +8,11 @@ import { PopupHelper } from './PopupHelper';
 import { Variant, PopupState } from './types';
 
 function usePopupHelper({
+  minWidth,
   popupId,
   variant,
 }: {
+  minWidth?: number;
   popupId?: string;
   variant: Variant;
 }) {
@@ -19,6 +21,7 @@ function usePopupHelper({
     hovered: false,
   });
   return new PopupHelper({
+    minWidth,
     popupId,
     variant,
     state,

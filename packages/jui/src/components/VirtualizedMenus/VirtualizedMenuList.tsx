@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 13:39:23
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useFocusHelper } from '../../foundation/hooks/useFocusHelper';
 import { filterReactElement } from '../../foundation/utils/filterReactElement';
 import { JuiMenuItemProps } from '../Menus';
@@ -72,7 +72,7 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
     }
   }, [focusedIndex]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (listRef.current && autoFocus) {
       listRef.current.focus();
     }

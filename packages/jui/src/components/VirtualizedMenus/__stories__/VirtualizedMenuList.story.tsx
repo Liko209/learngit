@@ -6,6 +6,7 @@
 import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { storiesOf } from '@storybook/react';
+import { boolean } from '@storybook/addon-knobs';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiPaper } from '../../Paper/Paper';
 import { JuiVirtualizedMenu } from '../VirtualizedMenu';
@@ -68,6 +69,9 @@ const useDemoState = () => {
 
 storiesOf('Components/VirtualizedMenus', module)
   .add('VirtualizedMenu', () => {
+    const focusOnHover = boolean('focusOnHover', true);
+    const loop = boolean('loop', false);
+
     const Demo = () => {
       const buttonRef = useRef<HTMLButtonElement | null>(null);
       const { open, setOpen, items } = useDemoState();
@@ -77,6 +81,8 @@ storiesOf('Components/VirtualizedMenus', module)
             Open Menu
           </button>
           <JuiVirtualizedMenu
+            focusOnHover={focusOnHover}
+            loop={loop}
             open={open}
             anchorEl={buttonRef.current}
             onClose={() => setOpen(false)}
@@ -89,11 +95,16 @@ storiesOf('Components/VirtualizedMenus', module)
     return <Demo />;
   })
   .add('VirtualizedMenuList', () => {
+    const focusOnHover = boolean('focusOnHover', false);
+    const loop = boolean('loop', true);
+
     const Demo = () => {
       const { items } = useDemoState();
       return (
         <JuiPaper style={{ height: 200 }}>
-          <JuiVirtualizedMenuList>{items}</JuiVirtualizedMenuList>
+          <JuiVirtualizedMenuList focusOnHover={focusOnHover} loop={loop}>
+            {items}
+          </JuiVirtualizedMenuList>
         </JuiPaper>
       );
     };
