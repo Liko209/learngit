@@ -17,6 +17,7 @@ import {
 import portalManager from '@/common/PortalManager';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
+import { PhotoEdit } from './PhotoEdit';
 import {
   EditProfileViewModelProps,
   EditItemSourceType,
@@ -136,6 +137,7 @@ class EditProfileViewComponent extends Component<
             uid={id}
             mask
             size="xlarge"
+            maskClick={() => PhotoEdit.show(id)}
             automationId="profileEditAvatar"
           />
           <JuiEditProfileSectionContent>
