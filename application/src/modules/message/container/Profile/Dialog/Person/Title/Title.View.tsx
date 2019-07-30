@@ -33,6 +33,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
           {isTheCurrentUserProfile && (
             <JuiIconButton
               onClick={this.handleEditClick}
+              data-test-automation-id="editProfileIcon"
               tooltipTitle={t('common.dialog.edit')}
               ariaLabel={t('common.dialog.edit')}
             >
