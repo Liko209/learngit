@@ -142,7 +142,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     network: 'message.prompt.editPostFailedForNetworkIssue',
   })
   private async _handleEditPost(content: string, ids: number[]) {
-    return await this._postService.editPost({
+    await this._postService.editPost({
       text: content,
       groupId: this.gid,
       postId: this.id,
