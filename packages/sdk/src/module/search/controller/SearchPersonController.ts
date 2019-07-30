@@ -70,7 +70,7 @@ class SearchPersonController {
         const nameMatchedOnly =
           persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
 
-        let showExtensionOnly =
+        const showExtensionOnly =
           nameMatchedOnly &&
           sortablePerson.entity.company_id === myCompanyId &&
           orderedPhoneNumbers[0].phoneNumberType === PhoneNumberType.Extension;
