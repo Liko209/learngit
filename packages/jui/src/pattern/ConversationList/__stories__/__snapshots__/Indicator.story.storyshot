@@ -16,7 +16,7 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/Conversati
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: 20px;
+  font-size: 16px;
   fill: #ff8800;
 }
 
@@ -27,7 +27,7 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Draft: Pattern/Conversati
     <svg
       className="c1"
       role="img"
-      size="medium"
+      size="small"
     >
       <use
         href="#icon-draft"
@@ -54,7 +54,7 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Failure: Pattern/Conversa
   stroke: currentColor;
   fill: currentColor;
   pointer-events: none;
-  font-size: 20px;
+  font-size: 16px;
   fill: #f44336;
 }
 
@@ -65,7 +65,7 @@ exports[`Storyshots Pattern/ConversationCard/Indicator Failure: Pattern/Conversa
     <svg
       className="c1"
       role="img"
-      size="medium"
+      size="small"
     >
       <use
         href="#icon-refresh"
