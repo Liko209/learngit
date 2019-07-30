@@ -31,12 +31,14 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
     } = this.props;
 
     return (
-      <Jui.FileCard>
+      <Jui.FileCard
+        onClick={handleFileClick}
+        data-test-automation-id={'fileCard'}
+      >
         <Jui.FileCardMedia
           image={url}
           disabled={disabled}
           data-test-automation-id={'fileCardMedia'}
-          onClick={handleFileClick}
         />
         <Jui.FileCardContent>
           <Jui.CardFileName>
@@ -48,7 +50,9 @@ class JuiFileWithPreview extends React.PureComponent<JuiFileWithPreviewProps> {
               {size}
             </Jui.CardSize>
             <Jui.CardFileActions>
-              <JuiButtonBar overlapSize={-2}>{Actions}</JuiButtonBar>
+              <JuiButtonBar isStopPropagation overlapSize={-2}>
+                {Actions}
+              </JuiButtonBar>
             </Jui.CardFileActions>
           </Jui.CardFileInfo>
         </Jui.FileCardContent>

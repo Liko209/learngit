@@ -11,7 +11,7 @@ import { MODULE_STATUS } from '../constants';
 import { ModuleParams } from 'foundation';
 
 const mockModuleFunc = jest.fn();
-jest.mock('foundation/src/telephony', () => {
+jest.mock('foundation/telephony', () => {
   return {
     Module: (params: ModuleParams) => {
       mockModuleFunc();

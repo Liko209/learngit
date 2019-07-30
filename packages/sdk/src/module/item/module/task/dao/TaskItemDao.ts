@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import { SanitizedTaskItem, TaskItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
-import { IDatabase } from 'foundation/src/db';
+import { IDatabase } from 'foundation/db';
 
 class TaskItemDao extends SubItemDao<SanitizedTaskItem> {
   static COLLECTION_NAME = 'taskItem';

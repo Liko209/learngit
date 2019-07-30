@@ -204,13 +204,11 @@ class PersonController {
   }
 
   getName(person: Person) {
-    if (person.display_name) {
-      return person.display_name;
-    }
+    // person.display_name display name is no longer used in Jupiter.
     if (person.first_name && person.last_name) {
       return `${person.first_name} ${person.last_name}`;
     }
-    return '';
+    return person.first_name || person.last_name ||'';
   }
 
   getEmailAsName(person: Person) {
@@ -370,7 +368,11 @@ class PersonController {
     const requestController = this._entitySourceController.getRequestController();
     if (requestController) {
       const person = await requestController.get(personId);
-      person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
+      if(person){
+        await this._entitySourceController.update(person);
+        notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
+      }
+      
     }
   }
 

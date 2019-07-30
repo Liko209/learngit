@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { PRESENCE } from './Presence';
+export { PRESENCE, PRESENCE_REQUEST_STATUS } from './Presence';
