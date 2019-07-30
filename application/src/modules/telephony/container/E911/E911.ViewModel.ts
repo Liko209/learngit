@@ -16,11 +16,16 @@ import { SettingEntityIds } from 'sdk/module/setting/moduleSetting/types';
 import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
 
-import { E911Props, E911ViewProps, Country, State } from './types';
+import { OutOfCountryDisclaimer } from './config';
+import { E911Props, E911ViewProps, Country, State, CheckBox } from './types';
 
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
+
+  @observable checkboxList: CheckBox[];
+
+  @observable region: Country;
 
   @observable value: E911SettingInfo = {
     street: '',
@@ -55,6 +60,9 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         fireImmediately: true,
       },
     );
+    this.getRegion(() => {
+      this.getDisclaimers();
+    });
   }
 
   get rcInfoService() {
@@ -124,6 +132,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
     this.saveStateOrCountry('country', country!);
     this.getState(country!.id);
+    this.getDisclaimers(country!.isoCode);
   };
 
   stateOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -156,6 +165,45 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     await (this.settingItemEntity.valueSetter &&
       this.settingItemEntity.valueSetter(this.value));
   };
+
+  @action
+  async getRegion(cb?: Function) {
+    this.region = await this.rcInfoService.getCurrentCountry();
+    cb && cb();
+  }
+
+  @computed
+  get isOutOfCountry() {
+    return true;
+  }
+
+  getDisclaimers(iscCode?: string) {
+    if (!this.region || !this.region.isoCode) {
+      return;
+    }
+
+    const currentIscCode = iscCode ? iscCode : this.region.isoCode;
+    const disclaimers = OutOfCountryDisclaimer[currentIscCode]
+      ? OutOfCountryDisclaimer[currentIscCode]
+      : OutOfCountryDisclaimer.default;
+    this.createCheckbox(disclaimers);
+  }
+
+  createCheckbox(disclaimers: string[]) {
+    this.checkboxList = disclaimers.map((text: string) => {
+      const isDefaultI18 = text === 'telephony.e911.disclaimer.default';
+      const base = {
+        i18text: text,
+        checked: false,
+      };
+      return isDefaultI18
+        ? {
+            ...base,
+            params: this.region,
+          }
+        : base;
+    });
+  }
 }
 
 export { E911ViewModel };

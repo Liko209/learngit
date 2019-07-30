@@ -18,8 +18,10 @@ import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 import dialogContext from '@/containers/Dialog/DialogContext';
 import { StyledTip, E911Description } from 'jui/pattern/E911';
+import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
+import { RuiCheckbox } from 'rcui/components/Checkbox';
 
-import { E911ViewProps, Country, State } from './types';
+import { E911ViewProps, Country, State, CheckBox } from './types';
 
 type Props = E911ViewProps & WithTranslation;
 
@@ -66,6 +68,31 @@ class E911ViewComponent extends Component<Props> {
         value={state}
         onChange={handleFieldChange('state')}
       />
+    );
+  }
+
+  get renderOutOfCountry() {
+    const { checkboxList, t } = this.props;
+    console.log('nello checkBoxList', checkboxList);
+    if (!checkboxList || !checkboxList.length) {
+      return null;
+    }
+    return (
+      <RuiFormControl>
+        {checkboxList.map((item: CheckBox) => {
+          const { i18text, checked, params } = item;
+          const label = params
+            ? t(i18text, { region: params.name })
+            : t(i18text);
+          return (
+            <RuiFormControlLabel
+              control={<RuiCheckbox />}
+              label={t(label)}
+              checked={checked}
+            />
+          );
+        })}
+      </RuiFormControl>
     );
   }
 
@@ -175,6 +202,7 @@ class E911ViewComponent extends Component<Props> {
             onChange={handleFieldChange('zip')}
           />
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
+          {this.renderOutOfCountry}
         </JuiDialogContent>
         <JuiDialogActions data-test-automation-id="DialogActions">
           <JuiButton

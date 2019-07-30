@@ -20,10 +20,17 @@ type E911ViewProps = E911Props & {
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   value: E911SettingInfo;
   disabled: boolean;
+  checkboxList: CheckBox[];
+};
+
+type CheckBox = {
+  i18text: string;
+  checked: boolean;
+  params?: object;
 };
 
 type Country = DialingCountryInfo;
 
 type State = StateRecord;
 
-export { E911Props, E911ViewProps, Country, State };
+export { E911Props, E911ViewProps, Country, State, CheckBox };
