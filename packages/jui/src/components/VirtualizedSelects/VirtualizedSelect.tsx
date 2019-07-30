@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
-
 import { Input } from '@material-ui/core';
 import { usePopupHelper } from '../../foundation/hooks/usePopupHelper';
 import { filterReactElement } from '../../foundation/utils/filterReactElement';
