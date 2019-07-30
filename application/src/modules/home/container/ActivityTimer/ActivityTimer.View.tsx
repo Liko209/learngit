@@ -26,13 +26,31 @@ class ActivityTimerView extends Component<ActivityTimerViewProps> {
     this.idleTimerRef.current && this.idleTimerRef.current.reset();
   }
 
+  componentWillReceiveProps(nextProps: ActivityTimerViewProps) {
+    if (!window.jupiterElectron) {
+      return;
+    }
+
+    const isOffline = nextProps.isOffline && nextProps.presence === PRESENCE.UNAVAILABLE;
+
+    if (nextProps.presence === PRESENCE.AVAILABLE || isOffline) {
+      window.jupiterElectron.resetActivityTimer();
+    } else {
+      window.jupiterElectron.clearActivityTimer();
+    }
+  }
+
   render() {
-    const { presence } = this.props;
-    const notNeedTimer =
-      window.jupiterElectron ||
-      (presence !== PRESENCE.UNAVAILABLE && presence !== PRESENCE.AVAILABLE)
+    const { presence, isOffline } = this.props;
+
+    const isAvaliableOrOffline =
+      presence === PRESENCE.AVAILABLE ||
+      (presence === PRESENCE.UNAVAILABLE && isOffline)
+
+    const needTimer = !window.jupiterElectron && isAvaliableOrOffline
+
     return (
-      notNeedTimer ? null : (
+      needTimer ? (
         <IdleTimer
           ref={this.idleTimerRef}
           element={document}
@@ -41,7 +59,7 @@ class ActivityTimerView extends Component<ActivityTimerViewProps> {
           debounce={DEBOUNCE}
           timeout={FIFTEEN_MINUTE}
         />
-      )
+      ) : null
     );
   }
 }

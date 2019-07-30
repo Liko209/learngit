@@ -11,6 +11,7 @@ type ActivityTimerViewProps = {
   setOffline: () => void;
   setOnline: () => void;
   presence: PRESENCE;
+  isOffline: boolean;
 };
 
 export { ActivityTimerProps, ActivityTimerViewProps };
