@@ -52,13 +52,21 @@ class RightShelfMemberListViewModel
 
   init = () => {
     this.reaction(
+      () => this.props.groupId,
+      (id: number) => {
+        if (id === undefined) return;
+        this._getMemberAndGuestIds();
+      },
+      { fireImmediately: true },
+    );
+    this.reaction(
       () => this.allMemberLength,
-
       (len: number) => {
-        if (len === undefined) return;
+        // only react to member length change within the same conversation
         const cachedIdsLen = (this._membersCache[this.props.groupId] || [])
           .length;
-        if (cachedIdsLen > 0 && len > cachedIdsLen) {
+        if (len === undefined || cachedIdsLen <= 0) return;
+        if (len > cachedIdsLen) {
           const addedPersonCompanyIds = _.difference(
             this.group.members,
             this._membersCache[this.props.groupId],
@@ -72,14 +80,12 @@ class RightShelfMemberListViewModel
               this._isNewGuestCompanyId(companyId),
             )
           ) {
-            this._membersCache = { [this.props.groupId]: this.group.members };
             return;
           }
         }
-        this._membersCache = { [this.props.groupId]: this.group.members };
+
         this._getMemberAndGuestIds();
       },
-      { fireImmediately: true },
     );
     this.reaction(
       () => this._guestCompanyIdsLen,
@@ -90,18 +96,13 @@ class RightShelfMemberListViewModel
     );
   };
 
-  // onReceiveProps({ groupId }: RightShelfMemberListProps) {
-  //   if (groupId !== this.group.id) {
-  //     this._membersCache = [];
-  //   }
-  // }
-
   @action
   private async _getMemberAndGuestIds() {
     const {
       memberIds,
       guestIds,
     } = await this._groupService.getMembersAndGuestIds(this.props.groupId);
+    this._membersCache = { [this.props.groupId]: this.group.members };
     this.isLoading = false;
     this.fullMemberIds = memberIds;
     this.fullGuestIds = guestIds;
