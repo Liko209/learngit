@@ -7,6 +7,7 @@ import PresenceAPI from '../presence';
 import Api from '../../api';
 import { NETWORK_VIA } from 'foundation';
 import { PRESENCE } from 'sdk/module/presence/constant';
+import { PRESENCE_REQUEST_STATUS } from 'sdk/module/presence/constant/Presence';
 
 jest.mock('../../NetworkClient');
 
@@ -37,6 +38,19 @@ describe('PresenceAPI tests', () => {
       pathPrefix: '',
       data: {
         status: PRESENCE.DND,
+      },
+    });
+  });
+
+  it('should call post method with correct parameters', async () => {
+    const spy = jest.spyOn(Api.glipNetworkClient, 'post');
+    PresenceAPI.setAutoPresence(PRESENCE_REQUEST_STATUS.AWAY);
+    expect(spy).toHaveBeenCalledWith({
+      path: '/set_presence',
+      via: NETWORK_VIA.SOCKET,
+      host: Api.httpConfig.glip.presenceServer,
+      data: {
+        presence: PRESENCE_REQUEST_STATUS.AWAY,
       },
     });
   });
