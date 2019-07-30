@@ -46,6 +46,7 @@ class PopupHelper {
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
     }
+
     this._setState({
       anchorEl: event.currentTarget,
       open: true,
@@ -109,7 +110,7 @@ class PopupHelper {
   get SelectTriggerProps() {
     return {
       ...this.TriggerProps,
-      onKeyDown: (event: React.KeyboardEvent) => {
+      onKeyDownCapture: (event: React.KeyboardEvent) => {
         if (SELECT_TRIGGER_KEYS.includes(event.key)) {
           event.preventDefault();
           this.open(event);

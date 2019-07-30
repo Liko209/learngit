@@ -2,7 +2,10 @@
 
 exports[`Storyshots Components/VirtualizedMenus VirtualizedMenu: Components/VirtualizedMenus VirtualizedMenu 1`] = `
 <button
+  aria-haspopup={true}
+  aria-owns={null}
   onClick={[Function]}
+  tabIndex={0}
 >
   Open Menu
 </button>

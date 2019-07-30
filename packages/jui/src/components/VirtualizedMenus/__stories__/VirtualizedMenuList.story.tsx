@@ -7,20 +7,21 @@ import _ from 'lodash';
 import React, { useRef, useState } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
+import { usePopupHelper } from '../../../foundation/hooks/usePopupHelper';
 import { JuiMenuItem } from '../../Menus/MenuItem';
 import { JuiPaper } from '../../Paper/Paper';
 import { JuiVirtualizedMenu } from '../VirtualizedMenu';
 import { JuiVirtualizedMenuList } from '../VirtualizedMenuList';
 
 const useDemoState = () => {
-  const [open, setOpen] = useState(false);
+  const popupHelper = usePopupHelper({ variant: 'popover' });
   const items = [
     <JuiMenuItem
       key="cut"
       searchString="Cut"
       onClick={() => {
         console.log('Click:Cut');
-        setOpen(false);
+        popupHelper.close();
       }}
     >
       Cut
@@ -30,7 +31,7 @@ const useDemoState = () => {
       searchString="Copy"
       onClick={() => {
         console.log('Click:Copy');
-        setOpen(false);
+        popupHelper.close();
       }}
     >
       Copy
@@ -40,7 +41,7 @@ const useDemoState = () => {
       searchString="Paste"
       onClick={() => {
         console.log('Click:Paste');
-        setOpen(false);
+        popupHelper.close();
       }}
     >
       Paste
@@ -56,7 +57,7 @@ const useDemoState = () => {
       searchString={`${n}-Item`}
       onClick={() => {
         console.log(`Click:Item-${n}`);
-        setOpen(false);
+        popupHelper.close();
       }}
     >
       {n}-Item
@@ -64,7 +65,7 @@ const useDemoState = () => {
   ));
 
   items.push(...otherItems);
-  return { open, setOpen, items };
+  return { popupHelper, items };
 };
 
 storiesOf('Components/VirtualizedMenus', module)
@@ -74,18 +75,16 @@ storiesOf('Components/VirtualizedMenus', module)
 
     const Demo = () => {
       const buttonRef = useRef<HTMLButtonElement | null>(null);
-      const { open, setOpen, items } = useDemoState();
+      const { popupHelper, items } = useDemoState();
       return (
         <>
-          <button ref={buttonRef} onClick={() => setOpen(true)}>
+          <button ref={buttonRef} {...popupHelper.TriggerProps}>
             Open Menu
           </button>
           <JuiVirtualizedMenu
             focusOnHover={focusOnHover}
             loop={loop}
-            open={open}
-            anchorEl={buttonRef.current}
-            onClose={() => setOpen(false)}
+            {...popupHelper.MenuProps}
           >
             {items}
           </JuiVirtualizedMenu>

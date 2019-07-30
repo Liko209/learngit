@@ -13,10 +13,11 @@ import { JuiVirtualizedMenu } from '../VirtualizedMenus';
 import { ArrowDropDownIcon } from './ArrowDropDownIcon';
 import { StyledInput } from './styles';
 
-type JuiVirtualizedSelectProps<V = string | number | string[] | undefined> = {
+type JuiVirtualizedSelectInputProps<
+  V = string | number | string[] | undefined
+> = {
   name?: string;
   value: V;
-  input?: JSX.Element;
   children: JSX.Element[];
   renderValue?: (value: V) => React.ReactNode;
   heightSize?: HeightSize;
@@ -26,6 +27,10 @@ type JuiVirtualizedSelectProps<V = string | number | string[] | undefined> = {
   ) => void;
 };
 
+type JuiVirtualizedSelectProps = JuiVirtualizedSelectInputProps & {
+  input?: JSX.Element;
+};
+
 const defaultInput = <Input />;
 
 const useSingleSelectHelper = <T extends any>(value?: T) => {
@@ -33,57 +38,59 @@ const useSingleSelectHelper = <T extends any>(value?: T) => {
   return { selected, setSelected };
 };
 
-const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
-  const { name, value, renderValue, input = defaultInput } = props;
-  const elementChildren = filterReactElement<JuiMenuItemProps>(props.children);
-  const displayRef = useRef<HTMLDivElement>(null);
-  const [minWidth, setMinWidth] = useState(120);
-  const popupHelper = usePopupHelper({ minWidth, variant: 'popper' });
-  const selectHelper = useSingleSelectHelper(value);
+const JuiVirtualizedSelectInput = React.memo(
+  (props: JuiVirtualizedSelectInputProps) => {
+    const { name, value, onChange, renderValue, ...rest } = props;
+    const elementChildren = filterReactElement<JuiMenuItemProps>(
+      props.children,
+    );
+    const displayRef = useRef<HTMLDivElement>(null);
+    const [minWidth, setMinWidth] = useState(120);
+    const popupHelper = usePopupHelper({ minWidth, variant: 'popper' });
+    const selectHelper = useSingleSelectHelper(value);
 
-  const buildItemClickHandler = (
-    child: React.ReactElement<JuiMenuItemProps>,
-  ) => (event: any) => {
-    const newValue = child.props.value;
-    child.props.onClick && child.props.onClick(event);
-    popupHelper.close();
-    selectHelper.setSelected(child.props.value);
-    event.persist();
-    event.target = { value: newValue, name };
-    props.onChange && props.onChange(event, child);
-  };
+    const buildItemClickHandler = (
+      child: React.ReactElement<JuiMenuItemProps>,
+    ) => (event: any) => {
+      const newValue = child.props.value;
+      child.props.onClick && child.props.onClick(event);
+      popupHelper.close();
+      selectHelper.setSelected(child.props.value);
+      event.persist();
+      event.target = { value: newValue, name };
+      onChange && onChange(event, child);
+    };
 
-  const children = elementChildren.map(child => {
-    return React.cloneElement(child, {
-      selected: child.props.value === selectHelper.selected,
-      role: 'option',
-      onClick: buildItemClickHandler(child),
+    const children = elementChildren.map(child => {
+      return React.cloneElement(child, {
+        selected: child.props.value === selectHelper.selected,
+        role: 'option',
+        onClick: buildItemClickHandler(child),
+      });
     });
-  });
 
-  const selectedIndex = children.findIndex(
-    child => child.props.value === selectHelper.selected,
-  );
+    const selectedIndex = children.findIndex(
+      child => child.props.value === selectHelper.selected,
+    );
 
-  useEffect(() => {
-    if (!popupHelper.PopperProps.open && displayRef.current) {
-      displayRef.current.focus();
-    }
-  }, [popupHelper.PopperProps.open]);
+    useEffect(() => {
+      if (!popupHelper.SelectMenuProps.open && displayRef.current) {
+        displayRef.current.focus();
+      }
+    }, [popupHelper.SelectMenuProps.open]);
 
-  useLayoutEffect(() => {
-    if (displayRef.current) {
-      setMinWidth(displayRef.current.clientWidth);
-    }
-  }, [displayRef.current]);
+    useLayoutEffect(() => {
+      if (displayRef.current) {
+        setMinWidth(displayRef.current.clientWidth);
+      }
+    }, [displayRef.current]);
 
-  return React.cloneElement(input, {
-    inputComponent: (props: { children: React.ReactNode }) => (
+    return (
       <>
         <StyledInput
           ref={displayRef as any}
-          {...props}
           {...popupHelper.SelectTriggerProps}
+          {...rest}
         >
           {renderValue ? renderValue(value) : value}
         </StyledInput>
@@ -95,11 +102,19 @@ const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
         </JuiVirtualizedMenu>
         <ArrowDropDownIcon />
       </>
-    ),
+    );
+  },
+);
+
+const JuiVirtualizedSelect = (props: JuiVirtualizedSelectProps) => {
+  const { input = defaultInput, ...rest } = props;
+
+  return React.cloneElement(input, {
+    inputComponent: JuiVirtualizedSelectInput,
     select: true,
     inputProps: {
-      children,
       type: undefined, // We render a select. We can ignore the type provided by the `Input`.
+      ...rest,
     },
   });
 };
