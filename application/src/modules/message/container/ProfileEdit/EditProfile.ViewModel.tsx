@@ -70,6 +70,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     };
     const info = {};
     Object.keys(keyMaps).forEach(key => {
+      if (this[key] === undefined) return;
       this[key] = trimStringBothSides(this[key]);
       if (this[key] === this.currentPersonInfo[key]) {
         return;
