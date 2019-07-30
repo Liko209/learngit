@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PresenceActionController } from '../PresenceActionController';
-import { PRESENCE } from '../../constant';
+import { PRESENCE, PRESENCE_REQUEST_STATUS } from '../../constant';
 import PresenceAPI from 'sdk/api/glip/presence';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
@@ -58,6 +58,32 @@ describe('PresenceActionController', () => {
       await presenceActionController.setPresence(state);
       expect(partialModifyController.updatePartially).toHaveBeenCalledTimes(1);
       expect(PresenceAPI.setPresence).toHaveBeenCalledWith(presence);
+    });
+  });
+
+  describe('setAutoPresence()', () => {
+    it('should call api with away when auto set unavailable', async () => {
+      PresenceAPI.setAutoPresence.mockRejectedValueOnce('');
+      await expect(
+        presenceActionController.setAutoPresence(PRESENCE.UNAVAILABLE),
+      ).resolves;
+      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE_REQUEST_STATUS.AWAY,
+      );
+    });
+    it('should call api with away when auto set available', async () => {
+      PresenceAPI.setAutoPresence.mockRejectedValueOnce('');
+      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE))
+        .resolves;
+      expect(PresenceAPI.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE_REQUEST_STATUS.ONLINE,
+      );
+    });
+    it('should catch an error', async () => {
+      PresenceAPI.setAutoPresence.mockRejectedValueOnce(new Error());
+      await expect(
+        presenceActionController.setAutoPresence(PRESENCE.AVAILABLE),
+      ).rejects.toThrow();
     });
   });
 });
