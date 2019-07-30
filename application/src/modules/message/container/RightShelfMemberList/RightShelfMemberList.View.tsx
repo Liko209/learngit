@@ -28,6 +28,9 @@ import { Dialog } from '@/containers/Dialog';
 import { NewConversation } from '@/containers/NewConversation';
 import { AddMembers } from '../Profile/Dialog/Group/Content/AddMembers';
 import { ANALYTICS_KEY } from '../Profile/Dialog/Group/Content/Members/constants';
+import { CONVERSATION_TYPES } from '@/constants';
+import { MiniCard } from '../MiniCard';
+import { Profile, PROFILE_TYPE } from '../Profile';
 
 type Props = WithTranslation & RightShelfMemberListViewProps;
 
@@ -95,17 +98,9 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     const anchor = event.currentTarget as HTMLElement;
-    const {
-      ProfileMiniCard,
-    } = await import('@/modules/message/container/MiniCard/Profile');
-
-    const profileMiniCard = new ProfileMiniCard();
-
-    profileMiniCard.show({
+    MiniCard.show(<Profile id={id} type={PROFILE_TYPE.MINI_CARD} />, {
       anchor,
-      id,
     });
-
     analyticsCollector.openMiniProfile(ANALYTICS_KEY);
   };
 
@@ -127,6 +122,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   render() {
     const {
       t,
+      group,
       isLoading,
       fullMemberIds,
       fullGuestIds,
@@ -138,14 +134,21 @@ class RightShelfMemberListViewComponent extends Component<Props> {
     const addButtonTip = isTeam
       ? t('people.team.addTeamMembers')
       : t('people.group.addPeople');
+    const showLink = ![
+      CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      CONVERSATION_TYPES.ME,
+      CONVERSATION_TYPES.SMS,
+    ].includes(group.type);
     return (
       <>
         <MemberListHeader ref={this._header}>
           <div>
             <MemberListTitle>{t('people.team.Members')}</MemberListTitle>
-            <JuiLink size="small" handleOnClick={this.openProfile}>
-              {t('people.team.showAllCount', { count: allMemberLength })}
-            </JuiLink>
+            {showLink ? (
+              <JuiLink size="small" handleOnClick={this.openProfile}>
+                {t('people.team.showAllCount', { count: allMemberLength })}
+              </JuiLink>
+            ) : null}
           </div>
           <JuiIconButton
             variant="plain"

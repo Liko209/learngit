@@ -11,6 +11,7 @@ import JuiLink from 'jui/components/Link';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { NewConversation } from '@/containers/NewConversation';
 import { Dialog } from '@/containers/Dialog';
+import { CONVERSATION_TYPES } from '@/constants';
 
 jest.mock('resize-observer-polyfill');
 jest.mock('@/containers/NewConversation', () => ({
@@ -26,6 +27,11 @@ jest.mock('@/common/OpenProfile', () => ({
     show: jest.fn(),
   },
 }));
+jest.mock('../../MiniCard', () => ({
+  MiniCard: {
+    show: jest.fn(),
+  },
+}));
 jest.mock('@/containers/Dialog', () => ({
   Dialog: {
     simple: jest.fn(),
@@ -37,7 +43,9 @@ jest.mock('../../Profile/Dialog/Group/Content/AddMembers', () => ({
 
 const props = {
   groupId: 123,
-  group: {},
+  group: {
+    type: CONVERSATION_TYPES.TEAM,
+  },
   isLoading: false,
   fullMemberIds: [],
   fullGuestIds: [],
@@ -51,7 +59,14 @@ const props = {
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {
+  it('should NOT render link for 1:1 conversations', () => {
+    props.group.type = CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    wrapper = shallow(<RightShelfMemberListView {...props} />);
+    expect(wrapper.find(JuiLink).exists()).toBe(false);
+  });
   it('should open profile dialog when click the link button', () => {
+    props.group.type = CONVERSATION_TYPES.TEAM;
+
     wrapper = shallow(<RightShelfMemberListView {...props} />);
     wrapper
       .find(JuiLink)
