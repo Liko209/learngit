@@ -21,7 +21,7 @@ type EditItemSourceType = {
 type EditProfileViewModelProps = {
   person: PersonModel;
   isLoading: boolean;
-  homePageError: boolean;
+  homepageError: boolean;
   updateInfo: (key: EditItemSourceType['key'], value: string) => void;
   handleProfileEdit: () => void;
   getUpdateInfo: () => Object | undefined;

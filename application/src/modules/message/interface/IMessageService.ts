@@ -11,7 +11,7 @@ interface IMessageService {
   enterEditMode(id: number, draft: string): void;
   leaveEditMode(id: number): void;
   getDraft(id: number): string;
-  open(id: number): string;
+  open(uid: number): void;
   blurEditInputFocus(): void;
   getCurrentInputFocus(): number | undefined;
 }
