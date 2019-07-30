@@ -51,12 +51,16 @@ class MessageNotificationManager extends AbstractNotificationManager
   implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
+  private _groupService: GroupService;
   private _vmQueue: {
     id: number;
     vm: MessageNotificationViewModel;
   }[] = [];
   constructor() {
     super('message');
+    this._groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     this._observer = {
       onEntitiesChanged:
         isFirefox && isWindows
@@ -181,10 +185,7 @@ class MessageNotificationManager extends AbstractNotificationManager
       );
       return false;
     }
-
-    const group = await ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    ).getById(post.group_id);
+    const group = await this._groupService.getById(post.group_id);
 
     if (!group) {
       logger.info(
@@ -197,25 +198,36 @@ class MessageNotificationManager extends AbstractNotificationManager
 
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
-    const result = { postModel, groupModel };
-    const strategy = {
-      default: () => false,
-      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE]: () => result,
-      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
-        if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
-          logger.info(
-            `notification for ${
-              post.id
-            } is not permitted because in team conversation, only post mentioning current user will show notification`,
-          );
-          return false;
-        }
-        return result;
-      },
-      [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
-    };
+
+    // ALEX TODO: const shouldMuteNotification = await this._groupService.isNotificationsMuted(post.group_id);
+    const shouldMuteNotification = true;
+    const isMentioned = this.isMyselfAtMentioned(postModel);
     const setting: string = await this.getCurrentMessageNotificationSetting();
-    return strategy[setting]();
+    if (
+      !shouldMuteNotification ||
+      (shouldMuteNotification &&
+        isMentioned &&
+        setting !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
+    ) {    
+      const result = { postModel, groupModel };
+      const strategy = {
+        default: () => false,
+        [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE]: () => result,
+        [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
+          if (groupModel.isTeam && !isMentioned) {
+            logger.info(
+              `notification for ${
+                post.id
+              } is not permitted because in team conversation, only post mentioning current user will show notification`,
+            );
+            return false;
+          }
+          return result;
+        },
+        [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF]: () => false,
+      };
+      return strategy[setting]();
+    }
   }
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {

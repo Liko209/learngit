@@ -77,6 +77,7 @@ describe('messageNotificationManager', () => {
         4: postWithMentionMe,
       }[i];
     },
+    isNotificationsMuted: jest.fn().mockReturnValue(false),
   };
 
   const mockedGroupService = {
@@ -90,14 +91,15 @@ describe('messageNotificationManager', () => {
       return { customEmoji: {} };
     },
   };
-  const settingItem = {value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}
+  const settingItem = {
+    value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
+  };
   function mockSettingItemValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
     settingItem.value = value;
   }
   beforeEach(() => {
     const userId = 123432;
     jest.clearAllMocks();
-    notificationManager = new MessageNotificationManager();
     jest.spyOn(utils, 'getGlobalValue').mockReturnValue(currentUserId);
     jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(type => {
       switch (type) {
@@ -108,15 +110,15 @@ describe('messageNotificationManager', () => {
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
         case ServiceConfig.SETTING_SERVICE:
-          return { getById: () => (settingItem) }
+          return { getById: () => settingItem };
         default:
           return { userConfig: { getGlipUserId: () => userId } };
       }
     });
+    notificationManager = new MessageNotificationManager();
   });
   describe('shouldEmitNotification()', () => {
     beforeEach(() => {
-      jest.clearAllMocks();
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
 
@@ -182,6 +184,35 @@ describe('messageNotificationManager', () => {
         );
         expect(result).toBeFalsy();
       });
+    });
+    describe('when post is from a conversation which has customized settings for notifications', () => {
+      it('should not show notification when post is from a conversation which has muted notifications and user is not mentioned in this post', async () => {
+        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+        const result = await notificationManager.shouldEmitNotification(
+          postMessage,
+        );
+        expect(result).toBeFalsy();
+      });
+      it('should show notification when post is from a conversation which has muted notifications and user is mentioned in this post', async () => {
+        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+        const result = await notificationManager.shouldEmitNotification(
+          postWithMentionMe,
+        );
+        expect(result).toBeTruthy();
+      });
+      it.only('should not show notification when post is from a conversation which has muted notifications and user is mentioned in this post but global setting for New Messages is Off', async () => {
+        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+        jest
+          .spyOn(notificationManager, 'getCurrentMessageNotificationSetting')
+          .mockImplementation(() =>
+            Promise.resolve(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF),
+          );
+        const result = await notificationManager.shouldEmitNotification(
+          postWithMentionMe,
+        );
+        expect(result).toBeFalsy();
+      });
+      // ALEX NEXT: 然后再去写 telephonyNotificationManager 部分的拦截
     });
   });
   describe('enqueueVm()', () => {
@@ -313,15 +344,21 @@ describe('messageNotificationManager', () => {
 
     it(`should unescape for text lik "you'll get it"`, () => {
       expect(
-        notificationManager.handlePostContent({ text: `you'll get it` } as PostModel),
+        notificationManager.handlePostContent({
+          text: `you'll get it`,
+        } as PostModel),
       ).toEqual(`you'll get it`);
     });
 
     it('should remove quote markup', () => {
-      expect(notificationManager.handlePostContent({ text: `> @Andy Hu wrote:
+      expect(
+        notificationManager.handlePostContent({
+          text: `> @Andy Hu wrote:
 > ddd
 > lll
-sfdasfasd` } as PostModel)).toEqual(` @Andy Hu wrote:
+sfdasfasd`,
+        } as PostModel),
+      ).toEqual(` @Andy Hu wrote:
  ddd
  lll
 sfdasfasd`);
