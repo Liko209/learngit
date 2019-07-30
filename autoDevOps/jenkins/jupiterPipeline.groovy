@@ -4,7 +4,7 @@ import java.net.URI
 
 class Context {
     final static String SUCCESS_EMOJI  = ':white_check_mark:'
-    final static String FAILURE_EMOJI  = ':negative_squared_cross_mark:'
+    final static String FAILURE_EMOJI  = ':x:'
     final static String ABORTED_EMOJI  = ':no_entry:'
     final static String UPWARD_EMOJI   = ':chart_with_upwards_trend:'
     final static String DOWNWARD_EMOJI = ':chart_with_downwards_trend:'
@@ -223,6 +223,10 @@ class Context {
         "e2e-${appHeadHash}.log".toString()
     }
 
+    String getEndToEndReportId() {
+        "runId-${appHeadHash}".toString()
+    }
+
     String getErrorMessage() {
         failedStages.join(', ')
     }
@@ -323,7 +327,7 @@ class BaseJob {
     def stage(Map args, Closure block) {
         assert args.name, 'stage name is required'
         String  name     = args.name
-        int     time  = (null == args.timeout) ? 1800: args.timeout
+        int     time  = (null == args.timeout) ? 600: args.timeout
         Boolean activity = (null == args.activity) ? true: args.activity
         jenkins.timeout(time: time, activity: activity, unit: 'SECONDS') {
             try {
@@ -421,7 +425,6 @@ class JupiterJob extends BaseJob {
 
     void run() {
         try {
-            context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
             doRun()
             context.buildStatus = true
         } finally {
@@ -433,8 +436,9 @@ class JupiterJob extends BaseJob {
             } else {
                 context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
                 jenkins.echo context.dump()
-                // jenkins.echo jenkins.currentBuild.dump()
-                // jenkins.echo jenkins.currentBuild.rawBuild.dump()
+                jenkins.echo jenkins.currentBuild.dump()
+                jenkins.echo jenkins.currentBuild.getResult()
+                jenkins.echo jenkins.currentBuild.rawBuild.result
             }
             mail(context.addresses, "Jenkins Build Result: ${context.buildResult}".toString(), context.glipReport)
         }
@@ -442,6 +446,7 @@ class JupiterJob extends BaseJob {
 
     void doRun() {
         cancelOldBuildOfSameCause()
+        context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
         // using a high performance node to build
         jenkins.node(context.isSkipUnitTestAndStaticAnalysis? context.e2eNode : context.buildNode) {
             context.isSkipUpdateGitlabStatus || jenkins.updateGitlabCommitStatus(name: 'jenkins', state: 'running')
@@ -450,8 +455,10 @@ class JupiterJob extends BaseJob {
             jenkins.withEnv([
                 "PATH+NODEJS=${nodejsHome}/bin",
                 'TZ=UTC-8',
+                'CI=false',
                 'SENTRYCLI_CDNURL=https://cdn.npm.taobao.org/dist/sentry-cli',
-                'NODE_OPTIONS=--max_old_space_size=12000',
+                'ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/',
+                'NODE_OPTIONS=--max_old_space_size=4096',
             ]) {
                 stage(name: 'Collect Facts'){ collectFacts() }
                 stage(name: 'Checkout'){ checkout() }
@@ -518,6 +525,7 @@ class JupiterJob extends BaseJob {
         jenkins.sh 'grep --version'
         jenkins.sh 'which tr'
         jenkins.sh 'which xargs'
+        jenkins.sh 'yum install gtk3-devel libXScrnSaver xorg-x11-server-Xvfb -y || true'
 
         // clean npm cache when its size exceed 6G, the unit of default du command is K, so we need to >> 20 to get G
         long npmCacheSize = Long.valueOf(jenkins.sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
@@ -557,6 +565,7 @@ class JupiterJob extends BaseJob {
         // keep node_modules to speed up build process
         // keep a lock file to help us decide if we need to upgrade dependencies
         jenkins.sh "git clean -xdf -e node_modules -e ${DEPENDENCY_LOCK}"
+        // jenkins.sh "git clean -xdf"  // work around errors
 
         // update runtime context
 
@@ -595,7 +604,7 @@ class JupiterJob extends BaseJob {
     void installDependencies() {
         if(isSkipInstallDependency) return
 
-        String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep package.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
+        String dependencyLock = jenkins.sh(returnStdout: true, script: '''git ls-files | grep -e package.json -e package-lock.json | grep -v tests | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- | xargs git cat-file commit | grep -e ^tree | cut -d ' ' -f 2 ''').trim()
         if (jenkins.fileExists(DEPENDENCY_LOCK) && jenkins.readFile(file: DEPENDENCY_LOCK, encoding: 'utf-8').trim() == dependencyLock) {
             jenkins.echo "${DEPENDENCY_LOCK} doesn't change, no need to update: ${dependencyLock}"
             return
@@ -612,23 +621,18 @@ class JupiterJob extends BaseJob {
 
     void staticAnalysis() {
         if (isSkipStaticAnalysis) return
-
-        jenkins.sh 'mkdir -p lint'
-        try {
-            jenkins.sh 'npm run lint-all > lint/report.txt'
-            context.saSummary = "${context.SUCCESS_EMOJI} no tslint error".toString()
-            lockKey(context.lockCredentialId, context.lockUri, context.staticAnalysisLockKey)
-        } catch (e) {
-            String stdout = jenkins.sh(returnStdout: true, script: 'cat lint/report.txt').trim()
-            context.saSummary = "${context.FAILURE_EMOJI} ${stdout}".toString()
-            jenkins.error "Static Analysis Failed!\n${e.dump()}"
-        }
+        jenkins.sh 'npm run tsc'
     }
 
     void unitTest() {
         if (isSkipUnitTest) return
 
-        jenkins.sh 'npm run test -- --coverage -w 16'
+        if (jenkins.sh(returnStatus: true, script: 'which xvfb-run') > 0) {
+            jenkins.sh 'npm run test -- --coverage -w 2'
+        } else {
+            jenkins.sh 'xvfb-run -d -s "-screen 0 1920x1200x24" npm run test -- --coverage -w 2'
+        }
+
         String reportName = 'Coverage'
         jenkins.publishHTML([
             reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: reportName, reportTitles: reportName,
@@ -848,6 +852,7 @@ class JupiterJob extends BaseJob {
             "QUARANTINE_PASSED_THRESHOLD=1",
             "DEBUG=axios",
             "ENABLE_SSL=true",
+            "ENABLE_NOTIFICATION=true",
             "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${context.gitlabSourceBranch}][${context.head}]",
         ]) {
             jenkins.dir(E2E_DIRECTORY) {
@@ -860,7 +865,9 @@ class JupiterJob extends BaseJob {
                 }
 
                 if (context.e2eEnableRemoteDashboard) {
+                    readKeyFile(context.lockCredentialId, context.lockUri, context.endToEndReportId, 'runId')
                     jenkins.sh 'npx ts-node create-run-id.ts'
+                    writeKeyFile(context.lockCredentialId, context.lockUri, context.endToEndReportId, 'runId')
                     context.e2eReport = jenkins.sh(returnStdout: true, script: 'cat reportUrl || true').trim()
                 }
 
@@ -905,7 +912,8 @@ class JupiterJob extends BaseJob {
     }
 
     Boolean getIsSkipUnitTest() {
-        context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
+        !context.isMerge || context.gitlabSourceBranch != 'feature/FIJI-7797'
+        // true || context.isSkipUnitTestAndStaticAnalysis || (context.isMerge && hasBeenLocked(context.deployCredentialId, context.lockUri, context.unitTestLockKey))
     }
 
     Boolean getIsSkipStaticAnalysis() {
@@ -925,7 +933,7 @@ class JupiterJob extends BaseJob {
     }
 
     Boolean getIsSkipEndToEnd() {
-        context.isSkipEndToEnd
+        context.isSkipEndToEnd && !(jenkins.fileExists("tests/e2e/testcafe/configs/${context.gitlabSourceBranch}.json") && context.isMerge)
     }
 }
 
