@@ -53,6 +53,7 @@ describe('messageNotificationManager', () => {
     text: '',
   };
   const postWithMentionMe = {
+    creator_id: otherUserId,
     id: 4,
     group_id: 1,
     at_mention_non_item_ids: [currentUserId],
@@ -77,13 +78,16 @@ describe('messageNotificationManager', () => {
         4: postWithMentionMe,
       }[i];
     },
-    isNotificationsMuted: jest.fn().mockReturnValue(false),
   };
 
   const mockedGroupService = {
     getById: async (i: number) => {
       return { 1: team, 0: group }[i];
     },
+  };
+
+  const mockedProfileService = {
+    isNotificationMute: jest.fn().mockReturnValue(false),
   };
 
   const mockedCompanyService = {
@@ -107,6 +111,8 @@ describe('messageNotificationManager', () => {
           return mockedPostService;
         case ServiceConfig.GROUP_SERVICE:
           return mockedGroupService;
+        case ServiceConfig.PROFILE_SERVICE:
+          return mockedProfileService;
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
         case ServiceConfig.SETTING_SERVICE:
@@ -187,21 +193,26 @@ describe('messageNotificationManager', () => {
     });
     describe('when post is from a conversation which has customized settings for notifications', () => {
       it('should not show notification when post is from a conversation which has muted notifications and user is not mentioned in this post', async () => {
-        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
         const result = await notificationManager.shouldEmitNotification(
           postMessage,
         );
         expect(result).toBeFalsy();
       });
       it('should show notification when post is from a conversation which has muted notifications and user is mentioned in this post', async () => {
-        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
+        jest
+          .spyOn(notificationManager, 'getCurrentMessageNotificationSetting')
+          .mockImplementation(() =>
+            Promise.resolve(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE),
+          );
         const result = await notificationManager.shouldEmitNotification(
           postWithMentionMe,
         );
         expect(result).toBeTruthy();
       });
-      it.only('should not show notification when post is from a conversation which has muted notifications and user is mentioned in this post but global setting for New Messages is Off', async () => {
-        mockedPostService.isNotificationsMuted.mockReturnValue(true);
+      it('should not show notification when post is from a conversation which has muted notifications and user is mentioned in this post but global setting for New Messages is Off', async () => {
+        mockedProfileService.isNotificationMute.mockReturnValue(true);
         jest
           .spyOn(notificationManager, 'getCurrentMessageNotificationSetting')
           .mockImplementation(() =>
@@ -212,7 +223,6 @@ describe('messageNotificationManager', () => {
         );
         expect(result).toBeFalsy();
       });
-      // ALEX NEXT: 然后再去写 telephonyNotificationManager 部分的拦截
     });
   });
   describe('enqueueVm()', () => {

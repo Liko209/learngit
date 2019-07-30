@@ -26,7 +26,7 @@ import {
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
 import GroupModel from '@/store/models/Group';
-import GroupService from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
@@ -37,7 +37,7 @@ import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
+import { ProfileService, DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
@@ -51,15 +51,15 @@ class MessageNotificationManager extends AbstractNotificationManager
   implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
-  private _groupService: GroupService;
+  private _profileService: ProfileService;
   private _vmQueue: {
     id: number;
     vm: MessageNotificationViewModel;
   }[] = [];
   constructor() {
     super('message');
-    this._groupService = ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
+    this._profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
     );
     this._observer = {
       onEntitiesChanged:
@@ -185,7 +185,9 @@ class MessageNotificationManager extends AbstractNotificationManager
       );
       return false;
     }
-    const group = await this._groupService.getById(post.group_id);
+    const group = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(post.group_id);
 
     if (!group) {
       logger.info(
@@ -199,8 +201,7 @@ class MessageNotificationManager extends AbstractNotificationManager
     const postModel = new PostModel(post);
     const groupModel = new GroupModel(group);
 
-    // ALEX TODO: const shouldMuteNotification = await this._groupService.isNotificationsMuted(post.group_id);
-    const shouldMuteNotification = true;
+    const shouldMuteNotification = await this._profileService.isNotificationMute(post.group_id);
     const isMentioned = this.isMyselfAtMentioned(postModel);
     const setting: string = await this.getCurrentMessageNotificationSetting();
     if (
