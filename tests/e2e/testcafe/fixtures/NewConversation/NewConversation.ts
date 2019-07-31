@@ -284,7 +284,7 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
     const currentGroupId = await conversationPage.currentGroupId;
     const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId, userF.rcId])
     const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
-    assert.equal(_.sortBy(groupData.members), _.sortBy(userGlipIDs));
+    assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
     await t.expect(conversationPage.posts.count).eql(0);
   });
 
