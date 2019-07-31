@@ -10,7 +10,7 @@ const fixtures = [];
 let fileName;
 
 async function getCurrentBranch() {
-  return await execa('git', ['name-rev', '--name-only', 'HEAD']);
+  return (await execa('git', ['rev-parse', '--abbrev-ref', 'HEAD'])).stdout;
 }
 
 function inputFixture() {
@@ -55,6 +55,7 @@ function chooseTags() {
 }
 
 function saveToFile(onMerge) {
+  makeDirectoryIfNotExists(fileName);
   processFixtures(onMerge);
   const jsonContent = { "on_merge": onMerge };
   jsonfile.writeFileSync(fileName, jsonContent);
@@ -76,8 +77,15 @@ function processFixtures(onMerge) {
   onMerge.fixtures = newFixtures;
 }
 
+function makeDirectoryIfNotExists(fileName) {
+  const directory = path.dirname(fileName);
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, {recursive: true})
+  }
+}
+
 async function inputFileName() {
-  const currentBranch: string = (await getCurrentBranch()).stdout;
+  const currentBranch: string = await getCurrentBranch();
   await inquirer.prompt([{
     type: 'input',
     message: 'please input file name:',
