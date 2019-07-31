@@ -89,6 +89,7 @@ class RTCAccount implements IRTCAccount {
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
   ): RTCCall | null {
+    rtcLogger.ensureApiBeenCalledLog(LOG_TAG, 'makeCall');
     if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return null;
