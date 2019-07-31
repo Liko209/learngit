@@ -230,7 +230,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     const setting: string = await this.getCurrentMessageNotificationSetting();
     if (
       !shouldMuteNotification ||
-      (shouldMuteNotification &&
+      (
         isMentioned &&
         setting !== DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
     ) {    
