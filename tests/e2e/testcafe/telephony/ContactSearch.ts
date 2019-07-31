@@ -56,7 +56,9 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Click the the first item via mouse', async () => {
-    await telephonyDialog.contactSearchList.selectNth(0)
+    await telephonyDialog.contactSearchList.selectNth(0);
+    // the first select conn't trigger click, so the trick is click it again.
+    await telephonyDialog.contactSearchList.selectNth(0);
   });
 
   await h(t).withLog('Then a call should be initiated', async () => {
