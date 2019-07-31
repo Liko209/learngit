@@ -23,7 +23,6 @@ test(formalName('Check More button on post action bar', ['P2','Message','Content
 
 	await h(t).withLog('Given one DirectMessage conversation', async () => {
 		await h(t).glip(loginUser).init();
-		await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 

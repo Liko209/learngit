@@ -22,7 +22,6 @@ test(formalName('Team section display the conversation which the login user as o
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
 
     let teamId;
@@ -61,7 +60,6 @@ test(formalName('Each conversation should be represented by the team name.',
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
     const teamName = `Team ${uuid()}`;
 
@@ -110,7 +108,6 @@ test(formalName('Conversation that received post should be moved to top', ['JPT-
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let teamOneId, teamTwoId;
   await h(t).withLog('Given I have an extension with two teams', async () => {

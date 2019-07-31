@@ -432,10 +432,15 @@ sfdasfasd`);
       });
     });
     it('should build title and body for @team mention conversation', async () => {
+      const datum = {
+        post: new PostModel(postWithMentionOthers),
+        person: { userDisplayName: names.userDisplayName },
+        group: { members: [1, 2, 3], displayName: names.teamDisplayName },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
       const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionOthers),
-        { userDisplayName: names.userDisplayName },
-        { members: [1, 2, 3], displayName: names.teamDisplayName },
+        datum,
+        type,
       );
       expect(i18n.default).toHaveBeenCalledTimes(1);
       expect(i18n.default).toHaveBeenCalledWith(

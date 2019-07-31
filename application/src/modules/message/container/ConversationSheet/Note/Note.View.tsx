@@ -3,7 +3,6 @@
  * @Date: 2018-11-08 15:54:47
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { NoteViewProps } from './types';
 import {

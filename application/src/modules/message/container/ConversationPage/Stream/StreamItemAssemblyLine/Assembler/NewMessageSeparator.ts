@@ -3,7 +3,6 @@
  * @Date: 2018-10-23 18:21:59
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
 import { ISortableModel } from '@/store/base';
@@ -148,7 +147,7 @@ class NewMessageSeparatorHandler extends Assembler {
     postId: number,
   ) {
     const len = allPosts.length;
-    let result: ISortableModel | undefined = undefined;
+    let result: ISortableModel | undefined;
     for (let i = 0; i < len; i++) {
       const sortableModel = allPosts[i];
       const post = getEntity<Post, PostModel>(

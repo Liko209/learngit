@@ -164,7 +164,7 @@ class TelephonyService {
       }
     }
   };
-  /* eslint-disable */
+
   private _pauseRingtone = async () => {
     if (!this._ringtone) {
       return;
@@ -442,6 +442,8 @@ class TelephonyService {
         );
         return false; // For other errors, need not show call UI
       }
+      default:
+        break;
     }
 
     return true;

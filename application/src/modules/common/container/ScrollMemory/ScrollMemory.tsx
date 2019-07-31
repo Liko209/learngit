@@ -3,7 +3,7 @@
  * @Date: 2019-05-28 16:05:06
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
@@ -23,6 +23,7 @@ class ScrollMemory extends Component<ScrollMemoryProps> {
   }
 
   private _scrollToLastPosition = () => {
+    /* eslint-disable react/no-find-dom-node */
     const scrollEl = ReactDOM.findDOMNode(this);
     if (scrollEl instanceof HTMLElement) {
       const [top, left] = ScrollMemory._map.get(this.props.id) || [0, 0];
