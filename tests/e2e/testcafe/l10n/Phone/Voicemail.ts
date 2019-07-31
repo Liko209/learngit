@@ -45,15 +45,10 @@ fixture('Phone/Voicemail')
   });
 
   await h(t).withLog('And I delete exists voicemail', async() => {
-    while(1){
-      if (await voicemailItemFromExt.exists) {
+    while(await voicemailItemFromExt.exists){
         await voicemailItemFromExt.openMoreMenu();
         await voicemailItemFromExt.clickDeleteButton();
         await deleteVoicemailDialog.clickDeleteButton();
-      }
-      else{
-        break;
-      };
     };
   });
 
