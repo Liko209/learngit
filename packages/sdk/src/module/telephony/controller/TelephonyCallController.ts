@@ -48,8 +48,8 @@ class TelephonyCallController implements IRTCCallDelegate {
   private _entityId: number;
   private _entityCacheController: IEntityCacheController<Call>;
   private _callActionCallbackMap: Map<
-  string,
-  { resolve: IResultResolveFn; reject: IResultRejectFn }
+    string,
+    { resolve: IResultResolveFn; reject: IResultRejectFn }
   >;
   private _holdToggle: ToggleController;
   private _recordToggle: ToggleController;
@@ -116,7 +116,6 @@ class TelephonyCallController implements IRTCCallDelegate {
     );
     return originalCall ? _.cloneDeep(originalCall) : null;
   }
-  /* eslint-disable */
   private _handleCallStateChanged(state: RTC_CALL_STATE) {
     const call = this._getCallEntity();
     if (call) {
@@ -136,6 +135,8 @@ class TelephonyCallController implements IRTCCallDelegate {
           if (!call.disconnectTime) {
             call.disconnectTime = Date.now();
           }
+          break;
+        default:
           break;
       }
       notificationCenter.emitEntityUpdate(ENTITY.CALL, [call]);
@@ -178,6 +179,8 @@ class TelephonyCallController implements IRTCCallDelegate {
         break;
       case ACR_ON:
         res = CALL_ACTION_ERROR_CODE.ACR_ON;
+        break;
+      default:
         break;
     }
     return res;
@@ -227,6 +230,8 @@ class TelephonyCallController implements IRTCCallDelegate {
       case RTC_CALL_ACTION.STOP_RECORD:
         toggleController = this._recordToggle;
         break;
+      default:
+        break;
     }
     if (toggleController) {
       isSuccess ? toggleController.onSuccess() : toggleController.onFailure();
@@ -267,6 +272,8 @@ class TelephonyCallController implements IRTCCallDelegate {
         break;
       case RTC_CALL_ACTION.PARK:
         res = this._handleParkAction(isSuccess, options);
+        break;
+      default:
         break;
     }
 

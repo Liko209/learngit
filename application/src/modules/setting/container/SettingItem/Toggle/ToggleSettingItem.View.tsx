@@ -3,7 +3,6 @@
  * @Date: 2019-05-27 13:30:09
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
 import { JuiToggleButton } from 'jui/components/Buttons';

@@ -218,7 +218,7 @@ class JuiTabs extends PureComponent<Props, States> {
     });
   };
 
-  private _handleMenuItemClick = (index: number, event: MouseEvent) => {
+  private _handleMenuItemClick = (index: number) => {
     this._setSelectedTabIndex(index);
   };
 

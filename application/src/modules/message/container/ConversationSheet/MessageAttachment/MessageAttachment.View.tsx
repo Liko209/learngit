@@ -3,7 +3,7 @@
  * @Date: 2019-05-03 09:54:21
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { MessageAttachmentViewProps } from './types';
 import { observer } from 'mobx-react';
@@ -61,14 +61,16 @@ class MessageAttachmentView extends Component<MessageAttachmentViewProps> {
             attachments.forEach((attachment: AttachmentItemProps) => {
               const clone: AttachmentItemProps = {};
               for (const key in attachment) {
-                const value = attachment[key];
-                clone[key] =
-                  keys.includes(key) && typeof value === 'string'
-                    ? postParser(value, {
-                        html: true,
-                        keyword: this.context.keyword,
-                      })
-                    : attachment[key];
+                if (Object.prototype.hasOwnProperty.call(attachment, key)) {
+                  const value = attachment[key];
+                  clone[key] =
+                    keys.includes(key) && typeof value === 'string'
+                      ? postParser(value, {
+                          html: true,
+                          keyword: this.context.keyword,
+                        })
+                      : attachment[key];
+                }
               }
               if (attachment.fields) {
                 clone.fields = attachment.fields.map(field =>

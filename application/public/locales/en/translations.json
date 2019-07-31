@@ -111,7 +111,8 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
-    "openDialer": "Open the dialer"
+    "openDialer": "Open the dialer",
+    "editProfile": "Edit Profile"
   },
   "globalSearch": {
     "search": "Search",

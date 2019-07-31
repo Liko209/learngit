@@ -11,7 +11,7 @@ import { spacing, typography } from '../../foundation/utils';
 const StyledMuiTypography = styled(MuiTypography)`
   && {
     flex: 1;
-    padding: ${spacing(0, 3, 0, 2)};
+    padding: ${spacing(0, 3, 0, 0)};
     ${typography('body2')};
     overflow: hidden;
     text-overflow: ellipsis;

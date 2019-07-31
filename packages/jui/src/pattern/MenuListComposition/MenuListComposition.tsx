@@ -78,7 +78,7 @@ class JuiMenuListComposition extends React.PureComponent<
     const { MenuExpandTrigger, menuItems, automationId } = this.props;
     return (
       <MenuListCompositionWrapper className={this.props.className}>
-        <MenuExpandTrigger aria-haspopup='true' onClick={this.handleToggle} />
+        <MenuExpandTrigger aria-haspopup="true" onClick={this.handleToggle} />
         <MenuWrapper
           open={open}
           anchorEl={anchorEl}

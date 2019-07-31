@@ -3,8 +3,6 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -56,14 +54,14 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
       >
         <JuiDialogHeader
           data-profile-type={group.isTeam ? 'team' : 'group'}
-          data-test-automation-id='profileDialogTitle'
+          data-test-automation-id="profileDialogTitle"
         >
           <ProfileDialogGroupTitle id={id} />
         </JuiDialogHeader>
         <JuiDivider />
         <JuiDialogContentWithFill
-          noPaddingFix={true}
-          data-test-automation-id='profileDialogContent'
+          noPaddingFix
+          data-test-automation-id="profileDialogContent"
         >
           <ProfileDialogGroupContent id={id} />
         </JuiDialogContentWithFill>

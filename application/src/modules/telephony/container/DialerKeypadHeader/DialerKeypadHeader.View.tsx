@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2019-03-06 14:31:51
@@ -20,11 +19,11 @@ class DialerKeypadHeaderView extends React.Component<
     return (
       <KeypadHeaderContainer>
         <JuiIconButton
-          variant='plain'
-          color='common.white'
-          disableToolTip={true}
+          variant="plain"
+          color="common.white"
+          disableToolTip
           onClick={this.props.quitKeypad}
-          size='large'
+          size="large"
         >
           previous
         </JuiIconButton>
