@@ -3,7 +3,6 @@
  * @Date: 2018-09-19 13:53:48
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { MouseEvent } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
 import { Indicator } from '../Indicator';

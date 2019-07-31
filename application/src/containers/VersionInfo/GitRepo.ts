@@ -3,7 +3,6 @@
  * @Date: 2018-04-02 09:41:46
  * Copyright © RingCentral. All rights reserved.
  */
-// tslint:disable:no-console
 const { exec } = require('child_process');
 const Async = require('async');
 const fs = require('fs');
@@ -40,14 +39,11 @@ class GitRepo {
   ensureSrcPath(callback: Function) {
     exec('pwd', (error: any, stdout: any, stderr: any) => {
       if (error) {
-        console.log(`GitRepo could not run pwd: ${error}`);
         return callback(error);
       }
       if (stderr) {
-        console.log(`GitRepo run pwd returned an error: ${stderr}`);
         return callback(stderr);
       }
-      console.log(stdout);
       this.srcDir = stdout.trim('\n');
       return callback(null);
     });
@@ -63,11 +59,9 @@ class GitRepo {
       } && git log -n ${n} --pretty=format:"%t|%an|%ad|%s|%h"`;
       return exec(gitCommitLine, (error: any, stdout: any, stderr: any) => {
         if (error) {
-          console.log(`run ${gitCommitLine} ${error}`);
           return callback(error);
         }
         if (stderr) {
-          console.log(`run ${gitCommitLine} return ${stderr}`);
           return callback(stderr);
         }
         if (stdout) {
@@ -99,11 +93,9 @@ class GitRepo {
     const gitCommitLine = 'echo $gitlabSourceBranch';
     return exec(gitCommitLine, (error: any, stdout: any, stderr: any) => {
       if (error || stderr) {
-        console.log('error');
         return callback(null);
       }
       if (stdout && stdout.trim() !== '') {
-        console.log('getBranchNameFromEnv:', stdout);
         this.branchName = stdout.trim();
       }
       return callback(null);
@@ -123,7 +115,6 @@ class GitRepo {
         return callback(stderr);
       }
       if (stdout) {
-        console.log('getBranchNameFromGit:', stdout);
         this.branchName = stdout.replace(/^\* (.*)\n/, '$1');
         return callback(null, this.branchName);
       }
@@ -157,16 +148,11 @@ class RunGitInfoIntoFile {
     this.gitRepo = new GitRepo();
   }
   run() {
-    Async.series(
-      [
-        this.getCurrentBranch.bind(this),
-        this.getLast3Commits.bind(this),
-        this.writeInfoToFile.bind(this),
-      ],
-      (error: any) => {
-        console.log(`RunGitInfoIntoFile ${error}`);
-      },
-    );
+    Async.series([
+      this.getCurrentBranch.bind(this),
+      this.getLast3Commits.bind(this),
+      this.writeInfoToFile.bind(this),
+    ]);
   }
 
   getCurrentBranch(callback: Function) {
@@ -207,10 +193,8 @@ class RunGitInfoIntoFile {
     this.srcDir = `${this.gitRepo.getSrcDir()}/commitInfo.ts`;
     fs.writeFile(`${this.srcDir}`, info, (err: any) => {
       if (err) {
-        console.error(`write commit info to file error ${err}`);
         return callback(err);
       }
-      console.log('write file success');
       return callback(null);
     });
   }

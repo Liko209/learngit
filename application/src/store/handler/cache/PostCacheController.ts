@@ -3,7 +3,7 @@
  * @Date: 2019-02-04 10:02:00
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import { FetchSortableDataListHandler } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
 import storeManager from '@/store/base/StoreManager';
@@ -96,15 +96,11 @@ abstract class PostCacheController implements IPreFetchController {
     if (this._currentGroupId === groupId) {
       this.removeInternal(groupId);
       this._currentGroupId = 0;
-    } else {
-      if (this.hasCache(groupId)) {
-        mainLogger.debug(
-          `PostCacheController: releaseCurrentConversation =>  ${groupId}`,
-        );
-        if (this.hasCache(groupId)) {
-          this.get(groupId).maintainMode = true;
-        }
-      }
+    } else if (this.hasCache(groupId)) {
+      mainLogger.debug(
+        `PostCacheController: releaseCurrentConversation =>  ${groupId}`,
+      );
+      this.get(groupId).maintainMode = true;
     }
   }
 
