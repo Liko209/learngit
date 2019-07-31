@@ -33,8 +33,12 @@ import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
-import { PermissionService, LaunchDarklyController, SplitIOController } from 'sdk/module/permission';
-
+import {
+  PermissionService,
+  LaunchDarklyController,
+  SplitIOController,
+} from 'sdk/module/permission';
+import { jobScheduler } from './framework/utils/jobSchedule';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -102,7 +106,7 @@ class Sdk {
       dbAdapter: dbConfig.adapter,
     });
     Api.init(apiConfig, this.networkManager);
-    await this.daoManager.initDatabase();
+    await this.daoManager.initDatabase(this.clearAllData);
 
     this.permissionService.injectControllers(new LaunchDarklyController());
     this.permissionService.injectControllers(new SplitIOController());
@@ -243,6 +247,16 @@ class Sdk {
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }
+
+  clearAllData = async () => {
+    await this.daoManager.deleteDatabase();
+    // remove relevant config
+    if (AccountGlobalConfig.getUserDictionary()) {
+      // TODO FIJI-4396
+      this.syncService.userConfig.clearSyncConfigsForDBUpgrade();
+      jobScheduler.userConfig.clearFetchDataConfigs();
+    }
+  };
 }
 
 export default Sdk;

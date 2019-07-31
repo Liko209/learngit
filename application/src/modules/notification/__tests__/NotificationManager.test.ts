@@ -2,7 +2,7 @@ import { AbstractNotificationManager } from '../manager';
 import { Jupiter, container } from 'framework';
 import { config } from '../module.config';
 import { MediaModule } from '@/modules/media';
-import { INotificationService, NOTIFICATION_PRIORITY } from '../interface';
+import { INotificationService } from '../interface';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
