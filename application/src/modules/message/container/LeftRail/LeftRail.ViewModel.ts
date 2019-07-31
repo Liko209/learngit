@@ -52,12 +52,14 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
         icon: 'mention',
         type: POST_LIST_TYPE.mentions,
         testId: 'entry-mentions',
+        iconColor: ['secondary', '600'],
       },
       {
         title: 'message.bookmarkPosts',
         icon: 'bookmark',
         type: POST_LIST_TYPE.bookmarks,
         testId: 'entry-bookmarks',
+        iconColor: ['primary', '600'],
       },
     ];
   }

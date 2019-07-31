@@ -182,9 +182,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   });
 
   await h(t).withLog('And I can no longer find the UMI on the team', async () => {
-    const text = team.self.find('p');
     await team.umi.shouldBeNumber(0);
-    await team.shouldBeNormalStyle();
   });
 
 });

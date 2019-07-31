@@ -144,7 +144,7 @@ class ConversationEntry extends BaseWebComponent {
     await H.retryUntilPass(async () => {
       const textStyle = await this.self.find('p').style;
       const textFontWeight = textStyle['font-weight'];
-      assert.ok(/bold|700/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 700`);
+      assert.ok(/bold|900/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 900`);
     });
   }
 
