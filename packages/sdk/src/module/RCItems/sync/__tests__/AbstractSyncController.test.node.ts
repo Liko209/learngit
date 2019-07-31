@@ -48,8 +48,8 @@ describe('AbstractSyncController', () => {
       syncController.hasPermission.mockReturnValueOnce(false);
 
       await syncController.doSync(false, SYNC_DIRECTION.NEWER);
-      expect(syncController.hasPermission).toBeCalledTimes(1);
-      expect(syncController.getSyncToken).toBeCalledTimes(0);
+      expect(syncController.hasPermission).toHaveBeenCalledTimes(1);
+      expect(syncController.getSyncToken).toHaveBeenCalledTimes(0);
     });
 
     it('should do nothing when is in clear', async () => {
@@ -57,8 +57,8 @@ describe('AbstractSyncController', () => {
       syncController['_syncStatus'] = 2;
 
       await syncController.doSync(false, SYNC_DIRECTION.NEWER);
-      expect(syncController.hasPermission).toBeCalledTimes(1);
-      expect(syncController.getSyncToken).toBeCalledTimes(0);
+      expect(syncController.hasPermission).toHaveBeenCalledTimes(1);
+      expect(syncController.getSyncToken).toHaveBeenCalledTimes(0);
     });
 
     it('should do FSync when does not have token', async () => {
@@ -70,9 +70,9 @@ describe('AbstractSyncController', () => {
       expect(
         await syncController.doSync(true, SYNC_DIRECTION.NEWER, false, 12),
       ).toEqual([mockData]);
-      expect(syncController.hasPermission).toBeCalledTimes(1);
-      expect(syncController.getSyncToken).toBeCalledTimes(1);
-      expect(syncController['_doFSync']).toBeCalledWith(true, 12);
+      expect(syncController.hasPermission).toHaveBeenCalledTimes(1);
+      expect(syncController.getSyncToken).toHaveBeenCalledTimes(1);
+      expect(syncController['_doFSync']).toHaveBeenCalledWith(true, 12);
     });
 
     it('should do ISync immediately when isSilent is false', async () => {
@@ -87,10 +87,10 @@ describe('AbstractSyncController', () => {
       expect(
         await syncController.doSync(false, SYNC_DIRECTION.NEWER, false, 12),
       ).toEqual([mockData]);
-      expect(syncController.hasPermission).toBeCalledTimes(1);
-      expect(syncController.getSyncToken).toBeCalledTimes(1);
-      expect(syncController['_doFSync']).toBeCalledTimes(0);
-      expect(syncController['_startSync']).toBeCalledWith(
+      expect(syncController.hasPermission).toHaveBeenCalledTimes(1);
+      expect(syncController.getSyncToken).toHaveBeenCalledTimes(1);
+      expect(syncController['_doFSync']).toHaveBeenCalledTimes(0);
+      expect(syncController['_startSync']).toHaveBeenCalledWith(
         false,
         SYNC_TYPE.ISYNC,
         SYNC_DIRECTION.NEWER,
@@ -110,13 +110,13 @@ describe('AbstractSyncController', () => {
       expect(
         await syncController.doSync(true, SYNC_DIRECTION.NEWER, 12),
       ).toEqual([]);
-      expect(syncController.hasPermission).toBeCalledTimes(1);
-      expect(syncController.getSyncToken).toBeCalledTimes(1);
-      expect(syncController['_doFSync']).toBeCalledTimes(0);
-      expect(syncController['_startSync']).toBeCalledTimes(0);
-      expect(syncController.canDoSilentSync).toBeCalledTimes(1);
+      expect(syncController.hasPermission).toHaveBeenCalledTimes(1);
+      expect(syncController.getSyncToken).toHaveBeenCalledTimes(1);
+      expect(syncController['_doFSync']).toHaveBeenCalledTimes(0);
+      expect(syncController['_startSync']).toHaveBeenCalledTimes(0);
+      expect(syncController.canDoSilentSync).toHaveBeenCalledTimes(1);
       expect(syncController['_lastSyncNewerTime']).toBeGreaterThan(0);
-      expect(silentSyncProcessorHandler.addProcessor).toBeCalledTimes(1);
+      expect(silentSyncProcessorHandler.addProcessor).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -141,7 +141,7 @@ describe('AbstractSyncController', () => {
         true,
       );
 
-      expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
+      expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledWith(
         'entity',
         data,
       );
@@ -149,32 +149,28 @@ describe('AbstractSyncController', () => {
   });
 
   describe('_doFSync', () => {
-    it('should throw error when is already in FSync', async () => {
+    it('should return [] when is already in FSync', async () => {
       syncController['_syncStatus'] = 1;
       syncController['_startSync'] = jest.fn();
-      try {
-        await syncController['_doFSync'](true);
-      } catch (err) {
-        expect(err.code).toEqual(ERROR_CODES_SDK.INVALID_SYNC_TOKEN);
-      }
-      expect(silentSyncProcessorHandler.addProcessor).toBeCalledTimes(0);
-      expect(syncController['_startSync']).toBeCalledTimes(0);
+      expect(await syncController['_doFSync'](true)).toEqual([]);
+      expect(silentSyncProcessorHandler.addProcessor).toHaveBeenCalledTimes(0);
+      expect(syncController['_startSync']).toHaveBeenCalledTimes(0);
     });
 
     it('should add processor when isSilent is true', async () => {
       syncController['_startSync'] = jest.fn();
 
       await syncController['_doFSync'](true, 13);
-      expect(silentSyncProcessorHandler.addProcessor).toBeCalledTimes(1);
-      expect(syncController['_startSync']).toBeCalledTimes(0);
+      expect(silentSyncProcessorHandler.addProcessor).toHaveBeenCalledTimes(1);
+      expect(syncController['_startSync']).toHaveBeenCalledTimes(0);
     });
 
     it('should do FSync immediately when isSilent is false', async () => {
       syncController['_startSync'] = jest.fn().mockResolvedValueOnce('result');
 
       await syncController['_doFSync'](false, 13);
-      expect(silentSyncProcessorHandler.addProcessor).toBeCalledTimes(0);
-      expect(syncController['_startSync']).toBeCalledWith(
+      expect(silentSyncProcessorHandler.addProcessor).toHaveBeenCalledTimes(0);
+      expect(syncController['_startSync']).toHaveBeenCalledWith(
         false,
         SYNC_TYPE.FSYNC,
         undefined,
@@ -190,7 +186,7 @@ describe('AbstractSyncController', () => {
       );
 
       await syncController.clearAll();
-      expect(syncController.requestClearAllAndRemoveLocalData).toBeCalledTimes(
+      expect(syncController.requestClearAllAndRemoveLocalData).toHaveBeenCalledTimes(
         1,
       );
       expect(syncController['_syncStatus']).toEqual(0);

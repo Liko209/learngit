@@ -24,6 +24,18 @@ const StyledMaskWrapper = styled.div`
   background-color: ${palette('common', 'white')};
   overflow: hidden;
   cursor: pointer;
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+  }
+  &:hover:after {
+    background: ${palette('common', 'white', 0.1)};
+  }
 `;
 
 export { StyledMaskWrapper, StyledMask };

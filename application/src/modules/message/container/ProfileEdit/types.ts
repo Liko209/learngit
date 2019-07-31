@@ -12,14 +12,7 @@ type EditProfileProps = {
 };
 
 type EditItemSourceType = {
-  key:
-    | 'firstName'
-    | 'lastName'
-    | 'title'
-    | 'location'
-    | 'department'
-    | 'webpage'
-    | 'phone';
+  key: 'firstName' | 'lastName' | 'jobTitle' | 'location' | 'homepage';
   automationId: string;
   maxLength: number;
   error?: string;
@@ -30,7 +23,7 @@ type EditProfileViewModelProps = {
   person: PersonModel;
   currentPersonInfo: PersonModel;
   isLoading: boolean;
-  webpageError: boolean;
+  homepageError: boolean;
   updateInfo: (key: EditItemSourceType['key'], value: string) => void;
   handleProfileEdit: () => void;
   getUpdateInfo: () => Object | undefined;

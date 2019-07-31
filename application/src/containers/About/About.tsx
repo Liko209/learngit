@@ -3,14 +3,12 @@
  * @Date: 2018-10-31 14:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import pkg from '../../../package.json';
 import { getGlobalValue } from '@/store/utils';

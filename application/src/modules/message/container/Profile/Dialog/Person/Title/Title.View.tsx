@@ -23,21 +23,23 @@ class ProfileDialogPersonTitleViewComponent extends Component<
 > {
   @IMessageService private _messageService: IMessageService;
   onClick = () => portalManager.dismissLast();
+  handleEditClick = () => this._messageService.open(this.props.id);
   render() {
-    const { id, t } = this.props;
+    const { id, t, isTheCurrentUserProfile } = this.props;
     return (
       <>
         <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
         <JuiDialogHeaderActions>
-          <JuiIconButton
-            onClick={() => {
-              this._messageService.open(id);
-            }}
-            tooltipTitle={t('common.dialog.edit')}
-            ariaLabel={t('common.dialog.edit')}
-          >
-            edit
-          </JuiIconButton>
+          {isTheCurrentUserProfile && (
+            <JuiIconButton
+              onClick={this.handleEditClick}
+              data-test-automation-id="editProfileIcon"
+              tooltipTitle={t('common.dialog.edit')}
+              ariaLabel={t('common.dialog.edit')}
+            >
+              edit
+            </JuiIconButton>
+          )}
           <Favorite id={id} size="medium" />
           <JuiIconButton
             onClick={this.onClick}

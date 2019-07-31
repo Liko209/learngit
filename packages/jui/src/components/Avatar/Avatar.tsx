@@ -21,7 +21,7 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 
-import { JuiIconButton } from '../Buttons';
+import { JuiIconography } from '../../foundation/Iconography';
 import { StyledMaskWrapper, StyledMask } from './Mask';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
@@ -117,14 +117,9 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   const { presence, cover, tooltip, mask, maskClick, ...rest } = props;
   const maskWithIcon = (
     <StyledMask>
-      <JuiIconButton
-        variant="plain"
-        size="small"
-        color="common.white"
-        disableToolTip
-      >
+      <JuiIconography iconSize="small" color="common.white">
         edit
-      </JuiIconButton>
+      </JuiIconography>
     </StyledMask>
   );
 

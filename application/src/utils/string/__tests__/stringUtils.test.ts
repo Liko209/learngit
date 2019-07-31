@@ -3,7 +3,7 @@
  * @Date: 2019-07-24 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { trimStringBothSides, matchEmail } from '../index';
+import { trimStringBothSides, matchUrl } from '../index';
 
 describe('trimStringBothSides()', () => {
   it('should spaces at the beginning or end should be ignored [JPT-2661]', () => {
@@ -11,11 +11,11 @@ describe('trimStringBothSides()', () => {
   });
 });
 
-describe('matchEmail()', () => {
+describe('matchUrl()', () => {
   it('should return true when email validation correct', () => {
-    expect(matchEmail('1@qq.com')).toBe(true);
+    expect(matchUrl('http://1.com')).toBe(true);
   });
   it('should return false when email validation incorrect', () => {
-    expect(matchEmail('@qq.')).toBe(false);
+    expect(matchUrl('qq.com')).toBe(false);
   });
 });

@@ -5,4 +5,5 @@
  */
 
 export * from './entities';
+export * from './presence';
 export * from './transform2Map';

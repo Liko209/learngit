@@ -13,7 +13,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
-/* eslint-disable */
+
 class StateActionController {
   private _partialModifyController: IPartialModifyController<GroupState>;
   constructor(
@@ -124,7 +124,7 @@ class StateActionController {
     groupState: GroupState,
   ): Partial<State> {
     return {
-      ['id']: myStateId,
+      'id': myStateId,
       [`unread_count:${groupState.id}`]: groupState.unread_count,
       [`unread_mentions_count:${
         groupState.id
@@ -142,7 +142,7 @@ class StateActionController {
     groupState: GroupState,
   ): Partial<State> {
     return {
-      ['id']: myStateId,
+      'id': myStateId,
       [`unread_count:${groupState.id}`]: groupState.unread_count,
       [`post_cursor:${groupState.id}`]: groupState.post_cursor,
       [`marked_as_unread:${groupState.id}`]: groupState.marked_as_unread,

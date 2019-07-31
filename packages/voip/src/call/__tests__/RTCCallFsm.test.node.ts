@@ -5,6 +5,7 @@
  */
 import { RTCCallFsm } from '../RTCCallFsm';
 import { CALL_FSM_NOTIFY } from '../types';
+import { RTC_CALL_ACTION } from '../../api/types';
 
 describe('Call FSM UT', () => {
   class MockCallFsmLisener {
@@ -62,7 +63,7 @@ describe('Call FSM UT', () => {
       fsm.accountNotReady();
       setImmediate(() => {
         expect(fsm.state()).toBe('pending');
-        expect(listener.onEnterPending).toBeCalled();
+        expect(listener.onEnterPending).toHaveBeenCalled();
         done();
       });
     });
@@ -76,8 +77,8 @@ describe('Call FSM UT', () => {
 
       setImmediate(() => {
         expect(fsm.state()).toBe('connecting');
-        expect(listener.onEnterConnecting).toBeCalled();
-        expect(listener.onCreateOutCallSession).toBeCalled();
+        expect(listener.onEnterConnecting).toHaveBeenCalled();
+        expect(listener.onCreateOutCallSession).toHaveBeenCalled();
         done();
       });
     });
@@ -90,8 +91,8 @@ describe('Call FSM UT', () => {
       fsm.hangup();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
-        expect(listener.onHangupAction).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
+        expect(listener.onHangupAction).toHaveBeenCalled();
         done();
       });
     });
@@ -157,7 +158,7 @@ describe('Call FSM UT', () => {
       fsm.sessionConfirmed();
       setImmediate(() => {
         expect(fsm.state()).toBe('connected');
-        expect(listener.onEnterConnected).toBeCalled();
+        expect(listener.onEnterConnected).toHaveBeenCalled();
         done();
       });
     });
@@ -170,7 +171,7 @@ describe('Call FSM UT', () => {
       fsm.hangup();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
         done();
       });
     });
@@ -183,7 +184,7 @@ describe('Call FSM UT', () => {
       fsm.sessionError();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
         done();
       });
     });
@@ -195,7 +196,7 @@ describe('Call FSM UT', () => {
       fsm.sessionDisconnected();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
         done();
       });
     });
@@ -211,8 +212,8 @@ describe('Call FSM UT', () => {
       fsm.accountReady();
       setImmediate(() => {
         expect(fsm.state()).toBe('connecting');
-        expect(listener.onEnterConnecting).toBeCalled();
-        expect(listener.onCreateOutCallSession).toBeCalled();
+        expect(listener.onEnterConnecting).toHaveBeenCalled();
+        expect(listener.onCreateOutCallSession).toHaveBeenCalled();
         done();
       });
     });
@@ -225,7 +226,7 @@ describe('Call FSM UT', () => {
       fsm.hangup();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
         done();
       });
     });
@@ -240,7 +241,7 @@ describe('Call FSM UT', () => {
       fsm.sessionAccepted();
       setImmediate(() => {
         expect(fsm.state()).toBe('connected');
-        expect(listener.onEnterConnected).toBeCalled();
+        expect(listener.onEnterConnected).toHaveBeenCalled();
         done();
       });
     });
@@ -254,8 +255,8 @@ describe('Call FSM UT', () => {
       fsm.hangup();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onEnterDisconnected).toBeCalled();
-        expect(listener.onHangupAction).toBeCalled();
+        expect(listener.onEnterDisconnected).toHaveBeenCalled();
+        expect(listener.onHangupAction).toHaveBeenCalled();
         done();
       });
     });
@@ -291,7 +292,7 @@ describe('Call FSM UT', () => {
       fsm.hangup();
       setImmediate(() => {
         expect(fsm.state()).toBe('disconnected');
-        expect(listener.onHangupAction).toBeCalled();
+        expect(listener.onHangupAction).toHaveBeenCalled();
         done();
       });
     });
@@ -325,7 +326,7 @@ describe('Call FSM UT', () => {
         callFsm.flip(5);
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
-          expect(callFsm.onFlipAction).toBeCalled();
+          expect(callFsm.onFlipAction).toHaveBeenCalled();
           done();
         });
       });
@@ -340,7 +341,7 @@ describe('Call FSM UT', () => {
         callFsm.startRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
-          expect(callFsm.onStartRecordAction).toBeCalled();
+          expect(callFsm.onStartRecordAction).toHaveBeenCalled();
           done();
         });
       });
@@ -355,7 +356,7 @@ describe('Call FSM UT', () => {
         callFsm.stopRecord();
         setImmediate(() => {
           expect(callFsm.state()).toBe('connected');
-          expect(callFsm.onStopRecordAction).toBeCalled();
+          expect(callFsm.onStopRecordAction).toHaveBeenCalled();
           done();
         });
       });
@@ -367,7 +368,7 @@ describe('Call FSM UT', () => {
         jest.spyOn(callFsm, 'onReportCallActionFailed');
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalled();
           done();
         });
       });
@@ -377,7 +378,7 @@ describe('Call FSM UT', () => {
         callFsm.accountNotReady();
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalled();
           done();
         });
       });
@@ -387,7 +388,7 @@ describe('Call FSM UT', () => {
         callFsm.answer();
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalled();
           done();
         });
       });
@@ -397,7 +398,7 @@ describe('Call FSM UT', () => {
         callFsm.accountReady();
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalled();
           done();
         });
       });
@@ -407,7 +408,7 @@ describe('Call FSM UT', () => {
         callFsm.hangup();
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onReportCallActionFailed).toBeCalled();
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalled();
           done();
         });
       });
@@ -418,7 +419,7 @@ describe('Call FSM UT', () => {
         callFsm.sessionAccepted();
         callFsm.transfer('123');
         setImmediate(() => {
-          expect(callFsm.onTransferAction).toBeCalled();
+          expect(callFsm.onTransferAction).toHaveBeenCalled();
           done();
         });
       });
@@ -434,7 +435,7 @@ describe('Call FSM UT', () => {
       callFsm.park();
       setImmediate(() => {
         expect(callFsm.state()).toBe('connected');
-        expect(callFsm.onParkAction).toBeCalled();
+        expect(callFsm.onParkAction).toHaveBeenCalled();
         done();
       });
     });
@@ -448,7 +449,7 @@ describe('Call FSM UT', () => {
       callFsm.forward(forwardNumber);
       setImmediate(() => {
         expect(callFsm.state()).toBe('forwarding');
-        expect(callFsm.onForwardAction).toBeCalled();
+        expect(callFsm.onForwardAction).toHaveBeenCalled();
         done();
       });
     });
@@ -582,6 +583,183 @@ describe('Call FSM UT', () => {
         setImmediate(() => {
           expect(callFsm.state()).toBe('disconnected');
           done();
+        });
+      });
+    });
+  });
+
+  describe('warmTransfer()', () => {
+    describe('should report fail and FSM back to last state if current FSM is in idle/pending/answering/replying/forwarding/connecting/disconnected when call warmTransfer API [JPT-2543]', () => {
+      const targetSession = 'targetSession';
+      it('should report fail and FSM enter idle state when warmTransfer() in idle state', done => {
+        const callFsm = new RTCCallFsm();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('idle');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter pending state when warmTransfer() in pending state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountNotReady();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('pending');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter answering state when warmTransfer() in answering state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('answering');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter replying state when warmTransfer() in replying state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.startReplyWithMessage();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('replying');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter forwarding state when warmTransfer() in forwarding state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.forward('100');
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('forwarding');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter connecting state when warmTransfer() in connecting state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connecting');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+
+      it('should report fail and FSM enter disconnected state when warmTransfer() in disconnected state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.hangup();
+        jest.spyOn(callFsm, 'onReportCallActionFailed');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('disconnected');
+          expect(callFsm.onReportCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.WARM_TRANSFER,
+          );
+          done();
+        });
+      });
+    });
+
+    describe('should call session WarmTransfer() when current FSM is in connected/holding/holded/unholding state [JPT-2683]', () => {
+      const targetSession = 'targetSession';
+      it('should call session WarmTransfer() when warmTransfer() in connected state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.sessionAccepted();
+        jest.spyOn(callFsm, 'onWarmTransferAction');
+        callFsm.warmTransfer(targetSession);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
+            targetSession,
+          );
+          done();
+        });
+      });
+      it('should call session WarmTransfer() when warmTransfer() in holding state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.sessionAccepted();
+        callFsm.hold();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('holding');
+          jest.spyOn(callFsm, 'onWarmTransferAction');
+          callFsm.warmTransfer(targetSession);
+          setImmediate(() => {
+            expect(callFsm.state()).toBe('holding');
+            expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
+              targetSession,
+            );
+            done();
+          });
+        });
+      });
+      it('should call session WarmTransfer() when warmTransfer() in holded state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.sessionAccepted();
+        callFsm.hold();
+        callFsm.holdSuccess();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('holded');
+          jest.spyOn(callFsm, 'onWarmTransferAction');
+          callFsm.warmTransfer(targetSession);
+          setImmediate(() => {
+            expect(callFsm.state()).toBe('holded');
+            expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
+              targetSession,
+            );
+            done();
+          });
+        });
+      });
+      it('should call session WarmTransfer() when warmTransfer() in unholding state', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.sessionAccepted();
+        callFsm.hold();
+        callFsm.holdSuccess();
+        callFsm.unhold();
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('unholding');
+          jest.spyOn(callFsm, 'onWarmTransferAction');
+          callFsm.warmTransfer(targetSession);
+          setImmediate(() => {
+            expect(callFsm.state()).toBe('unholding');
+            expect(callFsm.onWarmTransferAction).toHaveBeenCalledWith(
+              targetSession,
+            );
+            done();
+          });
         });
       });
     });

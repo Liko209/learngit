@@ -59,7 +59,7 @@ class EditProfileViewComponent extends Component<
     });
   };
 
-  _handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
+  _handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Prevents input loss of focus when button is clicked
     event.preventDefault();
   };
@@ -80,10 +80,10 @@ class EditProfileViewComponent extends Component<
   };
 
   handleMaskClick = () => {
-    const {currentPersonInfo, photoEditCb} = this.props
+    const { currentPersonInfo, photoEditCb } = this.props;
 
     PhotoEdit.show({ photoEditCb, person: currentPersonInfo });
-  }
+  };
 
   _renderItem = (section: EditItemSourceType[]) => {
     const { t, isLoading } = this.props;
@@ -92,7 +92,7 @@ class EditProfileViewComponent extends Component<
       const isInError = this.props[errorKey];
       const { currentFocusItem } = this.state;
       return (
-        <>
+        <React.Fragment key={key}>
           <JuiTextField
             key={key}
             label={t(`people.profile.edit.${key}`)}
@@ -114,12 +114,12 @@ class EditProfileViewComponent extends Component<
             onBlur={this._updateFocusState()}
           />
           {isLastItem && <div />}
-        </>
+        </React.Fragment>
       );
     });
   };
   render() {
-    const { t, id, handleProfileEdit, webpageError, isLoading } = this.props;
+    const { t, id, handleProfileEdit, homepageError, isLoading } = this.props;
     return (
       <JuiModal
         open
@@ -128,7 +128,7 @@ class EditProfileViewComponent extends Component<
         onCancel={this.handleClose}
         onOK={handleProfileEdit}
         okBtnProps={{
-          disabled: webpageError,
+          disabled: homepageError,
         }}
         loading={isLoading}
         okText={t('common.dialog.save')}

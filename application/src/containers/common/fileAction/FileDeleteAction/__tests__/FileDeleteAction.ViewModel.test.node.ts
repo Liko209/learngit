@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { test, testable } from 'shield';
-import { mockEntity } from 'shield/application';
-import { mockService } from 'shield/sdk';
+import { mockEntity } from 'shield/application/mockEntity';
+import { mockService } from 'shield/sdk/mockService';
 import { FileDeleteActionViewModel } from '../FileDeleteAction.ViewModel';
 import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';

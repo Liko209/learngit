@@ -3,8 +3,6 @@
  * @Date: 2019-05-23 14:26:14
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
-
 import { MeetingItem } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
@@ -84,7 +82,7 @@ export default class MeetingItemModel extends ItemModel {
       ended: MEETING_STATUS.ENDED,
       no_answer: MEETING_STATUS.NO_ANSWER,
     };
-    if (STATUS_MAP.hasOwnProperty(this.status)) {
+    if (Object.prototype.hasOwnProperty.call(STATUS_MAP, this.status)) {
       return STATUS_MAP[this.status];
     }
     return MEETING_STATUS.UN_KNOWN;

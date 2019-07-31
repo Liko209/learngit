@@ -35,6 +35,7 @@ class PartialModifyController<
       doUpdateEntity,
       doPartialNotify,
       saveLocalFirst = true,
+      forceDoUpdateEntity = false,
     } = params;
 
     const id: IdType = entityId;
@@ -68,6 +69,7 @@ class PartialModifyController<
         doUpdateEntity,
         doPartialNotify,
         saveLocalFirst,
+        forceDoUpdateEntity,
       );
     } while (false);
 
@@ -123,25 +125,27 @@ class PartialModifyController<
     doUpdateEntity: UpdateEntityFunc<T>,
     doPartialNotify?: PartialNotifyFunc<T>,
     saveLocalFirst = true,
+    forceDoUpdateEntity: boolean = false,
   ): Promise<T> {
     let result: T;
-    do {
-      partialEntity.id = originalEntity.id;
-      if (partialEntity._id) {
-        delete partialEntity._id;
-      }
+    partialEntity.id = originalEntity.id;
+    if (partialEntity._id) {
+      delete partialEntity._id;
+    }
 
-      const rollbackPartialEntity = this.getRollbackPartialEntity(
-        partialEntity,
-        originalEntity,
-      );
+    const rollbackPartialEntity = this.getRollbackPartialEntity(
+      partialEntity,
+      originalEntity,
+    );
 
-      if (_.isEqual(partialEntity, rollbackPartialEntity)) {
+    if (_.isEqual(partialEntity, rollbackPartialEntity)) {
+      if (forceDoUpdateEntity) {
+        result = await doUpdateEntity(originalEntity);
+      } else {
         result = originalEntity;
         mainLogger.info('handlePartialUpdate: no changes, no need update');
-        break;
       }
-
+    } else {
       const mergedEntity = this.getMergedEntity(partialEntity, originalEntity);
 
       mainLogger.info('handlePartialUpdate: trigger partial update');
@@ -172,8 +176,7 @@ class PartialModifyController<
 
         throw e;
       }
-    } while (false);
-
+    }
     return result;
   }
 

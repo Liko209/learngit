@@ -205,6 +205,7 @@ exports[`Storyshots Components/Chip with Avatar & DeleteIcon: Components/Chip wi
   </span>
   <button
     aria-describedby={null}
+    aria-label="Remove"
     className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c2"
     disabled={false}
     onBlur={[Function]}
@@ -501,6 +502,7 @@ exports[`Storyshots Components/Chip with DeleteIcon: Components/Chip with Delete
   </span>
   <button
     aria-describedby={null}
+    aria-label="Remove"
     className="MuiButtonBase-root MuiIconButton-root MuiChip-deleteIcon deleteIcon c1"
     disabled={false}
     onBlur={[Function]}

@@ -33,6 +33,7 @@ enum CALL_FSM_NOTIFY {
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
   FLIP_ACTION = 'flipAction',
   TRANSFER_ACTION = 'transferAction',
+  WARM_TRANSFER_ACTION = 'warmTransferAction',
   FORWARD_ACTION = 'forwardAction',
   START_RECORD_ACTION = 'startRecordAction',
   STOP_RECORD_ACTION = 'stopRecordAction',
