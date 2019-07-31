@@ -3,7 +3,6 @@
  * @Date: 2019-01-15 15:03:48
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
@@ -53,7 +52,7 @@ class AddMembers extends React.Component<ViewProps> {
           onSelectChange={handleSearchContactChange}
           label={t('people.team.Members')}
           error={false}
-          helperText=''
+          helperText=""
           hasMembers={members}
           placeholder={t('people.team.SearchContactPlaceholder')}
           isExcludeMe

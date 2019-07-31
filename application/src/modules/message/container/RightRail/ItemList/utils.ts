@@ -3,7 +3,6 @@
  * @Date: 2019-04-24 15:33:10
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import { ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils';
@@ -23,14 +22,6 @@ function getFilterFunc(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
     default:
       return undefined;
   }
-}
-
-function getSort(type: RIGHT_RAIL_ITEM_TYPE) {
-  return {
-    sortKey: ITEM_SORT_KEYS.CREATE_TIME,
-    desc: false,
-    ...getTabConfig(type).sort,
-  };
 }
 
 function getTypeId(type: RIGHT_RAIL_ITEM_TYPE) {
@@ -73,7 +64,13 @@ function getTabConfig(type: RIGHT_RAIL_ITEM_TYPE) {
   }
   return tabConfig;
 }
-
+function getSort(type: RIGHT_RAIL_ITEM_TYPE) {
+  return {
+    sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+    desc: false,
+    ...getTabConfig(type).sort,
+  };
+}
 export {
   getSort,
   getTabConfig,

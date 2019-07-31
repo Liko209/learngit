@@ -222,7 +222,6 @@ class MediaTrack {
       if (ext) {
         ext = ext[1].toLowerCase();
       }
-      /* eslint-disable no-console */
       if (!ext) {
         mainLogger.warn('[MediaModule] No file extension was found!');
       }

@@ -154,7 +154,7 @@ class TotalUnreadController {
       });
     }
   }
-  /* eslint-disable */
+
   private async _updateTotalUnreadByGroupChanges(
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
@@ -178,10 +178,8 @@ class TotalUnreadController {
             this._deleteFromTotalUnread(groupUnread);
             this._singleGroupBadges.delete(id);
           }
-        } else {
-          if (!groupUnread) {
-            groupsMap.set(id, group);
-          }
+        } else if (!groupUnread) {
+          groupsMap.set(id, group);
         }
       });
       if (groupsMap.size) {
@@ -373,14 +371,12 @@ class TotalUnreadController {
         unreadUpdate = -groupUnread.unreadCount;
         mentionUpdate = -groupUnread.mentionCount;
       }
+    } else if (groupState.unread_count) {
+      unreadUpdate = groupState.unread_count;
+      mentionUpdate = groupState.unread_mentions_count || 0;
     } else {
-      if (groupState.unread_count) {
-        unreadUpdate = groupState.unread_count;
-        mentionUpdate = groupState.unread_mentions_count || 0;
-      } else {
-        unreadUpdate = 0;
-        mentionUpdate = 0;
-      }
+      unreadUpdate = 0;
+      mentionUpdate = 0;
     }
 
     this._modifyTotalUnread(groupUnread.id, unreadUpdate, mentionUpdate);

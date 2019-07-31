@@ -8,3 +8,4 @@ export * from './AvatarActions';
 export * from './Logo';
 export * from './NewActions';
 export * from './TopBar';
+export * from './Dropdown';

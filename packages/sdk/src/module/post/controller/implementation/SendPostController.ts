@@ -3,7 +3,12 @@
  * @Date: 2019-01-14 08:54:37
  * Copyright © RingCentral. All rights reserved.
  */
-import { DEFAULT_RETRY_COUNT, mainLogger, REQUEST_PRIORITY } from 'foundation';
+import {
+  DEFAULT_RETRY_COUNT,
+  mainLogger,
+  REQUEST_PRIORITY,
+  Performance,
+} from 'foundation';
 import _ from 'lodash';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
@@ -32,6 +37,7 @@ import { PostItemController } from './PostItemController';
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { IGroupService, PERMISSION_ENUM } from 'sdk/module/group';
 import { AT_TEAM_MENTION_REGEXP } from '../../constant';
+import { POST_PERFORMANCE_KEYS } from '../../config/performanceKeys';
 
 class SendPostController implements ISendPostController {
   private _helper: SendPostControllerHelper;
@@ -49,6 +55,10 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
+    const sendPostTracer = Performance.instance.getTracer(
+      POST_PERFORMANCE_KEYS.SEND_POST,
+    );
+    sendPostTracer.start();
     const userConfig = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
@@ -64,6 +74,7 @@ class SendPostController implements ISendPostController {
       this.preInsertController.getAll(),
     );
     await this.innerSendPost(rawInfo, false);
+    sendPostTracer.stop();
   }
 
   async reSendPost(id: number) {
