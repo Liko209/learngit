@@ -68,13 +68,6 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   }
 
   @computed
-  get isHeadShotString() {
-    const { person } = this.props;
-    const { headshot } = person;
-    return typeof headshot === 'string';
-  }
-
-  @computed
   get shouldShowShortName() {
     const { person } = this.props;
     if (person) {

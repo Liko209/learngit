@@ -73,13 +73,6 @@ describe('PhotoEditViewModel', () => {
     });
   });
 
-  describe('isHeadShotString()', () => {
-    it('Should return headshot when headshot is string', async () => {
-      const vm = new PhotoEditViewModel({ person: { headshot: '111' } });
-      expect(vm.isHeadShotString).toEqual(true);
-    });
-  });
-
   describe('shouldShowShortName()', () => {
     it('Should shouldShowShortName been false when person is null', async () => {
       const vm = new PhotoEditViewModel(props);
