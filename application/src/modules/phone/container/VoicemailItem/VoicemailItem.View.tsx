@@ -3,7 +3,7 @@
  * @Date: 2019-06-01 14:56:34
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
     const {
       isHover,
       isAudioActive,
-      voiceMailResponsiveMap: voiceMailResponsiveMap,
+      voiceMailResponsiveMap,
     } = this.props;
 
     if (voiceMailResponsiveMap.audioMode === JuiAudioMode.FULL) {
@@ -122,7 +122,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       onMouseOver,
       onMouseLeave,
       isHover,
-      voiceMailResponsiveMap: voiceMailResponsiveMap,
+      voiceMailResponsiveMap,
       // onChange,
       // selected,
     } = this.props;
@@ -132,7 +132,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
       // <StyleVoicemailItem expanded={selected} onChange={onChange}>
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class='voicemail-item'
+        data-test-automation-class="voicemail-item"
         expanded={false}
       >
         <VoicemailSummary
@@ -145,7 +145,7 @@ class VoicemailViewComponent extends Component<VoicemailItemProps, State> {
               caller={caller}
               readStatus={readStatus}
               direction={direction}
-              isMissedCall={true}
+              isMissedCall
             />
           </StyledContactWrapper>
           {audio && (

@@ -3,7 +3,6 @@
  * @Date: 2018-09-28 16:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -45,13 +44,17 @@ class ProgressActionsViewComponent extends Component<Props> {
   private _editPost = async () => {
     try {
       await this.props.edit();
-    } catch (e) {}
+    } catch (e) {
+      mainLogger.error(e);
+    }
   };
 
   private _resendPost = async () => {
     try {
       await this.props.resend();
-    } catch (e) {}
+    } catch (e) {
+      mainLogger.error(e);
+    }
   };
 
   private _renderLoading = () => {

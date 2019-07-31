@@ -2,7 +2,6 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 15:43:47
  */
-/* eslint-disable */
 import { BETA_CONFIG_KEYS } from '../constant';
 import { AccountService } from '.';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
@@ -24,46 +23,15 @@ enum EBETA_FLAG {
   //   BETA_LAB_EVENT_REMINDER
 }
 
-function isInBeta(flag: EBETA_FLAG): boolean {
-  switch (flag) {
-    case EBETA_FLAG.BETA_LOG:
-      return isInBetaList(BETA_CONFIG_KEYS.BETA_ENABLE_LOG);
-    // case EBETA_FLAG.BETA_TELEPHONY_EMAIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_TELEPHONY_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_SMS_EMAIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_SMS_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_RC_ICON_EAMIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_RC_ICON_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_RCV_EMAIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_RCV_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_RCV_EMBEDED_EMAIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_RCV_EMBEDED_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_RCM_EMBEDED_EMAIL:
-    //   return isInBetaEmailList('');
-    // case EBETA_FLAG.BETA_RCM_EMBEDED_DOMAIN:
-    //   return isInBetaDomainList('');
-    // case EBETA_FLAG.BETA_LAB_EVENT_REMINDER:
-    //   return isInBetaEmailList('') || isInBetaDomainList('');
+function getFlagValue(flagName: string): string {
+  const userConfig = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  ).userConfig;
+  const clientConfig = userConfig.getClientConfig();
+  if (clientConfig && clientConfig[flagName]) {
+    return clientConfig[flagName];
   }
-
-  return false;
-}
-
-function isInBetaList(flagName: string): boolean {
-  return (
-    isInBetaEmailList(`${flagName}_emails`) ||
-    isInBetaDomainList(`${flagName}_domains`)
-  );
+  return '';
 }
 
 function isInBetaEmailList(flagName: string): boolean {
@@ -96,15 +64,48 @@ function isInBetaDomainList(flagName: string): boolean {
   return false;
 }
 
-function getFlagValue(flagName: string): string {
-  const userConfig = ServiceLoader.getInstance<AccountService>(
-    ServiceConfig.ACCOUNT_SERVICE,
-  ).userConfig;
-  const clientConfig = userConfig.getClientConfig();
-  if (clientConfig && clientConfig[flagName]) {
-    return clientConfig[flagName];
+function isInBetaList(flagName: string): boolean {
+  return (
+    isInBetaEmailList(`${flagName}_emails`) ||
+    isInBetaDomainList(`${flagName}_domains`)
+  );
+}
+
+function isInBeta(flag: EBETA_FLAG): boolean {
+  switch (flag) {
+    case EBETA_FLAG.BETA_LOG:
+      return isInBetaList(BETA_CONFIG_KEYS.BETA_ENABLE_LOG);
+    // case EBETA_FLAG.BETA_TELEPHONY_EMAIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_TELEPHONY_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_SMS_EMAIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_SMS_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_RC_ICON_EAMIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_RC_ICON_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_RCV_EMAIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_RCV_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_RCV_EMBEDED_EMAIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_RCV_EMBEDED_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_RCM_EMBEDED_EMAIL:
+    //   return isInBetaEmailList('');
+    // case EBETA_FLAG.BETA_RCM_EMBEDED_DOMAIN:
+    //   return isInBetaDomainList('');
+    // case EBETA_FLAG.BETA_LAB_EVENT_REMINDER:
+    //   return isInBetaEmailList('') || isInBetaDomainList('');
+    default:
+      break;
   }
-  return '';
+
+  return false;
 }
 
 export { EBETA_FLAG, isInBeta };

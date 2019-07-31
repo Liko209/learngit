@@ -170,7 +170,7 @@ abstract class AbstractSyncController<
     }
     return result;
   }
-  /* eslint-disable */
+
   private async _startSync(
     isSilent: boolean,
     syncType: SYNC_TYPE,
@@ -178,7 +178,7 @@ abstract class AbstractSyncController<
     recordCount?: number,
     needNotification?: boolean,
   ): Promise<T[]> {
-    let fetchCount: UndefinedAble<number> = undefined;
+    let fetchCount: UndefinedAble<number>;
     if (syncType === SYNC_TYPE.FSYNC) {
       fetchCount = MAX_RECORD_COUNT;
     } else if (direction === SYNC_DIRECTION.OLDER) {
