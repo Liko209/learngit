@@ -28,10 +28,11 @@ class SplitIOController extends AbstractPermissionController
   }
 
   shutdownClient() {
+    this.isClientReady = false;
     this.splitIOClient && this.splitIOClient.shutdown();
   }
   initClient() {
-    if (this.isIniting || this.isClientReady) {
+    if (this.isIniting) {
       return;
     }
     const userConfig = ServiceLoader.getInstance<AccountService>(

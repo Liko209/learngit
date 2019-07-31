@@ -40,10 +40,25 @@ class LaunchDarklyClient {
 
   shutdown() {
     if (this._ldclient) {
+      this._flags = {};
       this._ldclient.off('change', () => {});
       this._ldclient.off('ready', () => {});
       this._ldclient.setStreaming(false);
+      this._deleteLocalCache();
     }
+  }
+  private _deleteLocalCache() {
+    const ldKeys: string[] = [];
+    const ldReg = /^ld:[a-zA-Z0-9]+:[a-zA-Z0-9]+/;
+    Object.keys(localStorage).map(key => {
+      if (ldReg.test(key)) {
+        ldKeys.push(key);
+      }
+    });
+    mainLogger.log('delete launchDarkly cache data', ldKeys);
+    ldKeys.map(key => {
+      localStorage.removeItem(key);
+    });
   }
 
   private _initLDClient(options: Options) {
