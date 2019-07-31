@@ -11,6 +11,7 @@ type PhoneTabViewProps = RouteComponentProps<{ subPath?: string }> & {
   hasSawDialPad: boolean;
   setShowDialPad: () => void;
   currentTab: string;
+  updateCurrentTab: (path: string) => void;
 };
 
 export { PhoneTabProps, PhoneTabViewProps };

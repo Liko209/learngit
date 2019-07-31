@@ -819,7 +819,8 @@ describe('PersonService', () => {
 
       return person;
     }
-    it('should return all phone numbers when is company contact', () => {
+    
+    it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,

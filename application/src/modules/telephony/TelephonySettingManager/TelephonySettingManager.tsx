@@ -34,6 +34,7 @@ import {
   SoundSourcePlayerRenderer,
 } from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
+import { ringOptionTransformer } from './dataTransformer';
 
 const DefaultPhoneAppDataTrackingOption: {
   [key in CALLING_OPTIONS]: string;
@@ -174,6 +175,11 @@ class TelephonySettingManager {
       sourceRenderer: SoundSourceItem,
       secondaryActionRenderer: SoundSourcePlayerRenderer,
       ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'incomingCall'),
+      dataTracking: {
+        name: 'incomingVoiceCall',
+        type: 'desktopNotificationSettings',
+        optionTransform: ({ id }) => ringOptionTransformer[id],
+      },
     } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
   }
 

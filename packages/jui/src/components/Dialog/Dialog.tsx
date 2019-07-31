@@ -1,13 +1,14 @@
-import React, { memo } from 'react';
+import React from 'react';
 import MuiDialog, {
   DialogProps as MuiDialogProps,
 } from '@material-ui/core/Dialog';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { HotKeys } from '../../hoc/HotKeys';
 
 type StyledDialogProps = MuiDialogProps & {
   size?: 'small' | 'fullWidth' | 'medium' | 'large' | 'fullScreen';
+  fixedAtTop?: boolean;
 };
 
 type JuiDialogProps = StyledDialogProps & {
@@ -15,38 +16,20 @@ type JuiDialogProps = StyledDialogProps & {
   onClose?: (event: KeyboardEvent) => void;
 };
 
-const StyledDialog = styled(
-  memo(({ size = 'medium', classes, ...restProps }: StyledDialogProps) => {
-    switch (size) {
-      case 'small':
-        restProps.maxWidth = 'xs';
-        break;
-      case 'medium':
-        restProps.maxWidth = 'sm';
-        break;
-      case 'large':
-        restProps.maxWidth = 'md';
-        break;
-      case 'fullScreen':
-        restProps.maxWidth = false;
-        restProps.fullScreen = true;
-        break;
-      default:
-        restProps.maxWidth = 'xs';
-        break;
-    }
+const FilteredMuiDialog = ({ fixedAtTop, ...rest }: StyledDialogProps) => (
+  <MuiDialog {...rest} />
+);
 
-    const initClasses = {
-      ...classes,
-      paper: `paper ${(classes && classes.paper) || ''}`,
-      root: `root ${(classes && classes.root) || ''}`,
-    };
+const fixedAtTopStyle = css`
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: top;
+`;
 
-    return <MuiDialog classes={initClasses} {...restProps} />;
-  }),
-)`
+const StyledDialog = styled(FilteredMuiDialog)`
   & .paper {
     width: 100%;
+    ${({ fixedAtTop }: any) => fixedAtTop && fixedAtTopStyle}
   }
   & .paper.overflow-y {
     overflow-y: visible;
@@ -58,19 +41,47 @@ const WrapDialog = (props: JuiDialogProps) => {
     enableEscapeClose = false,
     disableEscapeKeyDown,
     onClose,
+    size = 'medium',
+    classes,
     ...rest
   } = props;
+
   const enableEscapeCloseHotKey = enableEscapeClose && !disableEscapeKeyDown;
+  const initClasses = {
+    ...classes,
+    paper: `paper ${(classes && classes.paper) || ''}`,
+    root: `root`,
+  };
+
+  switch (size) {
+    case 'small':
+      rest.maxWidth = 'xs';
+      break;
+    case 'medium':
+      rest.maxWidth = 'sm';
+      break;
+    case 'large':
+      rest.maxWidth = 'md';
+      break;
+    case 'fullScreen':
+      rest.maxWidth = false;
+      rest.fullScreen = true;
+      break;
+    default:
+      rest.maxWidth = 'xs';
+      break;
+  }
+
   return enableEscapeCloseHotKey ? (
     <HotKeys
       keyMap={{
-        esc: event => onClose && onClose(event),
+        esc: event => onClose && onClose(event) && false,
       }}
     >
-      <StyledDialog {...rest} onClose={onClose} />
+      <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
     </HotKeys>
   ) : (
-    <StyledDialog {...rest} onClose={onClose} />
+    <StyledDialog {...rest} classes={initClasses} onClose={onClose} />
   );
 };
 
