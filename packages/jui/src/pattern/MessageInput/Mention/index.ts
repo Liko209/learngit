@@ -2,7 +2,6 @@ import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
 import { Quill } from 'react-quill';
 import './blots/mention';
 import Keys from '../keys';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 export type KeyboardEventHandler = {
   key: number;
@@ -92,7 +91,6 @@ class Mention {
     contents.ops &&
       contents.ops.forEach(delta => {
         if (delta && delta.insert.mention) {
-          console.log('nye delta is ', delta);
           if (delta.insert.mention.isTeam === 'true' && !isTeamMentionKept) {
             result.push(delta);
             isTeamMentionKept = true;
@@ -116,7 +114,6 @@ class Mention {
   hasTeamMention = () => {
     const ops = this._quill.getContents().ops;
     let hasTeam = false;
-    console.log('nye delta.insert.mention.isTeam === true', ops);
     ops &&
       ops.forEach(delta => {
         if (
@@ -129,10 +126,6 @@ class Mention {
       });
     return hasTeam;
   };
-
-  isTeam(id: number) {
-    return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
-  }
 
   onSomethingChange = () => {
     const range = this._quill.getSelection();
