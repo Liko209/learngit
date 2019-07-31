@@ -392,7 +392,7 @@ sfdasfasd`);
         body: postWithMentionOthers.text,
       });
     });
-    it('should build title and body for @team mention conversation', async () => {
+    it.skip('should build title and body for @team mention conversation', async () => {
       const val = await notificationManager.buildNotificationBodyAndTitle(
         new PostModel(postWithMentionOthers),
         { userDisplayName: names.userDisplayName },
