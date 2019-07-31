@@ -158,7 +158,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       runInAction(() => {
         this.currentIndex = 0;
         this.members = res.sortableModels;
-        if (this.isTeam && this.searchTermMatchTeam && !this.isEditMode) {
+        if (this.isTeam && this._group.canMentionTeam && this.searchTermMatchTeam && !this.isEditMode) {
           this.members.unshift({ displayName: TEAM_TEXT, id: this._group.id });
         }
       });

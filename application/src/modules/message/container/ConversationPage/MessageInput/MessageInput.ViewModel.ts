@@ -27,7 +27,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
-import { mainLogger } from 'sdk';
+import { mainLogger, dataAnalysis } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
@@ -39,6 +39,7 @@ import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -310,7 +311,10 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
-
+      const isMentionIdsContainTeam = vm._isMentionIdsContainTeam(mentionIds);
+      if(isMentionIdsContainTeam) {
+        dataAnalysis.track('Jup_Web/DT_Messaging_conversationHistory');
+      }
       if (content.length > CONTENT_LENGTH) {
         vm.error = ERROR_TYPES.CONTENT_LENGTH;
         return;
@@ -381,6 +385,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   private _handleBeforeUnload = () => {
     this._handleDraftSave.cancel()
     this.forceSaveDraft();
+  }
+
+  private _isMentionIdsContainTeam = (ids:number[]) => {
+    return ids.some((id)=>{
+       return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
+    });
   }
 }
 

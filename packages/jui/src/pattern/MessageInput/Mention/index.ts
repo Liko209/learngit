@@ -1,9 +1,8 @@
-import {
-  QuillOptionsStatic, RangeStatic, DeltaStatic, Sources,
-} from 'quill';
+import { QuillOptionsStatic, RangeStatic, DeltaStatic, Sources } from 'quill';
 import { Quill } from 'react-quill';
 import './blots/mention';
 import Keys from '../keys';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 export type KeyboardEventHandler = {
   key: number;
@@ -77,8 +76,59 @@ class Mention {
       );
       this._quill.insertEmbed(this._mentionCharPos, 'mention', data, 'api');
       this._quill.insertText(this._mentionCharPos + 1, ' ', 'api');
+      if (this.hasTeamMention()) {
+        this.doRemoveStyleForMemberMention();
+      }
       this._quill.setSelection(this._mentionCharPos + 2, 0, 'api');
     });
+  }
+
+  doRemoveStyleForMemberMention = () => {
+    const contents = this._quill.getContents();
+    const result: any[] = [];
+    let isTeamMentionKept = false;
+    let mentionCharPosDiff = 0;
+    contents.ops &&
+      contents.ops.forEach(delta => {
+        if (delta && delta.insert.mention) {
+          if (this.isTeam(delta.insert.mention.id) && !isTeamMentionKept) {
+            result.push(delta);
+            isTeamMentionKept = true;
+            return;
+          }
+          result.push({
+            insert: `${delta.insert.mention.denotationChar}${
+              delta.insert.mention.name
+            }`,
+          });
+          mentionCharPosDiff += delta.insert.mention.name.length;
+        } else {
+          result.push(delta);
+        }
+      });
+    const deltaResult = { ops: result };
+    this._mentionCharPos += mentionCharPosDiff;
+    this._quill.setContents(deltaResult as DeltaStatic);
+  };
+
+  hasTeamMention = () => {
+    const ops = this._quill.getContents().ops;
+    let hasTeam = false;
+    ops &&
+      ops.forEach(delta => {
+        if (
+          delta &&
+          delta.insert.mention &&
+          this.isTeam(delta.insert.mention.id)
+        ) {
+          hasTeam = true;
+        }
+      });
+    return hasTeam;
+  };
+
+  isTeam(id: number) {
+    return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
   }
 
   onSomethingChange = () => {
@@ -134,7 +184,7 @@ class Mention {
     } else {
       this._options.onMention(false);
     }
-  }
+  };
 
   onTextChange(delta: DeltaStatic, oldContents: DeltaStatic, source: Sources) {
     if (source === 'user') {
