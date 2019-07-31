@@ -153,8 +153,11 @@ export class GlipSdk {
     this.accessToken = res.headers['x-authorization'];
     this.initData = res.data;
     this.glipDb.updateWithInitData(this.initData);
-    if (isReset)
-      await this.resetProfileAndState();
+    if (isReset) {
+      try {
+        await this.resetProfileAndState();
+      } catch (e) { }
+    }
   }
 
   /* person */
