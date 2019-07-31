@@ -26,16 +26,24 @@ class JobSchedulerConfig extends UserConfig {
   }
 
   clearFetchDataConfigs() {
-    this.remove(JOB_KEY.FETCH_CLIENT_INFO);
-    this.remove(JOB_KEY.FETCH_ACCOUNT_INFO);
-    this.remove(JOB_KEY.FETCH_EXTENSION_INFO);
-    this.remove(JOB_KEY.FETCH_ROLE_PERMISSIONS);
-    this.remove(JOB_KEY.FETCH_SPECIAL_NUMBER_RULE);
-    this.remove(JOB_KEY.FETCH_PHONE_DATA);
-    this.remove(JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST);
-    this.remove(JOB_KEY.FETCH_DIALING_PLAN);
-    this.remove(JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO);
-    this.remove(JOB_KEY.FETCH_FORWARDING_NUMBER);
+    const removeKeys: JOB_KEY[] = [
+      JOB_KEY.FETCH_ACCOUNT_INFO,
+      JOB_KEY.FETCH_BLOCK_NUMBER,
+      JOB_KEY.FETCH_CLIENT_INFO,
+      JOB_KEY.FETCH_DIALING_PLAN,
+      JOB_KEY.FETCH_EXTENSION_CALLER_ID,
+      JOB_KEY.FETCH_EXTENSION_INFO,
+      JOB_KEY.FETCH_EXTENSION_PHONE_NUMBER_LIST,
+      JOB_KEY.FETCH_FORWARDING_NUMBER,
+      JOB_KEY.FETCH_PHONE_DATA,
+      JOB_KEY.FETCH_RC_ACCOUNT_SERVICE_INFO,
+      JOB_KEY.FETCH_ROLE_PERMISSIONS,
+      JOB_KEY.FETCH_SPECIAL_NUMBER_RULE,
+    ];
+
+    removeKeys.forEach((key: JOB_KEY) => {
+      this.remove(key);
+    });
   }
 }
 

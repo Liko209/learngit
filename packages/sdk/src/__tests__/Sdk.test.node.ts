@@ -20,6 +20,7 @@ import { ServiceLoader } from '../module/serviceLoader';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
 import { PermissionService } from 'sdk/module/permission';
+import { jobScheduler } from 'sdk/framework/utils/jobSchedule';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
@@ -55,6 +56,7 @@ describe('Sdk', () => {
     networkManager = new NetworkManager();
     jest.spyOn(networkManager, 'clearToken');
     syncService = new SyncService();
+    syncService.userConfig = { clearSyncConfigsForDBUpgrade: jest.fn() } as any;
     permissionService = new PermissionService();
 
     sdk = new Sdk(
@@ -211,6 +213,36 @@ describe('Sdk', () => {
     it('should call stop services', () => {
       sdk.updateServiceStatus(['AService'], false);
       expect(serviceManager.stopServices).toHaveBeenCalledWith(['AService']);
+    });
+  });
+
+  describe('clearAllData()', () => {
+    it('should delete Database and config', async () => {
+      sdk.daoManager.deleteDatabase = jest.fn();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue('test');
+      sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade = jest.fn();
+      jobScheduler.userConfig.clearFetchDataConfigs = jest.fn();
+      await sdk.clearAllData();
+      expect(sdk.daoManager.deleteDatabase).toHaveBeenCalled();
+      expect(AccountGlobalConfig.getUserDictionary).toHaveBeenCalled();
+      expect(
+        sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade,
+      ).toHaveBeenCalled();
+      expect(jobScheduler.userConfig.clearFetchDataConfigs).toHaveBeenCalled();
+    });
+
+    it('should not delete config when UD is invalid', async () => {
+      sdk.daoManager.deleteDatabase = jest.fn();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(undefined);
+      sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade = jest.fn();
+      jobScheduler.userConfig.clearFetchDataConfigs = jest.fn();
+      await sdk.clearAllData();
+      expect(sdk.daoManager.deleteDatabase).toHaveBeenCalled();
+      expect(AccountGlobalConfig.getUserDictionary).toHaveBeenCalled();
+      expect(
+        sdk.syncService.userConfig.clearSyncConfigsForDBUpgrade,
+      ).not.toHaveBeenCalled();
+      expect(jobScheduler.userConfig.clearFetchDataConfigs).not.toHaveBeenCalled();
     });
   });
 });
