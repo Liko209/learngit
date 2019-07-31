@@ -3,15 +3,13 @@
  * @Date: 2019-03-14 16:13:52
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
-import _ from 'lodash';
 import { ISearchService } from '../service/ISearchService';
 import { GroupService } from '../../group';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { Group } from 'sdk/module/group';
 import { SortableModel, IdModel } from 'sdk/framework/model';
-import { PerformanceTracer } from 'foundation';
+import { PerformanceTracer, mainLogger } from 'foundation';
 import { AccountService } from '../../account/service';
 import {
   RecentSearchTypes,
@@ -29,7 +27,6 @@ import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 import { LAST_ACCESS_VALID_PERIOD } from '../constants';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { PhoneNumber, PhoneNumberType } from 'sdk/module/phoneNumber/entity';
-import { mainLogger } from 'foundation';
 import { SEARCH_PERFORMANCE_KEYS } from '../config';
 import { SortUtils } from 'sdk/framework/utils';
 
@@ -66,7 +63,7 @@ class SearchPersonController {
     persons.sortableModels.forEach((sortablePerson: SortableModel<Person>) => {
       const orderedPhoneNumbers = sortablePerson.extraData as PhoneNumber[]; // order as ext first
       if (orderedPhoneNumbers && orderedPhoneNumbers.length) {
-        //for co-workers, we should only show matched extension
+        // for co-workers, we should only show matched extension
         const nameMatchedOnly =
           persons.terms.searchKeyFormattedTerms.validFormattedKeys.length === 0;
 
@@ -304,10 +301,11 @@ class SearchPersonController {
         ServiceConfig.PERSON_SERVICE,
       );
 
-      matchedInfo.isMatched = matchedInfo.nameMatched = SearchUtils.isSoundexMatched(
+      matchedInfo.isMatched = SearchUtils.isSoundexMatched(
         personService.getSoundexById(personId),
         terms.searchKeyTermsToSoundex,
       );
+      matchedInfo.nameMatched = matchedInfo.isMatched;
     }
 
     if (
@@ -356,6 +354,8 @@ class SearchPersonController {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
+    // TODO: need @thomas to fix
+    /* eslint-disable no-constant-condition */
     return (person: Person, terms: Terms) => {
       do {
         if (!fetchAllIfSearchKeyEmpty && terms.searchKeyTerms.length === 0) {

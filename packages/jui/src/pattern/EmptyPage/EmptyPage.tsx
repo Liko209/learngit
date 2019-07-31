@@ -12,7 +12,7 @@ import {
   grey,
   typography,
 } from '../../foundation/utils';
-import { IJuiEmptyPage } from './types';
+import { IJuiEmptyPage, IJuiEmptyPageProps } from './types';
 
 const StyledEmptyPage = styled.div<{ pageHeight: number | string }>`
   box-sizing: border-box;
@@ -21,7 +21,8 @@ const StyledEmptyPage = styled.div<{ pageHeight: number | string }>`
   align-items: center;
   width: 100%;
   min-width: ${width(84)};
-  height: ${({ pageHeight }) => (typeof pageHeight === 'number' ? `${pageHeight}px` : pageHeight)};
+  height: ${({ pageHeight }) =>
+    typeof pageHeight === 'number' ? `${pageHeight}px` : pageHeight};
   padding: ${spacing(4, 8)};
   overflow: auto;
 
@@ -49,14 +50,14 @@ const StyledEmptyPageMessage = styled.span`
   ${typography('subheading1')};
   color: ${grey('900')};
 `;
-/* eslint-disable */
+
 const JuiEmptyPageComponent: IJuiEmptyPage = ({
   height = '100%',
   image = '',
   message = '',
   children = [],
   ...rest
-}) => {
+}: IJuiEmptyPageProps) => {
   const elImage = image ? <StyledEmptyPageImage src={image} /> : null;
 
   const elMessage = message ? (

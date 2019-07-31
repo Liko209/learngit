@@ -6,6 +6,7 @@
 import StoreViewModel from '@/store/ViewModel';
 import { AudioPlayerProps } from './types';
 import { jupiter } from 'framework';
+import { mainLogger } from 'sdk';
 import { MediaOptions, IMediaService, IMedia } from '@/interface/media';
 import { observable, action, computed } from 'mobx';
 import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
@@ -75,9 +76,7 @@ class AudioPlayerViewModel extends StoreViewModel<AudioPlayerProps> {
         throw new Error('[AudioPlayer] please check media props');
       }
       if (this.props.trackId) {
-        console.warn(
-          '[AudioPlayer] media is created outside, trackId is not working.',
-        );
+        mainLogger.warn('[AudioPlayer] media is created outside, trackId is not working.')
       }
       if (this._media === media) {
         return;

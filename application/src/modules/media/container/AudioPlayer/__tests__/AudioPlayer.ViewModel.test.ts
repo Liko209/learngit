@@ -10,6 +10,7 @@ import { MediaService } from '@/modules/media/service';
 import { AudioPlayerViewModel } from '../AudioPlayer.ViewModel';
 import { Media } from '@/modules/media/Media';
 import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { mainLogger } from 'sdk';
 
 jupiter.registerService(IMediaService, MediaService);
 
@@ -86,7 +87,7 @@ describe('AudioPlayerViewModel', () => {
       expect(vm._media).toEqual(null);
       expect(vm._currentSrc).toEqual('');
 
-      const warnFn = jest.spyOn(console, 'warn').mockImplementation();
+      const warnFn = jest.spyOn(mainLogger, 'warn').mockImplementation();
 
       vm._propMediaReaction(media);
       expect(warnFn).toBeCalled();

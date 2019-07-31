@@ -32,7 +32,8 @@ import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 
 const LOG_TAG = 'GroupHandleDataController';
-/* eslint-disable */
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
 class GroupHandleDataController {
   constructor(
     public groupService: IGroupService,
@@ -89,7 +90,10 @@ class GroupHandleDataController {
       const result = originData;
       if (remove) {
         for (const key in remove) {
-          if (remove.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          if (
+            hasOwnProperty.call(remove, key) &&
+            hasOwnProperty.call(originData, key)
+          ) {
             result[key] = _.difference(originData[key], remove[key]);
           } else {
             // No a regular delta message if the remove field is not existed,
@@ -101,7 +105,10 @@ class GroupHandleDataController {
 
       if (add) {
         for (const key in add) {
-          if (add.hasOwnProperty(key) && originData.hasOwnProperty(key)) {
+          if (
+            hasOwnProperty.call(add, key) &&
+            hasOwnProperty.call(originData, key)
+          ) {
             result[key] = _.uniq(_.concat([], originData[key], add[key]));
           } else {
             // No a regular delta message if the add field is not existed
@@ -113,7 +120,7 @@ class GroupHandleDataController {
 
       if (set) {
         for (const key in set) {
-          if (set.hasOwnProperty(key)) {
+          if (hasOwnProperty.call(set, key)) {
             result[key] = set[key];
           }
         }
@@ -126,7 +133,6 @@ class GroupHandleDataController {
     const transformedData: (Group | null)[] = await Promise.all(
       groups.map(async (item: Raw<Group>) => {
         let finalItem = item;
-        /* eslint-disable no-underscore-dangle */
         if (finalItem._delta && item._id) {
           const calculated = await this.calculateDeltaData(item);
           if (calculated) {
@@ -138,7 +144,6 @@ class GroupHandleDataController {
             return null;
           }
         }
-        /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
         const userConfig = ServiceLoader.getInstance<AccountService>(
           ServiceConfig.ACCOUNT_SERVICE,
@@ -268,7 +273,7 @@ class GroupHandleDataController {
   doFavoriteGroupsNotification = async (favIds: number[]) => {
     mainLogger.debug('-------doFavoriteGroupsNotification--------');
     const filteredFavIds = favIds.filter(
-      id => typeof id === 'number' && !isNaN(id),
+      id => typeof id === 'number' && !Number.isNaN(id),
     );
 
     const replaceGroups = new Map<number, Group>();
@@ -510,7 +515,7 @@ class GroupHandleDataController {
     if (oldestUnreadGroupTime) {
       // With unread message
       const filteredGroups = sortedGroups.filter(
-        (group: Group, i) => this.getGroupTime(group) >= oldestUnreadGroupTime,
+        (group: Group) => this.getGroupTime(group) >= oldestUnreadGroupTime,
       );
       if (filteredGroups.length > limit) {
         const result = filteredGroups.slice(0, limit);

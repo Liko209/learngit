@@ -66,7 +66,7 @@ const TitleWithSummary = styled.div`
 `;
 const LinkTitle = styled.p`
   ${typography('subheading1')};
-  margin: ${spacing(0, 0, 2, 0)};
+  margin: ${spacing(0, 4, 2, 0)};
   word-break: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
