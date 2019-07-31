@@ -465,12 +465,12 @@
       "edit": {
         "firstName": "First Name",
         "lastName": "Last Name",
-        "title": "Title",
+        "jobTitle": "Title",
         "location": "Location",
         "department": "Department",
-        "webpage": "Webpage",
+        "homepage": "Webpage",
         "phone": "Phone",
-        "webpageError": "Invalid webpage address",
+        "homepageError": "Invalid webpage address",
         "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
         "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later."
       }

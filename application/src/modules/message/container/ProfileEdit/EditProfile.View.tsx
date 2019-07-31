@@ -58,7 +58,7 @@ class EditProfileViewComponent extends Component<
     });
   };
 
-  _handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
+  _handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
     // Prevents input loss of focus when button is clicked
     event.preventDefault();
   };
@@ -112,7 +112,7 @@ class EditProfileViewComponent extends Component<
     });
   };
   render() {
-    const { t, id, handleProfileEdit, webpageError, isLoading } = this.props;
+    const { t, id, handleProfileEdit, homepageError, isLoading } = this.props;
     return (
       <JuiModal
         open
@@ -121,7 +121,7 @@ class EditProfileViewComponent extends Component<
         onCancel={this.handleClose}
         onOK={handleProfileEdit}
         okBtnProps={{
-          disabled: webpageError,
+          disabled: homepageError,
         }}
         loading={isLoading}
         okText={t('common.dialog.save')}

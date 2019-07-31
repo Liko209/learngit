@@ -26,10 +26,10 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   implements EditProfileViewModelProps {
   @observable firstName: string;
   @observable lastName: string;
-  @observable title?: string;
+  @observable jobTitle?: string;
   @observable location?: string;
-  @observable webpage?: string;
-  @observable webpageError: boolean;
+  @observable homepage?: string;
+  @observable homepageError: boolean;
   @observable currentPersonInfo: PersonModel;
   @observable isLoading: boolean;
 
@@ -42,9 +42,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
         this.currentPersonInfo = person;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.title = jobTitle;
+        this.jobTitle = jobTitle;
         this.location = location;
-        this.webpage = homepage;
+        this.homepage = homepage;
         reaction.dispose();
       },
       {
@@ -58,18 +58,23 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.props.id);
   }
 
+  @action
   getUpdateInfo = () => {
-    const info = {
-      firstName: this.firstName,
-      lastName: this.lastName,
-      jobTitle: this.title,
-      location: this.location,
-      homepage: this.webpage,
+    const keyMaps = {
+      firstName: 'first_name',
+      lastName: 'last_name',
+      jobTitle: 'job_title',
+      location: 'location',
+      homepage: 'homepage',
     };
-    Object.keys(info).forEach(v => {
-      if (info[v] === this.currentPersonInfo[v]) {
-        delete info[v];
+    const info = {};
+    Object.keys(keyMaps).forEach(key => {
+      if (this[key] === undefined) return;
+      this[key] = trimStringBothSides(this[key]);
+      if (this[key] === this.currentPersonInfo[key]) {
+        return;
       }
+      info[keyMaps[key]] = this[key];
     });
     return Object.keys(info).length ? info : undefined;
   };
@@ -80,12 +85,12 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   })
   @action
   handleProfileEdit = async () => {
-    if (this.webpage) {
-      this.webpageError = !new RegExp(Markdown.global_url_regex).test(
-        this.webpage,
+    if (this.homepage) {
+      this.homepageError = !new RegExp(Markdown.global_url_regex).test(
+        this.homepage,
       );
     }
-    if (this.webpageError) return;
+    if (this.homepageError) return;
     const info = this.getUpdateInfo();
     if (!info) {
       portalManager.dismissAll();
@@ -105,13 +110,13 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
 
   @action
   updateInfo = (key: EditItemSourceType['key'], value: string) => {
-    if (key === 'webpage') {
-      this.webpageError = false;
+    if (key === 'homepage') {
+      this.homepageError = false;
     }
     if (key === 'firstName' || key === 'lastName') {
       value = value.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, '');
     }
-    this[key] = trimStringBothSides(value);
+    this[key] = value;
   };
 }
 

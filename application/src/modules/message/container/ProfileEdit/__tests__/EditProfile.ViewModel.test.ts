@@ -73,6 +73,24 @@ describe('EditProfileViewModel', () => {
       await vm.handleProfileEdit();
       expect(Notification.flashToast).not.toHaveBeenCalled();
     });
+    it('Should show personService.editPersonalInfo call when input blank [JPT-2650]', async () => {
+      personService.editPersonalInfo = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, ''),
+        );
+      (getEntity as jest.Mock).mockReturnValue({
+        ...personInfo,
+      });
+      const vm = new EditProfileViewModel({ id: 1 });
+      vm.firstName = '';
+      vm.lastName = '';
+      vm.jobTitle = '';
+      vm.homepage = '';
+      vm.location = '';
+      await vm.handleProfileEdit();
+      expect(personService.editPersonalInfo).toHaveBeenCalled();
+    });
     it('Should show not show error when info not change', async () => {
       personService.editPersonalInfo = jest
         .fn()
@@ -131,7 +149,7 @@ describe('EditProfileViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue(personInfo);
       const vm = new EditProfileViewModel({ id: 1 });
       vm.lastName = '2';
-      expect(vm.getUpdateInfo()).toEqual({ lastName: '2' });
+      expect(vm.getUpdateInfo()).toEqual({ last_name: '2' });
     });
   });
   describe('updateInfo()', () => {
@@ -147,13 +165,13 @@ describe('EditProfileViewModel', () => {
       vm.updateInfo('firstName', '1😯');
       expect(vm.firstName).toEqual('1');
     });
-    it('Should change webpageError when call updateInfo with webpage', async () => {
+    it('Should change homepageError when call updateInfo with homepage', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         ...personInfo,
       });
       const vm = new EditProfileViewModel({ id: 1 });
-      vm.updateInfo('webpage', '1');
-      expect(vm.webpageError).toEqual(false);
+      vm.updateInfo('homepage', '1');
+      expect(vm.homepageError).toEqual(false);
     });
   });
 });
