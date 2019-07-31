@@ -24,14 +24,14 @@ type titleProps = {
   onClick: () => void;
 };
 
-function DialogTitle({ id, onClick }: titleProps) {
+function DialogTitle({ onClick }: titleProps) {
   return (
     <StyledDialogHeader>
       <StyledJuiDialogTitle>
         {i18nP('common.dialog.Alert')}
       </StyledJuiDialogTitle>
       <JuiIconButton
-        data-test-automation-id={`${id}DialogCrossButton`}
+        data-test-automation-id="emergencyPromptDialogCrossButton"
         variant="plain"
         onClick={onClick}
         tooltipTitle={i18nP('common.dialog.close')}

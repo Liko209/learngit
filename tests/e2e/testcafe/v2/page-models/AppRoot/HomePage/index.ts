@@ -160,7 +160,30 @@ export class HomePage extends BaseWebComponent {
   }
 
   async closeE911Prompt() {
-    await this.t.click(this.getSelectorByAutomationId('emergencyPromptDialogCrossButton'));
+    const button = this.getSelectorByAutomationId('emergencyPromptDialogCrossButton');
+    if (await button.exists) {
+      await this.t.click(button);
+    }
+  }
+
+  get e911DialogCancelButton() {
+    return this.getSelectorByAutomationId('e911-DialogCancelButton');
+  }
+
+  get e911DialogConfirmButton() {
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
+  }
+
+  async closeE911Form() {
+    if (await this.e911DialogCancelButton.exists) {
+      await this.t.click(this.e911DialogCancelButton);
+    }
+  }
+
+  async confirmE911Form() {
+    if (await this.e911DialogConfirmButton.exists) {
+      await this.t.click(this.e911DialogConfirmButton);
+    }
   }
 
   async hoverDialpadButton() {

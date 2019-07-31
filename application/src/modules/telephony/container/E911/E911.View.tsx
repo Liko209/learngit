@@ -180,7 +180,7 @@ class E911ViewComponent extends Component<Props> {
           <JuiButton
             color="primary"
             variant="text"
-            data-test-automation-id="DialogCancelButton"
+            data-test-automation-id="e911-DialogCancelButton"
             autoFocus={false}
             onClick={this.context}
             // disabled={loading}
@@ -192,7 +192,7 @@ class E911ViewComponent extends Component<Props> {
             color="primary"
             variant="contained"
             autoFocus={false}
-            data-test-automation-id="DialogOKButton"
+            data-test-automation-id="e911-DialogOKButton"
             disabled={disabled}
           >
             {t('common.dialog.confirm')}
