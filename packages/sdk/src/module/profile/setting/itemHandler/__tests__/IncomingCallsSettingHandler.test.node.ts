@@ -21,6 +21,7 @@ import {
 } from '../../../../setting';
 
 import { Profile } from 'sdk/module/profile/entity';
+
 jest.mock('sdk/module/profile');
 
 function clearMocks() {
@@ -41,9 +42,6 @@ describe('IncomingCallsSettingHandler', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      parentModelId: 1,
-      valueType: 1,
-      weight: 1,
       id: SettingEntityIds.Notification_IncomingCalls,
       state: 1,
       source: [NOTIFICATION_OPTIONS.OFF, NOTIFICATION_OPTIONS.ON],
@@ -135,7 +133,7 @@ describe('IncomingCallsSettingHandler', () => {
   describe('updateValue()', () => {
     it('should call updateSettingOptions with correct parameters', async () => {
       await settingHandler.updateValue(1);
-      expect(profileService.updateSettingOptions).toBeCalledWith([
+      expect(profileService.updateSettingOptions).toHaveBeenCalledWith([
         { value: 1, key: SETTING_KEYS.DESKTOP_CALL },
       ]);
     });
@@ -152,7 +150,7 @@ describe('IncomingCallsSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -167,7 +165,7 @@ describe('IncomingCallsSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
@@ -186,7 +184,7 @@ describe('IncomingCallsSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -203,7 +201,7 @@ describe('IncomingCallsSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
         done();
       });
     });
@@ -216,7 +214,7 @@ describe('IncomingCallsSettingHandler', () => {
         [],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
