@@ -17,7 +17,27 @@ import { E911SettingInfo } from 'sdk/module/rcInfo/setting/types';
 import { catchError } from '@/common/catchError';
 
 import { OutOfCountryDisclaimer } from './config';
-import { E911Props, E911ViewProps, Country, State, CheckBox } from './types';
+import addressConfig from './address.json';
+
+import {
+  E911Props,
+  E911ViewProps,
+  Country,
+  State,
+  FieldsConfig,
+  FieldItem,
+  CheckBox
+} from './types';
+
+const whitelist = ['US', 'Canada', 'Puerto Rico'];
+
+const CHECK_KEY_MAP = {
+  street: 'street',
+  additionalAddress: 'street2',
+  city: 'city',
+  state: 'state',
+  zipCode: 'zip',
+};
 
 class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
@@ -42,6 +62,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     zip: '',
     customerName: '',
     outOfCountry: false,
+  };
+
+  @observable fields: FieldsConfig = {
+    customerName: '',
   };
 
   constructor(props: E911Props) {
@@ -81,36 +105,50 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
 
   @computed
   get disabled() {
-    const checkField = ['customerName', 'country', 'street', 'city', 'zip'];
-    const { state, stateName } = this.value;
-    if (this.stateList.length > 0) {
-      if (state) {
-        checkField.push('state');
-      }
-      if (stateName) {
-        checkField.push('stateName');
-      }
-    }
+    const fields = this.fields;
+    const checkKeys = ['customerName', 'country'];
 
-    return checkField.some((field: string) => !this.value[field]);
+    Object.keys(fields).forEach((key: keyof FieldsConfig) => {
+      if (key === 'customerName') {
+        return;
+      }
+      if (!(fields[key] as FieldItem).optional) {
+        checkKeys.push(CHECK_KEY_MAP[key]);
+      }
+    });
+
+    return checkKeys.some((field: string) => !this.value[field]);
   }
 
   @action
-  async getState(countryId: string) {
-    const stateList = await this.rcInfoService.getStateList(countryId);
-    this.stateList = stateList;
+  async getState(country: Country) {
+    const value = this.settingItemEntity.value!;
+    if (!this.shouldShowSelectState) {
+      this.value.state = country.id === value.countryId ? value.state : '';
+      return;
+    }
 
+    const stateList = await this.rcInfoService.getStateList(country.id);
+
+    this.stateList = stateList;
     if (stateList.length > 0) {
-      this.saveStateOrCountry('state', stateList[0]);
+      const current = stateList.find(
+        (item: State) => item.id === value.stateId,
+      );
+      this.saveStateOrCountry('state', current ? current : stateList[0]);
     }
   }
 
   @action
   async getCountryInfo() {
-    const countryList = await this.rcInfoService.getCountryList();
-    this.countryList = countryList;
-    const { countryName } = this.value;
     let currentCountry;
+    const countryList = await this.rcInfoService.getCountryList();
+    const { countryName } = this.value;
+
+    this.countryList = countryList;
+
+    // if enter setting page directly
+    // countryName has exist in setting model
     if (countryName) {
       currentCountry = this.countryList.find(
         (item: Country) => item.name === countryName,
@@ -118,10 +156,25 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     } else {
       currentCountry = await this.rcInfoService.getCurrentCountry();
     }
+
     if (currentCountry) {
+      this.getFields(currentCountry);
       this.saveStateOrCountry('country', currentCountry);
-      this.getState(currentCountry.id);
+      this.getState(currentCountry);
     }
+  }
+
+  @computed
+  get shouldShowSelectState() {
+    const { country, countryName } = this.value;
+    return whitelist.includes(country) || whitelist.includes(countryName);
+  }
+
+  @action
+  getFields(country: Country) {
+    const { name, isoCode } = country;
+    this.fields =
+      addressConfig[isoCode] || addressConfig[name] || addressConfig['default'];
   }
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -130,8 +183,9 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       (item: Country) => item.name === value,
     );
 
+    this.getFields(country!);
     this.saveStateOrCountry('country', country!);
-    this.getState(country!.id);
+    this.getState(country!);
     this.getDisclaimers(country!.isoCode);
   };
 
@@ -162,6 +216,13 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     server: 'telephony.e911.prompt.networkError',
   })
   onSubmit = async () => {
+    // if state type is text field only send state field to backend
+    if (!this.shouldShowSelectState) {
+      this.value.stateName = '';
+      this.value.stateIsoCode = '';
+      this.value.stateId = '';
+    }
+
     await (this.settingItemEntity.valueSetter &&
       this.settingItemEntity.valueSetter(this.value));
   };

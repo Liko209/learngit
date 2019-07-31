@@ -21,16 +21,41 @@ type E911ViewProps = E911Props & {
   value: E911SettingInfo;
   disabled: boolean;
   checkboxList: CheckBox[];
+  fields: FieldsConfig;
+  shouldShowSelectState: boolean;
 };
 
 type CheckBox = {
   i18text: string;
   checked: boolean;
-  params?: object;
+  params?: Country;
 };
 
 type Country = DialingCountryInfo;
 
 type State = StateRecord;
 
-export { E911Props, E911ViewProps, Country, State, CheckBox };
+type FieldsConfig = {
+  customerName: string;
+  street?: FieldItem;
+  additionalAddress?: FieldItem;
+  city?: FieldItem;
+  state?: FieldItem;
+  zipCode?: FieldItem;
+};
+
+type FieldItem = {
+  label: string;
+  ghostText: string;
+  optional?: boolean;
+};
+
+export {
+  E911Props,
+  E911ViewProps,
+  Country,
+  State,
+  FieldsConfig,
+  FieldItem,
+  CheckBox,
+};
