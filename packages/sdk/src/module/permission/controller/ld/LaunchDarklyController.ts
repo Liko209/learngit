@@ -98,7 +98,7 @@ class LaunchDarklyController extends AbstractPermissionController
   }
 
   private _isClientFlagsReady() {
-    return this.launchDarklyClient.hasFlags();
+    return this.launchDarklyClient && this.launchDarklyClient.hasFlags();
   }
 
   private _defaultPermission(type: UserPermissionType) {
