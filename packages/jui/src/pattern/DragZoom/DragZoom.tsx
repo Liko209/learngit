@@ -16,7 +16,12 @@ import styled from '../../foundation/styled-components';
 import { height } from '../../foundation/utils/styles';
 import { JuiFabGroup } from '../ImageViewer';
 import { JuiDragZoomChildrenProps, JuiDragZoomOptions } from './types';
-import { calculateFitWidthHeight, fixBoundary, isDraggable } from './utils';
+import {
+  calculateFitWidthHeight,
+  calculateFitWidthHeightByFixedContainer,
+  fixBoundary,
+  isDraggable,
+} from './utils';
 
 type JuiDragZoomProps = {
   zoomInText?: string;
@@ -32,6 +37,9 @@ type JuiDragZoomProps = {
   }) => void;
   children: (withDragZoomProps: JuiDragZoomChildrenProps) => any;
   applyTransform?: boolean;
+  fixedContainer?: boolean;
+  transFormInCenter?: boolean;
+  unNeedZoomButtonGroup?: boolean;
 };
 
 type JuiDragZoomState = {
@@ -72,9 +80,9 @@ function ensureOptions(
 ): JuiDragZoomOptions {
   return options
     ? {
-      ...DEFAULT_DRAG_ZOOM_OPTIONS,
-      ...options,
-    }
+        ...DEFAULT_DRAG_ZOOM_OPTIONS,
+        ...options,
+      }
     : DEFAULT_DRAG_ZOOM_OPTIONS;
 }
 
@@ -105,8 +113,8 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       canDrag: false,
       canZoomIn: true,
       canZoomOut: true,
-      minScale: 0,
-      maxScale: Number.MAX_SAFE_INTEGER,
+      minScale: ensureOptions(this.props.options).minScale || 0,
+      maxScale: ensureOptions(this.props.options).maxScale || Number.MAX_VALUE,
     };
   }
 
@@ -139,13 +147,18 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       this._containerWidth &&
       this._containerHeight
     ) {
-      const [fitWidth, fitHeight] = calculateFitWidthHeight(
-        this._contentWidth,
-        this._contentHeight,
-        this._containerWidth,
-        this._containerHeight,
-        ensureOptions(this.props.options).padding,
-      );
+      const [fitWidth, fitHeight] = this.props.fixedContainer
+        ? calculateFitWidthHeightByFixedContainer(
+            this._contentWidth,
+            this._contentHeight,
+          )
+        : calculateFitWidthHeight(
+            this._contentWidth,
+            this._contentHeight,
+            this._containerWidth,
+            this._containerHeight,
+            ensureOptions(this.props.options).padding,
+          );
       if (this._fitWidth !== fitWidth || this._fitHeight !== fitHeight) {
         this.applyNewTransform({
           scale: 1,
@@ -205,25 +218,30 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     fitWidth: number,
     fitHeight: number,
   ) => {
-    const { minPixel, maxPixel } = ensureOptions(this.props.options);
+    const { minPixel, maxPixel } = this.props.options!;
     this._updateScale(fitWidth, fitHeight, minPixel, maxPixel);
     this._fitWidth = fitWidth;
     this._fitHeight = fitHeight;
     this.props.onAutoFitContentRectChange &&
       this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
+    this.forceUpdate();
   };
 
   private _updateScale(
     contentWidth: number,
     contentHeight: number,
-    minPixel: number,
-    maxPixel: number,
+    minPixel?: number,
+    maxPixel?: number,
   ) {
     if (contentWidth > 0 && contentHeight > 0) {
-      this.setState({
-        minScale: minPixel / Math.min(contentWidth, contentHeight),
-        maxScale: maxPixel / Math.max(contentWidth, contentHeight),
-      });
+      minPixel &&
+        this.setState({
+          minScale: minPixel / Math.min(contentWidth, contentHeight),
+        });
+      maxPixel &&
+        this.setState({
+          maxScale: maxPixel / Math.max(contentWidth, contentHeight),
+        });
     }
   }
 
@@ -240,12 +258,12 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       zoomOutText,
       zoomResetText,
       applyTransform,
+      transFormInCenter,
+      unNeedZoomButtonGroup,
       children,
     } = this.props;
     const { transform, canDrag } = this.state;
-    const {
-      minPixel, maxPixel, step, ...zoomOptions
-    } = ensureOptions(options);
+    const { minPixel, maxPixel, step, ...zoomOptions } = ensureOptions(options);
 
     const {
       minScale = zoomOptions.minScale,
@@ -256,6 +274,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         <JuiZoomComponent
           ref={this.getZoomRef()}
           applyTransform={applyTransform}
+          transFormInCenter={transFormInCenter}
           zoomOptions={{ ...zoomOptions, minScale, maxScale }}
           transform={transform}
           onTransformChange={(transform: Transform) => {
@@ -283,67 +302,70 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
                 this.setState({ isDragging: false });
               }}
             >
-              {({ isDragging }) => React.cloneElement(
-                children({
-                  canDrag,
-                  isDragging,
-                  transform,
-                  fitWidth: this._fitWidth,
-                  fitHeight: this._fitHeight,
-                  notifyContentSizeChange: this.updateContentSize,
-                }),
-                {
-                  ref: this._contentRef,
-                },
-              )
+              {({ isDragging }) =>
+                React.cloneElement(
+                  children({
+                    canDrag,
+                    isDragging,
+                    transform,
+                    fitWidth: this._fitWidth,
+                    fitHeight: this._fitHeight,
+                    notifyContentSizeChange: this.updateContentSize,
+                  }),
+                  {
+                    ref: this._contentRef,
+                  },
+                )
               }
             </DragArea>
           )}
         </JuiZoomComponent>
-        <ZoomButtonGroup
-          className="zoomGroup"
-          resetMode={transform.scale !== 1}
-          centerText={formatScaleText(transform.scale)}
-          ZoomOut={
-            <JuiIconButton
-              variant="plain"
-              tooltipTitle={zoomOutText}
-              ariaLabel={zoomOutText}
-              disabled={transform.scale - step < minScale}
-              onClick={() => {
-                this.getZoomRef().current!.zoomOut();
-              }}
-            >
-              zoom_out
-            </JuiIconButton>
-          }
-          ZoomIn={
-            <JuiIconButton
-              variant="plain"
-              tooltipTitle={zoomInText}
-              ariaLabel={zoomInText}
-              disabled={transform.scale + step > maxScale}
-              onClick={() => {
-                this.getZoomRef().current!.zoomIn();
-              }}
-            >
-              zoom_in
-            </JuiIconButton>
-          }
-          ZoomReset={
-            <JuiIconButton
-              variant="plain"
-              tooltipTitle={zoomResetText}
-              ariaLabel={zoomResetText}
-              disabled={transform.scale === 1}
-              onClick={() => {
-                this.getZoomRef().current!.reset();
-              }}
-            >
-              reset_zoom
-            </JuiIconButton>
-          }
-        />
+        {!unNeedZoomButtonGroup && (
+          <ZoomButtonGroup
+            className="zoomGroup"
+            resetMode={transform.scale !== 1}
+            centerText={formatScaleText(transform.scale)}
+            ZoomOut={
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle={zoomOutText}
+                ariaLabel={zoomOutText}
+                disabled={transform.scale - step < minScale}
+                onClick={() => {
+                  this.getZoomRef().current!.zoomOut();
+                }}
+              >
+                zoom_out
+              </JuiIconButton>
+            }
+            ZoomIn={
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle={zoomInText}
+                ariaLabel={zoomInText}
+                disabled={transform.scale + step > maxScale}
+                onClick={() => {
+                  this.getZoomRef().current!.zoomIn();
+                }}
+              >
+                zoom_in
+              </JuiIconButton>
+            }
+            ZoomReset={
+              <JuiIconButton
+                variant="plain"
+                tooltipTitle={zoomResetText}
+                ariaLabel={zoomResetText}
+                disabled={transform.scale === 1}
+                onClick={() => {
+                  this.getZoomRef().current!.reset();
+                }}
+              >
+                reset_zoom
+              </JuiIconButton>
+            }
+          />
+        )}
       </Container>
     );
   }

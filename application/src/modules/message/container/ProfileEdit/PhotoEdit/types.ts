@@ -5,9 +5,12 @@
  */
 
 import PersonModel from '@/store/models/Person';
+import { Transform } from 'jui/components/ZoomArea';
+import { HeadShotInfo } from 'sdk/module/person/types';
 
 type PhotoEditProps = {
-  id: number; // personId || conversationId
+  person: PersonModel;
+  photoEditCb: (headShotInfo: HeadShotInfo) => void;
 };
 
 type EditItemSourceType = {
@@ -29,11 +32,18 @@ type PhotoEditViewModelProps = {
   person: PersonModel;
   isLoading: boolean;
   webpageError: boolean;
-  currentScale: number;
-  updateScale: (
+  transform: Transform;
+  currentImageUrl: string;
+  shouldShowShortName: boolean;
+  sliderValue: number;
+  handleSliderChange: (
     event: React.ChangeEvent<HTMLInputElement>,
     value: number,
   ) => void;
+  updateTransform: (transform: Transform) => void;
+  updateImageUrl: (file: File) => void;
+  handleOk: (imageRef: React.RefObject<HTMLImageElement> | null) => () => void;
+  getInitSize: (contentWidth: number, contentHeight: number) => void;
 };
 
 export { EditItemSourceType, PhotoEditProps, PhotoEditViewModelProps };

@@ -10,6 +10,7 @@ import { AbstractViewModel } from '@/base';
 import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
+import { HeadShotInfo } from 'sdk/module/person/types';
 import { ENTITY_NAME } from '@/store';
 import { trimStringBothSides, matchEmail } from '@/utils/string';
 import { PersonService } from 'sdk/module/person';
@@ -31,6 +32,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @observable webpageError: boolean;
   @observable currentPersonInfo: PersonModel;
   @observable isLoading: boolean;
+  @observable headShotInfo: HeadShotInfo;
 
   constructor(props: EditProfileProps) {
     super(props);
@@ -84,7 +86,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     }
     if (this.webpageError) return;
     const info = this.getUpdateInfo();
-    if (!info) {
+    if (!info && !this.headShotInfo) {
       portalManager.dismissAll();
       return;
     }
@@ -92,7 +94,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-    await personService.editPersonalInfo(info).catch(e => {
+    await personService.editPersonalInfo(info, this.headShotInfo).catch(e => {
       this.isLoading = false;
       throw e;
     });
@@ -109,6 +111,10 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
       value = value.replace(/\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/g, '');
     }
     this[key] = trimStringBothSides(value);
+  };
+
+  photoEditCb = (headShotInfo: HeadShotInfo) => {
+    this.headShotInfo = headShotInfo;
   };
 }
 

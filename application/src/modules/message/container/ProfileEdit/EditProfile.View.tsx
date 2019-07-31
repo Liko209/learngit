@@ -79,6 +79,12 @@ class EditProfileViewComponent extends Component<
     );
   };
 
+  handleMaskClick = () => {
+    const {currentPersonInfo, photoEditCb} = this.props
+
+    PhotoEdit.show({ photoEditCb, person: currentPersonInfo });
+  }
+
   _renderItem = (section: EditItemSourceType[]) => {
     const { t, isLoading } = this.props;
     return section.map(({ key, automationId, isLastItem, maxLength }) => {
@@ -114,7 +120,6 @@ class EditProfileViewComponent extends Component<
   };
   render() {
     const { t, id, handleProfileEdit, webpageError, isLoading } = this.props;
-    console.log('looper', id);
     return (
       <JuiModal
         open
@@ -137,7 +142,7 @@ class EditProfileViewComponent extends Component<
             uid={id}
             mask
             size="xlarge"
-            maskClick={() => PhotoEdit.show(id)}
+            maskClick={this.handleMaskClick}
             automationId="profileEditAvatar"
           />
           <JuiEditProfileSectionContent>

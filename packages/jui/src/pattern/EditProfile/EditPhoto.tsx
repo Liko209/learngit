@@ -14,10 +14,43 @@ const JuiEditPhotoUploadContent = styled.div`
   }
 `;
 
-const JuiEditPhotoImageContent = styled.div`
+const JuiEditPhotoEditContent = styled.div`
+  position: relative;
   height: ${spacing(86)};
   background-color: ${palette('common', 'black')};
   margin: ${spacing(0, -6)};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+`;
+
+const JuiEditPhotoImageContent = styled.div`
+  img {
+    pointer-events: none;
+  }
+`;
+
+const JuiEditPhotoImageEditContent = styled.div`
+  position: relative;
+  && div {
+    overflow: visible;
+    border-radius: 50%;
+  }
+  > div {
+    height: ${spacing(70)};
+    width: ${spacing(70)};
+  }
+`;
+
+const JuiEditPhotoContentMask = styled.div`
+  position: absolute;
+  border: ${spacing(57)} solid ${palette('common', 'black', 0.3)};
+  height: ${spacing(70)};
+  width: ${spacing(70)};
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
 `;
 
 const JuiEditPhotoSliderContent = styled.div`
@@ -39,7 +72,10 @@ const JuiEditPhotoSliderLeftText = styled.div`
 
 export {
   JuiEditPhotoUploadContent,
-  JuiEditPhotoImageContent,
+  JuiEditPhotoEditContent,
   JuiEditPhotoSliderContent,
   JuiEditPhotoSliderLeftText,
+  JuiEditPhotoImageContent,
+  JuiEditPhotoImageEditContent,
+  JuiEditPhotoContentMask,
 };

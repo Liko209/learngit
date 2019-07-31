@@ -5,6 +5,7 @@
  */
 
 import PersonModel from '@/store/models/Person';
+import { HeadShotInfo } from 'sdk/module/person/types';
 
 type EditProfileProps = {
   id: number; // personId || conversationId
@@ -27,11 +28,13 @@ type EditItemSourceType = {
 
 type EditProfileViewModelProps = {
   person: PersonModel;
+  currentPersonInfo: PersonModel;
   isLoading: boolean;
   webpageError: boolean;
   updateInfo: (key: EditItemSourceType['key'], value: string) => void;
   handleProfileEdit: () => void;
   getUpdateInfo: () => Object | undefined;
+  photoEditCb: (headShotInfo: HeadShotInfo) => void;
 };
 
 export { EditItemSourceType, EditProfileProps, EditProfileViewModelProps };

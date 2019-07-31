@@ -6,48 +6,101 @@
 
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
+import { reaction } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
 import { JuiButton } from 'jui/components/Buttons';
+import { Avatar } from '@/containers/Avatar';
+
 import {
   JuiEditPhotoUploadContent,
-  JuiEditPhotoImageContent,
+  JuiEditPhotoEditContent,
   JuiEditPhotoSliderContent,
   JuiEditPhotoSliderLeftText,
+  JuiEditPhotoImageContent,
+  JuiEditPhotoImageEditContent,
+  JuiEditPhotoContentMask,
 } from 'jui/pattern/EditProfile';
 import { accelerateURL } from '@/common/accelerateURL';
+import { Transform } from 'jui/components/ZoomArea';
 import portalManager from '@/common/PortalManager';
+import { withUploadFile } from 'jui/hoc/withUploadFile';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
+@withUploadFile
+class UploadArea extends Component<any> {
+  render() {
+    return <div />;
+  }
+}
+type PhotoEdit = PhotoEditViewModelProps & PhotoEditProps & WithTranslation;
 @observer
-class PhotoEditComponent extends Component<
-  PhotoEditViewModelProps & PhotoEditProps & WithTranslation
-> {
+class PhotoEditComponent extends Component<PhotoEdit> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
+  private _uploadRef: RefObject<any> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
+
+  constructor(props: PhotoEdit) {
+    super(props);
+    reaction(
+      () => this.props.sliderValue,
+      (scale: number) => {
+        if (!this._zoomRef.current) return;
+        const zoomComponentRef = this._zoomRef.current.getZoomRef();
+        if (!zoomComponentRef || !zoomComponentRef.current) return;
+        zoomComponentRef.current.zoomTo(scale);
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+  }
 
   handleClose = () => portalManager.dismissLast();
 
+  private _hideMenuAndShowDialog = () => {
+    // for Edge bug: FIJI-2818
+    setTimeout(() => {
+      const ref = this._uploadRef.current;
+      if (ref) {
+        ref.showFileDialog();
+      }
+    }, 0);
+  };
+
+  handleTransformChange = ({
+    transform,
+  }: {
+    transform: Transform;
+    canDrag: boolean;
+  }) => {
+    this.props.updateTransform(transform);
+  };
+
+  onFileChanged = (files: FileList) => {
+    const { updateImageUrl } = this.props;
+    updateImageUrl(files[0]);
+  };
+
   renderZoomContainer = () => {
-    const { t } = this.props;
+    const { currentImageUrl, getInitSize } = this.props;
     return (
       <JuiDragZoom
         ref={this._zoomRef}
         contentRef={this._imageRef}
         options={{
-          minPixel: 10,
-          maxPixel: 20000,
-          step: 0.1,
+          maxScale: 5,
+          minScale: 1,
+          step: 0.01,
           wheel: true,
-          padding: [10, 10, 10, 10],
         }}
-        zoomInText={t('viewer.ZoomIn')}
-        zoomOutText={t('viewer.ZoomOut')}
-        zoomResetText={t('viewer.ZoomReset')}
-        onAutoFitContentRectChange={() => {}}
+        fixedContainer
+        transFormInCenter
+        unNeedZoomButtonGroup
+        onTransformChange={this.handleTransformChange}
       >
         {({
           fitWidth,
@@ -63,18 +116,22 @@ class PhotoEditComponent extends Component<
             }px, ${transform.translateY}px)`,
             cursor: canDrag ? 'move' : undefined,
           };
+          const onSizeLoad = (contentWidth: number, contentHeight: number) => {
+            getInitSize(contentWidth, contentHeight);
+            notifyContentSizeChange(contentWidth, contentHeight);
+          };
           return (
-            <JuiImageView
-              data-test-automation-id={'previewerCanvas'}
-              imageRef={this._imageRef}
-              src={accelerateURL(
-                'https://glip-vault-1.s3-accelerate.amazonaws.com/web/customer_files/1316652318732/modified.png?Expires=2075494478&AWSAccessKeyId=AKIAJROPQDFTIHBTLJJQ&Signature=uPTq8YQJisMS%2F2kPCyoQISwB%2Fs0%3D',
-              )}
-              width={fitWidth || 0}
-              height={fitHeight || 0}
-              style={imageStyle}
-              onSizeLoad={notifyContentSizeChange}
-            />
+            <JuiEditPhotoImageContent>
+              <JuiImageView
+                data-test-automation-id={'previewerCanvas'}
+                imageRef={this._imageRef}
+                src={accelerateURL(currentImageUrl)}
+                width={fitWidth || 0}
+                height={fitHeight || 0}
+                style={imageStyle}
+                onSizeLoad={onSizeLoad}
+              />
+            </JuiEditPhotoImageContent>
           );
         }}
       </JuiDragZoom>
@@ -84,20 +141,21 @@ class PhotoEditComponent extends Component<
   render() {
     const {
       t,
-      id,
       webpageError,
       isLoading,
-      updateScale,
-      currentScale,
+      handleSliderChange,
+      transform,
+      shouldShowShortName,
+      person,
+      handleOk,
     } = this.props;
-    console.log('looper', id);
     return (
       <JuiModal
         open
         size={'medium'}
         title={t('people.profile.edit.editProfilePhotoTitle')}
         onCancel={this.handleClose}
-        onOK={() => {}}
+        onOK={handleOk(this._imageRef)}
         okBtnProps={{
           disabled: webpageError,
         }}
@@ -109,27 +167,47 @@ class PhotoEditComponent extends Component<
         }}
       >
         <JuiEditPhotoUploadContent>
-          <JuiButton variant="outlined" onClick={() => {}}>
+          <JuiButton variant="outlined" onClick={this._hideMenuAndShowDialog}>
             {t('people.profile.edit.editProfilePhotoUploadPhoto')}
           </JuiButton>
-        </JuiEditPhotoUploadContent>
-        <JuiEditPhotoImageContent>
-          {this.renderZoomContainer()}
-        </JuiEditPhotoImageContent>
-        <JuiEditPhotoSliderContent>
-          <JuiEditPhotoSliderLeftText>
-            {t('people.profile.edit.editProfilePhotoZoomText')}
-          </JuiEditPhotoSliderLeftText>
-          <RuiSlider
-            onChange={updateScale}
-            min={1}
-            max={5}
-            step={0.01}
-            value={currentScale}
-            data-test-automation-id={'PhotoEditSlider'}
-            aria-labelledby="input-slider"
+          <UploadArea
+            onFileChanged={this.onFileChanged}
+            multiple={false}
+            ref={this._uploadRef}
+            accept="image/*"
           />
-        </JuiEditPhotoSliderContent>
+        </JuiEditPhotoUploadContent>
+        <JuiEditPhotoEditContent>
+          <JuiEditPhotoContentMask />
+          <JuiEditPhotoImageEditContent>
+            {shouldShowShortName ? (
+              <Avatar
+                uid={person.id}
+                size="xlarge"
+                cover
+                automationId="profileEditAvatar"
+              />
+            ) : (
+              this.renderZoomContainer()
+            )}
+          </JuiEditPhotoImageEditContent>
+        </JuiEditPhotoEditContent>
+        {!shouldShowShortName && (
+          <JuiEditPhotoSliderContent>
+            <JuiEditPhotoSliderLeftText>
+              {t('people.profile.edit.editProfilePhotoZoomText')}
+            </JuiEditPhotoSliderLeftText>
+            <RuiSlider
+              onChange={handleSliderChange}
+              min={1}
+              max={5}
+              step={0.1}
+              value={transform.scale}
+              data-test-automation-id={'PhotoEditSlider'}
+              aria-labelledby="input-slider"
+            />
+          </JuiEditPhotoSliderContent>
+        )}
       </JuiModal>
     );
   }
