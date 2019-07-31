@@ -30,20 +30,24 @@ describe('messageNotificationManager', () => {
   const mockedDeletedPost = {
     id: 1,
     deactivated: true,
+    creator_id: 1,
   };
   const postFromGroup = {
     id: 4,
     group_id: 0,
+    creator_id: 1,
   };
   const postFromTeam = {
     id: 2,
     group_id: 1,
+    creator_id: 1,
   };
   const postWithMentionOthers = {
     id: 3,
     group_id: 1,
     at_mention_non_item_ids: [otherUserId],
     text: '',
+    creator_id: 1,
   };
   const postWithMentionTeamMembers = {
     id: 111,
@@ -51,12 +55,14 @@ describe('messageNotificationManager', () => {
     group_id: 1,
     at_mention_non_item_ids: [otherUserId],
     text: '',
+    creator_id: 1,
   };
   const postWithMentionMe = {
     id: 4,
     group_id: 1,
     at_mention_non_item_ids: [currentUserId],
     text: '',
+    creator_id: 1,
   };
   const team = {
     id: 1,
@@ -121,7 +127,13 @@ describe('messageNotificationManager', () => {
       jest.clearAllMocks();
       jest.spyOn(notificationManager, 'show').mockImplementation();
     });
-
+    it('should not show notification when post is sent from current user', async () => {
+      jest.spyOn(utils, 'getGlobalValue').mockReturnValueOnce(1);
+      const result = await notificationManager.shouldEmitNotification(
+        postFromGroup,
+      );
+      expect(result).toBeUndefined();
+    });
     it('should show notification when post is from group', async () => {
       const result = await notificationManager.shouldEmitNotification(
         postFromGroup,
