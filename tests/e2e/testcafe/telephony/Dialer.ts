@@ -9,6 +9,7 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta, IGroup } from '../v2/models';
 import { WebphoneSession } from 'webphone-client';
+import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -21,6 +22,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the tooltip when hovering on the [Dialpad] button', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Dialer'
 
@@ -61,6 +64,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the tooltip when hovering on the to minimize button of the dialer', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Minimize';
 
@@ -91,6 +96,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the ghost text when dialer is empty', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const ghostText = 'Enter a name or number';
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -116,6 +123,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can show the delete button when click the keypad on the dialer', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const tooltipText = 'Delete';
   const character = 'a';
@@ -168,6 +177,10 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
+  await h(t).platform(callee).init();
+  await h(t).platform(callee).updateDevices(() => E911Address);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -225,6 +238,8 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
 
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
@@ -286,7 +301,9 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const callee = h(t).rcData.guestCompany.users[0];
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).platform(callee).init();
   const phoneNumbers = await h(t).platform(callee).getExtensionPhoneNumberList();
   const calleeDirectNumbers = phoneNumbers.data.records.filter(data => data.usageType == "DirectNumber").map(data => data.phoneNumber)
@@ -349,6 +366,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can display the default caller ID in "Caller ID" selection', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const settingTab = app.homePage.settingTab;
@@ -408,7 +427,9 @@ test.meta(<ITestMeta>{
   const anotherUser = users[1];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const telephonyDialog = app.homePage.telephonyDialog;
 
   let chat = <IGroup>{
@@ -513,6 +534,8 @@ test.meta(<ITestMeta>{
   keywords: ['Dialer']
 })('Can enter the search contact mode after edited the content of the custom forward ', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const settingsEntry = app.homePage.leftPanel.settingsEntry;

@@ -10,6 +10,7 @@ import { AppRoot } from '../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../config';
 import { ITestMeta } from '../v2/models';
 import { MiscUtils } from '../v2/utils'
+import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -29,6 +30,8 @@ test.meta(<ITestMeta>{
   const searchStr = extension.replace('+', '');
 
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).glip(loginUser).resetProfileAndState();
 
   await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
@@ -93,7 +96,8 @@ test.meta(<ITestMeta>{
 })('Can exit the search mode after cleared all content from input field', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
-
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   const searchStr = '1';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {

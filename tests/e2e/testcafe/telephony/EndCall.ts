@@ -11,6 +11,7 @@ import { AppRoot } from "../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
 import { WebphoneSession } from 'webphone-client';
+import { E911Address } from './e911address';
 
 fixture('Telephony/EndCall')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -27,6 +28,8 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
   await h(t).glip(loginUser).resetProfileAndState();
 
@@ -116,8 +119,10 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
   await h(t).glip(loginUser).resetProfileAndState();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -195,6 +200,8 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(loginUser);
 
 
@@ -262,6 +269,8 @@ test.meta(<ITestMeta>{
   const app = new AppRoot(t);
   await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfile(loginUser);
+  await h(t).platform(loginUser).init();
+  await h(t).platform(loginUser).updateDevices(() => E911Address);
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -353,6 +362,8 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   const app = new AppRoot(t);
   await h(t).glip(me).init();
+  await h(t).platform(me).init();
+  await h(t).platform(me).updateDevices(() => E911Address);
   await h(t).scenarioHelper.resetProfile(me);
   await h(t).glip(me).resetProfileAndState();
 
