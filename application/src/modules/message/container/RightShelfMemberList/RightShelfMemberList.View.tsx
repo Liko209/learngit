@@ -56,7 +56,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   }
 
   componentDidMount() {
-    this.props.init()
+    this.props.init();
     if (this._resizeObserver && this._header.current) {
       this._resizeObserver.observe(this._header.current);
     }
@@ -167,7 +167,9 @@ class RightShelfMemberListViewComponent extends Component<Props> {
             {shownMemberIds.map(id => this.renderAvatar(id))}
             {fullMemberIds.length > shownMemberIds.length ? (
               <MemberListMoreCount
-                count={fullMemberIds.length - shownMemberIds.length}
+                count={
+                  (allMemberLength ? (allMemberLength - fullGuestIds.length) : fullMemberIds.length) - shownMemberIds.length
+                }
               />
             ) : null}
           </MemberListAvatarWrapper>
