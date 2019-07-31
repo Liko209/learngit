@@ -18,7 +18,7 @@ test(formalName('Check Dialer Search', ['P2', 'Call', 'DialerRecentCalls', 'V1.6
     await h(t).platform(loginUser).deleteUserAllCallLog();
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
