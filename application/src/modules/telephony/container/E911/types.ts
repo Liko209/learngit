@@ -20,10 +20,27 @@ type E911ViewProps = E911Props & {
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   value: E911SettingInfo;
   disabled: boolean;
+  fields: FieldsConfig;
+  shouldShowSelectState: boolean;
 };
 
 type Country = DialingCountryInfo;
 
 type State = StateRecord;
 
-export { E911Props, E911ViewProps, Country, State };
+type FieldsConfig = {
+  customerName: string;
+  street?: FieldItem;
+  additionalAddress?: FieldItem;
+  city?: FieldItem;
+  state?: FieldItem;
+  zipCode?: FieldItem;
+};
+
+type FieldItem = {
+  label: string;
+  ghostText: string;
+  optional?: boolean;
+};
+
+export { E911Props, E911ViewProps, Country, State, FieldsConfig, FieldItem };
