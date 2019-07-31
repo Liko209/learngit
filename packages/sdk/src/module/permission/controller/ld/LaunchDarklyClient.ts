@@ -48,16 +48,12 @@ class LaunchDarklyClient {
     }
   }
   private _deleteLocalCache() {
-    const ldKeys: string[] = [];
     const ldReg = /^ld:[a-zA-Z0-9]+:[a-zA-Z0-9]+/;
     Object.keys(localStorage).map(key => {
       if (ldReg.test(key)) {
-        ldKeys.push(key);
+        localStorage.removeItem(key);
+        mainLogger.log('delete launchDarkly cache data', key);
       }
-    });
-    mainLogger.log('delete launchDarkly cache data', ldKeys);
-    ldKeys.map(key => {
-      localStorage.removeItem(key);
     });
   }
 
