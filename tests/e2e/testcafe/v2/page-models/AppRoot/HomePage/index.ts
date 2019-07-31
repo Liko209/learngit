@@ -154,6 +154,14 @@ export class HomePage extends BaseWebComponent {
     await this.t.hover('html').click(this.dialpadButton);
   }
 
+  get e911AlertDialog() {
+    return this.getSelectorByAutomationId('e911-prompt-dialog');
+  }
+
+  async closeE911Prompt() {
+    await this.t.click(this.getSelectorByAutomationId('emergencyPromptDialogCrossButton'));
+  }
+
   async hoverDialpadButton() {
     await this.t.hover(this.dialpadButton);
   }

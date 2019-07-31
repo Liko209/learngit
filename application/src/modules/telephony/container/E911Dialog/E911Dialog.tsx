@@ -17,12 +17,12 @@ type E911DialogProps = {
   onOK?: () => any;
   okText?: string;
   onCancel: () => any;
-}
+};
 
 type titleProps = {
   id: string;
   onClick: () => void;
-}
+};
 
 function DialogTitle({ id, onClick }: titleProps) {
   return (
@@ -39,7 +39,7 @@ function DialogTitle({ id, onClick }: titleProps) {
         close
       </JuiIconButton>
     </StyledDialogHeader>
-  )
+  );
 }
 
 function alertE911Dialog({
@@ -69,29 +69,25 @@ function alertE911Dialog({
   });
 }
 
-function simpleE911Dialog({
-  id,
-  content,
-  onCancel,
-}: E911DialogProps) {
+function simpleE911Dialog({ id, content, onCancel }: E911DialogProps) {
   const dialog = Dialog.simple(
-    (
-      <>
-        <DialogTitle
-          id={id}
-          onClick={() => {
-            onCancel();
-            dialog.dismiss();
-          }}
-        />
-        <JuiDialogContent data-test-automation-id={`${id}DialogContent`}>
-          {content}
-        </JuiDialogContent>
-      </>
-    ),
+    <>
+      <DialogTitle
+        data-test-automation-id="e911-prompt-dialog"
+        id={id}
+        onClick={() => {
+          onCancel();
+          dialog.dismiss();
+        }}
+      />
+      <JuiDialogContent data-test-automation-id={`${id}DialogContent`}>
+        {content}
+      </JuiDialogContent>
+    </>,
     {
       size: 'small',
-    });
+    },
+  );
 }
 
-export { alertE911Dialog, simpleE911Dialog }
+export { alertE911Dialog, simpleE911Dialog };
