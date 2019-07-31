@@ -8,9 +8,7 @@ import React, { memo } from 'react';
 import MuiMenuItem from '@material-ui/core/MenuItem';
 
 import styled from '../../foundation/styled-components';
-import {
-  spacing, grey, typography, height,
-} from '../../foundation/utils';
+import { spacing, grey, height } from '../../foundation/utils';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import {
   JuiToggleButton,
@@ -20,15 +18,22 @@ import {
 const StyledListItem = styled(MuiMenuItem)`
   && {
     white-space: nowrap;
-    padding: ${spacing(0, 4, 0, 8)};
-    height: ${height(12)};
-    line-height: ${height(12)};
+    padding: ${spacing(0, 3, 0, 3)};
+    height: ${height(14)};
+    line-height: ${height(14)};
     color: ${grey('900')};
-    ${typography('body2')};
     &:hover {
       background-color: inherit;
       cursor: initial;
     }
+  }
+`;
+
+const StyledItemText = styled(ItemText)`
+  && {
+    font-size: ${spacing(3)};
+    color: ${({ theme }) => theme.palette.grey['900']};
+    font-weight: ${({ theme }) => theme.typography.subheading3.fontWeight};
   }
 `;
 
@@ -42,9 +47,7 @@ type IConversationListItem = {
 
 const JuiConversationListFilter: IConversationListItem = memo(
   (props: JuiConversationListFilterProps) => {
-    const {
-      label, checked, onChange, disabled, ...rest
-    } = props;
+    const { label, checked, onChange, disabled, ...rest } = props;
 
     return (
       <StyledListItem
@@ -52,7 +55,7 @@ const JuiConversationListFilter: IConversationListItem = memo(
         disableRipple
         {...rest}
       >
-        <ItemText>{label}</ItemText>
+        <StyledItemText>{label}</StyledItemText>
         <JuiToggleButton
           className="toggle-button"
           checked={checked}
@@ -64,7 +67,7 @@ const JuiConversationListFilter: IConversationListItem = memo(
   },
 );
 
-JuiConversationListFilter.dependencies = [ItemText];
+JuiConversationListFilter.dependencies = [StyledItemText];
 
 export default JuiConversationListFilter;
 export { JuiConversationListFilterProps, JuiConversationListFilter };
