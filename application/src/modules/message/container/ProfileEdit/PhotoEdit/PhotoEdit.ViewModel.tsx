@@ -8,6 +8,7 @@ import { observable, action, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { Transform } from 'jui/components/ZoomArea';
 import { debounce } from 'lodash';
+import portalManager from '@/common/PortalManager';
 import { PhotoEditProps } from './types';
 
 const CONTENT_SIZE = 280;
@@ -40,6 +41,11 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
     this.transform = transform;
   };
 
+  @computed
+  get isGifImage() {
+    return this.uploadImageType === 'image/gif';
+  }
+
   @action
   updateImageUrl = (file: File) => {
     this.currentFile = file;
@@ -56,7 +62,7 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   @computed
   get headShotUrl(): string {
     const { person } = this.props;
-    const { headshot } = person;
+    const { headshot = '' } = person;
     if (!headshot) return '';
     return typeof headshot === 'string' ? headshot : headshot.url;
   }
@@ -113,9 +119,9 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
     imageRef: React.RefObject<HTMLImageElement> | null,
   ) => async () => {
     if (!imageRef || !imageRef.current) return;
+    if (!this.currentFile) return;
     const { photoEditCb } = this.props;
     const { scale, translateX, translateY } = this.transform;
-    await this.imageToFile(imageRef.current);
     const { width, height } = this.initSize;
     const baseSize = width > height ? height : width;
     const initScale = CONTENT_SIZE / baseSize;
@@ -129,6 +135,7 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
       ),
       crop: this.numberToSting(crop, crop),
     });
+    portalManager.dismissLast();
   };
 }
 

@@ -166,6 +166,15 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           translateY: 0,
         });
         this._onAutoFitContentRectChange(fitWidth, fitHeight);
+        const canDrag = isDraggable(
+          fitWidth,
+          fitHeight,
+          this._containerWidth,
+          this._containerHeight,
+        );
+        this.setState({
+          canDrag,
+        });
       }
     }
   };
@@ -224,7 +233,6 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     this._fitHeight = fitHeight;
     this.props.onAutoFitContentRectChange &&
       this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
-    this.forceUpdate();
   };
 
   private _updateScale(

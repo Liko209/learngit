@@ -23,6 +23,7 @@ import {
   JuiEditPhotoImageContent,
   JuiEditPhotoImageEditContent,
   JuiEditPhotoContentMask,
+  JuiEditPhotoImageCanNotEdit,
 } from 'jui/pattern/EditProfile';
 import { accelerateURL } from '@/common/accelerateURL';
 import { Transform } from 'jui/components/ZoomArea';
@@ -121,7 +122,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             notifyContentSizeChange(contentWidth, contentHeight);
           };
           return (
-            <JuiEditPhotoImageContent>
+            <JuiEditPhotoImageContent canDrag={canDrag}>
               <JuiImageView
                 data-test-automation-id={'previewerCanvas'}
                 imageRef={this._imageRef}
@@ -148,6 +149,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
       shouldShowShortName,
       person,
       handleOk,
+      isGifImage,
     } = this.props;
     return (
       <JuiModal
@@ -187,12 +189,16 @@ class PhotoEditComponent extends Component<PhotoEdit> {
                 cover
                 automationId="profileEditAvatar"
               />
+            ) : isGifImage ? (
+              <JuiEditPhotoImageCanNotEdit>
+                {this.renderZoomContainer()}
+              </JuiEditPhotoImageCanNotEdit>
             ) : (
               this.renderZoomContainer()
             )}
           </JuiEditPhotoImageEditContent>
         </JuiEditPhotoEditContent>
-        {!shouldShowShortName && (
+        {!shouldShowShortName && !isGifImage && (
           <JuiEditPhotoSliderContent>
             <JuiEditPhotoSliderLeftText>
               {t('people.profile.edit.editProfilePhotoZoomText')}

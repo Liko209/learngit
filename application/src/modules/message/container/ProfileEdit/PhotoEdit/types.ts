@@ -36,6 +36,7 @@ type PhotoEditViewModelProps = {
   currentImageUrl: string;
   shouldShowShortName: boolean;
   sliderValue: number;
+  isGifImage: boolean;
   handleSliderChange: (
     event: React.ChangeEvent<HTMLInputElement>,
     value: number,

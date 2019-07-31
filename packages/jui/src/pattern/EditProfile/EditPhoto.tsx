@@ -25,8 +25,21 @@ const JuiEditPhotoEditContent = styled.div`
   overflow: hidden;
 `;
 
-const JuiEditPhotoImageContent = styled.div`
-  img {
+const JuiEditPhotoImageContent = styled.div<{ canDrag?: boolean }>`
+  && {
+    cursor: ${({ canDrag }) => (canDrag ? 'move' : 'default')};
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    img {
+      pointer-events: none;
+    }
+  }
+`;
+
+const JuiEditPhotoImageCanNotEdit = styled.div`
+  &&&& {
+    overflow: hidden;
     pointer-events: none;
   }
 `;
@@ -36,10 +49,6 @@ const JuiEditPhotoImageEditContent = styled.div`
   && div {
     overflow: visible;
     border-radius: 50%;
-  }
-  > div {
-    height: ${spacing(70)};
-    width: ${spacing(70)};
   }
 `;
 
@@ -78,4 +87,5 @@ export {
   JuiEditPhotoImageContent,
   JuiEditPhotoImageEditContent,
   JuiEditPhotoContentMask,
+  JuiEditPhotoImageCanNotEdit,
 };
