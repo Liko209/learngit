@@ -7,7 +7,6 @@ import { test, testable } from 'shield';
 import { mockEntity } from 'shield/application/mockEntity';
 import { mockService } from 'shield/sdk/mockService';
 import { FileDeleteActionViewModel } from '../FileDeleteAction.ViewModel';
-import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ENTITY_NAME } from '@/store';
 import {
@@ -21,6 +20,8 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
+import { getGlobalValue } from '@/store/utils';
+
 jest.mock('@/containers/Notification');
 
 const userA = 'userA';
@@ -51,7 +52,7 @@ describe('FileDeleteActionViewModel', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-  const entityMock = postFileVersion => (name: any) => {
+  const entityMock = ({ postFileVersion, isThePersonGuest }) => (name: any) => {
     if (name === ENTITY_NAME.POST) {
       if (postFileVersion) {
         return {
@@ -60,21 +61,20 @@ describe('FileDeleteActionViewModel', () => {
       }
       return null;
     }
-    if ((name = ENTITY_NAME.ITEM)) {
+    if (name === ENTITY_NAME.ITEM) {
       return {
         creatorId: userA,
         latestVersion: fileV3,
         versions: [fileV3, fileV2, fileV1],
       };
     }
-  };
-
-  const mockUserConfig = userId => () => {
-    return {
-      getGlipUserId() {
-        return userId;
-      },
-    };
+    if (name === ENTITY_NAME.GROUP) {
+      return {
+        isThePersonGuest: () => {
+          return isThePersonGuest;
+        },
+      };
+    }
   };
 
   @testable
@@ -82,40 +82,54 @@ describe('FileDeleteActionViewModel', () => {
     @test(
       'should be true when file is in conversation and fileVersion in post is uploaded by user',
     )
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userC))
-    @mockEntity(entityMock(3))
+    @mockEntity(entityMock({ postFileVersion: 3, isThePersonGuest: false }))
     t1() {
-      const vm = new FileDeleteActionViewModel({ postId: 123 } as any);
+      // @ts-ignore
+      getGlobalValue = jest.fn().mockReturnValue(userC);
+      const vm = new FileDeleteActionViewModel({ postId: 123 });
       expect(vm.canDelete).toBe(true);
     }
 
     @test(
       'should be false when file is in conversation and fileVersion in post is not uploaded by user',
     )
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userC))
-    @mockEntity(entityMock(1))
+    @mockEntity(entityMock({ postFileVersion: 1, isThePersonGuest: false }))
     t2() {
-      const vm = new FileDeleteActionViewModel({ postId: 123 } as any);
+      getGlobalValue = jest.fn().mockReturnValue(userC);
+      const vm = new FileDeleteActionViewModel({ postId: 123 });
       expect(vm.canDelete).toBe(false);
     }
 
     @test(
       'should be true when file is not conversation and latest file version is uploaded by user',
     )
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userC))
-    @mockEntity(entityMock(undefined))
+    @mockEntity(entityMock({}))
     t3() {
-      const vm = new FileDeleteActionViewModel({ postId: 123 } as any);
+      // @ts-ignore
+      getGlobalValue = jest.fn().mockReturnValue(userC);
+      const vm = new FileDeleteActionViewModel();
       expect(vm.canDelete).toBe(true);
     }
 
     @test(
       'should be false when file is not conversation and latest file version is not uploaded by user',
     )
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userB))
-    @mockEntity(entityMock(undefined))
+    @mockEntity(entityMock({}))
     t4() {
-      const vm = new FileDeleteActionViewModel({ postId: 123 } as any);
+      // @ts-ignore
+      getGlobalValue = jest.fn().mockReturnValue(userB);
+      const vm = new FileDeleteActionViewModel();
+      expect(vm.canDelete).toBe(false);
+    }
+
+    @test(
+      'should be false when file is in conversation and fileVersion in post is uploaded by user, but the user is a guest',
+    )
+    @mockEntity(entityMock({ postFileVersion: 3, isThePersonGuest: true }))
+    t5() {
+      // @ts-ignore
+      getGlobalValue = jest.fn().mockReturnValue(userC);
+      const vm = new FileDeleteActionViewModel();
       expect(vm.canDelete).toBe(false);
     }
   }
@@ -127,29 +141,27 @@ describe('FileDeleteActionViewModel', () => {
     @test(
       'should delete the version that currentUser uploaded when in conversation',
     )
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userA))
     @mockService(ItemService, 'deleteFile', spy)
-    @mockEntity(entityMock(1))
+    @mockEntity(entityMock({ postFileVersion: 1, isThePersonGuest: false }))
     t1() {
       const vm = new FileDeleteActionViewModel({
         postId: 123,
         fileId: 123,
-      } as any);
+      });
       vm.handleDeleteFile();
-      expect(spy).toBeCalledWith(123, 1);
+      expect(spy).toHaveBeenCalledWith(123, 1);
     }
 
     @test('should delete the latest version when not in conversation')
-    @mockService(AccountService, 'userConfig.get', mockUserConfig(userC))
     @mockService(ItemService, 'deleteFile', t2Spy)
-    @mockEntity(entityMock(undefined))
+    @mockEntity(entityMock({}))
     t2() {
       const vm = new FileDeleteActionViewModel({
         postId: 123,
         fileId: 123,
-      } as any);
+      });
       vm.handleDeleteFile();
-      expect(t2Spy).toBeCalledWith(123, 3);
+      expect(t2Spy).toHaveBeenCalledWith(123, 3);
     }
   }
 
@@ -159,12 +171,12 @@ describe('FileDeleteActionViewModel', () => {
     @mockService(ItemService, 'deleteFile', () => {
       throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
     })
-    @mockEntity(entityMock(undefined))
+    @mockEntity(entityMock({}))
     async t1() {
       Notification.flashToast = jest.fn();
       const vm = new FileDeleteActionViewModel({
         fileId: 123,
-      } as any);
+      });
       await vm.handleDeleteFile();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.deleteFileBackendError'),
@@ -175,12 +187,12 @@ describe('FileDeleteActionViewModel', () => {
     @mockService(ItemService, 'deleteFile', () => {
       throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
     })
-    @mockEntity(entityMock(undefined))
+    @mockEntity(entityMock({}))
     async t2() {
       Notification.flashToast = jest.fn();
       const vm = new FileDeleteActionViewModel({
         fileId: 123,
-      } as any);
+      });
       await vm.handleDeleteFile();
       expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('message.prompt.deleteFileNetworkError'),

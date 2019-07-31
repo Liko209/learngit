@@ -4,9 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import '@/polyfill';
-import {
-  Jupiter, inject, container, injectable,
-} from 'framework';
+import { Jupiter, inject, container, injectable } from 'framework';
 import * as sw from '@/modules/service-worker/module.config';
 import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';
@@ -25,7 +23,9 @@ import * as media from '@/modules/media/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { errorReporter } from '@/utils/error';
-import { firebasePerformanceController } from './firebase';
+
+import config from '@/config';
+import { Performance, FirebasePerformance } from '../../packages/foundation';
 
 @injectable()
 class Application {
@@ -34,7 +34,11 @@ class Application {
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
     Pal.instance.setErrorReporter(errorReporter);
-    firebasePerformanceController.initialize();
+    if (config.isProductionAccount()) {
+      Performance.instance.setPerformance(new FirebasePerformance());
+      Performance.instance.initialize();
+    }
+
     const jupiter = this._jupiter;
     // TODO auto load modules
     jupiter.registerModule(sw.config);
@@ -54,10 +58,11 @@ class Application {
     jupiter.registerModule(media.config);
 
     if (window.jupiterElectron) {
-      jupiter.registerModuleAsync(() => import(/*
+      jupiter.registerModuleAsync(() =>
+        import(/*
         webpackChunkName: "m.electron" */
-        '@/modules/electron/module.config'
-      ));
+        '@/modules/electron/module.config'),
+      );
     }
     return this._jupiter.bootstrap();
   }

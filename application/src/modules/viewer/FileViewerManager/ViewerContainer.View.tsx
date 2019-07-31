@@ -16,16 +16,16 @@ type Type = {
   handleScaleChanged: () => void;
   handlePageIdxChanged: () => void;
 };
-/* eslint-disable */
+
 const ThumbnailBar: SFC<Type> = memo((props: Type) => {
   const { dataModule, handlePageIdxChanged } = props;
   if (dataModule.pages) {
-    const items = dataModule.pages.map((page, i) => {
-      return <JuiViewerImg src={page.url} key={i} />;
+    const items = dataModule.pages.map(page => {
+      return <JuiViewerImg src={page.url} key={page.url} />;
     });
     return (
       <JuiViewerSidebar
-        open={true}
+        open
         items={items}
         selectedIndex={dataModule.currentPageIdx}
         onSelectedChanged={handlePageIdxChanged}
@@ -38,10 +38,10 @@ const ThumbnailBar: SFC<Type> = memo((props: Type) => {
 const ViewerDocument = (props: Type) => {
   const { dataModule, handleScaleChanged, handlePageIdxChanged } = props;
   if (dataModule.pages) {
-    const pages = dataModule.pages.map((page, i) => {
+    const pages = dataModule.pages.map(page => {
       const { viewport } = page;
       return {
-        cmp: <JuiViewerImg src={page.url} key={`${i}${page.url}`} />,
+        cmp: <JuiViewerImg src={page.url} key={page.url} />,
         getViewport: () => {
           return {
             height: viewport ? viewport.origHeight : 0,
@@ -53,10 +53,10 @@ const ViewerDocument = (props: Type) => {
     return (
       <JuiViewerDocument
         pages={pages}
-        data-test-automation-id='ViewerDocument'
+        data-test-automation-id="ViewerDocument"
         scale={dataModule.currentScale}
         pageIndex={dataModule.currentPageIdx}
-        pageFit={true}
+        pageFit
         scrollBarPadding={LEFT_WIDTH}
         onScaleChange={handleScaleChanged}
         onCurrentPageIdxChanged={handlePageIdxChanged}

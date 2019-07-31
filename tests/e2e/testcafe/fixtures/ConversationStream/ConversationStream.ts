@@ -165,7 +165,6 @@ test(formalName('Should be able to read the newest posts once open a conversatio
 test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[6];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
 
   const imagePaths = ['../../sources/1.png', '../../sources/2.png'];

@@ -21,7 +21,6 @@ test(formalName(`The Add team members dialog display correctly after clicking 'A
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfileAndState()
 
 
   const app = new AppRoot(t);
@@ -77,7 +76,6 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfileAndState();
 
   const adminName = await h(t).glip(admin).getPersonPartialData('display_name');
   const nonMemberName = await h(t).glip(admin).getPersonPartialData('display_name', users[6].rcId);
@@ -194,7 +192,6 @@ test(formalName(`The existing team members should not be displayed as search res
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfileAndState()
 
   const otherUserName = await h(t).glip(admin).getPersonPartialData('display_name', otherUser.rcId);
 
@@ -259,7 +256,6 @@ test(formalName(`The member list and counts are updated when the member is added
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfileAndState()
 
   const nonMemberName = await h(t).glip(admin).getPersonPartialData('display_name', otherUser.rcId);
 

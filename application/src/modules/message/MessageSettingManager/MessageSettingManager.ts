@@ -35,28 +35,18 @@ import {
   SoundSourceItem,
   SoundSourcePlayerRenderer,
 } from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
+import {
+  SoundSelectDataTrackingOption,
+  BadgeCountSelectDataTrackingOption,
+  EmailNotificationSelectDataTrackingOption,
+} from './dataTrackingTransformer';
 
 const NewMessageSelectDataTrackingOption: {
-  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
+  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string;
 } = {
   always: 'All new messages',
   mentions_or_dms: 'Direct messages and mentions',
   never: 'Off',
-};
-
-const EmailNotificationSelectDataTrackingOption: {
-  [key in EMAIL_NOTIFICATION_OPTIONS]: string
-} = {
-  900000: 'Every 15 minutes',
-  3600000: 'Every hour',
-  0: 'Off',
-};
-
-const BadgeCountSelectDataTrackingOption: {
-  [key in NEW_MESSAGE_BADGES_OPTIONS]: string
-} = {
-  groups_and_mentions: 'Direct messages and mentions only',
-  all: 'All new messages',
 };
 
 class MessageSettingManager implements IMessageSettingManager {
@@ -186,6 +176,11 @@ class MessageSettingManager implements IMessageSettingManager {
           'sounds',
           'directMessages',
         ),
+        dataTracking: {
+          name: 'directMessages',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
       } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
     );
     this._settingService.registerItem(
@@ -199,6 +194,11 @@ class MessageSettingManager implements IMessageSettingManager {
         sourceRenderer: SoundSourceItem,
         secondaryActionRenderer: SoundSourcePlayerRenderer,
         ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'mentions'),
+        dataTracking: {
+          name: 'mentions',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
       } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
     );
     this._settingService.registerItem(
@@ -212,6 +212,11 @@ class MessageSettingManager implements IMessageSettingManager {
         sourceRenderer: SoundSourceItem,
         secondaryActionRenderer: SoundSourcePlayerRenderer,
         ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'teamMessages'),
+        dataTracking: {
+          name: 'teamMessages',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
       } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
     );
   }

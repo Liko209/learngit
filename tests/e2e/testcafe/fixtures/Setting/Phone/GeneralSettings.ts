@@ -168,8 +168,6 @@ fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.DID_WITH_MULTI_REGIONS))
   .afterEach(teardownCase());
 
-//Need account pool support
-//For now, use fixed account to run this case
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1790'],
@@ -212,7 +210,6 @@ test.meta(<ITestMeta>{
 
   for (let i in countryListWithAreaCode) {
     await h(t).withLog(`When select the country as "${countryListWithAreaCode[i]}"`, async () => {
-      // TODO
       await updateRegionDialog.clickCountryDropDown();
       await updateRegionDialog.selectCountryWithText(countryListWithAreaCode[i]);
     });
@@ -232,8 +229,6 @@ test.meta(<ITestMeta>{
 
 });
 
-//Need account pool support
-//For now, use fixed account to run this case
 test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1798'],
