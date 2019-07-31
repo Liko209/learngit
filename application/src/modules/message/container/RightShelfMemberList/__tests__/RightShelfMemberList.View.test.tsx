@@ -60,6 +60,12 @@ const props = {
 };
 let wrapper;
 describe('RightShelfMemberList.View', () => {
+  it('should return null if it is a me conversation', () => {
+    props.group.type = CONVERSATION_TYPES.ME;
+    wrapper = shallow(<RightShelfMemberListView {...props} />);
+    expect(wrapper.type()).toBe(null);
+  });
+
   it('should NOT render link for 1:1 conversations', () => {
     props.group.type = CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
     wrapper = shallow(<RightShelfMemberListView {...props} />);

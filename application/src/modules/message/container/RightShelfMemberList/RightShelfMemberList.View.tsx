@@ -56,7 +56,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
   }
 
   componentDidMount() {
-    this.props.init()
+    this.props.init();
     if (this._resizeObserver && this._header.current) {
       this._resizeObserver.observe(this._header.current);
     }
@@ -140,7 +140,7 @@ class RightShelfMemberListViewComponent extends Component<Props> {
       CONVERSATION_TYPES.ME,
       CONVERSATION_TYPES.SMS,
     ].includes(group.type);
-    return (
+    return group.type === CONVERSATION_TYPES.ME ? null : (
       <>
         <MemberListHeader ref={this._header}>
           <div>
