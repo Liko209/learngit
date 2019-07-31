@@ -388,7 +388,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private _isMentionIdsContainTeam = (ids:number[]) => {
-    return ids.some((id)=>{
+    return ids && ids.some((id)=>{
        return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
     });
   }
