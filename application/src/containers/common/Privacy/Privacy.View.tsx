@@ -3,8 +3,6 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
@@ -44,10 +42,10 @@ class PrivacyViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size={size}
-        color='grey.500'
-        className='privacy'
+        color="grey.500"
+        className="privacy"
         disabled={!isAdmin}
-        alwaysEnableTooltip={true}
+        alwaysEnableTooltip
         onClick={this.onClickPrivacy}
         tooltipTitle={t(tooltipKey)}
         data-test-automation-id={

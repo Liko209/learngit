@@ -98,8 +98,8 @@ class RCInfoApi extends Api {
 
   static getPhoneParserData(localDataVersion: string) {
     const extraHeaders = {};
-    /* eslint-disable */
-    const localDataVersionWithQuote = `\"${localDataVersion}\"`;
+
+    const localDataVersionWithQuote = `"${localDataVersion}"`;
     extraHeaders[REQUEST_HEADER_KEYS.ACCEPT] = CONTENT_TYPES.XML;
     extraHeaders[REQUEST_HEADER_KEYS.IF_NONE_MATCH] = localDataVersionWithQuote;
     const query = this._getInfoRequestParams({

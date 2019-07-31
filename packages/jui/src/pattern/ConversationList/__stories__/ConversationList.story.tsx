@@ -30,7 +30,6 @@ storiesOf('Pattern/ConversationList', module)
   .add('Section', () => (
     <StoryWrapper>
       <Section
-        icon="star"
         title={text('title', 'Favorite')}
         expanded={boolean('expanded', true)}
         umi={

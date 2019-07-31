@@ -14,7 +14,7 @@ import { HotKeys } from '../../../hoc/HotKeys';
 import _ from 'lodash';
 
 const UPDATE_DEBOUNCE_TIME = 50;
-/* eslint-disable */
+
 type VisibleThumbnailType = {
   view: ThumbnailContainerItemsType;
   percent: number;
@@ -50,7 +50,7 @@ type ThumbnailContainerItemsType = {
 };
 
 const CustomSidebar: React.SFC<ViewerSidebarProps> = memo(
-  ({ expand, ...props }) => {
+  ({ expand, ...props }: ViewerSidebarProps) => {
     return <MuiDrawer {...props} />;
   },
 );
@@ -204,6 +204,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
   renderThumbnail = () => {
     const { items } = this.props;
     const { currentSelectedIndex } = this.state;
+    /* eslint-disable react/no-array-index-key */
     if (items) {
       return items.map((item, idx) => {
         const selected = idx === currentSelectedIndex;
@@ -260,7 +261,7 @@ class JuiViewerSidebar extends React.PureComponent<Props, States> {
     };
     return (
       <ViewerSidebarWrap
-        variant='persistent'
+        variant="persistent"
         expand={open}
         open={open}
         classes={{ paper: 'paper' }}

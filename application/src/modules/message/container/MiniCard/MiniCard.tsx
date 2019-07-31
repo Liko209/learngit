@@ -4,10 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, {
-  Component, CSSProperties, RefObject, createRef,
-} from 'react';
+import React, { Component, CSSProperties } from 'react';
 import portalManager from '@/common/PortalManager';
+import { ClickAwayListener } from 'jui/components/ClickAwayListener';
 
 type Return = {
   dismiss: () => void;
@@ -61,46 +60,33 @@ function getStyles(anchor: HTMLElement): CSSProperties {
 }
 
 class Comp extends Component<{ anchor: HTMLElement; component: JSX.Element }> {
-  private _ref: RefObject<HTMLDivElement> = createRef();
-  private _clickEventHandler = (event: MouseEvent) => {
-    if (!this._ref.current || !event.target) {
-      return;
-    }
-    if (
-      !this._ref.current.contains(event.target as HTMLElement) &&
-      this._ref.current !== event.target
-    ) {
-      portalManager.dismissLast();
-    }
-  }
-  componentDidMount() {
-    document.addEventListener('click', this._clickEventHandler);
-  }
-  componentWillUnmount() {
-    document.removeEventListener('click', this._clickEventHandler);
-  }
+  private _handleClickAway = () => {
+    /* eslint-disable */
+    MiniCard.dismiss();
+    delete MiniCard.dismiss;
+  };
   render() {
     return (
-      <div style={getStyles(this.props.anchor)} ref={this._ref}>
-        {this.props.component}
-      </div>
+      <ClickAwayListener onClickAway={this._handleClickAway}>
+        <div style={getStyles(this.props.anchor)}>{this.props.component}</div>
+      </ClickAwayListener>
     );
   }
 }
 
 class MiniCard {
-  static _dismiss: Function;
+  static dismiss: Function;
   static show(component: JSX.Element, options: Options): Return {
     const Component = component;
     const { anchor } = options;
-    if (this._dismiss) {
-      this._dismiss();
+    if (MiniCard.dismiss) {
+      MiniCard.dismiss();
     }
     const { dismiss, show } = portalManager.wrapper(() => (
       <Comp anchor={anchor} component={Component} />
     ));
     show();
-    this._dismiss = dismiss;
+    MiniCard.dismiss = dismiss;
     return {
       dismiss,
     };

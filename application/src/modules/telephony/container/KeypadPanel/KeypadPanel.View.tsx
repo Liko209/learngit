@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { DialPad, JuiHeaderContainer, JuiContainer } from 'jui/pattern/Dialer';
@@ -31,7 +30,7 @@ class KeypadPanelView extends React.Component<KeypadPanelViewProps> {
     if (!this._dialerHeaderRef.current) {
       return;
     }
-
+    /* eslint-disable react/no-find-dom-node */
     const fakeInput = (ReactDOM.findDOMNode(
       this._dialerHeaderRef.current,
     ) as HTMLDivElement).querySelector('[tabindex="0"]') as HTMLDivElement;

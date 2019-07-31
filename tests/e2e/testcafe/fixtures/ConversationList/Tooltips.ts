@@ -29,7 +29,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let teamId;
   await h(t).withLog('Given I have an extension with certain team', async () => {
