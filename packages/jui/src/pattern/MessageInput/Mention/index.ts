@@ -61,11 +61,12 @@ class Mention {
     return this._options.allowedChars!.test(s);
   }
 
-  select(id: number, name: string, denotationChar: string) {
+  select(id: number, name: string, denotationChar: string, isTeam: boolean) {
     const data = {
       id,
       name,
       denotationChar,
+      isTeam,
     };
     requestAnimationFrame(() => {
       this._quill.setSelection(this._cursorPos, 0);
@@ -91,7 +92,8 @@ class Mention {
     contents.ops &&
       contents.ops.forEach(delta => {
         if (delta && delta.insert.mention) {
-          if (this.isTeam(delta.insert.mention.id) && !isTeamMentionKept) {
+          console.log('nye delta is ', delta);
+          if (delta.insert.mention.isTeam === 'true' && !isTeamMentionKept) {
             result.push(delta);
             isTeamMentionKept = true;
             return;
@@ -114,12 +116,13 @@ class Mention {
   hasTeamMention = () => {
     const ops = this._quill.getContents().ops;
     let hasTeam = false;
+    console.log('nye delta.insert.mention.isTeam === true', ops);
     ops &&
       ops.forEach(delta => {
         if (
           delta &&
           delta.insert.mention &&
-          this.isTeam(delta.insert.mention.id)
+          delta.insert.mention.isTeam === 'true'
         ) {
           hasTeam = true;
         }

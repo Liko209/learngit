@@ -17,6 +17,7 @@ import 'jui/pattern/MessageInput/Mention';
 import { CONVERSATION_TYPES } from '@/constants';
 import {TEAM_TEXT} from './constants';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 type searchMember = {
   displayName: string;
@@ -178,6 +179,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         vm.members[vm.currentIndex].id,
         vm.members[vm.currentIndex].displayName,
         vm._denotationChar,
+        vm._isTeamId(vm.members[vm.currentIndex].id)
       );
       vm.currentIndex = 0;
       vm.open = false;
@@ -249,6 +251,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @computed
   get ids() {
     return this.members.map((member: searchMember) => member.id);
+  }
+  
+  private _isTeamId= (id:number) => {
+    return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
   }
 
   mentionOptions = {
