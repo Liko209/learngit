@@ -3,7 +3,6 @@
  * @Date: 2019-06-14 17:18:57
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import _ from 'lodash';
 import { Raw } from 'sdk/framework/model';
 import { Item } from 'sdk/module/item/entity';
@@ -475,6 +474,7 @@ class PostSearchHandler {
     if (queryInfo) {
       const targetGroupId = queryInfo.queryOptions.group_id;
       const objects: (Post | Item)[] = transformAll(contents);
+       /* eslint-disable no-continue */
       for (const value of objects) {
         if (value.deactivated) {
           continue;

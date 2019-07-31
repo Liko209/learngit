@@ -3,7 +3,7 @@
  * @Date: 2018-12-11 09:44:13
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import { observable, computed } from 'mobx';
 import {
   AttachmentsProps,
@@ -13,7 +13,7 @@ import {
   DidUploadFileCallback,
 } from './types';
 import { notificationCenter, EVENT_TYPES } from 'sdk/service';
-
+import { mainLogger } from 'sdk';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService, ItemNotification } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
@@ -296,7 +296,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       });
       this.items.clear();
       this._trackSendPost();
-    } catch (e) {}
+    } catch (e) {
+      mainLogger.error(e)
+    }
   };
 
   private _trackSendPost() {

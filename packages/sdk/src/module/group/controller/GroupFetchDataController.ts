@@ -46,7 +46,7 @@ import { SortUtils } from 'sdk/framework/utils';
 import { PresenceService } from 'sdk/module/presence';
 import { PRESENCE } from 'sdk/module/presence/constant';
 
-/* eslint-disable */
+
 const LOG_TAG = '[GroupFetchDataController]';
 const kTeamIncludeMe: number = 1;
 const kSortingRateWithFirstMatched: number = 1;
@@ -364,7 +364,8 @@ export class GroupFetchDataController {
     const recentSearchedGroups = recentFirst
       ? await this._getRecentSearchGroups([RecentSearchTypes.GROUP])
       : undefined;
-
+     // need @Thomas to fix 
+    /* eslint-disable no-constant-condition */
     return (group: Group, terms: Terms) => {
       do {
         if (!this._isValidGroup(group) || group.members.length <= 2) {
@@ -464,6 +465,7 @@ export class GroupFetchDataController {
     );
 
     let result: Map<ModelIdType, RecentSearchModel> = new Map();
+    /* eslint-disable no-await-in-loop */
     for (const iterator of types) {
       const recentGroups = await searchService.getRecentSearchRecordsByType(
         iterator,
@@ -501,7 +503,7 @@ export class GroupFetchDataController {
         const isValidGroup = myGroupsOnly
           ? group.members.includes(currentUserId)
           : !group.is_team ||
-          this._isPublicTeamOrIncludeUser(group, currentUserId);
+          this._isPublicTeamOrIncludeUser(group);
         if (!isValidGroup) {
           break;
         }
@@ -624,7 +626,6 @@ export class GroupFetchDataController {
       ? await this._getRecentSearchGroups([RecentSearchTypes.TEAM])
       : undefined;
     const teamIdsIncludeMe = this._getTeamIdsIncludeMe();
-    const currentUserId = this._currentUserId;
     return (team: Group, terms: Terms) => {
       let isMatched: boolean = false;
       let keyWeight: number = 0;
@@ -635,7 +636,7 @@ export class GroupFetchDataController {
 
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
-          isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
+          isMatched = this._isPublicTeamOrIncludeUser(team);
         }
 
         if (isMatched || searchKeyTerms.length === 0) {
@@ -659,7 +660,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        if (!this._isPublicTeamOrIncludeUser(team, currentUserId)) {
+        if (!this._isPublicTeamOrIncludeUser(team)) {
           break;
         }
 
@@ -820,7 +821,7 @@ export class GroupFetchDataController {
     return favoriteGroupIds.some((x: number) => groupId === x);
   }
 
-  private _isPublicTeamOrIncludeUser(team: Group, userId: number) {
+  private _isPublicTeamOrIncludeUser(team: Group) {
     return (
       team.privacy === 'protected' || this._getTeamIdsIncludeMe().has(team.id)
     );
@@ -901,7 +902,7 @@ export class GroupFetchDataController {
       profile.favorite_group_ids.length > 0
     ) {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
-        (id: any) => typeof id === 'number' && !isNaN(id),
+        (id: any) => typeof id === 'number' && !Number.isNaN(id),
       );
       const hiddenIds = await extractHiddenGroupIdsWithoutUnread(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);

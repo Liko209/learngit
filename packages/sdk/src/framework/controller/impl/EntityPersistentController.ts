@@ -14,7 +14,6 @@ import { EVENT_TYPES } from '../../../service/constants';
 import { IEntityCacheController } from '../interface/IEntityCacheController';
 import _ from 'lodash';
 
-/* eslint-disable */
 class EntityPersistentController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
@@ -217,6 +216,8 @@ class EntityPersistentController<
         break;
       case EVENT_TYPES.DELETE:
         await this.entityCacheController.bulkDelete(payload.body.ids);
+        break;
+      default:
         break;
     }
   }

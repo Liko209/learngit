@@ -21,6 +21,7 @@ const CallFsmEvent = {
   MUTE: 'muteEvent',
   UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
+  WARM_TRANSFER: 'warmTransferEvent',
   FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
@@ -155,6 +156,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
       { name: CallFsmEvent.TRANSFER, params: target },
       (params: any) => {
         this._onTransfer(params);
+      },
+    );
+  }
+
+  warmTransfer(targetSession: any): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.WARM_TRANSFER, params: targetSession },
+      (params: any) => {
+        this._onWarmTransfer(params);
       },
     );
   }
@@ -299,6 +309,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onWarmTransferAction(targetSession: any) {
+    this.emit(CALL_FSM_NOTIFY.WARM_TRANSFER_ACTION, targetSession);
+  }
+
   onForwardAction(target: string) {
     this.emit(CALL_FSM_NOTIFY.FORWARD_ACTION, target);
   }
@@ -390,6 +404,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onWarmTransfer(targetSession: any) {
+    this._callFsmTable.warmTransfer(targetSession);
   }
 
   private _onForward(target: string) {

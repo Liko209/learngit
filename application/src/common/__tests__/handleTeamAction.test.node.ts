@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { testable, test } from 'shield';
-import { mockEntity } from 'shield/application';
-import { mockService } from 'shield/sdk';
+import { mockEntity } from 'shield/application/mockEntity';
+import { mockService } from 'shield/sdk/mockService';
 import { GroupService } from 'sdk/module/group';
 import { generalErrorHandler } from '@/utils/error';
 import { Notification } from '@/containers/Notification';
@@ -50,7 +50,7 @@ describe('handlerTeamAction', () => {
     async t1() {
       await teamActionHandler.handleTeamDelete(1);
 
-      expect(Notification.flashToast).toBeCalledWith(
+      expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('people.prompt.deleteTeamServerErrorContent'),
       );
     }
@@ -62,7 +62,7 @@ describe('handlerTeamAction', () => {
     async t2() {
       await teamActionHandler.handleTeamDelete(1);
 
-      expect(Notification.flashToast).toBeCalledWith(
+      expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('people.prompt.deleteTeamNetworkErrorContent'),
       );
     }
@@ -79,7 +79,7 @@ describe('handlerTeamAction', () => {
       }
 
       expect(generalErrorHandler).toHaveBeenCalled();
-      expect(Notification.flashToast).not.toBeCalled();
+      expect(Notification.flashToast).not.toHaveBeenCalled();
     }
   }
 
@@ -97,7 +97,7 @@ describe('handlerTeamAction', () => {
     async t1() {
       await teamActionHandler.handleTeamArchive(1);
 
-      expect(Notification.flashToast).toBeCalledWith(
+      expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('people.prompt.archiveTeamServerErrorContent'),
       );
     }
@@ -109,7 +109,7 @@ describe('handlerTeamAction', () => {
     async t2() {
       await teamActionHandler.handleTeamArchive(1);
 
-      expect(Notification.flashToast).toBeCalledWith(
+      expect(Notification.flashToast).toHaveBeenCalledWith(
         toastParamsBuilder('people.prompt.archiveTeamNetworkErrorContent'),
       );
     }

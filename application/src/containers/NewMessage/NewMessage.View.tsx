@@ -3,7 +3,6 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { createRef } from 'react';
 import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import styled from 'jui/foundation/styled-components';
@@ -117,7 +116,7 @@ class NewMessageComponent extends React.Component<Props, State> {
           },
           scroll: 'body',
         }}
-        open={true}
+        open
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}
         title={t('message.prompt.NewMessage')}
@@ -126,7 +125,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         okText={t('common.dialog.send')}
         contentBefore={
           serverError && (
-            <StyledSnackbarsContent type='error'>
+            <StyledSnackbarsContent type="error">
               {t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
@@ -143,8 +142,8 @@ class NewMessageComponent extends React.Component<Props, State> {
             helperText={emailError ? t(emailErrorMsg) : ''}
             errorEmail={errorEmail}
             messageRef={this.messageRef}
-            multiple={true}
-            autoSwitchEmail={true}
+            multiple
+            autoSwitchEmail
           />
         ) : (
           <ContactSearch
@@ -155,19 +154,19 @@ class NewMessageComponent extends React.Component<Props, State> {
             helperText={emailError ? t(emailErrorMsg) : ''}
             errorEmail={errorEmail}
             messageRef={this.messageRef}
-            multiple={true}
-            autoSwitchEmail={true}
+            multiple
+            autoSwitchEmail
           />
         )}
         <JuiTextarea
           id={t('message.action.typeNewMessage')}
           label={t('message.action.typeNewMessage')}
-          fullWidth={true}
+          fullWidth
           inputProps={{
             maxLength: 10000,
           }}
           onChange={this.handleMessageChange}
-          data-test-automation-id='newMessageTextarea'
+          data-test-automation-id="newMessageTextarea"
         />
         {canMentionTeam && (
           <JuiCheckboxLabel
@@ -178,7 +177,7 @@ class NewMessageComponent extends React.Component<Props, State> {
         )}
         <JuiBottomText>
           <Trans
-            i18nKey='message.prompt.newMessageTip'
+            i18nKey="message.prompt.newMessageTip"
             components={[
               <JuiLink handleOnClick={this.openCreateTeam}>
                 create a Team

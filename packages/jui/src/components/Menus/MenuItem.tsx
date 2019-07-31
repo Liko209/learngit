@@ -28,6 +28,7 @@ type JuiMenuItemProps = {
   secondaryAction?: JSX.Element;
   automationId?: string;
   maxWidth?: number;
+  searchString?: string;
   hasSecondaryAction?: boolean;
 } & MuiListItemPropsFixed;
 
@@ -43,6 +44,7 @@ const WrappedMenuItem = ({
   icon,
   avatar,
   maxWidth,
+  searchString,
   hasSecondaryAction,
   ...rest
 }: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
@@ -60,6 +62,10 @@ const StyledMenuItem = styled(WrappedMenuItem)`
     box-sizing: border-box;
     &[class*='MuiListItem-secondaryAction'][role='menuitem'] {
       padding-right: ${spacing(12)};
+    }
+
+    &:focus {
+      background-color: ${palette('grey', '0', 0.12)};
     }
 
     &:hover {
@@ -115,4 +121,4 @@ const JuiMenuItem = React.memo(
   },
 );
 
-export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem };
+export { JuiMenuItem, JuiMenuItemProps, StyledMenuItem, StyledMuiListItemIcon };

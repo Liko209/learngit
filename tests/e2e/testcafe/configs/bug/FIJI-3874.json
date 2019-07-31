@@ -1,7 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/ConversationList/CloseConversation.ts"],
-    "browsers": ["selenium:chrome"],
-    "include_tags": ["JPT-135", "JPT-130"]
- }
-}

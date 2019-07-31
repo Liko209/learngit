@@ -3,7 +3,7 @@
  * @Date: 2018-11-12 11:29:35
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component, ComponentType } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
@@ -47,7 +47,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   renderPresence = () => {
     const { id } = this.props;
-    return <Presence uid={id} size='xlarge' borderSize='xlarge' />;
+    return <Presence uid={id} size="xlarge" borderSize="xlarge" />;
   };
 
   getAriaLabelKey = () => {
@@ -69,20 +69,20 @@ class ProfileDialogPersonContentViewComponent extends Component<
   };
 
   renderIcon = (key: string) => {
-    return <JuiIconography iconSize='medium'>{key}</JuiIconography>;
+    return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   };
 
   renderIcons = (value: string, aria?: string, showCall?: boolean) => {
     const { t, id } = this.props;
     const copy = (
       <JuiIconButton
-        size='small'
-        onClick={this.onClickCopy.bind(this, value)}
+        size="small"
+        onClick={() => this.onClickCopy(value)}
         tooltipTitle={t('common.copy')}
         ariaLabel={t('common.ariaCopy', {
           value: aria || value,
         })}
-        key='copy phone number'
+        key="copy phone number"
       >
         copy
       </JuiIconButton>
@@ -93,9 +93,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <Comp
             key={`MESSAGE_PROFILE_CONTENT_EXTENSION_${Comp.displayName}`}
             phone={value}
-            size='small'
+            size="small"
             id={id}
-            analysisSource='profile'
+            analysisSource="profile"
           />
         ))
       : [];
@@ -156,24 +156,24 @@ class ProfileDialogPersonContentViewComponent extends Component<
       <>
         <Summary
           emphasize={isMe}
-          data-test-automation-id='profileDialogSummary'
+          data-test-automation-id="profileDialogSummary"
         >
           <Left>
             <Avatar
               uid={id}
-              size='xlarge'
+              size="xlarge"
               presence={this.renderPresence()}
-              automationId='profileAvatar'
+              automationId="profileAvatar"
             />
           </Left>
           <Right>
-            <Name data-test-automation-id='profileDialogSummaryName'>
+            <Name data-test-automation-id="profileDialogSummaryName">
               {person.userDisplayName}
             </Name>
-            <Status data-test-automation-id='profileDialogSummaryStatus'>
+            <Status data-test-automation-id="profileDialogSummaryStatus">
               {person.awayStatus}
             </Status>
-            <Title data-test-automation-id='profileDialogSummaryTitle'>
+            <Title data-test-automation-id="profileDialogSummaryTitle">
               {person.jobTitle}
             </Title>
             <Buttons>
@@ -186,9 +186,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <Form data-test-automation-id='profileDialogForm'>
-          <Grid container={true}>
-            <Grid item={true} xs={12} sm={6}>
+        <Form data-test-automation-id="profileDialogForm">
+          <Grid container>
+            <Grid item xs={12} sm={6}>
               {company.name &&
                 this.renderFormGroup({
                   icon: 'work',
@@ -202,7 +202,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   value: person.location,
                 })}
             </Grid>
-            <Grid item={true} xs={12} sm={6}>
+            <Grid item xs={12} sm={6}>
               {extensionNumbers.map((info: PhoneNumberInfo, index: number) => {
                 return this.renderFormGroup({
                   icon: index === 0 ? 'call' : undefined,
@@ -244,8 +244,8 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <>
             <JuiDivider />
             <Form>
-              <Grid container={true}>
-                <Grid item={true} xs={12}>
+              <Grid container>
+                <Grid item xs={12}>
                   {/* {person.linkedIn &&
                 this.renderFormGroup({
                   icon: 'link',

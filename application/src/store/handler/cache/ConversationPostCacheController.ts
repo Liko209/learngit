@@ -12,7 +12,8 @@ import {
   DeltaDataHandler,
 } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
+import { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';

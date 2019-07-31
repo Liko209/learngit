@@ -3,10 +3,11 @@
  * @Date: 2019-02-04 10:02:00
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import { FetchSortableDataListHandler } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
-import storeManager, { ENTITY_NAME } from '@/store';
+import storeManager from '@/store/base/StoreManager';
+import { ENTITY_NAME } from '@/store';
 import { Item } from 'sdk/module/item/entity';
 import { mainLogger } from 'sdk';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -75,9 +76,7 @@ abstract class PostCacheController implements IPreFetchController {
     if (this._currentGroupId !== groupId) {
       if (this.hasCache(this._currentGroupId)) {
         mainLogger.debug(
-          `PostCacheController: setCurrentCacheConversation original =>  ${
-            this._currentGroupId
-          }`,
+          `PostCacheController: setCurrentCacheConversation original =>  ${this._currentGroupId}`,
         );
         this.get(this._currentGroupId).maintainMode = true;
       }
@@ -97,15 +96,11 @@ abstract class PostCacheController implements IPreFetchController {
     if (this._currentGroupId === groupId) {
       this.removeInternal(groupId);
       this._currentGroupId = 0;
-    } else {
-      if (this.hasCache(groupId)) {
-        mainLogger.debug(
-          `PostCacheController: releaseCurrentConversation =>  ${groupId}`,
-        );
-        if (this.hasCache(groupId)) {
-          this.get(groupId).maintainMode = true;
-        }
-      }
+    } else if (this.hasCache(groupId)) {
+      mainLogger.debug(
+        `PostCacheController: releaseCurrentConversation =>  ${groupId}`,
+      );
+      this.get(groupId).maintainMode = true;
     }
   }
 

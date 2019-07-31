@@ -5,9 +5,7 @@
  */
 
 import React from 'react';
-import {
-  computed, action, observable, Reaction,
-} from 'mobx';
+import { computed, action, observable, Reaction } from 'mobx';
 
 import { Person } from 'sdk/module/person/entity';
 import { AbstractViewModel } from '@/base';
@@ -103,12 +101,12 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
     const { pages } = this._currentVersion;
     return pages
       ? pages.map(({ url }: ItemVersionPage) => ({
-        url,
-        viewport: {
-          origHeight,
-          origWidth,
-        },
-      }))
+          url,
+          viewport: {
+            origHeight,
+            origWidth,
+          },
+        }))
       : undefined;
   }
 
@@ -116,8 +114,7 @@ class FileViewerViewModel extends AbstractViewModel<IViewerView>
   handleTextFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { pages = [] } = this._currentVersion;
     let value = parseInt(e.target.value, 10);
-    /*eslint-disable */
-    if (isNaN(value)) return;
+    if (Number.isNaN(value)) return;
     value = value > pages.length ? pages.length : value;
     value = value < 1 ? 1 : value;
     this._textFieldValue = value;

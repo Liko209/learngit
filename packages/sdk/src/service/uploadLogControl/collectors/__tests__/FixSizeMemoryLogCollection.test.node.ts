@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { FixSizeMemoryLogCollection } from '../FixSizeMemoryLogCollection';
-import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { logEntityFactory } from 'foundation/log/__tests__/factory';
 
 describe('FixSizeMemoryLogCollection', () => {
   describe('push()', () => {

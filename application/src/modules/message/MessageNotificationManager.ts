@@ -91,9 +91,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     const post = entities[0];
     const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
-
     const result = await this.shouldEmitNotification(post);
-
     if (!result) {
       return;
     }
@@ -112,7 +110,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
       onCreate: () => this.buildNotification(postModel, groupModel),
       onUpdate: (id: number) => {
         const postModel = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
-        this.buildNotification(postModel, groupModel);
+        this.buildNotification(postModel, groupModel, true);
       },
       onDispose: () => {
         this.close(id);
@@ -136,7 +134,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
     this._vmQueue.unshift({ id, vm });
   }
 
-  async buildNotification(postModel: PostModel, groupModel: GroupModel) {
+  async buildNotification(postModel: PostModel, groupModel: GroupModel, muteSounds?:boolean) {
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
       postModel.creatorId,
@@ -147,7 +145,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
       datum,
       type,
     );
-    const sound = await this.getCurrentMessageSoundSetting(type.messageType)
+    const sound = !muteSounds && await this.getCurrentMessageSoundSetting(type.messageType)
     const opts = Object.assign(
       {
         body,

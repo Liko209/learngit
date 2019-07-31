@@ -65,7 +65,7 @@ describe('non-glipdown text', () => {
           'abc ',
           <a
             key={0}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='http://www.baidu.com'
           >
@@ -74,7 +74,7 @@ describe('non-glipdown text', () => {
           ' ',
           <a
             key={1}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='http://www.google.com'
           >
@@ -83,7 +83,7 @@ describe('non-glipdown text', () => {
           ' ',
           <a
             key={2}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='mailto:chris.zhan@ringcentral.com'
           >
@@ -401,7 +401,7 @@ describe('non-glipdown text', () => {
         ).toEqual([
           <a
             key={0}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='https://develop.fiji.gliprc.com/messages/3504234502'
           >

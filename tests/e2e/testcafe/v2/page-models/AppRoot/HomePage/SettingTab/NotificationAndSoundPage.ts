@@ -323,4 +323,47 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
   async clickNewMessageBadgeCountDropDown() {
     await this.t.click(this.newMessageBadgeCountDropDown);
   }
+
+  // sounds section
+  get soundsSection() {
+    return this.getComponent(SoundsSection);
+  }
+}
+
+export class SoundsSection extends BaseWebComponent{
+  get self(){
+    return this.getSelectorByAutomationId('settingSection-sounds');
+  }
+
+  get soundDirectMessages(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundDirectMessages').find('div').find('p');
+  }
+
+  get soundMentions(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundMentions').find('div').find('p');
+  }
+
+  get soundTeamMessages(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundTeamMessages').find('div').find('p');
+  }
+
+  get soundIncomingCall(){
+    return this.getSelectorByAutomationId('settingItemSelectBox-soundIncomingCall').find('div').find('p');
+  }
+
+  async showSoundInCurrentDirectMessagesSetting(sound:string){
+    await this.t.expect(this.soundDirectMessages.withText(sound).exists).ok();
+  }
+
+  async showSoundInCurrentMentionsSetting(sound:string){
+    await this.t.expect(this.soundMentions.withText(sound).exists).ok();
+  }
+
+  async showSoundInCurrentTeamsMessagesSetting(sound:string){
+    await this.t.expect(this.soundTeamMessages.withText(sound).exists).ok();
+  }
+
+  async showSoundInCurrentIncomingCallSetting(sound:string){
+    await this.t.expect(this.soundIncomingCall.withText(sound).exists).ok();
+  }
 }

@@ -4,24 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // Array.prototype.flatMap
-require("core-js/features/array/flat-map");
-require("reflect-metadata");
+import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
+
+require('core-js/features/array/flat-map');
+require('reflect-metadata');
 
 const btoa = require('btoa');
 const FormData = require('form-data');
 const fetch = require('jest-fetch-mock');
-const {
-  copyProps,
-  FakeStorage
-} = require('../utils');
-const {
-  performance,
-} = require('perf_hooks');
+const { copyProps, FakeStorage } = require('../utils');
+const { performance } = require('perf_hooks');
 
+registerRequireContextHook();
 
 const location = {
-  origin: ''
-}
+  origin: '',
+};
 
 const window = {
   Promise,
@@ -36,17 +34,19 @@ const window = {
   Reflect,
   localStorage: new FakeStorage(),
   sessionStorage: new FakeStorage(),
-  addEventListener: () => {}
+  addEventListener: () => {},
+  history: {},
 };
 
 const document = {
-  addEventListener: () => {}
-}
+  addEventListener: () => {},
+  createElement: () => {},
+};
 
 window.navigator = {
   userAgent: 'node',
   platform: 'Mac',
-  onLine: true
+  onLine: true,
 };
 global.document = document;
 global.window = window;

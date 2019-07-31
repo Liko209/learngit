@@ -3,8 +3,6 @@
  * @Date: 2019-01-17 14:03:39
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
-
 import { ReactNode } from 'react';
 import { observable, action } from 'mobx';
 import { IMessageStore } from '../interface';

@@ -6,6 +6,9 @@
     "outDir": "build",
     "rootDir": "src"
   },
+  "paths": {
+    "shield/*": ["../../tests/shield/src/*"]
+  },
   "include": ["src"],
   "exclude": ["node_modules"]
 }

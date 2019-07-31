@@ -18,6 +18,7 @@ async function detect() {
       };
     };
   } catch (error) {
+    /* eslint-disable no-console */
     console.error(error);
   }
   return theme;

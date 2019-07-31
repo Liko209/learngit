@@ -1,4 +1,4 @@
-// import { ErrorParser } from 'foundation/src';
+// import { ErrorParser } from 'foundation';
 
 /*
  * @Author: Paynter Chen

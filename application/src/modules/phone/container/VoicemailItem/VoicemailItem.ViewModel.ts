@@ -3,8 +3,6 @@
  * @Date: 2019-06-01 14:39:02
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import { container } from 'framework';
 import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
