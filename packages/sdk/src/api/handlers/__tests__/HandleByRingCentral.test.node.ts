@@ -2,6 +2,8 @@ import {
   OAuthTokenHandler,
   NETWORK_METHOD,
   NetworkRequestBuilder,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
 } from 'foundation';
 import { stringify } from 'qs';
 import HandleByRingCentral from '../HandleByRingCentral';
@@ -9,6 +11,7 @@ import { AccountService } from '../../../module/account';
 import { AccountManager } from '../../../framework';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { ApiConfiguration } from '../../config';
+
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
 const accountManager: AccountManager = new AccountManager(null);
@@ -131,28 +134,12 @@ describe('HandleByRingCentral', () => {
       expect.assertions(1);
       HandleByRingCentral.platformHandleDelegate = {
         refreshRCToken: jest.fn().mockRejectedValueOnce({ code: 'HTTP_400' }),
-      };
-      const originToken = {
-        timestamp: 0,
-        expires_in: 6000,
-        refresh_token_expires_in: 6000,
-      };
-      const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
-      await expect(refreshToken).rejects.toEqual(true);
-    });
-
-    it('should reject false when refresh fail with other code', async () => {
-      expect.assertions(1);
-      HandleByRingCentral.platformHandleDelegate = {
-        refreshRCToken: jest.fn().mockRejectedValueOnce({ code: 'test' }),
-      };
-      const originToken = {
-        timestamp: 0,
-        expires_in: 6000,
-        refresh_token_expires_in: 6000,
-      };
-      const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
-      await expect(refreshToken).rejects.toEqual(false);
+      } as any;
+      try {
+        await HandleByRingCentral.doRefreshToken();
+      } catch (reason) {
+        expect(reason).toEqual({ code: 'HTTP_400' });
+      }
     });
 
     it('should resolve if refresh success', async () => {
@@ -167,13 +154,8 @@ describe('HandleByRingCentral', () => {
       };
       HandleByRingCentral.platformHandleDelegate = {
         refreshRCToken: jest.fn().mockResolvedValueOnce(fakeToken),
-      };
-      const originToken = {
-        timestamp: 0,
-        expires_in: 6000,
-        refresh_token_expires_in: 6000,
-      };
-      const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
+      } as any;
+      const refreshToken = HandleByRingCentral.doRefreshToken();
       await expect(refreshToken).resolves.toEqual({
         expires_in: 6001,
         access_token: 'accessToken',
