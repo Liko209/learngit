@@ -20,7 +20,7 @@ import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
-import { isDND } from '../utils';
+import { isCurrentUserDND } from '../utils';
 
 const logger = mainLogger.tags('AbstractNotificationManager');
 
@@ -40,7 +40,7 @@ class NotificationService implements INotificationService {
   }
 
   async shouldShowUINotification() {
-    if (document.hasFocus() || isDND()) {
+    if (document.hasFocus() || isCurrentUserDND()) {
       return false;
     }
     if (!this._permission.isGranted) {

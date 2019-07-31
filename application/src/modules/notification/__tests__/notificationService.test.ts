@@ -74,7 +74,7 @@ describe('NotificationService', () => {
     jest.restoreAllMocks();
     Notification.permission = 'default';
     document.hasFocus = jest.fn().mockReturnValue(false);
-    jest.spyOn(utils, 'isDND').mockReturnValue(false);
+    jest.spyOn(utils, 'isCurrentUserDND').mockReturnValue(false);
     jest.spyOn(Notification, 'requestPermission').mockImplementation(() => {
       Notification.permission = permissionAfterRequest;
       return Promise.resolve(permissionAfterRequest);
@@ -86,7 +86,7 @@ describe('NotificationService', () => {
   describe('shouldShowUINotification', () => {
     it('shouldShowUINotification should be false when DND is true [JPT-2572]', async () => {
       Notification.permission = 'granted';
-      jest.spyOn(utils, 'isDND').mockReturnValue(true);
+      jest.spyOn(utils, 'isCurrentUserDND').mockReturnValue(true);
       setUpMock(false, 'granted', true);
       const shouldShowUINotification = await service.shouldShowUINotification();
       expect(shouldShowUINotification).toBeFalsy();
