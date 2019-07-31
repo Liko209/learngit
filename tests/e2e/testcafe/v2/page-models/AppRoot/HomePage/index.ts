@@ -152,6 +152,7 @@ export class HomePage extends BaseWebComponent {
 
   async openDialer() {
     await this.t.hover('html').click(this.dialpadButton);
+    await this.closeE911Prompt();
   }
 
   get e911AlertDialog() {

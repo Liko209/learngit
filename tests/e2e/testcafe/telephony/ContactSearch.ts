@@ -42,7 +42,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('When I click the to dialPad button', async () => {
     await app.homePage.openDialer();
-    await app.homePage.closeE911Prompt();
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
