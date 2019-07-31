@@ -8,6 +8,7 @@
     },
     "dialog": {
       "OK": "OK",
+      "Alert": "Alert",
       "cancel": "Cancel",
       "update": "Update",
       "create": "Create",
@@ -653,6 +654,8 @@
     "unknownCaller": "Unknown Caller",
     "unknownCallee": "Unknown",
     "prompt": {
+      "emergencyAddressIsUnknown": "You emergency address is unknown. You are limited to making outbound calls to extensions in your organization only.",
+      "e911ServiceMayBeLimitedOrUnavailable": "E911 Service may be limited or unavailable. Your specific location may not be automatically communicated to the dispatcher.",
       "RCPhoneGetDownloadError": "Sorry, something went wrong on our end and we weren't able to open the page. Try again later.",
       "RCPhoneIsNotInstalledTitle": "RingCentral Phone Not Installed",
       "RCPhoneIsNotInstalledBody": "You weren't able to make calls because RingCentral Phone is not installed. Install RingCentral Phone first.",
@@ -736,6 +739,7 @@
       "stateProvince": "State/Province",
       "dialogDescription": "Emergency Service dispatchers will send emergency first responders to this exact location. Where will you be using this phone?",
       "outOfCountryDisclaimers": "If you don't provide an emergency address, you will be limited to making calls to extensions in your organization only.",
+      "confirmEmergencyAddress": "Confirm emergency address",
       "disclaimer": {
         "US/CA1": "You will use this app at a physical location that is outside the United States or Canada. You are responsible for complying with all laws and regulations applicable to your use of the Services.",
         "US/CA2": "By choosing this option, you agree that you will make available another phone to reach emergency services. You will update your Emergency Address immediately if and when you use this app from within the United States.",
