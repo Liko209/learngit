@@ -144,7 +144,7 @@ class ConversationEntry extends BaseWebComponent {
     await H.retryUntilPass(async () => {
       const textStyle = await this.self.find('p').style;
       const textFontWeight = textStyle['font-weight'];
-      assert.ok(/bold|900/.test(textFontWeight), `${textFontWeight} not eql specify: bold | 900`);
+      assert.ok(/bold|900/.test(textFontWeight), `${textFontWeight} not match /bold|900/`);
     });
   }
 
@@ -152,7 +152,7 @@ class ConversationEntry extends BaseWebComponent {
     await H.retryUntilPass(async () => {
       const textStyle = await this.self.find('p').style;
       const textFontWeight = textStyle['font-weight'];
-      assert.ok(/normal|400/.test(textFontWeight), `${textFontWeight} not eql specify: normal | 400`);
+      assert.ok(/normal|900/.test(textFontWeight), `${textFontWeight} not match /normal|900/`);
     });
   }
 

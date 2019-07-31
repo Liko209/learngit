@@ -24,7 +24,6 @@ test(formalName('Bookmark and remove bookmark in the conversation', ['P2', 'Mess
 
   await h(t).withLog('Given one DirecMessage conversation', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 

@@ -22,7 +22,6 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();
@@ -158,7 +157,6 @@ test.meta(<ITestMeta>{
   const otherUser = h(t).rcData.mainCompany.users[0];
 
   await h(t).glip(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   const teamAllHandsId = (await h(t).glip(loginUser).getCompanyTeamId())[0];
   const teamA = <IGroup>{
