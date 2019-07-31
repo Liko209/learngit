@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-28 00:26:24
  */
-/// <reference path="../../__tests__/types.d.ts" />
+// / <reference path="../../__tests__/types.d.ts" />
 import {
   KVStorage,
   DBManager,
@@ -83,45 +83,40 @@ describe('DaoManager', () => {
 
   describe('initDataBase()', () => {
     it('should init database', async () => {
+      const clearFunc = jest.fn();
       DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
-      await daoManager.initDatabase();
+      await daoManager.initDatabase(clearFunc);
       expect(DBManager.mock.instances[0].initDatabase).toHaveBeenCalled();
+      expect(clearFunc).not.toHaveBeenCalled();
     });
 
     describe('db upgrade', () => {
       it('should not delete old db if version is same', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(1);
-        await daoManager.initDatabase();
-        expect(
-          DBManager.mock.instances[0].deleteDatabase,
-        ).not.toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).not.toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).not.toHaveBeenCalled();
       });
 
       it('should delete old db if version is deprecated', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest.fn().mockReturnValueOnce(0);
         AccountGlobalConfig.getUserDictionary.mockReturnValue('123');
-        await daoManager.initDatabase();
-        expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).toHaveBeenCalled();
       });
 
       it('should delete old db if local version is not found', async () => {
+        const clearFunc = jest.fn();
         DaoGlobalConfig.getDBSchemaVersion = jest
           .fn()
           .mockReturnValueOnce(null);
-        await daoManager.initDatabase();
-        expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
-        expect(
-          SyncUserConfig.prototype.clearSyncConfigsForDBUpgrade,
-        ).toHaveBeenCalled();
+        await daoManager.initDatabase(clearFunc);
+        expect(clearFunc).toHaveBeenCalled();
       });
 
       it('should set callback for when db is open', async () => {
+        const clearFunc = jest.fn();
         const db = new DexieDB({
           name: 'db',
           version: 1,
@@ -130,8 +125,9 @@ describe('DaoManager', () => {
         db.db = new Dexie('');
         jest.spyOn(db.db, 'on');
         DBManager.mock.instances[0].getDatabase.mockReturnValue(db);
-        await daoManager.initDatabase();
+        await daoManager.initDatabase(clearFunc);
         expect(db.db.on).toHaveBeenCalled();
+        expect(clearFunc).toHaveBeenCalled();
       });
     });
   });

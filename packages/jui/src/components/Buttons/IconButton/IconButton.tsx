@@ -223,7 +223,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
       disableRipple={rest.variant === 'plain'}
       colorScope={colorScope}
       colorName={colorName}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || tooltipTitle}
       className={className}
       {...rest}
     >

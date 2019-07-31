@@ -13,7 +13,7 @@ import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
 import { AccountService } from '../../../../account/service';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
-/* eslint-disable */
+
 class FileActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
@@ -23,6 +23,7 @@ class FileActionController {
   async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     const file = (await this._sourceController.get(itemId)) as FileItem;
     let url = '';
+    /* eslint-disable no-constant-condition */
     do {
       if (!file) {
         break;
@@ -81,7 +82,6 @@ class FileActionController {
   async editFileName(itemId: number, newName: string) {
     const preHandlePartial = (
       partialItem: Partial<Raw<ItemFile>>,
-      originalItem: ItemFile,
     ): Partial<Raw<ItemFile>> => {
       return {
         ...partialItem,

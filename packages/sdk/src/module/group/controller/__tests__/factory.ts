@@ -1,4 +1,4 @@
-import Factory from 'factory.ts';
+import { Sync as Factory } from 'factory.ts';
 import faker from 'faker';
 import { Group } from '../../entity';
 import { ExtendedBaseModel } from '../../../models';

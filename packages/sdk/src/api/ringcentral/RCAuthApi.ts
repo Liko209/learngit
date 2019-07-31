@@ -16,7 +16,7 @@ import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
 import { ITokenModel, RCAuthCodeInfo } from './types';
 import { ApiConfiguration } from '../config';
-/* eslint-disable */
+
 class RCAuthApi extends Api {
   static oauthTokenViaAuthCode(params: object, headers?: object) {
     const model = {
@@ -93,7 +93,10 @@ class RCAuthApi extends Api {
       let retryAfter = 0;
       if (
         response.headers &&
-        response.headers.hasOwnProperty(RESPONSE_HEADER_KEY.RETRY_AFTER)
+        Object.prototype.hasOwnProperty.call(
+          response.headers,
+          RESPONSE_HEADER_KEY.RETRY_AFTER,
+        )
       ) {
         retryAfter = response.headers[RESPONSE_HEADER_KEY.RETRY_AFTER];
       }

@@ -24,7 +24,7 @@ import {
   RTC_REPLY_MSG_TIME_UNIT,
   RTCUserInfo,
   RECORD_STATE,
-  RTC_CALL_ACTION_ERROR_CODE
+  RTC_CALL_ACTION_ERROR_CODE,
 } from './types';
 import { v4 as uuid } from 'uuid';
 import { RC_SIP_HEADER_NAME } from '../signaling/types';
@@ -37,7 +37,7 @@ const LOG_TAG = 'RTCCall';
 
 enum SDH_DIRECTION {
   SEND_ONLY = 'sendonly',
-  SEND_RECV = 'sendrecv'
+  SEND_RECV = 'sendrecv',
 }
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
@@ -48,7 +48,7 @@ class RTCCall {
     toNum: '',
     uuid: '',
     partyId: '',
-    sessionId: ''
+    sessionId: '',
   };
   private _callSession: IRTCCallSession;
   private _fsm: RTCCallFsm;
@@ -68,7 +68,7 @@ class RTCCall {
     account: IRTCAccount,
     delegate: IRTCCallDelegate | null,
     options?: RTCCallOptions,
-    userInfo?: RTCUserInfo
+    userInfo?: RTCUserInfo,
   ) {
     this._account = account;
     if (delegate != null) {
@@ -106,7 +106,7 @@ class RTCCall {
       { key: CALL_REPORT_PROPS.ID, value: this._callInfo.uuid },
       { key: CALL_REPORT_PROPS.DIRECTION, value: direction },
       { key: CALL_REPORT_PROPS.CREATE_TIME, value: new Date() },
-      { key: CALL_REPORT_PROPS.UA, value: userInfo }
+      { key: CALL_REPORT_PROPS.UA, value: userInfo },
     ]);
     CallReport.instance().updateEstablishment(establishmentKey);
     this._prepare();
@@ -121,7 +121,7 @@ class RTCCall {
       rtcLogger.info(LOG_TAG, 'call time out and be hangup');
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.CALL_TIME_OUT,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       this.hangup();
     }, kRTCHangupInvalidCallInterval * 1000);
@@ -176,7 +176,7 @@ class RTCCall {
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.START_REPLY,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
@@ -187,14 +187,14 @@ class RTCCall {
     if (!message || message.length === 0) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_MSG,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_MSG,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
@@ -204,12 +204,12 @@ class RTCCall {
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number = 0,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
   ): void {
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(
         RTC_CALL_ACTION.REPLY_WITH_PATTERN,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
@@ -265,18 +265,34 @@ class RTCCall {
     if (target.length === 0) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.TRANSFER,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
     this._fsm.transfer(target);
   }
 
+  warmTransfer(callUuid: string): void {
+    const targetCall = this._account.getCallByUuid(callUuid);
+    if (!targetCall || !targetCall.getCallSession()) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Can get call or call session from input call uuid',
+      );
+      this._delegate.onCallActionFailed(
+        RTC_CALL_ACTION.WARM_TRANSFER,
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
+      );
+      return;
+    }
+    this._fsm.warmTransfer(targetCall.getCallSession());
+  }
+
   forward(target: string): void {
     if (target.length === 0 || !this._isIncomingCall) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.FORWARD,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
       return;
     }
@@ -315,6 +331,10 @@ class RTCCall {
     }
   }
 
+  getCallSession(): any {
+    return this._callSession.getSession();
+  }
+
   private _prepare(): void {
     // listen session
     this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
@@ -329,7 +349,7 @@ class RTCCall {
       } else {
         rtcLogger.warn(
           LOG_TAG,
-          "Can't get invite response for parsing partyid and sessionid"
+          "Can't get invite response for parsing partyid and sessionid",
         );
       }
       this._onSessionAccepted();
@@ -337,7 +357,7 @@ class RTCCall {
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, (response: any) => {
       if (this._isIncomingCall && response && response.headers) {
         CallReport.instance().updateEstablishment(
-          CALL_REPORT_PROPS.RECEIVED_ACK_TIME
+          CALL_REPORT_PROPS.RECEIVED_ACK_TIME,
         );
       }
       this._onSessionConfirmed();
@@ -355,7 +375,7 @@ class RTCCall {
       CALL_SESSION_STATE.REINVITE_ACCEPTED,
       (session: any) => {
         this._onSessionReinviteAccepted(session);
-      }
+      },
     );
     this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
@@ -364,19 +384,19 @@ class RTCCall {
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
       (
         callAction: RTC_CALL_ACTION,
-        options: RTCCallActionSuccessOptions = {}
+        options: RTCCallActionSuccessOptions = {},
       ) => {
         this._onCallActionSuccess(callAction, options);
-      }
+      },
     );
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
       (
         callAction: RTC_CALL_ACTION,
-        code: number = RTC_CALL_ACTION_ERROR_CODE.INVALID
+        code: number = RTC_CALL_ACTION_ERROR_CODE.INVALID,
       ) => {
         this._onCallActionFailed(callAction, code);
-      }
+      },
     );
     // listen fsm
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_ANSWERING, () => {
@@ -415,6 +435,9 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
     });
+    this._fsm.on(CALL_FSM_NOTIFY.WARM_TRANSFER_ACTION, (targetSession: any) => {
+      this._onWarmTransferAction(targetSession);
+    });
     this._fsm.on(CALL_FSM_NOTIFY.FORWARD_ACTION, (target: string) => {
       this._onForwardAction(target);
     });
@@ -444,10 +467,10 @@ class RTCCall {
       (
         pattern: RTC_REPLY_MSG_PATTERN,
         time: number,
-        timeUnit: RTC_REPLY_MSG_TIME_UNIT
+        timeUnit: RTC_REPLY_MSG_TIME_UNIT,
       ) => {
         this._onReplyWithPatternAction(pattern, time, timeUnit);
-      }
+      },
     );
     this._fsm.on(CALL_FSM_NOTIFY.REPLY_WITH_MESSAGE_ACTION, (msg: string) => {
       this._onReplyWithMessageAction(msg);
@@ -456,7 +479,7 @@ class RTCCall {
       CALL_FSM_NOTIFY.CALL_ACTION_FAILED,
       (callAction: RTC_CALL_ACTION, code: number = -1) => {
         this._onCallActionFailed(callAction, code);
-      }
+      },
     );
     this._fsm.on(CALL_FSM_NOTIFY.ANSWER_ACTION, () => {
       this._onAnswerAction();
@@ -479,7 +502,7 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.HOLD_FAILED_ACTION, () => {
       this._onCallActionFailed(
         RTC_CALL_ACTION.HOLD,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
     });
     this._fsm.on(CALL_FSM_NOTIFY.UNHOLD_SUCCESS_ACTION, () => {
@@ -488,7 +511,7 @@ class RTCCall {
     this._fsm.on(CALL_FSM_NOTIFY.UNHOLD_FAILED_ACTION, () => {
       this._onCallActionFailed(
         RTC_CALL_ACTION.UNHOLD,
-        RTC_CALL_ACTION_ERROR_CODE.INVALID
+        RTC_CALL_ACTION_ERROR_CODE.INVALID,
       );
     });
   }
@@ -501,7 +524,7 @@ class RTCCall {
   // call action listener
   private _onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
-    options: RTCCallActionSuccessOptions = {}
+    options: RTCCallActionSuccessOptions = {},
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
@@ -544,7 +567,7 @@ class RTCCall {
     if (this._delegate) {
       rtcLogger.warn(
         LOG_TAG,
-        `Call action ${callAction} Failed. Error code: ${code}`
+        `Call action ${callAction} Failed. Error code: ${code}`,
       );
       this._delegate.onCallActionFailed(callAction, code);
     }
@@ -594,7 +617,7 @@ class RTCCall {
   private _onSessionProgress(response: any) {
     if (response.status_code === 183) {
       CallReport.instance().updateEstablishment(
-        CALL_REPORT_PROPS.RECEIVED_183_TIME
+        CALL_REPORT_PROPS.RECEIVED_183_TIME,
       );
       this._clearHangupTimer();
     }
@@ -655,6 +678,10 @@ class RTCCall {
     this._callSession.transfer(target);
   }
 
+  private _onWarmTransferAction(targetSession: any) {
+    this._callSession.warmTransfer(targetSession);
+  }
+
   private _onForwardAction(target: string) {
     this._callSession.forward(target);
   }
@@ -672,7 +699,7 @@ class RTCCall {
     } else if (this._delegate) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.START_RECORD,
-        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS
+        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS,
       );
     }
   }
@@ -686,7 +713,7 @@ class RTCCall {
     } else if (this._delegate) {
       this._delegate.onCallActionFailed(
         RTC_CALL_ACTION.STOP_RECORD,
-        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS
+        RTC_CALL_ACTION_ERROR_CODE.OTHER_ACTION_IN_PROGRESS,
       );
     }
   }
@@ -710,7 +737,7 @@ class RTCCall {
   private _onReplyWithPatternAction(
     pattern: RTC_REPLY_MSG_PATTERN,
     time: number,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._callSession.replyWithPattern(pattern, time, timeUnit);
   }
@@ -722,7 +749,7 @@ class RTCCall {
   private _onCreateOutingCallSession() {
     const session = this._account.createOutgoingCallSession(
       this._callInfo.toNum,
-      this._options
+      this._options,
     );
     this.setCallSession(session);
   }
@@ -747,7 +774,7 @@ class RTCCall {
     if (!apiIds) {
       rtcLogger.warn(
         LOG_TAG,
-        `Sip headers have no ${RC_SIP_HEADER_NAME.RC_API_IDS}`
+        `Sip headers have no ${RC_SIP_HEADER_NAME.RC_API_IDS}`,
       );
       return;
     }
@@ -758,13 +785,13 @@ class RTCCall {
     this._callInfo.sessionId = idMap[1][1];
     CallReport.instance().update(
       CALL_REPORT_PROPS.SESSION_ID,
-      this._callInfo.sessionId
+      this._callInfo.sessionId,
     );
     rtcLogger.info(
       LOG_TAG,
       `Got party id=${this._callInfo.partyId} session id=${
         this._callInfo.sessionId
-      }`
+      }`,
     );
   }
 }

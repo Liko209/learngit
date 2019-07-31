@@ -28,6 +28,7 @@ type PartialUpdateParams<
   doUpdateEntity?: UpdateEntityFunc<T>;
   doPartialNotify?: PartialNotifyFunc<T>;
   saveLocalFirst?: boolean;
+  forceDoUpdateEntity?: boolean;
 };
 
 interface IPartialModifyController<

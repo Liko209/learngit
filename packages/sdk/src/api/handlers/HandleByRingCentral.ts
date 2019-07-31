@@ -8,7 +8,6 @@ import {
   IToken,
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
-  ERROR_CODES_NETWORK,
 } from 'foundation';
 import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 /* eslint-disable */
@@ -49,18 +48,15 @@ const HandleByRingCentral = new class extends AbstractHandleType {
 
   doRefreshToken() {
     return new Promise<IToken>(async (resolve, reject) => {
-      try {
-        if (this.platformHandleDelegate) {
-          const refreshedToken = await this.platformHandleDelegate.refreshRCToken();
-          refreshedToken ? resolve(refreshedToken) : reject();
-        } else {
-          reject();
-        }
-      } catch (reason) {
-        reject(
-          reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
-            reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED,
-        );
+      if (this.platformHandleDelegate) {
+        const refreshedToken = await this.platformHandleDelegate
+          .refreshRCToken()
+          .catch(reason => {
+            reject(reason);
+          });
+        refreshedToken ? resolve(refreshedToken) : reject();
+      } else {
+        reject();
       }
     });
   }

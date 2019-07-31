@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import React from 'react';
 import {
   IPostParser,
@@ -37,10 +36,7 @@ class KeywordHighlightParser extends PostParser implements IPostParser {
       throw Error('No keyword specified');
     }
     const terms = this.options.keyword
-      .replace(
-        /([\.\?\*\+\^\$\[\]\(\)\{\}\-\@\!\#\%\&\_\=\"\'\:|;\/\\\|\>\<\,])/g,
-        ' ',
-      )
+      .replace(/([.?*+^$[\](){}\-@!#%&_="':|;/\\|><,])/g, ' ')
       .split(/\s/)
       .filter(str => str.trim());
     return new RegExp(terms.join('|'), 'gi');

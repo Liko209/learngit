@@ -45,9 +45,12 @@ import { WRAPPER_IDENTIFIER } from './ItemWrapper';
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
 type JuiVirtualizedListHandles = {
+  focus: () => void;
+  scrollToTop: () => void;
   scrollToBottom: () => void;
   isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
+  scrollIntoViewIfNeeded: (index: number) => void;
   getVisibleRange: () => IndexRange;
   getPrevVisibleRange: () => IndexRange;
   scrollToPosition: (scrollPosition: PartialScrollPosition) => void;
@@ -59,13 +62,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   JuiVirtualizedListProps
 > = (
   {
+    role,
+    tabIndex,
     height,
     minRowHeight,
     overscan = 5,
     children,
     initialScrollToIndex = 0,
     onScroll = noop,
-    onWheel = noop,
+    onWheel,
+    onKeyDown,
     onVisibleRangeChange = noop,
     onRenderedRangeChange = noop,
     before = null,
@@ -181,7 +187,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     rememberScrollPosition(position);
     setVisibleRange(
       createRange({
-        startIndex: position.index,
+        startIndex: position.options
+          ? position.index
+          : position.index - visibleRangeSize,
         size: visibleRangeSize,
         min: minIndex,
         max: maxIndex,
@@ -189,6 +197,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     );
     prevAtBottomRef.current = false;
     scrollToPosition(position);
+  };
+
+  const scrollToTop = () => {
+    if (ref.current) {
+      ref.current.scrollTop = 0;
+    }
   };
 
   const computeAtBottom = () => {
@@ -208,6 +222,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   };
+
   const shouldUpdateRange = () =>
     !isRangeIn(renderedRange, computeVisibleRange());
 
@@ -245,8 +260,18 @@ const JuiVirtualizedList: RefForwardingComponent<
   useImperativeHandle(
     forwardRef,
     () => ({
+      scrollToTop,
       scrollToBottom,
       scrollToPosition: jumpToPosition,
+      scrollIntoViewIfNeeded: (index: number) => {
+        if (ref.current) {
+          if (index < visibleRange.startIndex) {
+            jumpToPosition({ index, options: true });
+          } else if (index > visibleRange.stopIndex) {
+            jumpToPosition({ index, options: false });
+          }
+        }
+      },
       getScrollPosition: () => scrollPosition,
       isAtBottom: () => prevAtBottomRef.current,
       scrollToIndex: (index: number, options?: boolean) => {
@@ -254,6 +279,11 @@ const JuiVirtualizedList: RefForwardingComponent<
       },
       getVisibleRange: computeVisibleRange,
       getPrevVisibleRange: () => prevVisibleRange,
+      focus: () => {
+        if (ref.current) {
+          ref.current.focus();
+        }
+      },
     }),
     [computeVisibleRange, jumpToPosition],
   );
@@ -542,12 +572,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   );
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
+      role={role}
       ref={ref}
       style={wrapperStyle}
       onWheel={onWheel}
+      onKeyDown={onKeyDown}
       data-test-automation-id="virtualized-list"
       onScroll={handleScroll}
+      tabIndex={tabIndex}
     >
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />

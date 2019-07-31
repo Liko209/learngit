@@ -1,0 +1,25 @@
+{
+  "host": "https://ps18.pndsn.com",
+  "path": "/v2/presence/sub-key/sub-c-b8b9cd8c-e906-11e2-b383-02ee2ddab7fe/channel/21511040910285733_c2377818/heartbeat",
+  "method": "GET",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://ps18.pndsn.com",
+    "path": "/v2/presence/sub-key/sub-c-b8b9cd8c-e906-11e2-b383-02ee2ddab7fe/channel/21511040910285733_c2377818/heartbeat",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "status": 200,
+      "message": "OK",
+      "service": "Presence"
+    },
+    "headers": {
+      "content-type": "text/javascript; charset=\"UTF-8\"",
+      "cache-control": "no-cache"
+    }
+  }
+}

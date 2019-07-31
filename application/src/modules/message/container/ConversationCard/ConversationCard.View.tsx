@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { observer } from 'mobx-react';
 import {
@@ -189,7 +188,7 @@ export class ConversationCard extends React.Component<
           repliedEntity={this._renderRepliedEntity}
           from={from}
         >
-          {showProgressActions && <ProgressActions id={id} />}
+          {showProgressActions && <ProgressActions id={id} isEditMode={isEditMode} />}
           {!showProgressActions && isHover && (
             <Actions postId={id} groupId={post.groupId} />
           )}

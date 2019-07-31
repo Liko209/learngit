@@ -151,7 +151,7 @@ describe('PersonModel', () => {
 
       const res = pm.phoneNumbers;
       expect(res).toEqual(expectRes);
-      expect(personService.getAvailablePhoneNumbers).toBeCalledWith(
+      expect(personService.getAvailablePhoneNumbers).toHaveBeenCalledWith(
         pm.companyId,
         pm.rcPhoneNumbers,
         pm.sanitizedRcExtension,

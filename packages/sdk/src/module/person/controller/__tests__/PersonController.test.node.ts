@@ -144,7 +144,7 @@ describe('PersonService', () => {
         return [person1, person2];
       });
       const result = await personController.getPersonsByIds([1, 2]);
-      expect(entitySourceController.batchGet).toBeCalledWith([1, 2]);
+      expect(entitySourceController.batchGet).toHaveBeenCalledWith([1, 2]);
       expect(result).toEqual([person1, person2]);
     });
 
@@ -173,7 +173,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(person);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.CONFERENCE)).toBeFalsy;
-      expect(spy).toBeCalled;
+      expect(spy).toHaveBeenCalled;
     });
 
     it('should have message for person', async () => {
@@ -181,7 +181,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(person);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.ENABLE);
-      expect(spy).toBeCalledWith(person.id);
+      expect(spy).toHaveBeenCalledWith(person.id);
     });
 
     it('should not have message for pseudo person', async () => {
@@ -190,7 +190,7 @@ describe('PersonService', () => {
       spy.mockResolvedValueOnce(pseudoPerson);
       const res = await personController.buildPersonFeatureMap(personId);
       expect(res.get(FEATURE_TYPE.MESSAGE)).toBe(FEATURE_STATUS.INVISIBLE);
-      expect(spy).toBeCalledWith(pseudoPerson.id);
+      expect(spy).toHaveBeenCalledWith(pseudoPerson.id);
     });
   });
 
@@ -271,7 +271,7 @@ describe('PersonService', () => {
     });
   });
   describe('getFullName()', () => {
-    it('should return displayName first', () => {
+    it('should not return displayName', () => {
       const displayName = 'Bruce Chen';
       const firstName = 'Niki';
       const lastName = 'Rao';
@@ -285,7 +285,7 @@ describe('PersonService', () => {
             last_name: lastName,
           }),
         ),
-      ).toEqual(displayName);
+      ).toEqual('Niki Rao');
     });
     it('should return LastName FirstName after displayName', () => {
       const firstName = 'Bruce';
@@ -302,6 +302,7 @@ describe('PersonService', () => {
         ),
       ).toEqual(`${firstName} ${lastName}`);
     });
+
     it('should return name of email after displayName and FirstName LastName', () => {
       const email = 'Bruce.Chen@ringcentral.com';
       expect(
@@ -760,9 +761,36 @@ describe('PersonService', () => {
       jest
         .spyOn(entitySourceController, 'getRequestController')
         .mockReturnValue(requestController);
-      personController.refreshPersonData(1);
+
+      entitySourceController.update = jest.fn();
+      await personController.refreshPersonData(1);
+      expect(entitySourceController.update).toHaveBeenCalled();
       expect(requestController.get).toHaveBeenCalledTimes(1);
     });
+  });
+
+  describe('getName', () => {
+    it.each`
+      displayName | firstName   | lastName    | email      | res
+      ${'d_name'} | ${'f_name'} | ${'l_name'} | ${'email'} | ${'f_name l_name'}
+      ${''}       | ${'f_name'} | ${'l_name'} | ${'email'} | ${'f_name l_name'}
+      ${''}       | ${'f_name'} | ${''}       | ${'email'} | ${'f_name'}
+      ${''}       | ${''}       | ${'l_name'} | ${'email'} | ${'l_name'}
+      ${''}       | ${''}       | ${''}       | ${'email'} | ${''}
+      ${''}       | ${''}       | ${''}       | ${''}      | ${''}
+    `(
+      'should return full name of the person $res ',
+      ({ displayName, firstName, lastName, email, res }) => {
+        const person: any = {
+          email,
+          display_name: displayName,
+          first_name: firstName,
+          last_name: lastName,
+        };
+
+        expect(personController.getName(person)).toEqual(res);
+      },
+    );
   });
 
   describe('getPhoneNumbers', () => {
@@ -792,7 +820,8 @@ describe('PersonService', () => {
 
       return person;
     }
-    it('should return all phone numbers when is company contact', () => {
+    
+    it('should return all phone numbers when is company contact, and extension is at first', () => {
       const person = getPerson();
       const userConfig = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,

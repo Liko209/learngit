@@ -3,16 +3,17 @@
  * @Date: 2019-01-09 07:52:45
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { IdModel, ModelIdType, SortableModel } from '../model';
+
 class SortUtils {
   static sortModelByKey<
     T extends IdModel<IdType>,
     IdType extends ModelIdType = number
   >(lhs: T, rhs: T, sortKeys: string[], desc: boolean) {
-    let lhsValue: any = undefined;
-    let rhsValue: any = undefined;
+    let lhsValue: any;
+    let rhsValue: any;
     for (const key of sortKeys) {
       lhsValue = lhs[key];
       rhsValue = rhs[key];
@@ -32,6 +33,8 @@ class SortUtils {
               : natureCompare(lhsValue, rhsValue);
           case 'number':
             return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
+          default:
+            break;
         }
       }
       if (typeof lhs.id === 'number' && typeof rhs.id === 'number') {

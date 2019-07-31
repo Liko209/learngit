@@ -3,7 +3,6 @@
  * @Date: 2018-12-08 21:00:36
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EditMessageInputViewProps } from './types';
@@ -84,12 +83,12 @@ class EditMessageInputViewComponent extends Component<Props, State> {
         error={error ? t(error) : error}
         modules={modules}
         autofocus={false}
-        isEditMode={true}
+        isEditMode
         onChange={saveDraft}
         onBlur={this.blurHandler}
         placeholder={t('message.action.typeNewMessage')}
       >
-        <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
+        <Mention id={gid} pid={id} isEditMode ref={this._mentionRef} />
       </JuiMessageInput>
     );
   }

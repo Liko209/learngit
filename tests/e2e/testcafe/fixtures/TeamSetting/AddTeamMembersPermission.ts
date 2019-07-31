@@ -26,7 +26,6 @@ test.meta(<ITestMeta>{
   const adminUser = h(t).rcData.mainCompany.users[5];
   const guest = h(t).rcData.guestCompany.users[0];
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init()
 
@@ -123,7 +122,6 @@ test.meta(<ITestMeta>{
   const adminUser = h(t).rcData.mainCompany.users[5];
   const guestUser = h(t).rcData.guestCompany.users[0];
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init()
 
@@ -223,7 +221,6 @@ test.meta(<ITestMeta>{
   memberUser['type'] = 'member';
   adminUser['type'] = 'admin';
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 

@@ -1,0 +1,63 @@
+{
+  "host": "rc",
+  "path": "/restapi/v1.0/client-info/sip-provision",
+  "method": "POST",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "path": "/restapi/v1.0/client-info/sip-provision",
+    "method": "POST",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json;charset=utf-8",
+      "Authorization": "Bearer WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnaFhnQmVrWVlLVmQwNzVyblhVUnNCSV91RlY4U2s5T09LaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwRFM3bnlYT3JBTlRVVzVHdmJOUi04NHxURXctTnd8RWhDQVVad3ZHczZLdGUxMHJOYi1Hd3xBQQ"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "device": {
+        "uri": "http://api-glpdevxmn.lab.nordigy.ru/restapi/v1.0/account/400161823008/device/400020364008",
+        "id": "400020364008",
+        "type": "WebPhone",
+        "status": "Online",
+        "phoneLines": [],
+        "linePooling": "None"
+      },
+      "sipInfo": [
+        {
+          "transport": "WSS",
+          "username": "18002076138*239",
+          "password": "vIGG94Ght",
+          "authorizationId": "400020364008",
+          "domain": "sip-glpdevxmn.lab.nordigy.ru",
+          "outboundProxy": "glip-sip-glpdevxmn.lab.nordigy.ru:8083"
+        }
+      ],
+      "sipFlags": {
+        "voipFeatureEnabled": true,
+        "voipCountryBlocked": false,
+        "outboundCallsEnabled": false,
+        "dscpEnabled": false,
+        "dscpSignaling": 26,
+        "dscpVoice": 46,
+        "dscpVideo": 34
+      }
+    },
+    "headers": {
+      "date": "Tue, 09 Jul 2019 02:25:31 GMT",
+      "content-encoding": "gzip",
+      "x-rate-limit-limit": "60",
+      "routingkey": "XMN02P01PAS01",
+      "x-rate-limit-remaining": "59",
+      "content-length": "381",
+      "rcrequestid": "d2b6c6a0-a1f0-11e9-b1b6-005056beb634",
+      "content-language": "en-US",
+      "x-rate-limit-group": "heavy",
+      "content-type": "application/json; charset=UTF-8",
+      "x-rate-limit-window": "60"
+    }
+  }
+}

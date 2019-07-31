@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { PerformanceTracer } from './PerformanceTracer';
+export { Performance } from './Performance';
+export { FirebasePerformance } from './client';

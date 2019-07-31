@@ -14,7 +14,7 @@ import { SERVICE } from '../../../../service/eventKey';
 import { AuthUserConfig } from '../../config/AuthUserConfig';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 import { glipStatus } from 'sdk/api';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../../strategy/ReLoginGlipStrategy';
 
@@ -57,7 +57,7 @@ describe('AuthService', () => {
   describe('unifiedLogin()', () => {
     it('should login by UnifiedLoginAuthenticator', async () => {
       await authController.unifiedLogin({ code: 'xxxxx', token: undefined });
-      expect(mockAccountManager.login).toBeCalledWith(
+      expect(mockAccountManager.login).toHaveBeenCalledWith(
         UnifiedLoginAuthenticator.name,
         { code: 'xxxxx', token: undefined },
       );
@@ -71,7 +71,7 @@ describe('AuthService', () => {
         extension: '123',
         password: 'abc',
       });
-      expect(mockAccountManager.login).toBeCalledWith(
+      expect(mockAccountManager.login).toHaveBeenCalledWith(
         RCPasswordAuthenticator.name,
         {
           username: '123',
@@ -88,8 +88,8 @@ describe('AuthService', () => {
         owner_id: undefined,
       });
       await authController.makeSureUserInWhitelist();
-      expect(AuthUserConfig.prototype.getRCToken).toBeCalled();
-      expect(mockAccountManager.makeSureUserInWhitelist).not.toBeCalled();
+      expect(AuthUserConfig.prototype.getRCToken).toHaveBeenCalled();
+      expect(mockAccountManager.makeSureUserInWhitelist).not.toHaveBeenCalled();
     });
 
     it('should check white list when rc token is valid', async () => {
@@ -97,16 +97,16 @@ describe('AuthService', () => {
         owner_id: 123,
       });
       await authController.makeSureUserInWhitelist();
-      expect(AuthUserConfig.prototype.getRCToken).toBeCalled();
-      expect(mockAccountManager.makeSureUserInWhitelist).toBeCalledWith(123);
+      expect(AuthUserConfig.prototype.getRCToken).toHaveBeenCalled();
+      expect(mockAccountManager.makeSureUserInWhitelist).toHaveBeenCalledWith(123);
     });
   });
 
   describe('logout()', () => {
     it('should do logout', async () => {
       authController.logout();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGOUT);
-      expect(mockAccountManager.logout).toBeCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(SERVICE.LOGOUT);
+      expect(mockAccountManager.logout).toHaveBeenCalled();
     });
   });
 
@@ -131,9 +131,9 @@ describe('AuthService', () => {
   describe('startLoginGlip()', () => {
     it('should call job scheduler', () => {
       authController.startLoginGlip();
-      expect(TaskController).toBeCalled();
-      expect(ReLoginGlipStrategy).toBeCalled();
-      expect(TaskController.prototype.start).toBeCalled();
+      expect(TaskController).toHaveBeenCalled();
+      expect(ReLoginGlipStrategy).toHaveBeenCalled();
+      expect(TaskController.prototype.start).toHaveBeenCalled();
     });
   });
 
@@ -143,17 +143,17 @@ describe('AuthService', () => {
       await authController.GlipLoginFunc().catch(err => {
         expect(err).not.toBeUndefined();
       });
-      expect(glipStatus).toBeCalled();
-      expect(mockAccountManager.glipLogin).not.toBeCalled();
+      expect(glipStatus).toHaveBeenCalled();
+      expect(mockAccountManager.glipLogin).not.toHaveBeenCalled();
     });
 
     it('should login when status is OK', async () => {
       glipStatus = jest.fn().mockResolvedValue('OK');
       mockAccountManager.glipLogin.mockResolvedValue(true);
       await authController.GlipLoginFunc();
-      expect(glipStatus).toBeCalled();
-      expect(mockAccountManager.glipLogin).toBeCalled();
-      expect(notificationCenter.emitKVChange).not.toBeCalled();
+      expect(glipStatus).toHaveBeenCalled();
+      expect(mockAccountManager.glipLogin).toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).not.toHaveBeenCalled();
     });
 
     it('should emit glip_login with false when login failed', async () => {
@@ -162,9 +162,9 @@ describe('AuthService', () => {
       await authController.GlipLoginFunc().catch(err => {
         expect(err).not.toBeUndefined();
       });
-      expect(glipStatus).toBeCalled();
-      expect(mockAccountManager.glipLogin).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
+      expect(glipStatus).toHaveBeenCalled();
+      expect(mockAccountManager.glipLogin).toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
         false,
       );
@@ -178,9 +178,9 @@ describe('AuthService', () => {
       await authController.GlipLoginFunc().catch(err => {
         expect(err).not.toBeUndefined();
       });
-      expect(glipStatus).toBeCalled();
-      expect(mockAccountManager.glipLogin).toBeCalled();
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
+      expect(glipStatus).toHaveBeenCalled();
+      expect(mockAccountManager.glipLogin).toHaveBeenCalled();
+      expect(notificationCenter.emitKVChange).toHaveBeenCalledWith(
         SERVICE.GLIP_LOGIN,
         false,
       );

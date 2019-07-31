@@ -25,9 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import {
- reaction, IReactionDisposer, runInAction, action
-} from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -166,7 +164,7 @@ class TelephonyService {
       }
     }
   };
-  /* eslint-disable */
+
   private _pauseRingtone = async () => {
     if (!this._ringtone) {
       return;
@@ -444,6 +442,8 @@ class TelephonyService {
         );
         return false; // For other errors, need not show call UI
       }
+      default:
+        break;
     }
 
     return true;

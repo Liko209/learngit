@@ -5,10 +5,8 @@
  */
 import { test, testable } from 'shield';
 import { mockEntity, mockGlobalValue } from 'shield/application';
-import { registerModule } from 'shield/utils';
 import { TypeDictionary } from 'sdk/utils';
 import { ENTITY_NAME } from '@/store';
-import { config } from '@/modules/GlobalSearch/module.config';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
 jest.mock('i18next', () => ({
@@ -23,8 +21,6 @@ jest.mock('i18next', () => ({
   isInitialized: true,
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
-
-registerModule(config);
 
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;

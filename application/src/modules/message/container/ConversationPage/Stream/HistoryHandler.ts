@@ -3,7 +3,6 @@
  * @Date: 2018-11-14 12:27:09
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import _ from 'lodash';
 import { observable, computed, action } from 'mobx';
 import GroupStateModel from '@/store/models/GroupState';

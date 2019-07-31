@@ -48,6 +48,7 @@ enum RTC_CALL_ACTION {
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
   TRANSFER = 'transfer',
+  WARM_TRANSFER = 'warmTransfer',
   FORWARD = 'forward',
   HOLD = 'hold',
   UNHOLD = 'unhold',
@@ -112,7 +113,7 @@ type RTCSipInfo = {
 };
 
 type RTCSipProvisionInfo = {
-  device?: RTCSipDevice;
+  device: RTCSipDevice;
   sipInfo: RTCSipInfo[];
   sipFlags: RTCSipFlags;
   sipErrorCodes?: string[];

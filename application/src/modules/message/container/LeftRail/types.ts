@@ -5,6 +5,7 @@
  */
 import { SECTION_TYPE } from './Section/types';
 import { POST_LIST_TYPE } from '@/modules/message/container/PostListPage/types';
+import { IconColor } from 'jui/foundation/Iconography';
 
 type LeftRailProps = {};
 type LeftRailEntry = {
@@ -12,6 +13,7 @@ type LeftRailEntry = {
   icon: string;
   type: POST_LIST_TYPE;
   testId: string;
+  iconColor: IconColor;
 };
 
 type LeftRailFilter = {
@@ -27,6 +29,4 @@ type LeftRailViewProps = {
   currentPostListType: string;
 };
 
-export {
-  LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry,
-};
+export { LeftRailProps, LeftRailViewProps, LeftRailFilter, LeftRailEntry };

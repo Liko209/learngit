@@ -263,6 +263,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
     >
       <button
         aria-describedby={null}
+        aria-label="zoom_out"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -313,6 +314,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
     >
       <button
         aria-describedby={null}
+        aria-label="zoom_in"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
@@ -357,6 +359,7 @@ exports[`Storyshots Pattern/ImageViewer ZoomGroup: Pattern/ImageViewer ZoomGroup
     >
       <button
         aria-describedby={null}
+        aria-label="reset zoom"
         className="MuiButtonBase-root MuiIconButton-root c1"
         disabled={false}
         onBlur={[Function]}
