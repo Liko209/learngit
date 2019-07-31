@@ -30,8 +30,8 @@ const AnchorButton = React.memo(
     jumpToFirstUnread,
     jumpToLatest,
     isAboveScrollToLatestCheckPoint,
-    hasMore,
-  }: Props) => {
+  }: // hasMore,
+  Props) => {
     let props;
     let text;
     const { t } = useTranslation();
@@ -49,7 +49,10 @@ const AnchorButton = React.memo(
         arrowDirection: DIRECTION.UP,
         'data-test-automation-id': 'jump-to-first-unread-button',
       };
-    } else if (isAboveScrollToLatestCheckPoint || hasMore(DIRECTION.DOWN)) {
+    } else if (
+      isAboveScrollToLatestCheckPoint
+      // || hasMore(DIRECTION.DOWN)
+    ) {
       text = `${t('message.stream.jumpToLatest')}`;
       props = {
         onClick: jumpToLatest,

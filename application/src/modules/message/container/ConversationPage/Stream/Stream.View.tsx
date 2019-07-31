@@ -20,7 +20,7 @@ import {
   StreamItem,
   StreamItemType,
   StreamViewProps,
-  StreamProps
+  StreamProps,
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ import {
   ThresholdStrategy,
   JuiVirtualizedListHandles,
   ItemWrapper,
-  ScrollInfo
+  ScrollInfo,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
@@ -57,9 +57,9 @@ class StreamViewComponent extends Component<Props> {
   private _loadMoreStrategy = new ThresholdStrategy(
     {
       threshold: 60,
-      minBatchCount: 10
+      minBatchCount: 10,
     },
-    { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT }
+    { direction: POST_PRELOAD_DIRECTION, count: POST_PRELOAD_COUNT },
   );
 
   @observable
@@ -82,15 +82,15 @@ class StreamViewComponent extends Component<Props> {
     [StreamItemType.POST]: this._renderPost,
     [StreamItemType.NEW_MSG_SEPARATOR]: this._renderNewMessagesDivider,
     [StreamItemType.DATE_SEPARATOR]: this._renderDateDivider,
-    [StreamItemType.INITIAL_POST]: this._renderInitialPost
+    [StreamItemType.INITIAL_POST]: this._renderInitialPost,
   };
   private _contentStyleGen = _.memoize(
     (height?: number) =>
       ({
         minHeight: height,
         display: 'flex',
-        flexDirection: 'column'
-      } as React.CSSProperties)
+        flexDirection: 'column',
+      } as React.CSSProperties),
   );
 
   async componentDidMount() {
@@ -139,7 +139,10 @@ class StreamViewComponent extends Component<Props> {
 
     jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
 
-    if (loadingStatus === STATUS.SUCCESS && prevLoadingStatus === STATUS.PENDING) {
+    if (
+      loadingStatus === STATUS.SUCCESS &&
+      prevLoadingStatus === STATUS.PENDING
+    ) {
       this._performanceTracer.end({
         key: MESSAGE_PERFORMANCE_KEYS.UI_MESSAGE_RENDER,
         count: postIds.length,
@@ -193,7 +196,7 @@ class StreamViewComponent extends Component<Props> {
   }
   private _renderStreamItem = (
     streamItem: StreamItem,
-    index: number
+    index: number,
   ): JSX.Element => {
     const streamItemRenderer = this._RENDERER_MAP[streamItem.type];
     return streamItemRenderer.call(this, streamItem, index);
@@ -214,7 +217,7 @@ class StreamViewComponent extends Component<Props> {
     return cloneElement(ItemWrapper, {
       key: 'ConversationInitialPost',
       style: { flex: '1 1 auto' },
-      children: <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
+      children: <ConversationInitialPost notEmpty={notEmpty} id={groupId} />,
     });
   }
 
@@ -234,7 +237,7 @@ class StreamViewComponent extends Component<Props> {
         hasNewMessageSeparator,
         findNewMessageSeparatorIndex,
         getFirstUnreadPostByLoadAllUnread,
-        findPostIndex
+        findPostIndex,
       } = this.props;
       const firstUnreadPostId = await getFirstUnreadPostByLoadAllUnread();
 
@@ -244,14 +247,14 @@ class StreamViewComponent extends Component<Props> {
 
       if (!this._listRef.current) {
         mainLogger.warn(
-          'Failed to jump to the first unread post. _listRef no found.'
+          'Failed to jump to the first unread post. _listRef no found.',
         );
         return;
       }
 
       if (jumpToIndex === -1) {
         mainLogger.warn(
-          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`
+          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
         );
         return;
       }
@@ -273,20 +276,26 @@ class StreamViewComponent extends Component<Props> {
   @action
   private _handleVisibilityChanged = (
     { startIndex, stopIndex }: IndexRange,
-    { scrollHeight, scrollTop, clientHeight }: ScrollInfo
+    { scrollHeight, scrollTop, clientHeight }: ScrollInfo,
   ) => {
-    const listEl = this._listRef.current;
-    if(!this._isAboveScrollToLatestCheckPoint){
-      const isAboveScrollToLatestCheckPoint =
-      scrollHeight - clientHeight - scrollTop > checkPointThreshold;
-      this._isAboveScrollToLatestCheckPoint = isAboveScrollToLatestCheckPoint;
-    }
-    if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const {
       items,
       firstHistoryUnreadPostId = 0,
-      historyReadThrough = 0
+      historyReadThrough = 0,
+      hasMore,
     } = this.props;
+    const listEl = this._listRef.current;
+    const lastPostVisible =
+      !hasMore(DIRECTION.DOWN) && stopIndex === items.length - 1;
+    if (lastPostVisible) {
+      this._isAboveScrollToLatestCheckPoint = false;
+    } else if (!this._isAboveScrollToLatestCheckPoint) {
+      const isAboveScrollToLatestCheckPoint =
+        scrollHeight - clientHeight - scrollTop > checkPointThreshold;
+      this._isAboveScrollToLatestCheckPoint = isAboveScrollToLatestCheckPoint;
+    }
+
+    if (startIndex === -1 || stopIndex === -1 || !listEl) return;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
     if (this._historyViewed) {
       return;
@@ -320,7 +329,6 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   handleMostRecentViewed = () => {
-    this._isAboveScrollToLatestCheckPoint = false;
     if (document.hasFocus()) {
       this.props.markAsRead();
       this.props.disableNewMessageSeparatorHandler();
@@ -338,7 +346,7 @@ class StreamViewComponent extends Component<Props> {
   private _findStreamItemIndexByPostId = (id: number) =>
     this.props.items.findIndex(
       (item: StreamItemPost) =>
-        item.type === StreamItemType.POST && item.value === id
+        item.type === StreamItemType.POST && item.value === id,
     );
 
   @action
@@ -417,7 +425,7 @@ class StreamViewComponent extends Component<Props> {
         this._jumpToPostRef.current.highlight();
         goToConversation({
           conversationId: this.props.groupId,
-          replaceHistory: true
+          replaceHistory: true,
         });
       }
     });
@@ -445,7 +453,7 @@ class StreamViewComponent extends Component<Props> {
       loadingStatus,
       firstHistoryUnreadInPage,
       hasHistoryUnread,
-      historyUnreadCount
+      historyUnreadCount,
     } = this.props;
     const anchorButtonProps = {
       jumpToLatest: this._jumpToLatest,
@@ -457,7 +465,7 @@ class StreamViewComponent extends Component<Props> {
       jumpToFirstUnreadLoading: this._jumpToFirstUnreadLoading,
       jumpToFirstUnread: this._jumpToFirstUnread,
       hasMore,
-      isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint
+      isAboveScrollToLatestCheckPoint: this._isAboveScrollToLatestCheckPoint,
     };
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
