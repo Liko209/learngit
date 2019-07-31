@@ -15,7 +15,7 @@ type TowardsProps = {
   disabled: boolean;
   tooltipTitle: string;
   onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
-  menu: { pathname: string; title: string }[];
+  menu: () => { pathname: string; title: string }[];
   onClickMenu: (type: OPERATION, index: number) => void;
   menuItemMaxWidth?: number;
 };
@@ -30,85 +30,117 @@ const MenuListItemWrapper = styled.div`
 `;
 
 export class JuiHistoryOperation extends React.PureComponent<
-TowardsProps,
-{ open: boolean; anchorEl: HTMLElement | null }
+  TowardsProps,
+  { open: boolean; showMenuItems: boolean; anchorEl: HTMLElement | null }
 > {
-  private _clickMenuHander: {
+  private _clickMenuHandler: {
     [key: string]: (event: React.MouseEvent<HTMLElement>) => void;
   } = {};
-  private _showPopup: boolean = false;
+  private _timerId: NodeJS.Timeout;
   constructor(props: TowardsProps) {
     super(props);
     this.state = {
       open: false,
+      showMenuItems: false,
       anchorEl: null,
     };
   }
 
-  getClickMenuHander = (key: string, type: OPERATION, index: number) => {
-    let hander = this._clickMenuHander[key];
-    if (!hander) {
-      hander = (event: React.MouseEvent<HTMLElement>) => this.handleMenuItemClick(event, type, index);
-      this._clickMenuHander[key] = hander;
-      return hander;
+  private _getClickMenuHandler = (
+    key: string,
+    type: OPERATION,
+    index: number,
+  ) => {
+    let handler = this._clickMenuHandler[key];
+    if (!handler) {
+      handler = (event: React.MouseEvent<HTMLElement>) =>
+        this._handleMenuItemClick(event, type, index);
+      this._clickMenuHandler[key] = handler;
+      return handler;
     }
 
-    return hander;
-  };
-  /* eslint-disable react/no-access-state-in-setstate */
-  handleToggle = (target: EventTarget & HTMLElement) => {
-    this._showPopup = true;
-    this.setState({ anchorEl: target, open: !this.state.open });
+    return handler;
   };
 
-  handleClose = (event: React.MouseEvent<HTMLElement>) => {
-    if (this._showPopup) {
-      this._showPopup = false;
-      return;
-    }
+  private _handleLongPress = (target: EventTarget & HTMLElement) => {
+    this.setState({ anchorEl: target, open: true, showMenuItems: true });
+  };
+
+  private _handleClose = (event: React.MouseEvent<HTMLElement>) => {
     const { anchorEl } = this.state;
     if (anchorEl && anchorEl.contains(event.currentTarget)) {
       return;
     }
 
-    this.setState({ open: false, anchorEl: null });
+    this.setState({ open: false, anchorEl: null }, () => {
+      clearTimeout(this._timerId);
+      this._timerId = setTimeout(
+        () =>
+          this.setState({
+            showMenuItems: false,
+          }),
+        1000,
+      );
+    });
   };
 
-  handleMenuItemClick = (
+  private _handleMenuItemClick = (
     event: React.MouseEvent<HTMLElement>,
     type: OPERATION,
     index: number,
   ) => {
-    this.handleClose(event);
+    this._handleClose(event);
     const { onClickMenu } = this.props;
     onClickMenu(type, index);
   };
 
+  private _renderMenuItems = () => {
+    const { open, showMenuItems } = this.state;
+    const { menu, menuItemMaxWidth, type } = this.props;
+
+    if (!open && !showMenuItems) {
+      return null;
+    }
+
+    return (
+      <JuiMenuList>
+        {menu().map(({ title, pathname }, index: number) => {
+          const key = `${index} - ${pathname}`;
+          return (
+            <JuiMenuItem
+              onClick={this._getClickMenuHandler(key, type, index)}
+              maxWidth={menuItemMaxWidth}
+              key={key}
+            >
+              <MenuListItemWrapper>{title}</MenuListItemWrapper>
+            </JuiMenuItem>
+          );
+        })}
+      </JuiMenuList>
+    );
+  };
+
+  componentWillUnmount() {
+    clearTimeout(this._timerId);
+  }
+
   render() {
     const { open, anchorEl } = this.state;
+    const { disabled, onClick, type, tooltipTitle } = this.props;
 
-    const {
-      menu = [],
-      disabled,
-      onClick,
-      type,
-      tooltipTitle,
-      menuItemMaxWidth,
-    } = this.props;
     return (
       <MenuListCompositionWrapper>
         <TowardIcons
           tooltipTitle={tooltipTitle}
           disabled={disabled}
           onClick={onClick}
-          onLongPress={this.handleToggle}
+          onLongPress={this._handleLongPress}
           type={type}
         />
         <JuiPopover
           open={open}
           anchorEl={anchorEl}
-          onClose={this.handleClose}
-          onClick={this.handleClose}
+          onClick={this._handleClose}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center',
@@ -118,20 +150,7 @@ TowardsProps,
             horizontal: 'center',
           }}
         >
-          <JuiMenuList>
-            {menu.map(({ title, pathname }, index: number) => {
-              const key = `${index} - ${pathname}`;
-              return (
-                <JuiMenuItem
-                  onClick={this.getClickMenuHander(key, type, index)}
-                  maxWidth={menuItemMaxWidth}
-                  key={key}
-                >
-                  <MenuListItemWrapper>{title}</MenuListItemWrapper>
-                </JuiMenuItem>
-              );
-            })}
-          </JuiMenuList>
+          {this._renderMenuItems()}
         </JuiPopover>
       </MenuListCompositionWrapper>
     );

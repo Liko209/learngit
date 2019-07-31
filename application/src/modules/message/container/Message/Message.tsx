@@ -11,6 +11,7 @@ import { service, GLIP_LOGIN_STATUS } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import portalManager from '@/common/PortalManager';
 
 import { MessageRouter } from './MessageRouter';
 import { MessageViewProps } from './types';
@@ -23,20 +24,20 @@ type State = {
 @observer
 class MessageComponent extends Component<Props, State> {
   accountService = ServiceLoader.getInstance<AccountService>(
-    ServiceConfig.ACCOUNT_SERVICE
+    ServiceConfig.ACCOUNT_SERVICE,
   );
 
   state = {
     initializing:
       this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.PROCESS,
     success:
-      this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS
+      this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS,
   };
 
   private _handleGlipLogin = (success: boolean) => {
     this.setState({
       success,
-      initializing: false
+      initializing: false,
     });
   };
 
@@ -49,11 +50,12 @@ class MessageComponent extends Component<Props, State> {
   componentWillUnmount() {
     const { notificationCenter, SERVICE } = service;
     notificationCenter.off(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
+    portalManager.dismissAll();
   }
 
   tryAgain = () => {
     this.setState({
-      initializing: true
+      initializing: true,
     });
 
     this.accountService.startLoginGlip();
@@ -75,7 +77,7 @@ class MessageComponent extends Component<Props, State> {
         tip={t(
           initializing
             ? 'message.initialization.initializing'
-            : 'message.initialization.failure'
+            : 'message.initialization.failure',
         )}
         linkText={initializing ? '' : t('message.initialization.tryAgain')}
         showTip
