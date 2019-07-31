@@ -9,7 +9,7 @@ fixture('Profile/ViewYourProfile')
     .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
-test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'JPT-453', 'P1', 'zack']), async (t) => {
+test.skip(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'JPT-453', 'P1', 'zack']), async (t) => {
     const loginUser = h(t).rcData.mainCompany.users[0];
     const app = new AppRoot(t);
     const viewProfile = app.homePage.profileDialog;

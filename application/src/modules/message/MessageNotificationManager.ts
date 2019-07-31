@@ -22,6 +22,7 @@ import PostModel from '@/store/models/Post';
 import {
   NotificationOpts,
   NOTIFICATION_PRIORITY,
+  NotificationStrategy,
 } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
@@ -39,21 +40,36 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
 import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  AUDIO_SOUNDS_INFO,
 } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { IMessageNotificationManager } from './interface';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
-export class MessageNotificationManager extends AbstractNotificationManager {
+
+enum MESSAGE_TYPE {
+  DIRECT_MESSAGE,
+  MENTION,
+  TEAM,
+}
+type MessageTypeInfo = {
+isMention:boolean;
+isActivity: boolean;
+isOne2One:boolean;
+messageType:MESSAGE_TYPE
+}
+class MessageNotificationManager extends AbstractNotificationManager implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   private _vmQueue: {
     id: number;
     vm: MessageNotificationViewModel;
   }[] = [];
+
   constructor() {
     super('message');
     this._observer = {
@@ -75,15 +91,14 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const post = entities[0];
     const postId = post.id;
     logger.info(`prepare notification for ${postId}`);
-
     const result = await this.shouldEmitNotification(post);
-
     if (!result) {
       return;
     }
     const { postModel, groupModel } = result;
     this.enqueueVM(postModel, groupModel);
   };
+
   enqueueVM(postModel: PostModel, groupModel: GroupModel) {
     const id = postModel.id;
     const ids = this._vmQueue.map(i => i.id);
@@ -95,7 +110,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       onCreate: () => this.buildNotification(postModel, groupModel),
       onUpdate: (id: number) => {
         const postModel = getEntity<Post, PostModel>(ENTITY_NAME.POST, id);
-        this.buildNotification(postModel, groupModel);
+        this.buildNotification(postModel, groupModel, true);
       },
       onDispose: () => {
         this.close(id);
@@ -119,19 +134,22 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this._vmQueue.unshift({ id, vm });
   }
 
-  async buildNotification(postModel: PostModel, groupModel: GroupModel) {
+  async buildNotification(postModel: PostModel, groupModel: GroupModel, muteSounds?:boolean) {
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
       postModel.creatorId,
     );
+    const type = this.getMessageType(postModel, groupModel);
+    const datum  = {person,post:postModel,group:groupModel}
     const { title, body } = await this.buildNotificationBodyAndTitle(
-      postModel,
-      person,
-      groupModel,
+      datum,
+      type,
     );
+    const sound = !muteSounds && await this.getCurrentMessageSoundSetting(type.messageType)
     const opts = Object.assign(
       {
         body,
+        sound
       },
       await this.buildNotificationOption(postModel, groupModel, person),
     );
@@ -146,6 +164,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     const { members, isTeam } = groupModel;
     const opts: NotificationOpts = {
       renotify: false,
+      strategy: NotificationStrategy.SOUND_AND_UI_NOTIFICATION,
       icon: this.getIcon(person, members.length, isTeam),
       data: {
         id: postModel.id,
@@ -156,10 +175,25 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     };
     return opts;
   }
+  async getCurrentMessageSoundSetting(type: MESSAGE_TYPE) {
+    const {DIRECT_MESSAGE, TEAM,MENTION} = MESSAGE_TYPE
+    const soundSettingDict = {
+      [DIRECT_MESSAGE]: MESSAGE_SETTING_ITEM.SOUND_DIRECT_MESSAGES,
+      [MENTION]: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
+      [TEAM]: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
+    };
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<AUDIO_SOUNDS_INFO>(soundSettingDict[type]);
+    return entity ? (entity.value ? entity.value.id : undefined) : undefined;
+  }
+
   async getCurrentMessageNotificationSetting() {
     const entity = await ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
-    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES);
+    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(
+      MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
+    );
     return (entity && entity.value) || 'default';
   }
   async shouldEmitNotification(post: Post) {
@@ -172,9 +206,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
       logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because post type is not message`,
+        `notification for ${post.id} is not permitted because post type is not message`,
       );
       return false;
     }
@@ -185,9 +217,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
     if (!group) {
       logger.info(
-        `notification for ${
-          post.id
-        } is not permitted because group of the post does not exist`,
+        `notification for ${post.id} is not permitted because group of the post does not exist`,
       );
       return false;
     }
@@ -201,9 +231,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       [DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION]: () => {
         if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
           logger.info(
-            `notification for ${
-              post.id
-            } is not permitted because in team conversation, only post mentioning current user will show notification`,
+            `notification for ${post.id} is not permitted because in team conversation, only post mentioning current user will show notification`,
           );
           return false;
         }
@@ -221,13 +249,25 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     };
   }
 
-  async buildNotificationBodyAndTitle(
-    post: PostModel,
-    person: PersonModel,
-    group: GroupModel,
-  ) {
+  getMessageType(post: PostModel, group: GroupModel) {
     const isOne2One = group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
-    const isActivity = post.existItemIds.length || post.parentId;
+    const isActivity = !!(post.existItemIds.length || post.parentId);
+    const isMention = !!this.isMyselfAtMentioned(post);
+    const messageType = isMention
+      ? MESSAGE_TYPE.MENTION
+      : isOne2One
+      ? MESSAGE_TYPE.DIRECT_MESSAGE
+      : MESSAGE_TYPE.TEAM;
+    return { isActivity, isOne2One, isMention, messageType };
+  }
+
+  async buildNotificationBodyAndTitle({
+    post,person,group
+  }: {
+    post: PostModel;
+    person: PersonModel;
+    group: GroupModel;
+  },{isOne2One,isActivity,isMention}:MessageTypeInfo) {
     const translationArgs = {
       person: person.userDisplayName,
       conversation: group.displayName,
@@ -237,7 +277,8 @@ export class MessageNotificationManager extends AbstractNotificationManager {
         ? group.displayName
         : await i18nT('notification.group', translationArgs);
     let body = this.handlePostContent(post);
-    if (this.isMyselfAtMentioned(post)) {
+
+    if (isMention) {
       if (isOne2One) {
         title = await i18nT('notification.mentionedOne2One', translationArgs);
       } else {
@@ -251,7 +292,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostContent(post: PostModel) {
-    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(/(^|\n)> ([^\n]*)/g, (full_match, start, text) => `${start} ${text}`);
+    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(
+      /(^|\n)> ([^\n]*)/g,
+      (full_match, start, text) => `${start} ${text}`,
+    );
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,
@@ -271,16 +315,16 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   isMyselfAtMentioned(post: PostModel) {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const isTeamMention = post.isTeamMention;
     return (
       post.atMentionNonItemIds &&
-      post.atMentionNonItemIds.includes(currentUserId)
+      post.atMentionNonItemIds.includes(currentUserId) ||
+      isTeamMention
     );
   }
 
   getIcon(
-    {
-      id, headshotVersion = '', headshot = '', hasHeadShot,
-    }: PersonModel,
+    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {
@@ -309,3 +353,5 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this._postService.removeEntityNotificationObserver(this._observer);
   }
 }
+
+export { MessageNotificationManager };

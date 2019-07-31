@@ -38,3 +38,4 @@ export {
 } from './common';
 export * from './RCEventSubscription';
 export * from './BlockNumber';
+export * from './RCDeviceInfo';

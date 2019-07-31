@@ -22,6 +22,7 @@ interface IPartialModifyController<
       updatedEntities: T[],
       partialEntities: Partial<Raw<T>>[],
     ) => void,
+    forceDoUpdateEntity?: boolean,
   ): Promise<T | null>;
 
   getRollbackPartialEntity(

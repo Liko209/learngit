@@ -46,7 +46,7 @@ class NetworkRequestSurvivalMode {
     this._survivalMode = SURVIVAL_MODE.NORMAL;
   }
 
-  healthChecking() {
+  healthChecking = () => {
     this._checkServerStatus((success: boolean, retryAfter: number) => {
       if (success) {
         this.backToNormal();
@@ -55,7 +55,7 @@ class NetworkRequestSurvivalMode {
       const interval = retryAfter ? retryAfter * 1000 : 60000;
       this.setupTimer(interval);
     });
-  }
+  };
 }
 
 export default NetworkRequestSurvivalMode;

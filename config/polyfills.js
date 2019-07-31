@@ -1,9 +1,13 @@
+/* eslint-disable global-require */
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
  * @Date: 2018-08-30 08:42:56
  * Copyright © RingCentral. All rights reserved.
  */
+
 /* eslint-disable */
+// Array.prototype.flatMap
+import 'core-js/features/array/flat-map';
 // polyfill require.context
 import registerRequireContextHook from 'babel-plugin-require-context-hook/register';
 
@@ -15,4 +19,9 @@ if (process.env.NODE_ENV === 'test') {
   require('raf').polyfill(global);
 
   global.fetch = require('jest-fetch-mock');
+
+  global.Notification = {
+    requestPermission: jest.fn(),
+    permission: 'default',
+  };
 }

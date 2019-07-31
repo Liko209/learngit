@@ -159,7 +159,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
   min-width: 0;
 }
 
-.c1.c1 h6 {
+.c1.c1 h2 {
   color: #212121;
   text-align: left;
   white-space: nowrap;
@@ -227,12 +227,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -240,9 +240,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title only: Components/Dialog
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -490,7 +492,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
   min-width: 0;
 }
 
-.c1.c1 h6 {
+.c1.c1 h2 {
   color: #212121;
   text-align: left;
   white-space: nowrap;
@@ -566,12 +568,12 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
     <div
       className="MuiDialogTitle-root c1"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Title
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c2"
@@ -579,9 +581,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
       <div
         className="c3"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c4"
           disabled={false}
           onBlur={[Function]}
@@ -625,6 +629,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
@@ -674,6 +679,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c8"
               disabled={false}
               onBlur={[Function]}
@@ -719,6 +725,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with action icons: Comp
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c8"
           disabled={false}
           onBlur={[Function]}
@@ -1002,7 +1009,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
   min-width: 0;
 }
 
-.c6.c6 h6 {
+.c6.c6 h2 {
   color: #212121;
   text-align: center;
   white-space: nowrap;
@@ -1166,14 +1173,14 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         Bulldog friendship.jpegdddddddddddddddddddd
          
         (1 / 20)
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1181,9 +1188,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1227,6 +1236,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1276,6 +1286,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1321,6 +1332,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1405,7 +1417,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
     <div
       className="MuiDialogTitle-root c6"
     >
-      <h6
+      <h2
         className="MuiTypography-root MuiTypography-h6"
       >
         <span>
@@ -1416,7 +1428,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           (1 / 20)
         </span>
         <div />
-      </h6>
+      </h2>
     </div>
     <div
       className="c7"
@@ -1424,9 +1436,11 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
       <div
         className="c8"
         direction="horizontal"
+        onClick={[Function]}
       >
         <button
           aria-describedby={null}
+          aria-label="Favorite"
           className="MuiButtonBase-root MuiIconButton-root c9"
           disabled={false}
           onBlur={[Function]}
@@ -1470,6 +1484,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </button>
         <button
           aria-describedby={null}
+          aria-label="Settings"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}
@@ -1519,6 +1534,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
           >
             <button
               aria-describedby={null}
+              aria-label="More"
               className="MuiButtonBase-root MuiIconButton-root c13"
               disabled={false}
               onBlur={[Function]}
@@ -1564,6 +1580,7 @@ exports[`Storyshots Components/Dialog/DialogHeader Title with avatar and informa
         </div>
         <button
           aria-describedby={null}
+          aria-label="Close"
           className="MuiButtonBase-root MuiIconButton-root c13"
           disabled={false}
           onBlur={[Function]}

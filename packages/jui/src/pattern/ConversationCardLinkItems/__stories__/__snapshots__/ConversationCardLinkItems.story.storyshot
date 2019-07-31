@@ -296,6 +296,7 @@ exports[`Storyshots Pattern ConversationCardLinkItems: Pattern ConversationCardL
   data-test-automation-id="linkItemsWrapper"
 >
   <button
+    aria-label=""
     className="MuiButtonBase-root MuiIconButton-root c1"
     data-id="closeBtn"
     data-test-automation-id="linkPreviewCloseBtn"

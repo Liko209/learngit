@@ -43,6 +43,11 @@ describe('', () => {
         method: 'methodName1', // will mockResolveValue
         data: args => { return false },
       },
+      {
+        method: 'methodName2',
+        data: args => { return false },
+        type: 'reject' // priority up will mockRejectValue
+      },
     ])
     t6() {}
 

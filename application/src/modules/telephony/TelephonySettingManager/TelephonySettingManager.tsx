@@ -12,13 +12,7 @@ import { IPhoneNumberRecord } from 'sdk/api/ringcentral/types/common';
 import {
   SETTING_PAGE__PHONE,
   SETTING_SECTION__PHONE_GENERAL,
-  SETTING_ITEM__PHONE_CALLER_ID,
-  SETTING_ITEM__PHONE_REGION,
-  SETTING_ITEM__PHONE_EXTENSIONS,
-  SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
-  SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
-  SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
-  SETTING_ITEM__PHONE_E911,
+  PHONE_SETTING_ITEM,
 } from './constant';
 import {
   CallerIdSelectSourceItem,
@@ -29,18 +23,28 @@ import {
   DefaultPhoneAppSelectItem,
   beforeDefaultPhoneAppSettingSave,
 } from './DefaultPhoneAppSettingItem';
-import { CALLING_OPTIONS } from 'sdk/module/profile/constants';
+import {
+  CALLING_OPTIONS,
+  AUDIO_SOUNDS_INFO,
+} from 'sdk/module/profile/constants';
 import { SETTING_SECTION__DESKTOP_NOTIFICATIONS } from '@/modules/notification/notificationSettingManager/constant';
+import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
+import {
+  SoundSourceItem,
+  SoundSourcePlayerRenderer,
+} from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
+import { buildTitleAndDesc } from '@/modules/setting/utils';
+import { ringOptionTransformer } from './dataTransformer';
 
 const DefaultPhoneAppDataTrackingOption: {
-  [key in CALLING_OPTIONS]: string
+  [key in CALLING_OPTIONS]: string;
 } = {
   glip: 'Use RingCentral App (this app)',
   ringcentral: 'Use RingCentral Phone',
 };
 
 const CallerIDDataTrackingOption: {
-  [key in IPhoneNumberRecord['usageType']]: string
+  [key in IPhoneNumberRecord['usageType']]: string;
 } = {
   DirectNumber: '"DID", personal direct number',
   MainCompanyNumber: '"companyMain", company main number',
@@ -69,7 +73,7 @@ class TelephonySettingManager {
           weight: 0,
           items: [
             {
-              id: SETTING_ITEM__PHONE_DEFAULT_PHONE_APP,
+              id: PHONE_SETTING_ITEM.PHONE_DEFAULT_PHONE_APP,
               title: 'setting.phone.general.defaultPhoneApp.label',
               description: 'setting.phone.general.defaultPhoneApp.description',
               type: SETTING_ITEM_TYPE.SELECT,
@@ -85,7 +89,7 @@ class TelephonySettingManager {
               automationId: 'defaultPhoneApp',
             } as SelectSettingItem<CALLING_OPTIONS>,
             {
-              id: SETTING_ITEM__PHONE_CALLER_ID,
+              id: PHONE_SETTING_ITEM.PHONE_CALLER_ID,
               automationId: 'callerID',
               title: 'setting.phone.general.callerID.label',
               description: 'setting.phone.general.callerID.description',
@@ -102,13 +106,13 @@ class TelephonySettingManager {
               },
             } as SelectSettingItem<IPhoneNumberRecord>,
             {
-              id: SETTING_ITEM__PHONE_REGION,
+              id: PHONE_SETTING_ITEM.PHONE_REGION,
               automationId: 'regionSetting',
               type: RegionSettingItem,
               weight: 300,
             },
             {
-              id: SETTING_ITEM__PHONE_EXTENSIONS,
+              id: PHONE_SETTING_ITEM.PHONE_EXTENSIONS,
               automationId: 'extensions',
               title: 'setting.phone.general.extensions.label',
               description: 'setting.phone.general.extensions.description',
@@ -119,12 +123,6 @@ class TelephonySettingManager {
                 type: 'phoneGeneral',
               },
             },
-            {
-              id: SETTING_ITEM__PHONE_E911,
-              automationId: 'e911Setting',
-              type: RegionSettingItem,
-              weight: 300,
-            },
           ],
         },
       ],
@@ -133,7 +131,7 @@ class TelephonySettingManager {
       this._scope,
       SETTING_SECTION__DESKTOP_NOTIFICATIONS,
       {
-        id: SETTING_ITEM__NOTIFICATION_INCOMING_CALLS,
+        id: PHONE_SETTING_ITEM.NOTIFICATION_INCOMING_CALLS,
         automationId: 'incomingCalls',
         title:
           'setting.notificationAndSounds.desktopNotifications.incomingCalls.label',
@@ -151,7 +149,7 @@ class TelephonySettingManager {
       this._scope,
       SETTING_SECTION__DESKTOP_NOTIFICATIONS,
       {
-        id: SETTING_ITEM__NOTIFICATION_CALLS_VOICEMAILS,
+        id: PHONE_SETTING_ITEM.NOTIFICATION_CALLS_VOICEMAILS,
         automationId: 'callsAndVoicemails',
         title:
           'setting.notificationAndSounds.desktopNotifications.callsAndVoicemails.label',
@@ -165,6 +163,24 @@ class TelephonySettingManager {
         },
       },
     );
+    this.registerSounds();
+  }
+
+  registerSounds() {
+    this._settingService.registerItem(this._scope, SETTING_SECTION__SOUNDS, {
+      id: PHONE_SETTING_ITEM.SOUND_INCOMING_CALL,
+      automationId: 'soundIncomingCall',
+      weight: 400,
+      type: SETTING_ITEM_TYPE.SELECT,
+      sourceRenderer: SoundSourceItem,
+      secondaryActionRenderer: SoundSourcePlayerRenderer,
+      ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'incomingCall'),
+      dataTracking: {
+        name: 'incomingVoiceCall',
+        type: 'desktopNotificationSettings',
+        optionTransform: ({ id }) => ringOptionTransformer[id],
+      },
+    } as SelectSettingItem<AUDIO_SOUNDS_INFO>);
   }
 
   dispose() {
