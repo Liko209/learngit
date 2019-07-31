@@ -459,7 +459,7 @@ class TelephonyService {
         } else {
           // toast error
           Notification.flagToast({
-            message: '',
+            message: 'telephony.prompt.e911ServiceMayBeLimitedOrUnavailable',
             type: ToastType.ERROR,
             messageAlign: ToastMessageAlign.CENTER,
             fullWidth: false,
