@@ -3,7 +3,7 @@
  * @Date: 2019-07-23 14:24:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, computed, action } from 'mobx';
+import { observable, computed, action, IReactionPublic } from 'mobx';
 import { ChangeEvent } from 'react';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RCInfoService } from 'sdk/module/rcInfo';
@@ -43,13 +43,12 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     super(props);
     this.reaction(
       () => this.settingItemEntity.value,
-      (value: E911SettingInfo, dispose: any) => {
+      (value: E911SettingInfo, reaction: IReactionPublic) => {
         if (value) {
           const cloneValue = { ...value };
-          delete cloneValue.country;
           this.value = cloneValue;
           this.getCountryInfo();
-          dispose();
+          reaction.dispose();
         }
       },
       {
@@ -75,9 +74,16 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @computed
   get disabled() {
     const checkField = ['customerName', 'country', 'street', 'city', 'zip'];
+    const { state, stateName } = this.value;
     if (this.stateList.length > 0) {
-      checkField.push('state');
+      if (state) {
+        checkField.push('state');
+      }
+      if (stateName) {
+        checkField.push('stateName');
+      }
     }
+
     return checkField.some((field: string) => !this.value[field]);
   }
 
@@ -85,19 +91,29 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   async getState(countryId: string) {
     const stateList = await this.rcInfoService.getStateList(countryId);
     this.stateList = stateList;
-    this.saveStateOrCountry('state', stateList[0]);
+
+    if (stateList.length > 0) {
+      this.saveStateOrCountry('state', stateList[0]);
+    }
   }
 
   @action
   async getCountryInfo() {
-    const [countryList, currentCountry] = await Promise.all([
-      this.rcInfoService.getCountryList(),
-      this.rcInfoService.getCurrentCountry(),
-    ]);
+    const countryList = await this.rcInfoService.getCountryList();
     this.countryList = countryList;
-    const current = currentCountry.name ? currentCountry : countryList[0];
-    this.saveStateOrCountry('country', current);
-    this.getState(current.id);
+    const { countryName } = this.value;
+    let currentCountry;
+    if (countryName) {
+      currentCountry = this.countryList.find(
+        (item: Country) => item.name === countryName,
+      );
+    } else {
+      currentCountry = await this.rcInfoService.getCurrentCountry();
+    }
+    if (currentCountry) {
+      this.saveStateOrCountry('country', currentCountry);
+      this.getState(currentCountry.id);
+    }
   }
 
   countryOnChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -105,6 +121,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     const country = this.countryList.find(
       (item: Country) => item.name === value,
     );
+
     this.saveStateOrCountry('country', country!);
     this.getState(country!.id);
   };
@@ -118,6 +135,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @action
   saveStateOrCountry(type: 'state' | 'country', data: State | Country) {
     const { id, name, isoCode } = data;
+
     this.value[type] = isoCode;
     this.value[`${type}Name`] = name;
     this.value[`${type}Id`] = id;

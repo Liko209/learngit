@@ -32,7 +32,7 @@ describe('E911ViewModel', () => {
       expect(vm.disabled).toBeTruthy();
     }
 
-    @test('should be true and check state if state list > 0')
+    @test('should be check state if state api return name iso and id')
     @mockEntity(
       createUserInfo({
         country: 'country',
@@ -42,11 +42,17 @@ describe('E911ViewModel', () => {
         zip: 'zip',
       }),
     )
-    @mockService(RCInfoService, 'getStateList', [1])
+    @mockService(RCInfoService, 'getStateList', [
+      {
+        id: 'id',
+        isoCode: 'isoCode',
+        name: 'name',
+      },
+    ])
     async t2() {
       const vm = new E911ViewModel({});
       await vm.getState('1');
-      expect(vm.disabled).toBeTruthy();
+      expect(vm.disabled).toBeFalsy();
     }
 
     @test('should be true if has all check field')
@@ -61,13 +67,35 @@ describe('E911ViewModel', () => {
     )
     t3() {
       const vm = new E911ViewModel({});
-      expect(vm.disabled).toBeTruthy();
+      expect(vm.disabled).toBeFalsy();
+    }
+
+    @test('should be check stateName if state api only return name')
+    @mockEntity(
+      createUserInfo({
+        country: 'country',
+        customerName: 'customerName',
+        street: 'street',
+        city: 'city',
+        zip: 'zip',
+      }),
+    )
+    @mockService(RCInfoService, 'getStateList', [
+      {
+        id: 1,
+        name: 'name',
+      },
+    ])
+    async t4() {
+      const vm = new E911ViewModel({});
+      await vm.getState('1');
+      expect(vm.disabled).toBeFalsy();
     }
   }
 
   @testable
   class getState {
-    @test('should be call saveStateOrCountry if getState')
+    @test('should be call saveStateOrCountry if state list length > 0')
     @mockEntity(createUserInfo())
     @mockService(RCInfoService, 'getStateList', [1])
     async t1() {
@@ -77,23 +105,38 @@ describe('E911ViewModel', () => {
       expect(vm.stateList).toEqual([1]);
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('state', 1);
     }
+
+    @test('should not call saveStateOrCountry if state list length === 0')
+    @mockEntity(createUserInfo())
+    @mockService(RCInfoService, 'getStateList', [])
+    async t2() {
+      const vm = new E911ViewModel({});
+      jest.spyOn(vm, 'saveStateOrCountry');
+      await vm.getState('1');
+      expect(vm.stateList).toEqual([]);
+      expect(vm.saveStateOrCountry).not.toHaveBeenCalled();
+    }
   }
 
   @testable
   class getCountryInfo {
-    @test('should be call saveStateOrCountry if getState')
-    @mockEntity(createUserInfo())
+    @test(
+      'should be saveStateOrCountry with user setting if user has been setting',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryName: 'countryName',
+      }),
+    )
     @mockService(RCInfoService, [
       {
         method: 'getCountryList',
-        data: [1],
-      },
-      {
-        method: 'getCurrentCountry',
-        data: {
-          id: 2,
-          name: 'current',
-        },
+        data: [
+          {
+            id: 1,
+            name: 'countryName',
+          },
+        ],
       },
     ])
     async t1() {
@@ -101,45 +144,15 @@ describe('E911ViewModel', () => {
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
       await vm.getCountryInfo();
-      expect(vm.countryList).toEqual([1]);
-      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', {
-        id: 2,
-        name: 'current',
-      });
-      expect(vm.getState).toHaveBeenCalledWith(2);
-    }
-
-    @test('should be use countryList first if not current country')
-    @mockEntity(createUserInfo())
-    @mockService(RCInfoService, [
-      {
-        method: 'getCountryList',
-        data: [
-          {
-            id: 1,
-            name: 'countryList',
-          },
-        ],
-      },
-      {
-        method: 'getCurrentCountry',
-        data: {},
-      },
-    ])
-    async t2() {
-      const vm = new E911ViewModel({});
-      jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
-      jest.spyOn(vm, 'getState').mockImplementation();
-      await vm.getCountryInfo();
       expect(vm.countryList).toEqual([
         {
           id: 1,
-          name: 'countryList',
+          name: 'countryName',
         },
       ]);
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', {
         id: 1,
-        name: 'countryList',
+        name: 'countryName',
       });
       expect(vm.getState).toHaveBeenCalledWith(1);
     }
@@ -213,6 +226,22 @@ describe('E911ViewModel', () => {
         stateName: 'name',
         stateId: 'id',
         stateIsoCode: 'isoCode',
+      });
+    }
+
+    @test('should be name if state not isoCode')
+    @mockEntity(createUserInfo())
+    t2() {
+      const vm = new E911ViewModel({});
+      vm.saveStateOrCountry('state', {
+        id: 'id',
+        name: 'name',
+      });
+      expect(vm.value).toMatchObject({
+        state: undefined,
+        stateName: 'name',
+        stateId: 'id',
+        stateIsoCode: undefined,
       });
     }
   }
