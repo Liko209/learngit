@@ -7,14 +7,14 @@
 import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
-import { JuiConversationListSectionHeader } from 'jui/pattern/ConversationList/ConversationListSectionHeader';
+import { JuiConversationListTop } from 'jui/pattern/ConversationList/ConversationListTop';
 
 import { Section } from './Section';
 import { LeftRailViewProps } from './types';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
-  JuiLeftRailMainSection,
+  JuiLeftRailMainSection
 } from 'jui/pattern/LeftRail/LeftRail';
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -32,42 +32,39 @@ class LeftRailViewComponent extends Component<
   render() {
     const { filters, entries, sections, currentPostListType, t } = this.props;
     return (
-      <JuiLeftRail data-test-automation-id='leftRail'>
+      <JuiLeftRail data-test-automation-id="leftRail">
         <JuiLeftRailStickyTop>
-          {filters.map((filter, index) => [
-            index ? <JuiDivider key={`divider${index}`} /> : null,
-            <JuiConversationListFilter
-              data-test-automation-id='unreadOnlyToggler'
-              checked={filter.value}
-              key={filter.label}
-              label={t(filter.label)}
-              onChange={filter.onChange}
-            />,
-          ])}
-        </JuiLeftRailStickyTop>
-        <JuiDivider key='divider-filters' />
-        <JuiLeftRailMainSection>
-          {entries.map((entry, index) => (
-            <JuiConversationListSectionHeader
+          {entries.map(entry => (
+            <JuiConversationListTop
               data-test-automation-id={entry.testId}
               key={entry.title}
               title={t(entry.title)}
               icon={entry.icon}
-              hideArrow={true}
+              iconColor={entry.iconColor}
               selected={entry.type === currentPostListType}
               onClick={() => {
                 this.onEntryClick(entry.type);
               }}
             />
           ))}
-          <JuiDivider key='divider-entries' />
+          <JuiDivider key="divider-filters" />
+        </JuiLeftRailStickyTop>
+        {filters.map(filter => [
+          <JuiConversationListFilter
+            data-test-automation-id="unreadOnlyToggler"
+            checked={filter.value}
+            key={filter.label}
+            label={t(filter.label).toUpperCase()}
+            onChange={filter.onChange}
+          />
+        ])}
+        <JuiLeftRailMainSection>
           {sections.map((type, index, array) => [
-            index ? <JuiDivider key={`divider${index}`} /> : null,
             <Section
               key={type}
               type={type}
               isLast={index === array.length - 1}
-            />,
+            />
           ])}
         </JuiLeftRailMainSection>
       </JuiLeftRail>

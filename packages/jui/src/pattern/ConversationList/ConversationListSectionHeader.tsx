@@ -6,11 +6,8 @@
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
-import {
-  JuiListNavItem,
-  JuiListNavItemIconographyLeft,
-  JuiListNavItemIconography,
-} from '../../components';
+import { JuiListNavItem, JuiListNavItemIconography } from '../../components';
+import { typography } from '../../foundation/utils';
 
 const StyledRightWrapper = styled.div`
   display: flex;
@@ -19,9 +16,16 @@ const StyledRightWrapper = styled.div`
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};
 `;
 
+const StyledItemText = styled(ItemText)`
+  && {
+    ${typography('caption2')};
+    font-weight: ${({ theme }) => theme.typography.subheading3.fontWeight};
+    color: ${({ theme }) => theme.palette.grey['600']};
+  }
+`;
+
 type JuiSectionHeaderProps = {
   title: string;
-  icon: string;
   umi?: JSX.Element;
   expanded?: boolean;
   className?: string;
@@ -34,7 +38,6 @@ type JuiSectionHeaderProps = {
 const JuiConversationListSectionHeader = memo(
   (props: JuiSectionHeaderProps) => {
     const {
-      icon,
       title,
       umi,
       expanded,
@@ -58,15 +61,13 @@ const JuiConversationListSectionHeader = memo(
         onClick={onClick}
         {...rest}
       >
-        <JuiListNavItemIconographyLeft iconSize="small">
-          {icon}
-        </JuiListNavItemIconographyLeft>
-        <ItemText>{title}</ItemText>
+        <StyledItemText>{title}</StyledItemText>
         <StyledRightWrapper>
           {!expanded ? umi : null}
           {!hideArrow ? (
             <JuiListNavItemIconography
               iconSize="medium"
+              iconColor={['grey', '500']}
               onClick={onArrowClick}
               data-test-automation-id={
                 expanded
