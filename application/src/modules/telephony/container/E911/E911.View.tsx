@@ -25,8 +25,6 @@ type Props = E911ViewProps & WithTranslation;
 
 type Field = {
   fieldItem: FieldItem;
-  // label: string;
-  // placeholder: string;
   automationId: string;
   value: string;
   type: string;

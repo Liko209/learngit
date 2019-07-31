@@ -28,7 +28,7 @@ import {
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
 
-const KEY_MAP = {
+const CHECK_KEY_MAP = {
   street: 'street',
   additionalAddress: 'street2',
   city: 'city',
@@ -103,7 +103,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         return;
       }
       if (!(fields[key] as FieldItem).optional) {
-        checkKeys.push(KEY_MAP[key]);
+        checkKeys.push(CHECK_KEY_MAP[key]);
       }
     });
 
