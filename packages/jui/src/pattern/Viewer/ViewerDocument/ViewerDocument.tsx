@@ -20,7 +20,7 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const PAGE_PADDING = 32;
 const PAGE_FIT = 'page-fit';
-/* eslint-disable */
+
 const ViewerDocumentWrap = styled('div')`
   && {
     background-color: ${palette('grey', '100')};
@@ -446,20 +446,18 @@ class JuiViewerDocument extends React.Component<Props, States> {
       }
     } else if (emitIdx > last.id) {
       emitIdx = Number(first.id);
-    } else {
-      if (viewLength > 2) {
-        if (emitIdx < first.id || emitIdx > last.id) {
-          emitIdx = Number(first.id);
-        } else {
-          emitIdx = toIdx;
-        }
-      } else if (viewLength === 2) {
-        const secondView = views[1];
-        if (secondView.percent > first.percent) {
-          emitIdx = Number(secondView.id);
-        } else {
-          emitIdx = Number(first.id);
-        }
+    } else if (viewLength > 2) {
+      if (emitIdx < first.id || emitIdx > last.id) {
+        emitIdx = Number(first.id);
+      } else {
+        emitIdx = toIdx;
+      }
+    } else if (viewLength === 2) {
+      const secondView = views[1];
+      if (secondView.percent > first.percent) {
+        emitIdx = Number(secondView.id);
+      } else {
+        emitIdx = Number(first.id);
       }
     }
     this._emitPageIdx = emitIdx;
@@ -521,6 +519,7 @@ class JuiViewerDocument extends React.Component<Props, States> {
   renderPages = () => {
     const { pages } = this.props;
     const { currentScale } = this.state;
+    /* eslint-disable react/no-array-index-key */
     if (pages) {
       return pages.map((pageItem, idx) => {
         const { cmp, getViewport, loading } = pageItem;
@@ -547,10 +546,10 @@ class JuiViewerDocument extends React.Component<Props, States> {
   render() {
     return (
       <ViewerDocumentWrap
-        className='ViewerDocument'
+        className="ViewerDocument"
         ref={this.container as any}
       >
-        <div className='ViewerDocumentContent'>{this.renderPages()}</div>
+        <div className="ViewerDocumentContent">{this.renderPages()}</div>
       </ViewerDocumentWrap>
     );
   }

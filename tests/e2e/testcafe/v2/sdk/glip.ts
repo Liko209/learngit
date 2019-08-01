@@ -148,11 +148,16 @@ export class GlipSdk {
     };
   }
 
-  async init() {
+  async init(isReset: Boolean = true) {
     const res = await this.authByRcToken(true);
     this.accessToken = res.headers['x-authorization'];
     this.initData = res.data;
     this.glipDb.updateWithInitData(this.initData);
+    if (isReset) {
+      try {
+        await this.resetProfileAndState();
+      } catch (e) { }
+    }
   }
 
   /* person */
@@ -461,6 +466,7 @@ export class GlipSdk {
       "_csrf": null,
       "first_time_users_ensured": true,
       "desktop_banner_dismissed": true,
+      "last_group_id": 0,
     }
     await this.clearAllUmi();
     return await this.partialUpdateState(initData, rcId);

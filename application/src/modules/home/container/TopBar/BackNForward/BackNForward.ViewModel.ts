@@ -20,7 +20,7 @@ class BackNForwardViewModel extends StoreViewModel {
     }
 
     this._setHistoryStackPointer(pointer + 1);
-  }
+  };
 
   @action
   back = () => {
@@ -30,14 +30,16 @@ class BackNForwardViewModel extends StoreViewModel {
     }
 
     this._setHistoryStackPointer(pointer - 1);
-  }
+  };
 
   @computed
   get backRecord() {
-    return historyStack.backRecord.map((pathname: string) => ({
-      pathname,
-      title: getDocTitle(pathname),
-    }));
+    return historyStack.backRecord
+      .map((pathname: string) => ({
+        pathname,
+        title: getDocTitle(pathname),
+      }))
+      .reverse();
   }
 
   @computed
@@ -57,6 +59,14 @@ class BackNForwardViewModel extends StoreViewModel {
   get disabledForward() {
     return this.forwardRecord.length === 0;
   }
+
+  getBackRecord = () => {
+    return this.backRecord;
+  };
+
+  getForwardRecord = () => {
+    return this.forwardRecord;
+  };
 
   @action
   private _setHistoryStackPointer(pointer: number) {
@@ -79,6 +89,6 @@ class BackNForwardViewModel extends StoreViewModel {
     }
 
     this._setHistoryStackPointer(pointer);
-  }
+  };
 }
 export { BackNForwardViewModel };

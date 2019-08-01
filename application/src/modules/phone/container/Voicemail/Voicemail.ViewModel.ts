@@ -21,9 +21,13 @@ import {
 import { INITIAL_COUNT } from './config';
 import { VoicemailListHandler } from './VoicemailListHandler';
 import { HoverControllerViewModel } from '../HoverController';
+import { container } from 'framework';
+import { PhoneStore } from '../../store';
 
 class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   implements VoicemailViewProps {
+  private _phoneStore: PhoneStore = container.get(PhoneStore);
+
   @observable
   isError = false;
 
@@ -72,7 +76,7 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
 
     this.reaction(
       () => getGlobalValue(GLOBAL_KEYS.INCOMING_CALL),
-      () => this.onVoicemailPlay(null),
+      () => this._pauseAllVoiceMail(),
     );
   }
 
@@ -138,6 +142,20 @@ class VoicemailViewModel extends HoverControllerViewModel<VoicemailProps>
   onFilterChange: IJuiChangePhoneFilter = value => {
     this._filterValue = value;
   };
+
+  private _pauseAllVoiceMail = () => {
+    const audioCache = this._phoneStore.audioCache;
+    if (audioCache.size !== 0) {
+      audioCache.forEach(audio => {
+        audio.media && audio.media.pause();
+      });
+    }
+  };
+
+  dispose() {
+    super.dispose();
+    this._pauseAllVoiceMail();
+  }
 }
 
 export { VoicemailViewModel };

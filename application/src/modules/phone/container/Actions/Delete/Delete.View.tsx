@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import { withTranslation, WithTranslation } from 'react-i18next';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -77,7 +76,7 @@ class DeleteViewComponent extends Component<Props> {
     return (
       <ActionButton
         key={`${entity}-delete`}
-        icon='delete-call'
+        icon="delete-call"
         type={type}
         tooltip={t('common.delete')}
         onClick={this._handleClick}

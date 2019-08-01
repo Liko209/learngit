@@ -8,7 +8,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { AudioPlayerButtonProps } from './types';
 import { MediaOptions, IMedia } from '@/interface/media';
 import { observable, action, computed } from 'mobx';
-import { JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { Media } from '../../Media';
 
 class AudioPlayerButtonViewModel extends StoreViewModel<

@@ -29,6 +29,7 @@ class Media implements IMedia {
   private _currentTime: number;
   private _useTrack: MediaTrack;
   private _events: MediaEvents[] = [];
+  private _onResetHandler: () => void;
 
   constructor(options: MediaOptions) {
     this._setup(options);
@@ -83,8 +84,8 @@ class Media implements IMedia {
   stop() {
     if (this._isMediaInTrack()) {
       this._useTrack.stop();
-      this._currentTime = 0;
     }
+    this._currentTime = 0;
     return this;
   }
 
@@ -165,9 +166,14 @@ class Media implements IMedia {
     this._resetMedia();
   }
 
-  private _resetMedia() {
-    this._currentTime = 0;
+  onReset(handler: () => void) {
+    this._onResetHandler = handler;
   }
+
+  private _resetMedia = () => {
+    this._currentTime = 0;
+    this._onResetHandler && this._onResetHandler();
+  };
 
   private _setup(o: MediaOptions) {
     this._trackId = o.trackId;

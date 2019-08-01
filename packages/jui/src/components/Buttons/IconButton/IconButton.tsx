@@ -243,7 +243,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   if (alwaysEnableTooltip) {
     renderToolTipWrapper = () => <span>{renderToolTip()}</span>;
   }
-  if (!disableToolTip) {
+  if (!disableToolTip && tooltipTitle) {
     return (
       <RuiTooltip
         title={tooltipTitle}

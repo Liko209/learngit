@@ -41,6 +41,7 @@ import { SYNC_PERFORMANCE_KEYS } from '../config/performanceKeys';
 
 import { IndexTaskController } from './IndexTaskController';
 import { ACCOUNT_TYPE_ENUM } from 'sdk/authenticator/constants';
+import { dataCollectionHelper } from 'sdk/framework';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -129,9 +130,11 @@ class SyncController {
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
+      this._traceLoginData(true);
       notificationCenter.emitKVChange(SERVICE.GLIP_LOGIN, true);
     } catch (e) {
       mainLogger.error(LOG_TAG, 'fetch initial data error');
+      this._traceLoginData(false);
       const accountType = ServiceLoader.getInstance<AccountService>(
         ServiceConfig.ACCOUNT_SERVICE,
       ).userConfig.getAccountType();
@@ -625,6 +628,25 @@ class SyncController {
         await this.syncData();
       }
     }
+  }
+
+  private async _traceLoginData(isSuccess: boolean){
+    if (isSuccess) {
+    const userConfig = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).userConfig;
+
+    dataCollectionHelper.traceLoginSuccess({
+      accountType:'glip',
+      userId: userConfig.getGlipUserId(),
+      companyId: userConfig.getCurrentCompanyId()
+    });
+  }else {
+    dataCollectionHelper.traceLoginFailed(
+      'glip',
+      'initial failed',
+    );
+  }
   }
 
   /**

@@ -24,7 +24,6 @@ test(formalName('Should be not favorite when received new unread conversation', 
 
   await h(t).withLog('Given one DirectMessage conversation as unread', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
     await h(t).glip(loginUser).hideGroups(chat.glipId);
   });
@@ -94,4 +93,3 @@ test(formalName('Should be not favorite when received new unread conversation', 
 
   await h(t).log('And I take screenshot',{screenshotPath:'Jupiter_LeftRail_CloseConversation'});
 });
-
