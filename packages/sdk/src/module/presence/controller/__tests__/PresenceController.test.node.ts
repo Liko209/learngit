@@ -54,37 +54,13 @@ describe('Presence Controller', () => {
     ).toHaveBeenCalledWith(1);
   });
 
-  it('should call subscribeSuccess() when success and every id is different from incoming data', () => {
+  it('should call subscribeSuccess() when success', () => {
     presenceController.handlePresenceIncomingData = jest.fn();
     presenceController.saveToMemory([{ id: 1, presence: PRESENCE.AVAILABLE }]);
     presenceController.subscribeSuccess([
       {
         personId: 1,
         calculatedStatus: PRESENCE.UNAVAILABLE,
-      },
-      {
-        personId: 2,
-        calculatedStatus: PRESENCE.AVAILABLE,
-      },
-    ]);
-    expect(presenceController.handlePresenceIncomingData).toHaveBeenCalledWith([
-      {
-        personId: 1,
-        calculatedStatus: PRESENCE.UNAVAILABLE,
-      },
-      {
-        personId: 2,
-        calculatedStatus: PRESENCE.AVAILABLE,
-      },
-    ]);
-  });
-  it('should call subscribeSuccess() when success and filter person in cache', () => {
-    presenceController.handlePresenceIncomingData = jest.fn();
-    presenceController.saveToMemory([{ id: 1, presence: PRESENCE.AVAILABLE }]);
-    presenceController.subscribeSuccess([
-      {
-        personId: 1,
-        calculatedStatus: PRESENCE.AVAILABLE,
       },
       {
         personId: 2,

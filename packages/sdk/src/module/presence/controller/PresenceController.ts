@@ -102,10 +102,8 @@ class PresenceController {
    */
   subscribeSuccess(successPresences: RawPresence[]) {
     const needUpdatePresences = successPresences.filter(
-      (presence: RawPresence) => {
-        const cache = this._getPresenceFromCache(presence.personId);
-        return (cache && cache.presence) !== presence.calculatedStatus;
-      },
+      (presence: RawPresence) =>
+        !this._cacheController.getSynchronously(presence.personId),
     );
     this.handlePresenceIncomingData(needUpdatePresences);
   }
