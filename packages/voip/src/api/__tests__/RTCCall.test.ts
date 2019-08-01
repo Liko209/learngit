@@ -49,6 +49,8 @@ describe('RTC call', () => {
     }
     onCallActionSuccess = jest.fn();
     onCallActionFailed = jest.fn();
+    notifyNoAudioDataEvent = jest.fn();
+    notifyNoAudioStateEvent = jest.fn();
 
     isReady(): boolean {
       return this.isReadyReturnValue;
@@ -166,7 +168,6 @@ describe('RTC call', () => {
     reject = jest.fn();
     toVoicemail = jest.fn();
     warmTransfer = jest.fn();
-
 
     dialog = {
       id: {
@@ -2201,6 +2202,167 @@ describe('RTC call', () => {
           -1,
         );
         done();
+      });
+    });
+  });
+
+  describe('No Audio Report', () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      call.onAccountNotReady();
+      session = new MockSession();
+      call.setCallSession(session);
+      session.hold.mockResolvedValue(null);
+      session.unhold.mockResolvedValue(null);
+    }
+    it('should do nothing if call never enter connected state before call is terminated. [JPT-2507]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      setImmediate(() => {
+        call.hangup();
+        setImmediate(() => {
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should do nothing if call connected less than 5 sec before call is terminated. [JPT-2508]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp-incoming if has sent but no received when call is terminated. [JPT-2509]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = true;
+        call._callSession._mediaStatsManager._hasReceivedPackages = false;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp-incoming');
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio state success if has sent and has received when call is terminated. [JPT-2510]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = true;
+        call._callSession._mediaStatsManager._hasReceivedPackages = true;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp-outgoing if has no sent but has received when call is terminated. [JPT-2511]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = false;
+        call._callSession._mediaStatsManager._hasReceivedPackages = true;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp-outgoing');
+          done();
+        });
+      });
+    });
+
+    it('should notify no audio with no-rtp if has no sent and has no received when call is terminated. [JPT-2512]', done => {
+      setup();
+      jest.spyOn(call, '_notifyNoAudioStateEvent');
+      jest.spyOn(call, '_notifyNoAudioDataEvent');
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call._connectedTimestamp = new Date() - 6000;
+        call._callSession._mediaStatsManager._hasSentPackages = false;
+        call._callSession._mediaStatsManager._hasReceivedPackages = false;
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._notifyNoAudioStateEvent).not.toHaveBeenCalled();
+          expect(call._notifyNoAudioDataEvent.mock.calls[0][1]).toBe('no-rtp');
+          done();
+        });
+      });
+    });
+
+    it('should do nothing if the value of connected time is not null when call connected. [JPT-2513]', done => {
+      setup();
+      call._connectedTimestamp = new Date() - 6000;
+      const connectedTime = call._connectedTimestamp;
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._connectedTimestamp).toBe(connectedTime);
+          done();
+        });
+      });
+    });
+    it('should set connected time to current time  if the value of connected time is null when call connected. [JPT-2514]', done => {
+      setup();
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTED);
+        call.hangup();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._connectedTimestamp).toBeDefined();
+          done();
+        });
       });
     });
   });
