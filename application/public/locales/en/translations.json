@@ -476,7 +476,7 @@
         "homepageError": "Invalid webpage address",
         "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
         "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later.",
-        "editProfilePhotoTitle": "Edit Profile Photo",
+        "editProfilePhotoTitle": "Edit profile photo",
         "editProfilePhotoUploadPhoto": "Upload photo",
         "editProfilePhotoZoomText": "Zoom"
       }

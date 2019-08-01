@@ -142,7 +142,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
   };
 
   updateRect = () => {
-    const { fixedContainer, containerSize} = this.props
+    const { fixedContainer, containerSize } = this.props;
     if (
       this._contentHeight &&
       this._contentWidth &&
@@ -231,13 +231,14 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     fitWidth: number,
     fitHeight: number,
   ) => {
-    if(!this.props.options) return
+    if (!this.props.options) return;
     const { minPixel, maxPixel } = this.props.options;
     this._updateScale(fitWidth, fitHeight, minPixel, maxPixel);
     this._fitWidth = fitWidth;
     this._fitHeight = fitHeight;
     this.props.onAutoFitContentRectChange &&
       this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
+    this.forceUpdate();
   };
 
   private _updateScale(
