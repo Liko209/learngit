@@ -21,7 +21,9 @@ import { RESENT_ERROR_FILE_NO_EXISTS } from './constant';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { IMessageService } from '@/modules/message/interface';
 import { TypeDictionary } from 'sdk/utils';
+import { debounce } from 'lodash';
 
+const DEBOUNCE_DELAY = 100;
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
   @IMessageService private _messageService: IMessageService;
@@ -118,16 +120,20 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
       message: 'item.prompt.fileNoLongerExists',
     },
   ])
-  resend = async () => {
-    const canResend = await this._itemService.canResendFailedItems(
-      this.post.itemIds,
-    );
-    if (canResend) {
-      await this._postService.reSendPost(this.id);
-    } else {
-      throw new Error(RESENT_ERROR_FILE_NO_EXISTS);
-    }
-  };
+  resend = debounce(
+    async () => {
+      const canResend = await this._itemService.canResendFailedItems(
+        this.post.itemIds,
+      );
+      if (canResend) {
+        await this._postService.reSendPost(this.id);
+      } else {
+        throw new Error(RESENT_ERROR_FILE_NO_EXISTS);
+      }
+    },
+    DEBOUNCE_DELAY,
+    { leading: true, trailing: false },
+  );
 
   @action
   edit = () => {
@@ -140,9 +146,13 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
     this._messageService.setEditInputFocus(this.id);
   };
 
-  deletePost = async () => {
-    await this._postService.deletePost(this.id);
-  };
+  deletePost = debounce(
+    async () => {
+      await this._postService.deletePost(this.id);
+    },
+    DEBOUNCE_DELAY,
+    { leading: true, trailing: false },
+  );
 }
 
 export { ProgressActionsViewModel };
