@@ -99,6 +99,11 @@ class Sound {
         });
       this._node.src = '';
 
+      if (process.env.NODE_ENV !== 'test') {
+        const audio = document.getElementById(this._id);
+        audio && audio.parentNode && audio.parentNode.removeChild(audio);
+      }
+
       this._node = null;
     }
     setTimeout(() => {
@@ -391,7 +396,12 @@ class Sound {
       });
     }
 
-    return new Audio();
+    const audio = new Audio();
+    if (process.env.NODE_ENV !== 'test') {
+      audio.id = this._id;
+      document.body.appendChild(audio);
+    }
+    return audio;
   }
 
   get id() {

@@ -1,8 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ConversationStream/ConversationStream.ts",
-      "./fixtures/AtMention/*"
+      "./fixtures/PhoneTab/Voicemail/CheckStatus.ts"
     ],
     "browsers": [
       "selenium:chrome"
