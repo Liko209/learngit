@@ -22,7 +22,6 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();
@@ -104,9 +103,8 @@ test.meta(<ITestMeta>{
     members: [loginUser, users[0], users[1]]
   }
 
-
-  let chatId;
   await h(t).withLog('Given I have an extension with 1 group and 1 team', async () => {
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
     await h(t).scenarioHelper.createTeamsOrChats([team, group]);
   });
 
@@ -197,9 +195,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I enter teamB and click more icon on conversation header', async () => {
-    const teamEntry = teamSection.conversationEntryById(teamB.glipId);
-    await t.click(teamEntry.self);
-    await teamEntry.enter();
+    await teamSection.conversationEntryById(teamB.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
   });
 
@@ -208,9 +204,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I enter teamA and click more icon on conversation header', async () => {
-    const teamEntry = teamSection.conversationEntryById(teamA.glipId);
-    await t.click(teamEntry.self);
-    await teamEntry.enter();
+    await teamSection.conversationEntryById(teamA.glipId).enter();
     await conversationPage.openMoreButtonOnHeader();
   });
 
@@ -265,7 +259,7 @@ test.meta(<ITestMeta>{
   const otherUser = h(t).rcData.mainCompany.users[1];
   const groupUser = h(t).rcData.mainCompany.users[2];
 
-  await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   const team = <IGroup>{
     type: 'Team',
@@ -373,7 +367,7 @@ test.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const otherUser = h(t).rcData.mainCompany.users[1];
 
-  await h(t).glip(loginUser).init();
+  await h(t).scenarioHelper.resetProfileAndState(loginUser);
 
   const team = <IGroup>{
     type: 'Team',

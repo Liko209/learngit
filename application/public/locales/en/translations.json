@@ -16,7 +16,8 @@
       "send": "Send",
       "delete": "Delete",
       "close": "Close",
-      "deleteAll": "Delete all"
+      "deleteAll": "Delete all",
+      "edit": "Edit"
     },
     "prompt": {
       "NoInternetConnection": "No Internet Connection",
@@ -111,7 +112,8 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved",
     "dialer": "Dialer",
-    "openDialer": "Open the dialer"
+    "openDialer": "Open the dialer",
+    "editProfile": "Edit Profile"
   },
   "globalSearch": {
     "search": "Search",
@@ -295,7 +297,8 @@
       "editFileNameBackendError": "Sorry, something went wrong on our end and we aren't able to save the edit. Try again later.",
       "editFileNameNetworkError": "We aren't able to save the edit. Check your network connection, then try again.",
       "deleteFileBackendError": "Sorry, something went wrong on our end and we weren't able to delete this file. Try again later.",
-      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again."
+      "deleteFileNetworkError": "We weren't able to delete this file. Check your network connection, then try again.",
+      "editProfileTitle": "Edit Profile"
     },
     "fileAction": {
       "deleteFile": "Delete file",
@@ -461,7 +464,19 @@
       "webpage": "Webpage",
       "ariaWebpage": "web page",
       "ariaGoToMe": "Go to the workstation of yourself",
-      "ariaGoToOther": "Go to the conversation with {{name}}"
+      "ariaGoToOther": "Go to the conversation with {{name}}",
+      "edit": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "jobTitle": "Title",
+        "location": "Location",
+        "department": "Department",
+        "homepage": "Webpage",
+        "phone": "Phone",
+        "homepageError": "Invalid webpage address",
+        "editProfileNetworkError": "We weren't able to save the edit. Check your network connection, then try again.",
+        "editProfileBackendError": "Sorry, something went wrong on our end and we weren't able to save the edit. Try again later."
+      }
     },
     "group": {
       "addPeople": "Add people"

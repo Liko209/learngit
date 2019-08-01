@@ -3,12 +3,11 @@
  * @Date: 2018-12-05 18:30:30
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager from '@/store';
-import { getGlobalValue, getPresence } from '@/store/utils';
+import storeManager, { ENTITY_NAME }  from '@/store';
+import { getGlobalValue, getPresence, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
 import { container } from 'framework';
@@ -19,10 +18,14 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
+
 
 const globalStore = storeManager.getGlobalStore();
 
-class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps {
+class AvatarActionsViewModel extends StoreViewModel<Props>
+  implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
 
@@ -39,7 +42,7 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
       callCount = telephonyService.getAllCallCount();
     } catch (e) {
       mainLogger.info(
-        '[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}',
+        `[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}`,
       );
     }
 
@@ -81,15 +84,19 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
   };
 
   private _doLogout = async () => {
-    const accountService = ServiceLoader.getInstance<AccountService>(ServiceConfig.ACCOUNT_SERVICE);
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     await accountService.logout();
     window.location.href = '/';
   };
 
   @action
   toggleAboutPage = (electronAppVersion?: string, electronVersion?: string) => {
-    electronAppVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
-    electronVersion && globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
+    electronAppVersion &&
+      globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion);
+    electronVersion &&
+      globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion);
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   };
 
@@ -100,6 +107,14 @@ class AvatarActionsViewModel extends StoreViewModel<Props> implements ViewProps 
   @computed
   get presence() {
     return getPresence(this.currentUserId);
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
+    );
   }
 }
 

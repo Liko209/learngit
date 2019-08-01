@@ -187,7 +187,6 @@ class JuiHeader extends PureComponent<Props, State> {
   state = {
     showHoverActions: false,
   };
-  /* eslint-disable react/sort-comp */
   private _handleMouseEvent = () => {
     const { HoverActions, showDialerInputField } = this.props;
     if (showDialerInputField) {

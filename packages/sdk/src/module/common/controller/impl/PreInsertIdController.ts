@@ -9,7 +9,7 @@ import { AccountGlobalConfig } from '../../../account/config';
 import { UserConfigService } from '../../../config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
-/* eslint-disable */
+
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
 class PreInsertIdController implements IPreInsertIdController {
@@ -65,7 +65,7 @@ class PreInsertIdController implements IPreInsertIdController {
   }
 
   isInPreInsert(uniqueId: string): boolean {
-    return this._preInsertIds.hasOwnProperty(uniqueId);
+    return Object.prototype.hasOwnProperty.call(this._preInsertIds, uniqueId);
   }
 
   getPreInsertId(uniqueId: string): number {

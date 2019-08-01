@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { PureComponent } from 'react';
 
 type DocumentTitleProps = {
   children: string;
@@ -7,8 +7,7 @@ type DocumentTitleProps = {
 /**
  * Update document.title
  */
-/* eslint-disable */
-class DocumentTitle extends Component<DocumentTitleProps> {
+class DocumentTitle extends PureComponent<DocumentTitleProps> {
   render() {
     document.title = this.props.children;
     return null;

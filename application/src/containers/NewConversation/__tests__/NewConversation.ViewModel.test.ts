@@ -57,7 +57,7 @@ describe('NewConversationViewModel', () => {
       );
       expect(newConversationVM.handleClose).not.toHaveBeenCalled();
     });
-    it('Should display flash toast notification when getConversationId failed for network issue [JPT-2605]', async () => {
+    it('Should display flash toast notification when getConversationId failed for network issue [JPT-2605, JPT-2606]', async () => {
       (getConversationId = jest.fn().mockImplementation(() => {
         throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
       })),

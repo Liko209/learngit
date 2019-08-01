@@ -85,6 +85,13 @@ describe('Presence Controller', () => {
         PRESENCE.DND,
       );
     });
+
+    it('should call autoSetPresence with correct parameter', async () => {
+      await presenceService.setAutoPresence(PRESENCE.UNAVAILABLE);
+      expect(presenceActionController.setAutoPresence).toHaveBeenCalledWith(
+        PRESENCE.UNAVAILABLE,
+      );
+    });
   });
 
   describe('presence handleData with correct parameter', () => {

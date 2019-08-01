@@ -16,8 +16,6 @@ import { CompanyService } from 'sdk/module/company';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { E_ACCOUNT_TYPE } from 'sdk/module/company/entity';
 
-/* eslint-disable */
-
 class RCPermissionController {
   private _featurePermissionMap: Map<
     ERCServiceFeaturePermission,
@@ -49,19 +47,20 @@ class RCPermissionController {
   private async _isDisabledRcPermissionForRcProAndFaxUser(
     featurePermission: ERCServiceFeaturePermission,
   ) {
+    const companyService = ServiceLoader.getInstance<CompanyService>(
+      ServiceConfig.COMPANY_SERVICE,
+    );
+    const accountType = await companyService.getUserAccountTypeFromSP430();
     switch (featurePermission) {
       case ERCServiceFeaturePermission.VOIP_CALLING:
       case ERCServiceFeaturePermission.DOMESTIC_CALLS:
       case ERCServiceFeaturePermission.INTERNAL_CALLS:
       case ERCServiceFeaturePermission.RINGCENTRAL_MOBILE_APP:
       case ERCServiceFeaturePermission.CONFERENCING:
-        const companyService = ServiceLoader.getInstance<CompanyService>(
-          ServiceConfig.COMPANY_SERVICE,
-        );
-        const accountType = await companyService.getUserAccountTypeFromSP430();
         if (accountType) {
           return accountType !== E_ACCOUNT_TYPE.RC_MOBILE;
         }
+        return false;
       case ERCServiceFeaturePermission.VIDEO_CONFERENCING:
         return true;
       default:

@@ -15,6 +15,7 @@ interface IRTCCallSession extends EventEmitter2 {
   hangup(): void;
   flip(target: number): void;
   transfer(target: string): void;
+  warmTransfer(targetSession: any): void;
   forward(target: string): void;
   startRecord(): void;
   stopRecord(): void;

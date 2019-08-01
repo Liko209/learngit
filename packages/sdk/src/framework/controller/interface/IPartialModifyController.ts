@@ -6,23 +6,36 @@
 
 import { IdModel, Raw, ModelIdType } from '../../model';
 
+type PartialNotifyFunc<T> = (
+  originalEntities: T[],
+  updatedEntities: T[],
+  partialEntities: Partial<Raw<T>>[],
+) => void;
+
+type PreHandlePartialEntityFunc<T> = (
+  partialEntity: Partial<Raw<T>>,
+  originalEntity: T,
+) => Partial<Raw<T>>;
+
+type UpdateEntityFunc<T> = (updatedEntity: T) => Promise<T>;
+
+type PartialUpdateParams<
+  T extends IdModel<IdType>,
+  IdType extends ModelIdType = number
+> = {
+  entityId: IdType;
+  preHandlePartialEntity?: PreHandlePartialEntityFunc<T>;
+  doUpdateEntity?: UpdateEntityFunc<T>;
+  doPartialNotify?: PartialNotifyFunc<T>;
+  saveLocalFirst?: boolean;
+  forceDoUpdateEntity?: boolean;
+};
+
 interface IPartialModifyController<
   T extends IdModel<IdType>,
   IdType extends ModelIdType = number
 > {
-  updatePartially(
-    entityId: IdType,
-    preHandlePartialEntity?: (
-      partialEntity: Partial<Raw<T>>,
-      originalEntity: T,
-    ) => Partial<Raw<T>>,
-    doUpdateEntity?: (updatedEntity: T) => Promise<T>,
-    doPartialNotify?: (
-      originalEntities: T[],
-      updatedEntities: T[],
-      partialEntities: Partial<Raw<T>>[],
-    ) => void,
-  ): Promise<T | null>;
+  updatePartially(params: PartialUpdateParams<T, IdType>): Promise<T | null>;
 
   getRollbackPartialEntity(
     partialEntity: Partial<Raw<T>>,
@@ -32,4 +45,10 @@ interface IPartialModifyController<
   getMergedEntity(partialEntity: Partial<Raw<T>>, originalEntity: T): T;
 }
 
-export { IPartialModifyController };
+export {
+  IPartialModifyController,
+  PartialUpdateParams,
+  PartialNotifyFunc,
+  PreHandlePartialEntityFunc,
+  UpdateEntityFunc,
+};

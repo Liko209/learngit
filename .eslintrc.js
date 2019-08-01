@@ -49,7 +49,7 @@ module.exports = {
     'no-bitwise': 'off',
     'no-return-assign': 'off',
     'no-empty-function': 'off',
-    'no-console': 'off',
+    'no-console': 'error',
     'no-nested-ternary': 'off',
     'no-unused-expressions': 'off',
     'lines-between-class-members': 'off',

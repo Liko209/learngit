@@ -11,9 +11,12 @@ import { Listener } from 'eventemitter2';
 
 class BaseConfigService extends AbstractService {
   private _ns: string;
+  private subscriptions: Map<Listener, Set<string>> = new Map();
 
   protected onStarted() {}
-  protected onStopped() {}
+  protected onStopped() {
+    this.clear();
+  }
 
   protected setNameSpace(ns: string) {
     this._ns = ns;
@@ -50,10 +53,17 @@ class BaseConfigService extends AbstractService {
 
   on(module: string, key: string, listener: Listener) {
     notificationCenter.on(`${this._ns}.${module}.${key}`, listener);
+    if (!this.subscriptions.has(listener)) {
+      this.subscriptions.set(listener, new Set());
+    }
+    this.subscriptions.get(listener)!.add(`${this._ns}.${module}.${key}`);
   }
 
   off(module: string, key: string, listener: Listener) {
     notificationCenter.off(`${this._ns}.${module}.${key}`, listener);
+    if (this.subscriptions.has(listener)) {
+      this.subscriptions.get(listener)!.delete(`${this._ns}.${module}.${key}`);
+    }
   }
 
   clear() {

@@ -3,8 +3,9 @@
  * @Date: 2019-07-23 13:39:23
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useCallback, useEffect } from 'react';
 import { useFocusHelper } from '../../foundation/hooks/useFocusHelper';
+import { filterReactElement } from '../../foundation/utils/filterReactElement';
 import { JuiMenuItemProps } from '../Menus';
 import {
   JuiVirtualizedList,
@@ -24,16 +25,6 @@ type JuiVirtualizedMenuListProps = {
   menuItemHeight?: number;
 };
 
-function filterElementChildren(children: React.ReactNode) {
-  const elementChildren: React.ReactElement<JuiMenuItemProps>[] = [];
-  React.Children.forEach(children, child => {
-    if (React.isValidElement<JuiMenuItemProps>(child)) {
-      elementChildren.push(child);
-    }
-  });
-  return elementChildren;
-}
-
 const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   const {
     focusOnHover,
@@ -44,7 +35,8 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   } = props;
 
   const listRef = useRef<JuiVirtualizedListHandles>();
-  const elementChildren = filterElementChildren(props.children);
+  const elementChildren = filterReactElement<JuiMenuItemProps>(props.children);
+
   const items = elementChildren.map(child => {
     return {
       text: child.props.searchString,
@@ -66,8 +58,8 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
     listRef.current && _setFocusedIndex(index);
   };
 
-  const handleKeyPress = useCallback(
-    (event: React.KeyboardEvent<HTMLUListElement>) => {
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLElement>) => {
       event.preventDefault();
       onKeyPress(event.key);
     },
@@ -79,6 +71,12 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
       listRef.current.scrollIntoViewIfNeeded(focusedIndex);
     }
   }, [focusedIndex]);
+
+  useEffect(() => {
+    if (listRef.current && autoFocus) {
+      listRef.current.focus();
+    }
+  }, [autoFocus]);
 
   const children = elementChildren.map((child, i) => {
     return React.cloneElement(child, {
@@ -105,8 +103,8 @@ const JuiVirtualizedMenuList = (props: JuiVirtualizedMenuListProps) => {
   return (
     <List
       ref={listRef as any}
+      onKeyDown={handleKeyDown}
       minRowHeight={menuItemHeight}
-      onKeyDown={handleKeyPress}
       tabIndex={autoFocus ? 0 : -1}
     >
       {children}

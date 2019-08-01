@@ -1,0 +1,43 @@
+{
+  "host": "rc",
+  "path": "/restapi/oauth/token",
+  "method": "POST",
+  "type": "request-response",
+  "via": "xhr",
+  "request": {
+    "host": "https://api-glpdevxmn.lab.nordigy.ru",
+    "path": "/restapi/oauth/token",
+    "method": "POST",
+    "headers": {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  },
+  "response": {
+    "status": 200,
+    "statusText": "OK",
+    "data": {
+      "access_token": "WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnaFhnQmVrWVlLVmQwNzVyblhVUnNCSV91RlY4U2s5T09LaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwRFM3bnlYT3JBTlRVVzVHdmJOUi04NHxURXctTnd8RWhDQVVad3ZHczZLdGUxMHJOYi1Hd3xBQQ",
+      "token_type": "bearer",
+      "expires_in": 3600,
+      "refresh_token": "WE1OMDJQMDFQQVMwMHxBQUNHUDdDWm5HX01JQ3ZKTnViLWVJQWFpcG9JUmtqMUt0b19IcGJSVXVmc2FGbUxlQU9NUk5ySUhqZWdUYkJ4eHZNZHhMbUxtNlJaLW5qODloMDdRUmZnakNaSDBudkhQdC1MYmZiSk9Wdk9SX2k1SG5rdEdmRWhLaF9WQjJ5dll2NFRKN2I1cDMzeXVzbFpTX1BlcjEtMndCV3hmdE5UY3BuSTIyRjVibjRMRmFYc0hyRWQxRWU2SWU3VEg0RW1hUTRISE1Cdm14SEQwSkM3ZkJSaXlFMmR4ZTdzd2NSMy1CNHxURXctTnd8eXRPOUJpUzJSSi1UVFRoVUdyOGI2d3xBQQ",
+      "refresh_token_expires_in": 5184000,
+      "scope": "EditAccounts Faxes GlipInternal EditMeetingsPresence EditCallLog Meetings VoipCalling ReadCallRecording ReadClientInfo Interoperability Contacts EditExtensions TelephonySessions RingOut SMS InternalMessages EditMessages EditPresence",
+      "owner_id": "400162901008",
+      "endpoint_id": "y9mDmTjnQJiBTvzFouGQTA"
+    },
+    "headers": {
+      "date": "Tue, 09 Jul 2019 02:25:28 GMT",
+      "x-rate-limit-limit": "50",
+      "x-rate-limit-remaining": "49",
+      "content-length": "1194",
+      "pragma": "no-cache",
+      "rcrequestid": "d0fd539c-a1f0-11e9-b1b6-005056beb634",
+      "x-rate-limit-group": "auth",
+      "cache-control": "no-store",
+      "routingkey": "XMN02P01",
+      "content-type": "application/json;charset=utf-8",
+      "x-rate-limit-window": "60"
+    }
+  }
+}

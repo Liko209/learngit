@@ -11,7 +11,7 @@ import {
 } from 'sdk';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import '@/i18n';
 

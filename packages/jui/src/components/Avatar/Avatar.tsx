@@ -21,6 +21,9 @@ import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
 import { RuiTooltip } from 'rcui/components/Tooltip';
 
+import { JuiIconography } from '../../foundation/Iconography';
+import { StyledMaskWrapper, StyledMask } from './Mask';
+
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
 
 type JuiAvatarProps = {
@@ -29,6 +32,7 @@ type JuiAvatarProps = {
   tooltip?: string;
   presence?: JSX.Element;
   cover?: boolean;
+  mask?: boolean;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -56,7 +60,8 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color }) => (color ? palette('avatar', color) : grey('100'))};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -85,8 +90,10 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     align-items: center;
     justify-content: center;
     font-size: ${spacing(12)};
-    color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
-    background-color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
+    color: ${({ color }) =>
+      color ? palette('avatar', color) : primary('600')};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : primary('600')};
   }
   & span {
     display: flex;
@@ -106,28 +113,54 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, tooltip, ...rest } = props;
+  const { presence, cover, tooltip, mask, ...rest } = props;
+  const maskWithIcon = (
+    <StyledMask>
+      <JuiIconography iconSize="small" color="common.white">
+        edit
+      </JuiIconography>
+    </StyledMask>
+  );
 
   if (cover) {
-    return (
-      tooltip
-        ? <RuiTooltip title={tooltip}><StyledCoverAvatar {...rest} /></RuiTooltip>
-        : <StyledCoverAvatar {...rest} />
+    const coverWithMask = mask ? (
+      <StyledMaskWrapper>
+        <StyledCoverAvatar {...rest} />
+        {maskWithIcon}
+      </StyledMaskWrapper>
+    ) : (
+      <StyledCoverAvatar {...rest} />
+    );
+    return tooltip ? (
+      <RuiTooltip title={tooltip}>{coverWithMask}</RuiTooltip>
+    ) : (
+      coverWithMask
     );
   }
 
-  const avatar = presence
-    ? (
-      <StyledWrapper size={rest.size} style={rest.style}>
-        <StyledAvatar {...rest} />
-        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      </StyledWrapper>
-    )
-    : <StyledAvatar {...rest} />
+  const avatar = presence ? (
+    <StyledWrapper size={rest.size} style={rest.style}>
+      <StyledAvatar {...rest} />
+      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+    </StyledWrapper>
+  ) : (
+    <StyledAvatar {...rest} />
+  );
 
-  return tooltip
-    ? <RuiTooltip title={tooltip}>{avatar}</RuiTooltip>
-    : avatar
+  const avatarWithMask = mask ? (
+    <StyledMaskWrapper>
+      {avatar}
+      {maskWithIcon}
+    </StyledMaskWrapper>
+  ) : (
+    avatar
+  );
+
+  return tooltip ? (
+    <RuiTooltip title={tooltip}>{avatarWithMask}</RuiTooltip>
+  ) : (
+    avatarWithMask
+  );
 });
 
 JuiAvatar.defaultProps = {
