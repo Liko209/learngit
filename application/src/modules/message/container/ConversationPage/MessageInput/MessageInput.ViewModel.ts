@@ -27,6 +27,7 @@ import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
+import {isMentionIdsContainTeam} from '../../ConversationCard/utils'
 import { mainLogger, dataAnalysis } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -39,7 +40,6 @@ import { ConvertList, WhiteOnlyList } from 'jui/pattern/Emoji/excludeList';
 import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -311,8 +311,8 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       // @ts-ignore
       const quill = (this as any).quill;
       const { content, mentionIds } = markdownFromDelta(quill.getContents());
-      const isMentionIdsContainTeam = vm._isMentionIdsContainTeam(mentionIds);
-      if(isMentionIdsContainTeam) {
+      const mentionIdsContainTeam = isMentionIdsContainTeam(mentionIds);
+      if(mentionIdsContainTeam) {
         dataAnalysis.track('Jup_Web/DT_Messaging_conversationHistory');
       }
       if (content.length > CONTENT_LENGTH) {
@@ -326,12 +326,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       vm.error = '';
       const items = vm.items;
       if (content.trim() || items.length > 0) {
-        vm._sendPost(content, mentionIds);
+        vm._sendPost(content, mentionIds, mentionIdsContainTeam);
       }
     };
   }
 
-  private _sendPost = async (content: string, ids: number[]) => {
+  private _sendPost = async (content: string, ids: number[], containsTeamMention: boolean) => {
     if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
       DEBUG_COMMAND_MAP[content.trim()]();
       this.contentChange('');
@@ -348,6 +348,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         groupId: this.props.id,
         itemIds: items.map((item: FileItem) => item.id),
         mentionNonItemIds: ids,
+        isTeamMention: containsTeamMention,
       });
       // clear context (attachments) after post
       //
@@ -362,7 +363,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   forceSendPost = () => {
-    this._sendPost('', []);
+    this._sendPost('', [],false);
   }
 
   addOnPostCallback = (callback: OnPostCallback) => {
@@ -387,11 +388,6 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.forceSaveDraft();
   }
 
-  private _isMentionIdsContainTeam = (ids:number[]) => {
-    return ids && ids.some((id)=>{
-       return GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_TEAM;
-    });
-  }
 }
 
 export {
