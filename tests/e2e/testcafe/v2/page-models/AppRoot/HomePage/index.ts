@@ -34,9 +34,17 @@ import { DeleteCallHistoryDialog } from './PhoneTab/CallHistory';
 import { BlockNumberDialog } from './PhoneTab/index';
 
 export class HomePage extends BaseWebComponent {
-  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
+  async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true, confirmE911Form: boolean = true) {
     await this.waitUntilExist(this.leftPanel, timeout)
     await this.waitForAllSpinnersToDisappear();
+    if (confirmE911Form) {
+      if (await this.emergencyConfirmFromEntry.exists) {
+        await this.t
+          .click(this.emergencyConfirmFromEntry)
+          .click(this.emergencyConformButton);
+      }
+    }
+
     if (alwaysFocus)
       await h(this.t).interceptHasFocus(true);
   }
@@ -56,6 +64,17 @@ export class HomePage extends BaseWebComponent {
     await h(this.t).directLoginWithUser(url, user);
     await this.ensureLoaded();
   }
+
+  get emergencyConfirmFromEntry() {
+    return this.getSelector('a').withText('Confirm address now.');
+  }
+
+  get emergencyConformButton() {
+    // FIXME
+    return this.getSelectorByAutomationId('DialogOKButton');
+  }
+
+
 
   get leftPanel() {
     return this.getComponent(LeftPanel);
