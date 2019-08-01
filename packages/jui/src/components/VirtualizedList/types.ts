@@ -26,7 +26,8 @@ type JuiVirtualizedListProps = {
   role?: string;
   tabIndex?: number;
   height: number;
-  minRowHeight: number;
+  minRowHeight?: number;
+  fixedRowHeight?: number;
   overscan?: number;
   initialScrollToIndex?: number;
   stickToBottom?: boolean;

@@ -21,6 +21,8 @@ import {
   RTCSipFlags,
   RTCUserInfo,
   RTCSipProvisionInfo,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
 } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -196,6 +198,21 @@ class RTCAccount implements IRTCAccount {
         this._reRegister();
       }
     }
+  }
+
+  public notifyNoAudioStateEvent(
+    uuid: string,
+    noAudioStateEvent: RTCNoAudioStateEvent,
+  ) {
+    this._delegate &&
+      this._delegate.onNoAudioStateEvent(uuid, noAudioStateEvent);
+  }
+
+  public notifyNoAudioDataEvent(
+    uuid: string,
+    noAudioDataEvent: RTCNoAudioDataEvent,
+  ) {
+    this._delegate && this._delegate.onNoAudioDataEvent(uuid, noAudioDataEvent);
   }
 
   private _initListener() {

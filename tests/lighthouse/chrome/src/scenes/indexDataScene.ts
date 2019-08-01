@@ -12,7 +12,7 @@ import { MetricService, FileService } from "../services";
 class IndexDataScene extends Scene {
 
   tags(): Array<string> {
-    return ["Login", "Trace", "API"];
+    return ["IndexDataScene", "Login", "Trace", "API"];
   }
 
   async preHandle() {

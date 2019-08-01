@@ -6,15 +6,16 @@
 
 import { computed, observable } from 'mobx';
 import { FileActionViewModel } from '../common/FIleAction.ViewModel';
-import { AccountService } from 'sdk/module/account';
 import { ItemService } from 'sdk/module/item/service';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { catchError } from '@/common/catchError';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
+import { getEntity, getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { mainLogger } from 'sdk';
+import { Group } from 'sdk/module/group';
+import GroupModel from '@/store/models/Group';
 
 class FileDeleteActionViewModel extends FileActionViewModel {
   @observable
@@ -31,13 +32,13 @@ class FileDeleteActionViewModel extends FileActionViewModel {
 
   @computed
   get canDelete() {
-    const userConfig = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
-    ).userConfig;
-    const currentUserId = userConfig.getGlipUserId();
+    const groupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
     return (
       this._currentItemVersion &&
-      this._currentItemVersion.creator_id === currentUserId
+      this._currentItemVersion.creator_id === currentUserId &&
+      !group.isThePersonGuest(currentUserId)
     );
   }
 

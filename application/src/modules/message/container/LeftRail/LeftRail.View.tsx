@@ -3,7 +3,7 @@
  * @Date: 2018-10-02 15:46:28
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiConversationListFilter } from 'jui/pattern/ConversationList/ConversationListFilter';
@@ -14,7 +14,7 @@ import { LeftRailViewProps } from './types';
 import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
-  JuiLeftRailMainSection
+  JuiLeftRailMainSection,
 } from 'jui/pattern/LeftRail/LeftRail';
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -56,7 +56,7 @@ class LeftRailViewComponent extends Component<
             key={filter.label}
             label={t(filter.label).toUpperCase()}
             onChange={filter.onChange}
-          />
+          />,
         ])}
         <JuiLeftRailMainSection>
           {sections.map((type, index, array) => [
@@ -64,7 +64,7 @@ class LeftRailViewComponent extends Component<
               key={type}
               type={type}
               isLast={index === array.length - 1}
-            />
+            />,
           ])}
         </JuiLeftRailMainSection>
       </JuiLeftRail>

@@ -1,4 +1,8 @@
-import { CALLING_OPTIONS } from 'sdk/module/profile';
+import { CALLING_OPTIONS ,
+  ProfileService,
+  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
+  SETTING_KEYS,
+} from 'sdk/module/profile';
 /*
  * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
  * @Date: 2019-05-28 16:45:22
@@ -8,11 +12,7 @@ import { CALLING_OPTIONS } from 'sdk/module/profile';
 import { ENTITY, notificationCenter } from 'sdk/service';
 import { AccountService } from 'sdk/module/account';
 import { PlatformUtils } from 'sdk/utils/PlatformUtils';
-import {
-  ProfileService,
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-  SETTING_KEYS,
-} from 'sdk/module/profile';
+
 import { NewMessagesSettingHandler } from '../NewMessagesSettingHandler';
 import {
   SettingService,
@@ -21,6 +21,7 @@ import {
   SettingService,
 } from '../../../../setting';
 import { Profile } from 'sdk/module/profile/entity';
+
 jest.mock('sdk/module/profile');
 
 function clearMocks() {
@@ -41,9 +42,6 @@ describe('NewMessagesSettingHandler', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      parentModelId: 1,
-      valueType: 1,
-      weight: 1,
       id: SettingEntityIds.Notification_NewMessages,
       state: 1,
       source: [
@@ -138,7 +136,7 @@ describe('NewMessagesSettingHandler', () => {
       await settingHandler.updateValue(
         DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
       );
-      expect(profileService.updateSettingOptions).toBeCalledWith([
+      expect(profileService.updateSettingOptions).toHaveBeenCalledWith([
         {
           value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF,
           key: SETTING_KEYS.DESKTOP_MESSAGE,
@@ -158,7 +156,7 @@ describe('NewMessagesSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
 
         done();
       });
@@ -175,7 +173,7 @@ describe('NewMessagesSettingHandler', () => {
         } as Profile,
       ]);
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });
@@ -194,7 +192,7 @@ describe('NewMessagesSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
 
         done();
       });
@@ -212,7 +210,7 @@ describe('NewMessagesSettingHandler', () => {
         ],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).toBeCalled();
+        expect(settingHandler.getUserSettingEntity).toHaveBeenCalled();
 
         done();
       });
@@ -226,7 +224,7 @@ describe('NewMessagesSettingHandler', () => {
         [],
       );
       setTimeout(() => {
-        expect(settingHandler.getUserSettingEntity).not.toBeCalled();
+        expect(settingHandler.getUserSettingEntity).not.toHaveBeenCalled();
         done();
       });
     });

@@ -11,7 +11,7 @@ class LoginScene extends Scene {
   private _finallyUrl: string;
 
   tags(): Array<string> {
-    return ["Lighthouse"];
+    return ["LoginScene", "Lighthouse"];
   }
 
   async preHandle() {

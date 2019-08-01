@@ -5,6 +5,7 @@
  */
 
 import * as _ from "lodash";
+import * as assert from "assert";
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
@@ -54,7 +55,6 @@ test(formalName('The content of "New conversation" dialog is correct', ['P2', 'N
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -107,7 +107,6 @@ test(formalName('Group/1:1 conversation can convert to team successfully', ['P2'
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -157,7 +156,6 @@ test(formalName('Cancel the creation of a new group', ['P2', 'NewConversation', 
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -210,7 +208,6 @@ test(formalName("Shouldn't create new group when the conversation existed", ['P1
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -268,7 +265,6 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
   });
 
   await h(t).withLog('Then the "New conversation" dialog is opened', async () => {
-    await t.expect(newConversationDialog.exists).ok();
     await newConversationDialog.ensureLoaded();
   });
 
@@ -288,7 +284,7 @@ test(formalName('Create new group successfully', ['P0', 'NewConversation', 'ales
     const currentGroupId = await conversationPage.currentGroupId;
     const userGlipIDs = await h(t).glip(loginUser).toPersonId([loginUser.rcId, userB.rcId, userC.rcId, userD.rcId, userF.rcId])
     const groupData = await h(t).glip(loginUser).getGroup(currentGroupId).then(res => res.data)
-    await t.expect(_.isEqual(_.sortBy(groupData.members), _.sortBy(userGlipIDs))).ok();
+    assert.equal(String(_.sortBy(groupData.members)), String(_.sortBy(userGlipIDs)));
     await t.expect(conversationPage.posts.count).eql(0);
   });
 

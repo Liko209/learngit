@@ -164,7 +164,9 @@ describe('SendPostController', () => {
       jest
         .spyOn(sendPostController, 'innerSendPost')
         .mockResolvedValueOnce(null);
+      preInsertController.updateStatus = jest.fn();
       await sendPostController.reSendPost(-1);
+      expect(preInsertController.updateStatus).toHaveBeenCalled();
       expect(sendPostController.innerSendPost).toHaveBeenCalledTimes(1);
     });
     it('should return null when local post does not exist', async () => {

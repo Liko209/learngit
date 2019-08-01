@@ -13,7 +13,7 @@ class SwitchConversationScene extends Scene {
   private convrsationIds: Array<string> = Config.switchConversationIds;
 
   tags(): Array<string> {
-    return ["Message", "MessagePanel", "Conversation", "RightRail", "File", "Image", "Memory", "Trace", "API"];
+    return ["SwitchConversationScene", "Message", "MessagePanel", "Conversation", "RightRail", "File", "Image", "Memory", "Trace", "API"];
   }
 
   async preHandle() {

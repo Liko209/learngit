@@ -43,9 +43,6 @@ describe('AudioMessageSoundsSettingHandler', () => {
     jest.spyOn(notificationCenter, 'off');
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     mockDefaultSettingItem = {
-      weight: 1,
-      parentModelId: 1,
-      valueType: 1,
       id: SettingEntityIds.Audio_DirectMessage,
       source: SoundsList,
       value: defaultSounds,
