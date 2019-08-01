@@ -168,10 +168,13 @@ interface IScenarioDataHelper<T> {
   factory: IFactory<T>;
 }
 
-type ScenarioFactory = (
+type Scenario = {};
+
+type ScenarioFactory<Props extends object = object> = (
   context: ItContext,
   glipIndexDataHelper: GlipInitialDataHelper,
-) => any;
+  props?: Props,
+) => Scenario;
 
 export {
   IJRequest,

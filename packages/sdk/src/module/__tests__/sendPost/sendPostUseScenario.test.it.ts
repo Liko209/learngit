@@ -4,17 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk, readJson } from 'shield/sdk';
+import { itForSdk } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
-import {
-  sendPostSuccess,
-  sendPostFail,
-  resendPost,
-} from './data/sendPost.scenario';
-// import { sendPostFailScenarioFactory } from './data/sendPostFail.scenario';
+import * as sendPostScenarioFactory from './data/sendPost.scenario';
 import { wait } from 'shield/utils';
-import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
-import { createResponse } from 'shield/sdk/mocks/server/utils';
 import { Post } from 'sdk/module/post/entity';
 
 itForSdk('Send post test', context => {
@@ -29,7 +22,9 @@ itForSdk('Send post test', context => {
     it('send post success', async () => {
       // PostScenario.action.send.success,
 
-      const sendPostScenario = await helper.useScenario(sendPostSuccess);
+      const sendPostScenario = await helper.useScenario(
+        sendPostScenarioFactory.success,
+      );
       const { post, team } = sendPostScenario;
       await postService.sendPost({
         text: post.text,
@@ -42,10 +37,12 @@ itForSdk('Send post test', context => {
       expect(result.posts[0].id).toEqual(post.id);
       expect(result.posts[0].text).toEqual(post.text);
     });
-    let sendFailedPost: Post;
     let sendFailedTeamId: number;
+    let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      const sendPostFailScenario = await helper.useScenario(sendPostFail);
+      const sendPostFailScenario = await helper.useScenario(
+        sendPostScenarioFactory.fail,
+      );
       sendFailedTeamId = sendPostFailScenario.team._id;
       await expect(
         postService.sendPost({
@@ -74,40 +71,18 @@ itForSdk('Send post test', context => {
       ).not.toBeUndefined();
     });
     it('resend post successfully', async () => {
-      const resendPostScenario = await helper.useScenario(resendPost);
-      // helper.mockResponse(
-      // readJson<IGlipPostPost>(require('./data/SEND_POST.SUCCESS.json')),
-      // data => {
-      // data.response.data.group_id = sendFailedTeamId;
-      // data.response.data.text = 'test post 2';
-      // data.response.data._id = helper
-      // .glipDataHelper()
-      // .post.factory.build()._id;
-      // },
-      // (request, requestResponse) => {
-      // return createResponse({
-      // ...requestResponse.response,
-      // data: {
-      // ...requestResponse.response.data,
-      // unique_id: request.data.unique_id,
-      // },
-      // });
-      // },
-      // );
-      await postService
-        .sendPost({
-          text: resendPostScenario.post!.text!,
-          groupId: resendPostScenario.team._id,
-        })
-        .catch();
+      await helper.useScenario(sendPostScenarioFactory.success, {
+        teamId: sendFailedTeamId,
+        postText: sendFailedPost.text,
+      });
       await postService.reSendPost(sendFailedPost.id);
-      const result2 = await postService.getPostsByGroupId({
+      const groupPosts = await postService.getPostsByGroupId({
         groupId: sendFailedTeamId,
       });
 
-      expect(result2.posts.length).toEqual(1);
-      expect(result2.posts[0].text).toEqual(sendFailedPost.text);
-      expect(result2.posts[0].id > 0).toBeTruthy();
+      expect(groupPosts.posts.length).toEqual(1);
+      expect(groupPosts.posts[0].text).toEqual(sendFailedPost.text);
+      expect(groupPosts.posts[0].id > 0).toBeTruthy();
     });
   });
 });

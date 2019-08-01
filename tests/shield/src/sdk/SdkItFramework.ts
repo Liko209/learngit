@@ -65,6 +65,7 @@ export type ItContext = {
     clearMocks: () => void;
     useScenario: <T extends ScenarioFactory>(
       scenarioFactory: T,
+      props?: T extends ScenarioFactory<infer P> ? P: object,
     ) => Promise<ReturnType<T>>;
   };
   // sdk setup/cleanUp
@@ -181,7 +182,7 @@ export function itForSdk(
     );
   };
 
-  const useScenario: ItContext['helper']['useScenario'] = async scenarioFactory => {
+  const useScenario: ItContext['helper']['useScenario'] = async (scenarioFactory, props) => {
     const emptyIndexData: InitialData = _.cloneDeep({
       ...glipInitialData,
       companies: [],
@@ -195,12 +196,13 @@ export function itForSdk(
     const result = scenarioFactory(
       itCtx,
       createInitialDataHelper(emptyIndexData),
+      props,
     );
     return new Promise(resolve => {
       sdk.syncService.syncData({
         onIndexHandled: async () => {
           console.warn('useScenario ->> onIndexHandled');
-          resolve(result);
+          resolve(result as any);
         },
       });
     });

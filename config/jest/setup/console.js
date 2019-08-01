@@ -3,8 +3,8 @@
  * @Date: 2019-06-27 10:08:01
  * Copyright © RingCentral. All rights reserved.
  */
-global.console.info = jest.fn();
-global.console.log = jest.fn();
+// global.console.info = jest.fn();
+// global.console.log = jest.fn();
 const rawConsoleError = console.error;
 const blackList = [
   /When testing, code that causes React state updates should be wrapped into act/,
