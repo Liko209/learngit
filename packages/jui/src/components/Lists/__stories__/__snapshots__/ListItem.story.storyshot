@@ -142,6 +142,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 }
 
 .c3.c3 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -154,6 +155,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with Avatar and c
 }
 
 .c3.c3 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -426,6 +428,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 }
 
 .c6.c6 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -438,6 +441,7 @@ exports[`Storyshots Components/Lists/ListItem Single-line item with icon: Compon
 }
 
 .c6.c6 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
@@ -725,6 +729,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 }
 
 .c4.c4 .list-item-primary {
+  display: block;
   color: #212121;
   font-size: 0.875rem;
   font-weight: 400;
@@ -737,6 +742,7 @@ exports[`Storyshots Components/Lists/ListItem Two-line item: Components/Lists/Li
 }
 
 .c4.c4 .list-item-secondary {
+  display: block;
   color: #757575;
   font-size: 0.75rem;
   font-weight: 400;
