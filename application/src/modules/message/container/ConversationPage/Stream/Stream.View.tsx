@@ -282,11 +282,9 @@ class StreamViewComponent extends Component<Props> {
       items,
       firstHistoryUnreadPostId = 0,
       historyReadThrough = 0,
-      hasMore,
     } = this.props;
     const listEl = this._listRef.current;
-    const lastPostVisible =
-      !hasMore(DIRECTION.DOWN) && stopIndex === items.length - 1;
+    const lastPostVisible = stopIndex === items.length - 1;
     if (lastPostVisible) {
       this._isAboveScrollToLatestCheckPoint = false;
     } else if (!this._isAboveScrollToLatestCheckPoint) {
