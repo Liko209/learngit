@@ -14,9 +14,7 @@ class BaseConfigService extends AbstractService {
   private subscriptions: Map<Listener, Set<string>> = new Map();
 
   protected onStarted() {}
-  protected onStopped() {
-    this.clear();
-  }
+  protected onStopped() {}
 
   protected setNameSpace(ns: string) {
     this._ns = ns;
