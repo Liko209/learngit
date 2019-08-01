@@ -38,7 +38,8 @@ class PersonActionController {
       return;
     }
 
-    const basicInfo = this._purifyProperties(incomingInfo);
+    const basicInfo =
+      (incomingInfo && this._purifyProperties(incomingInfo)) || {};
 
     const currentPerson = await this._entitySourceController.get(
       this.currentUserGlipId(),
