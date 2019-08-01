@@ -69,10 +69,12 @@ describe('TrackManager', () => {
       });
       expect(track1.volume).toEqual(1);
       expect(track2.volume).toEqual(1);
+      expect(trackManager.volume).toEqual(1);
 
       trackManager.setAllTrackVolume(newVolumeValue);
       expect(track1.masterVolume).toEqual(newVolumeValue);
       expect(track2.masterVolume).toEqual(newVolumeValue);
+      expect(trackManager.volume).toEqual(newVolumeValue);
     });
   });
   describe('setAllTrackOutputDevice()', () => {

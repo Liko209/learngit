@@ -25,7 +25,7 @@ describe('DndBanner', () => {
   class View {
     @test('should not show banner when presence is not dnd')
     @mockGlobalValue(1)
-    @mockPresence(PRESENCE.AVALIABLE)
+    @mockPresence(PRESENCE.AVAILABLE)
     t1() {
       const wrapper = mountWithTheme(<DndBanner />);
       expect(wrapper.find(JuiSnackbarContent)).toHaveLength(0);
