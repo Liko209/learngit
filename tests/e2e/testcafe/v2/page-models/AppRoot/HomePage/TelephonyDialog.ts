@@ -446,7 +446,6 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async hitEnterToMakeCall() {
-    await this.t.click(this.dialerInput);
     await this.t.click(this.dialerInput).pressKey('enter');
   }
 

@@ -466,7 +466,7 @@ class TelephonyService {
             dismissible: true,
           });
         }
-        return false;
+        return true;
       }
     }
 

@@ -5,9 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import {
- observable, computed, action, reaction
-} from 'mobx';
+import { observable, computed, action, reaction } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
@@ -180,6 +178,8 @@ class TelephonyStore {
       length => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForInputString();
+        } else {
+          this.enterFirstLetterThroughKeypadForInputString();
         }
       },
     );
