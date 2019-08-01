@@ -9,7 +9,7 @@ fixture('Profile/ViewYourProfile')
     .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
-test.skip(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'JPT-453', 'P1', 'zack']), async (t) => {
+test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'P1', 'zack']), async (t) => {
     const loginUser = h(t).rcData.mainCompany.users[0];
     const app = new AppRoot(t);
     const viewProfile = app.homePage.profileDialog;
@@ -22,17 +22,11 @@ test.skip(formalName('Open personal profile via top bar avatar then open convers
         await app.homePage.openSettingMenu();
         await app.homePage.settingMenu.ensureLoaded();
     });
-    await h(t).withLog('When I click "Profile" button in setting menu', async () => {
-        await app.homePage.settingMenu.clickViewYourProfile();
+    await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
+        await app.homePage.settingMenu.clickEditYourProfile();
     });
-    await h(t).withLog('Then I can see Profile title', async () => {
+    await h(t).withLog('Then I can see Edit Profile title', async () => {
         await viewProfile.ensureLoaded();
-    }, true);
-    await h(t).withLog('When I click messasge link in Profile', async () => {
-        await viewProfile.goToMessages();
-    }, true);
-    await h(t).withLog('And I can jump to Me Conversation', async () => {
-        await t.expect(app.homePage.messageTab.conversationPage.title.withText(/\(me\)$/).exists).ok();
     }, true);
 
 });

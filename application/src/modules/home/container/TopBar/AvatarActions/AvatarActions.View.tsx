@@ -72,7 +72,7 @@ class AvatarActionsComponent extends React.Component<Props> {
   }
 
   // TODO: when edit profile completed then Replenish
-  handleOpenEditProfile = () => { };
+  handleOpenEditProfile = () => {};
 
   handleDropdown = () => {
     dataAnalysis.page('Jup_Web/DT__appOptions');
