@@ -85,6 +85,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session = null;
   }
 
+  public hasSentPackages(): boolean {
+    return this._mediaStatsManager.hasSentPackages();
+  }
+
+  public hasReceivedPackages(): boolean {
+    return this._mediaStatsManager.hasReceivedPackages();
+  }
+
   private _prepareSipSession() {
     if (!this._session) {
       return;

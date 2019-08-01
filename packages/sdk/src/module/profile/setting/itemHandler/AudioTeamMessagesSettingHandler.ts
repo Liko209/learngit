@@ -42,9 +42,6 @@ class AudioTeamMessagesSettingHandler extends AbstractSettingEntityHandler<
   }
   async fetchUserSettingEntity() {
     const settingItem: UserSettingEntity<AUDIO_SOUNDS_INFO> = {
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       source: SoundsList,
       id: this.id,
       value: await this._getValue(),

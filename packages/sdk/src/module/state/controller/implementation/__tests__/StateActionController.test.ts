@@ -88,6 +88,7 @@ describe('StateActionController', () => {
         post_cursor: 1,
         group_post_cursor: 1,
         group_post_drp_cursor: 0,
+        group_team_mention_cursor: 123
       };
 
       jest
@@ -137,6 +138,7 @@ describe('StateActionController', () => {
         group_post_cursor: 2,
         group_post_drp_cursor: 0,
         unread_deactivated_count: 0,
+        group_team_mention_cursor: 123
       };
       jest
         .spyOn(mockEntitySourceController, 'get')

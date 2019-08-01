@@ -14,7 +14,6 @@ import { RC_INFO, SERVICE } from 'sdk/service/eventKey';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { isChrome } from '../utils';
-import { ESettingItemState } from 'sdk/framework/model/setting/types';
 import { CONFIG_EVENT_TYPE } from 'sdk/module/config/constants';
 
 jest.mock('../utils');
@@ -39,9 +38,6 @@ describe('RingerSourceSettingHandler', () => {
     jest.spyOn(notificationCenter, 'emitEntityUpdate');
     const mockSource = [{ deviceId: 1 }, { deviceId: 2 }];
     mockDefaultSettingItem = {
-      parentModelId: 0,
-      weight: 0,
-      valueType: 0,
       id: SettingEntityIds.Phone_RingerSource,
       source: mockSource,
       state: 0,
@@ -260,9 +256,6 @@ describe('RingerSourceSettingHandler', () => {
         .mockReturnValue(devices);
       const res = await settingHandler.fetchUserSettingEntity();
       expect(res).toEqual({
-        valueType: 0,
-        weight: 0,
-        parentModelId: 0,
         id: SettingEntityIds.Phone_RingerSource,
         source: devices,
         state: expect.any(Number),

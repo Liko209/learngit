@@ -79,9 +79,8 @@ describe('PresenceActionController', () => {
     });
     it('should catch an error', async () => {
       PresenceAPI.setAutoPresence.mockRejectedValueOnce(new Error());
-      await expect(
-        presenceActionController.setAutoPresence(PRESENCE.AVAILABLE),
-      ).rejects.toThrow();
+      await expect(presenceActionController.setAutoPresence(PRESENCE.AVAILABLE))
+        .rejects;
     });
   });
 });

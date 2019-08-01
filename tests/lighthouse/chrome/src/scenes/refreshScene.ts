@@ -9,7 +9,7 @@ import { LoginGatherer, HomePageGatherer } from '../gatherers';
 class RefreshScene extends Scene {
 
   tags(): Array<string> {
-    return ["Lighthouse"];
+    return ["RefreshScene", "Lighthouse"];
   }
 
   async preHandle() {
