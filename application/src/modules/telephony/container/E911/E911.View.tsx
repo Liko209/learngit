@@ -100,7 +100,6 @@ class E911ViewComponent extends Component<Props> {
             automationId={`state-${item.name}`}
             value={item.name}
             key={item.id}
-            maxWidth={90}
           >
             {item.name}
           </JuiMenuItem>

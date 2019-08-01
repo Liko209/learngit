@@ -237,35 +237,22 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   }
 
   getDisclaimers(country?: Country) {
-    if (!this.region || !this.region.isoCode) {
+    if (!this.region || !this.region.name) {
       return;
     }
-    // const regionId = this.region.id;
-    const originalValue = this.settingItemEntity.value!;
+
     const outOfCountry = this.isOutOfCountry(country);
     if (!outOfCountry) {
       this.checkboxList = [];
       return;
     }
 
-    const currentIscCode = country
-      ? country.isoCode
-      : originalValue!.countryIsoCode;
-    const disclaimers = OutOfCountryDisclaimer[currentIscCode]
-      ? OutOfCountryDisclaimer[currentIscCode]
+    const countryName = this.region.name;
+    const disclaimers = OutOfCountryDisclaimer[countryName]
+      ? OutOfCountryDisclaimer[countryName]
       : OutOfCountryDisclaimer.default;
 
-    const defaultValue = this.checkConfirmCountry(country);
-    this.createCheckbox(disclaimers, defaultValue);
-  }
-
-  checkConfirmCountry(country?: Country) {
-    const originalValue = this.settingItemEntity.value!;
-    // if change country need check whether checked disclaimers
-    if (country) {
-      return country.id === originalValue.countryId;
-    }
-    return originalValue.outOfCountry;
+    this.createCheckbox(disclaimers);
   }
 
   isOutOfCountry(country?: Country) {
@@ -278,12 +265,12 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   }
 
   @action
-  createCheckbox(disclaimers: string[], defaultValue: boolean) {
+  createCheckbox(disclaimers: string[]) {
     this.checkboxList = disclaimers.map((text: string) => {
       const isDefaultI18 = text === 'telephony.e911.disclaimer.default';
       const base = {
         i18text: text,
-        checked: defaultValue,
+        checked: false,
       };
       return isDefaultI18
         ? {

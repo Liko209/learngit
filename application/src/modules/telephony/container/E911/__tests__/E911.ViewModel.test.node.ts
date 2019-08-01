@@ -511,23 +511,18 @@ describe('E911ViewModel', () => {
     @test(
       'should be get disclaimers and create checkbox list with original setting if get disclaimers not with country',
     )
-    @mockEntity(
-      createUserInfo({
-        countryIsoCode: 'US',
-      }),
-    )
+    @mockEntity(createUserInfo())
     t1() {
       const vm = new E911ViewModel({});
       vm.region = {
-        isoCode: 'placeholder',
+        name: 'United States',
       };
       jest.spyOn(vm, 'createCheckbox').mockImplementation();
-      jest.spyOn(vm, 'checkConfirmCountry').mockReturnValue(true);
       jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
+
       vm.getDisclaimers();
       expect(vm.createCheckbox).toHaveBeenCalledWith(
-        OutOfCountryDisclaimer['US'],
-        true,
+        OutOfCountryDisclaimer['United States'],
       );
     }
 
@@ -536,7 +531,7 @@ describe('E911ViewModel', () => {
     t2() {
       const vm = new E911ViewModel({});
       vm.region = {
-        isoCode: 'placeholder',
+        name: 'placeholder',
       };
       jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(false);
       vm.getDisclaimers();
@@ -546,48 +541,18 @@ describe('E911ViewModel', () => {
     @test(
       'should be get disclaimers and create checkbox list with default if not match isoCode',
     )
-    @mockEntity(
-      createUserInfo({
-        countryIsoCode: 'CN',
-      }),
-    )
+    @mockEntity(createUserInfo())
     t3() {
       const vm = new E911ViewModel({});
       vm.region = {
-        isoCode: 'placeholder',
+        name: 'China',
       };
       jest.spyOn(vm, 'createCheckbox').mockImplementation();
-      jest.spyOn(vm, 'checkConfirmCountry').mockReturnValue(true);
       jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
       vm.getDisclaimers();
       expect(vm.createCheckbox).toHaveBeenCalledWith(
         OutOfCountryDisclaimer.default,
-        true,
       );
-    }
-
-    @test(
-      'should be get disclaimers and create checkbox list with country if pass country',
-    )
-    @mockEntity(
-      createUserInfo({
-        countryIsoCode: 'CN',
-      }),
-    )
-    t4() {
-      const vm = new E911ViewModel({});
-      vm.region = {
-        isoCode: 'placeholder',
-      };
-      jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
-      jest.spyOn(vm, 'checkConfirmCountry').mockImplementation(() => false);
-      jest.spyOn(vm, 'createCheckbox').mockImplementation();
-      vm.getDisclaimers({ isoCode: 'US' } as any);
-      expect(vm.createCheckbox).toHaveBeenCalledWith(
-        OutOfCountryDisclaimer['US'],
-        false,
-      );
-      expect(vm.checkConfirmCountry).toHaveBeenCalledWith({ isoCode: 'US' });
     }
   }
 
@@ -668,97 +633,71 @@ describe('E911ViewModel', () => {
   }
 
   @testable
-  class checkConfirmCountry {
-    @mockService(RCInfoService, mockRCInfoServiceMethods())
-    beforeEach() {}
-
-    @test('should be use remote data if user already out of country')
-    @mockEntity(
-      createUserInfo({
-        outOfCountry: true,
-      }),
-    )
-    t1() {
-      const vm = new E911ViewModel({});
-      expect(vm.checkConfirmCountry()).toBeTruthy();
-    }
-
-    @test(
-      'should be confirm if user select country === last time setting country',
-    )
-    @mockEntity(
-      createUserInfo({
-        countryId: '1',
-      }),
-    )
-    t2() {
-      const vm = new E911ViewModel({});
-      expect(
-        vm.checkConfirmCountry({
-          id: '1',
-        }),
-      ).toBeTruthy();
-    }
-
-    @test(
-      'should be not confirm if user select country !== last time setting country',
-    )
-    @mockEntity(
-      createUserInfo({
-        countryId: '1',
-      }),
-    )
-    t3() {
-      const vm = new E911ViewModel({});
-      expect(
-        vm.checkConfirmCountry({
-          id: '2',
-        }),
-      ).toBeFalsy();
-    }
-  }
-
-  @testable
   class createCheckbox {
     @mockService(RCInfoService, mockRCInfoServiceMethods())
     beforeEach() {}
 
     @test('should be pass params if is default disclaimers')
-    @mockEntity(
-      createUserInfo({
-      }),
-    )
+    @mockEntity(createUserInfo({}))
     t1() {
       const vm = new E911ViewModel({});
       vm.region = {
-        id: '1'
-      }
-      vm.createCheckbox(OutOfCountryDisclaimer.default, true)
-      const checkBoxList = [{
-        i18text: 'telephony.e911.disclaimer.default',
-        checked: true,
-        params: {
-          id: '1'
-        }
-      }]
+        id: '1',
+      };
+      vm.createCheckbox(OutOfCountryDisclaimer.default);
+      const checkBoxList = [
+        {
+          i18text: 'telephony.e911.disclaimer.default',
+          checked: false,
+          params: {
+            id: '1',
+          },
+        },
+      ];
       expect(vm.checkboxList).toEqual(checkBoxList);
     }
 
-    @test('should be not pass params if not default disclaimers')
-    @mockEntity(
-      createUserInfo({
-      }),
-    )
+    @test('should be show US/CA if out of US/CA')
+    @mockEntity(createUserInfo({}))
     t2() {
       const vm = new E911ViewModel({});
-      vm.createCheckbox(OutOfCountryDisclaimer.US, false)
-      const checkBoxList = [{
-        i18text: 'telephony.e911.disclaimer.US/CA1',
-        checked: false,
-      }, {
-        i18text: 'telephony.e911.disclaimer.US/CA2',
-        checked: false,
-      }]
+      vm.createCheckbox(OutOfCountryDisclaimer['United States']);
+      const checkBoxList1 = [
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA1',
+          checked: false,
+        },
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA2',
+          checked: false,
+        },
+      ];
+      expect(vm.checkboxList).toEqual(checkBoxList1);
+      vm.createCheckbox(OutOfCountryDisclaimer.Canada);
+      const checkBoxList2 = [
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA1',
+          checked: false,
+        },
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA2',
+          checked: false,
+        },
+      ];
+      expect(vm.checkboxList).toEqual(checkBoxList2);
+    }
+
+    @test('should be show UK disclaimer if out of UK')
+    @mockEntity(createUserInfo({}))
+    t3() {
+      const vm = new E911ViewModel({});
+      vm.createCheckbox(OutOfCountryDisclaimer['United Kingdom']);
+      const checkBoxList = [
+        {
+          i18text: 'telephony.e911.disclaimer.UK',
+          checked: false,
+        },
+      ];
       expect(vm.checkboxList).toEqual(checkBoxList);
     }
   }
@@ -769,20 +708,22 @@ describe('E911ViewModel', () => {
     beforeEach() {}
 
     @test('should be set checkbox status if call setCheckBox')
-    @mockEntity(
-      createUserInfo({})
-    )
+    @mockEntity(createUserInfo({}))
     t1() {
       const vm = new E911ViewModel({});
-      vm.checkboxList = [{
-        i18text: 'telephony.e911.disclaimer.US/CA1',
-        checked: false,
-      }]
+      vm.checkboxList = [
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA1',
+          checked: false,
+        },
+      ];
       vm.setCheckBox(0)();
-      expect(vm.checkboxList).toEqual([{
-        i18text: 'telephony.e911.disclaimer.US/CA1',
-        checked: true,
-      }]);
+      expect(vm.checkboxList).toEqual([
+        {
+          i18text: 'telephony.e911.disclaimer.US/CA1',
+          checked: true,
+        },
+      ]);
     }
   }
 });

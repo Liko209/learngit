@@ -5,9 +5,15 @@
  */
 
 const OutOfCountryDisclaimer = {
-  US: ['telephony.e911.disclaimer.US/CA1', 'telephony.e911.disclaimer.US/CA2'],
-  CA: ['telephony.e911.disclaimer.US/CA1', 'telephony.e911.disclaimer.US/CA2'],
-  UK: ['telephony.e911.disclaimer.UK'],
+  'United States': [
+    'telephony.e911.disclaimer.US/CA1',
+    'telephony.e911.disclaimer.US/CA2',
+  ],
+  Canada: [
+    'telephony.e911.disclaimer.US/CA1',
+    'telephony.e911.disclaimer.US/CA2',
+  ],
+  'United Kingdom': ['telephony.e911.disclaimer.UK'],
   default: ['telephony.e911.disclaimer.default'],
 };
 
