@@ -89,14 +89,14 @@ class FileActionController {
       };
     };
 
-    await this._partialModifyController.updatePartially(
-      itemId,
-      preHandlePartial,
-      async (newItem: ItemFile) => {
+    await this._partialModifyController.updatePartially({
+      entityId: itemId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newItem: ItemFile) => {
         const requestController = this._sourceController.getRequestController();
         return await requestController!.put(newItem);
       },
-    );
+    });
   }
 
   async deleteFile(itemId: number, version: number) {
@@ -116,14 +116,14 @@ class FileActionController {
       return partialItem;
     };
 
-    await this._partialModifyController.updatePartially(
-      itemId,
-      preHandlePartial,
-      async (newItem: ItemFile) => {
+    await this._partialModifyController.updatePartially({
+      entityId: itemId,
+      preHandlePartialEntity: preHandlePartial,
+      doUpdateEntity: async (newItem: ItemFile) => {
         const requestController = this._sourceController.getRequestController();
         return await requestController!.put(newItem);
       },
-    );
+    });
   }
 
   private _replaceHostWithProxy(url: string) {

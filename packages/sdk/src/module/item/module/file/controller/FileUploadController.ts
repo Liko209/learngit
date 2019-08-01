@@ -6,24 +6,24 @@
 
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager } from '../../../../../dao';
+import { daoManager } from 'sdk/dao';
 import { ItemDao } from '../../../dao';
-import { Progress, PROGRESS_STATUS } from '../../../../progress';
-import { Raw } from '../../../../../framework/model';
+import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
+import { Raw } from 'sdk/framework/model';
 import { StoredFile, ItemFile, Item } from '../../../entity';
-import ItemAPI, { RequestHolder } from '../../../../../api/glip/item';
-import { AmazonFileUploadPolicyData } from '../../../../../api/glip/types';
-import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
-import { versionHash } from '../../../../../utils/mathUtils';
+import ItemAPI, { RequestHolder, ProgressCallback } from 'sdk/api/glip/item';
+import { AmazonFileUploadPolicyData } from 'sdk/api/glip/types';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { versionHash } from 'sdk/utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
-import { ENTITY, SERVICE } from '../../../../../service/eventKey';
-import notificationCenter from '../../../../../service/notificationCenter';
-import { AccountService } from '../../../../account/service';
-import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
-import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
+import { ENTITY, SERVICE } from 'sdk/service/eventKey';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { AccountService } from 'sdk/module/account/service';
+import { IPartialModifyController } from 'sdk/framework/controller/interface/IPartialModifyController';
+import { IEntitySourceController } from 'sdk/framework/controller/interface/IEntitySourceController';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
-import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import {
   SequenceProcessorHandler,
   IProcessor,
@@ -534,35 +534,46 @@ class FileUploadController {
     });
   }
 
+  async uploadFileToAmazonServer(
+    file: File,
+    updateProgress?: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    const extendFileData = await this._requestAmazonS3Policy(file);
+    const formData = this._createFromDataWithPolicyData(file, extendFileData);
+    mainLogger.tags(LOG_TAG).log('_createFromDataWithPolicyData done', {
+      stored_file: extendFileData && extendFileData.stored_file,
+    });
+    await ItemAPI.uploadFileToAmazonS3(
+      extendFileData.post_url,
+      formData,
+      (event: ProgressEventInit) => {
+        updateProgress && updateProgress(event);
+      },
+      requestHolder,
+    );
+    mainLogger
+      .tags(LOG_TAG)
+      .log('_uploadFileToAmazonS3 done', {
+        stored_file: extendFileData && extendFileData.stored_file,
+      });
+    return extendFileData.stored_file;
+  }
+
   private async _uploadFileToAmazonS3(
     file: File,
     preInsertItem: ItemFile,
-    requestHolder: RequestHolder,
+    requestHolder?: RequestHolder,
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    let extendFileData: AmazonFileUploadPolicyData;
     try {
-      extendFileData = await this._requestAmazonS3Policy(file);
-      // const extendFileData = policyResponse.unwrap();
-      const formData = this._createFromDataWithPolicyData(file, extendFileData);
-      mainLogger.tags(LOG_TAG).log('_createFromDataWithPolicyData done', {
-        stored_file: extendFileData && extendFileData.stored_file,
-      });
-      await ItemAPI.uploadFileToAmazonS3(
-        extendFileData.post_url,
-        formData,
-        (event: ProgressEventInit) => {
-          this._updateProgress(event, itemId);
-        },
-        requestHolder,
-      );
-      mainLogger.tags(LOG_TAG).log('_uploadFileToAmazonS3 done', {
-        groupId,
-        preInsertItem,
-      });
+      const storedFile = await this.uploadFileToAmazonServer(file, (event: ProgressEventInit)=>{
+        this._updateProgress(event, itemId);
+      }, requestHolder)
+     
       this._handleFileUploadSuccess(
-        extendFileData.stored_file,
+        storedFile,
         groupId,
         preInsertItem,
       );
@@ -663,15 +674,14 @@ class FileUploadController {
       };
     };
     await this._partialModifyController.updatePartially(
-      itemId,
-      preHandlePartial,
-      async (updateModel: ItemFile) => {
+      {entityId:itemId,
+      preHandlePartialEntity:preHandlePartial,
+      doUpdateEntity:async (updateModel: ItemFile) => {
         mainLogger
           .tags(LOG_TAG)
           .log('_handleFileUploadSuccess, updatePartially', updateModel.id);
         return updateModel;
-      },
-      undefined,
+      },}
     );
     this._emitItemFileStatus(PROGRESS_STATUS.INPROGRESS, itemId, itemId);
   }

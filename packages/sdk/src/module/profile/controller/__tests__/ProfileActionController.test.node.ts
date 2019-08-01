@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
-import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
+import { IPartialModifyController, PartialUpdateParams } from '../../../../framework/controller/interface/IPartialModifyController';
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
@@ -24,23 +24,14 @@ class TestPartialModifyController implements IPartialModifyController<Profile> {
   partialEntity: Partial<Raw<Profile>>;
   originalEntity: Profile;
   updatePartially(
-    entityId: number,
-    preHandlePartialEntity?: (
-      partialEntity: Partial<Raw<Profile>>,
-      originalEntity: Profile,
-    ) => Partial<Raw<Profile>>,
-    doUpdateEntity?: (updatedEntity: Profile) => Promise<Profile>,
-    doPartialNotify?: (
-      originalEntities: Profile[],
-      updatedEntities: Profile[],
-      partialEntities: Partial<Raw<Profile>>[],
-    ) => void,
+    params: PartialUpdateParams<any>
   ): Promise<Profile | null> {
+    const {preHandlePartialEntity} = params;
     return preHandlePartialEntity(this.partialEntity, this.originalEntity);
   }
 }
 
-const profileDataController = new ProfileDataController(null);
+const profileDataController = new ProfileDataController(null as any, null as any);
 const testPartialModifyController = new TestPartialModifyController();
 describe('ProfileActionController', () => {
   beforeEach(() => {});
