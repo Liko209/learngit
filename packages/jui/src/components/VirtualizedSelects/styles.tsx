@@ -3,8 +3,9 @@
  * @Date: 2019-07-30 09:38:13
  * Copyright © RingCentral. All rights reserved.
  */
+import React from 'react';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import {
   disabled,
   grey,
@@ -16,8 +17,17 @@ import {
   palette,
 } from '../../foundation/utils/styles';
 import { ArrowDropDownIcon } from './ArrowDropDownIcon';
+import { HeightSize } from '../Selects/BoxSelect/types';
 
-const StyledSelect = styled<InputBaseProps>(InputBase)`
+type StyledSelectProps = InputBaseProps & {
+  heightSize?: HeightSize;
+};
+
+const Input = ({ heightSize, ...rest }: StyledSelectProps) => (
+  <InputBase {...rest} />
+);
+
+const StyledSelect = styled<StyledSelectProps>(Input)`
   position: relative;
   display: flex;
   align-items: center;
@@ -28,7 +38,19 @@ const StyledSelect = styled<InputBaseProps>(InputBase)`
   ${typography('body1')};
   color: ${grey('900')};
   width: ${width(50)};
-  height: ${height(10)};
+  ${({ heightSize }: StyledSelectProps) => {
+    if (heightSize === 'default') {
+      return css`
+        height: ${height(8)};
+      `;
+    }
+    if (heightSize === 'large') {
+      return css`
+        height: ${height(10)};
+      `;
+    }
+    return;
+  }}
 
   &&:hover {
     background-color: ${grey('100')};

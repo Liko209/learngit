@@ -9,18 +9,42 @@ import {
   JuiVirtualizedSelectProps,
 } from './VirtualizedSelect';
 import { StyledSelect } from './styles';
+import {
+  StyledSelectBoxContainer,
+  StyledSelectBoxHeader,
+} from '../Selects/BoxSelect';
 
-type JuiVirtualizedBoxSelectProps = Exclude<JuiVirtualizedSelectProps, 'input'>;
+type JuiVirtualizedBoxSelectProps = Exclude<
+  JuiVirtualizedSelectProps,
+  'input'
+> & {
+  automationId: string;
+  className?: string;
+  label?: string;
+  isFullWidth?: boolean;
+};
 
 const CLASSES = { focused: 'focused', input: 'select-input' };
+const LIST_CLASS_NAME = 'virtualized_select-list-container';
+const defaultMenuProps = { classes: { paper: LIST_CLASS_NAME } };
 
 const JuiVirtualizedBoxSelect = React.memo(
   (props: JuiVirtualizedBoxSelectProps) => {
+    const { label, className, isFullWidth, MenuProps, ...rest } = props;
     return (
-      <JuiVirtualizedSelect
-        input={<StyledSelect classes={CLASSES} />}
-        {...props}
-      />
+      <StyledSelectBoxContainer className={className}>
+        {label && <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>}
+        <JuiVirtualizedSelect
+          MenuProps={MenuProps ? MenuProps : defaultMenuProps}
+          input={
+            <StyledSelect
+              classes={CLASSES}
+              style={isFullWidth ? { width: '100%' } : {}}
+            />
+          }
+          {...rest}
+        />
+      </StyledSelectBoxContainer>
     );
   },
 );

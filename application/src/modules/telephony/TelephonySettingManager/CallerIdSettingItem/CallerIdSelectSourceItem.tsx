@@ -3,9 +3,21 @@
  * @Date: 2019-05-27 18:07:46
  * Copyright © RingCentral. All rights reserved.
  */
-import { PhoneNumberRecord, PhoneNumberRecordProps } from './PhoneNumberRecord';
+import React from 'react';
+import { CallerIdItem } from 'src/modules/telephony/container/CallerIdSelector/CallerIdItem';
+import { ICallerPhoneNumber } from 'src/modules/telephony/container/CallerIdSelector/types';
 
-type CallerIdSelectItemProps = PhoneNumberRecordProps;
-const CallerIdSelectSourceItem = PhoneNumberRecord;
+type CallerIdSelectItemProps = {
+  value: ICallerPhoneNumber;
+};
+const CallerIdSelectSourceItem = ({ value }: CallerIdSelectItemProps) => {
+  return (
+    <CallerIdItem
+      {...value}
+      key={value.phoneNumber}
+      value={value.phoneNumber}
+    />
+  );
+};
 
 export { CallerIdSelectSourceItem, CallerIdSelectItemProps };
