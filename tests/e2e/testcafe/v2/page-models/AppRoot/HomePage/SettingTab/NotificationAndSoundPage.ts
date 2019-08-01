@@ -86,6 +86,38 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.microphoneSourceItems.nth(n).getAttribute('data-test-automation-value');
   }
 
+  get microphoneSourceDefaultItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-microphoneSource-default');
+  }
+
+  get ringerSourceAllAudioSourcesItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-ringerSource-all');
+  }
+
+  get audioSourcesVolumeControlLabel() {
+    return this.getSelectorByAutomationId('settingItemLabel-volume');
+  }
+
+  get ringSourceSelectBoxOffItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-ringerSource-off');
+  }
+
+  async hoverRingSourceSelectBoxOffItem() {
+    await this.t.hover(this.ringSourceSelectBoxOffItem);
+  }
+
+  async hoverAudioSourcesVolumeControlLabel() {
+    await this.t.hover(this.audioSourcesVolumeControlLabel);
+  }
+
+  async hoverRingerSourceSelectBox() {
+    await this.t.hover(this.ringerSourceSelectBox);
+  }
+
+  async hoverMicrophoneSourceSelectBox() {
+    await this.t.hover(this.microphoneSourceSelectBox);
+  }
+
   async clickMicrophoneSourceSelectBox() {
     await this.t.click(this.microphoneSourceSelectBox);
   }
@@ -214,6 +246,10 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemToggleButton-notificationBrowser');
   }
 
+  get DialogOKButton() {
+    return this.getSelectorByAutomationId('DialogOKButton');
+  }
+
   // New Message
   get newMessageItem() {
     return this.getSelectorByAutomationId('settingItem-newMessages')
@@ -235,8 +271,16 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('settingItemSelectBox-newMessages');
   }
 
+  get newMessageItemSelectOff() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessages-never');
+  }
+
   get newMessageDropDownItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
+  }
+
+  async hoverNewMessageItemSelectOff() {
+    await this.t.hover(this.newMessageItemSelectOff);
   }
 
   // Incoming Call
@@ -322,5 +366,51 @@ export class NotificationAndSoundSettingPage extends BaseWebComponent {
 
   async clickNewMessageBadgeCountDropDown() {
     await this.t.click(this.newMessageBadgeCountDropDown);
+  }
+
+  /// Direct messages
+  get directMessagesSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-notificationDirectMessages');
+  }
+
+  async clickDirectMessagesSelectBox() {
+    await this.t.click(this.directMessagesSelectBox);
+  }
+
+  get directMessagesOffItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-notificationDirectMessages-0');
+  }
+
+  async hoverDirectMessagesOffItem() {
+    await this.t.hover(this.directMessagesOffItem);
+  }
+
+  /// Other notification settings
+  get otherNotificationSettingsTitle() {
+    return this.getSelectorByAutomationId('settingSectionTitle-otherNotificationSettings');
+  }
+
+  get newMessageBadgeCountSelectBox() {
+    return this.getSelectorByAutomationId('settingItemSelectBox-newMessageBadgeCount');
+  }
+
+  get directMessagesAndMentionsOnlyItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessageBadgeCount-groups_and_mentions');
+  }
+
+  get allNewMessagesItem() {
+    return this.getSelectorByAutomationId('settingItemSelectBoxItem-newMessageBadgeCount-all');
+  }
+
+  async hoverAllNewMessagesItem() {
+    await this.t.hover(this.allNewMessagesItem);
+  }
+
+  async hoverOtherNotificationSettingsTitle() {
+    await this.t.hover(this.otherNotificationSettingsTitle);
+  }
+
+  async clickNewMessageBadgeCountSelectBox() {
+    await this.t.click(this.newMessageBadgeCountSelectBox);
   }
 }
