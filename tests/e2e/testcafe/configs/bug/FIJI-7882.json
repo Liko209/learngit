@@ -1,6 +1,6 @@
 {
   "on_merge": {
-    "fixtures": ["./fixtures/MessageInput"],
+    "fixtures": ["./fixtures/ConversationStream"],
     "browsers": [
       "selenium:chrome"
     ]
