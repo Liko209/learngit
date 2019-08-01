@@ -32,9 +32,11 @@ import { withUploadFile } from 'jui/hoc/withUploadFile';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
 const CONTAINER_SIZE = 280;
+const MIN_SCALE = 1;
+const MAX_SCALE = 5;
 const initZoomOptions: Partial<JuiDragZoomOptions> = {
-  maxScale: 5,
-  minScale: 1,
+  maxScale: MAX_SCALE,
+  minScale: MIN_SCALE,
   step: 0.01,
   wheel: true,
   padding:[0,0,0,0]
@@ -205,8 +207,8 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             </JuiEditPhotoSliderLeftText>
             <RuiSlider
               onChange={handleSliderChange}
-              min={1}
-              max={5}
+              min={MIN_SCALE}
+              max={MAX_SCALE}
               step={0.1}
               value={transform.scale}
               data-test-automation-id={'PhotoEditSlider'}
@@ -221,4 +223,4 @@ class PhotoEditComponent extends Component<PhotoEdit> {
 
 const PhotoEditView = withTranslation('translations')(PhotoEditComponent);
 
-export { PhotoEditView };
+export { PhotoEditView, MAX_SCALE, MIN_SCALE};

@@ -83,7 +83,11 @@ class EditProfileViewComponent extends Component<
   handleMaskClick = () => {
     const { currentPersonInfo, onPhotoEdited, localInfo } = this.props;
 
-    PhotoEdit.show({ onPhotoEdited, file: localInfo && localInfo.file, person: currentPersonInfo  });
+    PhotoEdit.show({
+      onPhotoEdited,
+      file: localInfo && localInfo.file,
+      person: currentPersonInfo,
+    });
   };
 
   _renderItem = (section: EditItemSourceType[]) => {
@@ -146,12 +150,13 @@ class EditProfileViewComponent extends Component<
         }}
       >
         <JuiEditProfileContent>
-          <JuiEditProfileAvatarContent 
-            imgStyle={{ 
-              width: localInfo && localInfo.width, 
-              height: localInfo && localInfo.height, 
-              top: localInfo && localInfo.top, 
-              left: localInfo && localInfo.left 
+          <JuiEditProfileAvatarContent
+            imgStyle={{
+              width: localInfo && localInfo.width,
+              height: localInfo && localInfo.height,
+              top: localInfo && localInfo.top,
+              left: localInfo && localInfo.left,
+              disabled: isLoading,
             }}
           >
             <Avatar

@@ -1,6 +1,6 @@
 /*
  * @Author: looper Wang (looper.wang@ringcentral.com)
- * @Date: 2019-05-30 09:40:39
+ * @Date: 2019-07-30 09:40:39
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -51,7 +51,7 @@ describe('PhotoEditViewModel', () => {
       const vm = new PhotoEditViewModel({ person: { shortName: '111' } });
       expect(vm.shortName).toEqual('111');
     });
-    it('Should return blank update when construct vm with person.shortName',   () => {
+    it('Should return blank update when construct vm with person.shortName', () => {
       const vm = new PhotoEditViewModel(props);
       expect(vm.shortName).toEqual('');
     });
