@@ -7,10 +7,11 @@
 import PersonModel from '@/store/models/Person';
 import { Transform } from 'jui/components/ZoomArea';
 import { HeadShotInfo } from 'sdk/module/person/types';
+import { LocalInfo } from '../types';
 
 type PhotoEditProps = {
   person: PersonModel;
-  photoEditCb: (headShotInfo: HeadShotInfo) => void;
+  onPhotoEdited: (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => void;
 };
 
 type EditItemSourceType = {
@@ -37,6 +38,7 @@ type PhotoEditViewModelProps = {
   shouldShowShortName: boolean;
   sliderValue: number;
   isGifImage: boolean;
+  currentFile: File;
   handleSliderChange: (
     event: React.ChangeEvent<HTMLInputElement>,
     value: number,

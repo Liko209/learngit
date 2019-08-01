@@ -6,7 +6,6 @@
 
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
-import { reaction } from 'mobx';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiDragZoom } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
@@ -24,6 +23,7 @@ import {
   JuiEditPhotoImageEditContent,
   JuiEditPhotoContentMask,
   JuiEditPhotoImageCanNotEdit,
+  JuiEditPhotoZoomCover,
 } from 'jui/pattern/EditProfile';
 import { accelerateURL } from '@/common/accelerateURL';
 import { Transform } from 'jui/components/ZoomArea';
@@ -31,6 +31,14 @@ import portalManager from '@/common/PortalManager';
 import { withUploadFile } from 'jui/hoc/withUploadFile';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
+const CONTAINER_SIZE = 280;
+const initZoomOptions = {
+  maxScale: 5,
+  minScale: 1,
+  step: 0.01,
+  wheel: true,
+  padding:[0,0,0,0]
+}
 @withUploadFile
 class UploadArea extends Component<any> {
   render() {
@@ -44,20 +52,13 @@ class PhotoEditComponent extends Component<PhotoEdit> {
   private _uploadRef: RefObject<any> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
 
-  constructor(props: PhotoEdit) {
-    super(props);
-    reaction(
-      () => this.props.sliderValue,
-      (scale: number) => {
-        if (!this._zoomRef.current) return;
+  componentDidUpdate(prevProps){
+    if(prevProps.sliderValue !== this.props.sliderValue){
+      if (!this._zoomRef.current) return;
         const zoomComponentRef = this._zoomRef.current.getZoomRef();
         if (!zoomComponentRef || !zoomComponentRef.current) return;
-        zoomComponentRef.current.zoomTo(scale);
-      },
-      {
-        fireImmediately: true,
-      },
-    );
+        zoomComponentRef.current.zoomTo(this.props.sliderValue);
+    }
   }
 
   handleClose = () => portalManager.dismissLast();
@@ -81,7 +82,8 @@ class PhotoEditComponent extends Component<PhotoEdit> {
     this.props.updateTransform(transform);
   };
 
-  onFileChanged = (files: FileList) => {
+  handleFileChanged = (files: FileList) => {
+    if(!files) return;
     const { updateImageUrl } = this.props;
     updateImageUrl(files[0]);
   };
@@ -92,15 +94,11 @@ class PhotoEditComponent extends Component<PhotoEdit> {
       <JuiDragZoom
         ref={this._zoomRef}
         contentRef={this._imageRef}
-        options={{
-          maxScale: 5,
-          minScale: 1,
-          step: 0.01,
-          wheel: true,
-        }}
+        options={initZoomOptions}
         fixedContainer
         transFormInCenter
         unNeedZoomButtonGroup
+        containerSize={CONTAINER_SIZE}
         onTransformChange={this.handleTransformChange}
       >
         {({
@@ -117,12 +115,13 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             }px, ${transform.translateY}px)`,
             cursor: canDrag ? 'move' : undefined,
           };
-          const onSizeLoad = (contentWidth: number, contentHeight: number) => {
+          const handleSizeLoad = (contentWidth: number, contentHeight: number) => {
             getInitSize(contentWidth, contentHeight);
             notifyContentSizeChange(contentWidth, contentHeight);
           };
           return (
-            <JuiEditPhotoImageContent canDrag={canDrag}>
+            <JuiEditPhotoImageContent>
+              <JuiEditPhotoZoomCover canDrag={canDrag} />
               <JuiImageView
                 data-test-automation-id={'previewerCanvas'}
                 imageRef={this._imageRef}
@@ -130,7 +129,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
                 width={fitWidth || 0}
                 height={fitHeight || 0}
                 style={imageStyle}
-                onSizeLoad={onSizeLoad}
+                onSizeLoad={handleSizeLoad}
               />
             </JuiEditPhotoImageContent>
           );
@@ -149,6 +148,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
       shouldShowShortName,
       person,
       handleOk,
+      currentFile,
       isGifImage,
     } = this.props;
     return (
@@ -173,7 +173,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             {t('people.profile.edit.editProfilePhotoUploadPhoto')}
           </JuiButton>
           <UploadArea
-            onFileChanged={this.onFileChanged}
+            onFileChanged={this.handleFileChanged}
             multiple={false}
             ref={this._uploadRef}
             accept="image/*"
@@ -189,7 +189,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
                 cover
                 automationId="profileEditAvatar"
               />
-            ) : isGifImage ? (
+            ) : isGifImage || !currentFile ? (
               <JuiEditPhotoImageCanNotEdit>
                 {this.renderZoomContainer()}
               </JuiEditPhotoImageCanNotEdit>
@@ -198,7 +198,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
             )}
           </JuiEditPhotoImageEditContent>
         </JuiEditPhotoEditContent>
-        {!shouldShowShortName && !isGifImage && (
+        {!shouldShowShortName && !isGifImage && currentFile && (
           <JuiEditPhotoSliderContent>
             <JuiEditPhotoSliderLeftText>
               {t('people.profile.edit.editProfilePhotoZoomText')}

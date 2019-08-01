@@ -19,15 +19,29 @@ type EditItemSourceType = {
   isLastItem?: boolean;
 };
 
+type LocalInfo = {
+  url: string;
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+};
+
 type EditProfileViewModelProps = {
   person: PersonModel;
   currentPersonInfo: PersonModel;
   isLoading: boolean;
+  localInfo: LocalInfo;
   homepageError: boolean;
   updateInfo: (key: EditItemSourceType['key'], value: string) => void;
   handleProfileEdit: () => void;
   getUpdateInfo: () => Object | undefined;
-  photoEditCb: (headShotInfo: HeadShotInfo) => void;
+  onPhotoEdited: (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => void;
 };
 
-export { EditItemSourceType, EditProfileProps, EditProfileViewModelProps };
+export {
+  EditItemSourceType,
+  EditProfileProps,
+  EditProfileViewModelProps,
+  LocalInfo,
+};

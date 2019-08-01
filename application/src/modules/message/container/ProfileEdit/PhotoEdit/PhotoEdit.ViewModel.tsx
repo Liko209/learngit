@@ -12,10 +12,11 @@ import portalManager from '@/common/PortalManager';
 import { PhotoEditProps } from './types';
 
 const CONTENT_SIZE = 280;
+const AVATAR_SIZE = 80;
 class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   @observable currentImageUrl: string = this.headShotUrl;
   @observable uploadImageType: string;
-  @observable sliderValue: number;
+  @observable sliderValue: number = 1;
   @observable currentFile: File;
   @observable initSize: { width: number; height: number };
   @observable transform: Transform = { scale: 1, translateX: 0, translateY: 0 };
@@ -84,27 +85,7 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
     };
   };
 
-  @action
-  imageToFile = async (img: HTMLImageElement) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.clientWidth;
-    canvas.height = img.clientHeight;
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    context.drawImage(img, 0, 0);
-    await new Promise(resolve => {
-      canvas.toBlob((blob: Blob) => {
-        resolve(blob);
-      }, 'image/*');
-    }).then((blob: Blob) => {
-      if (!blob) return;
-      this.currentFile = new File([blob], 'headshot', {
-        type: this.uploadImageType,
-      });
-    });
-  };
-
-  numberToSting = (before: number, after: number) => {
+  numberToString = (before: number, after: number) => {
     return `${Math.round(before)}x${Math.round(after)}`;
   };
 
@@ -113,21 +94,31 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   ) => async () => {
     if (!imageRef || !imageRef.current) return;
     if (!this.currentFile) return;
-    const { photoEditCb } = this.props;
+    const { onPhotoEdited } = this.props;
     const { scale, translateX, translateY } = this.transform;
     const { width, height } = this.initSize;
     const baseSize = width > height ? height : width;
     const initScale = CONTENT_SIZE / baseSize;
     const realScale = initScale * scale;
     const crop = baseSize / scale;
-    photoEditCb({
-      file: this.currentFile,
-      offset: this.numberToSting(
-        width / 2 - translateX / initScale - CONTENT_SIZE / 2 / realScale,
-        height / 2 - translateY / initScale - CONTENT_SIZE / 2 / realScale,
-      ),
-      crop: this.numberToSting(crop, crop),
-    });
+    const rate = AVATAR_SIZE / CONTENT_SIZE;
+    onPhotoEdited(
+      {
+        file: this.currentFile,
+        offset: this.numberToString(
+          width / 2 - translateX / initScale - CONTENT_SIZE / 2 / realScale,
+          height / 2 - translateY / initScale - CONTENT_SIZE / 2 / realScale,
+        ),
+        crop: this.numberToString(crop, crop),
+      },
+      {
+        url: this.currentImageUrl,
+        width: width * realScale * rate,
+        height: height * realScale * rate,
+        top: translateY * realScale * rate / initScale,
+        left: translateX * realScale * rate / initScale,
+      },
+    );
     portalManager.dismissLast();
   };
 }

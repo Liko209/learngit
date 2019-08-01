@@ -13,6 +13,7 @@ import {
   JuiEditProfileContent,
   JuiEditProfileSection,
   JuiEditProfileSectionContent,
+  JuiEditProfileAvatarContent,
 } from 'jui/pattern/EditProfile';
 import portalManager from '@/common/PortalManager';
 import { JuiTextField } from 'jui/components/Forms/TextField';
@@ -80,9 +81,9 @@ class EditProfileViewComponent extends Component<
   };
 
   handleMaskClick = () => {
-    const { currentPersonInfo, photoEditCb } = this.props;
+    const { currentPersonInfo, onPhotoEdited } = this.props;
 
-    PhotoEdit.show({ photoEditCb, person: currentPersonInfo });
+    PhotoEdit.show({ onPhotoEdited, person: currentPersonInfo });
   };
 
   _renderItem = (section: EditItemSourceType[]) => {
@@ -119,7 +120,14 @@ class EditProfileViewComponent extends Component<
     });
   };
   render() {
-    const { t, id, handleProfileEdit, homepageError, isLoading } = this.props;
+    const {
+      t,
+      id,
+      handleProfileEdit,
+      homepageError,
+      isLoading,
+      localInfo,
+    } = this.props;
     return (
       <JuiModal
         open
@@ -138,13 +146,23 @@ class EditProfileViewComponent extends Component<
         }}
       >
         <JuiEditProfileContent>
-          <Avatar
-            uid={id}
-            mask
-            size="xlarge"
-            maskClick={this.handleMaskClick}
-            automationId="profileEditAvatar"
-          />
+          <JuiEditProfileAvatarContent 
+            imgStyle={{ 
+              width: localInfo && localInfo.width, 
+              height: localInfo && localInfo.height, 
+              top: localInfo && localInfo.top, 
+              left: localInfo && localInfo.left 
+            }}
+          >
+            <Avatar
+              uid={id}
+              icon={localInfo && localInfo.url}
+              mask
+              size="xlarge"
+              onClick={this.handleMaskClick}
+              automationId="profileEditAvatar"
+            />
+          </JuiEditProfileAvatarContent>
           <JuiEditProfileSectionContent>
             {this._renderSection()}
           </JuiEditProfileSectionContent>

@@ -71,13 +71,13 @@ describe('utils', () => {
       expect(result).toEqual(2);
     });
   });
-  describe('isDraggable()', () => {
+  describe('calculateFitWidthHeightByFixedContainer()', () => {
     it('should return [280, 400] when call with 140, 200', () => {
-      const result = calculateFitWidthHeightByFixedContainer(140, 200);
+      const result = calculateFitWidthHeightByFixedContainer(140, 200, 280);
       expect(result).toEqual([280, 400]);
     });
     it('should return [500, 280] when call with 1000, 560', () => {
-      const result = calculateFitWidthHeightByFixedContainer(1000, 560);
+      const result = calculateFitWidthHeightByFixedContainer(1000, 560, 280);
       expect(result).toEqual([500, 280]);
     });
   });

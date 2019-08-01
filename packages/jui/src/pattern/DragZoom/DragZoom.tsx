@@ -40,6 +40,7 @@ type JuiDragZoomProps = {
   fixedContainer?: boolean;
   transFormInCenter?: boolean;
   unNeedZoomButtonGroup?: boolean;
+  containerSize?: number;
 };
 
 type JuiDragZoomState = {
@@ -141,16 +142,19 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
   };
 
   updateRect = () => {
+    const { fixedContainer, containerSize} = this.props
     if (
       this._contentHeight &&
       this._contentWidth &&
       this._containerWidth &&
       this._containerHeight
     ) {
-      const [fitWidth, fitHeight] = this.props.fixedContainer
+      const [fitWidth, fitHeight] = fixedContainer
         ? calculateFitWidthHeightByFixedContainer(
             this._contentWidth,
             this._contentHeight,
+            containerSize,
+            ensureOptions(this.props.options).padding,
           )
         : calculateFitWidthHeight(
             this._contentWidth,
@@ -227,7 +231,8 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     fitWidth: number,
     fitHeight: number,
   ) => {
-    const { minPixel, maxPixel } = this.props.options!;
+    if(!this.props.options) return
+    const { minPixel, maxPixel } = this.props.options;
     this._updateScale(fitWidth, fitHeight, minPixel, maxPixel);
     this._fitWidth = fitWidth;
     this._fitHeight = fitHeight;

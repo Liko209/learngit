@@ -21,6 +21,7 @@ import {
   EditProfileProps,
   EditProfileViewModelProps,
   EditItemSourceType,
+  LocalInfo,
 } from './types';
 
 class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
@@ -34,6 +35,7 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   @observable currentPersonInfo: PersonModel;
   @observable isLoading: boolean;
   @observable headShotInfo: HeadShotInfo;
+  @observable localInfo: LocalInfo;
 
   constructor(props: EditProfileProps) {
     super(props);
@@ -121,8 +123,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
     this[key] = value;
   };
 
-  photoEditCb = (headShotInfo: HeadShotInfo) => {
+  onPhotoEdited = (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => {
     this.headShotInfo = headShotInfo;
+    this.localInfo = localInfo;
   };
 }
 

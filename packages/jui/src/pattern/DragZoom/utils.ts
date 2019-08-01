@@ -38,16 +38,19 @@ export function calculateFitWidthHeight(
   return [contentWidth / largerRatio, contentHeight / largerRatio];
 }
 
-const CONTAINER_SIZE = 280;
 export function calculateFitWidthHeightByFixedContainer(
   contentWidth: number,
   contentHeight: number,
+  containerSize: number,
+  padding: Padding = [],
 ): [number, number] {
   let ratio;
+
+  const [pl = 0] = padding;
   if (contentWidth > contentHeight) {
-    ratio = contentHeight / CONTAINER_SIZE;
+    ratio = contentHeight / (containerSize - pl * 2);
   } else {
-    ratio = contentWidth / CONTAINER_SIZE;
+    ratio = contentWidth / (containerSize - pl * 2);
   }
   return [contentWidth / ratio, contentHeight / ratio];
 }

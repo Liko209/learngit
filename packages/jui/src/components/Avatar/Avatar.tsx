@@ -33,7 +33,6 @@ type JuiAvatarProps = {
   presence?: JSX.Element;
   cover?: boolean;
   mask?: boolean;
-  maskClick?: () => void;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -114,7 +113,7 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, tooltip, mask, maskClick, ...rest } = props;
+  const { presence, cover, tooltip, mask, ...rest } = props;
   const maskWithIcon = (
     <StyledMask>
       <JuiIconography iconSize="small" color="common.white">
@@ -149,7 +148,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   );
 
   const avatarWithMask = mask ? (
-    <StyledMaskWrapper onClick={maskClick}>
+    <StyledMaskWrapper onClick={rest.onClick}>
       {avatar}
       {maskWithIcon}
     </StyledMaskWrapper>
