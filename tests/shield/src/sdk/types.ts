@@ -146,6 +146,7 @@ interface IRequestResponse<Req = any, Res = any>
 
 interface IMockRequestResponse<Req = any, Res = any> extends IRequestResponse {
   pathRegexp: RegExp;
+  pathRegexpString: string;
   mapper?: (
     request: IJRequest,
     mockRequestResponse: IMockRequestResponse,

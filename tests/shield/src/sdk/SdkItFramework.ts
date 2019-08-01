@@ -120,10 +120,7 @@ async function cleanUp() {
   debug('clean sdk end.');
 }
 
-export function itForSdk(
-  name: string,
-  caseExecutor: (itCtx: ItContext) => void,
-) {
+export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
   let userId: number;
   let companyId: number;
   const proxyServer = InstanceManager.get(ProxyServer);
@@ -166,11 +163,13 @@ export function itForSdk(
       : requestResponse;
     const pool = proxyServer.getRequestResponsePool();
     const pathRegexp = pathToRegexp(requestResponse.path);
-    pool.push({
+    const mockRequestResponse = {
       ...requestResponse,
       mapper,
       pathRegexp,
-    });
+      pathRegexpString: String(pathRegexp),
+    };
+    pool.push(mockRequestResponse);
     return extractResult;
   };
 

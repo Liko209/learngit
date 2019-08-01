@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk } from 'shield/sdk';
+import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { sendPost } from './scenario/sendPost.scenario';
 import { wait } from 'shield/utils';
 import { Post } from 'sdk/module/post/entity';
 
-itForSdk('Send post test', context => {
+jit('Send post test', context => {
   let postService: PostService;
   const { helper, sdk, userContext, template } = context;
   beforeAll(async () => {
@@ -20,8 +20,6 @@ itForSdk('Send post test', context => {
 
   describe('PostService', () => {
     it('send post success', async () => {
-      // PostScenario.action.send.success,
-
       const sendPostScenario = await helper.useScenario(sendPost.success);
       const { post, team } = sendPostScenario;
       await postService.sendPost({

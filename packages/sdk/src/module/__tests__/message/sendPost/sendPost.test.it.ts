@@ -5,13 +5,12 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { itForSdk } from 'shield/sdk';
+import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
-jest.setTimeout(30 * 1000);
-itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
+jit('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
   let postService: PostService;
   let stateService: StateService;
@@ -35,6 +34,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
       jest.restoreAllMocks();
     });
     it('send post 1: success', async () => {
+      // jest.spyOn(postService, 'sendPost').mock
       await postService.sendPost({
         text: 'test post 1',
         groupId: team1._id,
