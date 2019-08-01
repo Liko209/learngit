@@ -553,8 +553,4 @@ export class EditProfileDialog extends BaseWebComponent {
     this.warnFlakySelector();
     return this.getSelectorByAutomationId('EditProfile');
   }
-
-  get exists() {
-    return this.self.exists;
-  }
 }

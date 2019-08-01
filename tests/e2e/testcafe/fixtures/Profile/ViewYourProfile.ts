@@ -12,7 +12,7 @@ fixture('Profile/ViewYourProfile')
 test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'P1', 'spike.yang']), async (t) => {
     const loginUser = h(t).rcData.mainCompany.users[0];
     const app = new AppRoot(t);
-    const viewProfile = app.homePage.editProfileDialog;
+    const editProfileDialog = app.homePage.editProfileDialog;
 
     await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
         await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -26,8 +26,7 @@ test(formalName('Open personal profile via top bar avatar then open conversation
         await app.homePage.settingMenu.clickEditYourProfile();
     });
     await h(t).withLog('Then user profile should be opened in edit mode', async () => {
-        await viewProfile.ensureLoaded();
-        await t.expect(viewProfile.exists).ok();
+        await editProfileDialog.ensureLoaded();
     }, true);
 
 });
