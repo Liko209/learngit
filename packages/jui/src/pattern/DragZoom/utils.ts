@@ -41,7 +41,7 @@ export function calculateFitWidthHeight(
 export function calculateFitWidthHeightByFixedContainer(
   contentWidth: number,
   contentHeight: number,
-  containerSize: number,
+  containerSize: number = 1,
   padding: Padding = [0, 0, 0, 0],
 ): [number, number] {
   let ratio;
