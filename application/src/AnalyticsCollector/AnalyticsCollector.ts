@@ -187,7 +187,7 @@ class AnalyticsCollector {
     conversationType: ConversationType,
     source: NewConversationSource,
   ) {
-    dataAnalysis.track('Jup_Web/DT_conversation_addPerson', {
+    dataAnalysis.track('Jup_Web/DT_msg_addPerson', {
       conversationType,
       source,
     });

@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { CallerIdItem } from 'src/modules/telephony/container/CallerIdSelector/CallerIdItem';
-import { ICallerPhoneNumber } from 'src/modules/telephony/container/CallerIdSelector/types';
+import { CallerIdItem } from '../../container/CallerIdSelector/CallerIdItem';
+import { ICallerPhoneNumber } from '../../container/CallerIdSelector/types';
 
 type CallerIdSelectItemProps = {
   value: ICallerPhoneNumber;
