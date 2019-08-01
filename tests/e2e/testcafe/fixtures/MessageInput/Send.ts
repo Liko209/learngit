@@ -145,14 +145,16 @@ test.meta(<ITestMeta>{
 });
 
 // bug id https://jira.ringcentral.com/browse/FIJI-7081
-test.skip.meta(<ITestMeta>{
+test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-420'],
+  caseIds: ['JPT-420','JPT-2608', 'JPT-2700', "JPT-2610", "JPT-2613"],
   keywords: ['Send Messages'],
   maintainers: ['Mia.Cai']
 })(`Click outside of the search result list or Esc keyboard can close the search list`,  async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
+  const teamText = 'Team (notify everyone)';
+  const atTeamContent = '@Team';
   await h(t).platform(loginUser).init();
 
   const app = new AppRoot(t);
@@ -202,16 +204,112 @@ test.skip.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can see members list`, async () => {
-    await t.expect(conversationPage.mentionUserList.self.exists).ok();
-    await conversationPage.mentionUserList.ensureDismiss();
+    await conversationPage.mentionUserList.ensureLoaded();
   }, true);
+
+  await h(t).withLog(`And member list number should be correct`, async () => {
+    await t.expect(conversationPage.mentionUserList.members.count).eql(4);
+  });
+
+  await h(t).withLog(`And team should be show and selected on the first`, async () => {
+    await t.expect(conversationPage.mentionUserList.members.nth(0).getAttribute('data-test-automation-value')).eql(teamText);
+    await t.expect(conversationPage.mentionUserList.members.nth(0).hasClass('selected')).ok();
+  });
+
+  await h(t).withLog('And I hit enter on the keyboard', async () => {
+    await t.pressKey('Enter');
+  });
+
+  await h(t).withLog(`Then Display selected @team in the input box`, async () => {
+    const reg = new RegExp(`${atTeamContent}.* `);
+    await t.expect(conversationPage.messageInputArea.textContent).match(reg);
+  });
+
+  await h(t).withLog('And I type @ in the conversation to add more mentioned Items', async () => {
+    await conversationPage.typeAtSymbol();
+    await t.pressKey('Enter');
+  });
+
+  await h(t).withLog(`Then Only the first mentioned team item is highlighted`, async () => {
+    await t.expect(conversationPage.messageInputArea.find('.ql-mention-denotation-char').count).eql(1);
+    await t.expect(conversationPage.messageInputArea.find('.ql-mention-denotation-char').parent(0).textContent).eql(atTeamContent);
+  });
+
+  let postId;
+  await h(t).withLog('When I send the message', async () => {
+    await t.pressKey('Enter');
+    await conversationPage.lastPostItem.waitForPostToSend();
+    postId = await conversationPage.lastPostItem.postId;
+  });
+
+  await h(t).withLog('And I go to Mentions page', async () => {
+    await app.homePage.messageTab.mentionsEntry.enter();
+  });
+
+  await h(t).withLog('Then I should see NO related message', async () => {
+    await conversationPage.postItemById(postId).ensureDismiss();
+  });
+
+  await h(t).withLog('Then I should see NO related message', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  await h(t).withLog('And I hit @ to open conversation mention list', async () => {
+    await conversationPage.typeAtSymbol();
+  });
 
   await h(t).withLog('And I tap ESC on the keyboard ', async () => {
     await t.pressKey('ESC');
   });
 
   await h(t).withLog(`Then I can't see members list`, async () => {
+
     await t.expect(conversationPage.mentionUserList.self.exists).notOk();
+  }, true);
+
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-2612'],
+  keywords: ['Send Messages'],
+  maintainers: ['Ken.Li']
+})(`At Team in group shold not be avaliable`,  async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const teamText = 'Team (notify everyone)';
+  await h(t).platform(loginUser).init();
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  let group = <IGroup>{
+    type: "Group",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, users[0],users[1],users[5]]
+  }
+
+  await h(t).withLog(`And I create one new teams`, async () => {
+    await h(t).scenarioHelper.createTeam(group);
+  });
+
+  await h(t).withLog('When I enter a conversation', async () => {
+    await app.homePage.messageTab.directMessagesSection.expand();
+    await app.homePage.messageTab.directMessagesSection.nthConversationEntry(0).enter();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog('When I type @ in the conversation', async () => {
+    await conversationPage.typeAtSymbol()
+  });
+
+  await h(t).withLog(`There should be no @Team in member list`, async () => {
+    await t.expect(conversationPage.mentionUserList.members.nth(0).getAttribute('data-test-automation-value')).notEql(teamText);
   }, true);
 
 });
