@@ -38,7 +38,7 @@ const success = createScenarioFactory(
     // glipIndexDataHelper.profile.insertOrUpdate()
 
     const post = helper.mockResponse(
-      readJson<IGlipPostPost>(require('./SEND_POST.SUCCESS.json')),
+      readJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),
       data => {
         // modify the response
         data.request.data!.group_id = team._id;
@@ -80,4 +80,4 @@ const fail = createScenarioFactory(
   },
 );
 
-export { success, fail };
+export const sendPost = { success, fail };
