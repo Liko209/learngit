@@ -1346,9 +1346,10 @@ describe('GroupFetchDataController', () => {
 
   describe('getMembersAndGuestIds', () => {
     it('should return sorted ids when onlineFirst is true, JPT-2686', async () => {
-      groupFetchDataController.entitySourceController.getEntityLocally = jest.fn().mockResolvedValue(
-        {
-          members: [123, 234, 345, 456],
+      groupFetchDataController.entitySourceController.getEntityLocally = jest
+        .fn()
+        .mockResolvedValue({
+          members: [123, 234, 345, 456, 567],
           guest_user_company_ids: [333, 444],
         },
       );
@@ -1387,7 +1388,7 @@ describe('GroupFetchDataController', () => {
       });
 
       const result = await groupFetchDataController.getMembersAndGuestIds(1235, true);
-      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234] });
+      expect(result).toEqual({ guestIds: [456, 345], memberIds: [123, 234, 567] });
     });
   });
 });
