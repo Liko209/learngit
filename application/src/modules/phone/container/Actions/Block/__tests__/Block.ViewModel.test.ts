@@ -31,7 +31,7 @@ const serverErrorFunc = () => {
 };
 
 const rcInfoService = {
-  name: ServiceConfig.RC_INFO_SERVICE, // must be set service name
+  name: ServiceConfig.RC_INFO_SERVICE,
   addBlockedNumber: jest.fn(),
   deleteBlockedNumbers: jest.fn(),
 };

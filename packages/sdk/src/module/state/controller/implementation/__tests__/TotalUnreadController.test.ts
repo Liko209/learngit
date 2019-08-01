@@ -934,4 +934,14 @@ describe('TotalUnreadController', () => {
       expect(mockBadgeService.registerBadge).toBeCalledTimes(4);
     });
   });
+
+  describe('getMentionUnread() [JPT-81]', () => {
+    it('should include mention, team_mention', () => {
+      const result = totalUnreadController['_getMentionUnread']({
+        unread_mentions_count: 1,
+        unread_team_mentions_count: 3,
+      } as GroupState);
+      expect(result).toEqual(4);
+    });
+  });
 });

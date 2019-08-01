@@ -12,10 +12,16 @@ import {
   RTCSipFlags,
   RTC_REPLY_MSG_PATTERN,
   RTC_REPLY_MSG_TIME_UNIT,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
 } from 'voip';
 import { TelephonyCallController } from './TelephonyCallController';
 import { ITelephonyDelegate } from '../service/ITelephonyDelegate';
-import { MAKE_CALL_ERROR_CODE, LogoutCallback } from '../types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  LogoutCallback,
+  TelephonyDataCollectionInfoConfigType,
+} from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
@@ -31,6 +37,7 @@ import notificationCenter, {
   NotificationEntityPayload,
 } from 'sdk/service/notificationCenter';
 import { EVENT_TYPES } from 'sdk/service';
+import { TelephonyDataCollectionController } from './TelephonyDataCollectionController';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyDelegate;
@@ -40,6 +47,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _logoutCallback: LogoutCallback;
   private _entityCacheController: IEntityCacheController<Call>;
   private _callControllerList: Map<number, TelephonyCallController> = new Map();
+  private _telephonyDataCollectionController: TelephonyDataCollectionController;
 
   constructor(rtcEngine: RTCEngine) {
     this._rtcAccount = rtcEngine.createAccount(this);
@@ -320,6 +328,17 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
 
+  onNoAudioStateEvent(uuid: string, noAudioStateEvent: RTCNoAudioStateEvent) {
+    this.telephonyDataCollectionController.traceNoAudioStatus(
+      noAudioStateEvent,
+    );
+    // implement this to get no audio state event
+  }
+  onNoAudioDataEvent(uuid: string, noAudioDataEvent: RTCNoAudioDataEvent) {
+    this.telephonyDataCollectionController.traceNoAudioData(noAudioDataEvent);
+    // implement this to get no audio data event
+  }
+
   private async _shouldShowIncomingCall() {
     const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
       ServiceConfig.RC_INFO_SERVICE,
@@ -413,6 +432,19 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       }
       this._unSubscribeNotifications();
     }
+  }
+
+  setDataCollectionInfoConfig = (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => {
+    this.telephonyDataCollectionController.setDataCollectionInfoConfig(info);
+  };
+
+  protected get telephonyDataCollectionController() {
+    if (!this._telephonyDataCollectionController) {
+      this._telephonyDataCollectionController = new TelephonyDataCollectionController();
+    }
+    return this._telephonyDataCollectionController;
   }
 }
 

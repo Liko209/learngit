@@ -11,7 +11,7 @@ import { MetricService, FileService } from "../services";
 class FetchGroupScene extends Scene {
 
   tags(): Array<string> {
-    return ["Message", "LeftRail", "Memory", "Trace", "API"];
+    return ["FetchGroupScene", "Message", "LeftRail", "Memory", "Trace", "API"];
   }
 
   async preHandle() {

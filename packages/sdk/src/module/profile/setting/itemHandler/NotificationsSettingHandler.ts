@@ -24,7 +24,7 @@ import { PlatformUtils } from 'sdk/utils/PlatformUtils';
 import { mainLogger } from 'foundation';
 
 class NotificationsSettingHandler extends AbstractSettingEntityHandler<
-DesktopNotificationsSettingModel
+  DesktopNotificationsSettingModel
 > {
   id = SettingEntityIds.Notification_Browser;
 
@@ -37,7 +37,9 @@ DesktopNotificationsSettingModel
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload => this.onProfileEntityUpdate(payload));
+    this.onEntity().onUpdate<Profile>(ENTITY.PROFILE, payload =>
+      this.onProfileEntityUpdate(payload),
+    );
     this.on<NotificationPermission>(
       APPLICATION.NOTIFICATION_PERMISSION_CHANGE,
       payload => this.onNotificationPermissionUpdate(payload),
@@ -74,9 +76,6 @@ DesktopNotificationsSettingModel
     };
     const settingItem: UserSettingEntity<DesktopNotificationsSettingModel> = {
       value,
-      weight: 1,
-      valueType: 1,
-      parentModelId: 1,
       id: SettingEntityIds.Notification_Browser,
       state: PlatformUtils.isElectron()
         ? ESettingItemState.INVISIBLE

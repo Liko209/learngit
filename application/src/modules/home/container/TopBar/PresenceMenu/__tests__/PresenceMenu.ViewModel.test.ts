@@ -38,7 +38,7 @@ describe('PresenceMenuViewModel', () => {
     @mockService(PresenceService, 'setPresence', networkErrorFunc)
     async t1() {
       const vm = new PresenceMenuViewModel({
-        presence: PRESENCE.AVALIABLE,
+        presence: PRESENCE.AVAILABLE,
       });
       await vm.setPresence(PRESENCE.DND);
       expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -51,7 +51,7 @@ describe('PresenceMenuViewModel', () => {
     @mockService(PresenceService, 'setPresence', serverErrorFunc)
     async t2() {
       const vm = new PresenceMenuViewModel({
-        presence: PRESENCE.AVALIABLE,
+        presence: PRESENCE.AVAILABLE,
       });
       await vm.setPresence(PRESENCE.DND);
       expect(Notification.flashToast).toHaveBeenCalledWith(
@@ -64,9 +64,9 @@ describe('PresenceMenuViewModel', () => {
     @mockService(presenceService)
     async t3() {
       const vm = new PresenceMenuViewModel({
-        presence: PRESENCE.AVALIABLE,
+        presence: PRESENCE.AVAILABLE,
       });
-      await vm.setPresence(PRESENCE.AVALIABLE);
+      await vm.setPresence(PRESENCE.AVAILABLE);
       expect(presenceService.setPresence).not.toHaveBeenCalled();
     }
   }
