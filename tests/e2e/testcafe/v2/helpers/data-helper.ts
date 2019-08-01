@@ -59,13 +59,16 @@ class DataHelper {
       companies[phoneNumber].users = users
     }
 
-    const mainCompany = companies[data.mainNumber]
+    const mainCompany = companies[data.mainNumber] || companies[`+${data.mainNumber}`];
+    data.teams = data.teams || [];
     const groups = data.teams.map((team) => {
       return <IGroup>{
         glipId: team._id,
       }
     })
-    mainCompany.groups = groups;
+    if (mainCompany) {
+      mainCompany.groups = groups;
+    }
     let guestCompany: ICompany, anotherGuestCompany: ICompany;
     if (phoneNumbers.length > 1) {
       const guestPhoneNumbers = _.pull(phoneNumbers, data.mainNumber);

@@ -139,6 +139,7 @@ enum BrandTire {
   "CALL_LOG_READ_ONLY" = "kamino(Call-Log-Read-Only,Jupiter,1210,4488)",
   "CALL_LOG_USER0_WITH_OTHERS" = "kamino(Call_Log_User0_With_Others,Jupiter,1210,4488)",
   "RC_EMPTY_ONE_TIME" = "kamino(One-Time-Empty-Account,Jupiter,1210,4488)",
+  "RC_WITH_PHONE_DL" = "kamino(RC_WITH_PHONE_DL,Jupiter,1210,4488)",
 };
 
 const WebphoneConfig = {

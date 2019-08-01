@@ -13,7 +13,7 @@ import { MiscUtils } from '../v2/utils'
 import { E911Address } from './e911address';
 
 fixture('Telephony/Dialer')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_WITH_PHONE_DL))
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
