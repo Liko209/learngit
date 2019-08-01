@@ -71,7 +71,7 @@ export class HomePage extends BaseWebComponent {
 
   get emergencyConformButton() {
     // FIXME
-    return this.getSelectorByAutomationId('DialogOKButton');
+    return this.getSelectorByAutomationId('e911-DialogOKButton');
   }
 
 
