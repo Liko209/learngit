@@ -18,7 +18,7 @@ import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { MessageStore } from '@/modules/message/store';
 import { container } from 'framework';
-
+import { ProfileDialogPerson } from '@/modules/message/container/Profile/Dialog/Person';
 @observer
 class ProfileMiniCardPersonFooter extends Component<
   WithTranslation & ProfileMiniCardPersonFooterViewProps
@@ -85,7 +85,11 @@ class ProfileMiniCardPersonFooter extends Component<
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
-          <OpenProfileDialog id={id} beforeClick={this.handleCloseMiniCard}>
+          <OpenProfileDialog
+            id={id}
+            profileDialog={ProfileDialogPerson}
+            beforeClick={this.handleCloseMiniCard}
+          >
             <JuiLinkButton>{t('people.team.profile')}</JuiLinkButton>
           </OpenProfileDialog>
         </JuiProfileMiniCardFooterLeft>
