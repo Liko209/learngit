@@ -17,6 +17,7 @@ import { PersonService } from 'sdk/module/person';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { Markdown } from 'glipdown';
 import portalManager from '@/common/PortalManager';
+import { dataAnalysis } from 'sdk';
 import {
   EditProfileProps,
   EditProfileViewModelProps,
@@ -89,6 +90,9 @@ class EditProfileViewModel extends AbstractViewModel<EditProfileProps>
   })
   @action
   handleProfileEdit = async () => {
+    dataAnalysis.track('Jup_Web/DT_profile_saveEditAvatar', {
+      source: 'Edit Profile',
+    });
     if (this.homepage) {
       this.homepageError = !new RegExp(Markdown.global_url_regex).test(
         this.homepage,
