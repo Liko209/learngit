@@ -9,10 +9,10 @@ fixture('Profile/ViewYourProfile')
     .beforeEach(setupCase(BrandTire.RCOFFICE))
     .afterEach(teardownCase());
 
-test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'P1', 'zack']), async (t) => {
+test(formalName('Open personal profile via top bar avatar then open conversation', ['JPT-460', 'P1', 'spike.yang']), async (t) => {
     const loginUser = h(t).rcData.mainCompany.users[0];
     const app = new AppRoot(t);
-    const viewProfile = app.homePage.profileDialog;
+    const viewProfile = app.homePage.editProfileDialog;
 
     await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
         await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -25,8 +25,9 @@ test(formalName('Open personal profile via top bar avatar then open conversation
     await h(t).withLog('When I click "Edit profile" button in setting menu', async () => {
         await app.homePage.settingMenu.clickEditYourProfile();
     });
-    await h(t).withLog('Then I can see Edit Profile title', async () => {
+    await h(t).withLog('Then user profile should be opened in edit mode', async () => {
         await viewProfile.ensureLoaded();
+        await t.expect(viewProfile.exists).ok();
     }, true);
 
 });
