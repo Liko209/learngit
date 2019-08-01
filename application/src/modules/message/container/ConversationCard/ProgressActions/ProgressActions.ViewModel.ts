@@ -23,7 +23,7 @@ import { IMessageService } from '@/modules/message/interface';
 import { TypeDictionary } from 'sdk/utils';
 import { debounce } from 'lodash';
 
-const DEBOUNCE_DELAY = 100;
+const DEBOUNCE_DELAY = 300;
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
   @IMessageService private _messageService: IMessageService;
