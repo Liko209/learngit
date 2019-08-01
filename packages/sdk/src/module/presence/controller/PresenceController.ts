@@ -41,7 +41,7 @@ class PresenceController {
     });
   }
 
-  async getById(id: number): Promise<Presence> {
+  getById(id: number): Presence {
     const presence = this._getPresenceFromCache(id);
     if (presence) {
       return presence;
@@ -81,8 +81,8 @@ class PresenceController {
   }
 
   handleSocketStateChange(state: string) {
+    this.reset();
     if (state === 'connected') {
-      this.reset();
       notificationCenter.emitEntityReload(ENTITY.PRESENCE, [], true);
     } else if (state === 'disconnected') {
       this.resetPresence();
@@ -101,8 +101,10 @@ class PresenceController {
    */
   subscribeSuccess(successPresences: RawPresence[]) {
     const needUpdatePresences = successPresences.filter(
-      (presence: RawPresence) =>
-        !this._cacheController.getSynchronously(presence.personId),
+      (presence: RawPresence) => {
+        const cache = this._getPresenceFromCache(presence.personId);
+        return (cache && cache.presence) !== presence.calculatedStatus;
+      },
     );
     this.handlePresenceIncomingData(needUpdatePresences);
   }
