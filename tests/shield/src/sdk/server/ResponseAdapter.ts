@@ -11,7 +11,7 @@ import {
   IJRequest,
   INetworkRequestExecutorListener,
   IResponseAdapter,
-} from '../../types';
+} from 'shield/sdk/types';
 import { createResponse, isPromise } from './utils';
 
 const error = createDebug('ResponseAdapter', true);

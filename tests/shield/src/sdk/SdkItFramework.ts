@@ -17,63 +17,26 @@ import { globalConfig } from './globalConfig';
 import {
   GlipDataHelper,
   createInitialDataHelper,
-  GlipInitialDataHelper,
-} from './mocks/server/glip/data/data';
-import { MockGlipServer } from './mocks/server/glip/MockGlipServer';
-import { GlipData, InitialData } from './mocks/server/glip/types';
-import { parseInitialData } from './mocks/server/glip/utils';
-import { InstanceManager } from './mocks/server/InstanceManager';
-import { MockSocketServer } from './mocks/server/MockSocketServer';
-import { ProxyServer } from './mocks/server/ProxyServer';
-import { SocketServerManager } from './mocks/server/SocketServerManager';
+} from './mocks/glip/data/data';
+import { MockGlipServer } from './mocks/glip/MockGlipServer';
+import { GlipData, InitialData } from './mocks/glip/types';
+import { parseInitialData } from './mocks/glip/utils';
+import { InstanceManager } from './server/InstanceManager';
+import { ProxyServer } from './server/ProxyServer';
+import { SocketServerManager } from './server/SocketServerManager';
 import {
   IMockRequestResponse,
   MockApi,
   MockResponse,
-  ScenarioFactory,
+  ItContext,
 } from './types';
 import { blockExternalRequest, createApiResponse } from './utils';
-import { createResponse } from './mocks/server/utils';
 
 import assert = require('assert');
 // import { IGlipIndex } from './mocks/server/glip/api/index/index.get.contract';
 const debug = createDebug('SdkItFramework');
 blockExternalRequest();
 
-export type ItContext = {
-  // ACCOUNT user info
-  userContext: {
-    glipUserId: () => number;
-    glipCompanyId: () => number;
-  };
-  // ACCOUNT data template
-  template: {
-    BASIC: InitialData;
-    STANDARD: InitialData;
-  };
-  // some useful helper for  test
-  helper: {
-    // apply template
-    useInitialData: (initialData: InitialData) => GlipInitialDataHelper;
-    // model build helper
-    glipDataHelper: () => GlipDataHelper;
-    mockResponse: MockResponse;
-    // mock api response
-    mockApi: MockApi;
-    // glip socketServer, use to send message to client.
-    socketServer: MockSocketServer;
-    clearMocks: () => void;
-    useScenario: <T extends ScenarioFactory>(
-      scenarioFactory: T,
-      props?: T extends ScenarioFactory<infer P> ? P : object,
-    ) => Promise<ReturnType<T>>;
-  };
-  // sdk setup/cleanUp
-  sdk: {
-    setup: (mode?: 'glip' | 'rc') => Promise<void>;
-    cleanUp: () => Promise<void>;
-  };
-};
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetModules();
@@ -224,8 +187,8 @@ export function jit(name: string, caseExecutor: (itCtx: ItContext) => void) {
       glipCompanyId: () => companyId,
     },
     template: {
-      BASIC: require('./mocks/server/glip/data/template/accountData/empty-account.json'),
-      STANDARD: require('./mocks/server/glip/data/template/accountData/test-account.json'),
+      BASIC: require('./mocks/glip/data/template/accountData/empty-account.json'),
+      STANDARD: require('./mocks/glip/data/template/accountData/test-account.json'),
     },
     sdk: {
       cleanUp,

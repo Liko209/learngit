@@ -5,7 +5,7 @@
  */
 import {
  IRouter, IJRequest, IJResponse, RequestHandler
-} from '../../types';
+} from 'shield/sdk/types';
 import _ from 'lodash';
 import pathToRegexp from 'path-to-regexp';
 import { createDebug } from 'sdk/__tests__/utils';
@@ -15,9 +15,9 @@ import {
   META_PARAM_PARAM,
   META_PARAM_CONTEXT,
   META_PARAM_REQUEST,
-} from '../../decorators/constants';
-import { getMeta, getParamMeta } from '../../decorators/metaUtil';
-import { IApiContract, IRoute } from '../../types';
+} from 'shield/sdk/decorators/constants';
+import { getMeta, getParamMeta } from 'shield/sdk/decorators/metaUtil';
+import { IApiContract, IRoute } from 'shield/sdk/types';
 
 const debug = createDebug('Router');
 const error = createDebug('Router', true);

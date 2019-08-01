@@ -6,9 +6,23 @@
 
 import _ from 'lodash';
 import { IApiContract, IRequestResponse, IApiPath } from '../types';
-import { createResponse } from '../mocks/server/utils';
+import { IResponse } from 'foundation/network/network';
 
 import assert = require('assert');
+
+export function createResponse<T>(
+  partial: Partial<IResponse<T>>,
+): IResponse<T> {
+  return _.merge(
+    {
+      status: 200,
+      statusText: 'ok',
+      headers: {},
+      request: {},
+    } as IResponse<T>,
+    partial,
+  );
+}
 
 export function readJson<
   A extends IApiContract<any, any> = IApiContract<any, any>,

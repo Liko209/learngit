@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { readJson, ScenarioFactory } from 'shield/sdk';
-import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
+import { IGlipPostPost } from 'shield/sdk/mocks/glip/api/post/post.post.contract';
 
 function createScenarioFactory<T extends ScenarioFactory>(factory: T): T {
   return factory;
@@ -35,7 +35,7 @@ const success = createScenarioFactory(
       teamId ? { _id: teamId } : undefined,
     );
     glipIndexDataHelper.teams.insertOrUpdate(team);
-    // glipIndexDataHelper.profile.insertOrUpdate()
+    // glipIndexDataHelper.profile.insertOrUpdate(i)
 
     const post = helper.mockResponse(
       readJson<IGlipPostPost>(require('../data/SEND_POST.SUCCESS.json')),

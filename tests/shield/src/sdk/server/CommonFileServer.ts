@@ -7,7 +7,7 @@ import {
   IMockServer,
   INetworkRequestExecutorListener,
   IJRequest,
-} from '../../types';
+} from 'shield/sdk/types';
 
 import url from 'url';
 import path from 'path';
@@ -53,7 +53,7 @@ export class CommonFileServer implements IMockServer {
     const relatePath = `${hostname || host}${uri}`;
     const mockDataPath = path.resolve(
       __dirname,
-      '../../../../',
+      '../../../',
       './testingData/',
       protocol ? protocol : '.',
       `${protocol ? `${protocol}/` : ''}${relatePath.replace(

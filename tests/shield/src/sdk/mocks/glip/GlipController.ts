@@ -11,10 +11,11 @@ import {
   PContext,
   PParam,
   PRequest,
-} from '../../../decorators/Parameter.decorator';
-import { Route } from '../../../decorators/Route.decorator';
-import { IJRequest } from '../../../types';
-import { createResponse, String2Number } from '../utils';
+} from 'shield/sdk/decorators/Parameter.decorator';
+import { Route } from 'shield/sdk/decorators/Route.decorator';
+import { IJRequest } from 'shield/sdk/types';
+import { createResponse } from 'shield/sdk/utils';
+import { String2Number } from 'shield/sdk/server/utils';
 import { IGlipServerContext } from './IGlipServerContext';
 import { GlipGroup, GlipPost, GlipProfile, GlipState } from './types';
 import { doPartialUpdate, genPostId, parseState } from './utils';

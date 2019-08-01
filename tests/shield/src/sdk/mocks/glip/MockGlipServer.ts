@@ -13,15 +13,15 @@ import {
   JRequestHandler,
 } from 'shield/sdk/types';
 
-import { Route } from '../../../decorators/Route.decorator';
-import { globalConfig } from '../../../globalConfig';
-import { CommonFileServer } from '../CommonFileServer';
-import { InstanceManager } from '../InstanceManager';
-import { MockSocketServer } from '../MockSocketServer';
-import { ResponseAdapter } from '../ResponseAdapter';
-import { Router } from '../Router';
-import { SocketServerManager } from '../SocketServerManager';
-import { createResponse } from '../utils';
+import { Route } from 'shield/sdk/decorators/Route.decorator';
+import { globalConfig } from 'shield/sdk/globalConfig';
+import { CommonFileServer } from 'shield/sdk/server/CommonFileServer';
+import { InstanceManager } from 'shield/sdk/server/InstanceManager';
+import { MockSocketServer } from 'shield/sdk/server/MockSocketServer';
+import { ResponseAdapter } from 'shield/sdk/server/ResponseAdapter';
+import { Router } from 'shield/sdk/server/Router';
+import { SocketServerManager } from 'shield/sdk/server/SocketServerManager';
+import { createResponse } from 'shield/sdk/utils';
 import { STATE_KEYS } from './constants';
 import { GlipClientConfigDao } from './dao/clientConfig';
 import { GlipCompanyDao } from './dao/company';

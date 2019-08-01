@@ -3,7 +3,6 @@
  * @Date: 2019-07-10 16:19:17
  * Copyright © RingCentral. All rights reserved.
  */
-import * as Factory from 'factory.ts';
 import { Company } from 'sdk/module/company/entity';
 import { Group } from 'sdk/module/group/entity';
 import { Item } from 'sdk/module/item/entity';

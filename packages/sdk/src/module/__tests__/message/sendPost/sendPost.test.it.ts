@@ -9,7 +9,7 @@ import { jit } from 'shield/sdk';
 import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
-import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
+import { IGlipPostPost } from 'shield/sdk/mocks/glip/api/post/post.post.contract';
 jit('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
   let postService: PostService;

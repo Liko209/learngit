@@ -8,18 +8,18 @@ import {
   IResponseAdapter,
   IJRequest,
   IMockRequestResponse,
-} from '../../types';
+} from 'shield/sdk/types';
 import { ResponseAdapter } from './ResponseAdapter';
 import {
   INetworkRequestExecutorListener,
   NETWORK_HANDLE_TYPE,
 } from 'foundation/network/network';
 import { CommonFileServer } from './CommonFileServer';
-import { MockGlipServer } from './glip/MockGlipServer';
+import { MockGlipServer } from 'shield/sdk/mocks/glip/MockGlipServer';
 import { InstanceManager } from './InstanceManager';
-import { SERVER_ALIAS_MAP } from '../../utils/network/networkDataTool';
+import { SERVER_ALIAS_MAP } from 'shield/sdk/utils/network/networkDataTool';
 import _ from 'lodash';
-import { createResponse } from './utils';
+import { createResponse } from 'shield/sdk/utils';
 import { createDebug } from 'sdk/__tests__/utils';
 
 const debug = createDebug('ProxyServer');
