@@ -381,7 +381,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -392,13 +391,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -420,14 +417,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -459,7 +450,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -470,13 +460,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -498,14 +486,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -537,7 +519,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -548,13 +529,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -576,14 +555,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
     <div
       aria-disabled={false}
@@ -615,7 +588,6 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
         className="c2"
       >
         <button
-          aria-describedby={null}
           aria-label="Comments"
           className="MuiButtonBase-root MuiIconButton-root c3"
           disabled={false}
@@ -626,13 +598,11 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
           onKeyUp={[Function]}
           onMouseDown={[Function]}
           onMouseLeave={[Function]}
-          onMouseOver={[Function]}
           onMouseUp={[Function]}
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
           tabIndex={0}
-          title={null}
           type="button"
           variant="round"
         >
@@ -654,14 +624,8 @@ exports[`Storyshots Components/Lists List Controls: Components/Lists List Contro
               </svg>
             </span>
           </span>
-          <span
-            className="MuiTouchRipple-root"
-          />
         </button>
       </div>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </div>
   </ul>
 </div>

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { JuiAudioMode } from 'jui/pattern/AudioPlayer';
+import { JuiAudioMode } from 'jui/components/AudioPlayer';
 import { BREAK_POINT_MAP } from './types';
 import { DATE_FORMAT } from '@/utils/date';
 
