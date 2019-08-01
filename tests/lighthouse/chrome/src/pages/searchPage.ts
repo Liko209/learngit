@@ -48,10 +48,26 @@ class SearchPage extends Page {
 
     await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-team"]');
     await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="global-full-search"] li[data-test-automation-id="searchResultsCount"]');
-
     await bluebird.delay(200);
+
     await PptrUtils.click(page, 'button[data-test-automation-id="globalSearch-messages"]');
     await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="search-message-panel"] li[data-test-automation-id="searchResultsCount"]');
+    await bluebird.delay(200);
+  }
+
+  async scrollMessageTab() {
+    let page = await this.page();
+
+    let list = 'div[data-test-automation-id="search-message-panel"] div[data-test-automation-id="virtualized-list"]';
+
+    await PptrUtils.waitForSelector(page, list);
+
+    await PptrUtils.scrollBy(page, list, 0, 1000);
+
+    await bluebird.delay(200);
+
+    await PptrUtils.scrollBy(page, list, 0, 1000);
+
     await bluebird.delay(200);
   }
 

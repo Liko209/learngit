@@ -3,34 +3,31 @@
  * @Date: 2019-01-11 08:37:56
  */
 import { Scene } from "./scene";
-import { Config } from "../config";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
-import { SwitchConversationGatherer } from "../gatherers";
+import { LoginGatherer, SettingGatherer } from "../gatherers";
 import { MetricService, FileService } from "../services";
 
-class SwitchConversationScene extends Scene {
-  private convrsationIds: Array<string> = Config.switchConversationIds;
+class SettingScene extends Scene {
 
   tags(): Array<string> {
-    return ["SwitchConversationScene", "Message", "MessagePanel", "Conversation", "RightRail", "File", "Image", "Memory", "Trace", "API"];
+    return ["SettingScene", "Setting", "Notifications", "Memory", "Trace", "API"];
   }
 
   async preHandle() {
-    this.config = SceneConfigFactory.getCommonLoginConfig({ fpsMode: this.fpsMode });
+    this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
-      instance: new SwitchConversationGatherer(this.convrsationIds)
+      instance: new LoginGatherer()
+    });
+    this.config.passes[0].gatherers.unshift({
+      instance: new SettingGatherer()
     });
   }
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
-    await MetricService.createLoadingTime(
-      sceneDto,
-      this,
-      SwitchConversationGatherer.name
-    );
+    await MetricService.createLoadingTime(sceneDto, this, SettingGatherer.name);
     return sceneDto;
   }
 
@@ -39,10 +36,7 @@ class SwitchConversationScene extends Scene {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
       await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
-  }
-
-  supportFps(): boolean {
-    return true;
+    this.artifacts['MemoryGatherer'] = {};
   }
 
   supportDashboard(): boolean {
@@ -50,4 +44,4 @@ class SwitchConversationScene extends Scene {
   }
 }
 
-export { SwitchConversationScene };
+export { SettingScene };

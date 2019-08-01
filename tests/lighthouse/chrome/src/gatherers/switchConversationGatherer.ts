@@ -17,12 +17,9 @@ class SwitchConversationGatherer extends DebugGatherer {
     'goto_conversation_fetch_items',
     'conversation_fetch_from_db',
     'goto_conversation_shelf_fetch_items',
-    // 'ui_message_render',
-    // 'ui_profile_render',
-    // 'conversation_fetch_unread_post',
-    // 'conversation_fetch_interval_post',
-    // 'conversation_fetch_from_server',
-    // 'conversation_handle_data_from_server',
+    'ui_message_render',
+    'ui_profile_render',
+    'init_group_members',
   ];
 
   constructor(conversationIds: Array<string>) {
@@ -76,7 +73,7 @@ class SwitchConversationGatherer extends DebugGatherer {
         ui: []
       };
     }
-
+    
     return result;
   }
 
@@ -104,7 +101,7 @@ class SwitchConversationGatherer extends DebugGatherer {
 
       await page.switchDetailTab();
 
-      // await page.lookupTeamMember();
+      await page.lookupTeamMember();
 
       this.pushGatherer(this.metricKeys);
 
