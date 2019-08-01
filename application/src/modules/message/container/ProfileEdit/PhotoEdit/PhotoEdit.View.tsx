@@ -7,7 +7,7 @@
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiDragZoom } from 'jui/pattern/DragZoom';
+import { JuiDragZoom, JuiDragZoomOptions } from 'jui/pattern/DragZoom';
 import { JuiImageView } from 'jui/components/ImageView';
 import { JuiModal } from 'jui/components/Dialog';
 import { RuiSlider } from 'rcui/components/Forms/Slider';
@@ -32,7 +32,7 @@ import { withUploadFile } from 'jui/hoc/withUploadFile';
 import { PhotoEditViewModelProps, PhotoEditProps } from './types';
 
 const CONTAINER_SIZE = 280;
-const initZoomOptions = {
+const initZoomOptions: Partial<JuiDragZoomOptions> = {
   maxScale: 5,
   minScale: 1,
   step: 0.01,
@@ -52,7 +52,7 @@ class PhotoEditComponent extends Component<PhotoEdit> {
   private _uploadRef: RefObject<any> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
 
-  componentDidUpdate(prevProps){
+  componentDidUpdate(prevProps: PhotoEdit){
     if(prevProps.sliderValue !== this.props.sliderValue){
       if (!this._zoomRef.current) return;
         const zoomComponentRef = this._zoomRef.current.getZoomRef();
