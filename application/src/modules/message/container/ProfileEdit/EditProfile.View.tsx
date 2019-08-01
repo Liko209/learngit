@@ -81,9 +81,9 @@ class EditProfileViewComponent extends Component<
   };
 
   handleMaskClick = () => {
-    const { currentPersonInfo, onPhotoEdited } = this.props;
+    const { currentPersonInfo, onPhotoEdited, localInfo } = this.props;
 
-    PhotoEdit.show({ onPhotoEdited, person: currentPersonInfo });
+    PhotoEdit.show({ onPhotoEdited, file: localInfo && localInfo.file, person: currentPersonInfo  });
   };
 
   _renderItem = (section: EditItemSourceType[]) => {

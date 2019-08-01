@@ -25,6 +25,7 @@ type LocalInfo = {
   height: number;
   left: number;
   top: number;
+  file: File;
 };
 
 type EditProfileViewModelProps = {

@@ -17,9 +17,23 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
   @observable currentImageUrl: string = this.headShotUrl;
   @observable uploadImageType: string;
   @observable sliderValue: number = 1;
-  @observable currentFile: File;
+  @observable currentFile?: File = this.props.file;
   @observable initSize: { width: number; height: number };
   @observable transform: Transform = { scale: 1, translateX: 0, translateY: 0 };
+
+  constructor(props: PhotoEditProps) {
+    super(props);
+    this.reaction(
+      () => this.props.file,
+      (file: File) => {
+        if (!file) return;
+        this.currentImageUrl = window.URL.createObjectURL(file);
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+  }
 
   @action
   handleSliderChange = debounce(
@@ -115,8 +129,9 @@ class PhotoEditViewModel extends AbstractViewModel<PhotoEditProps> {
         url: this.currentImageUrl,
         width: width * realScale * rate,
         height: height * realScale * rate,
-        top: translateY * realScale * rate / initScale,
-        left: translateX * realScale * rate / initScale,
+        top: (translateY * realScale * rate) / initScale,
+        left: (translateX * realScale * rate) / initScale,
+        file: this.currentFile,
       },
     );
     portalManager.dismissLast();

@@ -11,6 +11,7 @@ import { LocalInfo } from '../types';
 
 type PhotoEditProps = {
   person: PersonModel;
+  file?: File;
   onPhotoEdited: (headShotInfo: HeadShotInfo, localInfo: LocalInfo) => void;
 };
 
