@@ -162,6 +162,10 @@ class Helper {
     return await this.webphoneHelper.newWebphoneSession(user);
   }
 
+  async newWebphoneSessionWithDid(did: string, password: string) {
+    return await this.webphoneHelper.newWebphoneSessionWithDid(did, password);
+  }
+
   async getGlip(user: IUser) {
     return await this.sdkHelper.sdkManager.getGlip(user);
   }

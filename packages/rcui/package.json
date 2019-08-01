@@ -1,6 +1,6 @@
 {
   "name": "rcui",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -10,11 +10,10 @@
     "npm": ">=6.2.0"
   },
   "scripts": {
-    "prestorybook": "npm run test:generate-output",
     "prebuild:storybook": "npm run test:generate-output",
     "start": "npm run storybook",
     "storybook": "start-storybook -p 6006",
-    "test": "jest",
+    "test": "cross-env NODE_ENV=test jest",
     "test-watch": "jest --watchAll",
     "update-snapshot": "jest --updateSnapshot storyshots.test.jsx",
     "build:storybook": "build-storybook -c .storybook -o public",
@@ -37,10 +36,9 @@
     "postupdate-icon": " jest src/components/Iconography/__tests__/icons.test.ts --watch"
   },
   "dependencies": {
-    "@material-ui/core": "3.9.3",
-    "@material-ui/icons": "3.0.2",
-    "@material-ui/lab": "3.0.0-alpha.30",
-    "@material-ui/styles": "^3.0.0-alpha.10",
+    "@material-ui/core": "4.2.1",
+    "@material-ui/lab": "4.0.0-alpha.18",
+    "@material-ui/styles": "4.2.1",
     "deepmerge": "3.2.0",
     "eventemitter2": "5.0.1",
     "lodash": "4.17.11",

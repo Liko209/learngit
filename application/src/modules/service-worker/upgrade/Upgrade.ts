@@ -3,8 +3,6 @@
  * @Date: 2018-11-22 19:22:43
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import history from '@/history';
 import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
@@ -27,7 +25,9 @@ class Upgrade {
   private _lastRouterChangeTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
-  constructor(public queryInterval = DEFAULT_UPDATE_INTERVAL) {
+  queryInterval = DEFAULT_UPDATE_INTERVAL;
+
+  constructor() {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
@@ -71,7 +71,7 @@ class Upgrade {
     );
     if (isByWaitingWorker) {
       const workingWorkerFlag = this._getWorkingWorkerFlag();
-      if (!!workingWorkerFlag) {
+      if (workingWorkerFlag) {
         mainLogger.info(
           `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
         );
@@ -219,11 +219,11 @@ class Upgrade {
     const waitingWorker = registration.waiting;
     mainLogger.info(
       `${logTag}active[${!!activeWorker}]${
-        !!activeWorker ? activeWorker.state : ''
+        activeWorker ? activeWorker.state : ''
       }, installing[${!!installingWorker}]${
-        !!installingWorker ? installingWorker.state : ''
+        installingWorker ? installingWorker.state : ''
       }, waiting[${!!waitingWorker}]${
-        !!waitingWorker ? waitingWorker.state : ''
+        waitingWorker ? waitingWorker.state : ''
       }`,
     );
 

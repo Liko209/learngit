@@ -28,7 +28,7 @@ function parseNoResponseErrorStatus(code: string | undefined, message: string) {
     } else if (message.startsWith('timeout')) {
       status = RESPONSE_STATUS_CODE.LOCAL_TIME_OUT;
     }
-  } else if (code === null) {
+  } else if (code === null || code === undefined) {
     if (message === 'Network Error') {
       status = RESPONSE_STATUS_CODE.NETWORK_ERROR;
     }

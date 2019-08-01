@@ -9,7 +9,7 @@ import MuiButton, {
 } from '@material-ui/core/Button';
 import { RuiCircularProgress } from 'rcui/components/Progress';
 import { Palette, Theme } from '../../../foundation/theme/theme';
-import styled, { css } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import {
   typography,
   spacing,
@@ -22,7 +22,7 @@ import {
 } from '../../../foundation/utils/styles';
 import { Omit } from '../../../foundation/utils/typeHelper';
 
-type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
+type Variant = 'text' | 'contained' | 'outlined';
 
 type JuiButtonColor = 'primary' | 'secondary' | 'negative';
 
@@ -32,6 +32,7 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
+  component?: React.ElementType;
 };
 
 const ColorMap: {
@@ -47,26 +48,17 @@ const touchRippleClasses = {
 };
 
 const WrappedMuiButton = (props: JuiButtonProps) => {
-  const {
-    variant, color, children, loading, ...restProps
-  } = props;
-  let _variant = variant;
-  if (_variant === 'round') {
-    _variant = 'fab';
-    restProps.disableRipple = true;
-    restProps.size = 'small';
-  }
+  const { variant, color, children, loading, ...restProps } = props;
   return (
     <MuiButton
       classes={{
         disabled: 'disabled',
         contained: 'containedButtonStyle',
-        fab: 'roundButtonStyle',
         text: 'textButtonStyle',
         outlined: 'outlineButtonStyle',
       }}
       TouchRippleProps={{ classes: touchRippleClasses }}
-      variant={_variant}
+      variant={variant}
       {...restProps}
     >
       {loading ? <RuiCircularProgress size={16} color="inherit" /> : children}
@@ -74,19 +66,16 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
   );
 };
 
-const shadow = (n: number) => css<JuiButtonProps>`
-    box-shadow: ${({ theme, variant }) => (variant === 'round' ? theme.shadows[n] : 'unset')};
-  `;
-
 const ButtonColor = ({
   theme,
   color = 'primary',
 }: {
   theme: Theme;
   color: JuiButtonColor;
-}) => theme.palette.getContrastText(
-  palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
-);
+}) =>
+  theme.palette.getContrastText(
+    palette(ColorMap[color][0], ColorMap[color][1])({ theme }),
+  );
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
@@ -96,25 +85,25 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
     ${typography('button')};
     color: ${palette('primary', 'main')};
     text-align: center;
+    box-shadow: unset;
     &.containedButtonStyle {
       color: ${ButtonColor};
-      ${shadow(3)}
-      background-color: ${({ color = 'primary' }) => palette(ColorMap[color][0], ColorMap[color][1])};
+      background-color: ${({ color = 'primary' }) =>
+        palette(ColorMap[color][0], ColorMap[color][1])};
       &:hover {
-        opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
+        opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       }
       &.disabled {
-        background-color: ${({ theme, loading }) => (loading ? '' : palette('accent', 'ash')({ theme }))};
+        background-color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
         color: ${ButtonColor};
-      }
-      &:active {
-        ${shadow(1)}
       }
     }
 
     &.textButtonStyle {
       &.disabled {
-        color: ${({ theme, loading }) => (loading ? '' : palette('accent', 'ash')({ theme }))};
+        color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
       }
       &:hover {
         background-color: ${palette('primary', 'main', 1)};
@@ -129,24 +118,25 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       height: ${({ theme }) => height(7)({ theme })};
       border-radius: ${({ theme }) => spacing(7)({ theme })};
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
-      background-color: ${({ theme }) => theme.palette.getContrastText(primary('700')({ theme }))};
-      color:${primary('700')};
+      background-color: ${({ theme }) =>
+        theme.palette.getContrastText(primary('700')({ theme }))};
+      color: ${primary('700')};
       ${typography('caption1')};
-      min-height:unset;
-      width:inherit;
+      min-height: unset;
+      width: inherit;
       &:hover {
         background-color: ${grey('50')};
-      &:active {
-        background-color: ${grey('100')};
+        &:active {
+          background-color: ${grey('100')};
+        }
+      }
+
+      .rippleVisible {
+        opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+        transform: scale(1);
+        animation-name: ${({ theme }) => rippleEnter(theme)};
       }
     }
-
-    .rippleVisible {
-      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
-      transform: scale(1);
-      animation-name: ${({ theme }) => rippleEnter(theme)};
-    }
-  }
   }
 `;
 
@@ -163,6 +153,4 @@ JuiButtonComponent.defaultProps = {
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;
 
-export {
-  JuiButton, JuiButtonProps, JuiButtonColor, ColorMap,
-};
+export { JuiButton, JuiButtonProps, JuiButtonColor, ColorMap };

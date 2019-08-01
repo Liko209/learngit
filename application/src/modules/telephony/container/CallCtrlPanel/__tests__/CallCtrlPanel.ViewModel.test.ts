@@ -1,27 +1,35 @@
 import { container, decorate, injectable } from 'framework';
 import { TelephonyStore } from '../../../store';
 import { CallCtrlPanelViewModel } from '../CallCtrlPanel.ViewModel';
+import { getEntity } from '@/store/utils';
+import { observable } from 'mobx';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
+jest.mock('@/store/utils');
 decorate(injectable(), TelephonyStore);
 
 container.bind(TelephonyStore).to(TelephonyStore);
 
 let callCtrlPanelViewModel: CallCtrlPanelViewModel;
 
+let call;
+
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue({
+  matchContactByPhoneNumber: jest.fn().mockResolvedValue({}),
+});
+
 beforeEach(() => {
+  call = observable({
+    toNum: 'bar',
+  });
+  (getEntity as jest.Mock).mockReturnValue(call);
   callCtrlPanelViewModel = new CallCtrlPanelViewModel();
 });
 
 describe('CallCtrlPanelViewModel', () => {
   describe('phone', () => {
     it('Should return value of `phoneNumber` on TelephonyStore', () => {
-      Object.defineProperty(
-        callCtrlPanelViewModel._telephonyStore,
-        'phoneNumber',
-        {
-          get: jest.fn(() => 'bar'),
-        },
-      );
+      // call.direction = 'inbound';
       expect(callCtrlPanelViewModel.phone).toEqual('bar');
     });
   });
@@ -34,6 +42,13 @@ describe('CallCtrlPanelViewModel', () => {
 
   describe('name', () => {
     it('Should return value of `displayName` on TelephonyStore', () => {
+      Object.defineProperty(
+        callCtrlPanelViewModel._telephonyStore,
+        'isContactMatched',
+        {
+          get: jest.fn(() => true),
+        },
+      );
       expect(callCtrlPanelViewModel.name).toEqual('');
     });
   });

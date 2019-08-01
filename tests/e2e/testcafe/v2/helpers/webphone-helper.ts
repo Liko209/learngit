@@ -19,7 +19,7 @@ export class WebphoneHelper {
   }
 
   async withSession(user: IUser, cb: (session: WebphoneSession) => Promise<any>) {
-    const webphoneRequest = {phoneNumber: user.company.number, extension: user.extension, password: user.password};
+    const webphoneRequest = { phoneNumber: user.company.number, extension: user.extension, password: user.password };
     const session = new WebphoneSession(ENV_OPTS.WEBPHONE_BASE_URL, ENV_OPTS.WEBPHONE_ENV, webphoneRequest);
     try {
       await session.init();
@@ -30,7 +30,15 @@ export class WebphoneHelper {
   }
 
   async newWebphoneSession(user: IUser) {
-    const webphoneRequest = {phoneNumber: user.company.number, extension: user.extension, password: user.password};
+    const webphoneRequest = { phoneNumber: user.company.number, extension: user.extension, password: user.password };
+    const session = new WebphoneSession(ENV_OPTS.WEBPHONE_BASE_URL, ENV_OPTS.WEBPHONE_ENV, webphoneRequest);
+    this.sessions.push(session);
+    await session.init();
+    return session;
+  }
+
+  async newWebphoneSessionWithDid(did: string, password: string) {
+    const webphoneRequest = { phoneNumber: did, extension: "0", password: password };
     const session = new WebphoneSession(ENV_OPTS.WEBPHONE_BASE_URL, ENV_OPTS.WEBPHONE_ENV, webphoneRequest);
     this.sessions.push(session);
     await session.init();

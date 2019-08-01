@@ -19,14 +19,17 @@ import {
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
+import { RuiTooltip } from 'rcui/components/Tooltip';
 
 type Size = 'small' | 'medium' | 'large' | 'xlarge';
 
 type JuiAvatarProps = {
   size?: Size;
   color?: string;
+  tooltip?: string;
   presence?: JSX.Element;
   cover?: boolean;
+  displayName?: string;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -54,7 +57,8 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     width: ${({ size = 'medium' }) => width(sizes[size])};
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
-    background-color: ${({ color }) => (color ? palette('avatar', color) : grey('100'))};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;
@@ -83,8 +87,10 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     align-items: center;
     justify-content: center;
     font-size: ${spacing(12)};
-    color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
-    background-color: ${({ color }) => (color ? palette('avatar', color) : primary('600'))};
+    color: ${({ color }) =>
+      color ? palette('avatar', color) : primary('600')};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : primary('600')};
   }
   & span {
     display: flex;
@@ -104,13 +110,19 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, cover, ...rest } = props;
+  const { presence, cover, tooltip, displayName, ...rest } = props;
 
   if (cover) {
-    return <StyledCoverAvatar {...rest} />;
+    return tooltip ? (
+      <RuiTooltip title={tooltip}>
+        <StyledCoverAvatar {...rest} />
+      </RuiTooltip>
+    ) : (
+      <StyledCoverAvatar {...rest} />
+    );
   }
 
-  return presence ? (
+  const avatar = presence ? (
     <StyledWrapper size={rest.size} style={rest.style}>
       <StyledAvatar {...rest} />
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
@@ -118,6 +130,8 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
   ) : (
     <StyledAvatar {...rest} />
   );
+
+  return tooltip ? <RuiTooltip title={tooltip}>{avatar}</RuiTooltip> : avatar;
 });
 
 JuiAvatar.defaultProps = {

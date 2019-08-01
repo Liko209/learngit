@@ -29,7 +29,7 @@ type Props = {
   Back?: React.ComponentType;
   HoverActions?: React.ComponentType;
   Avatar?: React.ComponentType;
-  RecentCallBtn?: React.ComponentType;
+  RecentCallBtn?: React.ComponentType<any>;
   name?: string;
   phone?: string;
   placeholder?: string;
@@ -130,10 +130,11 @@ const StyledInputContainer = styled('div')`
   }
 `;
 
-const colorTransition = ({ theme }: { theme: Theme }) => theme.transitions.create(['color'], {
-  easing: theme.transitions.easing.easeInOut,
-  duration: theme.transitions.duration.standard,
-});
+const colorTransition = ({ theme }: { theme: Theme }) =>
+  theme.transitions.create(['color'], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.standard,
+  });
 
 const SearchInput = styled(JuiTextField)<any>`
   && {
@@ -186,7 +187,6 @@ class JuiHeader extends PureComponent<Props, State> {
   state = {
     showHoverActions: false,
   };
-  /* eslint-disable react/sort-comp */
   private _handleMouseEvent = () => {
     const { HoverActions, showDialerInputField } = this.props;
     if (showDialerInputField) {
@@ -202,9 +202,7 @@ class JuiHeader extends PureComponent<Props, State> {
 
   private _renderCallInfo() {
     const { showHoverActions } = this.state;
-    const {
-      Back, Avatar, name, phone, HoverActions,
-    } = this.props;
+    const { Back, Avatar, name, phone, HoverActions } = this.props;
     return (
       <>
         <StyledLeft>
@@ -234,8 +232,9 @@ class JuiHeader extends PureComponent<Props, State> {
     );
   }
 
-  private _handleMouseDown = (e: MouseEvent<HTMLInputElement>) => {
-    if (e.button) { // Only handle the primary key
+  private _handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.button) {
+      // Only handle the primary key
       return;
     }
     e.preventDefault();
@@ -252,8 +251,9 @@ class JuiHeader extends PureComponent<Props, State> {
     }, 1000);
   };
   /* eslint-disable react/no-find-dom-node */
-  private _handleMounseUp = (e: MouseEvent<HTMLInputElement>) => {
-    if (e.button) { // Only handle the primary key
+  private _handleMounseUp = (e: MouseEvent<HTMLButtonElement>) => {
+    if (e.button) {
+      // Only handle the primary key
       return;
     }
     e.preventDefault();
@@ -355,6 +355,15 @@ class JuiHeader extends PureComponent<Props, State> {
   private _handleMouseDownOnInput = (e: React.MouseEvent<any>) => {
     // prevent drag & drop
     e.stopPropagation();
+  };
+
+  _onFocus = (e: MouseEvent) => {
+    const { onFocus } = this.props;
+    // prevent drag & drop
+    e.stopPropagation();
+    e.preventDefault();
+
+    onFocus && onFocus();
   };
 
   private _renderDialerInput() {

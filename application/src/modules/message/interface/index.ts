@@ -1,9 +1,11 @@
-import { createDecorator } from 'framework';
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-07-16 16:44:40
+ * Copyright © RingCentral. All rights reserved.
+ */
 
-const IMessageSettingManager = createDecorator('MESSAGE_SETTING_MANAGER');
-
-interface IMessageSettingManager {
-  init: Function;
-  dispose: Function;
-}
-export { IMessageSettingManager };
+export * from './IMessageService';
+export * from './IMessageStore';
+export * from './IMessageSettingManager';
+export * from './IMessageNotificationManager';
+export * from './constant';

@@ -30,10 +30,10 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhone', 'V1.
     await t.expect(phoneSettingPage.callerIDDropDownItems.exists).ok();
   })
 
-  await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Settings_Phone'})
+  await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_Phone' })
 
   await h(t).withLog('When I click Update button for Region', async () => {
-    await phoneSettingPage.clickCallerIDDropDown();
+    await t.pressKey('esc');
     await phoneSettingPage.clickRegionUpdateButton();
   })
 
@@ -41,5 +41,5 @@ test(formalName('Check Phone Settings', ['P2', 'Settings', 'SettingsPhone', 'V1.
     await t.expect(phoneSettingPage.updateRegionDialog.title.exists).ok();
   })
 
-  await h(t).log('And I capture screenshot', {screenshotPath: 'Jupiter_Settings_PhoneRegion'})
+  await h(t).log('And I capture screenshot', { screenshotPath: 'Jupiter_Settings_PhoneRegion' })
 })

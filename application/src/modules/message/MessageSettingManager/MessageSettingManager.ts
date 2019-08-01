@@ -24,33 +24,29 @@ import {
   DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
   NEW_MESSAGE_BADGES_OPTIONS,
   EMAIL_NOTIFICATION_OPTIONS,
+  AUDIO_SOUNDS_INFO,
 } from 'sdk/module/profile';
 import { NewMessageSelectSourceItem } from './NewMessageSelectSourceItem.View';
 import { buildTitleAndDesc } from '@/modules/setting/utils';
 import { BadgeCountSourceItem } from './NewMessageBadgeCountSelectSouceItem.View';
 import { EmailNotificationTimeSourceItem } from './EmailNotificationTimeSelectSourceItem.View';
+import { SETTING_SECTION__SOUNDS } from '@/modules/setting/constant';
+import {
+  SoundSourceItem,
+  SoundSourcePlayerRenderer,
+} from '@/modules/setting/container/SettingItem/Select/SoundSourceItem.View';
+import {
+  SoundSelectDataTrackingOption,
+  BadgeCountSelectDataTrackingOption,
+  EmailNotificationSelectDataTrackingOption,
+} from './dataTrackingTransformer';
 
 const NewMessageSelectDataTrackingOption: {
-  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string
+  [key in DESKTOP_MESSAGE_NOTIFICATION_OPTIONS]: string;
 } = {
   always: 'All new messages',
   mentions_or_dms: 'Direct messages and mentions',
   never: 'Off',
-};
-
-const EmailNotificationSelectDataTrackingOption: {
-  [key in EMAIL_NOTIFICATION_OPTIONS]: string
-} = {
-  900000: 'Every 15 minutes',
-  3600000: 'Every hour',
-  0: 'Off',
-};
-
-const BadgeCountSelectDataTrackingOption: {
-  [key in NEW_MESSAGE_BADGES_OPTIONS]: string
-} = {
-  groups_and_mentions: 'Direct messages and mentions only',
-  all: 'All new messages',
 };
 
 class MessageSettingManager implements IMessageSettingManager {
@@ -91,7 +87,8 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailDirectMessage',
           type: 'emailNotificationSettings',
-          optionTransform: value => EmailNotificationSelectDataTrackingOption[value],
+          optionTransform: value =>
+            EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('directMessages'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -115,7 +112,8 @@ class MessageSettingManager implements IMessageSettingManager {
         dataTracking: {
           name: 'emailTeams',
           type: 'emailNotificationSettings',
-          optionTransform: value => EmailNotificationSelectDataTrackingOption[value],
+          optionTransform: value =>
+            EmailNotificationSelectDataTrackingOption[value],
         },
         ...emailNotificationTitleAndDescBuilder('teams'),
       } as SelectSettingItem<EMAIL_NOTIFICATION_OPTIONS>,
@@ -132,11 +130,13 @@ class MessageSettingManager implements IMessageSettingManager {
       },
     ];
 
-    emailNotificationSettingItems.forEach(i => this._settingService.registerItem(
-      MESSAGE_SETTING_SCOPE,
-      SETTING_SECTION__EMAIL_NOTIFICATIONS,
-      i,
-    ));
+    emailNotificationSettingItems.forEach(i =>
+      this._settingService.registerItem(
+        MESSAGE_SETTING_SCOPE,
+        SETTING_SECTION__EMAIL_NOTIFICATIONS,
+        i,
+      ),
+    );
     this._settingService.registerItem(
       MESSAGE_SETTING_SCOPE,
       SETTING_SECTION__OTHER_NOTIFICATION_SETTINGS,
@@ -158,8 +158,68 @@ class MessageSettingManager implements IMessageSettingManager {
         ),
       } as SelectSettingItem<NEW_MESSAGE_BADGES_OPTIONS>,
     );
+    this.registerSounds();
   }
-
+  registerSounds() {
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__SOUNDS,
+      {
+        id: MESSAGE_SETTING_ITEM.SOUND_DIRECT_MESSAGES,
+        automationId: 'soundDirectMessages',
+        weight: 100,
+        type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: SoundSourceItem,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
+        ...buildTitleAndDesc(
+          'notificationAndSounds',
+          'sounds',
+          'directMessages',
+        ),
+        dataTracking: {
+          name: 'directMessages',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
+    );
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__SOUNDS,
+      {
+        id: MESSAGE_SETTING_ITEM.SOUND_MENTIONS,
+        automationId: 'soundMentions',
+        weight: 200,
+        type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: SoundSourceItem,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
+        ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'mentions'),
+        dataTracking: {
+          name: 'mentions',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
+    );
+    this._settingService.registerItem(
+      MESSAGE_SETTING_SCOPE,
+      SETTING_SECTION__SOUNDS,
+      {
+        id: MESSAGE_SETTING_ITEM.SOUND_TEAM_MESSAGES,
+        automationId: 'soundTeamMessages',
+        weight: 300,
+        type: SETTING_ITEM_TYPE.SELECT,
+        sourceRenderer: SoundSourceItem,
+        secondaryActionRenderer: SoundSourcePlayerRenderer,
+        ...buildTitleAndDesc('notificationAndSounds', 'sounds', 'teamMessages'),
+        dataTracking: {
+          name: 'teamMessages',
+          type: 'soundSettings',
+          optionTransform: ({ id }) => SoundSelectDataTrackingOption[id],
+        },
+      } as SelectSettingItem<AUDIO_SOUNDS_INFO>,
+    );
+  }
   dispose() {
     this._settingService.unRegisterAll(MESSAGE_SETTING_SCOPE);
   }

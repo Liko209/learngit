@@ -7,7 +7,7 @@ import * as Flatted from 'flatted';
 import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
-import { h } from './v2/helpers';
+import { h, H } from './v2/helpers';
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
 import { BeatsClient, Run } from 'bendapi-ts';
 import { MiscUtils } from './v2/utils';

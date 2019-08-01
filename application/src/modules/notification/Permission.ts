@@ -10,12 +10,13 @@ import { notificationCenter } from 'sdk/service';
 class Permission implements INotificationPermission {
   private _permissionCache: NotificationPermission = this.current;
   private _permissions = PERMISSION;
-  private _requestPermission = async (): Promise<NotificationPermission> => new Promise(resolve => {
-    const result = Notification.requestPermission(resolve);
-    if (result) {
-      result.then(resolve);
-    }
-  })
+  private _requestPermission = async (): Promise<NotificationPermission> =>
+    new Promise(resolve => {
+      const result = Notification.requestPermission(resolve);
+      if (result) {
+        result.then(resolve);
+      }
+    });
   async request(): Promise<NotificationPermission> {
     const requestedPermission = await this._requestPermission();
     this.handlePermissionChange(requestedPermission);

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer, Observer } from 'mobx-react';
@@ -59,7 +58,7 @@ class VoicemailWrapper extends Component<
 
     return (
       <JuiEmptyPage
-        data-test-automation-id='voicemailEmptyPage'
+        data-test-automation-id="voicemailEmptyPage"
         image={image}
         message={message}
         height={height}
@@ -114,7 +113,7 @@ class VoicemailWrapper extends Component<
       <>
         <JuiConversationPageHeader
           title={t('phone.voicemail')}
-          data-test-automation-id='VoicemailPageHeader'
+          data-test-automation-id="VoicemailPageHeader"
           Right={this._filterRenderer}
         />
         <PhoneWrapper pageHeight={height}>
@@ -124,7 +123,7 @@ class VoicemailWrapper extends Component<
             <DataList
               initialDataCount={INITIAL_COUNT}
               listHandler={listHandler}
-              reverse={true}
+              reverse
               InfiniteListProps={Object.assign(this._infiniteListProps, {
                 height,
                 noRowsRenderer: this._noRowsRenderer,
@@ -147,14 +146,8 @@ class VoicemailComp extends Component<Props> {
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true} handleWidth={true}>
-        {({
-          width: width,
-          height: height,
-        }: {
-          width: number;
-          height: number;
-        }) => (
+      <ReactResizeDetector handleHeight handleWidth>
+        {({ width, height }: { width: number; height: number }) => (
           <Observer>
             {() => (
               <VoicemailWrapper

@@ -6,7 +6,7 @@
 
 import { createDecorator } from 'framework';
 import { IMedia } from './IMedia';
-import { MediaOptions } from '.';
+import { MediaOptions } from './Media';
 
 const IMediaService = createDecorator('IMediaService');
 
@@ -21,7 +21,12 @@ interface IMediaService {
    *
    * @param mediaId
    */
-  getMedia?(mediaId: string): IMedia;
+  getMedia(mediaId: string): IMedia | null;
+
+  /**
+   * @param trackId
+   */
+  pauseTrack(trackId: string): void;
 
   canPlayType(mimeType: string): boolean;
 }

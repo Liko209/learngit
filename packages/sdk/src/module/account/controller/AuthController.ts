@@ -24,6 +24,7 @@ import { AccountService } from '../service';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { TaskController } from 'sdk/framework/controller/impl/TaskController';
 import { ReLoginGlipStrategy } from '../strategy/ReLoginGlipStrategy';
+import { dataCollectionHelper } from 'sdk/framework';
 
 interface ILogin {
   username: string;
@@ -52,6 +53,11 @@ class AuthController {
         UnifiedLoginAuthenticator.name,
         { code, token },
       );
+      dataCollectionHelper.traceLoginSuccess({
+        accountType: 'rc',
+        userId: 0,
+        companyId: 0,
+      });
       mainLogger
         .tags(LOG_TAG)
         .info(`unifiedLogin finished ${JSON.stringify(resp)}`);

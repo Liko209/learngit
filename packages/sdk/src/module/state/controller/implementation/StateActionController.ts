@@ -13,7 +13,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
-/* eslint-disable */
+
 class StateActionController {
   private _partialModifyController: IPartialModifyController<GroupState>;
   constructor(
@@ -63,7 +63,7 @@ class StateActionController {
     if (lastPostId && myStateId > 0) {
       await this._partialModifyController.updatePartially(
         groupId,
-        (partialEntity: Partial<Raw<GroupState>>) => {
+        (partialEntity: Partial<Raw<GroupState>>, originEntity) => {
           if (isUnread) {
             return {
               ...partialEntity,
@@ -76,6 +76,7 @@ class StateActionController {
             ...partialEntity,
             read_through: lastPostId,
             last_read_through: lastPostId,
+            team_mention_cursor: originEntity.group_team_mention_cursor,
             unread_count: 0,
             unread_mentions_count: 0,
             unread_deactivated_count: 0,
@@ -124,7 +125,7 @@ class StateActionController {
     groupState: GroupState,
   ): Partial<State> {
     return {
-      ['id']: myStateId,
+      'id': myStateId,
       [`unread_count:${groupState.id}`]: groupState.unread_count,
       [`unread_mentions_count:${
         groupState.id
@@ -134,6 +135,7 @@ class StateActionController {
       }`]: groupState.unread_deactivated_count,
       [`read_through:${groupState.id}`]: groupState.read_through,
       [`marked_as_unread:${groupState.id}`]: groupState.marked_as_unread,
+      [`team_mention_cursor:${groupState.id}`]: groupState.team_mention_cursor,
     };
   }
 
@@ -142,7 +144,7 @@ class StateActionController {
     groupState: GroupState,
   ): Partial<State> {
     return {
-      ['id']: myStateId,
+      'id': myStateId,
       [`unread_count:${groupState.id}`]: groupState.unread_count,
       [`post_cursor:${groupState.id}`]: groupState.post_cursor,
       [`marked_as_unread:${groupState.id}`]: groupState.marked_as_unread,

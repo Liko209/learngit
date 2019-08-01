@@ -3,8 +3,6 @@
  * @Date: 2018-11-22 11:27:02
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import { observer } from 'mobx-react';
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -62,23 +60,24 @@ class MemberList extends React.Component<
     } = this.props;
     return (
       <JuiProfileDialogContentMemberList>
-        {showEmpty && (
+        {showEmpty ? (
           <EmptyView
             image={empty}
             subText={t('people.team.noMatchesFound')}
             delay={100}
           />
+        ) : (
+          <InfiniteList
+            loadInitialData={loadInitialData}
+            loadMore={loadMore}
+            hasMore={hasMore}
+            minRowHeight={ITEM_HEIGHT}
+            onScroll={this.onScroll}
+            data-test-automation-id="profileDialogMemberList"
+          >
+            {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
+          </InfiniteList>
         )}
-        <InfiniteList
-          loadInitialData={loadInitialData}
-          loadMore={loadMore}
-          hasMore={hasMore}
-          minRowHeight={ITEM_HEIGHT}
-          onScroll={this.onScroll}
-          data-test-automation-id='profileDialogMemberList'
-        >
-          {filteredMemberIds.map((id: number) => this.rowRenderer(id))}
-        </InfiniteList>
       </JuiProfileDialogContentMemberList>
     );
   }

@@ -3,7 +3,7 @@
  * @Date: 2019-05-03 09:54:21
  * Copyright © RingCentral. All rights reserved.
  */
-/* eslint-disable */
+
 import React, { Component } from 'react';
 import { IntegrationItemViewProps } from './types';
 import { observer } from 'mobx-react';

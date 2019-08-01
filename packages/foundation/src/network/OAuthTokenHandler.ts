@@ -13,6 +13,7 @@ import {
   IToken,
 } from './network';
 import { networkLogger } from '../log';
+import { ERROR_CODES_NETWORK, JNetworkError } from '../error';
 
 const LOG_TAG = 'OAuthTokenHandler';
 
@@ -150,7 +151,12 @@ class OAuthTokenHandler implements ITokenHandler {
                 this._notifyRefreshTokenFailure();
               }
             })
-            .catch((forceLogout: boolean) => {
+            .catch((reason?: JNetworkError) => {
+              const forceLogout =
+                reason &&
+                (reason.code === ERROR_CODES_NETWORK.BAD_REQUEST ||
+                  reason.code === ERROR_CODES_NETWORK.UNAUTHORIZED);
+
               networkLogger
                 .tags(LOG_TAG)
                 .info('Refreshing token error, forceLogout:', forceLogout);

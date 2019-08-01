@@ -10,10 +10,15 @@ import { ThemeProvider } from 'styled-components';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { getEntity, getGlobalValue } from '@/store/utils';
-import { ERROR_CODES_NETWORK, JNetworkError, JServerError, ERROR_CODES_SERVER } from 'sdk/error';
+import {
+  ERROR_CODES_NETWORK,
+  JNetworkError,
+  JServerError,
+  ERROR_CODES_SERVER,
+} from 'sdk/error';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { WithPostLikeComponentProps } from '../withPostLike/types';
-import { theme } from '@/__tests__/utils';
+import { theme } from 'shield/utils';
 import { withPostLike } from '../withPostLike';
 
 jest.mock('@/containers/Notification');
@@ -37,7 +42,11 @@ const mountWithTheme = (content: React.ReactNode) =>
 const userId = 1;
 (getGlobalValue as jest.Mock).mockReturnValue(userId);
 
-function setUpMock(iLiked: boolean, isFailed: boolean, errorType: 'network' | 'server') {
+function setUpMock(
+  iLiked: boolean,
+  isFailed: boolean,
+  errorType: 'network' | 'server',
+) {
   const postService = {
     likePost: jest.fn().mockImplementationOnce(() => {
       if (errorType === 'network') {
@@ -61,7 +70,7 @@ function setUpMock(iLiked: boolean, isFailed: boolean, errorType: 'network' | 's
 describe('LikeView', () => {
   describe('render()', () => {
     beforeEach(() => {
-      Notification.flashToast = jest.fn().mockImplementationOnce(() => { });
+      Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
     });
 
     it('Unlike failed due to backend issue.', async (done: jest.DoneCallback) => {

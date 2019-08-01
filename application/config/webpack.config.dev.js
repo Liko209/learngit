@@ -26,7 +26,7 @@ const paths = require('./paths');
 
 // eslint-disable-next-line import/no-dynamic-require
 const appPackage = require(paths.appPackageJson);
-const eslintRules = require('../../.eslintrc');
+const eslintRules = require('../../.eslintrc-dev');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
@@ -173,7 +173,9 @@ module.exports = {
         [paths.appSrc, paths.depPackages],
         [paths.appPackageJson],
       ),
-      new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
+      new TsconfigPathsPlugin({
+        configFile: paths.appTsConfig
+      }),
     ],
   },
   resolveLoader: {
@@ -185,10 +187,9 @@ module.exports = {
   },
   module: {
     strictExportPresence: true,
-    rules: [
-      {
+    rules: [{
         test: /\.(ts|tsx)$/,
-        exclude: /\.test.(ts|tsx)$/,
+        exclude: /\.test[.\w]*.(ts|tsx)$/,
         enforce: 'pre',
         include: [
           paths.appSrc,
@@ -198,19 +199,17 @@ module.exports = {
           paths.sdkPkg,
           paths.voipPkg,
         ],
-        use: [
-          {
-            options: {
-              formatter: require.resolve('react-dev-utils/eslintFormatter'),
-              ignore: true,
-              failOnError: true,
-              cache: true,
-              emitError: true,
-              ...eslintRules,
-            },
-            loader: require.resolve('eslint-loader'),
+        use: [{
+          options: {
+            formatter: require.resolve('react-dev-utils/eslintFormatter'),
+            ignore: true,
+            failOnError: true,
+            cache: true,
+            emitError: true,
+            ...eslintRules,
           },
-        ],
+          loader: require.resolve('eslint-loader'),
+        }],
       },
       // Disable require.ensure as it's not a standard language feature.
       // { parser: { requireEnsure: false } },
@@ -238,12 +237,14 @@ module.exports = {
           {
             test: /\.(js|jsx|ts|tsx)$/,
             exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-            use: [
-              { loader: 'cache-loader' },
+            use: [{
+                loader: 'cache-loader'
+              },
               {
                 loader: 'ts-loader',
                 options: {
                   transpileOnly: true,
+                  configFile: paths.appTsConfig,
                 },
               },
             ],
@@ -286,8 +287,7 @@ module.exports = {
           },
           {
             test: /jui\/src\/assets\/.*\.svg$/,
-            use: [
-              {
+            use: [{
                 loader: 'svg-sprite-loader',
                 options: {
                   symbolId: 'icon-[name]',
@@ -296,11 +296,20 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathData: true },
-                    { reusePaths: true },
+                  plugins: [{
+                      removeTitle: true
+                    },
+                    {
+                      convertColors: {
+                        shorthex: false
+                      }
+                    },
+                    {
+                      convertPathData: true
+                    },
+                    {
+                      reusePaths: true
+                    },
                   ],
                 },
               },
@@ -328,7 +337,12 @@ module.exports = {
       {
         test: /\.worker\.(ts|js)$/,
         exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [{ loader: 'workerize-loader', options: { inline: false } }],
+        use: [{
+          loader: 'workerize-loader',
+          options: {
+            inline: false
+          }
+        }],
       },
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
@@ -394,15 +408,14 @@ module.exports = {
       publicPath,
     }),
     // add dll.js to html
-    ...(dllPlugin
-      ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          dllPath =>
-            new AddAssetHtmlPlugin({
-              filepath: dllPath,
-              includeSourcemap: false,
-            }),
-        )
-      : [() => {}]),
+    ...(dllPlugin ?
+      glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
+        dllPath =>
+        new AddAssetHtmlPlugin({
+          filepath: dllPath,
+          includeSourcemap: false,
+        }),
+      ) : [() => {}]),
   ]),
   // Some libraries import Node modules but don't use them in the browser.
   // Tell Webpack to provide empty mocks for them so importing them works.

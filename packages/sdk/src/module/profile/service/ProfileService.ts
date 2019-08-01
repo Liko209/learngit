@@ -41,7 +41,8 @@ class ProfileService extends EntityBaseService<Profile>
     );
 
     this.setCheckTypeFunc((id: number) =>
-      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE),);
+      GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE),
+    );
   }
 
   protected onStarted() {
@@ -156,11 +157,16 @@ class ProfileService extends EntityBaseService<Profile>
       .updateSettingOptions(options);
   }
 
+  async isNotificationMute(conversationId: number) {
+    return await this.getProfileController()
+      .getProfileDataController()
+      .isNotificationMute(conversationId);
+  }
+
   private get profileSetting() {
     if (!this._profileSetting) {
       this._profileSetting = new ProfileSetting(
         this,
-        ServiceLoader.getInstance(ServiceConfig.TELEPHONY_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.ACCOUNT_SERVICE),
         ServiceLoader.getInstance(ServiceConfig.SETTING_SERVICE),
       );

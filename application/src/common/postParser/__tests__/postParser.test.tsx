@@ -65,7 +65,7 @@ describe('non-glipdown text', () => {
           'abc ',
           <a
             key={0}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='http://www.baidu.com'
           >
@@ -74,7 +74,7 @@ describe('non-glipdown text', () => {
           ' ',
           <a
             key={1}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='http://www.google.com'
           >
@@ -83,7 +83,7 @@ describe('non-glipdown text', () => {
           ' ',
           <a
             key={2}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='mailto:chris.zhan@ringcentral.com'
           >
@@ -401,7 +401,7 @@ describe('non-glipdown text', () => {
         ).toEqual([
           <a
             key={0}
-            rel='noreferrer'
+            rel='noopener noreferrer'
             target='_blank'
             href='https://develop.fiji.gliprc.com/messages/3504234502'
           >
@@ -518,6 +518,24 @@ describe('glipdown text', () => {
           }),
         ).toEqual('😂hahahah');
       });
+      
+      it('should return woman NOT family when enter :woman:', ()=> {
+        expect(postParser(':woman:', {
+          emoji: {},
+        }),).toEqual([
+          <Emoji
+            emoji='woman'
+            skin={1}
+            set={'emojione'}
+            size={30}
+            key={0}
+            backgroundImageFn={backgroundImageFn}
+          >
+            👩
+          </Emoji>
+        ])
+      })
+
 
       it('should return array with only image emoji only[JPT-2387, JPT-2392, JPT-2396]', () => {
         expect(postParser('😁', { emoji: {} })).toEqual([

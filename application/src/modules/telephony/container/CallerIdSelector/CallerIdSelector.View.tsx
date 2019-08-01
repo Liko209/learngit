@@ -3,8 +3,6 @@
  * @Date: 2019-06-13 13:25:27
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import React, { PureComponent, createRef, ChangeEvent } from 'react';
 import { JuiBoxSelect } from 'jui/components/Selects/BoxSelect';
 import { JuiVirtualizedList } from 'jui/components/VirtualizedList';
@@ -43,13 +41,10 @@ class RawCallerIdSelector extends PureComponent<
   private _height = 416 - MENU_PADDING * 4;
 
   state = {
-    height: 0,
     focusIndex:
       this.props.menu.findIndex(
         item => item.phoneNumber === this.props.value,
       ) || 0,
-    displayStartIdx: 0,
-    displayEndIdx: 0,
   };
 
   private _getIdx = (idx: number, direction: Direction = Direction.DOWN) => {
@@ -151,7 +146,7 @@ class RawCallerIdSelector extends PureComponent<
     return (
       <JuiBoxSelect
         {...rest}
-        automationId='caller-id-selector'
+        automationId="caller-id-selector"
         renderValue={renderValue}
         MenuProps={styleProp}
         ref={this._containerRef}
@@ -189,25 +184,26 @@ class RawCallerIdSelector extends PureComponent<
 }
 
 const CallerIdSelectorWithLazyFormat = CallerIdContainer(
-  (props: CallerIdSelectorProps) => (
+  React.forwardRef((props: CallerIdSelectorProps, ref) => (
     <RawCallerIdSelector
       {...props}
+      ref={ref as any}
       renderValue={(i: any) => <LazyFormatPhone value={i} />}
     />
-  ),
+  )),
 );
 
 const CallerIdSelector = withTranslation('translations')(
   ({ tooltipProps, callerIdProps, t }: CallerIdViewProps & WithTranslation) => {
     return (
       <RuiTooltip
-        placement='bottom'
+        placement="bottom"
         {...tooltipProps}
         title={t('telephony.callerIdSelector.tooltip')}
       >
         <CallerIdSelectorWithLazyFormat
           {...callerIdProps}
-          heightSize='default'
+          heightSize="default"
           label={t('telephony.callFrom')}
         />
       </RuiTooltip>

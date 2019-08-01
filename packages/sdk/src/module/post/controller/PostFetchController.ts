@@ -5,9 +5,7 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import {
-  Post, IPostQuery, IPostResult, IRawPostResult,
-} from '../entity';
+import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
 import { daoManager } from '../../../dao';
 import { PostDao } from '../dao';
@@ -19,8 +17,8 @@ import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
 import { IGroupService } from '../../group/service/IGroupService';
 import { IRemotePostRequest, UnreadPostQuery } from '../entity/Post';
-import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 import { POST_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const ADDITIONAL_UNREAD_POST_COUNT = 500;
 const DEFAULT_HAS_MORE = {
@@ -55,7 +53,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     const performanceTracer = PerformanceTracer.start();
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
@@ -81,7 +79,6 @@ class PostFetchController {
       const hasMorePostInRemote = await this._groupService.hasMorePostInRemote(
         groupId,
       );
-      result.hasMore = hasMorePostInRemote;
       const shouldFetch = hasMorePostInRemote[direction];
       mainLogger.info(
         LOG_FETCH_POST,
@@ -90,6 +87,8 @@ class PostFetchController {
         }`,
       );
       if (!shouldSaveToDb || shouldFetch) {
+        result.hasMore[direction] = hasMorePostInRemote[direction];
+
         const validAnchorPostId = this._findValidAnchorPostId(
           direction,
           result.posts,
@@ -140,17 +139,33 @@ class PostFetchController {
       limit: unreadCount,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     mainLogger.info(
       LOG_FETCH_POST,
       `getUnreadPosts() groupId: ${groupId} startPostId: ${startPostId} endPostId: ${endPostId}`,
     );
     const performanceTracer = PerformanceTracer.start();
-    const isPostInDb = startPostId && (await this._isPostInDb(startPostId));
-    if (isPostInDb) {
+    if (startPostId > endPostId) {
+      mainLogger
+        .tags(LOG_FETCH_POST)
+        .info(
+          'getUnreadPostsByGroupId() return directly due to startPostId > endPostId',
+        );
+      return result;
+    }
+
+    let getPostsFromDb = false;
+    if (startPostId === 0) {
+      const { older } = await this._groupService.hasMorePostInRemote(groupId);
+      getPostsFromDb = !older;
+    } else if (await this._isPostInDb(startPostId)) {
+      getPostsFromDb = true;
+    }
+
+    if (getPostsFromDb) {
       mainLogger.info(LOG_FETCH_POST, 'getUnreadPosts() get from db');
-      result = await this._getIntervalPostsFromDb({
+      result = await this._getUnreadPostsFromDb({
         groupId,
         startPostId,
         endPostId,
@@ -165,10 +180,35 @@ class PostFetchController {
         direction: QUERY_DIRECTION.NEWER,
         shouldSaveToDb: true,
       });
+
+      let olderResult = null;
+      if (
+        startPostId > 0 &&
+        serverResult &&
+        (await this._groupService.hasMorePostInRemote(groupId)).older
+      ) {
+        const oldestPost = _.last(serverResult.posts);
+        if (oldestPost) {
+          olderResult = await this.getRemotePostsByGroupId({
+            groupId,
+            limit: DEFAULT_PAGE_SIZE,
+            postId: oldestPost.id,
+            direction: QUERY_DIRECTION.NEWER,
+            shouldSaveToDb: true,
+          });
+        }
+      }
+
       if (serverResult) {
-        result.posts = serverResult.posts;
-        result.items = serverResult.items;
         result.hasMore[QUERY_DIRECTION.NEWER] = serverResult.hasMore;
+        if (olderResult) {
+          result.posts = [...serverResult.posts, ...olderResult.posts];
+          result.items = [...serverResult.items, ...olderResult.items];
+          result.hasMore[QUERY_DIRECTION.OLDER] = olderResult.hasMore;
+        } else {
+          result.posts = serverResult.posts;
+          result.items = serverResult.items;
+        }
       }
     }
     performanceTracer.end({
@@ -273,10 +313,11 @@ class PostFetchController {
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
-          const index = localPosts.findIndex((localPost: Post) => (
-            localPost.unique_id !== undefined &&
-              localPost.unique_id === remotePost.unique_id
-          ));
+          const index = localPosts.findIndex(
+            (localPost: Post) =>
+              localPost.unique_id !== undefined &&
+              localPost.unique_id === remotePost.unique_id,
+          );
           if (index !== -1) {
             localPosts.splice(index, 1);
           }
@@ -298,7 +339,7 @@ class PostFetchController {
       limit,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     mainLogger.info(
       LOG_FETCH_POST,
@@ -334,18 +375,18 @@ class PostFetchController {
     return result;
   }
 
-  private async _getIntervalPostsFromDb(
+  private async _getUnreadPostsFromDb(
     unreadPostQuery: UnreadPostQuery,
   ): Promise<IPostResult> {
     const result: IPostResult = {
       limit: unreadPostQuery.unreadCount,
       posts: [],
       items: [],
-      hasMore: DEFAULT_HAS_MORE,
+      hasMore: _.cloneDeep(DEFAULT_HAS_MORE),
     };
     const performanceTracer = PerformanceTracer.start();
     const postDao = daoManager.getDao(PostDao);
-    const posts: Post[] = await postDao.queryIntervalPostsByGroupId(
+    const posts: Post[] = await postDao.queryUnreadPostsByGroupId(
       unreadPostQuery,
     );
     performanceTracer.end({

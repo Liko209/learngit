@@ -8,6 +8,10 @@ import { HomePageGatherer, OfflineGatherer, LoginGatherer } from '../gatherers';
 
 class OfflineScene extends Scene {
 
+  tags(): Array<string> {
+    return ["OfflineScene", "Lighthouse"];
+  }
+
   async preHandle() {
     this.config = SceneConfigFactory.getOfflineConfig();
 

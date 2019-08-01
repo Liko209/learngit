@@ -43,6 +43,9 @@ test(formalName('Pinned or unpinned text', ['P2', 'Messages', 'RightRail', 'Pinn
   await h(t).withLog('When I open a team and open empty Pinned tab', async() => {
     await teamPage.conversationEntryById(team.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
+    if (await rightRail.foldStatusButtonByClass.exists) {
+      await rightRail.clickFoldStatusButton();
+    }
     await rightRail.pinnedEntry.enter();
   });
 

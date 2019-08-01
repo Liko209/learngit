@@ -16,7 +16,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
 } from 'sdk/module/telephony/types';
-import { RC_INFO, notificationCenter } from 'sdk/service';
+import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
@@ -25,9 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import {
- reaction, IReactionDisposer, runInAction, action
-} from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -46,10 +44,11 @@ import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
-import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
 import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
+import config from '@/config';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -106,15 +105,9 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.id = id;
-    const { fromNum, callId, fromName } = this._telephonyStore.call;
+    const { fromNum, callId } = this._telephonyStore.call;
     this._callEntityId = id;
 
-    this._telephonyStore.callerName = fromName;
-    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
-    if (phoneNumber !== this._telephonyStore.phoneNumber) {
-      this._telephonyStore.isContactMatched = false;
-      this._telephonyStore.phoneNumber = phoneNumber;
-    }
     this._telephonyStore.incomingCall();
     // need factor in new module design
     // if has incoming call voicemail should be pause
@@ -172,7 +165,7 @@ class TelephonyService {
       }
     }
   };
-  /* eslint-disable */
+
   private _pauseRingtone = async () => {
     if (!this._ringtone) {
       return;
@@ -246,6 +239,17 @@ class TelephonyService {
       this._getCallerPhoneNumberList,
     );
 
+    notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+      const globalStore = storeManager.getGlobalStore();
+      this._serverTelephonyService.setDataCollectionInfoConfig({
+        isProduction: config.isProductionAccount(),
+        userInfo:{
+          userId: globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID),
+          companyId: globalStore.get(GLOBAL_KEYS.CURRENT_COMPANY_ID),
+        }
+      })
+    });
+
     this._serverTelephonyService.setTelephonyDelegate({
       onMadeOutgoingCall: this._onMadeOutgoingCall,
       onReceiveIncomingCall: this._onReceiveIncomingCall,
@@ -279,7 +283,7 @@ class TelephonyService {
         // prettier-ignore
         const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
           ENTITY_NAME.USER_SETTING,
-          SETTING_ITEM__PHONE_CALLER_ID,
+          PHONE_SETTING_ITEM.PHONE_CALLER_ID,
         ).value;
         return {
           defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,
@@ -365,8 +369,8 @@ class TelephonyService {
   private async _isJupiterDefaultApp() {
     const entity = await ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
-    ).getById(SettingEntityIds.Phone_DefaultApp, 0);
-    return (entity && entity.value) !== CALLING_OPTIONS.RINGCENTRAL;
+    ).getById(SettingEntityIds.Phone_DefaultApp);
+    return (entity && entity.value) === CALLING_OPTIONS.GLIP;
   }
 
   makeCall = async (toNumber: string, callback?: Function) => {
@@ -389,6 +393,7 @@ class TelephonyService {
       ToastCallError.toastPermissionError();
       return;
     }
+
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
       return this.makeRCPhoneCall(toNumber);
@@ -449,9 +454,10 @@ class TelephonyService {
         );
         return false; // For other errors, need not show call UI
       }
+      default:
+        break;
     }
 
-    this._telephonyStore.phoneNumber = toNumber;
     return true;
   };
 

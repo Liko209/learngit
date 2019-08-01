@@ -37,7 +37,7 @@ test.meta(<ITestMeta>{
     const sections = app.homePage.messageTab.sections;
     for (let i = 0; i < order.length; i++) {
       await t.expect(sections.nth(i).getAttribute('data-name')).eql(order[i]);
-      await t.expect(sections.nth(i).find(`[data-test-automation-id="conversation-list-section-header"]`).textContent).eql(order[i]);
+      await t.expect(sections.nth(i).find(`[data-test-automation-id="conversation-list-section-header"]`).textContent).eql(order[i].toUpperCase());
     }
   });
 });

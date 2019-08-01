@@ -11,13 +11,12 @@ import { observer } from 'mobx-react';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { FileNameEditDialog } from './FileNameEditDialog';
 
-/* eslint-disable */
 @observer
 class FileNameEditActionViewComponent extends Component<
   FileNameEditActionViewProps
 > {
   iconCom = (
-    <JuiIconography iconColor={['grey', '500']} iconSize='small'>
+    <JuiIconography iconColor={['grey', '500']} iconSize="small">
       edit
     </JuiIconography>
   );

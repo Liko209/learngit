@@ -1,0 +1,9 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Logout.ts"
+    ],
+  "includes_tags":["p0", "p1", "p2"],
+  "browsers": ["selenium:chrome"]
+  }
+}

@@ -11,6 +11,7 @@ import {
   JuiPreviewImage,
   JuiDelayPlaceholder,
   JuiFileSection,
+  JuiFileImageSection,
 } from 'jui/pattern/ConversationCard/Files';
 import { getThumbnailSize } from 'jui/foundation/utils';
 import {
@@ -129,24 +130,20 @@ class FilesView extends React.Component<FilesViewProps> {
 
   private _getActions = moize(
     (downloadUrl: string, fileId: number, postId: number) => [
-        <Download key="download-action" url={downloadUrl} />,
-        <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
+      <Download key="download-action" url={downloadUrl} />,
+      <FileActionMenu key="more-action" fileId={fileId} postId={postId} />,
     ],
   );
 
   render() {
-    const {
-      files, progresses, urlMap, postId,
-    } = this.props;
+    const { files, progresses, urlMap, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
-        <JuiFileSection>
+        <JuiFileImageSection>
           {files[FileType.image].map((file: ExtendFileItem) => {
             const { item } = file;
-            const {
-              origHeight, id, origWidth, name, downloadUrl,
-            } = item;
+            const { origHeight, id, origWidth, name, downloadUrl } = item;
             let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
             if (singleImage) {
               size = getThumbnailSize(origWidth, origHeight);
@@ -155,6 +152,7 @@ class FilesView extends React.Component<FilesViewProps> {
               <JuiDelayPlaceholder width={size.width} height={size.height} />
             );
             const props = {
+              fileID: id,
               width: size.width,
               height: size.height,
               forceSize: !singleImage,
@@ -175,9 +173,9 @@ class FilesView extends React.Component<FilesViewProps> {
             const future = (
               <JuiPreviewImage
                 key={id}
-                didLoad={(callback: Function) => this._handleImageDidLoad(id, callback)
+                didLoad={(callback: Function) =>
+                  this._handleImageDidLoad(id, callback)
                 }
-                placeholder={placeholder}
                 {...props}
               />
             );
@@ -200,13 +198,11 @@ class FilesView extends React.Component<FilesViewProps> {
               />
             );
           })}
-        </JuiFileSection>
+        </JuiFileImageSection>
         <JuiFileSection>
           {files[FileType.document].map((file: ExtendFileItem) => {
             const { item, previewUrl } = file;
-            const {
-              size, type, id, name, downloadUrl,
-            } = item;
+            const { size, type, id, name, downloadUrl } = item;
             const status = item.latestVersion && item.latestVersion.status;
             const iconType = getFileIcon(type);
             const supportFileViewer = isSupportFileViewer(type);
@@ -238,9 +234,7 @@ class FilesView extends React.Component<FilesViewProps> {
         <JuiFileSection>
           {files[FileType.others].map((file: ExtendFileItem) => {
             const { item } = file;
-            const {
-              size, type, name, downloadUrl, id,
-            } = item;
+            const { size, type, name, downloadUrl, id } = item;
             const iconType = getFileIcon(type);
             if (id < 0) {
               return this._renderItem(id, progresses, name);

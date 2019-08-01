@@ -25,7 +25,6 @@ test.meta(<ITestMeta>{
   const otherUser = users[5];
   const firstChatUser = users[6]
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
 
   let nonTopChat = <IGroup>{
@@ -139,7 +138,6 @@ test.skip.meta(<ITestMeta>{
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).glip(loginUser).setMaxTeamDisplay(3); // if use hide group, no show last Group
 
   let topTeam = <IGroup>{
@@ -327,7 +325,6 @@ test.skip.meta(<ITestMeta>{
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
 

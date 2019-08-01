@@ -160,7 +160,6 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
 
   await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
     await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
@@ -222,7 +221,6 @@ test(formalName('Show UMI when receive new messages after jump to conversation.'
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",
@@ -309,7 +307,6 @@ test(formalName('Function on post card of mentions/bookmarks page should the sam
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     type: "DirectMessage",
@@ -591,7 +588,7 @@ test(formalName('Show empty page when there are no posts in AtMention list', ['P
     });
 
     await h(t).withLog('Then I can see this post instead of empty page in the mentions page', async () => {
-      await t.expect(emptyPage.exists).notOk();
+      await t.expect(emptyPage.exists).notOk({ timeout: 20e3 });
       const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
       await t.expect(atMentionPostCard.exists).ok();
     }, true);
@@ -604,4 +601,3 @@ test(formalName('Show empty page when there are no posts in AtMention list', ['P
       await t.expect(emptyPage.exists).ok();
     }, true);
   });
-

@@ -21,7 +21,7 @@ import { RC_INFO_KEYS } from 'sdk/module/rcInfo/config/constants';
 
 export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   PhoneNumberModel
-  > {
+> {
   id = SettingEntityIds.Phone_CallerId;
 
   constructor() {
@@ -35,7 +35,9 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
   }
 
   private _subscribe() {
-    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload => this.onSettingEntityUpdate(payload));
+    this.onEntity().onUpdate<UserSettingEntity>(ENTITY.USER_SETTING, payload =>
+      this.onSettingEntityUpdate(payload),
+    );
 
     this.rcInfoConfig().on(RC_INFO_KEYS.EXTENSION_CALLER_ID, () => {
       this.onRcInfoEntityUpdate();
@@ -64,15 +66,11 @@ export class CallerIdSettingHandler extends AbstractSettingEntityHandler<
     );
     const model = await settingService.getById<CALLING_OPTIONS>(
       SettingEntityIds.Phone_DefaultApp,
-      0
     );
     const callingOptions = model && model.value;
     const callerList = await rcInfoService.getCallerIdList();
     const info = await rcInfoService.getDefaultCallerId();
     const settingItem: UserSettingEntity<PhoneNumberModel> = {
-      weight: 0,
-      valueType: 0,
-      parentModelId: 0,
       id: SettingEntityIds.Phone_CallerId,
       source: callerList,
       value: info,
