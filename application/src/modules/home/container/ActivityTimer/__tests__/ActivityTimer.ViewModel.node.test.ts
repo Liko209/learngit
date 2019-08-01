@@ -13,12 +13,12 @@ import { ActivityTimerViewModel } from '../ActivityTimer.ViewModel';
 const presenceService = {
   name: ServiceConfig.PRESENCE_SERVICE,
   setAutoPresence: jest.fn(),
-}
+};
 
 describe('ActivityTimer.ViewModel', () => {
   @testable
   class setOffline {
-    @test('should set offline when presence is AVAILABLE')
+    @test('should set offline when presence is AVAILABLE [JPT-2626]')
     @mockGlobalValue(1)
     @mockPresence(PRESENCE.AVAILABLE)
     @mockService(presenceService, 'setAutoPresence', true)
@@ -42,7 +42,7 @@ describe('ActivityTimer.ViewModel', () => {
 
   @testable
   class setOnline {
-    @test('should set online when app is in offline mode')
+    @test('should set online when app is in offline mode [JPT-2652]')
     @mockGlobalValue(1)
     @mockPresence(PRESENCE.AVAILABLE)
     @mockService(presenceService, 'setAutoPresence', true)
@@ -62,4 +62,4 @@ describe('ActivityTimer.ViewModel', () => {
       expect(presenceService.setAutoPresence).not.toHaveBeenCalled();
     }
   }
-})
+});
