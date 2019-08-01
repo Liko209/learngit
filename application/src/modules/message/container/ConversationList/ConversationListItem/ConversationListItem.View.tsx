@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /* eslint-disable */
-import React, { MouseEvent, Fragment } from 'react';
+import React, { MouseEvent } from 'react';
 import { JuiConversationListItem } from 'jui/pattern/ConversationList';
-import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
 import { Indicator } from '../Indicator';
 import { Presence } from '@/containers/Presence';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -28,7 +27,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
 
   private _requiredShownPresenceConversationTypes = [
     CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-    CONVERSATION_TYPES.ME,
+    // CONVERSATION_TYPES.ME
   ];
 
   state = {
@@ -42,25 +41,21 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this._closeMenu = this._closeMenu.bind(this);
   }
 
-  private get _umi() {
-    return this.props.umiHint ? (
-      <Umi type={UMI_SECTION_TYPE.SINGLE} id={this.props.groupId} />
-    ) : (
-      undefined
-    );
+  private get _showUmi() {
+    return !!(this.props.umiHint && !this.state.isHover);
   }
 
-  private get _presence() {
+  private _presence = () => {
     const { groupType } = this.props;
     return this._requiredShownPresenceConversationTypes.includes(groupType) ? (
       <Presence uid={this.props.personId} />
     ) : null;
-  }
+  };
   private get _indicator() {
     if (this.props.selected) {
       return null;
     }
-    return <Indicator id={this.props.groupId} />;
+    return <Indicator id={this.props.groupId} showUmi={this._showUmi} />;
   }
 
   private _handleMouseOver = (e: React.MouseEvent<HTMLElement>) => {
@@ -83,15 +78,14 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   render() {
     const { isHover } = this.state;
     return (
-      <Fragment>
+      <>
         <JuiConversationListItem
-          className='conversation-list-item'
-          data-test-automation-id='conversation-list-item'
+          className="conversation-list-item"
+          data-test-automation-id="conversation-list-item"
           tabIndex={0}
           isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}
           presence={this._presence}
-          umi={this._umi}
           umiHint={this.props.umiHint}
           indicator={this._indicator}
           onMoreClick={this._handleMoreClick}
@@ -111,7 +105,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
             />
           )}
         </JuiConversationListItem>
-      </Fragment>
+      </>
     );
   }
 
@@ -127,6 +121,9 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   private _closeMenu(event: MouseEvent<HTMLElement> | UIEvent) {
     event.stopPropagation();
     this.menuAnchorEl = null;
+    this.setState({
+      isHover: false,
+    });
   }
 }
 

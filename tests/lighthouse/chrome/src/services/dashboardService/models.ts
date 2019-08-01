@@ -54,7 +54,7 @@ class DashboardItem {
   k: DashboardPair;
   b: DashboardPair;
   startMemory: DashboardPair;
-  endMemory: DashboardPair;
+  memoryGrowth: DashboardPair;
 
   memoryDiffArray: Array<Array<MemoryDiffItem>>;
 }

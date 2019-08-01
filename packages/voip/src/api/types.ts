@@ -19,11 +19,17 @@ type RTCCallInfo = {
   uuid: string;
   partyId: string;
   sessionId: string;
+  fromTag?: string;
+  toTag?: string;
+  callId?: string;
 };
 
 type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
+  replacesCallId?: string;
+  replacesFromTag?: string;
+  replacesToTag?: string;
 };
 
 type RTCCallActionSuccessOptions = {
@@ -67,6 +73,49 @@ type RTCSipFlags = {
   dscpSignaling: Number;
   dscpVoice: Number;
   dscpVideo: Number;
+};
+
+type RTCSipEmergencyServiceAddr = {
+  street: string;
+  street2: string;
+  city: string;
+  state: string;
+  stateId: string;
+  stateIsoCode: string;
+  stateName: string;
+  country: string;
+  countryId: string;
+  countryIsoCode: string;
+  countryName: string;
+  zip: string;
+  customerName: string;
+  outOfCountry: boolean;
+};
+
+type RTCSipDevice = {
+  uri: string;
+  id: string;
+  type: string;
+  status: string;
+  emergencyServiceAddress?: RTCSipEmergencyServiceAddr;
+};
+
+type RTCSipInfo = {
+  transport: string;
+  password: string;
+  domain: string;
+  username: string;
+  authorizationId: string;
+  outboundProxy: string;
+  outboundProxyBackup?: string;
+  switchBackInterval?: number;
+};
+
+type RTCSipProvisionInfo = {
+  device: RTCSipDevice;
+  sipInfo: RTCSipInfo[];
+  sipFlags: RTCSipFlags;
+  sipErrorCodes?: string[];
 };
 
 type RTCUserInfo = {
@@ -120,4 +169,6 @@ export {
   RTCSipFlags,
   RTC_MEDIA_ACTION,
   RECORD_STATE,
+  RTCSipProvisionInfo,
+  RTCSipEmergencyServiceAddr,
 };

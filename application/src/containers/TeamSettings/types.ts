@@ -10,6 +10,7 @@ type TeamSettingTypes = {
   allowMemberAddMember: boolean;
   allowMemberPost: boolean;
   allowMemberPin: boolean;
+  allowMemberAtTeamMention: boolean;
 };
 type ViewProps = {
   initialData: TeamSettingTypes;
@@ -25,4 +26,13 @@ type ViewProps = {
   saving: boolean;
 };
 
-export { ViewProps, TeamSettingTypes };
+type State = {
+  name: string;
+  description: string;
+  allowMemberAddMember: boolean;
+  allowMemberPost: boolean;
+  allowMemberPin: boolean;
+  allowMemberAtTeamMention: boolean;
+};
+
+export { ViewProps, TeamSettingTypes, State };

@@ -20,7 +20,7 @@ exports[`Avatar renders correctly 1`] = `
 }
 
 <div
-  className="MuiAvatar-root-1 MuiAvatar-colorDefault-2 c0"
+  className="MuiAvatar-root c0 MuiAvatar-colorDefault"
   color="lake"
   size="md"
 >

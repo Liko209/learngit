@@ -85,10 +85,7 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId(
-      'settingItemSelectBox-defaultPhoneApp',
-      this.generalSection,
-    );
+    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection,);
   }
 
   get callerIDDropDownItems() {
@@ -272,7 +269,7 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('regionSettingDialogHeader');
+    return this.getSelectorByAutomationId('dialog-header-regionSetting');
   }
 
   get statement() {

@@ -12,7 +12,7 @@ import i18next from 'i18next';
 import MeetingItemModel from '@/store/models/MeetingItem';
 import jsonFile from '../../../../../../../public/locales/en/translations.json';
 import { MEETING_STATUS } from '../types';
-import { mountWithTheme } from '@/__tests__/utils';
+import { mountWithTheme } from 'shield/utils';
 import { MeetingView } from '../Meeting.View';
 
 let meetingVM: MeetingViewModel;

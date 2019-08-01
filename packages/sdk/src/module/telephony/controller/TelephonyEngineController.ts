@@ -26,6 +26,8 @@ import { AccountService } from 'sdk/module/account';
 import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
 import { Call } from '../entity';
 import { VoIPMediaDevicesDelegate } from './mediaDeviceDelegate/VoIPMediaDevicesDelegate';
+import { TelephonyGlobalConfig } from '../config/TelephonyGlobalConfig';
+import { notificationCallback } from '../types';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -116,7 +118,7 @@ class TelephonyEngineController {
       telephonyLogger.info('voip calling permission is revoked');
       this.logout();
     }
-  }
+  };
 
   subscribeNotifications() {
     notificationCenter.on(ENTITY.USER_PERMISSION, () => {
@@ -200,6 +202,35 @@ class TelephonyEngineController {
 
   getRingerDevicesList() {
     return this.mediaDevicesController.getRingerDevicesList();
+  }
+
+  subscribeEmergencyAddressChange(listener: notificationCallback) {
+    TelephonyGlobalConfig.onEmergencyAddressChange(listener);
+  }
+
+  subscribeSipProvChange(listener: notificationCallback) {
+    notificationCenter.on(
+      SERVICE.TELEPHONY_SERVICE.SIP_PROVISION_UPDATED,
+      listener,
+    );
+  }
+
+  getLocalEmergencyAddress() {
+    return TelephonyGlobalConfig.getEmergencyAddress();
+  }
+
+  getRemoteEmergencyAddress() {
+    return this._accountController.getEmergencyAddress();
+  }
+
+  isEmergencyAddrConfirmed() {
+    if (!this._accountController.getSipProv()) {
+      // Sip Provision is not ready
+      return true;
+    }
+    return (
+      !!this.getRemoteEmergencyAddress() && !!this.getLocalEmergencyAddress()
+    );
   }
 }
 

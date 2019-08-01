@@ -10,9 +10,11 @@ import {
   INotificationService,
   INotificationSettingManager,
   INotificationPermission,
+  ISoundNotification,
 } from './interface';
 import { NotificationSettingManager } from './notificationSettingManager/notificationSettingManager';
 import { Permission } from './Permission';
+import { SoundNotification } from './agent/SoundNotification';
 
 const config: ModuleConfig = {
   entry: NotificationModule,
@@ -20,6 +22,7 @@ const config: ModuleConfig = {
     { name: INotificationService, value: NotificationService },
     { name: INotificationSettingManager, value: NotificationSettingManager },
     { name: INotificationPermission, value: Permission },
+    { name: ISoundNotification, value: SoundNotification },
   ],
 };
 

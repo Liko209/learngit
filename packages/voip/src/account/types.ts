@@ -3,23 +3,6 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTCSipFlags } from '../api/types';
-
-type RTCSipProvisionInfo = {
-  device: object;
-  sipInfo: {
-    transport: string;
-    password: string;
-    domain: string;
-    username: string;
-    authorizationId: string;
-    outboundProxy: string;
-    outboundProxyBackup?: string;
-    switchBackInterval?: number;
-  }[];
-  sipFlags: RTCSipFlags;
-  sipErrorCodes?: string[];
-};
 
 type RTCRegisterAsyncTask = {
   name: string;
@@ -78,6 +61,5 @@ export {
   REGISTRATION_FSM_NOTIFY,
   REGISTRATION_EVENT,
   RTC_PROV_EVENT,
-  RTCSipProvisionInfo,
   RTCRegisterAsyncTask,
 };

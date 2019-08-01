@@ -37,17 +37,18 @@ import { Remove_Markdown } from 'glipdown';
 import { postParser } from '@/common/postParser';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { MessageNotificationViewModel } from './MessageNotificationViewModel';
-import {
-  DESKTOP_MESSAGE_NOTIFICATION_OPTIONS,
-} from 'sdk/module/profile';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from 'sdk/module/profile';
 import { MESSAGE_SETTING_ITEM } from './interface/constant';
 import { CONVERSATION_TYPES } from '@/constants';
 import { HTMLUnescape } from '@/common/postParser/utils';
 import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { IMessageNotificationManager } from './interface';
 
 const logger = mainLogger.tags('MessageNotificationManager');
 const NOTIFY_THROTTLE_FACTOR = 5000;
-export class MessageNotificationManager extends AbstractNotificationManager {
+
+class MessageNotificationManager extends AbstractNotificationManager
+  implements IMessageNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   private _vmQueue: {
@@ -159,10 +160,16 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   async getCurrentMessageNotificationSetting() {
     const entity = await ServiceLoader.getInstance<SettingService>(
       ServiceConfig.SETTING_SERVICE,
-    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES);
+    ).getById<DESKTOP_MESSAGE_NOTIFICATION_OPTIONS>(
+      MESSAGE_SETTING_ITEM.NOTIFICATION_NEW_MESSAGES,
+    );
     return (entity && entity.value) || 'default';
   }
   async shouldEmitNotification(post: Post) {
+    const currentUser = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    if (post.creator_id === currentUser) {
+      return;
+    }
     const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
@@ -247,7 +254,10 @@ export class MessageNotificationManager extends AbstractNotificationManager {
   }
 
   handlePostContent(post: PostModel) {
-    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(/(^|\n)> ([^\n]*)/g, (full_match, start, text) => `${start} ${text}`);
+    const _text = Remove_Markdown(post.text, { dont_escape: true }).replace(
+      /(^|\n)> ([^\n]*)/g,
+      (full_match, start, text) => `${start} ${text}`,
+    );
     const parsedResult = postParser(_text, {
       atMentions: {
         customReplaceFunc: (match, id, name) => name,
@@ -267,19 +277,21 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   isMyselfAtMentioned(post: PostModel) {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const isTeamMention = post.isTeamMention;
     return (
       post.atMentionNonItemIds &&
-      post.atMentionNonItemIds.includes(currentUserId)
+      post.atMentionNonItemIds.includes(currentUserId) ||
+      isTeamMention
     );
   }
 
-  getIcon(
-    {
-      id, headshotVersion = '', headshot = '', hasHeadShot,
-    }: PersonModel,
-    memberCount: number,
-    isTeam?: boolean,
-  ) {
+  getIcon(personModel: PersonModel, memberCount: number, isTeam?: boolean) {
+    const {
+      id,
+      headshotVersion = '',
+      headshot = '',
+      hasHeadShot,
+    } = personModel;
     if (isTeam) {
       return '/icon/defaultTeamAvatar.png';
     }
@@ -305,3 +317,5 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     this._postService.removeEntityNotificationObserver(this._observer);
   }
 }
+
+export { MessageNotificationManager };

@@ -11,6 +11,16 @@ import * as scenes from "./scenes";
 
 const logger = LogUtils.getLogger(__filename);
 
+const hasAtLeastOneTagInTargetLists = (tags: string[], ...targetLists) => {
+  let flag: boolean;
+  for (const targetList of targetLists) {
+    if (targetList) {
+      flag = flag || tags.some(tag => targetList.some(item => tag.toLowerCase() == item.toLowerCase()));
+    }
+  }
+  return flag;
+}
+
 (async () => {
   // init
   await initModel();
@@ -18,12 +28,13 @@ const logger = LogUtils.getLogger(__filename);
   let exitCode = 1;
   let skipRun = false;
   try {
-    let startTime = Date.now();
 
+    let startTime = Date.now();
     // check report dir
     await FileService.checkReportPath();
 
     const versionInfo = await DashboardService.getVersionInfo();
+
     await DashboardService.getVersionInfo(Config.jupiterStageHost);
     await DashboardService.getVersionInfo(Config.jupiterDevelopHost);
 
@@ -41,6 +52,7 @@ const logger = LogUtils.getLogger(__filename);
         }
       }
     }
+
     let taskDto = await MetricService.createTask(versionInfo.jupiterVersion);
 
     // run scenes
@@ -63,11 +75,21 @@ const logger = LogUtils.getLogger(__filename);
     });
 
     const sceneArray = [];
+    let scene;
     for (let name of sceneNames) {
-      sceneArray.push(new scenes[name](taskDto, versionInfo.jupiterVersion));
+      scene = new scenes[name](taskDto, versionInfo.jupiterVersion);
+
+      if (Config.includeTags.length > 0 && !hasAtLeastOneTagInTargetLists(scene.tags(), Config.includeTags)) {
+        continue;
+      }
+      if (Config.excludeTags.length > 0 && hasAtLeastOneTagInTargetLists(scene.tags(), Config.excludeTags)) {
+        continue;
+      }
+
+      sceneArray.push(scene);
     }
 
-    let result = true, scene;
+    let result = true;
     while (sceneArray.length > 0) {
       try {
         scene = sceneArray.shift();
@@ -99,7 +121,11 @@ const logger = LogUtils.getLogger(__filename);
     if (!skipRun) {
       await DashboardService.buildReport();
       // generate report index.html
-      await FileService.generateReportIndex();
+      try {
+        await FileService.generateReportIndex();
+      } catch (err) {
+        logger.error(err);
+      }
     }
 
     // release resources

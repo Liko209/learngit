@@ -5,7 +5,6 @@
  */
 import { observable, computed, reaction } from 'mobx';
 import _ from 'lodash';
-import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
@@ -14,14 +13,12 @@ import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
 import i18nT from '@/utils/i18nT';
-import { TeamPermission, GroupService } from 'sdk/module/group';
-import { PERMISSION_ENUM } from 'sdk/service';
+import { TeamPermission, GroupService, PERMISSION_ENUM, Group } from 'sdk/module/group';
 import { AccountService } from 'sdk/module/account';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import PersonModel from './Person';
 import { Person } from 'sdk/module/person/entity';
 
-/* eslint-disable */
 export default class GroupModel extends Base<Group> {
   @observable
   isTeam?: boolean;
@@ -246,6 +243,9 @@ export default class GroupModel extends Base<Group> {
       case CONVERSATION_TYPES.NORMAL_GROUP:
         result = 'Group conversation';
         break;
+      default:
+        result = '';
+        break;
     }
     return result;
   }
@@ -340,6 +340,17 @@ export default class GroupModel extends Base<Group> {
     );
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_PIN_POST,
+      this.teamPermissionParams,
+    );
+  }
+
+  @computed
+  get canMentionTeam() {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_MENTION,
       this.teamPermissionParams,
     );
   }

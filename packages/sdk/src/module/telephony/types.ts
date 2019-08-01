@@ -3,7 +3,12 @@
  * @Date: 2019-02-28 13:29:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { RTC_ACCOUNT_STATE, RTC_CALL_STATE } from 'voip';
+import {
+  RTC_ACCOUNT_STATE,
+  RTC_CALL_STATE,
+  RTCSipEmergencyServiceAddr as EmergencyServiceAddress,
+  RTCSipProvisionInfo as SipProvisionInfo,
+} from 'voip';
 
 enum FEATURE_PERMISSIONS {
   VOIP_CALLING = 'VoipCalling',
@@ -15,6 +20,8 @@ enum E911_STATUS {
   ACCEPTED,
   DISCLINED,
 }
+
+type notificationCallback = (...values: any[]) => void;
 
 type TelephonyCallInfo = {
   fromName?: string;
@@ -72,4 +79,7 @@ export {
   TelephonyCallInfo,
   LogoutCallback,
   CALL_ACTION_ERROR_CODE,
+  EmergencyServiceAddress,
+  SipProvisionInfo,
+  notificationCallback,
 };

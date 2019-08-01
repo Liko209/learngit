@@ -14,7 +14,7 @@ const JuiNoteContent = styled.div`
 
 const JuiNoteTitle = styled(JuiDialogHeaderTitle)`
   && {
-    h2 {
+    h6 {
       text-align: center;
     }
   }

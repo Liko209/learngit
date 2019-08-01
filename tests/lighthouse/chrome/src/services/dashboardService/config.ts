@@ -31,7 +31,7 @@ class DashboardConfig {
   };
   icons: FlagConfig = {
     warning: ":warning:",
-    block: ":negative_squared_cross_mark:",
+    block: ":x:",
     pass: ":white_check_mark:"
   };
   lodingTimeUrl: string = "http://xmn145.rcoffice.ringcentral.com:9005/question/140";
@@ -308,9 +308,14 @@ class DashboardConfig {
       "k": 3,
       "b": 700,
       "metric": {
-        "init_call_log_badge": {
-          "name": "init_call_log_badge",
+        "filter_and_sort_call_log": {
+          "name": "filter_and_sort_call_log",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/199",
+          "apiGoal": 2000
+        },
+        "filter_and_sort_voicemail": {
+          "name": "filter_and_sort_voicemail",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/253",
           "apiGoal": 2000
         },
         "fetch_call_log": {
@@ -350,8 +355,23 @@ class DashboardConfig {
           "name": "delete_rc_message_from_server",
           "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/206",
           "apiGoal": 2000
+        },
+        "fetch_recent_call_logs": {
+          "name": "fetch_recent_call_logs",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/254",
+          "apiGoal": 2000
+        },
+        "delete_call_log": {
+          "name": "delete_call_log",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/255",
+          "apiGoal": 2000
+        },
+        "delete_call_log_from_server": {
+          "name": "delete_call_log_from_server",
+          "url": "http://xmn145.rcoffice.ringcentral.com:9005/question/256",
+          "apiGoal": 2000
+        },
 
-        }
       }
     },
   };
