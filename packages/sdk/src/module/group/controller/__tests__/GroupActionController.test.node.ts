@@ -84,6 +84,9 @@ describe('GroupFetchDataController', () => {
   const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
   const mockUserId = 1;
+  const handleDataController = {
+    handleData: jest.fn(),
+  } as any;
 
   function setUp() {
     ServiceLoader.getInstance = jest
@@ -141,6 +144,7 @@ describe('GroupFetchDataController', () => {
       testEntitySourceController,
       testPartialModifyController,
       new TeamPermissionController(),
+      handleDataController,
     );
   }
 
@@ -203,6 +207,7 @@ describe('GroupFetchDataController', () => {
           },
         }),
       );
+      expect(handleDataController.handleData).toHaveBeenCalled();
       expect(groupActionController.handleRawGroup).toHaveBeenCalled();
     });
 
@@ -236,6 +241,7 @@ describe('GroupFetchDataController', () => {
           TEAM_POST: true,
         },
       } as TeamSetting);
+      expect(handleDataController.handleData).toHaveBeenCalled();
       expect(GroupAPI.createTeam).toHaveBeenCalledWith(
         Object.assign({}, _.cloneDeep(data), {
           privacy: 'protected',
@@ -264,6 +270,7 @@ describe('GroupFetchDataController', () => {
       });
       expect(result).toEqual(group);
 
+      expect(handleDataController.handleData).toHaveBeenCalled();
       expect(GroupAPI.createTeam).toHaveBeenCalledWith({
         ...data,
         permissions: {
@@ -283,6 +290,7 @@ describe('GroupFetchDataController', () => {
       );
       GroupAPI.createTeam.mockRejectedValue(error);
 
+      expect(handleDataController.handleData).not.toHaveBeenCalled();
       await expect(
         groupActionController.createTeam(1323, [], {
           name: 'some team',
