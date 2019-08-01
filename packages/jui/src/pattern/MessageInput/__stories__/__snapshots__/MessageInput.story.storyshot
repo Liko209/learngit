@@ -741,7 +741,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-describedby={null}
                   aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
@@ -752,13 +751,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
                   tabIndex={0}
-                  title={null}
                   type="button"
                   variant="plain"
                 >
@@ -834,7 +831,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-describedby={null}
                   aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
@@ -845,13 +841,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
                   tabIndex={0}
-                  title={null}
                   type="button"
                   variant="plain"
                 >
@@ -963,7 +957,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-describedby={null}
                   aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
@@ -974,13 +967,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
                   tabIndex={0}
-                  title={null}
                   type="button"
                   variant="plain"
                 >
@@ -1059,7 +1050,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-describedby={null}
                   aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
@@ -1070,13 +1060,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
                   tabIndex={0}
-                  title={null}
                   type="button"
                   variant="plain"
                 >
@@ -1155,7 +1143,6 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                 className="c10"
               >
                 <button
-                  aria-describedby={null}
                   aria-label=""
                   className="MuiButtonBase-root MuiIconButton-root c11"
                   disabled={false}
@@ -1166,13 +1153,11 @@ exports[`Storyshots Pattern/MessageInput AttachmentItem: Pattern/MessageInput At
                   onKeyUp={[Function]}
                   onMouseDown={[Function]}
                   onMouseLeave={[Function]}
-                  onMouseOver={[Function]}
                   onMouseUp={[Function]}
                   onTouchEnd={[Function]}
                   onTouchMove={[Function]}
                   onTouchStart={[Function]}
                   tabIndex={0}
-                  title={null}
                   type="button"
                   variant="plain"
                 >
