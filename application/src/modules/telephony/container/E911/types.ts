@@ -18,6 +18,7 @@ type E911ViewProps = E911Props & {
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSubmit: () => Promise<void>;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  setCheckBox: (index: number) => () => void;
   value: E911SettingInfo;
   disabled: boolean;
   checkboxList: CheckBox[];

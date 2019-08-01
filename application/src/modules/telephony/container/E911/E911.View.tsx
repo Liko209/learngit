@@ -17,7 +17,7 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 import dialogContext from '@/containers/Dialog/DialogContext';
-import { StyledTip, E911Description } from 'jui/pattern/E911';
+import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
 import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
 import { RuiCheckbox } from 'rcui/components/Checkbox';
 
@@ -37,16 +37,12 @@ type Field = {
 class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
 
-  isOptional(optional?: boolean) {
-    return optional ? '' : ' *';
-  }
-
   createField(config: Field) {
     const { handleFieldChange, t } = this.props;
     const { fieldItem, automationId, maxLength = 100, value, type } = config;
 
     const { label, ghostText, optional } = fieldItem;
-    const optionText = this.isOptional(optional);
+    const optionText = optional ? '' : ' *';
     const i18n = t(`telephony.e911.fields.${label}`);
     const placeholder = ghostText ? `${t('common.eg')}${ghostText}` : '';
 
@@ -64,6 +60,21 @@ class E911ViewComponent extends Component<Props> {
         onChange={handleFieldChange(type)}
       />
     );
+  }
+
+  renderFieldWithType(type: string, automationId: string) {
+    const { value, fields } = this.props;
+    const fieldItem = fields[type];
+    if (!fieldItem) {
+      return null;
+    }
+
+    return this.createField({
+      fieldItem,
+      type,
+      automationId: `e911-${automationId}`,
+      value: value[type],
+    });
   }
 
   get renderState() {
@@ -89,104 +100,51 @@ class E911ViewComponent extends Component<Props> {
             automationId={`state-${item.name}`}
             value={item.name}
             key={item.id}
+            maxWidth={90}
           >
             {item.name}
           </JuiMenuItem>
         ))}
       </JuiLineSelect>
     ) : (
-      this.renderTextState
+      this.renderFieldWithType('state', 'stateProvince')
     );
   }
 
   get renderOutOfCountry() {
-    const { checkboxList, t } = this.props;
-    console.log('nello checkBoxList', checkboxList);
+    const { checkboxList, t, setCheckBox } = this.props;
     if (!checkboxList || !checkboxList.length) {
       return null;
     }
 
     return (
-      <RuiFormControl>
-        {checkboxList.map((item: CheckBox) => {
-          const { i18text, checked, params } = item;
-          const label = params
-            ? t(i18text, { region: params.name })
-            : t(i18text);
-          return (
-            <RuiFormControlLabel
-              control={<RuiCheckbox />}
-              label={t(label)}
-              checked={checked}
-            />
-          );
-        })}
-      </RuiFormControl>
+      <>
+        <E911Disclaimers>
+          {t('telephony.e911.outOfCountryTitle')}
+        </E911Disclaimers>
+        <RuiFormControl>
+          {checkboxList.map((item: CheckBox, index: number) => {
+            const { i18text, checked, params } = item;
+            const label = params
+              ? t(i18text, { region: params.name })
+              : t(i18text);
+            return (
+              <RuiFormControlLabel
+                control={
+                  <RuiCheckbox
+                    color="primary"
+                    value={checked}
+                    onChange={setCheckBox(index)}
+                  />
+                }
+                label={t(label)}
+                checked={checked}
+              />
+            );
+          })}
+        </RuiFormControl>
+      </>
     );
-  }
-
-  get renderTextState() {
-    const { value, fields } = this.props;
-    const { state } = value;
-    const fieldItem = fields.state;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-stateProvince',
-      value: state,
-      type: 'state',
-    });
-  }
-
-  get renderAddress() {
-    const { value, fields } = this.props;
-    const { street } = value;
-    const fieldItem = fields.street;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-streetAddress',
-      value: street,
-      type: 'street',
-    });
-  }
-
-  get renderAdditionalAddress() {
-    const { value, fields } = this.props;
-    const { street2 } = value;
-    const fieldItem = fields.additionalAddress;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-additionalAddress',
-      value: street2,
-      type: 'street2',
-    });
-  }
-
-  get renderCity() {
-    const { value, fields } = this.props;
-    const { city } = value;
-    const fieldItem = fields.city;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-city',
-      value: city,
-      type: 'city',
-    });
   }
 
   get renderZipCode() {
@@ -263,9 +221,9 @@ class E911ViewComponent extends Component<Props> {
               </JuiMenuItem>
             ))}
           </JuiLineSelect>
-          {this.renderAddress}
-          {this.renderAdditionalAddress}
-          {this.renderCity}
+          {this.renderFieldWithType('street', 'streetAddress')}
+          {this.renderFieldWithType('street2', 'additionalAddress')}
+          {this.renderFieldWithType('city', 'city')}
           {this.renderState}
           {this.renderZipCode}
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>

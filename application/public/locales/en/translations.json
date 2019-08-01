@@ -732,6 +732,7 @@
       "dialogDescription": "Emergency Service dispatchers will send emergency first responders to this exact location. Where will you be using this phone?",
       "outOfCountryDisclaimers": "If you don't provide an emergency address, you will be limited to making calls to extensions in your organization only.",
       "confirmEmergencyAddress": "Confirm emergency address",
+      "outOfCountryTitle": "Emergency address out of country",
       "disclaimer": {
         "US/CA1": "You will use this app at a physical location that is outside the United States or Canada. You are responsible for complying with all laws and regulations applicable to your use of the Services.",
         "US/CA2": "By choosing this option, you agree that you will make available another phone to reach emergency services. You will update your Emergency Address immediately if and when you use this app from within the United States.",

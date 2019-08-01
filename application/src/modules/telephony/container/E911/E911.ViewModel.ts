@@ -26,7 +26,7 @@ import {
   State,
   FieldsConfig,
   FieldItem,
-  CheckBox
+  CheckBox,
 } from './types';
 
 const whitelist = ['US', 'Canada', 'Puerto Rico'];
@@ -43,7 +43,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
   @observable countryList: Country[] = [];
   @observable stateList: State[] = [];
 
-  @observable checkboxList: CheckBox[];
+  @observable checkboxList: CheckBox[] = [];
 
   @observable region: Country;
 
@@ -77,6 +77,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
           const cloneValue = { ...value };
           this.value = cloneValue;
           this.getCountryInfo();
+          this.getRegion();
           reaction.dispose();
         }
       },
@@ -84,9 +85,6 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         fireImmediately: true,
       },
     );
-    this.getRegion(() => {
-      this.getDisclaimers();
-    });
   }
 
   get rcInfoService() {
@@ -117,7 +115,10 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       }
     });
 
-    return checkKeys.some((field: string) => !this.value[field]);
+    return (
+      checkKeys.some((field: string) => !this.value[field]) ||
+      !this.checkboxList.every((checkbox: CheckBox) => checkbox.checked)
+    );
   }
 
   @action
@@ -186,7 +187,7 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
     this.getFields(country!);
     this.saveStateOrCountry('country', country!);
     this.getState(country!);
-    this.getDisclaimers(country!.isoCode);
+    this.getDisclaimers(country!);
   };
 
   stateOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -223,39 +224,66 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
       this.value.stateId = '';
     }
 
+    this.value.outOfCountry = this.checkboxList.length > 0;
+
     await (this.settingItemEntity.valueSetter &&
       this.settingItemEntity.valueSetter(this.value));
   };
 
   @action
-  async getRegion(cb?: Function) {
+  async getRegion() {
     this.region = await this.rcInfoService.getCurrentCountry();
-    cb && cb();
+    this.getDisclaimers();
   }
 
-  @computed
-  get isOutOfCountry() {
-    return true;
-  }
-
-  getDisclaimers(iscCode?: string) {
+  getDisclaimers(country?: Country) {
     if (!this.region || !this.region.isoCode) {
       return;
     }
+    // const regionId = this.region.id;
+    const originalValue = this.settingItemEntity.value!;
+    const outOfCountry = this.isOutOfCountry(country);
+    if (!outOfCountry) {
+      this.checkboxList = [];
+      return;
+    }
 
-    const currentIscCode = iscCode ? iscCode : this.region.isoCode;
+    const currentIscCode = country
+      ? country.isoCode
+      : originalValue!.countryIsoCode;
     const disclaimers = OutOfCountryDisclaimer[currentIscCode]
       ? OutOfCountryDisclaimer[currentIscCode]
       : OutOfCountryDisclaimer.default;
-    this.createCheckbox(disclaimers);
+
+    const defaultValue = this.checkConfirmCountry(country);
+    this.createCheckbox(disclaimers, defaultValue);
   }
 
-  createCheckbox(disclaimers: string[]) {
+  checkConfirmCountry(country?: Country) {
+    const originalValue = this.settingItemEntity.value!;
+    // if change country need check whether checked disclaimers
+    if (country) {
+      return country.id === originalValue.countryId;
+    }
+    return originalValue.outOfCountry;
+  }
+
+  isOutOfCountry(country?: Country) {
+    const region = this.region;
+    const originalValue = this.settingItemEntity.value!;
+    if (country) {
+      return country.id !== region.id;
+    }
+    return region.id !== originalValue.countryId;
+  }
+
+  @action
+  createCheckbox(disclaimers: string[], defaultValue: boolean) {
     this.checkboxList = disclaimers.map((text: string) => {
       const isDefaultI18 = text === 'telephony.e911.disclaimer.default';
       const base = {
         i18text: text,
-        checked: false,
+        checked: defaultValue,
       };
       return isDefaultI18
         ? {
@@ -265,6 +293,12 @@ class E911ViewModel extends StoreViewModel<E911Props> implements E911ViewProps {
         : base;
     });
   }
+
+  @action
+  setCheckBox = (index: number) => () => {
+    const current = this.checkboxList[index];
+    current.checked = !current.checked;
+  };
 }
 
 export { E911ViewModel };

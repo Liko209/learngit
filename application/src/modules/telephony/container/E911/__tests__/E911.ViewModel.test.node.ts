@@ -9,6 +9,7 @@ import { mockService } from 'shield/sdk';
 import { RCInfoService } from 'sdk/module/rcInfo';
 
 import { E911ViewModel } from '../E911.ViewModel';
+import { OutOfCountryDisclaimer } from '../config';
 
 jest.mock('@/containers/Notification');
 
@@ -45,6 +46,27 @@ describe('E911ViewModel', () => {
     };
   }
 
+  function mockRCInfoServiceMethods({
+    stateList = {},
+    countryList = [],
+    currentCountry = {},
+  } = {}) {
+    return [
+      {
+        method: 'getStateList',
+        data: stateList,
+      },
+      {
+        method: 'getCountryList',
+        data: countryList,
+      },
+      {
+        method: 'getCurrentCountry',
+        data: currentCountry,
+      },
+    ];
+  }
+
   @testable
   class disabled {
     @test('should be true if some need check field is undefined')
@@ -53,6 +75,7 @@ describe('E911ViewModel', () => {
         street: 'street',
       }),
     )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
     t1() {
       const vm = new E911ViewModel({});
       expect(vm.disabled).toBeTruthy();
@@ -68,6 +91,7 @@ describe('E911ViewModel', () => {
         zip: 'zip',
       }),
     )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
     t2() {
       const vm = new E911ViewModel({});
       expect(vm.disabled).toBeFalsy();
@@ -83,8 +107,51 @@ describe('E911ViewModel', () => {
         zip: 'zip',
       }),
     )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
     t3() {
       const vm = new E911ViewModel({});
+      expect(vm.disabled).toBeFalsy();
+    }
+
+    @test('should be disabled if not check all checkbox')
+    @mockEntity(
+      createUserInfo({
+        customerName: 'customerName',
+        country: 'US',
+        street: 'street',
+        city: 'city',
+        zip: 'zip',
+      }),
+    )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    t4() {
+      const vm = new E911ViewModel({});
+      vm.checkboxList = [
+        {
+          checked: false,
+        },
+      ] as any;
+      expect(vm.disabled).toBeTruthy();
+    }
+
+    @test('should be not disabled if not check all checkbox')
+    @mockEntity(
+      createUserInfo({
+        customerName: 'customerName',
+        country: 'US',
+        street: 'street',
+        city: 'city',
+        zip: 'zip',
+      }),
+    )
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    t5() {
+      const vm = new E911ViewModel({});
+      vm.checkboxList = [
+        {
+          checked: true,
+        },
+      ] as any;
       expect(vm.disabled).toBeFalsy();
     }
   }
@@ -93,10 +160,10 @@ describe('E911ViewModel', () => {
   class getState {
     @test('should be get state list if country is US/Canada/Puerto Rico')
     @mockEntity(createUserInfo())
-    @mockService(RCInfoService, 'getStateList', [1])
+    @mockService(RCInfoService, mockRCInfoServiceMethods({ stateList: [1] }))
     async t1() {
       const vm = new E911ViewModel({});
-      jest.spyOn(vm, 'saveStateOrCountry');
+      jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       vm.value.country = 'US';
       await vm.getState({
         isoCode: 'US',
@@ -104,12 +171,14 @@ describe('E911ViewModel', () => {
       expect(vm.stateList).toEqual([1]);
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('state', 1);
 
+      vm.value.countryName = 'Canada';
       await vm.getState({
         name: 'Canada',
       });
       expect(vm.stateList).toEqual([1]);
       expect(vm.saveStateOrCountry).toHaveBeenCalledWith('state', 1);
 
+      vm.value.countryName = 'Puerto Rico';
       await vm.getState({
         name: 'Puerto Rico',
       });
@@ -119,15 +188,34 @@ describe('E911ViewModel', () => {
 
     @test('should not call saveStateOrCountry if country not in white list')
     @mockEntity(createUserInfo())
-    @mockService(RCInfoService, 'getStateList', [])
+    @mockService(RCInfoService, mockRCInfoServiceMethods({ stateList: [] }))
     async t2() {
       const vm = new E911ViewModel({});
-      jest.spyOn(vm, 'saveStateOrCountry');
+      jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
+      vm.value.countryName = 'China';
       await vm.getState({
         name: 'China',
       });
       expect(vm.stateList).toEqual([]);
       expect(vm.saveStateOrCountry).not.toHaveBeenCalled();
+    }
+  }
+
+  @testable
+  class shouldShowSelectState {
+    @test('should be true if country is US/Canada/Puerto Rico')
+    @mockEntity(createUserInfo())
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    t1() {
+      const vm = new E911ViewModel({});
+      vm.value.country = 'US';
+      expect(vm.shouldShowSelectState).toBeTruthy();
+
+      vm.value.countryName = 'Canada';
+      expect(vm.shouldShowSelectState).toBeTruthy();
+
+      vm.value.countryName = 'Puerto Rico';
+      expect(vm.shouldShowSelectState).toBeTruthy();
     }
   }
 
@@ -141,12 +229,17 @@ describe('E911ViewModel', () => {
         countryName: 'countryName',
       }),
     )
-    @mockService(RCInfoService, 'getCountryList', [
-      {
-        id: 1,
-        name: 'countryName',
-      },
-    ])
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        countryList: [
+          {
+            id: 1,
+            name: 'countryName',
+          },
+        ],
+      }),
+    )
     async t1() {
       const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
@@ -210,60 +303,42 @@ describe('E911ViewModel', () => {
   class countryOnChange {
     @test('should be get state if country change')
     @mockEntity(createUserInfo())
-    @mockService(RCInfoService, [
-      {
-        method: 'getCountryList',
-        data: [
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        countryList: [
           {
             id: 1,
             name: 'countryList',
           },
         ],
-      },
-      {
-        method: 'getCurrentCountry',
-        data: {},
-      },
-    ])
+        currentCountry: {},
+      }),
+    )
     async t1() {
       const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
       jest.spyOn(vm, 'getState').mockImplementation();
+      jest.spyOn(vm, 'getDisclaimers').mockImplementation();
       jest.spyOn(vm, 'getFields');
       await vm.getCountryInfo();
       await vm.countryOnChange({ target: { value: 'countryList' } } as any);
       expect(vm.getFields).toHaveBeenCalled();
-      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', {
+      const country = {
         id: 1,
         name: 'countryList',
-      });
-      expect(vm.getState).toHaveBeenCalledWith({
-        id: 1,
-        name: 'countryList',
-      });
+      };
+      expect(vm.saveStateOrCountry).toHaveBeenCalledWith('country', country);
+      expect(vm.getState).toHaveBeenCalledWith(country);
+      expect(vm.getDisclaimers).toHaveBeenCalledWith(country);
     }
   }
 
-  @testable
-  class shouldShowSelectState {
-    @test('should be true if country is US/Canada/Puerto Rico')
-    @mockEntity(createUserInfo())
-    t1() {
-      const vm = new E911ViewModel({});
-      vm.value.country = 'US';
-      expect(vm.shouldShowSelectState).toBeTruthy();
-
-      vm.value.countryName = 'Canada';
-      expect(vm.shouldShowSelectState).toBeTruthy();
-
-      vm.value.countryName = 'Puerto Rico';
-      expect(vm.shouldShowSelectState).toBeTruthy();
-    }
-  }
   @testable
   class getFields {
     @test('should be return default fields if not match isoCode and name')
     @mockEntity(createUserInfo())
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
     t1() {
       const vm = new E911ViewModel({});
       vm.getFields({} as any);
@@ -275,12 +350,17 @@ describe('E911ViewModel', () => {
   class stateOnChange {
     @test('should be save state if state change')
     @mockEntity(createUserInfo())
-    @mockService(RCInfoService, 'getStateList', [
-      {
-        id: '123',
-        name: 'state',
-      },
-    ])
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        stateList: [
+          {
+            id: '123',
+            name: 'state',
+          },
+        ],
+      }),
+    )
     t1() {
       const vm = new E911ViewModel({});
       jest.spyOn(vm, 'saveStateOrCountry').mockImplementation();
@@ -300,6 +380,9 @@ describe('E911ViewModel', () => {
 
   @testable
   class saveStateOrCountry {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
     @test('should be save state if state change')
     @mockEntity(createUserInfo())
     t1() {
@@ -336,6 +419,8 @@ describe('E911ViewModel', () => {
 
   @testable
   class handleFieldChange {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
     @test('should be save value if field change')
     @mockEntity(createUserInfo())
     t1() {
@@ -351,13 +436,15 @@ describe('E911ViewModel', () => {
 
   @testable
   class onSubmit {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
     @test('should be save value if field change')
     @mockEntity({
       valueSetter,
     })
     t1() {
       const vm = new E911ViewModel({});
-      console.log(vm.value.stateName)
       vm.onSubmit();
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
     }
@@ -374,6 +461,328 @@ describe('E911ViewModel', () => {
       expect(vm.value.stateIsoCode).toBe('');
       expect(vm.value.stateId).toBe('');
       expect(valueSetter).toHaveBeenCalledWith(vm.value);
+    }
+
+    @test('should be not outOfCountry if checkboxList length === 0')
+    @mockEntity({
+      valueSetter,
+    })
+    t3() {
+      const vm = new E911ViewModel({});
+      vm.onSubmit();
+      expect(vm.value.outOfCountry).toBeFalsy();
+    }
+
+    @test('should be outOfCountry if checkboxList length > 0')
+    @mockEntity({
+      valueSetter,
+    })
+    async t4() {
+      const vm = new E911ViewModel({});
+      vm.checkboxList = [1];
+      await vm.onSubmit();
+      expect(vm.value.outOfCountry).toBeTruthy();
+    }
+  }
+
+  @testable
+  class getRegion {
+    @test('should be get region and call get disclaimers if show E911 dialog')
+    @mockEntity({})
+    @mockService(
+      RCInfoService,
+      mockRCInfoServiceMethods({
+        currentCountry: {},
+      }),
+    )
+    async t1() {
+      const vm = new E911ViewModel({});
+      jest.spyOn(vm, 'getDisclaimers').mockImplementation();
+      await vm.getRegion();
+      expect(vm.getDisclaimers).toHaveBeenCalled();
+      expect(vm.region).toEqual({});
+    }
+  }
+
+  @testable
+  class getDisclaimers {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+    @test(
+      'should be get disclaimers and create checkbox list with original setting if get disclaimers not with country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryIsoCode: 'US',
+      }),
+    )
+    t1() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        isoCode: 'placeholder',
+      };
+      jest.spyOn(vm, 'createCheckbox').mockImplementation();
+      jest.spyOn(vm, 'checkConfirmCountry').mockReturnValue(true);
+      jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
+      vm.getDisclaimers();
+      expect(vm.createCheckbox).toHaveBeenCalledWith(
+        OutOfCountryDisclaimer['US'],
+        true,
+      );
+    }
+
+    @test('should be checkbox list = [] if not out of country')
+    @mockEntity(createUserInfo())
+    t2() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        isoCode: 'placeholder',
+      };
+      jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(false);
+      vm.getDisclaimers();
+      expect(vm.checkboxList).toEqual([]);
+    }
+
+    @test(
+      'should be get disclaimers and create checkbox list with default if not match isoCode',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryIsoCode: 'CN',
+      }),
+    )
+    t3() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        isoCode: 'placeholder',
+      };
+      jest.spyOn(vm, 'createCheckbox').mockImplementation();
+      jest.spyOn(vm, 'checkConfirmCountry').mockReturnValue(true);
+      jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
+      vm.getDisclaimers();
+      expect(vm.createCheckbox).toHaveBeenCalledWith(
+        OutOfCountryDisclaimer.default,
+        true,
+      );
+    }
+
+    @test(
+      'should be get disclaimers and create checkbox list with country if pass country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryIsoCode: 'CN',
+      }),
+    )
+    t4() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        isoCode: 'placeholder',
+      };
+      jest.spyOn(vm, 'isOutOfCountry').mockReturnValue(true);
+      jest.spyOn(vm, 'checkConfirmCountry').mockImplementation(() => false);
+      jest.spyOn(vm, 'createCheckbox').mockImplementation();
+      vm.getDisclaimers({ isoCode: 'US' } as any);
+      expect(vm.createCheckbox).toHaveBeenCalledWith(
+        OutOfCountryDisclaimer['US'],
+        false,
+      );
+      expect(vm.checkConfirmCountry).toHaveBeenCalledWith({ isoCode: 'US' });
+    }
+  }
+
+  @testable
+  class isOutOfCountry {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
+    @test(
+      'should be out of country if user region !== last time setting country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryId: '1',
+      }),
+    )
+    t1() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        id: '2',
+      };
+      expect(vm.isOutOfCountry()).toBeTruthy();
+    }
+
+    @test(
+      'should be not out of country if user region === last time setting country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryId: '1',
+      }),
+    )
+    t2() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        id: '1',
+      };
+      expect(vm.isOutOfCountry()).toBeFalsy();
+    }
+
+    @test('should be out of country if user select country !== region country')
+    @mockEntity(
+      createUserInfo({
+        countryId: '1',
+      }),
+    )
+    t3() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        id: '2',
+      };
+      expect(
+        vm.isOutOfCountry({
+          id: '3',
+        }),
+      ).toBeTruthy();
+    }
+
+    @test(
+      'should be not out of country if user select country === region country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryId: '2',
+      }),
+    )
+    t4() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        id: '1',
+      };
+      expect(
+        vm.isOutOfCountry({
+          id: '1',
+        }),
+      ).toBeFalsy();
+    }
+  }
+
+  @testable
+  class checkConfirmCountry {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
+    @test('should be use remote data if user already out of country')
+    @mockEntity(
+      createUserInfo({
+        outOfCountry: true,
+      }),
+    )
+    t1() {
+      const vm = new E911ViewModel({});
+      expect(vm.checkConfirmCountry()).toBeTruthy();
+    }
+
+    @test(
+      'should be confirm if user select country === last time setting country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryId: '1',
+      }),
+    )
+    t2() {
+      const vm = new E911ViewModel({});
+      expect(
+        vm.checkConfirmCountry({
+          id: '1',
+        }),
+      ).toBeTruthy();
+    }
+
+    @test(
+      'should be not confirm if user select country !== last time setting country',
+    )
+    @mockEntity(
+      createUserInfo({
+        countryId: '1',
+      }),
+    )
+    t3() {
+      const vm = new E911ViewModel({});
+      expect(
+        vm.checkConfirmCountry({
+          id: '2',
+        }),
+      ).toBeFalsy();
+    }
+  }
+
+  @testable
+  class createCheckbox {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
+    @test('should be pass params if is default disclaimers')
+    @mockEntity(
+      createUserInfo({
+      }),
+    )
+    t1() {
+      const vm = new E911ViewModel({});
+      vm.region = {
+        id: '1'
+      }
+      vm.createCheckbox(OutOfCountryDisclaimer.default, true)
+      const checkBoxList = [{
+        i18text: 'telephony.e911.disclaimer.default',
+        checked: true,
+        params: {
+          id: '1'
+        }
+      }]
+      expect(vm.checkboxList).toEqual(checkBoxList);
+    }
+
+    @test('should be not pass params if not default disclaimers')
+    @mockEntity(
+      createUserInfo({
+      }),
+    )
+    t2() {
+      const vm = new E911ViewModel({});
+      vm.createCheckbox(OutOfCountryDisclaimer.US, false)
+      const checkBoxList = [{
+        i18text: 'telephony.e911.disclaimer.US/CA1',
+        checked: false,
+      }, {
+        i18text: 'telephony.e911.disclaimer.US/CA2',
+        checked: false,
+      }]
+      expect(vm.checkboxList).toEqual(checkBoxList);
+    }
+  }
+
+  @testable
+  class setCheckBox {
+    @mockService(RCInfoService, mockRCInfoServiceMethods())
+    beforeEach() {}
+
+    @test('should be set checkbox status if call setCheckBox')
+    @mockEntity(
+      createUserInfo({})
+    )
+    t1() {
+      const vm = new E911ViewModel({});
+      vm.checkboxList = [{
+        i18text: 'telephony.e911.disclaimer.US/CA1',
+        checked: false,
+      }]
+      vm.setCheckBox(0)();
+      expect(vm.checkboxList).toEqual([{
+        i18text: 'telephony.e911.disclaimer.US/CA1',
+        checked: true,
+      }]);
     }
   }
 });
