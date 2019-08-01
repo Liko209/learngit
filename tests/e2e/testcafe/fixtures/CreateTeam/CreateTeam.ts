@@ -650,7 +650,7 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   const otherUser = users[5];
   const workerUser = users[1];
-  await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
   await h(t).scenarioHelper.resetProfileAndState(workerUser);
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
   const createTeamModal = app.homePage.createTeamModal;
