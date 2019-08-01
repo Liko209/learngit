@@ -35,16 +35,12 @@ type Field = {
 class E911ViewComponent extends Component<Props> {
   static contextType = dialogContext;
 
-  isOptional(optional?: boolean) {
-    return optional ? '' : ' *';
-  }
-
   createField(config: Field) {
     const { handleFieldChange, t } = this.props;
     const { fieldItem, automationId, maxLength = 100, value, type } = config;
 
     const { label, ghostText, optional } = fieldItem;
-    const optionText = this.isOptional(optional);
+    const optionText = optional ? '' : ' *';
     const i18n = t(`telephony.e911.fields.${label}`);
     const placeholder = ghostText ? `${t('common.eg')}${ghostText}` : '';
 
@@ -62,6 +58,21 @@ class E911ViewComponent extends Component<Props> {
         onChange={handleFieldChange(type)}
       />
     );
+  }
+
+  renderFieldWithType(type: string, automationId: string) {
+    const { value, fields } = this.props;
+    const fieldItem = fields[type];
+    if (!fieldItem) {
+      return null;
+    }
+
+    return this.createField({
+      fieldItem,
+      type,
+      automationId: `e911-${automationId}`,
+      value: value[type],
+    });
   }
 
   get renderState() {
@@ -93,72 +104,8 @@ class E911ViewComponent extends Component<Props> {
         ))}
       </JuiLineSelect>
     ) : (
-      this.renderTextState
+      this.renderFieldWithType('state', 'stateProvince')
     );
-  }
-
-  get renderTextState() {
-    const { value, fields } = this.props;
-    const { state } = value;
-    const fieldItem = fields.state;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-stateProvince',
-      value: state,
-      type: 'state',
-    });
-  }
-
-  get renderAddress() {
-    const { value, fields } = this.props;
-    const { street } = value;
-    const fieldItem = fields.street;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-streetAddress',
-      value: street,
-      type: 'street',
-    });
-  }
-
-  get renderAdditionalAddress() {
-    const { value, fields } = this.props;
-    const { street2 } = value;
-    const fieldItem = fields.additionalAddress;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-additionalAddress',
-      value: street2,
-      type: 'street2',
-    });
-  }
-
-  get renderCity() {
-    const { value, fields } = this.props;
-    const { city } = value;
-    const fieldItem = fields.city;
-    if (!fieldItem) {
-      return null;
-    }
-
-    return this.createField({
-      fieldItem,
-      automationId: 'e911-city',
-      value: city,
-      type: 'city',
-    });
   }
 
   get renderZipCode() {
@@ -235,9 +182,9 @@ class E911ViewComponent extends Component<Props> {
               </JuiMenuItem>
             ))}
           </JuiLineSelect>
-          {this.renderAddress}
-          {this.renderAdditionalAddress}
-          {this.renderCity}
+          {this.renderFieldWithType('street', 'streetAddress')}
+          {this.renderFieldWithType('street2', 'additionalAddress')}
+          {this.renderFieldWithType('city', 'city')}
           {this.renderState}
           {this.renderZipCode}
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
