@@ -11,6 +11,7 @@ import { CALLER_ID_FEATURE_NAME } from '../../config/constants';
 import { PhoneNumberType } from 'sdk/module/phoneNumber/entity';
 import { RC_INFO } from 'sdk/service';
 import { RCInfoApi } from 'sdk/api';
+import { PartialUpdateParams } from 'sdk/framework/controller/interface/IPartialModifyController';
 jest.mock('sdk/api');
 
 function clearMocks() {
@@ -405,13 +406,14 @@ describe('RCInfoFetchController', () => {
       partialModifyController.updatePartially = jest
         .fn()
         .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+          (params: PartialUpdateParams<any>) => {
+            const {entityId, preHandlePartialEntity, doUpdateEntity} = params;
+            expect(entityId).toBe(normalId);
+            expect(preHandlePartialEntity!({ id: normalId }, originalModel)).toEqual({
               id: normalId,
               ...requestParams,
             });
-            doUpdateFunc({ id: normalId, ...requestParams });
+            doUpdateEntity!({ id: normalId, ...requestParams });
           },
         );
       await rcCallerIdController.setDefaultCallerId(2);
@@ -433,13 +435,14 @@ describe('RCInfoFetchController', () => {
       partialModifyController.updatePartially = jest
         .fn()
         .mockImplementation(
-          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
-            expect(itemId).toBe(normalId);
-            expect(prehandleFunc({ id: normalId }, originalModel)).toEqual({
+          ( params: PartialUpdateParams<any>) => {
+            const {entityId, preHandlePartialEntity, doUpdateEntity} = params;
+            expect(entityId).toBe(normalId);
+            expect(preHandlePartialEntity!({ id: normalId }, originalModel)).toEqual({
               id: normalId,
               ...requestParams,
             });
-            doUpdateFunc({ id: normalId, ...requestParams });
+            doUpdateEntity!({ id: normalId, ...requestParams });
           },
         );
       await rcCallerIdController.setDefaultCallerId(0);

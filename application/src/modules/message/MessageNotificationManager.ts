@@ -336,7 +336,7 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
   }
 
   getIcon(
-    { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
+    { id, headshotVersion, headshot = '', hasHeadShot }: PersonModel,
     memberCount: number,
     isTeam?: boolean,
   ) {
@@ -354,9 +354,9 @@ class MessageNotificationManager extends AbstractNotificationManager implements 
       );
       headshotUrl = personService.getHeadShotWithSize(
         id,
-        headshotVersion,
         headshot,
         150,
+        headshotVersion,
       );
     }
     return headshotUrl || '/icon/defaultAvatar.png';

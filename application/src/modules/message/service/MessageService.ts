@@ -5,6 +5,8 @@
  */
 
 import { ReactNode } from 'react';
+import portalManager from '@/common/PortalManager';
+import { EditProfile } from '../container/ProfileEdit';
 import { IMessageService, IMessageStore } from '../interface';
 
 class MessageService implements IMessageService {
@@ -30,6 +32,11 @@ class MessageService implements IMessageService {
     window.requestAnimationFrame(
       () => (this._messageStore.currentFocusedInput = id),
     );
+  };
+
+  open = (uid: number) => {
+    portalManager.dismissLast();
+    EditProfile.show({ id: uid });
   };
 
   blurEditInputFocus() {
