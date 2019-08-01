@@ -81,10 +81,11 @@ class PresenceController {
   }
 
   handleSocketStateChange(state: string) {
-    this.reset();
     if (state === 'connected') {
+      this.reset();
       notificationCenter.emitEntityReload(ENTITY.PRESENCE, [], true);
     } else if (state === 'disconnected') {
+      this.reset();
       this.resetPresence();
     }
   }
