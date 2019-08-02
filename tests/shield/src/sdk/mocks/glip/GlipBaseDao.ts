@@ -8,6 +8,7 @@ import _ from 'lodash';
 import Query from 'sdk/framework/dao/impl/Query';
 
 import { GlipModel } from './types';
+import { sanitized } from './utils';
 
 export class GlipBaseDao<T extends GlipModel> {
   db: IDatabase;
@@ -26,7 +27,9 @@ export class GlipBaseDao<T extends GlipModel> {
   }
 
   create(item: T) {
-    return this.lokiCollection.insert({ ...item, [this.unique]: Date.now() });
+    return sanitized(
+      this.lokiCollection.insert({ ...item, [this.unique]: Date.now() }),
+    );
   }
 
   put(item: T) {
@@ -42,17 +45,17 @@ export class GlipBaseDao<T extends GlipModel> {
     if (result) {
       const { $loki } = result;
       this.lokiCollection.update(_.assign(newItem, { $loki }));
-      return newItem;
+      return sanitized(newItem);
     }
     this.lokiCollection.insert(newItem);
-    return newItem;
+    return sanitized(newItem);
   }
 
   bulkPut(array: T | T[]) {
     if (!Array.isArray(array)) {
       return this.put(array);
     }
-    return array.map(async (item: T) => this.put(item));
+    return array.map((item: T) => this.put(item));
   }
 
   delete(id: number): void {
@@ -71,11 +74,15 @@ export class GlipBaseDao<T extends GlipModel> {
   }
 
   findOne() {
-    return this.lokiCollection.findOne();
+    return sanitized(this.lokiCollection.findOne());
+  }
+
+  find() {
+    return sanitized(this.lokiCollection.find());
   }
 
   getById(id: number) {
-    return this.lokiCollection.findOne({ [this.unique]: id } as any);
+    return sanitized(this.lokiCollection.findOne({ [this.unique]: id } as any));
   }
 
   get lokiCollection() {

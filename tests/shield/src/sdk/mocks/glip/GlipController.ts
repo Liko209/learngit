@@ -86,13 +86,7 @@ export class GlipController {
     groupState.read_through = serverPost._id;
     context.groupStateDao.put(groupState);
     context.socketServer.emitEntityCreate(serverPost);
-    context.socketServer.emitPartial(serverGroup, {
-      hint: {
-        post_creator_ids: {
-          [String(serverGroup._id)]: serverPost.creator_id,
-        },
-      },
-    });
+    context.socketServer.emitMessage(serverGroup);
     context.socketServer.emitPartial(groupState, {
       hint: {
         post_creator_ids: {

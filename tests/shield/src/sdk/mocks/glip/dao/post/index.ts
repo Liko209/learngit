@@ -1,6 +1,7 @@
 import { IDatabase } from 'foundation/db';
 import { GlipBaseDao } from '../../GlipBaseDao';
 import { GlipPost } from '../../types';
+import { sanitized } from '../../utils';
 
 export class GlipPostDao extends GlipBaseDao<GlipPost> {
   constructor(db: IDatabase) {
@@ -8,18 +9,22 @@ export class GlipPostDao extends GlipBaseDao<GlipPost> {
   }
 
   async getPostsByGroupId(groupId: number) {
-    return this.createQuery()
-      .equal('group_id', groupId)
-      .toArray();
+    return sanitized(
+      await this.createQuery()
+        .equal('group_id', groupId)
+        .toArray(),
+    );
   }
 
   async getPostsByPostIds(ids: number[]) {
-    return await this.createQuery()
-      .anyOf(this.unique, ids)
-      .toArray();
+    return sanitized(
+      await this.createQuery()
+        .anyOf(this.unique, ids)
+        .toArray(),
+    );
   }
 
   getPosts() {
-    return this.lokiCollection.find();
+    return sanitized(this.lokiCollection.find());
   }
 }
