@@ -18,11 +18,5 @@ const config: DeepPartial<ApiConfig> = {
   upload: {
     server: 'https://xmnup.asialab.glip.net:8443',
   },
-  launchdarkly: {
-    clientId: '',
-  },
-  splitio: {
-    clientSecret: '',
-  },
 };
 export default config;

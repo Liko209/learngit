@@ -43,6 +43,7 @@ async function runTests(runnerOpts) {
       skipJsErrors: runnerOpts.SKIP_JS_ERROR,
       stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL,
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
+      debugOnFail: runnerOpts.DEBUG_ON_FAIL,
     });
   } finally {
     logger.info(`runner exit with ${failed} failed cases`);

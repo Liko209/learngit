@@ -36,6 +36,7 @@ module.exports = {
       '<rootDir>/config/jest/__mocks__/fileMock.js',
     '\\.(css|less)$': '<rootDir>/config/jest/__mocks__/cssMock.js',
   },
+  modulePathIgnorePatterns: [`${process.env.APP}/build`],
   moduleFileExtensions: [
     'web.ts',
     'ts',

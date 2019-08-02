@@ -6,6 +6,7 @@
 /* eslint-disable */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
+import { observable } from 'mobx';
 import {
   JuiListItemText,
   JuiListItemWithHover,
@@ -26,18 +27,13 @@ const SQUARE_SIZE = 36;
 
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
-  private _thumbnailRef: React.RefObject<any> = React.createRef();
+  @observable private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, modifiedTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail
-            ref={this._thumbnailRef}
-            id={id}
-            type='image'
-            onClick={this._handleImageClick}
-          />
+          <Thumbnail ref={this._thumbnailRef} id={id} type="image" />
         </JuiListItemIcon>
         <JuiListItemText
           primary={
@@ -51,7 +47,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         />
         {hover && (
           <JuiListItemSecondaryAction>
-            <JuiButtonBar overlapSize={-2}>
+            <JuiButtonBar isStopPropagation overlapSize={-2}>
               <Download url={downloadUrl} />
               <FileActionMenu fileId={id} disablePortal={true} />
             </JuiButtonBar>
@@ -62,6 +58,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   };
 
   _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
+    if (!this._thumbnailRef.current.vm.thumbsUrlWithSize) return;
     const { id, groupId } = this.props;
     const target = event.currentTarget;
     showImageViewer(groupId, id, {
@@ -79,8 +76,14 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     }
     return (
       <JuiListItemWithHover
+        onClick={
+          this._thumbnailRef.current &&
+          this._thumbnailRef.current.vm.thumbsUrlWithSize
+            ? this._handleImageClick
+            : undefined
+        }
         render={this._renderItem}
-        data-test-automation-id='rightRail-image-item'
+        data-test-automation-id="rightRail-image-item"
       />
     );
   }

@@ -42,6 +42,12 @@ class ProgressActionsViewComponent extends Component<Props> {
     });
   };
 
+  private _editPost = async () => {
+    try {
+      await this.props.edit();
+    } catch (e) {}
+  };
+
   private _resendPost = async () => {
     try {
       await this.props.resend();
@@ -61,13 +67,30 @@ class ProgressActionsViewComponent extends Component<Props> {
     if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
-          variant='plain'
+          variant="plain"
           tooltipTitle={t('message.action.resendPost')}
           onClick={this._resendPost}
-          size='small'
-          color='semantic.negative'
+          size="small"
+          color="semantic.negative"
         >
           refresh
+        </JuiIconButton>
+      );
+    }
+    return null;
+  };
+
+  private _renderEdit = () => {
+    const { postStatus, t, showEditAction } = this.props;
+    if (postStatus === PROGRESS_STATUS.FAIL && showEditAction) {
+      return (
+        <JuiIconButton
+          variant="plain"
+          tooltipTitle={t('message.action.editPost')}
+          onClick={this._editPost}
+          size="small"
+        >
+          edit
         </JuiIconButton>
       );
     }
@@ -79,10 +102,10 @@ class ProgressActionsViewComponent extends Component<Props> {
     if (postStatus === PROGRESS_STATUS.FAIL) {
       return (
         <JuiIconButton
-          variant='plain'
+          variant="plain"
           tooltipTitle={t('message.action.deletePost')}
           onClick={this._deletePost}
-          size='small'
+          size="small"
         >
           delete
         </JuiIconButton>
@@ -92,13 +115,14 @@ class ProgressActionsViewComponent extends Component<Props> {
   };
 
   render() {
-    return (
+    return !this.props.inEditProcess ? (
       <JuiActions>
         {this._renderLoading()}
         {this._renderResend()}
+        {this._renderEdit()}
         {this._renderDelete()}
       </JuiActions>
-    );
+    ) : null;
   }
 }
 

@@ -1,4 +1,4 @@
-var baseConfig = require('./jest-base.config');
+const baseConfig = require('./jest-base.config');
 
 module.exports = {
   ...baseConfig,
@@ -8,6 +8,7 @@ module.exports = {
   },
   testMatch: [`${process.env.APP}/src/**/__test?(s)__/**/*.test.(j|t)s?(x)`],
   setupFiles: [
+    '<rootDir>/config/jsdom.js',
     '<rootDir>/config/polyfills.js',
     '<rootDir>/config/enzymeTestAdapterSetup.js',
   ],

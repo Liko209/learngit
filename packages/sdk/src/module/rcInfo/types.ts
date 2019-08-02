@@ -4,7 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ISpecialServiceNumber, DialingCountryInfo } from 'sdk/api';
+import {
+  ISpecialServiceNumber,
+  DialingCountryInfo,
+  IAssignLineRequest,
+  AddressInfo,
+  DeviceRecord,
+  IUpdateLineRequest,
+} from 'sdk/api';
+
+import { StateRecord } from 'sdk/api/ringcentral/types';
 
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
@@ -45,6 +54,7 @@ enum ERCServiceFeaturePermission {
   CALL_FORWARDING,
   READ_CALLLOG,
   READ_MESSAGES,
+  WEB_PHONE,
 }
 
 enum PermissionId {
@@ -73,6 +83,7 @@ enum RCServiceFeatureName {
   VIDEO_CONFERENCING = 'VideoConferencing',
   CONFERENCING = 'Conferencing',
   CALL_FORWARDING = 'CallForwarding',
+  WEB_PHONE = 'WebPhone',
 }
 
 enum RCBrandType {
@@ -145,4 +156,9 @@ export {
   EForwardingFlipNumberType,
   ForwardingFlipNumberModel,
   EForwardingNumberFeatureType,
+  IAssignLineRequest,
+  AddressInfo,
+  DeviceRecord,
+  IUpdateLineRequest,
+  StateRecord,
 };

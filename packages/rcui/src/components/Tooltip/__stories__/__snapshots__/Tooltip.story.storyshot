@@ -3,7 +3,7 @@
 exports[`Storyshots Tooltip Tooltip: Tooltip Tooltip 1`] = `
 <div>
   <button
-    aria-describedby={null}
+    aria-describedby="mui-tooltip-88387"
     className=""
     onMouseLeave={[Function]}
     onMouseOver={[Function]}

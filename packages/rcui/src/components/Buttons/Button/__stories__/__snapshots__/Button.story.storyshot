@@ -106,10 +106,10 @@ exports[`Storyshots Buttons Contained Button: Buttons Contained Button 1`] = `
    
   <div>
     <button
-      className="MuiButtonBase-root MuiButton-root root MuiButton-contained containedButtonStyle MuiButton-containedPrimary MuiButton-raised MuiButton-raisedPrimary MuiButton-sizeLarge c0"
+      className="MuiButtonBase-root MuiButton-root root c0 MuiButton-contained containedButtonStyle MuiButton-containedPrimary MuiButton-sizeLarge"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -119,7 +119,7 @@ exports[`Storyshots Buttons Contained Button: Buttons Contained Button 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span
@@ -127,9 +127,6 @@ exports[`Storyshots Buttons Contained Button: Buttons Contained Button 1`] = `
       >
         Button
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </div>
@@ -241,10 +238,10 @@ exports[`Storyshots Buttons Outlined Button: Buttons Outlined Button 1`] = `
    
   <div>
     <button
-      className="MuiButtonBase-root MuiButton-root root MuiButton-outlined outlineButtonStyle MuiButton-outlinedPrimary MuiButton-sizeLarge c0"
+      className="MuiButtonBase-root MuiButton-root root c0 MuiButton-outlined outlineButtonStyle MuiButton-outlinedPrimary MuiButton-sizeLarge"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -254,7 +251,7 @@ exports[`Storyshots Buttons Outlined Button: Buttons Outlined Button 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span
@@ -262,9 +259,6 @@ exports[`Storyshots Buttons Outlined Button: Buttons Outlined Button 1`] = `
       >
         Button
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </div>
@@ -376,11 +370,11 @@ exports[`Storyshots Buttons Round Button: Buttons Round Button 1`] = `
    
   <div>
     <button
-      className="MuiButtonBase-root MuiButton-root root MuiButton-fab roundButtonStyle MuiButton-contained containedButtonStyle MuiButton-containedPrimary MuiButton-raised MuiButton-raisedPrimary MuiButton-sizeLarge c0"
+      className="MuiButtonBase-root MuiButton-root root c0 MuiButton-sizeLarge"
       content="Button"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -390,7 +384,7 @@ exports[`Storyshots Buttons Round Button: Buttons Round Button 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span
@@ -509,10 +503,10 @@ exports[`Storyshots Buttons Text Button: Buttons Text Button 1`] = `
    
   <div>
     <button
-      className="MuiButtonBase-root MuiButton-root root MuiButton-text textButtonStyle MuiButton-textPrimary MuiButton-flat MuiButton-flatPrimary MuiButton-sizeLarge c0"
+      className="MuiButtonBase-root MuiButton-root root c0 MuiButton-text textButtonStyle MuiButton-textPrimary MuiButton-sizeLarge"
       disabled={false}
       onBlur={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -522,7 +516,7 @@ exports[`Storyshots Buttons Text Button: Buttons Text Button 1`] = `
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span
@@ -530,9 +524,6 @@ exports[`Storyshots Buttons Text Button: Buttons Text Button 1`] = `
       >
         Button
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </button>
   </div>
 </div>

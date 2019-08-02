@@ -9,7 +9,12 @@ import { IRTCRegistrationFsmDependency } from './IRTCRegistrationFsmDependency';
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from '../signaling/IRTCUserAgent';
 import { RTCSipUserAgent } from '../signaling/RTCSipUserAgent';
-import { RTC_ACCOUNT_STATE, RTCCallOptions, RTCUserInfo } from '../api/types';
+import {
+  RTC_ACCOUNT_STATE,
+  RTCCallOptions,
+  RTCUserInfo,
+  RTCSipProvisionInfo,
+} from '../api/types';
 import { UA_EVENT, ProvisionDataOptions } from '../signaling/types';
 import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import {
@@ -17,31 +22,24 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
-  RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
-import { rtcLogger } from '../utils/RTCLoggerProxy';
 import _ from 'lodash';
-import { randomBetween } from '../utils/utils';
-import { kRetryIntervalList } from './constants';
 
-const LOG_TAG = 'RTCRegistrationManager';
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
   private _eventQueue: AsyncQueue<RTCRegisterAsyncTask>;
   private _userAgent: IRTCUserAgent;
-  private _retryTimer: NodeJS.Timeout | null = null;
-  private _failedTimes: number = 0;
   private _userInfo: RTCUserInfo;
 
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
 
-  public onReRegisterAction(forceToMainProxy: boolean): void {
+  public onReRegisterAction(): void {
     if (this._userAgent) {
-      this._userAgent.reRegister(forceToMainProxy);
+      this._userAgent.reRegister();
     }
   }
 
@@ -86,8 +84,6 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onEnterReady() {
-    this._clearRegisterRetryTimer();
-    this._failedTimes = 0;
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.REGISTERED,
@@ -102,7 +98,6 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onEnterRegFailure() {
-    this._scheduleRegisterRetryTimer();
     this.emit(
       REGISTRATION_EVENT.ACCOUNT_STATE_CHANGED,
       RTC_ACCOUNT_STATE.FAILED,
@@ -170,16 +165,13 @@ class RTCRegistrationManager extends EventEmitter2
     );
   }
 
-  public reRegister(forceToMainProxy: boolean = false) {
+  public reRegister() {
     this._eventQueue.push(
       {
         name: REGISTRATION_EVENT.RE_REGISTER,
-        data: {
-          forceToMain: forceToMainProxy,
-        },
       },
-      (data?: any) => {
-        this._fsm.reRegister(data.forceToMain);
+      () => {
+        this._fsm.reRegister();
       },
     );
   }
@@ -293,40 +285,6 @@ class RTCRegistrationManager extends EventEmitter2
 
   private _onUAReceiveInvite(session: any) {
     this._fsm.receiveIncomingInvite(session);
-  }
-
-  private _scheduleRegisterRetryTimer() {
-    const interval = this._calculateNextRetryInterval();
-    this._failedTimes++;
-    rtcLogger.debug(
-      LOG_TAG,
-      `Schedule retry registration in ${interval} seconds`,
-    );
-    if (this._retryTimer) {
-      clearTimeout(this._retryTimer);
-    }
-    this._retryTimer = setTimeout(() => {
-      this.reRegister();
-    }, interval * 1000);
-  }
-
-  private _clearRegisterRetryTimer() {
-    rtcLogger.debug(LOG_TAG, 'Clear retry registration timer');
-    if (this._retryTimer) {
-      clearTimeout(this._retryTimer);
-    }
-    this._retryTimer = null;
-  }
-
-  private _calculateNextRetryInterval(): number {
-    const index =
-      this._failedTimes < kRetryIntervalList.length
-        ? this._failedTimes
-        : kRetryIntervalList.length - 1;
-    return randomBetween(
-      kRetryIntervalList[index].min,
-      kRetryIntervalList[index].max,
-    );
   }
 
   private _restartUA(

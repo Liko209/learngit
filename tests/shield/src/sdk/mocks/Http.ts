@@ -7,8 +7,8 @@ import {
   IRequest,
   INetworkRequestExecutorListener,
 } from 'foundation/network/network';
-import { InstanceManager } from '../server/InstanceManager';
-import { ProxyServer } from '../server/ProxyServer';
+import { InstanceManager } from 'shield/sdk/server/InstanceManager';
+import { ProxyServer } from 'shield/sdk/server/ProxyServer';
 
 export default class Http {
   request = (request: IRequest, listener: INetworkRequestExecutorListener) => {

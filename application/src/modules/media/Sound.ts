@@ -3,18 +3,26 @@
  * @Date: 2019-06-27 12:40:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { SoundOptions, MediaEventName } from '@/interface/media';
+import {
+  SoundOptions,
+  MediaEventName,
+  MediaEventType,
+  MediaEvents,
+} from '@/interface/media';
 import { Utils } from './Utils';
+import { mainLogger } from 'sdk';
 
-/* eslint-disable */
 class Sound {
   private _id: SoundOptions['id'];
   private _url: SoundOptions['url'];
   private _muted: SoundOptions['muted'];
   private _volume: SoundOptions['volume'];
+  private _loop: SoundOptions['loop'];
+  private _autoplay: SoundOptions['autoplay'];
   private _outputDevice: SoundOptions['outputDevice'];
   private _isDeviceSound: SoundOptions['isDeviceSound'];
-  private _events: SoundOptions['events'];
+  private _events: MediaEvents[] = [];
+  private _canplayThroughListener: () => void;
 
   private _duration: number;
   private _paused: boolean;
@@ -48,6 +56,10 @@ class Sound {
     this._soundVolume(vol);
   }
 
+  setLoop(loop: boolean) {
+    this._soundLoop(loop);
+  }
+
   setSeek(
     time: number,
     opts?: {
@@ -73,8 +85,15 @@ class Sound {
   }
 
   dispose() {
-    this.stop();
-    this._node = null;
+    if (this._node) {
+      this._node.pause();
+      this._node.currentTime = 0;
+      this._node = null;
+    }
+    setTimeout(() => {
+      this._unbindAllEvents();
+      this._resetSound();
+    }, 0);
   }
 
   dispatchEvent(event: Event) {
@@ -84,11 +103,33 @@ class Sound {
     this._node.dispatchEvent(event);
   }
 
+  bindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
+    this._events.push({
+      handler,
+      name: eventName,
+      type: MediaEventType.ON,
+    });
+    this._on(eventName, handler);
+  }
+
+  unbindEvent(eventName: MediaEventName, handler: (event: Event) => void) {
+    // check event pool has bound same name event
+    const hasEvent = this._events.some(evt => evt.name === eventName);
+    if (hasEvent) {
+      this._events = this._events.filter(
+        evt => !(evt.name === eventName && evt.handler === handler),
+      );
+      this._off(eventName, handler);
+    }
+  }
+
   private _setup(options: SoundOptions) {
     this._id = options.id;
     this._url = options.url;
-    this._muted = options.muted;
+    this._muted = options.muted || false;
     this._volume = Utils.isValidVolume(options.volume) ? options.volume : 1;
+    this._loop = options.loop || false;
+    this._autoplay = options.autoplay || false;
     this._seek = options.seek || 0;
     this._outputDevice = options.outputDevice;
     this._isDeviceSound = options.isDeviceSound || false;
@@ -119,11 +160,15 @@ class Sound {
 
     this._node.addEventListener('error', soundError, false);
     this._node.addEventListener('canplay', soundCanplay, false);
+    this._soundEventBind();
 
     this._node.src = this._url;
     this._node.preload = 'auto';
     this._node.volume = this._volume;
     this._node.muted = this._muted;
+    this._node.loop = this._loop;
+    this._node.autoplay = this._autoplay;
+
     if (this._outputDevice && this._node.setSinkId) {
       this._node
         .setSinkId(this._outputDevice)
@@ -134,8 +179,6 @@ class Sound {
           this._hasSinkId = false;
         });
     }
-
-    this._soundEventBind();
 
     this._node.load();
   }
@@ -168,8 +211,13 @@ class Sound {
               }
             })
             .catch(e => {
-              this._paused = true;
-              this._ended = true;
+              mainLogger.warn('[MediaModule] audio play catch error', e);
+              if (this._autoplay && e.code === 0) {
+                Utils.audioPolicyHandler(() => {
+                  this.play();
+                });
+              }
+              this._resetSound();
             });
         }
 
@@ -177,13 +225,13 @@ class Sound {
           if (!this._node) {
             return;
           }
-          this._paused = true;
-          this._ended = true;
+          this._resetSound();
           this._node.removeEventListener('ended', endedListener, false);
         };
-
         this._node.addEventListener('ended', endedListener, false);
-      } catch (e) {}
+      } catch (e) {
+        mainLogger.warn('[MediaModule] audio play catch error', e);
+      }
     };
 
     if (this._node.readyState >= 3) {
@@ -196,6 +244,8 @@ class Sound {
         html5AudioPlay();
         this._node.removeEventListener('canplaythrough', listener, false);
       };
+
+      this._canplayThroughListener = listener;
 
       this._node.addEventListener('canplaythrough', listener, false);
     }
@@ -216,7 +266,12 @@ class Sound {
   }
 
   private _soundStop() {
-    this._soundPause();
+    if (!this._node) {
+      return;
+    }
+    this._canplayThroughListener && this._node.removeEventListener('canplaythrough', this._canplayThroughListener, false);
+    this._node.pause();
+    this._node.currentTime = 0;
     this._resetSound();
   }
 
@@ -237,27 +292,54 @@ class Sound {
     this._node.volume = volume;
   }
 
+  private _soundLoop(loop: boolean) {
+    if (!this._node) {
+      return;
+    }
+    this._loop = loop;
+    this._node.loop = loop;
+  }
+
   private _soundEventBind() {
     if (this._events && this._events.length !== 0) {
       this._events.forEach(event => {
         const { name, type, handler } = event;
-        if (type === 'on') {
+        if (type === MediaEventType.ON) {
           this._on(name, handler);
-        } else if (type === 'off') {
+        } else if (MediaEventType.OFF) {
           this._off(name, handler);
         }
       });
     }
+
+    if (this._node) {
+      const loadeddataListener = () => {
+        if (!this._node) {
+          return;
+        }
+        this._node.currentTime = Math.max(0, this._seek);
+        this._node.removeEventListener('loadeddata', loadeddataListener, false);
+      };
+      this._node.addEventListener('loadeddata', loadeddataListener, false);
+    }
   }
 
-  private _on(event: MediaEventName, handler: () => void) {
+  private _unbindAllEvents() {
+    const onEvents = this._events.filter(evt => evt.type === MediaEventType.ON);
+    onEvents.forEach(evt => {
+      const { name, handler } = evt;
+      this.unbindEvent(name, handler);
+    });
+  }
+
+  private _on(event: MediaEventName, handler: (event: Event) => void) {
     if (!this._node || this._isDeviceSound) {
       return;
     }
     this._node.addEventListener(event, handler, false);
   }
 
-  private _off(event: MediaEventName, handler: () => void) {
+  private _off(event: MediaEventName, handler: (event: Event) => void) {
     if (!this._node || this._isDeviceSound) {
       return;
     }
@@ -268,6 +350,7 @@ class Sound {
     this._paused = true;
     this._ended = true;
     this._seek = 0;
+    this._events = [];
   }
 
   private _createHtml5Audio() {
@@ -278,7 +361,7 @@ class Sound {
       (testPlay instanceof Promise || typeof testPlay.then === 'function')
     ) {
       testPlay.catch(() => {
-        console.warn("audio can't be play");
+        mainLogger.warn("[MediaModule] audio can't be play");
       });
     }
 
@@ -309,6 +392,10 @@ class Sound {
     return this._node ? this._node.currentTime : this._seek;
   }
 
+  get duration() {
+    return this._node ? this._node.duration : this._duration || 0;
+  }
+
   get muted() {
     return this._muted;
   }
@@ -317,8 +404,20 @@ class Sound {
     return this._volume;
   }
 
+  get autoplay() {
+    return this._autoplay;
+  }
+
+  get loop() {
+    return this._loop;
+  }
+
   get sinkId() {
     return this._outputDevice;
+  }
+
+  get events() {
+    return this._events;
   }
 }
 

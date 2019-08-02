@@ -12,7 +12,7 @@ interface IPostActionController {
     personId: number,
     toLike: boolean,
   ): Promise<Post | null>;
-  editPost(params: EditPostType): Promise<Post | null>;
+  editSuccessPost(params: EditPostType): Promise<Post | null>;
 
   deletePost(id: number): Promise<boolean>;
 }

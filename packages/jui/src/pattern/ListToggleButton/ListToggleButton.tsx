@@ -24,7 +24,8 @@ const List = styled(MuiList)`
   }
 `;
 
-const ListItem = styled(MuiListItem)`
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+const ListItem = styled<ListItemProps & { button?: any }>(MuiListItem)`
   && {
     padding: 0;
     margin: ${spacing(0, 0, 4, 0)};
@@ -39,7 +40,7 @@ const ListItemSecondaryAction = styled(MuiListItemSecondaryAction)`
 `;
 
 const ListItemText = styled(MuiListItemText)`
-  && {
+  && .primary {
     color: ${grey('900')};
     ${typography('body1')};
   }
@@ -72,9 +73,7 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
   }
 
   render() {
-    const {
-      items, onChange, listProps, listItemProps, ...rest
-    } = this.props;
+    const { items, onChange, listProps, listItemProps, ...rest } = this.props;
     /* eslint-disable react/jsx-no-bind */
     return (
       <List dense {...listProps} {...rest}>
@@ -85,7 +84,9 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
             key={toggleItem.text}
             dense
           >
-            <ListItemText>{toggleItem.text}</ListItemText>
+            <ListItemText classes={{ primary: 'primary' }}>
+              {toggleItem.text}
+            </ListItemText>
             <ListItemSecondaryAction>
               <JuiToggleButton
                 checked={toggleItem.checked}

@@ -13,7 +13,10 @@ import {
   IResponse as IJResponse,
 } from 'foundation/network/network';
 import { Nullable } from 'sdk/types';
-import { GlipInitialDataHelper, GlipDataHelper } from './mocks/server/glip/data/data';
+import {
+  GlipInitialDataHelper,
+  GlipDataHelper,
+} from './mocks/server/glip/data/data';
 import { InitialData } from './mocks/server/glip/types';
 import { MockSocketServer } from './mocks/server/MockSocketServer';
 

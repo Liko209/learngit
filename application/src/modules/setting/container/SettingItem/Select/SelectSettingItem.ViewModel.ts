@@ -10,8 +10,8 @@ import { dataTrackingForSetting } from '../utils/dataTrackingForSetting';
 import { SelectSettingItemProps } from './types';
 
 class SelectSettingItemViewModel<T> extends BaseSettingItemViewModel<
-SelectSettingItemProps,
-SelectSettingItem<T>
+  SelectSettingItemProps,
+  SelectSettingItem<T>
 > {
   @computed
   get source() {
@@ -48,7 +48,7 @@ SelectSettingItem<T>
     }
     valueSetter && valueSetter(rawValue);
     dataTracking && dataTrackingForSetting(dataTracking, rawValue);
-  }
+  };
 
   extractValue = (sourceItem: T) => {
     const { valueExtractor } = this.settingItem;
@@ -68,7 +68,7 @@ SelectSettingItem<T>
       throw new Error('Error: Can not extract value of source');
     }
     return result.toString();
-  }
+  };
 
   private _isObjectSourceItem(
     value: any,

@@ -7,8 +7,8 @@
 import { computed, observable, action } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
-import storeManager from '@/store/base/StoreManager';
-import { getGlobalValue } from '@/store/utils';
+import storeManager from '@/store';
+import { getGlobalValue, getPresence } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
 import { container } from 'framework';
@@ -19,6 +19,10 @@ import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TELEPHONY_SERVICE } from '@/modules/telephony/interface/constant';
 import { UploadRecentLogs } from '@/modules/feedback';
+import { getEntity } from '@/store/utils';
+import { ENTITY_NAME } from '@/store';
+import { Person } from 'sdk/module/person/entity';
+import PersonModel from '@/store/models/Person';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -101,6 +105,19 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   handleSendFeedback = () => {
     UploadRecentLogs.show();
   };
+
+  @computed
+  get presence() {
+    return getPresence(this.currentUserId);
+  }
+
+  @computed
+  get person() {
+    return getEntity<Person, PersonModel>(
+      ENTITY_NAME.PERSON,
+      this.currentUserId,
+    );
+  }
 }
 
 export { AvatarActionsViewModel };

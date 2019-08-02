@@ -8,3 +8,5 @@ export const INDEX_POST_MAX_SIZE = 50;
 
 export const LOG_INDEX_DATA_POST = '[LOG_INDEX_DATA_POST]';
 export const LOG_FETCH_POST = '[LOG_FETCH_POST]';
+
+export const AT_TEAM_MENTION_REGEXP = /(<a class='at_mention_compose' rel='{"id":-1}'>)(.*?)(<\/a>)/gi;

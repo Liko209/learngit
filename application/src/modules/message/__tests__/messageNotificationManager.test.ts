@@ -45,6 +45,13 @@ describe('messageNotificationManager', () => {
     at_mention_non_item_ids: [otherUserId],
     text: '',
   };
+  const postWithMentionTeamMembers = {
+    id: 111,
+    isTeamMention: true,
+    group_id: 1,
+    at_mention_non_item_ids: [otherUserId],
+    text: '',
+  };
   const postWithMentionMe = {
     id: 4,
     group_id: 1,
@@ -83,7 +90,9 @@ describe('messageNotificationManager', () => {
       return { customEmoji: {} };
     },
   };
-  const settingItem = {value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE}
+  const settingItem = {
+    value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE,
+  };
   function mockSettingItemValue(value: DESKTOP_MESSAGE_NOTIFICATION_OPTIONS) {
     settingItem.value = value;
   }
@@ -101,7 +110,7 @@ describe('messageNotificationManager', () => {
         case ServiceConfig.COMPANY_SERVICE:
           return mockedCompanyService;
         case ServiceConfig.SETTING_SERVICE:
-          return { getById: () => (settingItem) }
+          return { getById: () => settingItem };
         default:
           return { userConfig: { getGlipUserId: () => userId } };
       }
@@ -127,7 +136,7 @@ describe('messageNotificationManager', () => {
     });
     describe('when notification settings turned to off', () => {
       beforeEach(() => {
-        mockSettingItemValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF)
+        mockSettingItemValue(DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF);
       });
       it('should not show notification when post is from group', async () => {
         const result = await notificationManager.shouldEmitNotification(
@@ -306,15 +315,21 @@ describe('messageNotificationManager', () => {
 
     it(`should unescape for text lik "you'll get it"`, () => {
       expect(
-        notificationManager.handlePostContent({ text: `you'll get it` } as PostModel),
+        notificationManager.handlePostContent({
+          text: `you'll get it`,
+        } as PostModel),
       ).toEqual(`you'll get it`);
     });
 
     it('should remove quote markup', () => {
-      expect(notificationManager.handlePostContent({ text: `> @Andy Hu wrote:
+      expect(
+        notificationManager.handlePostContent({
+          text: `> @Andy Hu wrote:
 > ddd
 > lll
-sfdasfasd` } as PostModel)).toEqual(` @Andy Hu wrote:
+sfdasfasd`,
+        } as PostModel),
+      ).toEqual(` @Andy Hu wrote:
  ddd
  lll
 sfdasfasd`);
@@ -336,15 +351,20 @@ sfdasfasd`);
       jest.spyOn(i18n, 'default').mockResolvedValue(translation);
     });
     it('should build title and body for one2one conversation', async () => {
-      const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionOthers),
-        { userDisplayName: names.userDisplayName },
-        {
+      const datum = {
+        post: new PostModel(postWithMentionOthers),
+        person: { userDisplayName: names.userDisplayName },
+        group: {
           members: [1, 2],
           displayName: names.teamDisplayName,
           isTeam: false,
           type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
         },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
+      const val = await notificationManager.buildNotificationBodyAndTitle(
+        datum,
+        type,
       );
       expect(val).toEqual({
         title: names.teamDisplayName,
@@ -352,6 +372,27 @@ sfdasfasd`);
       });
     });
     it('should build title and body for group and team conversation', async () => {
+      const datum = {
+        post: new PostModel(postWithMentionOthers),
+        person: { userDisplayName: names.userDisplayName },
+        group: { members: [1, 2, 3], displayName: names.teamDisplayName },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
+      const val = await notificationManager.buildNotificationBodyAndTitle(
+        datum,
+        type,
+      );
+      expect(i18n.default).toHaveBeenCalledTimes(1);
+      expect(i18n.default).toHaveBeenCalledWith(
+        'notification.group',
+        translationArgs,
+      );
+      expect(val).toEqual({
+        title: translation,
+        body: postWithMentionOthers.text,
+      });
+    });
+    it('should build title and body for @team mention conversation', async () => {
       const val = await notificationManager.buildNotificationBodyAndTitle(
         new PostModel(postWithMentionOthers),
         { userDisplayName: names.userDisplayName },
@@ -364,14 +405,19 @@ sfdasfasd`);
       );
       expect(val).toEqual({
         title: translation,
-        body: postWithMentionOthers.text,
+        body: postWithMentionTeamMembers.text,
       });
     });
     it('should build title and body for mentioned conversation', async () => {
+      const datum = {
+        post: new PostModel(postWithMentionMe),
+        person: { userDisplayName: names.userDisplayName },
+        group: { members: [1, 2, 3], displayName: names.teamDisplayName },
+      };
+      const type = notificationManager.getMessageType(datum.post, datum.group);
       const val = await notificationManager.buildNotificationBodyAndTitle(
-        new PostModel(postWithMentionMe),
-        { userDisplayName: names.userDisplayName },
-        { members: [1, 2, 3], displayName: names.teamDisplayName },
+        datum,
+        type,
       );
       expect(i18n.default).toHaveBeenCalledTimes(2);
       expect(i18n.default).toHaveBeenCalledWith(
