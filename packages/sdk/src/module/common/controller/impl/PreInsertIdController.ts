@@ -9,7 +9,7 @@ import { AccountGlobalConfig } from '../../../account/config';
 import { UserConfigService } from '../../../config';
 import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 import { mainLogger } from 'foundation';
-/* eslint-disable */
+
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
 class PreInsertIdController implements IPreInsertIdController {
@@ -32,12 +32,22 @@ class PreInsertIdController implements IPreInsertIdController {
     if (preInsertKeysIds) {
       try {
         this._preInsertIds = JSON.parse(preInsertKeysIds);
+        const isValid =
+          this._preInsertIds &&
+          typeof this._preInsertIds === 'object' &&
+          !(this._preInsertIds instanceof Array);
+
+        if (!isValid) {
+          mainLogger.log(
+            `PreInsertIdController Json is not object ${preInsertKeysIds}`,
+          );
+          this._resetPreinsertIds();
+        }
       } catch (e) {
         mainLogger.log(
           `PreInsertIdController Json parser error ${preInsertKeysIds}`,
         );
-        this._preInsertIds = {};
-        this._syncDataDB();
+        this._resetPreinsertIds();
       }
     }
   }
@@ -55,7 +65,7 @@ class PreInsertIdController implements IPreInsertIdController {
   }
 
   isInPreInsert(uniqueId: string): boolean {
-    return this._preInsertIds.hasOwnProperty(uniqueId);
+    return Object.prototype.hasOwnProperty.call(this._preInsertIds, uniqueId);
   }
 
   getPreInsertId(uniqueId: string): number {
@@ -84,6 +94,11 @@ class PreInsertIdController implements IPreInsertIdController {
       uniqueIds: Object.keys(this._preInsertIds),
       ids: Object.values(this._preInsertIds),
     };
+  }
+
+  private _resetPreinsertIds() {
+    this._preInsertIds = {};
+    this._syncDataDB();
   }
 }
 

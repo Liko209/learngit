@@ -34,6 +34,7 @@ import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { TypingIndicatorController } from '../controller/TypingIndicatorController';
+import { Person } from 'sdk/module/person/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -49,8 +50,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       SubscribeController.buildSubscriptionController({
         [SOCKET.GROUP]: this.handleData,
         [`${ENTITY.POST}.*`]: this.handleGroupMostRecentPostChanged,
-        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this
-          .deleteAllTeamInformation,
+        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this.handleRemovedFromTeam,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
           .setAsTrue4HasMoreConfigByDirection,
         [SOCKET.TYPING]: this.handleIncomingTyingEvent,
@@ -125,10 +125,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .handleGroupFetchedPost(groupId, posts);
   }
 
-  deleteAllTeamInformation = async (ids: number[]) => {
+  handleRemovedFromTeam = async (ids: number[]) => {
     await this.getGroupController()
       .getGroupActionController()
-      .deleteAllTeamInformation(ids);
+      .handleRemovedFromTeam(ids);
   };
 
   isValid(group: Group): boolean {
@@ -264,6 +264,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     return await this._groupFetchDataController.getGroupsByIds(ids, order);
+  }
+
+  async getPersonIdsBySelectedItem(ids: (number | string)[]) {
+    return await this._groupFetchDataController.getPersonIdsBySelectedItem(ids);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -429,6 +433,18 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.getTypingIndicatorController().sendTypingEvent(
       groupId,
       isClear,
+    );
+  }
+
+  async getMembersAndGuestIds(
+    groupId: number,
+    onlineFirst: boolean = true,
+    sortFunc?: (lhs: Person, rhs: Person) => number,
+  ) {
+    return this._groupFetchDataController.getMembersAndGuestIds(
+      groupId,
+      onlineFirst,
+      sortFunc,
     );
   }
 }

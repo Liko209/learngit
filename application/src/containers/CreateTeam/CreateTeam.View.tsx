@@ -19,10 +19,10 @@ import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-import { ContactSearch } from '@/containers/Downshift';
+import { ContactAndGroupSearch, ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
-
-import { ViewProps } from './types';
+import { dataAnalysis } from 'sdk';
+import { ViewProps, INIT_ITEMS } from './types';
 import {
   ToastType,
   ToastMessageAlign,
@@ -61,25 +61,31 @@ class CreateTeamComponent extends React.Component<Props, State> {
 
     return [
       {
-        type: 'isPublic',
+        type: INIT_ITEMS.IS_PUBLIC,
         text: t('people.team.SetAsPublicTeam'),
         checked: false,
         automationId: 'CreateTeamIsPublic',
       },
       {
-        type: 'canAddMember',
+        type: INIT_ITEMS.CAN_ADD_MEMBER,
         text: t('people.team.MembersMayAddOtherMembers'),
         checked: true,
         automationId: 'CreateTeamCanAddMember',
       },
       {
-        type: 'canPost',
+        type: INIT_ITEMS.CAN_POST,
         text: t('people.team.MembersMayPostMessages'),
         checked: true,
         automationId: 'CreateTeamCanPost',
       },
       {
-        type: 'canPin',
+        type: INIT_ITEMS.CAN_AT_TEAM_MENTION,
+        text: t('people.team.MembersCanAtTeamMention'),
+        checked: false,
+        automationId: 'CreateTeamCanAtTeamMention',
+      },
+      {
+        type: INIT_ITEMS.CAN_PIN,
         text: t('people.team.MembersMayPinPosts'),
         checked: true,
         automationId: 'CreateTeamCanPinPost',
@@ -102,6 +108,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
   componentDidMount() {
     // because of modal is dynamic append body
     // so must be delay focus
+    dataAnalysis.page('Jup_Web/DT_Messaging_Team_createTeam');
     this.focusTimer = setTimeout(() => {
       const node = this.teamNameRef.current;
       if (node) {
@@ -122,10 +129,23 @@ class CreateTeamComponent extends React.Component<Props, State> {
           checked,
         };
       }
-      if (oldItem.type === 'canPin' && item.type === 'canPost') {
+      if (
+        oldItem.type === INIT_ITEMS.CAN_PIN &&
+        item.type === INIT_ITEMS.CAN_POST
+      ) {
         return {
           ...oldItem,
           checked,
+          disabled: !checked,
+        };
+      }
+      if (
+        oldItem.type === INIT_ITEMS.CAN_AT_TEAM_MENTION &&
+        item.type === INIT_ITEMS.CAN_POST
+      ) {
+        return {
+          ...oldItem,
+          checked: false,
           disabled: !checked,
         };
       }
@@ -149,6 +169,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
       canAddMember: boolean;
       canPost: boolean;
       canPin: boolean;
+      canAtTeamMention: boolean;
     };
 
     const teamSetting: TeamSetting = {
@@ -159,6 +180,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
         TEAM_ADD_MEMBER: uiSetting.canAddMember,
         TEAM_POST: uiSetting.canPost,
         TEAM_PIN_POST: uiSetting.canPin,
+        TEAM_MENTION: uiSetting.canAtTeamMention,
       },
     };
     try {
@@ -199,6 +221,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
       serverError,
       errorEmail,
       loading,
+      canMentionTeam,
       t,
     } = this.props;
     return (
@@ -212,7 +235,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
         okText={t('people.team.Create')}
         contentBefore={
           serverError && (
-            <StyledSnackbarsContent type='error'>
+            <StyledSnackbarsContent type="error">
               {t('people.prompt.CreateTeamError')}
             </StyledSnackbarsContent>
           )
@@ -241,17 +264,33 @@ class CreateTeamComponent extends React.Component<Props, State> {
             helperText={nameError && t(errorMsg)}
             onChange={handleNameChange}
           />
-          <ContactSearch
-            onSelectChange={handleSearchContactChange}
-            label={t('people.team.Members')}
-            placeholder={t('people.team.SearchContactPlaceholder')}
-            error={emailError}
-            helperText={emailError ? t(emailErrorMsg) : ''}
-            errorEmail={errorEmail}
-            isExcludeMe
-            multiple
-            autoSwitchEmail
-          />
+
+          {// temporary: ContactAndGroupSearch contain group and person
+          canMentionTeam ? (
+            <ContactAndGroupSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              isExcludeMe
+              multiple
+              autoSwitchEmail
+            />
+          ) : (
+            <ContactSearch
+              onSelectChange={handleSearchContactChange}
+              label={t('people.team.Members')}
+              placeholder={t('people.team.SearchContactPlaceholder')}
+              error={emailError}
+              helperText={emailError ? t(emailErrorMsg) : ''}
+              errorEmail={errorEmail}
+              isExcludeMe
+              multiple
+              autoSwitchEmail
+            />
+          )}
           <JuiTextarea
             id={t('people.team.teamDescription')}
             label={t('people.team.teamDescription')}
@@ -263,7 +302,7 @@ class CreateTeamComponent extends React.Component<Props, State> {
             onChange={handleDescChange}
           />
           <JuiListToggleButton
-            data-test-automation-id='CreateTeamToggleList'
+            data-test-automation-id="CreateTeamToggleList"
             items={items}
             onChange={this.handleSwitchChange}
           />

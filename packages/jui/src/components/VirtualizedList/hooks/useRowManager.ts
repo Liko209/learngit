@@ -5,16 +5,39 @@
  */
 import { useState } from 'react';
 import { KeyMapper, RowManager } from '../RowManager';
+import { FixedRowManager } from '../FixedRowManager';
+import { AbstractRowManager } from '../AbstractRowManager';
 
 const useRowManager = ({
   minRowHeight,
+  fixedRowHeight,
   keyMapper,
 }: {
-  minRowHeight: number;
+  minRowHeight?: number;
+  fixedRowHeight?: number;
   keyMapper: KeyMapper;
 }) => {
-  const [rowManager] = useState(() => new RowManager({ minRowHeight }));
-  rowManager.setKeyMapper(keyMapper);
+  const [rowManager] = useState(() => {
+    let result: AbstractRowManager;
+    if (minRowHeight) {
+      const rowManager = new RowManager({ minRowHeight });
+      rowManager.setKeyMapper(keyMapper);
+      result = rowManager;
+    } else if (fixedRowHeight) {
+      const rowManager = new FixedRowManager({ fixedRowHeight });
+      result = rowManager;
+    } else {
+      throw new Error(
+        `ERROR: At least provide 'minRowHeight' or 'fixedRowHeight'`,
+      );
+    }
+    return result;
+  });
+
+  if (rowManager instanceof RowManager) {
+    rowManager.setKeyMapper(keyMapper);
+  }
+
   return rowManager;
 };
 

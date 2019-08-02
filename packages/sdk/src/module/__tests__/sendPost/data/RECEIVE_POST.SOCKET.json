@@ -1,0 +1,62 @@
+{
+  "type": "socket-message",
+  "host": "glip",
+  "path": "/socket.io",
+  "protocol": "",
+  "direction": "receive",
+  "channel": "message",
+  "data": {
+    "body": {
+      "timestamp": 1563120343326,
+      "message_id": "user_id:187875331;id:0f32d31a-4645-4cb1-8ff8-ba329a5d4b19",
+      "pending_object_ids": [],
+      "objects": [
+        [
+          {
+            "created_at": 1563120343165,
+            "creator_id": 187875331,
+            "version": 3547237132741689,
+            "model_size": 0,
+            "is_new": true,
+            "item_ids": [],
+            "post_ids": [],
+            "modified_at": 1563120343165,
+            "unique_id": "3547237132741689",
+            "text": "hello",
+            "group_id": 16386,
+            "at_mention_item_ids": [],
+            "at_mention_non_item_ids": [],
+            "company_id": 401409,
+            "deactivated": false,
+            "source": "Jupiter",
+            "function_id": "post",
+            "items": [],
+            "_id": 2854567940,
+            "history": [
+              {
+                "modified_at": 1563120342971,
+                "creator_id": 187875331,
+                "new_version": 3547237132741689,
+                "unique_id": "3547237132741689",
+                "is_new": true,
+                "model_size": 0,
+                "text": "hello",
+                "group_id": 16386,
+                "item_ids": [],
+                "post_ids": [],
+                "at_mention_item_ids": [],
+                "at_mention_non_item_ids": [],
+                "company_id": 401409,
+                "deactivated": false,
+                "source": "Jupiter",
+                "function_id": "post",
+                "items": [],
+                "created_at": 1563120343165
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  }
+}

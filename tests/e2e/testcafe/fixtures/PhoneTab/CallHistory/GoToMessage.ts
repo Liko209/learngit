@@ -11,8 +11,7 @@ import { h } from '../../../v2/helpers';
 import { ITestMeta } from '../../../v2/models';
 import { AppRoot } from '../../../v2/page-models/AppRoot';
 
-
-import { addOneCallLogFromGuest } from './utils';
+import { addOneMissCallLogFromAnotherUser } from './utils';
 
 fixture('Setting/EnterPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -21,7 +20,7 @@ fixture('Setting/EnterPoint')
 
 test.meta(<ITestMeta>{
   priority: ['P1'],
-  caseIds: ['FIJI-2394'],
+  caseIds: ['JPT-2394'],
   maintainers: ['Allen.Lian'],
   keywords: ['call history']
 })('Go to conversation from the call history', async (t) => {
@@ -57,8 +56,7 @@ test.meta(<ITestMeta>{
     await telephoneDialog.clickMinimizeButton()
   }
 
-  await addOneCallLogFromGuest(t, caller, callee, app);
-
+  await addOneMissCallLogFromAnotherUser(t, caller, callee, app);
 
   const callhistoryItem = callhistoryPage.callhistoryItemByNth(0);
   const callhistoryId = await callhistoryItem.id;

@@ -3,10 +3,8 @@
  * @Date: 2018-11-22 19:22:43
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
 import history from '@/history';
-import { mainLogger } from 'sdk';
+import { mainLogger, powerMonitor } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { TelephonyService } from 'sdk/module/telephony';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -19,6 +17,7 @@ const WAITING_WORKER_FLAG = 'upgrade.waiting_worker_flag';
 
 class Upgrade {
   private _hasNewVersion: boolean = false;
+  private _hasSkippedWaiting: boolean = false;
   private _hasControllerChanged: boolean = false;
   private _refreshing: boolean = false;
   private _swURL: string;
@@ -26,7 +25,9 @@ class Upgrade {
   private _lastRouterChangeTime?: Date = new Date();
   private _queryTimer: NodeJS.Timeout;
 
-  constructor(public queryInterval = DEFAULT_UPDATE_INTERVAL) {
+  queryInterval = DEFAULT_UPDATE_INTERVAL;
+
+  constructor() {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
@@ -38,6 +39,11 @@ class Upgrade {
       if (action === 'PUSH') {
         this._lastRouterChangeTime = new Date();
       }
+    });
+
+    // In case suspend or lock screen for a long time, expected to not reload after unlock screen.
+    powerMonitor.onUnlock(() => {
+      this._lastRouterChangeTime = new Date();
     });
   }
 
@@ -65,7 +71,7 @@ class Upgrade {
     );
     if (isByWaitingWorker) {
       const workingWorkerFlag = this._getWorkingWorkerFlag();
-      if (!!workingWorkerFlag) {
+      if (workingWorkerFlag) {
         mainLogger.info(
           `${logTag} Ignore upgrade due to there's waiting worker flag: ${workingWorkerFlag}`,
         );
@@ -76,6 +82,11 @@ class Upgrade {
     }
 
     this._hasNewVersion = true;
+
+    if (this._isInPowerSavingMode()) {
+      mainLogger.info(`${logTag} Postpone upgrade due to power saving mode`);
+      return;
+    }
 
     if (this._appInFocus()) {
       if (
@@ -112,11 +123,21 @@ class Upgrade {
       );
 
       this._serviceWorkerSkipWaiting();
+      this._hasSkippedWaiting = true;
     }
   }
 
   public reloadIfAvailable(triggerSource: string) {
     if (this._hasControllerChanged && this._canDoReload()) {
+      // In some unknown cases, it get the onControllerChange event, even if there's no version get published.
+      if (!this._hasSkippedWaiting) {
+        mainLogger.info(
+          `${logTag}[${triggerSource}] No reload due to has no done skipped waiting`,
+        );
+
+        return;
+      }
+
       this._hasControllerChanged = false;
       mainLogger.info(
         `${logTag}[${triggerSource}] Will auto reload due to service worker controller is changed`,
@@ -198,11 +219,11 @@ class Upgrade {
     const waitingWorker = registration.waiting;
     mainLogger.info(
       `${logTag}active[${!!activeWorker}]${
-        !!activeWorker ? activeWorker.state : ''
+        activeWorker ? activeWorker.state : ''
       }, installing[${!!installingWorker}]${
-        !!installingWorker ? installingWorker.state : ''
+        installingWorker ? installingWorker.state : ''
       }, waiting[${!!waitingWorker}]${
-        !!waitingWorker ? waitingWorker.state : ''
+        waitingWorker ? waitingWorker.state : ''
       }`,
     );
 
@@ -258,6 +279,11 @@ class Upgrade {
   }
 
   private _canDoReload() {
+    if (this._isInPowerSavingMode()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to power saving mode`);
+      return false;
+    }
+
     if (this._hasInProgressCall()) {
       mainLogger.info(`${logTag}Forbidden to reload due to call in progress`);
       return false;
@@ -334,6 +360,10 @@ class Upgrade {
 
   private _appInFocus() {
     return document.hasFocus();
+  }
+
+  private _isInPowerSavingMode() {
+    return powerMonitor.isScreenLocked();
   }
 
   private _reloadApp() {

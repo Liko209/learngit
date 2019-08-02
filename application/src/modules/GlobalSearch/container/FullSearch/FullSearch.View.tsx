@@ -13,23 +13,27 @@ import { JuiFullSearch } from 'jui/pattern/GlobalSearch';
 import { TAB_CONFIG, TabConfig } from './config';
 import history from '@/history';
 import { UnregisterCallback } from 'history';
+import { InputContext } from '../context';
 
 type Props = FullSearchViewProps & WithTranslation;
 
 @observer
 class FullSearchViewComponent extends Component<Props> {
-  private _unlisten: UnregisterCallback;
+  private _unListen: UnregisterCallback;
+  static contextType = InputContext;
 
   componentDidMount() {
-    this._unlisten = history.listen(location => {
+    this._unListen = history.listen(location => {
       if (/^\/messages\/\d+$/.test(location.pathname)) {
         this.props.jumpToConversationCallback();
       }
     });
+
+    this.context.current && this.context.current.focus();
   }
 
   componentWillUnmount() {
-    this._unlisten && this._unlisten();
+    this._unListen();
 
     this.props.resetSearchScope();
   }
@@ -56,7 +60,7 @@ class FullSearchViewComponent extends Component<Props> {
                   <Component isShow={index === currentTab} />
                 </JuiTab>
               );
-            },
+            }
           )}
         </JuiTabs>
       </JuiFullSearch>

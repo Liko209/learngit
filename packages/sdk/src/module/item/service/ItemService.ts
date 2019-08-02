@@ -25,9 +25,10 @@ import { ItemNotification } from '../utils/ItemNotification';
 import { ChangeModel } from '../../sync/types';
 import { NoteItemService } from '../module/note/service';
 import { ITEM_PERFORMANCE_KEYS } from '../config/performanceKeys';
+import { RequestHolder, ProgressCallback } from 'sdk/api/glip/item';
 
 const INVALID_ITEM_ID = [-1, -2, null];
-
+const LOG_NAME = 'ItemService';
 class ItemService extends EntityBaseService<Item> implements IItemService {
   private _itemServiceController: ItemServiceController;
 
@@ -260,8 +261,11 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     itemId: number,
     options: ItemQueryOptions,
   ): Promise<{ index: number; totalCount: number }> {
-    return this.itemServiceController.getItemIndexInfo(itemId, options);
+    const result = this.itemServiceController.getItemIndexInfo(itemId, options);
+    mainLogger.tags(LOG_NAME).info('getItemIndexInfo', result);
+    return result;
   }
+
   async editFileName(itemId: number, newName: string): Promise<void> {
     await this.fileService.editFileName(itemId, newName);
   }
@@ -272,6 +276,18 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async getNoteBody(itemId: number) {
     return await this.noteService.getNoteBody(itemId);
+  }
+
+  async uploadFileToServer(
+    file: File,
+    progressCallback?: ProgressCallback,
+    requestHolder?: RequestHolder,
+  ) {
+    return await this.fileService.uploadFileToServer(
+      file,
+      progressCallback,
+      requestHolder,
+    );
   }
 }
 

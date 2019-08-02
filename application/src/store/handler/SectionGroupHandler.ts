@@ -5,7 +5,7 @@
  */
 /* eslint-disable */
 import history from '@/history';
-import storeManager from '@/store';
+import storeManager from '@/store/base/StoreManager';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -257,35 +257,38 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       ENTITY.GROUP,
       (payload: NotificationEntityPayload<Group>) => {
         let ids: number[] = [];
+        let removeFromCurrentTeam = false;
         if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+          const currentGroupId = getGlobalValue(
+            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+          );
           ids = ids.filter((id: number) => {
             const group = payload.body.entities.get(id);
+            const includeCurrentUser =
+              group && group.members.includes(currentUserId);
+            removeFromCurrentTeam =
+              id === currentGroupId && (!group || !includeCurrentUser);
+
             return (
               !group ||
               group.deactivated ||
-              !_.includes(group.members, currentUserId) ||
+              !includeCurrentUser ||
               group.is_archived
             );
           });
         }
-        if (payload.type === EVENT_TYPES.DELETE) {
-          const currentGroupId = getGlobalValue(
-            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-          );
-          if (payload.body.ids && payload.body.ids.includes(currentGroupId)) {
-            ids = [currentGroupId];
-            Notification.flashToast({
-              ...defaultNotificationOptions,
-              message: 'people.prompt.noLongerAMemberOfThisTeam',
-            });
-            mainLogger
-              .tags(LOG_TAG)
-              .info(
-                'subscribe notification|user was removed from current conversation',
-              );
-          }
+        if (removeFromCurrentTeam) {
+          Notification.flashToast({
+            ...defaultNotificationOptions,
+            message: 'people.prompt.noLongerAMemberOfThisTeam',
+          });
+          mainLogger
+            .tags(LOG_TAG)
+            .info(
+              'subscribe notification|user was removed from current conversation',
+            );
         }
         // update url
         this._updateUrl(EVENT_TYPES.DELETE, ids);

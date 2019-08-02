@@ -386,7 +386,6 @@ test.meta(<ITestMeta>{
   const loginUser = users[6];
   const groupUser = users[2];
   await h(t).glip(loginUser).init();
-  await h(t).scenarioHelper.resetProfileAndState(loginUser);
   const nameUserA = await h(t).glip(loginUser).getPersonPartialData('display_name', userA.rcId);
   const groupName = await h(t).glip(loginUser).getPersonPartialData('display_name', groupUser.rcId);
 
@@ -403,15 +402,19 @@ test.meta(<ITestMeta>{
     members: [loginUser, groupUser],
   };
 
-  await h(t).withLog(`Given I login Jupiter : ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`Given I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-  },
-  );
+  });
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`And make 3 records on searched list, group: ${groupName} team: ${team.name} user: ${nameUserA}`, async () => {
+  await h(t).withLog(`And make 3 records on searched list, group: {groupName} team: {teamName} user: {nameUserA}`, async (step) => {
+    step.initMetadata({ groupName, nameUserA, teamName: team.name });
     await h(t).scenarioHelper.createTeamsOrChats([team, group]);
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(groupName);
@@ -430,16 +433,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog('Then there are 3 items on the recently searched list', async () => {
     await t.expect(searchDialog.recentPage.conversationItems.count).eql(3);
-    await searchBar.clickCloseIcon();
+    await searchDialog.clickCloseButton();
   });
 
-  await h(t).withLog('When I sign out the app', async () => {
-    await app.homePage.openSettingMenu();
-    await app.homePage.settingMenu.clickLogout();
-  });
-
-  await h(t).withLog(`And Re-login the app with the same account ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  await h(t).withLog(`And logout and Re-login the app with the same account`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
@@ -466,7 +464,6 @@ test.meta(<ITestMeta>{
 
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
   const searchedUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', antherUser.rcId);
 
@@ -600,7 +597,6 @@ test.meta(<ITestMeta>{
   const admin = users[2];
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
 
 
   const team = <IGroup>{
@@ -719,7 +715,6 @@ test.meta(<ITestMeta>{
   const anotherUser = users[2];
   await h(t).glip(loginUser).init();
   await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).resetProfileAndState();
   const userName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
   const contentName = 'Ring';
   const contentNameInThisConversation = `${contentName} in this conversation`;

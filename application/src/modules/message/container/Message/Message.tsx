@@ -11,6 +11,7 @@ import { service, GLIP_LOGIN_STATUS } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import portalManager from '@/common/PortalManager';
 
 import { MessageRouter } from './MessageRouter';
 import { MessageViewProps } from './types';
@@ -33,15 +34,23 @@ class MessageComponent extends Component<Props, State> {
       this.accountService.getGlipLoginStatus() === GLIP_LOGIN_STATUS.SUCCESS,
   };
 
+  private _handleGlipLogin = (success: boolean) => {
+    this.setState({
+      success,
+      initializing: false,
+    });
+  };
+
   constructor(props: Props) {
     super(props);
     const { notificationCenter, SERVICE } = service;
-    notificationCenter.on(SERVICE.GLIP_LOGIN, (success: boolean) => {
-      this.setState({
-        success,
-        initializing: false,
-      });
-    });
+    notificationCenter.on(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
+  }
+
+  componentWillUnmount() {
+    const { notificationCenter, SERVICE } = service;
+    notificationCenter.off(SERVICE.GLIP_LOGIN, this._handleGlipLogin);
+    portalManager.dismissAll();
   }
 
   tryAgain = () => {

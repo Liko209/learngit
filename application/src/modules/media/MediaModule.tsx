@@ -5,9 +5,12 @@
  */
 
 import { AbstractModule } from 'framework';
+import { Utils } from './Utils';
 
 class MediaModule extends AbstractModule {
-  async bootstrap() {}
+  bootstrap() {
+    Utils.safariAudioPolicyHandler();
+  }
 }
 
 export { MediaModule };

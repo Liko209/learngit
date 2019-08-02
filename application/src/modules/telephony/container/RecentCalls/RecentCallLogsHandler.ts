@@ -46,9 +46,15 @@ class RecentCallLogsHandler {
   async init() {
     await this._initRecentCallInfo();
 
-    const filterFunc = (model: CallLogModel) => !model.deactivated;
+    const filterFunc = (model: CallLogModel) => {
+      const poneNumber = this._getPhoneNumber(model);
+      return !!(poneNumber && !model.deactivated);
+    };
 
-    const isMatchFunc = (entity: CallLog) => !entity.__deactivated && this._recentCallIds.includes(entity.id);
+    const isMatchFunc = (entity: CallLog) => {
+      const poneNumber = this._getPhoneNumber(entity);
+      return !!(poneNumber && !entity.__deactivated && this._recentCallIds.includes(entity.id));
+    };
 
     this._idListHandler = new IdListPaginationHandler(this._recentCallIds, {
       filterFunc,
@@ -111,7 +117,7 @@ class RecentCallLogsHandler {
     }
   };
 
-  private _handleDataReplace(
+  private async _handleDataReplace(
     payload: NotificationEntityReplacePayload<CallLog, string>,
   ) {
     let needUpdate = false;
@@ -124,37 +130,56 @@ class RecentCallLogsHandler {
     }
 
     const entities = Array.from(payload.body.entities.values());
-    needUpdate = this._checkAndHandleUpdate(entities) || needUpdate;
+    needUpdate = (await this._checkAndHandleUpdate(entities)) || needUpdate;
     needUpdate && this._updateSourceIds(this._recentCalls);
   }
 
-  private _handleDataUpdate(
+  private async _handleDataUpdate(
     payload: NotificationEntityUpdatePayload<CallLog, string>,
   ) {
     const entities = Array.from(payload.body.entities.values());
-    this._checkAndHandleUpdate(entities) &&
+    (await this._checkAndHandleUpdate(entities)) &&
       this._updateSourceIds(this._recentCalls);
   }
 
-  private _checkAndHandleUpdate(entities: CallLog[]) {
-    let hasUpdate = false;
+  private async _checkAndHandleUpdate(entities: CallLog[]) {
+    let needUpdate = false;
+    let needReload = false;
     for (const call of entities) {
+      needReload = call.__deactivated;
+      if (needReload) {
+        break;
+      }
+
       const phoneNumber = this._getPhoneNumber(call);
       if (phoneNumber) {
         const record = this._recentCalls.get(phoneNumber);
         if (!record || (record && call.__timestamp > record.creationTime)) {
-          hasUpdate = true;
+          needUpdate = true;
           this._recentCalls.set(phoneNumber, {
             id: call.id,
             creationTime: call.__timestamp,
           });
         }
+      } else {
+        // in some case, we have phone number at first, then server update the call log to one that has no number
+        needReload = this.recentCallIds.some((value: string) => value === call.id);
+        if (needReload) {
+          break;
+        }
       }
     }
-    return hasUpdate;
+
+    if (needReload) {
+      mainLogger
+        .tags(MODULE_NAME)
+        .log('_checkAndHandleUpdate, receive call deleted');
+      await this._initRecentCallInfo();
+    }
+    return needUpdate || needReload;
   }
 
-  private _getPhoneNumber(call: CallLog) {
+  private _getPhoneNumber(call: CallLog|CallLogModel) {
     const caller =
       call.direction === CALL_DIRECTION.INBOUND ? call.from : call.to;
     return caller ? caller.extensionNumber || caller.phoneNumber : undefined;

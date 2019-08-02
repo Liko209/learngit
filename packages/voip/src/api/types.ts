@@ -19,11 +19,17 @@ type RTCCallInfo = {
   uuid: string;
   partyId: string;
   sessionId: string;
+  fromTag?: string;
+  toTag?: string;
+  callId?: string;
 };
 
 type RTCCallOptions = {
   fromNumber?: string;
   homeCountryId?: string;
+  replacesCallId?: string;
+  replacesFromTag?: string;
+  replacesToTag?: string;
 };
 
 type RTCCallActionSuccessOptions = {
@@ -42,6 +48,7 @@ enum RTC_CALL_ACTION {
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
   TRANSFER = 'transfer',
+  WARM_TRANSFER = 'warmTransfer',
   FORWARD = 'forward',
   HOLD = 'hold',
   UNHOLD = 'unhold',
@@ -67,6 +74,49 @@ type RTCSipFlags = {
   dscpSignaling: Number;
   dscpVoice: Number;
   dscpVideo: Number;
+};
+
+type RTCSipEmergencyServiceAddr = {
+  street: string;
+  street2: string;
+  city: string;
+  state: string;
+  stateId: string;
+  stateIsoCode: string;
+  stateName: string;
+  country: string;
+  countryId: string;
+  countryIsoCode: string;
+  countryName: string;
+  zip: string;
+  customerName: string;
+  outOfCountry: boolean;
+};
+
+type RTCSipDevice = {
+  uri: string;
+  id: string;
+  type: string;
+  status: string;
+  emergencyServiceAddress?: RTCSipEmergencyServiceAddr;
+};
+
+type RTCSipInfo = {
+  transport: string;
+  password: string;
+  domain: string;
+  username: string;
+  authorizationId: string;
+  outboundProxy: string;
+  outboundProxyBackup?: string;
+  switchBackInterval?: number;
+};
+
+type RTCSipProvisionInfo = {
+  device: RTCSipDevice;
+  sipInfo: RTCSipInfo[];
+  sipFlags: RTCSipFlags;
+  sipErrorCodes?: string[];
 };
 
 type RTCUserInfo = {
@@ -106,6 +156,55 @@ enum RECORD_STATE {
   STOP_RECORD_IN_PROGRESS = 'stopRecordInProgress',
 }
 
+enum RTC_NO_AUDIO_TYPE {
+  NO_RTP = 'no-rtp',
+  NO_RTP_INCOMING = 'no-rtp-incoming',
+  NO_RTP_OUTGOING = 'no-rtp-outgoing',
+}
+
+type RTCNoAudioStateEvent = {
+  event: {
+    type: 'success';
+    timestamp?: number;
+    details: {
+      feature: 'no_audio_data';
+      build_type?: string;
+      user_id?: string;
+      company_id?: string;
+    };
+  };
+};
+
+type RTCNoAudioDataEvent = {
+  event: {
+    type: 'no-rtp';
+    timestamp?: number;
+    details: {
+      feature: 'no_audio_data';
+      build_type?: string;
+      user_id?: string;
+      company_id?: string;
+      data: {
+        call_type: string;
+        user_agent: string;
+        mailbox_id?: string;
+        account_id?: string;
+        session_time: number;
+        type: RTC_NO_AUDIO_TYPE;
+        call_info: {
+          to_tag: string;
+          to_number: string;
+          to_name: string;
+          call_id: string;
+          from_tag: string;
+          from_number: string;
+          from_name: string;
+        };
+      };
+    };
+  };
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -120,4 +219,9 @@ export {
   RTCSipFlags,
   RTC_MEDIA_ACTION,
   RECORD_STATE,
+  RTC_NO_AUDIO_TYPE,
+  RTCNoAudioStateEvent,
+  RTCNoAudioDataEvent,
+  RTCSipProvisionInfo,
+  RTCSipEmergencyServiceAddr,
 };

@@ -3,9 +3,6 @@
  * @Date: 2019-06-03 14:44:12
  * Copyright © RingCentral. All rights reserved.
  */
-
-/* eslint-disable */
-
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -54,6 +51,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
       t,
       id,
       isUnread,
+      isPseudo,
       caller,
       icon,
       callType,
@@ -73,7 +71,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
     return (
       <StyleVoicemailItem
         data-id={id}
-        data-test-automation-class='call-history-item'
+        data-test-automation-class="call-history-item"
         expanded={false}
       >
         <VoicemailSummary
@@ -106,6 +104,7 @@ class CallLogItemViewComponent extends Component<Props, State> {
                 id={id}
                 caller={caller}
                 entity={ENTITY_TYPE.CALL_LOG}
+                isPseudo={isPseudo}
                 maxButtonCount={callLogResponsiveMap.buttonToShow}
                 canEditBlockNumbers={canEditBlockNumbers}
                 showCall={showCall}

@@ -29,10 +29,7 @@ const throttledHandler = (f: any) => _.debounce(f, THROTTLE_TIME, {
   leading: true,
 });
 
-export class DialPad extends React.Component<
-DialPadViewProps,
-DialPadViewState
-> {
+export class DialPad extends React.Component<DialPadViewProps, DialPadViewState> {
   static defaultProps = {
     shouldHandleKeyboardEvts: true,
   };
@@ -53,6 +50,10 @@ DialPadViewState
     this._onClicks = Object.keys(KEY_2_ICON_MAP)
       .filter(key => key !== 'plus')
       .map(str => e => {
+        // Only handling the primary button
+        if (e && e.button) {
+          return;
+        }
         this.props.makeMouseEffect(KEY_2_ICON_MAP[str]);
         if (e) {
           e.preventDefault();
@@ -115,6 +116,10 @@ DialPadViewState
   };
 
   _onMouseDownForZero = (e: MouseEvent<HTMLButtonElement>) => {
+    // Only handling the primary button
+    if (e.button) {
+      return;
+    }
     e.persist();
     e.preventDefault();
     e.stopPropagation();
@@ -126,6 +131,10 @@ DialPadViewState
   };
 
   _onMouseupForZero = throttledHandler((e: MouseEvent<HTMLButtonElement>) => {
+    // Only handling the primary button
+    if (e.button) {
+      return;
+    }
     e.persist();
     e.preventDefault();
     e.stopPropagation();
@@ -136,7 +145,6 @@ DialPadViewState
     ) {
       return;
     }
-
     this._onClicks[10](); // the '10' button is on the 11th
     this._clearTimeout();
     this._mouseDownTime = null;

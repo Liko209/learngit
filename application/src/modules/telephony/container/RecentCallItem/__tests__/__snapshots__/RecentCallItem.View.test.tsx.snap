@@ -2,7 +2,6 @@
 
 exports[`RecentCallItemView render should render each record item [JPT-2316, JPT-2317] 1`] = `
 <Styled(JuiListItem)
-  onClick={[Function]}
   tabIndex={0}
 >
   <styled.div>
@@ -20,7 +19,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
     />
   </styled.div>
   <styled.div>
-    <JuiIconography
+    <ForwardRef(JuiIconography)
       iconColor={
         Array [
           "accent",
@@ -30,7 +29,7 @@ exports[`RecentCallItemView render should render each record item [JPT-2316, JPT
       iconSize="medium"
     >
       missedcall
-    </JuiIconography>
+    </ForwardRef(JuiIconography)>
   </styled.div>
   <styled.div>
     2019-06-28T02:09:28.595Z

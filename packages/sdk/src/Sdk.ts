@@ -16,9 +16,7 @@ import {
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
-import {
-  Api, HandleByGlip, HandleByRingCentral, HandleByUpload,
-} from './api';
+import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';
@@ -29,13 +27,19 @@ import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './module/account';
-import { UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
 import { AccountGlobalConfig } from './module/account/config';
 import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 import { PhoneParserUtility } from './utils/phoneParser';
 import { configMigrator } from './framework/config';
 import { ACCOUNT_TYPE_ENUM } from './authenticator/constants';
+import {
+  PermissionService,
+  LaunchDarklyController,
+  SplitIOController,
+} from 'sdk/module/permission';
+import { jobScheduler } from './framework/utils/jobSchedule';
+import { UserConfigService } from './module/config';
 
 const LOG_TAG = 'SDK';
 const AM = AccountManager;
@@ -54,6 +58,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
+    public permissionService: PermissionService,
   ) {}
 
   async init(config: ISdkConfig) {
@@ -79,7 +84,9 @@ class Sdk {
     );
 
     if (!loginResp || !loginResp.success) {
-      window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      if (process.env.NODE_ENV !== 'test') {
+        window.indexedDB && window.indexedDB.deleteDatabase('Glip');
+      }
     }
     this._subscribeNotification();
     this._initDataAnalysis();
@@ -100,7 +107,10 @@ class Sdk {
       dbAdapter: dbConfig.adapter,
     });
     Api.init(apiConfig, this.networkManager);
-    await this.daoManager.initDatabase();
+    await this.daoManager.initDatabase(this.clearAllData);
+
+    this.permissionService.injectControllers(new LaunchDarklyController());
+    this.permissionService.injectControllers(new SplitIOController());
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
@@ -241,6 +251,16 @@ class Sdk {
   private _resetDataAnalysis() {
     dataAnalysis.reset();
   }
+
+  clearAllData = async () => {
+    await this.daoManager.deleteDatabase();
+    // remove relevant config
+    if (AccountGlobalConfig.getUserDictionary()) {
+      // TODO FIJI-4396
+      this.syncService.userConfig.clearSyncConfigsForDBUpgrade();
+      jobScheduler.userConfig.clearFetchDataConfigs();
+    }
+  };
 }
 
 export default Sdk;

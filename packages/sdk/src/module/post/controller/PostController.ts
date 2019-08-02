@@ -82,6 +82,7 @@ class PostController {
         this.getPostActionController(),
         this._getPreInsertController(),
         this.getPostDataController(),
+        this._groupService,
       );
     }
     return this._sendController;

@@ -6,18 +6,14 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import {
-  observable, computed, action, reaction,
+ observable, computed, action, reaction
 } from 'mobx';
 import { PersonService } from 'sdk/module/person';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PersonModel from '@/store/models/Person';
-import {
-  Person,
-  PHONE_NUMBER_TYPE,
-  PhoneNumberModel,
-} from 'sdk/module/person/entity';
+import { Person, PhoneNumberModel } from 'sdk/module/person/entity';
 import { v4 } from 'uuid';
 import {
   CALL_WINDOW_STATUS,
@@ -41,8 +37,6 @@ import {
 } from 'sdk/module/telephony/entity';
 import CallModel from '@/store/models/Call';
 
-const some = require('lodash/some');
-
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
 class TelephonyStore {
@@ -64,16 +58,10 @@ class TelephonyStore {
   uid?: number;
 
   @observable
-  phoneNumber?: string;
-
-  @observable
   isContactMatched: boolean = false;
 
   @observable
-  id: number = 0;
-
-  @observable
-  callerName?: string;
+  id: number | undefined = undefined;
 
   // TODO: move out of telephony store when minization won't destroy the telephony dialog
   @observable
@@ -156,6 +144,9 @@ class TelephonyStore {
   @observable
   enteredDialer: boolean = false;
 
+  @observable
+  isExt: boolean = false;
+
   constructor() {
     type FSM = '_callWindowFSM';
     type FSMProps = 'callWindowState';
@@ -202,15 +193,6 @@ class TelephonyStore {
         }
       },
     );
-
-    reaction(
-      () => this.call && this.callState,
-      callState => {
-        if (callState === CALL_STATE.DISCONNECTED) {
-          this.end();
-        }
-      },
-    );
   }
 
   @computed
@@ -232,25 +214,12 @@ class TelephonyStore {
       : this.callerName;
   }
 
-  @computed
-  get isExt() {
-    if (this.person) {
-      return some(this.person.phoneNumbers, {
-        type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
-        phoneNumber: this.phoneNumber,
-      });
-    }
-    return false;
-  }
-
   private _matchContactByPhoneNumber = async (phone: string) => {
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
 
-    return await personService.matchContactByPhoneNumber(
-      phone,
-    );
+    return await personService.matchContactByPhoneNumber(phone);
   };
 
   private get _localCallWindowStatus() {
@@ -360,19 +329,23 @@ class TelephonyStore {
         this._history.delete(DIALING);
         break;
       default:
-        // this._history.delete(DIALING);
         break;
     }
 
     this.resetReply();
+    this.backIncoming();
     this.quitKeypad();
     this._clearEnteredKeys();
     this._clearForwardString();
-    this.callerName = undefined;
-    this.phoneNumber = undefined;
+
     this.isContactMatched = false;
     this.hasManualSelected = false;
     this._history.delete(CALL_DIRECTION.INBOUND);
+
+    // for TelephonyNotificationManger can get call disconnected state.
+    Promise.resolve().then(() => {
+      this.id = undefined;
+    });
   };
 
   @action
@@ -530,7 +503,8 @@ class TelephonyStore {
 
   @computed
   get call(): CallModel {
-    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, this.id);
+    const id = this.id || NaN;
+    return getEntity<Call, CallModel>(ENTITY_NAME.CALL, id);
   }
 
   @computed
@@ -559,6 +533,11 @@ class TelephonyStore {
   }
 
   @computed
+  get callConnectingTime(): number {
+    return this.call.connectingTime;
+  }
+
+  @computed
   get isInbound(): boolean {
     return this.call.direction === CALL_DIRECTION.INBOUND;
   }
@@ -569,15 +548,17 @@ class TelephonyStore {
   }
 
   @computed
+  get activeCallDirection() {
+    return this.call && this.call.direction;
+  }
+
+  @computed
   get callDisconnected(): boolean {
     return this.callState === CALL_STATE.DISCONNECTED;
   }
 
   @computed
   get callId() {
-    if (this.callDisconnected) {
-      return undefined;
-    }
     return this.call.callId;
   }
 
@@ -623,6 +604,17 @@ class TelephonyStore {
       this.hasActiveInBoundCall ||
       this.isIncomingCall
     );
+  }
+
+  @computed
+  get callerName() {
+    return this.call.fromName;
+  }
+
+  @computed
+  get phoneNumber() {
+    const phoneNumber = this.isInbound ? this.call.fromNum : this.call.toNum;
+    return phoneNumber !== ANONYMOUS ? phoneNumber : '';
   }
 
   @action

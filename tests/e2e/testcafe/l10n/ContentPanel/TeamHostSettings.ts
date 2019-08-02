@@ -7,19 +7,20 @@ import { IGroup } from "../../v2/models";
 import { v4 as uuid } from 'uuid';
 
 fixture('ContentPanel/TeamHostSettings')
-.beforeEach(setupCase(BrandTire.RCOFFICE))
+.beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
 .afterEach(teardownCase());
-test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages', 'TeamSettings', 'TeamHostSettings', 'V1.4', 'Hanny.han']),async (t) => {
+test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages', 'TeamSettings', 'TeamHostSettings', 'V1.4', 'Hanny.Han']),async (t) => {
   const users=h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
+  const guestUser = h(t).rcData.guestCompany.users[0];
   const app=new AppRoot(t);
 
   let team = <IGroup>{
     name: `publicTeamWithMe${uuid()}`,
     type: "Team",
     owner: loginUser,
-    members: [loginUser, otherUser]
+    members: [loginUser, otherUser, guestUser]
   }
 
   await h(t).withLog(`Given I own a team: "${team.name}"`, async() => {
@@ -37,27 +38,32 @@ test(formalName('Check the MembersSettings page',['P2', 'ContentPanel','Messages
     await conversationPage.waitUntilPostsBeLoaded;
   });
 
+  await h(t).withLog('And close the right rail', async () => {
+    app.homePage.messageTab.rightRail.fold();
+  }, true);
+
   await h(t).withLog('And I click members button', async () => {
     await t.click(conversationPage.memberCountIcon);
   });
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamProfile'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamProfile'});
 
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog('When I hover settings button', async () => {
     await t.hover(profileDialog.settingButton);
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamHostSettings'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamHostSettings'});
 
   await h(t).withLog('When I click more button', async () => {
     await t.click(profileDialog.moreIcon);
+    await t.hover(profileDialog.privateIcon);
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamMore'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_TeamMore'});
 
   const AddTeamMembers = app.homePage.addTeamMemberDialog;
   await h(t).withLog('When I click more button again and click add team members button', async () => {
     await t.click(profileDialog.moreIcon);
     await t.click(profileDialog.addMembersIcon);
-    await await t.expect(AddTeamMembers.addButton.exists).ok();
+    // await await t.expect(AddTeamMembers.addButton.exists).ok();
   })
-  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_AddTeamMembers'})
+  await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_AddTeamMembers'});
 });

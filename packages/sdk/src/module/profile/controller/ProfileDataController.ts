@@ -19,10 +19,15 @@ import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE, ChangeModel } from '../../sync/types';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { Nullable } from 'sdk/types';
+import { IEntityCacheController } from 'sdk/framework/controller/interface/IEntityCacheController';
+import { SettingService, SettingEntityIds } from 'sdk/module/setting';
+import { DESKTOP_MESSAGE_NOTIFICATION_OPTIONS } from '../constants';
+import GroupService from 'sdk/module/group';
 
 class ProfileDataController {
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
+    public entityCacheController: IEntityCacheController<Profile>,
   ) {}
 
   async profileHandleData(
@@ -46,6 +51,16 @@ class ProfileDataController {
       ServiceConfig.ACCOUNT_SERVICE,
     ).userConfig;
     return userConfig.getCurrentUserProfileId();
+  }
+
+  async getLocalProfile(): Promise<Nullable<Profile>> {
+    const profileId = this.getCurrentProfileId();
+    if (!profileId) {
+      return null;
+    }
+
+    const profile = await this.entityCacheController.get(profileId);
+    return profile;
   }
 
   async getProfile(): Promise<Nullable<Profile>> {
@@ -80,6 +95,54 @@ class ProfileDataController {
     const profile = await this.getProfile();
     return (profile && profile.favorite_group_ids) || [];
   }
+  async _isTeam(conversationId: number) {
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+    const group = await groupService.getById(conversationId);
+    return !!(group && group.is_team);
+  }
+  async _getGlobalSetting(conversationId: number) {
+    const settingService = ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    );
+    const model = await settingService.getById<
+      DESKTOP_MESSAGE_NOTIFICATION_OPTIONS
+    >(SettingEntityIds.Notification_NewMessages);
+    const value = model && model.value;
+    let isMute;
+    switch (value) {
+      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.ALL_MESSAGE:
+        isMute = false;
+        break;
+      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.OFF:
+        isMute = true;
+        break;
+      case DESKTOP_MESSAGE_NOTIFICATION_OPTIONS.DM_AND_MENTION:
+      default:
+        isMute = await this._isTeam(conversationId);
+        break;
+    }
+    return isMute;
+  }
+
+  async isNotificationMute(conversationId: number) {
+    const profile = await this.getProfile();
+    const notification =
+      profile &&
+      profile.conversation_level_notifications &&
+      profile.conversation_level_notifications[conversationId];
+    if (!notification) {
+      return this._getGlobalSetting(conversationId);
+    }
+    if (notification.muted) {
+      return true;
+    }
+    if (notification.desktop_notifications === undefined) {
+      return this._getGlobalSetting(conversationId);
+    }
+    return !notification.desktop_notifications;
+  }
 
   private async _handleProfile(
     profile: Raw<Profile>,
@@ -88,7 +151,7 @@ class ProfileDataController {
   ): Promise<Profile | null> {
     try {
       if (profile) {
-        const local = await this.getProfile();
+        const local = await this.getLocalProfile();
         if (local && local.modified_at >= profile.modified_at) {
           return local;
         }

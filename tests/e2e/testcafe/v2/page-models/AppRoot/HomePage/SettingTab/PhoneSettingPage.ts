@@ -1,18 +1,17 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as assert from 'assert';
 
-
 export class PhoneSettingPage extends BaseWebComponent {
   get self() {
     return this.getSelectorByAutomationId('settingPage-phone');
-  };
+  }
 
   get header() {
     return this.getSelectorByAutomationId('settingPageHeader-phone');
   }
 
   get headerTitle() {
-    return this.getSelectorByAutomationId("conversation-page-header-title");
+    return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
   get generalSection() {
@@ -20,31 +19,47 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get generalLabel() {
-    return this.getSelectorByAutomationId('settingSectionTitle-phoneGeneral', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingSectionTitle-phoneGeneral',
+      this.generalSection,
+    );
   }
 
-  get defaultAppLabel(){
-    return this.getSelectorByAutomationId('settingItemLabel-defaultPhoneApp', this.generalSection);
+  get defaultAppLabel() {
+    return this.getSelectorByAutomationId(
+      'settingItemLabel-defaultPhoneApp',
+      this.generalSection,
+    );
   }
 
-  get defaultAppDescription(){
-    return this.getSelectorByAutomationId('settingItemDescription-defaultPhoneApp', this.generalSection);
+  get defaultAppDescription() {
+    return this.getSelectorByAutomationId(
+      'settingItemDescription-defaultPhoneApp',
+      this.generalSection,
+    );
   }
 
   get defaultAppSelectBox() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-defaultPhoneApp', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemSelectBox-defaultPhoneApp',
+      this.generalSection,
+    );
   }
 
   get phoneAppDropDownItems() {
     return this.getSelectorByAutomationClass('settingItemSelectBoxItem');
   }
 
-  get ringCentralAppItem(){
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-defaultPhoneApp-glip');
+  get ringCentralAppItem() {
+    return this.getSelectorByAutomationId(
+      'settingItemSelectBoxItem-defaultPhoneApp-glip',
+    );
   }
 
-  get ringCentralPhoneItem(){
-    return this.getSelectorByAutomationId('settingItemSelectBoxItem-defaultPhoneApp-ringcentral');
+  get ringCentralPhoneItem() {
+    return this.getSelectorByAutomationId(
+      'settingItemSelectBoxItem-defaultPhoneApp-ringcentral',
+    );
   }
 
   get changeRCPhoneDialog() {
@@ -56,15 +71,21 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get callerIDLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-callerID', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemLabel-callerID',
+      this.generalSection,
+    );
   }
 
   get callerIDDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-callerID', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemDescription-callerID',
+      this.generalSection,
+    );
   }
 
   get callerIDDropDown() {
-    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection);
+    return this.getSelectorByAutomationId('settingItemSelectBox-callerID', this.generalSection,);
   }
 
   get callerIDDropDownItems() {
@@ -76,27 +97,45 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   get regionLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemLabel-regionSetting',
+      this.generalSection,
+    );
   }
 
   get regionDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemDescription-regionSetting',
+      this.generalSection,
+    );
   }
 
   get regionUpdateButton() {
-    return this.getSelectorByAutomationId('settingItemButton-regionSetting', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemButton-regionSetting',
+      this.generalSection,
+    );
   }
 
   get extensionSettingsLabel() {
-    return this.getSelectorByAutomationId('settingItemLabel-extensions', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemLabel-extensions',
+      this.generalSection,
+    );
   }
 
   get extensionSettingsDescription() {
-    return this.getSelectorByAutomationId('settingItemDescription-extensions', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemDescription-extensions',
+      this.generalSection,
+    );
   }
 
   get extensionUpdateButton() {
-    return this.getSelectorByAutomationId('settingItemButton-extensions', this.generalSection);
+    return this.getSelectorByAutomationId(
+      'settingItemButton-extensions',
+      this.generalSection,
+    );
   }
 
   async existsGeneralLabel(text: string) {
@@ -124,9 +163,8 @@ export class PhoneSettingPage extends BaseWebComponent {
     await this.t.click(this.ringCentralPhoneItem);
   }
 
-
   async existRingCentralApp() {
-   await this.t.expect(this.ringCentralAppItem.exists).ok();
+    await this.t.expect(this.ringCentralAppItem.exists).ok();
   }
 
   async existRingCentralPhone() {
@@ -167,7 +205,7 @@ export class PhoneSettingPage extends BaseWebComponent {
     const count = await this.callerIDDropDownItems.count;
     for (let i = 0; i < count; i++) {
       const text = await this.callerIDDropDownItems.nth(i).innerText;
-      const numberOnly = text.replace(/[^\d]/g, "");
+      const numberOnly = text.replace(/[^\d]/g, '');
       const reg = new RegExp(`${numberOnly}$`);
       let result = false;
       for (const i in callerIds) {
@@ -178,7 +216,6 @@ export class PhoneSettingPage extends BaseWebComponent {
       assert.ok(result, `${text} does not apply ${callerIds}`);
     }
   }
-
 
   async selectCallerID(text: string) {
     await this.t.click(this.callerIDDropDownItems.withText(text));
@@ -196,12 +233,11 @@ export class PhoneSettingPage extends BaseWebComponent {
     let callerIDList = [];
     const count = await this.callerIDDropDownItems.count;
     for (let i = 0; i < count; i++) {
-      let item = await this.callerIDDropDownItems.nth(i).innerText
+      let item = await this.callerIDDropDownItems.nth(i).innerText;
       callerIDList.push(item);
     }
     return callerIDList;
   }
-
 
   // Extension setting
   async existExtensionSettingsLabel(text: string) {
@@ -209,7 +245,9 @@ export class PhoneSettingPage extends BaseWebComponent {
   }
 
   async existExtensionSettingsDescription(text: string) {
-    await this.t.expect(this.extensionSettingsDescription.withText(text).exists).ok();
+    await this.t
+      .expect(this.extensionSettingsDescription.withText(text).exists)
+      .ok();
   }
 
   async existExtensionUpdateButton() {
@@ -231,7 +269,9 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get statement() {
-    return this.getSelectorByAutomationId('dialog-contentDescription-regionSetting');
+    return this.getSelectorByAutomationId(
+      'dialog-contentDescription-regionSetting',
+    );
   }
 
   get countryDropDown() {
@@ -247,7 +287,9 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   get areaCode() {
-    return this.getSelectorByAutomationId('dialog-regionSetting-areaCodeTextField');
+    return this.getSelectorByAutomationId(
+      'dialog-regionSetting-areaCodeTextField',
+    );
   }
 
   get areaCodeInput() {
@@ -303,7 +345,10 @@ export class UpdateRegionDialog extends BaseWebComponent {
   }
 
   async clearInputByKey() {
-    await this.t.click(this.areaCodeInput).selectText(this.areaCodeInput).pressKey('delete');
+    await this.t
+      .click(this.areaCodeInput)
+      .selectText(this.areaCodeInput)
+      .pressKey('delete');
   }
 
   async showAreaCodeWithText(text: string) {
@@ -350,54 +395,52 @@ export class UpdateRegionDialog extends BaseWebComponent {
     await this.t.expect(this.cancelButton.withText(text).exists).ok();
   }
 }
-  export class changeRCPhoneDialog extends BaseWebComponent {
-    get self() {
-      return this.getSelectorByAutomationId('defaultPhoneAppConfirmDialog');
-    }
-
-    get exists() {
-      return this.title.exists;
-    }
-
-    get title() {
-      return this.getSelectorByAutomationId('DialogTitle');
-    }
-
-    get statement() {
-      return this.getSelectorByAutomationId('DialogContent');
-    }
-
-    get okButton() {
-      return this.getSelectorByAutomationId('defaultPhoneAppOkButton');
-    }
-
-     get cancelButton() {
-    return this.getSelectorByAutomationId('defaultPhoneAppCancelButton');
-    }
-
-    async titleShouldBe(text: string) {
-      await this.t.expect(this.title.withText(text).exists).ok();
-    }
-
-    async statementShouldBe(text: string) {
-      await this.t.expect(this.statement.withText(text).exists).ok();
-    }
-
-    async okButtonShouldBeText(text: string) {
-      await this.t.expect(this.okButton.withText(text).exists).ok();
-    }
-
-    async cancelButtonShouldBeText(text: string) {
-      await this.t.expect(this.cancelButton.withText(text).exists).ok();
-    }
-
-    async clickCancelButton() {
-      await this.t.click(this.cancelButton);
-    }
-
-    async clickOKButton() {
-      await this.t.click(this.okButton);
-    }
-
+export class changeRCPhoneDialog extends BaseWebComponent {
+  get self() {
+    return this.getSelectorByAutomationId('defaultPhoneAppConfirmDialog');
   }
 
+  get exists() {
+    return this.title.exists;
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId('DialogTitle');
+  }
+
+  get statement() {
+    return this.getSelectorByAutomationId('DialogContent');
+  }
+
+  get okButton() {
+    return this.getSelectorByAutomationId('defaultPhoneAppOkButton');
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId('defaultPhoneAppCancelButton');
+  }
+
+  async titleShouldBe(text: string) {
+    await this.t.expect(this.title.withText(text).exists).ok();
+  }
+
+  async statementShouldBe(text: string) {
+    await this.t.expect(this.statement.withText(text).exists).ok();
+  }
+
+  async okButtonShouldBeText(text: string) {
+    await this.t.expect(this.okButton.withText(text).exists).ok();
+  }
+
+  async cancelButtonShouldBeText(text: string) {
+    await this.t.expect(this.cancelButton.withText(text).exists).ok();
+  }
+
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickOKButton() {
+    await this.t.click(this.okButton);
+  }
+}

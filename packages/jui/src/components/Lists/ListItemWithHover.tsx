@@ -18,7 +18,7 @@ type States = {
 
 const StyledListItem = styled(JuiListItem)`
   && {
-    cursor: auto;
+    cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
   }
 `;
 

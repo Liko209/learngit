@@ -16,7 +16,7 @@ import {
   MAKE_CALL_ERROR_CODE,
   CALL_ACTION_ERROR_CODE,
 } from 'sdk/module/telephony/types';
-import { RC_INFO, notificationCenter } from 'sdk/service';
+import { RC_INFO, notificationCenter, SERVICE } from 'sdk/service';
 import { PersonService } from 'sdk/module/person';
 import { GlobalConfigService } from 'sdk/module/config';
 import { PhoneNumberModel } from 'sdk/module/person/entity';
@@ -25,9 +25,7 @@ import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { ANONYMOUS } from '../interface/constant';
-import {
-  reaction, IReactionDisposer, runInAction, action,
-} from 'mobx';
+import { reaction, IReactionDisposer, runInAction, action } from 'mobx';
 import { RCInfoService } from 'sdk/module/rcInfo';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -46,9 +44,11 @@ import { SettingEntityIds, UserSettingEntity } from 'sdk/module/setting';
 import keypadBeeps from './sounds/sounds.json';
 import { sleep } from '../helpers';
 import SettingModel from '@/store/models/UserSetting';
-import { SETTING_ITEM__PHONE_CALLER_ID } from '../TelephonySettingManager/constant';
 import { IPhoneNumberRecord } from 'sdk/api';
 import { showRCDownloadDialog } from './utils';
+import { CALL_STATE } from 'sdk/module/telephony/entity';
+import { PHONE_SETTING_ITEM } from '../TelephonySettingManager/constant';
+import config from '@/config';
 
 const ringTone = require('./sounds/Ringtone.mp3');
 
@@ -70,11 +70,13 @@ class TelephonyService {
   private _phoneNumberService = ServiceLoader.getInstance<PhoneNumberService>(
     ServiceConfig.PHONE_NUMBER_SERVICE,
   );
-  private _callId: number;
+  private _callEntityId: number;
   private _hasActiveOutBoundCallDisposer: IReactionDisposer;
   private _callerPhoneNumberDisposer: IReactionDisposer;
   private _incomingCallDisposer: IReactionDisposer;
   private _defaultCallerPhoneNumberDisposer: IReactionDisposer;
+  private _isExtDisposer: IReactionDisposer;
+  private _callStateDisposer: IReactionDisposer;
   private _ringtone: HTMLAudioElement | null;
   private _keypadBeepPool: HTMLMediaElement[] | null;
   private _currentSoundTrackForBeep: number | null;
@@ -92,7 +94,7 @@ class TelephonyService {
     // need factor in new module design
     // if has incoming call voicemail should be pause
     storeManager.getGlobalStore().set(GLOBAL_KEYS.INCOMING_CALL, true);
-    this._callId = id;
+    this._callEntityId = id;
 
     this._telephonyStore.directCall();
   };
@@ -103,15 +105,9 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.id = id;
-    const { fromNum, callId, fromName } = this._telephonyStore.call;
-    this._callId = id;
+    const { fromNum, callId } = this._telephonyStore.call;
+    this._callEntityId = id;
 
-    this._telephonyStore.callerName = fromName;
-    const phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
-    if (phoneNumber !== this._telephonyStore.phoneNumber) {
-      this._telephonyStore.isContactMatched = false;
-      this._telephonyStore.phoneNumber = phoneNumber;
-    }
     this._telephonyStore.incomingCall();
     // need factor in new module design
     // if has incoming call voicemail should be pause
@@ -169,7 +165,7 @@ class TelephonyService {
       }
     }
   };
-  /* eslint-disable */
+
   private _pauseRingtone = async () => {
     if (!this._ringtone) {
       return;
@@ -186,7 +182,7 @@ class TelephonyService {
      * Be careful that the server might not respond for the request, so since we design
      * the store as a singleton then we need to restore every single state for the next call.
      */
-    delete this._callId;
+    delete this._callEntityId;
   }
 
   private _setDialerOpenedCount = () => {
@@ -243,6 +239,17 @@ class TelephonyService {
       this._getCallerPhoneNumberList,
     );
 
+    notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
+      const globalStore = storeManager.getGlobalStore();
+      this._serverTelephonyService.setDataCollectionInfoConfig({
+        isProduction: config.isProductionAccount(),
+        userInfo:{
+          userId: globalStore.get(GLOBAL_KEYS.CURRENT_USER_ID),
+          companyId: globalStore.get(GLOBAL_KEYS.CURRENT_COMPANY_ID),
+        }
+      })
+    });
+
     this._serverTelephonyService.setTelephonyDelegate({
       onMadeOutgoingCall: this._onMadeOutgoingCall,
       onReceiveIncomingCall: this._onReceiveIncomingCall,
@@ -276,7 +283,7 @@ class TelephonyService {
         // prettier-ignore
         const defaultCaller = getEntity<UserSettingEntity, SettingModel<IPhoneNumberRecord>>(
           ENTITY_NAME.USER_SETTING,
-          SETTING_ITEM__PHONE_CALLER_ID,
+          PHONE_SETTING_ITEM.PHONE_CALLER_ID,
         ).value;
         return {
           defaultPhoneNumber: defaultCaller && defaultCaller.phoneNumber,
@@ -320,6 +327,23 @@ class TelephonyService {
       },
     );
 
+    this._isExtDisposer = reaction(
+      () => this._telephonyStore.phoneNumber,
+      async phoneNumber => {
+        this._telephonyStore.isExt = await this.isShortNumber(phoneNumber);
+      },
+    );
+
+    this._callStateDisposer = reaction(
+      () => this._telephonyStore.call && this._telephonyStore.callState,
+      callState => {
+        if (callState === CALL_STATE.DISCONNECTED) {
+          this._telephonyStore.end();
+          this._resetCallState();
+        }
+      },
+    );
+
     // triggering a change of caller id list
     this._getCallerPhoneNumberList();
   };
@@ -358,7 +382,7 @@ class TelephonyService {
           phone.phoneNumber === this._telephonyStore.chosenCallerPhoneNumber,
       );
 
-    const { isValid, parsed } = await this.isValidNumber(toNumber);
+    const { isValid } = await this.isValidNumber(toNumber);
     if (!isValid) {
       ToastCallError.toastInvalidNumber();
       return;
@@ -372,7 +396,7 @@ class TelephonyService {
 
     const shouldMakeRcPhoneCall = !(await this._isJupiterDefaultApp());
     if (shouldMakeRcPhoneCall) {
-      return this.makeRCPhoneCall(parsed as string);
+      return this.makeRCPhoneCall(toNumber);
     }
     callback && callback();
 
@@ -385,10 +409,12 @@ class TelephonyService {
     }
 
     mainLogger.info(
-      `${TelephonyService.TAG}Make call with fromNumber: ${fromNumber}， and toNumber: ${parsed}`,
+      `${
+        TelephonyService.TAG
+      }Make call with fromNumber: ${fromNumber}， and toNumber: ${toNumber}`,
     );
     const rv = await this._serverTelephonyService.makeCall(
-      parsed as string,
+      toNumber,
       fromNumber,
     );
 
@@ -428,9 +454,10 @@ class TelephonyService {
         );
         return false; // For other errors, need not show call UI
       }
+      default:
+        break;
     }
 
-    this._telephonyStore.phoneNumber = parsed as string;
     return true;
   };
 
@@ -441,39 +468,48 @@ class TelephonyService {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
       );
-      return Promise.resolve(false);
+      // when multiple call don't hangup
+      return Promise.resolve(true);
     }
     return this.makeCall(toNumber);
   };
 
   hangUp = () => {
-    if (this._callId) {
-      mainLogger.info(`${TelephonyService.TAG}Hang up call id=${this._callId}`);
-      this._serverTelephonyService.hangUp(this._callId);
+    if (this._callEntityId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}Hang up call id=${this._callEntityId}`,
+      );
+      this._serverTelephonyService.hangUp(this._callEntityId);
       this._resetCallState();
     }
   };
 
   answer = () => {
-    if (this._callId) {
-      mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callId}`);
-      this._serverTelephonyService.answer(this._callId);
+    if (this._callEntityId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}answer call id=${this._callEntityId}`,
+      );
+      this._serverTelephonyService.answer(this._callEntityId);
     }
   };
 
   sendToVoiceMail = () => {
-    if (this._callId) {
+    if (this._callEntityId) {
       mainLogger.info(
-        `${TelephonyService.TAG}send to voicemail call id=${this._callId}`,
+        `${TelephonyService.TAG}send to voicemail call id=${
+          this._callEntityId
+        }`,
       );
-      this._serverTelephonyService.sendToVoiceMail(this._callId);
+      this._serverTelephonyService.sendToVoiceMail(this._callEntityId);
     }
   };
 
   ignore = () => {
-    if (this._callId) {
-      mainLogger.info(`${TelephonyService.TAG}ignore call id=${this._callId}`);
-      this._serverTelephonyService.ignore(this._callId);
+    if (this._callEntityId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}ignore call id=${this._callEntityId}`,
+      );
+      this._serverTelephonyService.ignore(this._callEntityId);
     }
   };
 
@@ -532,14 +568,14 @@ class TelephonyService {
   };
 
   muteOrUnmute = () => {
-    if (this._callId) {
+    if (this._callEntityId) {
       const { isMute } = this._telephonyStore;
       isMute
-        ? this._serverTelephonyService.unmute(this._callId)
-        : this._serverTelephonyService.mute(this._callId);
+        ? this._serverTelephonyService.unmute(this._callEntityId)
+        : this._serverTelephonyService.mute(this._callEntityId);
       mainLogger.info(
-        `${TelephonyService.TAG}${isMute ? 'unmute' : 'mute'} call id=${
-          this._callId
+        `${TelephonyService.TAG}${isMute ? 'unmute' : 'mute'} call entity id=${
+          this._callEntityId
         }`,
       );
     }
@@ -550,9 +586,7 @@ class TelephonyService {
       ServiceConfig.PERSON_SERVICE,
     );
 
-    return await personService.matchContactByPhoneNumber(
-      phone,
-    );
+    return await personService.matchContactByPhoneNumber(phone);
   };
 
   getAllCallCount = () => {
@@ -563,9 +597,11 @@ class TelephonyService {
   };
 
   holdOrUnhold = async () => {
-    if (this._telephonyStore.holdDisabled || !this._callId) {
+    if (this._telephonyStore.holdDisabled || !this._callEntityId) {
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
+          this._telephonyStore.holdDisabled
+        }`,
       );
       return;
     }
@@ -574,11 +610,15 @@ class TelephonyService {
     let isHeld: boolean = this._telephonyStore.held;
 
     if (isHeld) {
-      mainLogger.info(`${TelephonyService.TAG}unhold call id=${this._callId}`);
-      $fetch = this._serverTelephonyService.unhold(this._callId);
+      mainLogger.info(
+        `${TelephonyService.TAG}unhold call entity id=${this._callEntityId}`,
+      );
+      $fetch = this._serverTelephonyService.unhold(this._callEntityId);
     } else {
-      mainLogger.info(`${TelephonyService.TAG}hold call id=${this._callId}`);
-      $fetch = this._serverTelephonyService.hold(this._callId);
+      mainLogger.info(
+        `${TelephonyService.TAG}hold call entity id=${this._callEntityId}`,
+      );
+      $fetch = this._serverTelephonyService.hold(this._callEntityId);
     }
 
     try {
@@ -592,7 +632,7 @@ class TelephonyService {
   };
 
   startOrStopRecording = async () => {
-    if (!this._callId || this._telephonyStore.recordDisabled) {
+    if (!this._callEntityId || this._telephonyStore.recordDisabled) {
       return;
     }
 
@@ -601,7 +641,7 @@ class TelephonyService {
 
     if (isRecording) {
       this._telephonyStore.isStopRecording = true;
-      $fetch = this._serverTelephonyService.stopRecord(this._callId);
+      $fetch = this._serverTelephonyService.stopRecord(this._callEntityId);
     } else {
       if (
         !(await this._rcInfoService.isRCFeaturePermissionEnabled(
@@ -611,7 +651,7 @@ class TelephonyService {
         ToastCallError.toastOnDemandRecording();
         return;
       }
-      $fetch = this._serverTelephonyService.startRecord(this._callId);
+      $fetch = this._serverTelephonyService.startRecord(this._callEntityId);
     }
 
     try {
@@ -638,7 +678,7 @@ class TelephonyService {
 
   dtmf = (digits: string) => {
     this._telephonyStore.inputKey(digits);
-    return this._serverTelephonyService.dtmf(this._callId, digits);
+    return this._serverTelephonyService.dtmf(this._callEntityId, digits);
   };
 
   callComponent = () => import('../container/Call');
@@ -660,7 +700,9 @@ class TelephonyService {
     }
     this._telephonyStore.hasManualSelected = true;
     mainLogger.info(
-      `${TelephonyService.TAG} set caller phone number: ${this._telephonyStore.chosenCallerPhoneNumber}`,
+      `${TelephonyService.TAG} set caller phone number: ${
+        this._telephonyStore.chosenCallerPhoneNumber
+      }`,
     );
   };
 
@@ -721,15 +763,19 @@ class TelephonyService {
     this._incomingCallDisposer && this._incomingCallDisposer();
     this._defaultCallerPhoneNumberDisposer &&
       this._defaultCallerPhoneNumberDisposer();
+    this._isExtDisposer && this._isExtDisposer();
+    this._callStateDisposer && this._callStateDisposer();
 
     this._pauseRingtone();
     this._telephonyStore.hasManualSelected = false;
     delete this._telephonyStore;
     delete this._serverTelephonyService;
-    delete this._callId;
+    delete this._callEntityId;
     delete this._hasActiveOutBoundCallDisposer;
     delete this._callerPhoneNumberDisposer;
     delete this._incomingCallDisposer;
+    delete this._isExtDisposer;
+    delete this._callStateDisposer;
     delete this._ringtone;
     delete this._keypadBeepPool;
   };
@@ -776,17 +822,20 @@ class TelephonyService {
   }
 
   startReply = () => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.startReply(this._callId);
+    return this._serverTelephonyService.startReply(this._callEntityId);
   };
 
   replyWithMessage = (message: string) => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.replyWithMessage(this._callId, message);
+    return this._serverTelephonyService.replyWithMessage(
+      this._callEntityId,
+      message,
+    );
   };
 
   replyWithPattern = (
@@ -794,15 +843,21 @@ class TelephonyService {
     time?: number,
     timeUnit?: RTC_REPLY_MSG_TIME_UNIT,
   ) => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
     return this._serverTelephonyService.replyWithPattern(
-      this._callId,
+      this._callEntityId,
       pattern,
       time,
       timeUnit,
     );
+  };
+
+  isShortNumber = async (
+    toNumber: string = this._telephonyStore.inputString,
+  ) => {
+    return this._phoneNumberService.isShortNumber(toNumber);
   };
 
   isValidNumber = async (
@@ -828,7 +883,7 @@ class TelephonyService {
   };
 
   park = () => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
 
@@ -838,7 +893,7 @@ class TelephonyService {
     }
 
     return this._serverTelephonyService
-      .park(this._callId)
+      .park(this._callEntityId)
       .then((parkExtension: string) => {
         const message = `${i18next.t(
           'telephony.prompt.ParkOk',
@@ -863,17 +918,20 @@ class TelephonyService {
   };
 
   forward = (phoneNumber: string) => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.forward(this._callId, phoneNumber);
+    return this._serverTelephonyService.forward(
+      this._callEntityId,
+      phoneNumber,
+    );
   };
 
   flip = (flipNumber: number) => {
-    if (!this._callId) {
+    if (!this._callEntityId) {
       return;
     }
-    return this._serverTelephonyService.flip(this._callId, flipNumber);
+    return this._serverTelephonyService.flip(this._callEntityId, flipNumber);
   };
 
   getForwardPermission = () => {

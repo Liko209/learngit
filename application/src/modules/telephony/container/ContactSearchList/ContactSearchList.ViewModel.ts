@@ -133,7 +133,7 @@ export class ContactSearchListViewModel
 
   @action
   onEnter = () => {
-    if (!this.dialerFocused) {
+    if (!this.dialerInputFocused) {
       return;
     }
     const res = this.searchResult[this.focusIndex];
@@ -181,11 +181,11 @@ export class ContactSearchListViewModel
         this.isSearching = false;
         const res = this.shouldDisplayPhoneNumberItem
           ? [
-            {
-              id: CONTACT_SEARCH_PHONE_NUMBER_ID,
-              directDial: parsedPhone.parsed,
-            } as SearchItem,
-          ]
+              {
+                id: CONTACT_SEARCH_PHONE_NUMBER_ID,
+                directDial: parsedPhone.toNumber,
+              } as SearchItem,
+            ]
           : [];
         this.searchResult = currentSearchResult
           ? [...res, ...currentSearchResult.phoneContacts]
@@ -257,7 +257,7 @@ export class ContactSearchListViewModel
   }
 
   @computed
-  get dialerFocused() {
-    return this._telephonyStore.dialerFocused;
+  get dialerInputFocused() {
+    return this._telephonyStore.dialerInputFocused;
   }
 }

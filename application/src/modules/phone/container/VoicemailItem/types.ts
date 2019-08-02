@@ -5,7 +5,7 @@
  */
 import { Caller } from 'sdk/module/RCItems/types';
 import { Voicemail } from 'sdk/module/RCItems/voicemail/entity/Voicemail';
-import { JuiAudioMode, JuiAudioStatus } from 'jui/pattern/AudioPlayer';
+import { JuiAudioMode, JuiAudioStatus } from 'jui/components/AudioPlayer';
 import { RCMessage } from 'sdk/module/RCItems';
 import { HoverControllerBaseViewProps } from '../HoverController';
 import { Audio, Checker } from '../../types';
@@ -19,12 +19,13 @@ type VoicemailViewProps = {
   isUnread: boolean;
   canEditBlockNumbers: boolean;
   audio?: Audio;
+  onPlay: () => void;
+  onPaused: () => void;
   onError: () => void;
-  onBeforePlay: () => void;
-  onBeforeAction: (status: JuiAudioStatus) => void;
+  onEnded: () => void;
+  onBeforePlay: () => Promise<boolean> | boolean;
   updateStartTime: (timestamp: number) => void;
-  isAudioActive: boolean | Audio | undefined;
-  shouldPause: boolean;
+  showFullAudioPlayer: boolean;
   createTime: string;
   direction: RCMessage['direction'];
   shouldShowCall: () => Promise<boolean>;

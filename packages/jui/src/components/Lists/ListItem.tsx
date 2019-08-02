@@ -10,7 +10,12 @@ import MuiListItem, {
 import styled from '../../foundation/styled-components';
 import { spacing, width } from '../../foundation/utils';
 
-type JuiListItemProps = MuiListItemProps & {
+// type issue, so add button, https://github.com/mui-org/material-ui/issues/14971
+type MuiListItemPropsFixed = MuiListItemProps & {
+  button?: any;
+};
+
+type JuiListItemProps = MuiListItemPropsFixed & {
   width?: number;
   isInline?: boolean;
   singleLine?: boolean;
@@ -19,10 +24,12 @@ type JuiListItemProps = MuiListItemProps & {
 
 const WrappedListItem = React.memo(
   ({
-    width, isInline, singleLine, disableButton, ...rests
-  }: JuiListItemProps) => (
-    <MuiListItem {...rests} />
-  ),
+    width,
+    isInline,
+    singleLine,
+    disableButton,
+    ...rests
+  }: JuiListItemProps) => <MuiListItem {...rests} />,
 );
 
 const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
@@ -35,9 +42,9 @@ const StyledListItem = styled<JuiListItemProps>(WrappedListItem)`
 `;
 
 const JuiListItemComponent = (props: JuiListItemProps) => (
-    <StyledListItem button={!props.disableButton && true} {...props}>
-      {props.children}
-    </StyledListItem>
+  <StyledListItem button={!props.disableButton && true} {...props}>
+    {props.children}
+  </StyledListItem>
 );
 
 JuiListItemComponent.defaultProps = {

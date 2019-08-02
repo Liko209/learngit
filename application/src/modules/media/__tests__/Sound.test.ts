@@ -5,35 +5,23 @@
  */
 
 import { Sound } from '../Sound';
+import { MediaEventName, MediaEventType } from '@/interface/media';
 
 const soundBaseOpts = {
   id: 'testId',
   url: 'testUrl',
   muted: false,
   volume: 1,
+  loop: false,
+  autoplay: false,
   seek: 0,
 };
 
 describe('Sound', () => {
   beforeEach(() => {
-    Object.defineProperty(HTMLMediaElement.prototype, 'load', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'play', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
-    Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
-      configurable: true,
-      get() {
-        return () => {};
-      },
-    });
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
 
   afterEach(() => {
@@ -58,6 +46,7 @@ describe('Sound', () => {
         expect(node.src.includes(soundBaseOpts.url)).toBeTruthy();
         expect(node.muted).toEqual(soundBaseOpts.muted);
         expect(node.volume).toEqual(soundBaseOpts.volume);
+        expect(node.loop).toEqual(soundBaseOpts.loop);
         expect(node.currentTime).toEqual(soundBaseOpts.seek);
         expect(node.pause).toBeTruthy();
         expect(node.ended).toBeFalsy();
@@ -65,6 +54,7 @@ describe('Sound', () => {
       expect(sound.id).toEqual(soundBaseOpts.id);
       expect(sound.muted).toEqual(soundBaseOpts.muted);
       expect(sound.volume).toEqual(soundBaseOpts.volume);
+      expect(sound.loop).toEqual(soundBaseOpts.loop);
       expect(sound.seek).toEqual(soundBaseOpts.seek);
       expect(sound.pause).toBeTruthy();
       expect(sound.ended).toBeTruthy();
@@ -81,7 +71,7 @@ describe('Sound', () => {
       if (sound.node) {
         expect(sound.node.duration).toEqual(100);
       }
-      expect(mockCanplayFn).toBeCalled();
+      expect(mockCanplayFn).toHaveBeenCalled();
     });
     it('should get current seek when sound set seek', () => {
       const seek = 100;
@@ -92,6 +82,15 @@ describe('Sound', () => {
       );
       expect(sound.seek).toEqual(seek);
       expect(sound.currentTime).toEqual(0);
+    });
+    it('should set autoplay when sound set autoplay', () => {
+      const sound = new Sound(
+        Object.assign({}, soundBaseOpts, {
+          autoplay: true,
+        }),
+      );
+      expect(sound.autoplay).toBeTruthy();
+      sound.node && expect(sound.autoplay).toBeTruthy();
     });
     it('should set sinkId when sound set output device', () => {
       const deviceId = 'testDeviceId';
@@ -117,7 +116,7 @@ describe('Sound', () => {
           outputDevice: deviceId,
         }),
       );
-      expect(mockSinkFn).toBeCalled();
+      expect(mockSinkFn).toHaveBeenCalled();
       expect(sound.sinkId).toEqual(deviceId);
       if (sound.node) {
         expect(sound.node.sinkId).toEqual(deviceId);
@@ -128,7 +127,7 @@ describe('Sound', () => {
   describe('sound play', () => {
     beforeEach(() => {
       jest
-        .spyOn<HTMLAudioElement, any>(
+        .spyOn<HTMLMediaElement, any>(
           HTMLMediaElement.prototype,
           'readyState',
           'get',
@@ -140,21 +139,19 @@ describe('Sound', () => {
       const mockPlayFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'play',
-        'get',
       );
       const sound = new Sound(soundBaseOpts);
       sound.play();
-      expect(mockPlayFn).toBeCalled();
+      expect(mockPlayFn).toHaveBeenCalled();
       sound.play();
       // try play once
-      expect(mockPlayFn).toBeCalledTimes(2);
+      expect(mockPlayFn).toHaveBeenCalledTimes(2);
     });
     it('should set node current time when sound seek not equal zero', () => {
       const seek = 100;
       const mockPlayFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'play',
-        'get',
       );
       const sound = new Sound(
         Object.assign({}, soundBaseOpts, {
@@ -162,7 +159,7 @@ describe('Sound', () => {
         }),
       );
       sound.play();
-      expect(mockPlayFn).toBeCalled();
+      expect(mockPlayFn).toHaveBeenCalled();
       if (sound.node) {
         expect(sound.node.currentTime).toEqual(seek);
 
@@ -176,11 +173,10 @@ describe('Sound', () => {
       const mockPlayFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'play',
-        'get',
       );
       const sound = new Sound(soundBaseOpts);
       sound.play();
-      expect(mockPlayFn).toBeCalled();
+      expect(mockPlayFn).toHaveBeenCalled();
       if (sound.node) {
         sound.node.currentTime = seek;
         sound.play();
@@ -192,29 +188,24 @@ describe('Sound', () => {
   describe('sound pause', () => {
     beforeEach(() => {
       jest
-        .spyOn<HTMLAudioElement, any>(
+        .spyOn<HTMLMediaElement, any>(
           HTMLMediaElement.prototype,
           'readyState',
           'get',
         )
         .mockReturnValue('5');
-      jest.spyOn<HTMLMediaElement, any>(
-        HTMLMediaElement.prototype,
-        'play',
-        'get',
-      );
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
     });
 
     it('should be pause when sound is playing', () => {
       const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'pause',
-        'get',
       );
       const sound = new Sound(soundBaseOpts);
       sound.play();
       sound.pause();
-      expect(pauseMockFn).toBeCalled();
+      expect(pauseMockFn).toHaveBeenCalled();
       expect(sound.paused).toBeTruthy();
       if (sound.node) {
         expect(sound.node.paused).toBeTruthy();
@@ -225,7 +216,6 @@ describe('Sound', () => {
       const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'pause',
-        'get',
       );
       const sound = new Sound(
         Object.assign({}, soundBaseOpts, {
@@ -235,7 +225,7 @@ describe('Sound', () => {
       expect(sound.seek).toEqual(seek);
       expect(sound.currentTime).toEqual(0);
       sound.pause();
-      expect(pauseMockFn).not.toBeCalled();
+      expect(pauseMockFn).not.toHaveBeenCalled();
       expect(sound.seek).toEqual(seek);
       expect(sound.currentTime).toEqual(0);
     });
@@ -244,7 +234,6 @@ describe('Sound', () => {
       const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'pause',
-        'get',
       );
       const sound = new Sound(
         Object.assign({}, soundBaseOpts, {
@@ -252,12 +241,12 @@ describe('Sound', () => {
         }),
       );
       sound.pause();
-      expect(pauseMockFn).not.toBeCalled();
+      expect(pauseMockFn).not.toHaveBeenCalled();
       expect(sound.seek).toEqual(seek);
       expect(sound.currentTime).toEqual(0);
       sound.play();
       sound.pause();
-      expect(pauseMockFn).toBeCalled();
+      expect(pauseMockFn).toHaveBeenCalled();
       expect(sound.seek).toEqual(seek);
       expect(sound.currentTime).toEqual(seek);
     });
@@ -266,23 +255,18 @@ describe('Sound', () => {
   describe('sound stop', () => {
     beforeEach(() => {
       jest
-        .spyOn<HTMLAudioElement, any>(
+        .spyOn<HTMLMediaElement, any>(
           HTMLMediaElement.prototype,
           'readyState',
           'get',
         )
         .mockReturnValue('5');
-      jest.spyOn<HTMLMediaElement, any>(
-        HTMLMediaElement.prototype,
-        'play',
-        'get',
-      );
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
     });
     it('should be stop when sound call stop', () => {
       const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
         HTMLMediaElement.prototype,
         'pause',
-        'get',
       );
       const sound = new Sound(soundBaseOpts);
       sound.play();
@@ -290,10 +274,13 @@ describe('Sound', () => {
         sound.node.currentTime = 200;
       }
       sound.stop();
-      expect(pauseMockFn).toBeCalled();
+      expect(pauseMockFn).toHaveBeenCalled();
       expect(sound.paused).toBeTruthy();
       expect(sound.ended).toBeTruthy();
       expect(sound.seek).toEqual(0);
+      expect(sound.events).toEqual([]);
+      expect(sound.currentTime).toEqual(0);
+      sound.node && expect(sound.node.currentTime).toEqual(0);
     });
   });
 
@@ -339,6 +326,22 @@ describe('Sound', () => {
     });
   });
 
+  describe('sound set loop', () => {
+    it('should loop media or not when sound call setLoop', () => {
+      const sound = new Sound(soundBaseOpts);
+      expect(sound.loop).toBeFalsy();
+      sound.node && expect(sound.node.loop).toBeFalsy();
+
+      sound.setLoop(true);
+      expect(sound.loop).toBeTruthy();
+      sound.node && expect(sound.node.loop).toBeTruthy();
+
+      sound.setLoop(false);
+      expect(sound.loop).toBeFalsy();
+      sound.node && expect(sound.node.loop).toBeFalsy();
+    });
+  });
+
   describe('sound set seek', () => {
     it('should set seek when sound call setSeek', () => {
       const seek = 100;
@@ -350,17 +353,13 @@ describe('Sound', () => {
     });
     it('should continue play when sound is playing', () => {
       jest
-        .spyOn<HTMLAudioElement, any>(
+        .spyOn<HTMLMediaElement, any>(
           HTMLMediaElement.prototype,
           'readyState',
           'get',
         )
         .mockReturnValue('5');
-      jest.spyOn<HTMLMediaElement, any>(
-        HTMLMediaElement.prototype,
-        'play',
-        'get',
-      );
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
       const seek = 100;
       const sound = new Sound(soundBaseOpts);
       expect(sound.seek).toEqual(0);
@@ -374,17 +373,13 @@ describe('Sound', () => {
     });
     it('should not play when sound set not continue play', () => {
       jest
-        .spyOn<HTMLAudioElement, any>(
+        .spyOn<HTMLMediaElement, any>(
           HTMLMediaElement.prototype,
           'readyState',
           'get',
         )
         .mockReturnValue('5');
-      jest.spyOn<HTMLMediaElement, any>(
-        HTMLMediaElement.prototype,
-        'play',
-        'get',
-      );
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
       const seek = 100;
       const sound = new Sound(soundBaseOpts);
       expect(sound.seek).toEqual(0);
@@ -403,11 +398,38 @@ describe('Sound', () => {
       const seek = 100;
       const sound = new Sound(
         Object.assign({}, soundBaseOpts, {
-          seek: seek,
+          seek,
         }),
       );
       sound.setSeek(-1);
       expect(sound.seek).toEqual(seek);
+    });
+    it('should not pause when continue play is true', () => {
+      jest
+        .spyOn<HTMLMediaElement, any>(
+          HTMLMediaElement.prototype,
+          'readyState',
+          'get',
+        )
+        .mockReturnValue('5');
+      jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+      const pauseMockFn = jest.spyOn<HTMLMediaElement, any>(
+        HTMLMediaElement.prototype,
+        'pause',
+      );
+      const seek = 100;
+      const sound = new Sound(soundBaseOpts);
+      expect(sound.seek).toEqual(0);
+
+      sound.play();
+      expect(sound.paused).toBeFalsy();
+
+      sound.setSeek(seek, {
+        continuePlay: true,
+      });
+      expect(sound.seek).toEqual(seek);
+      expect(pauseMockFn).not.toHaveBeenCalled();
+      expect(sound.paused).toBeFalsy();
     });
   });
 
@@ -418,6 +440,10 @@ describe('Sound', () => {
 
       sound.dispose();
       expect(sound.node).toEqual(null);
+      expect(sound.pause).toBeTruthy();
+      expect(sound.ended).toBeTruthy();
+      expect(sound.seek).toEqual(0);
+      expect(sound.events).toEqual([]);
     });
   });
 
@@ -436,10 +462,10 @@ describe('Sound', () => {
       ];
       new Sound(
         Object.assign({}, soundBaseOpts, {
-          events: events,
+          events,
         }),
       );
-      expect(listener).toBeCalled();
+      expect(listener).toHaveBeenCalled();
     });
     it('should bind off event to node before audio load', () => {
       const listener = jest.spyOn<HTMLMediaElement, any>(
@@ -455,10 +481,10 @@ describe('Sound', () => {
       ];
       new Sound(
         Object.assign({}, soundBaseOpts, {
-          events: events,
+          events,
         }),
       );
-      expect(listener).toBeCalled();
+      expect(listener).toHaveBeenCalled();
     });
   });
 
@@ -470,7 +496,49 @@ describe('Sound', () => {
       );
       const sound = new Sound(soundBaseOpts);
       sound.dispatchEvent(new Event('load'));
-      expect(listener).toBeCalled();
+      expect(listener).toHaveBeenCalled();
+    });
+  });
+
+  describe('sound bind event', () => {
+    it('should store event when sound bindEvent called', () => {
+      const listener = jest.spyOn<HTMLMediaElement, any>(
+        HTMLAudioElement.prototype,
+        'addEventListener',
+      );
+      const loadedEvent = {
+        name: 'loadeddata' as MediaEventName,
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const sound = new Sound(soundBaseOpts);
+      expect(sound.events.length).toEqual(0);
+
+      sound.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(sound.events.length).toEqual(1);
+      expect(sound.events[0].name).toEqual(loadedEvent.name);
+      expect(listener).toHaveBeenCalled();
+    });
+  });
+
+  describe('sound unbind event', () => {
+    it('should execute unbind event when sound unbindEvent called', () => {
+      const listener = jest.spyOn<HTMLMediaElement, any>(
+        HTMLAudioElement.prototype,
+        'removeEventListener',
+      );
+      const loadedEvent = {
+        name: 'loadeddata' as MediaEventName,
+        type: MediaEventType.ON,
+        handler: () => {},
+      };
+      const sound = new Sound(soundBaseOpts);
+      sound.bindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(sound.events.length).toEqual(1);
+
+      sound.unbindEvent(loadedEvent.name, loadedEvent.handler);
+      expect(sound.events.length).toEqual(0);
+      expect(listener).toHaveBeenCalled();
     });
   });
 });

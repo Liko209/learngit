@@ -3,8 +3,8 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
-/* eslint-disable */
-import { INotificationService, NotificationOpts } from './../interface';
+
+import { INotificationService, NotificationOpts } from '../interface';
 
 type NotificationId = number | string;
 
@@ -15,9 +15,6 @@ export abstract class AbstractNotificationManager {
   constructor(protected _scope: string) {}
 
   show(title: string, opts: NotificationOpts) {
-    if (document.hasFocus()) {
-      return;
-    }
     this._notificationService.show(title, opts);
   }
 

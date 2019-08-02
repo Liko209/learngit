@@ -6,7 +6,7 @@
 
 interface IRTCRegistrationFsmDependency {
   onProvisionReadyAction(provisionData: any, options: any): void;
-  onReRegisterAction(forceToMain: boolean): void;
+  onReRegisterAction(): void;
   onNetworkChangeToOnlineAction(): void;
   onUnregisterAction(): void;
   onReceiveIncomingInviteAction(session: any): void;

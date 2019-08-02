@@ -3,17 +3,18 @@
  * @Date: 2019-03-07 15:06:46
  * Copyright © RingCentral. All rights reserved.
  */
+import { AbstractRowManager } from './AbstractRowManager';
 
 type KeyMapper = (index: number) => React.Key;
 
-class RowManager {
+class RowManager extends AbstractRowManager {
   private _heightMap = new Map<React.Key, number>();
-  private _beforeHeight: number = 0;
   private _minRowHeight: number;
   private _cacheMap = new Map<React.Key, number>();
   private _keyMapper: KeyMapper = (index: number) => index;
 
   constructor({ minRowHeight }: { minRowHeight: number }) {
+    super();
     this._minRowHeight = minRowHeight;
   }
 
@@ -36,10 +37,6 @@ class RowManager {
   hasRowHeight(index: number) {
     const key = this._keyMapper(index);
     return this._cacheMap.has(key) || this._heightMap.has(key);
-  }
-  computeDiff(index: number, newHeight: number) {
-    const oldHeight = this.getRowHeight(index);
-    return newHeight - oldHeight;
   }
 
   setRowHeight(index: number, newHeight: number) {
@@ -64,6 +61,7 @@ class RowManager {
     });
     this._cacheMap.clear();
   }
+
   getRowsHeight(startIndex: number, stopIndex: number) {
     if (stopIndex < 0) {
       return 0;
@@ -74,10 +72,6 @@ class RowManager {
       heightBeforeIndex += rowHeight;
     }
     return heightBeforeIndex;
-  }
-
-  getRowOffsetTop(index: number) {
-    return this.getBeforeHeight() + this.getRowsHeight(0, index - 1);
   }
 
   getRowIndexFromPosition(
@@ -93,14 +87,6 @@ class RowManager {
       }
     }
     return stopIndex;
-  }
-
-  setBeforeHeight(height: number) {
-    this._beforeHeight = height;
-  }
-
-  getBeforeHeight() {
-    return this._beforeHeight;
   }
 }
 

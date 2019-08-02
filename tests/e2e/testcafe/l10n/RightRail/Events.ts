@@ -36,7 +36,7 @@ test(formalName('Events display on the right rail', ['P2', 'Messages', 'RightRai
     const teamsSection = app.homePage.messageTab.teamsSection;
     const eventsEntry = rightRail.eventsEntry;
     await teamsSection.conversationEntryById(team.glipId).enter();
-    await rightRail.openMore();
+    await rightRail.clickMoreButton();
     await eventsEntry.enter();
   });
   await h(t).log('Then I take screenshot' , { screenshotPath:'Jupiter_RightRail_EventsEmpty' });

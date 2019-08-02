@@ -273,15 +273,16 @@ export class LogUploadConsumer implements ILogConsumer {
     const logs = this._memoryQueue.peekAll();
     this._memorySize = 0;
     // this._flushInTimeout();
-    this._persistentTaskQueueLoop.addTail(
-      new PersistentTask() // cache task
-        .setOnExecute(async () => {
-          await this._logPersistent.put(transform.toPersistent(logs));
-          if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
-            this._persistentFSM.append();
-          }
-        }),
-    );
+    logs.length &&
+      this._persistentTaskQueueLoop.addTail(
+        new PersistentTask() // cache task
+          .setOnExecute(async () => {
+            await this._logPersistent.put(transform.toPersistent(logs));
+            if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
+              this._persistentFSM.append();
+            }
+          }),
+      );
   }
 
   private _ensurePersistentState() {

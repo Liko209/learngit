@@ -30,25 +30,25 @@ test.meta(<ITestMeta>{
   const searchKeyword = `Team-${H.uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithoutMe`,
+    name: `${searchKeyword} A`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let publicTeamWithMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithMe`,
+    name: `${searchKeyword} B`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
   let privateTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithoutMe`,
+    name: `${searchKeyword} C`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let privateTeamWithMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithMe`,
+    name: `${searchKeyword} D`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
@@ -151,25 +151,25 @@ test.meta(<ITestMeta>{
   const searchKeyword = `Team-${H.uuid()}`;
   let publicTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithoutMe`,
+    name: `${searchKeyword} A`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let publicTeamWithMe = <IGroup>{
     type: 'Team', isPublic: true,
-    name: `${searchKeyword} PublicTeamWithMe`,
+    name: `${searchKeyword} B`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
   let privateTeamWithoutMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithoutMe`,
+    name: `${searchKeyword} C`,
     owner: anotherUser,
     members: [anotherUser],
   };
   let privateTeamWithMe = <IGroup>{
     type: 'Team', isPublic: false,
-    name: `${searchKeyword} PrivateTeamWithMe`,
+    name: `${searchKeyword} D`,
     owner: anotherUser,
     members: [me, anotherUser],
   };
@@ -201,7 +201,7 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 30e3 });
     for (const team of searchResults) {
       await searchDialog.instantPage.conversationEntryByName(team.name);
     }
@@ -242,7 +242,7 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 30e3 });
     for (const team of searchResults) {
       await searchDialog.instantPage.conversationsContainName(team.name);
     }
@@ -377,10 +377,10 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then people search resutls order is alphabetical order`, async () => {
     await checkInAlphabeticalOrder();
-  });
+  }, true);
 
   await h(t).withLog(`When I search userC and open conversation with userC ${nameUserC}`, async () => {
-    await searchBar.clickSelf();
+    await searchDialog.clickClearButton();
     await searchDialog.typeSearchKeyword(nameUserC);
     await searchDialog.instantPage.nthPeople(0).enter();
   }, true);

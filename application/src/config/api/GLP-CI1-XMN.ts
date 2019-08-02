@@ -18,5 +18,12 @@ const config: DeepPartial<ApiConfig> = {
   upload: {
     server: 'https://glpci1xmn.asialab.glip.net:8443',
   },
+  launchdarkly: {
+    clientId: '',
+  },
+  splitio: {
+    clientSecret: '',
+  },
+  data_collection: '',
 };
 export default config;

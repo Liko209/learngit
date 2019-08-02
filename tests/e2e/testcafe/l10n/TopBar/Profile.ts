@@ -28,32 +28,32 @@ test(formalName('Check "Profile" menu', ['P2', 'TopBar', 'Profile', 'V1.4', 'Han
   })
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_SettingMenu'});
 
+  const profileDialog = app.homePage.profileDialog;
+
   await h(t).withLog('When I click "Profile" button', async() => {
     await settingMenu.clickViewYourProfile();
   });
   await h(t).withLog('Then "Profile" page should be displayed', async() => {
-    await t.expect(settingMenu.viewYourProfileButton.exists).ok();
+    await t.expect(profileDialog.profileTitle.exists).ok();
   });
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_ProfilePage'});
 
-  const profileDialog = app.homePage.profileDialog;
-  const favoriteStatusIcon = profileDialog.favoriteStatusIcon;
-  const unFavoriteStatusIcon = profileDialog.unFavoriteStatusIcon;
+  const favoriteButton = profileDialog.favoriteButton;
 
   await h(t).withLog('When I hover "Favorites" button', async() => {
-    await t.hover(favoriteStatusIcon);
+    if(favoriteButton.exists){
+      await profileDialog.hoverFavoriteButton();
+    }
+    else{
+      await profileDialog.clickUnFavoriteButton();
+      await profileDialog.hoverFavoriteButton();
+    }
   });
-  await h(t).withLog('Then "favorite" icon should be displayed', async() => {
-    await t.expect(unFavoriteStatusIcon.exists).notOk();
-  });
-  await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_RemoveFromFavorites'});
+  await h(t).log('Then I take screenshot', {screenshotPath:'Jupiter_TopBar_RemoveFromFavorites'});
 
   await h(t).withLog('When I click "Favorites" button and hover it', async() => {
-    await t.click(favoriteStatusIcon);
-    await t.hover(favoriteStatusIcon);
-  });
-  await h(t).withLog('Then "favorite" icon change to "unFavorite" icon', async() => {
-    await t.expect(unFavoriteStatusIcon.exists).ok();
+    await profileDialog.clickFavoriteButton();
+    await profileDialog.hoverUnFavoriteButton();
   });
   await h(t).log('And I take screenshot', {screenshotPath:'Jupiter_TopBar_AddToFavorites'});
 

@@ -15,6 +15,22 @@ class EnvConfig extends CommonGlobalConfig {
   static setEnv(env: string) {
     this.put(CONFIG_KEYS.ENV, env);
   }
+
+  static getIsRunningE2E() {
+    return this.get(CONFIG_KEYS.RUNNING_E2E);
+  }
+
+  static disableLD(disable: boolean = true) {
+    return this.put(CONFIG_KEYS.DISABLE_LD, disable);
+  }
+
+  static getDisableSplitIo(): boolean {
+    return Boolean(this.get(CONFIG_KEYS.DISABLE_SPLIT_IO));
+  }
+
+  static disableSplitIo(disable: boolean = true) {
+    return this.put(CONFIG_KEYS.DISABLE_SPLIT_IO, disable);
+  }
 }
 
 export { EnvConfig };

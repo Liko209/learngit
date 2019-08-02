@@ -3,7 +3,6 @@
  * @Date: 2018-08-30 08:44:54
  * Copyright © RingCentral. All rights reserved.
  */
-'use strict';
 
 // Do this as the first thing so that any code reading it knows the right env.
 process.env.NODE_ENV = 'test';
@@ -21,7 +20,7 @@ const path = require('path');
 const jest = require('jest');
 const getPackages = require('./getPackages');
 
-let argv = process.argv.slice(2);
+const argv = process.argv.slice(2);
 
 // Watch unless on CI, in coverage mode, or explicitly running all tests
 if (
@@ -41,6 +40,10 @@ if (argv.length) {
     .forEach(p => {
       argv.push(p);
     });
+}
+
+if (argv.includes('it')) {
+  argv[argv.indexOf('it')] = '--config=./jest-integration.config.js';
 }
 
 switch (true) {
@@ -64,8 +67,16 @@ switch (true) {
     break;
   default:
     process.env.APP =
-      '<rootDir>/(application|packages/sdk|packages/jui|packages/foundation|packages/voip|packages/framework)';
+      '<rootDir>/(application|packages/sdk|packages/jui|packages/foundation|packages/voip|packages/framework|tests/shield)';
     break;
+}
+
+if (argv.includes('debug')) {
+  process.env.DEBUG_MODE = true;
+}
+
+if (argv.includes('promise')) {
+  process.env.DEBUG_PROMISE = true;
 }
 
 jest.run(argv);

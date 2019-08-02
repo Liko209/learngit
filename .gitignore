@@ -17,6 +17,7 @@ node_modules
 /application/build/
 /application/dist/
 /application/build-es/
+/application/.cache-loader
 
 # misc
 .DS_Store

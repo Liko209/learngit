@@ -12,7 +12,7 @@ import styled, {
   css,
   createGlobalStyle,
 } from '../../foundation/styled-components';
-import { Theme, Color } from '../../foundation/styles/';
+import { Theme, Color } from '../../foundation/styles';
 
 const placementTopMargin = '16px 0';
 const placementBottomMargin = '12px 0';
@@ -112,10 +112,18 @@ const GlobalToolTipStyle = createGlobalStyle<{
   suppressMultiMountWarning: boolean;
 }>`
 
+  .tooltip{
+    word-break: break-word;
+  }
+
   .popper.popper > *{
     background-color: ${({ theme, color }) =>
       theme.palette[color[0]][color[1]]};
   }
+  .popper.popper > div{
+    position: relative;
+  }
+
 
   .popper[x-placement='right'] ${TooltipArrow}{
     margin: ${placementRightMargin};
@@ -147,15 +155,15 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     this.setState({
       arrowRef: node,
     });
-  };
+  }
 
   handleTooltipClose = () => {
     this.setState({ open: false });
-  };
+  }
 
   handleTooltipOpen = () => {
     this.setState({ open: true });
-  };
+  }
 
   componentDidUpdate() {
     if (this.props.tooltipForceHide === true) {
@@ -167,10 +175,10 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
     const {
       title,
       children,
-      tooltipForceHide,
       placement = 'bottom',
       color = ['grey', 700] as Color,
       open: propOpen,
+      tooltipForceHide,
       ...rest
     } = this.props;
     const { arrowRef, open: stateOpen } = this.state;
@@ -181,7 +189,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
           open={open}
           onClose={this.handleTooltipClose}
           onOpen={this.handleTooltipOpen}
-          disableFocusListener={true}
+          disableFocusListener
           placement={placement}
           title={
             <React.Fragment>
@@ -191,6 +199,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
           }
           classes={{
             popper: 'popper',
+            tooltip: 'tooltip',
           }}
           PopperProps={{
             popperOptions: {
@@ -206,7 +215,7 @@ export class RuiTooltip extends React.PureComponent<RuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        <GlobalToolTipStyle color={color} suppressMultiMountWarning={true} />
+        <GlobalToolTipStyle color={color} suppressMultiMountWarning />
       </React.Fragment>
     );
   }

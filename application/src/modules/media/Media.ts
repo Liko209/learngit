@@ -19,14 +19,17 @@ import { Utils } from './Utils';
 
 class Media implements IMedia {
   private _trackId: MediaOptions['trackId'];
-  private _mediaId: MediaOptions['id'];
+  private _mediaId: string;
   private _src: MediaOptions['src'];
-  private _volume: MediaOptions['volume'];
-  private _muted: MediaOptions['muted'];
+  private _muted: boolean;
+  private _volume: number;
+  private _loop: boolean;
+  private _autoplay: boolean;
   private _outputDevices: MediaDeviceType[];
   private _currentTime: number;
   private _useTrack: MediaTrack;
   private _events: MediaEvents[] = [];
+  private _onResetHandler: () => void;
 
   constructor(options: MediaOptions) {
     this._setup(options);
@@ -47,6 +50,11 @@ class Media implements IMedia {
       );
     } else if (isMediaInTrack && isPlaying) {
       return this;
+    } else if (isMediaInTrack && !isPlaying && startTime) {
+      this._useTrack.setCurrentTime(
+        (playOpts && playOpts.startTime) || 0,
+        true,
+      );
     } else if (isMediaInTrack && !isPlaying) {
       this._useTrack.setCurrentTime(this._currentTime, true);
     } else {
@@ -55,7 +63,8 @@ class Media implements IMedia {
         Object.assign({}, options, {
           currentTime:
             (playOpts && playOpts.startTime) || this._currentTime || 0,
-          events: this._events,
+          mediaEvents: this._events,
+          onReset: () => this._resetMedia(),
         }),
       );
       this._useTrack.play();
@@ -68,8 +77,6 @@ class Media implements IMedia {
     if (this._isMediaInTrack() && this._useTrack.playing) {
       this._useTrack.pause();
       this._currentTime = this._useTrack.currentTime;
-    } else {
-      throw new Error('This media is not playing now.');
     }
     return this;
   }
@@ -77,10 +84,8 @@ class Media implements IMedia {
   stop() {
     if (this._isMediaInTrack()) {
       this._useTrack.stop();
-      this._currentTime = 0;
-    } else {
-      throw new Error('This media is not playing now.');
     }
+    this._currentTime = 0;
     return this;
   }
 
@@ -97,6 +102,14 @@ class Media implements IMedia {
       this._useTrack.setVolume(volume);
     }
     this._volume = volume;
+    return this;
+  }
+
+  setLoop(loop: boolean) {
+    if (this._isMediaInTrack()) {
+      this._useTrack.setLoop(loop);
+    }
+    this._loop = loop;
     return this;
   }
 
@@ -126,29 +139,51 @@ class Media implements IMedia {
     return this;
   }
 
-  on(eventName: MediaEventName, handler: () => void) {
+  on(eventName: MediaEventName, handler: (event: Event) => void) {
     this._events.push({
       handler,
       name: eventName,
       type: MediaEventType.ON,
     });
+    if (this._isMediaInTrack()) {
+      this._useTrack.bindEvent(eventName, handler);
+    }
   }
 
-  off(eventName: MediaEventName, handler: () => void) {
-    this._events.push({
-      handler,
-      name: eventName,
-      type: MediaEventType.OFF,
-    });
+  off(eventName: MediaEventName, handler: (event: Event) => void) {
+    this._events = this._events.filter(
+      evt => !(evt.name === eventName && evt.handler === handler),
+    );
+    if (this._isMediaInTrack()) {
+      this._useTrack.unbindEvent(eventName, handler);
+    }
   }
+
+  dispose() {
+    if (this._isMediaInTrack()) {
+      this._useTrack.dispose();
+    }
+    this._resetMedia();
+  }
+
+  onReset(handler: () => void) {
+    this._onResetHandler = handler;
+  }
+
+  private _resetMedia = () => {
+    this._currentTime = 0;
+    this._onResetHandler && this._onResetHandler();
+  };
 
   private _setup(o: MediaOptions) {
     this._trackId = o.trackId;
-    this._mediaId = o.id;
+    this._mediaId = o.id || '';
     this._src = o.src;
+    this._muted = o.muted || false;
     this._volume =
       o.volume && Utils.isValidVolume(o.volume) ? o.volume : 1 || 1;
-    this._muted = o.muted || false;
+    this._loop = o.loop || false;
+    this._autoplay = o.autoplay || false;
     this._currentTime = 0;
     this._outputDevices =
       o.outputDevices && Array.isArray(o.outputDevices)
@@ -160,6 +195,8 @@ class Media implements IMedia {
       throw new Error('Media setup error');
     }
     this._useTrack = useTrack;
+
+    this._autoplay && this.play();
   }
 
   private _getUseTrack() {
@@ -175,8 +212,10 @@ class Media implements IMedia {
       id: this._trackId || DEFAULT_TRACK_ID,
       mediaId: this._mediaId,
       src: this._src,
-      volume: this._volume,
       muted: this._muted,
+      volume: this._volume,
+      loop: this._loop,
+      autoplay: this._autoplay,
       outputDevices: this._outputDevices,
       currentTime: 0,
     };
@@ -194,12 +233,30 @@ class Media implements IMedia {
     return this._trackId;
   }
 
+  get muted() {
+    return this._muted;
+  }
+
   get volume() {
     return this._volume;
   }
 
-  get muted() {
-    return this._muted;
+  get loop() {
+    return this._loop;
+  }
+
+  get autoplay() {
+    return this._autoplay;
+  }
+
+  get currentTime() {
+    return this._isMediaInTrack()
+      ? this._useTrack.currentTime
+      : this._currentTime || 0;
+  }
+
+  get duration() {
+    return this._isMediaInTrack() ? this._useTrack.currentMediaDuration : 0;
   }
 
   get outputDevices() {
@@ -211,7 +268,7 @@ class Media implements IMedia {
   }
 
   get playing() {
-    return this._isMediaInTrack() && this._useTrack.playing;
+    return (this._isMediaInTrack() && this._useTrack.playing) || false;
   }
 }
 

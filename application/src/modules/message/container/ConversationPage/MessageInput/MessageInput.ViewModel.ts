@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed } from 'mobx';
+import {
+  action,
+  runInAction,
+  observable,
+  computed,
+} from 'mobx';
 import {
   MessageInputProps,
   MessageInputViewProps,
@@ -27,7 +32,6 @@ import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
 import { container } from 'framework';
-import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
@@ -36,32 +40,20 @@ import { ZipItemLevel } from 'sdk/service/uploadLogControl/types';
 import debounce from 'lodash/debounce';
 import { isEmpty } from './helper';
 
-const saveDebugLog = (level: ZipItemLevel = ZipItemLevel.NORMAL) => {
-  container
-    .get(FeedbackService)
-    .zipRecentLogs(level)
-    .then(zipResult => {
-      if (!zipResult) {
-        mainLogger.debug('Zip log fail.');
-        return;
-      }
-      saveBlob(zipResult.zipName, zipResult.zipBlob);
-    });
-};
-
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-all': () => UploadRecentLogs.show({ level: ZipItemLevel.DEBUG_ALL }),
   '/debug-save': () => {
-    saveDebugLog(ZipItemLevel.NORMAL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.NORMAL);
   },
   '/debug-save-all': () => {
-    saveDebugLog(ZipItemLevel.DEBUG_ALL);
+    container.get(FeedbackService).saveRecentLogs(ZipItemLevel.DEBUG_ALL);
   },
 };
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
+const DRAFT_SAVE_WAIT: number = 1000;
 enum ERROR_TYPES {
   CONTENT_LENGTH = 'message.prompt.contentLength',
   CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
@@ -78,25 +70,25 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
-
+  
   get items() {
     return this._itemService.getUploadItems(this.props.id);
   }
-
+  private _rawDraft :string
   private _oldId: number;
   private _debounceFactor: number = 3e2;
   @observable
   error: string = '';
 
   private _upHandler = debounce(
-    this.props.onUpArrowPressed,
+    ()=>this.props.onUpArrowPressed(this._rawDraft),
     this._debounceFactor,
     {
       leading: true,
     },
   );
 
-  keyboardEventHandler = {
+  keyboardEventHandler: any = {
     enter: {
       key: 13,
       handler: this._enterHandler(this),
@@ -104,9 +96,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     up: {
       key: 38,
       empty: true,
-      handler: this._upHandler,
+      handler: this._upHandler
     },
   };
+
+  @observable
+  hasFocused = false;
 
   constructor(props: MessageInputProps) {
     super(props);
@@ -124,20 +119,25 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-    this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(
       () => this.props.id,
       (id: number) => {
         this._oldId = id;
+        this.hasFocused = false;
         this.error = '';
         this.forceSaveDraft();
       },
     );
+    this.reaction(() => ({
+      hasDraft: this._memoryDraftMap.has(this.props.id),
+    }), ({ hasDraft }) => {
+      setTimeout(() => this.hasFocused = hasDraft, 0);
+    });
     notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
     window.addEventListener(
       'beforeunload',
-      this._handleBeforeUnload.bind(this),
+      this._handleBeforeUnload,
     );
   }
 
@@ -145,8 +145,22 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
     window.removeEventListener(
       'beforeunload',
-      this._handleBeforeUnload.bind(this),
+      this._handleBeforeUnload,
     );
+
+    this.keyboardEventHandler.up.handler.cancel();
+
+    this.keyboardEventHandler = {
+      enter: {
+        key: 13,
+        handler: _.noop,
+      },
+      up: {
+        key: 38,
+        empty: true,
+        handler: (_.noop as any),
+      },
+    };
   }
 
   @action
@@ -202,11 +216,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @action
   contentChange = (draft: string) => {
-    if ((!isEmpty(draft) || !isEmpty(this.draft)) && draft !== this.draft) {
-      this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    this._rawDraft = draft;
+    if ((isEmpty(draft) && isEmpty(this.draft)) || draft === this.draft) {
+      return;
     }
     this.error = '';
     this.draft = draft;
+    this._groupService.sendTypingEvent(this._oldId, isEmpty(draft));
+    this._handleDraftSave()
   }
 
   @action
@@ -247,13 +264,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     if (this._memoryDraftMap.has(this.props.id)) {
       return this._memoryDraftMap.get(this.props.id) || '';
     }
+
     this.getDraftFromLocal();
     return '';
   }
 
-  async getDraftFromLocal() {
+  getDraftFromLocal = async () => {
     const draft = await this._groupConfigService.getDraft(this.props.id);
-    this._memoryDraftMap.set(this.props.id, draft);
+    runInAction(() => {
+      this.draft = draft;
+    });
   }
 
   set draft(draft: string) {
@@ -307,7 +327,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     };
   }
 
-  private async _sendPost(content: string, ids: number[]) {
+  private _sendPost = async (content: string, ids: number[]) => {
     if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
       DEBUG_COMMAND_MAP[content.trim()]();
       this.contentChange('');
@@ -354,7 +374,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     );
   }
 
-  private _handleBeforeUnload() {
+  private _handleDraftSave = debounce(() => {
+    this.forceSaveDraft();
+  }, DRAFT_SAVE_WAIT)
+
+  private _handleBeforeUnload = () => {
+    this._handleDraftSave.cancel()
     this.forceSaveDraft();
   }
 }

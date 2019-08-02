@@ -11,19 +11,19 @@ import {
   DropTargetConnector,
   ConnectDropTarget,
   DropTargetMonitor,
-  DragDropContext,
+  DragDropContext
 } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { ThemeProps, Theme } from '../../foundation/theme/theme';
 import { grey, palette } from '../../foundation/utils/styles';
 
 type JuiDropZoneProps = {
-  hidden?: boolean,
+  hidden?: boolean;
   dropzoneClass?: CSSProperties;
 };
 
 class TargetBox extends PureComponent<
-ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
+  ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
 > {
   private _checkFolder = (event: React.DragEvent) => {
     const { items } = event.dataTransfer;
@@ -42,25 +42,22 @@ ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
       const { detectedFolderDrop } = this.props;
       detectedFolderDrop && detectedFolderDrop();
     }
-  }
+  };
 
-  private _getOpacity = (
-    {
-      theme,
-      hidden,
-      showHoverStyle,
-    }:
-    {
-      theme: Theme,
-      hidden?: boolean,
-      showHoverStyle: boolean,
-    },
-  ) => {
+  private _getOpacity = ({
+    theme,
+    hidden,
+    showHoverStyle
+  }: {
+    theme: Theme;
+    hidden?: boolean;
+    showHoverStyle: boolean;
+  }) => {
     if (hidden) {
       return 0;
     }
     return showHoverStyle ? theme.palette.action.hoverOpacity * 2 : 1;
-  }
+  };
 
   render() {
     const {
@@ -70,7 +67,7 @@ ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
       dropzoneClass,
       children,
       theme,
-      hasDroppedFolder,
+      hasDroppedFolder
     } = this.props;
     const showHoverStyle = hasDroppedFolder
       ? !hasDroppedFolder() && isOver
@@ -85,7 +82,7 @@ ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
         : 'none',
       background: showHoverStyle ? grey('200')({ theme }) : 'transparent',
       // minHeight: 100 /* firefox compatibility */,
-      ...dropzoneClass,
+      ...dropzoneClass
     };
     return connectDropTarget(
       <div
@@ -94,7 +91,7 @@ ITargetBoxProps & ITargetBoxCollectedProps & JuiDropZoneProps & ThemeProps
         onDragOver={this.props.clearFolderDetection}
       >
         {children}
-      </div>,
+      </div>
     );
   }
 }
@@ -115,7 +112,7 @@ const boxTarget = {
     if (props.onDrop) {
       props.onDrop(props, monitor);
     }
-  },
+  }
 };
 
 export interface ITargetBoxProps {
@@ -134,16 +131,16 @@ interface ITargetBoxCollectedProps {
 }
 
 const JuiDropZone = DropTarget<
-ITargetBoxProps & JuiDropZoneProps,
-ITargetBoxCollectedProps
+  ITargetBoxProps & JuiDropZoneProps,
+  ITargetBoxCollectedProps
 >(
   (props: ITargetBoxProps) => props.accepts,
   boxTarget,
   (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
     connectDropTarget: connect.dropTarget(),
     isOver: monitor.isOver(),
-    canDrop: monitor.canDrop(),
-  }),
+    canDrop: monitor.canDrop()
+  })
 )(ThemedBox);
 
 const withDragDropContext = DragDropContext(HTML5Backend);

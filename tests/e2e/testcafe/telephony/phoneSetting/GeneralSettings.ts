@@ -1,11 +1,12 @@
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL, BrandTire, SITE_ENV } from '../../config';
+import { SITE_URL, BrandTire } from '../../config';
 import { IGroup, ITestMeta } from "../../v2/models";
 import { WebphoneSession } from 'webphone-client';
+import * as assert from 'assert';
 
 fixture('Phone/GeneralSettings')
   .beforeEach(setupCase(BrandTire.RC_WITH_DID))
@@ -14,15 +15,56 @@ fixture('Phone/GeneralSettings')
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-934'],
+  caseIds: ['JPT-1934'],
   maintainers: ['Mia.Cai'],
   keywords: ['GeneralSettings', 'Telephony']
 })(`Should show the extension number when caller enables the "Display my extension number for internal calls"`, async t => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.mainCompany.users[5];
+
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+  await h(t).withLog('Given I have a extension {number}#{extension} and reset its profile', async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  });
+
+  let anotherUserName = '';
+  await h(t).withLog('And I get the display name {name} of anotherUser ', async (step) => {
+    anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+    step.setMetadata('name', anotherUserName)
+  });
+
+  await h(t).withLog('And I have a 1:1 chat with anotherUser', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  let otherUserPostId;
+  await h(t).withLog('And anotherUser send a mention loginUser post', async () => {
+    otherUserPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Other post ${uuid()}`, chat, anotherUser);
+  });
+
+  let session: WebphoneSession;
+  await h(t).withLog('And another user login webphone', async () => {
+    session = await h(t).newWebphoneSession(anotherUser);
+  });
+
   const app = new AppRoot(t);
-  await h(t).platform(anotherUser).init();
-  await h(t).glip(anotherUser).init();
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
 
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const messagesEntry = app.homePage.leftPanel.messagesEntry;
@@ -31,32 +73,6 @@ test.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog;
   const miniProfile = app.homePage.miniProfile;
   const profileDialog = app.homePage.profileDialog;
-  let chat = <IGroup>{
-    type: 'DirectMessage',
-    owner: loginUser,
-    members: [loginUser, anotherUser]
-  }
-
-  await h(t).withLog('Given I have a 1:1 chat', async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-  });
-
-  let anotherUserName = '';
-  await h(t).withLog('And I get the display name of one user ', async () => {
-    anotherUserName = await h(t).glip(anotherUser).getPersonPartialData('display_name', anotherUser.rcId);
-  });
-
-  const otherUserPostId = await h(t).platform(anotherUser).sentAndGetTextPostId(`Other post ${uuid()}`, chat.glipId);
-
-  let session: WebphoneSession;
-  await h(t).withLog('And anpther user login webphone', async () => {
-    session = await h(t).newWebphoneSession(anotherUser);
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
 
   // Entry1: 1:1conversation
   await h(t).withLog(`When I click Setting entry`, async () => {
@@ -97,7 +113,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+  await h(t).withLog(`Then the caller id is {extension} from anotherUser`, async (step) => {
+    step.setMetadata('extension', loginUser.extension)
     await session.waitForPhoneNumber(loginUser.extension);
   });
 
@@ -136,7 +153,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+  await h(t).withLog(`Then the caller id is {extension} from anotherUser`, async (step) => {
+    step.setMetadata('extension', loginUser.extension)
     await session.waitForPhoneNumber(loginUser.extension);
   });
 
@@ -177,7 +195,8 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+  await h(t).withLog(`Then the caller id is {extension} from anotherUser`, async (step) => {
+    step.setMetadata('extension', loginUser.extension)
     await session.waitForPhoneNumber(loginUser.extension);
   });
 
@@ -204,7 +223,8 @@ test.meta(<ITestMeta>{
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   const anotherUserRecord = searchDialog.instantPage.searchPeopleWithText(anotherUserName);
-  await h(t).withLog(`And I search the person ${anotherUserName}`, async () => {
+  await h(t).withLog(`And I search the person {anotherUserName}`, async (step) => {
+    step.setMetadata('anotherUserName', anotherUserName);
     await messagesEntry.enter();
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(anotherUserName);
@@ -220,13 +240,17 @@ test.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  await h(t).withLog(`Then the caller id is ${loginUser.extension} from anotherUser`, async () => {
+  await h(t).withLog(`Then the caller id is {extension} from anotherUser`, async (step) => {
+    step.setMetadata('extension', loginUser.extension)
     await session.waitForPhoneNumber(loginUser.extension);
   });
 });
 
-// Todo Need account pool support(different company account with DID)
-test.skip.meta(<ITestMeta>{
+fixture('Phone/GeneralSettings')
+  .beforeEach(setupCase(BrandTire.RC_WITH_GUESS_DID))
+  .afterEach(teardownCase());
+
+test.meta(<ITestMeta>{
   priority: ['P2'],
   caseIds: ['JPT-1759'],
   maintainers: ['Mia.Cai'],
@@ -235,9 +259,70 @@ test.skip.meta(<ITestMeta>{
   const loginUser = h(t).rcData.mainCompany.users[0];
   const anotherUser = h(t).rcData.guestCompany.users[0];
 
+  let chat = <IGroup>{
+    type: 'DirectMessage',
+    owner: loginUser,
+    members: [loginUser, anotherUser]
+  }
+
+
+  const extractNumber = (callerId: string): string => {
+    if (callerId == 'Blocked') {
+      return 'anonymous';
+    }
+    return callerId.replace(/[^\d]/g, '');
+  }
+
+  const checkCallerId = async (randomCallerID: any, session: WebphoneSession) => {
+    const formalNumber = extractNumber(randomCallerID);
+    await session.waitForStatus('invited');
+    await H.retryUntilPass(async () => {
+      const reg = new RegExp(`${formalNumber}$`);
+      const lastIncomingCallNumber = await session.lastIncomingCallNumber;
+      const isMatch = reg.test(lastIncomingCallNumber);
+      assert.ok(isMatch, `${formalNumber} != "${lastIncomingCallNumber}" (webphone)`);
+    });
+  }
+
+
+  await h(t).withLog('Given I have a extension {number}#{extension} and reset its profile', async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).scenarioHelper.resetProfileAndState(loginUser);
+  });
+
+  let anotherUserName = '';
+  await h(t).withLog('And I get the display name {name} of anotherUser ', async (step) => {
+    anotherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+    step.setMetadata('name', anotherUserName)
+  });
+
+  await h(t).withLog('And I have a 1:1 chat with anotherUser', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  let otherUserPostId;
+  await h(t).withLog('And anotherUser send a mention loginUser post', async () => {
+    otherUserPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Other post ${uuid()}`, chat, anotherUser);
+  });
+
+  let session: WebphoneSession;
+  await h(t).withLog('And another user login webphone', async () => {
+    session = await h(t).newWebphoneSession(anotherUser);
+  });
+
   const app = new AppRoot(t);
-  await h(t).platform(anotherUser).init();
-  await h(t).glip(anotherUser).init();
+  await h(t).withLog(`And I login Jupiter with {number}#{extension}`, async (step) => {
+    step.initMetadata({
+      number: loginUser.company.number,
+      extension: loginUser.extension,
+    });
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
   const settingsEntry = app.homePage.leftPanel.settingsEntry;
   const messagesEntry = app.homePage.leftPanel.messagesEntry;
   const settingTab = app.homePage.settingTab;
@@ -245,31 +330,6 @@ test.skip.meta(<ITestMeta>{
   const telephonyDialog = app.homePage.telephonyDialog;
   const miniProfile = app.homePage.miniProfile;
   const profileDialog = app.homePage.profileDialog;
-  let chat = <IGroup>{
-    type: 'DirectMessage',
-    owner: loginUser,
-    members: [loginUser, anotherUser]
-  }
-
-  await h(t).withLog('Given I have a 1:1 chat', async () => {
-    await h(t).scenarioHelper.createOrOpenChat(chat);
-  });
-
-  let anotherUserName = '';
-  await h(t).withLog('And I get the display name of one user ', async () => {
-    anotherUserName = await h(t).glip(anotherUser).getPersonPartialData('display_name', anotherUser.rcId);
-  });
-
-  const otherUserPostId = await h(t).platform(anotherUser).sentAndGetTextPostId(`Other post ${uuid()}`, chat.glipId);
-  let session: WebphoneSession;
-  await h(t).withLog('And anpther user login webphone', async () => {
-    session = await h(t).newWebphoneSession(anotherUser);
-  });
-
-  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
-    await app.homePage.ensureLoaded();
-  });
 
   // Entry1: 1:1conversation
   await h(t).withLog(`When I click Setting entry`, async () => {
@@ -310,11 +370,9 @@ test.skip.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  if (randomCallerID == 'Blocked') {
-    randomCallerID = 'Unknown Caller';
-  }
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is {randomCallerID} check by anotherUser webphone session`, async (step) => {
+    step.setMetadata('randomCallerID', randomCallerID)
+    await checkCallerId(randomCallerID, session);
   });
 
   await h(t).withLog('Given I click hangup button', async () => {
@@ -352,12 +410,10 @@ test.skip.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  if (randomCallerID == 'Blocked') {
-    randomCallerID = 'Unknown Caller';
-  }
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
-  });
+  await h(t).withLog(`Then the caller id is {randomCallerID} check by anotherUser webphone session`, async (step) => {
+    step.setMetadata('randomCallerID', randomCallerID)
+    await checkCallerId(randomCallerID, session);
+  });;
 
   await h(t).withLog('Given I click hangup button', async () => {
     await telephonyDialog.clickHangupButton();
@@ -396,11 +452,9 @@ test.skip.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  if (randomCallerID == 'Blocked') {
-    randomCallerID = 'Unknown Caller';
-  }
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is {randomCallerID} check by anotherUser webphone session`, async (step) => {
+    step.setMetadata('randomCallerID', randomCallerID)
+    await checkCallerId(randomCallerID, session);
   });
 
   await h(t).withLog('Given I click hangup button', async () => {
@@ -426,7 +480,8 @@ test.skip.meta(<ITestMeta>{
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   const anotherUserRecord = searchDialog.instantPage.searchPeopleWithText(anotherUserName);
-  await h(t).withLog(`And I search the person ${anotherUserName}`, async () => {
+  await h(t).withLog(`And I search the person {anotherUserName}`, async (step) => {
+    step.setMetadata('anotherUserName', anotherUserName);
     await messagesEntry.enter();
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(anotherUserName);
@@ -442,10 +497,9 @@ test.skip.meta(<ITestMeta>{
     await telephonyDialog.ensureLoaded();
   });
 
-  if (randomCallerID == 'Blocked') {
-    randomCallerID = 'Unknown Caller';
-  }
-  await h(t).withLog(`Then the caller id is ${randomCallerID} from anotherUser`, async () => {
-    await session.waitForPhoneNumber(randomCallerID);
+  await h(t).withLog(`Then the caller id is {randomCallerID} check by anotherUser webphone session`, async (step) => {
+    step.setMetadata('randomCallerID', randomCallerID)
+    await checkCallerId(randomCallerID, session);
   });
 });
+

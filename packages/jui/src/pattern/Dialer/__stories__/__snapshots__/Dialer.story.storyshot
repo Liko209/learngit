@@ -1,42 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
-.c12.c12 {
-  width: 32px;
-  height: 32px;
-  font-size: 1rem;
-  font-weight: 500;
-  font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  line-height: 22px;
-  background-color: #f5f6fb;
-}
-
-.c12.c12:hover {
-  opacity: 0.88;
-  cursor: pointer;
-}
-
-.c12.c12:active {
-  opacity: 0.76;
-}
-
-.c12 > .avatar-short-name {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  height: 100%;
-  width: 100%;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
 .c4 {
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
@@ -55,7 +19,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 24px;
 }
 
-.c24 {
+.c23 {
   display: inline-block;
   width: 1em;
   height: 1em;
@@ -66,11 +30,8 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   font-size: 32px;
 }
 
-.c23.c23 {
-  min-height: 0;
-}
-
 .c22.c22 {
+  min-height: 0;
   background-color: #f44336;
   width: 64px;
   height: 64px;
@@ -104,6 +65,23 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   opacity: 0.12;
 }
 
+.c24.c24 .c8,
+.c24.c24 .c8 svg {
+  font-size: 20px;
+}
+
+.c24.c24:hover .c8 {
+  color: rgba(158,158,158,0.88);
+}
+
+.c24.c24:active .c8 {
+  color: #9e9e9e;
+}
+
+.c24.c24.c24.c24.disabled .c8 {
+  color: rgba(0,0,0,0.12);
+}
+
 .c25.c25 .c8,
 .c25.c25 .c8 svg {
   font-size: 20px;
@@ -127,11 +105,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c26.c26:hover .c8 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c26.c26:active .c8 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c26.c26.c26.c26.disabled .c8 {
@@ -161,11 +139,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c28.c28:hover .c8 {
-  color: rgba(6,132,189,0.88);
+  color: rgba(237,182,60,0.88);
 }
 
 .c28.c28:active .c8 {
-  color: #0684bd;
+  color: #edb63c;
 }
 
 .c28.c28.c28.c28.disabled .c8 {
@@ -174,15 +152,15 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 
 .c29.c29 .c8,
 .c29.c29 .c8 svg {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .c29.c29:hover .c8 {
-  color: rgba(237,182,60,0.88);
+  color: rgba(158,158,158,0.88);
 }
 
 .c29.c29:active .c8 {
-  color: #edb63c;
+  color: #9e9e9e;
 }
 
 .c29.c29.c29.c29.disabled .c8 {
@@ -195,48 +173,14 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
 }
 
 .c30.c30:hover .c8 {
-  color: rgba(158,158,158,0.88);
+  color: rgba(6,132,189,0.88);
 }
 
 .c30.c30:active .c8 {
-  color: #9e9e9e;
+  color: #0684bd;
 }
 
 .c30.c30.c30.c30.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c31.c31 .c8,
-.c31.c31 .c8 svg {
-  font-size: 20px;
-}
-
-.c31.c31:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c31.c31:active .c8 {
-  color: #0684bd;
-}
-
-.c31.c31.c31.c31.disabled .c8 {
-  color: rgba(0,0,0,0.12);
-}
-
-.c32.c32 .c8,
-.c32.c32 .c8 svg {
-  font-size: 16px;
-}
-
-.c32.c32:hover .c8 {
-  color: rgba(6,132,189,0.88);
-}
-
-.c32.c32:active .c8 {
-  color: #0684bd;
-}
-
-.c32.c32.c32.c32.disabled .c8 {
   color: rgba(0,0,0,0.12);
 }
 
@@ -320,6 +264,42 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
   transform: scale(1);
   -webkit-animation-name: cBKRfH;
   animation-name: cBKRfH;
+}
+
+.c12.c12 {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Roboto','Helvetica','Arial',sans-serif;
+  line-height: 22px;
+  background-color: #f5f6fb;
+}
+
+.c12.c12:hover {
+  opacity: 0.88;
+  cursor: pointer;
+}
+
+.c12.c12:active {
+  opacity: 0.76;
+}
+
+.c12 > .avatar-short-name {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 }
 
 .c2.c2 {
@@ -579,10 +559,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
       >
         <button
           aria-describedby={null}
+          aria-label="Detach"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -593,8 +574,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="small"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"
@@ -620,10 +600,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
         </button>
         <button
           aria-describedby={null}
+          aria-label="Minimize"
           className="MuiButtonBase-root MuiIconButton-root c7"
           disabled={false}
           onBlur={[Function]}
-          onContextMenu={[Function]}
+          onDragLeave={[Function]}
           onFocus={[Function]}
           onKeyDown={[Function]}
           onKeyUp={[Function]}
@@ -634,8 +615,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           onTouchEnd={[Function]}
           onTouchMove={[Function]}
           onTouchStart={[Function]}
-          size="small"
-          tabIndex="0"
+          tabIndex={0}
           title={null}
           type="button"
           variant="plain"
@@ -675,10 +655,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
         >
           <button
             aria-describedby={null}
+            aria-label="Back"
             className="MuiButtonBase-root MuiIconButton-root c7"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -689,8 +670,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="small"
-            tabIndex="0"
+            tabIndex={0}
             title={null}
             type="button"
             variant="plain"
@@ -758,10 +738,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -771,8 +752,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -806,10 +786,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -819,8 +800,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -854,10 +834,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -867,8 +848,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -902,10 +882,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -915,8 +896,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -950,10 +930,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -963,8 +944,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -998,10 +978,11 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
           className="c19"
         >
           <button
+            aria-label=""
             className="MuiButtonBase-root MuiIconButton-root c20"
             disabled={false}
             onBlur={[Function]}
-            onContextMenu={[Function]}
+            onDragLeave={[Function]}
             onFocus={[Function]}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
@@ -1011,8 +992,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             onTouchEnd={[Function]}
             onTouchMove={[Function]}
             onTouchStart={[Function]}
-            size="xxlarge"
-            tabIndex="0"
+            tabIndex={0}
             type="button"
             variant="round"
           >
@@ -1049,10 +1029,10 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
       onMouseDown={[Function]}
     >
       <button
-        className="MuiButtonBase-root MuiFab-root c22 c23"
+        className="MuiButtonBase-root MuiFab-root c22"
         disabled={false}
         onBlur={[Function]}
-        onContextMenu={[Function]}
+        onDragLeave={[Function]}
         onFocus={[Function]}
         onKeyDown={[Function]}
         onKeyUp={[Function]}
@@ -1062,7 +1042,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
         onTouchEnd={[Function]}
         onTouchMove={[Function]}
         onTouchStart={[Function]}
-        tabIndex="0"
+        tabIndex={0}
         type="button"
       >
         <span
@@ -1072,7 +1052,7 @@ exports[`Storyshots Pattern Dialer: Pattern Dialer 1`] = `
             className=" hand_up icon c4"
           >
             <svg
-              className="c24"
+              className="c23"
               role="img"
               size="moreLarge"
             >

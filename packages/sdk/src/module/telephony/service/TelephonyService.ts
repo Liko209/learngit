@@ -13,7 +13,11 @@ import {
 
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
-import { MAKE_CALL_ERROR_CODE } from '../types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  notificationCallback,
+  TelephonyDataCollectionInfoConfigType,
+} from '../types';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 import { Call } from '../entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
@@ -68,7 +72,8 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.logout();
   };
 
-  getVoipCallPermission = async () => this.telephonyController.getVoipCallPermission();
+  getVoipCallPermission = async () =>
+    this.telephonyController.getVoipCallPermission();
 
   protected get telephonyController() {
     if (!this._telephonyEngineController) {
@@ -122,17 +127,17 @@ class TelephonyService extends EntityBaseService<Call>
     this.telephonyController.getAccountController().unmute(callId);
   };
 
-  hold = async (callId: number) => await this.telephonyController.getAccountController().hold(callId);
+  hold = async (callId: number) =>
+    await this.telephonyController.getAccountController().hold(callId);
 
-  unhold = async (callId: number) => await this.telephonyController.getAccountController().unhold(callId);
+  unhold = async (callId: number) =>
+    await this.telephonyController.getAccountController().unhold(callId);
 
-  startRecord = async (callId: number) => await this.telephonyController
-    .getAccountController()
-    .startRecord(callId);
+  startRecord = async (callId: number) =>
+    await this.telephonyController.getAccountController().startRecord(callId);
 
-  stopRecord = async (callId: number) => await this.telephonyController
-    .getAccountController()
-    .stopRecord(callId);
+  stopRecord = async (callId: number) =>
+    await this.telephonyController.getAccountController().stopRecord(callId);
 
   dtmf = (callId: number, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
@@ -160,15 +165,18 @@ class TelephonyService extends EntityBaseService<Call>
       .replyWithMessage(callId, message);
   };
 
-  park = async (callId: number) => await this.telephonyController.getAccountController().park(callId);
+  park = async (callId: number) =>
+    await this.telephonyController.getAccountController().park(callId);
 
-  flip = async (callId: number, flipNumber: number) => await this.telephonyController
-    .getAccountController()
-    .flip(callId, flipNumber);
+  flip = async (callId: number, flipNumber: number) =>
+    await this.telephonyController
+      .getAccountController()
+      .flip(callId, flipNumber);
 
-  forward = async (callId: number, phoneNumber: string) => await this.telephonyController
-    .getAccountController()
-    .forward(callId, phoneNumber);
+  forward = async (callId: number, phoneNumber: string) =>
+    await this.telephonyController
+      .getAccountController()
+      .forward(callId, phoneNumber);
 
   replyWithPattern = (
     callId: number,
@@ -194,6 +202,39 @@ class TelephonyService extends EntityBaseService<Call>
     }
     return this._phoneSetting;
   }
+
+  setDataCollectionInfoConfig = (
+    info: TelephonyDataCollectionInfoConfigType,
+  ) => {
+    this.telephonyController
+      .getAccountController()
+      .setDataCollectionInfoConfig(info);
+  };
+
+  isEmergencyAddrConfirmed = () => {
+    return this.telephonyController.isEmergencyAddrConfirmed();
+  };
+
+  getWebPhoneId = () => {
+    const accountController = this.telephonyController.getAccountController();
+    return accountController ? accountController.getWebPhoneId() : undefined;
+  };
+
+  getRemoteEmergencyAddress = () => {
+    return this.telephonyController.getRemoteEmergencyAddress();
+  };
+
+  getLocalEmergencyAddress = () => {
+    return this.telephonyController.getLocalEmergencyAddress();
+  };
+
+  subscribeEmergencyAddressChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeEmergencyAddressChange(listener);
+  };
+
+  subscribeSipProvChange = (listener: notificationCallback) => {
+    this.telephonyController.subscribeSipProvChange(listener);
+  };
 }
 
 export { TelephonyService };

@@ -44,9 +44,12 @@ class ConversationPage extends Page {
   async lookupTeamMember() {
     let page = await this.page();
 
-    await PptrUtils.click(page, 'button[data-test-automation-id="memberButton"]');
+    await PptrUtils.click(page, '*[data-test-automation-id="conversation-page-header"] button[aria-label="More"]');
 
-    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="virtualized-list"] li');
+    await PptrUtils.click(page, 'li[data-test-automation-id="profileEntry"]');
+
+
+    await PptrUtils.waitForSelector(page, 'div[data-test-automation-id="profileDialogContent"] div[data-test-automation-id="virtualized-list"] li');
 
     await PptrUtils.click(page, 'div[data-test-automation-id="profileDialogTitle"] button[aria-label="Close"]');
 

@@ -36,11 +36,11 @@ type Props = WithTranslation & GenericDialerPanelViewProps;
 class GenericDialerPanelViewComponent extends React.Component<
   Props,
   GenericDialerPanelViewState
-  > {
+> {
   private _dialerHeaderRef: RefObject<any> = createRef();
   private _timer: NodeJS.Timeout;
   private _shouldShowToolTip =
-  !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
+    !this.props.hasDialerOpened && !this.props.shouldCloseToolTip;
 
   state = {
     shouldShowToolTip: true,
@@ -54,11 +54,15 @@ class GenericDialerPanelViewComponent extends React.Component<
     this._focusInput();
   }
 
-  componentDidUpdate() {
-    const { enteredDialer } = this.props;
+  componentDidUpdate(prevProps: Props) {
+    const { enteredDialer, shouldDisplayRecentCalls } = this.props;
     const { shouldShowToolTip } = this.state;
     if (enteredDialer && shouldShowToolTip) {
+      clearTimeout(this._timer);
       this._timer = setTimeout(this._handleCloseToolTip, CLOSE_TOOLTIP_TIME);
+    }
+    if (shouldDisplayRecentCalls !== prevProps.shouldDisplayRecentCalls) {
+      this._focusInput();
     }
   }
   componentWillUnmount() {
@@ -167,7 +171,7 @@ class GenericDialerPanelViewComponent extends React.Component<
     <RecentCallContainer>
       <RecentCalls />
     </RecentCallContainer>
-  )
+  );
 
   private _renderKeypadActions = () => {
     const { shouldEnterContactSearch, shouldDisplayRecentCalls } = this.props;

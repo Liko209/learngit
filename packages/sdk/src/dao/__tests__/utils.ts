@@ -1,9 +1,9 @@
-import { DBManager, KVStorageManager } from 'foundation';
+import { DBManager, KVStorageManager, DatabaseType } from 'foundation';
 import schema from '../schema';
 
-const setup = () => {
+const setup = (dbType: DatabaseType = DatabaseType.LokiDB) => {
   const dbManager = new DBManager();
-  dbManager.initDatabase(schema);
+  dbManager.initDatabase(schema, dbType);
   const database = dbManager.getDatabase();
   return {
     dbManager,

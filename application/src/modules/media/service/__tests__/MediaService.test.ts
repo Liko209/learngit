@@ -10,13 +10,9 @@ import { Media } from '../../Media';
 
 describe('MediaService', () => {
   beforeEach(() => {
-    window.HTMLMediaElement.prototype.load = jest.fn();
-
-    window.HTMLMediaElement.prototype.play = jest.fn();
-
-    window.HTMLMediaElement.prototype.canPlayType = jest
-      .fn()
-      .mockReturnValue('');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'load');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'play');
+    jest.spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'pause');
   });
   afterAll(() => {
     jest.clearAllMocks();
@@ -25,15 +21,31 @@ describe('MediaService', () => {
   describe('createMedia()', () => {
     it('should create mediaTrack', () => {
       const media = new MediaService().createMedia({
-        src: [],
+        src: []
       });
       expect(media).toBeInstanceOf(Media);
     });
   });
+  describe('getMedia()', () => {
+    it('should get exist media', () => {
+      const mediaId = 'testMediaId';
+      const mediaService = new MediaService();
+      const media = mediaService.createMedia({
+        src: [],
+        id: mediaId
+      });
+      const checkMedia = mediaService.getMedia(mediaId);
+      expect(checkMedia).toEqual(media);
+    });
+  });
+
   describe('canPlayType()', () => {
     it('should return this mime type can play', () => {
+      const canPlayType = jest
+        .spyOn<HTMLMediaElement, any>(HTMLMediaElement.prototype, 'canPlayType')
+        .mockReturnValue('maybe');
       mediaManager.canPlayType('audio/mp3');
-      expect(window.HTMLMediaElement.prototype.canPlayType).toBeCalled();
+      expect(canPlayType).toHaveBeenCalled();
     });
   });
   describe('globalVolume', () => {
@@ -50,20 +62,20 @@ describe('MediaService', () => {
       const devices = [
         {
           deviceId: 'device1',
-          label: 'device1',
+          label: 'device1'
         },
         {
           deviceId: 'device2',
-          label: 'device2',
+          label: 'device2'
         },
         {
           deviceId: 'default',
-          label: 'default',
+          label: 'default'
         },
         {
           deviceId: 'VirtualDevice',
-          label: 'VirtualDevice',
-        },
+          label: 'VirtualDevice'
+        }
       ];
       jest
         .spyOn(utils, 'getEntity')

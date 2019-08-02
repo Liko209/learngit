@@ -15,11 +15,11 @@ exports[`Storyshots Pattern/PopperMenu PopperMenu: Pattern/PopperMenu PopperMenu
   line-height: 16px;
   color: #0684bd;
   text-align: center;
+  box-shadow: unset;
 }
 
 .c0.c0.containedButtonStyle {
   color: #fff;
-  box-shadow: unset;
   background-color: #0684bd;
 }
 
@@ -30,10 +30,6 @@ exports[`Storyshots Pattern/PopperMenu PopperMenu: Pattern/PopperMenu PopperMenu
 .c0.c0.containedButtonStyle.disabled {
   background-color: #bfbfbf;
   color: #fff;
-}
-
-.c0.c0.containedButtonStyle:active {
-  box-shadow: unset;
 }
 
 .c0.c0.textButtonStyle.disabled {
@@ -84,11 +80,11 @@ exports[`Storyshots Pattern/PopperMenu PopperMenu: Pattern/PopperMenu PopperMenu
     onMouseDown={[Function]}
   >
     <button
-      className="MuiButtonBase-root MuiButton-root MuiButton-contained containedButtonStyle MuiButton-raised MuiButton-sizeLarge c0"
+      className="MuiButtonBase-root MuiButton-root c0 MuiButton-contained containedButtonStyle MuiButton-sizeLarge"
       disabled={false}
       onBlur={[Function]}
       onClick={[Function]}
-      onContextMenu={[Function]}
+      onDragLeave={[Function]}
       onFocus={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
@@ -98,7 +94,7 @@ exports[`Storyshots Pattern/PopperMenu PopperMenu: Pattern/PopperMenu PopperMenu
       onTouchEnd={[Function]}
       onTouchMove={[Function]}
       onTouchStart={[Function]}
-      tabIndex="0"
+      tabIndex={0}
       type="button"
     >
       <span
@@ -106,9 +102,6 @@ exports[`Storyshots Pattern/PopperMenu PopperMenu: Pattern/PopperMenu PopperMenu
       >
         Open Popper
       </span>
-      <span
-        className="MuiTouchRipple-root"
-      />
     </button>
   </span>
 </div>

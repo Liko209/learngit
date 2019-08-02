@@ -8,71 +8,105 @@ import {
   INotificationService,
   NotificationOpts,
   INotificationPermission,
+  ISoundNotification,
+  NotificationStrategy,
 } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
-// import { SWNotification } from '../agent/SWNotification';
+import { SWNotification } from '../agent/SWNotification';
 import { isFirefox, isElectron } from '@/common/isUserAgent';
 import { Pal } from 'sdk/pal';
 import { mainLogger } from 'sdk';
-import { computed } from 'mobx';
-import { UserSettingEntity } from 'sdk/module/setting';
-import { getEntity } from '@/store/utils/entities';
-import { ENTITY_NAME } from '@/store/constants';
-import SettingModel from '@/store/models/UserSetting';
 import { DesktopNotificationsSettingModel as DNSM } from 'sdk/module/profile';
 import { SETTING_ITEM__NOTIFICATION_BROWSER } from '../notificationSettingManager/constant';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { SettingService } from 'sdk/module/setting/service/SettingService';
+import { isCurrentUserDND } from '../utils';
 
 const logger = mainLogger.tags('AbstractNotificationManager');
 
 class NotificationService implements INotificationService {
   @INotificationPermission
   private _permission: INotificationPermission;
-  private _notificationDistributors: Map<string, AbstractNotification<any>>;
-  private _notificationDistributor: AbstractNotification<any>;
+  @ISoundNotification
+  private _soundNotification: ISoundNotification;
+  private _uiNotificationDistributors: Map<string, AbstractNotification<any>>;
+  private _uiNotificationDistributor: AbstractNotification<any>;
   private _maximumFirefoxTxtLength = 40;
   private _maximumTxtLength = 700;
   constructor() {
-    this._notificationDistributors = new Map();
-    // temp solution for solving crash problem
-    // this._notificationDistributors.set('sw', new SWNotification());
-    this._notificationDistributors.set('desktop', new DeskTopNotification());
+    this._uiNotificationDistributors = new Map();
+    this._uiNotificationDistributors.set('sw', new SWNotification());
+    this._uiNotificationDistributors.set('desktop', new DeskTopNotification());
   }
 
-  @computed
-  get browserSettingItem() {
-    return getEntity<UserSettingEntity, SettingModel<DNSM>>(
-      ENTITY_NAME.USER_SETTING,
-      SETTING_ITEM__NOTIFICATION_BROWSER,
-    );
-  }
-
-  get shouldShowNotification() {
+  async shouldShowUINotification() {
+    if (document.hasFocus() || isCurrentUserDND()) {
+      return false;
+    }
+    if (!this._permission.isGranted) {
+      return false;
+    }
+    const entity = await ServiceLoader.getInstance<SettingService>(
+      ServiceConfig.SETTING_SERVICE,
+    ).getById<DNSM>(SETTING_ITEM__NOTIFICATION_BROWSER);
     return (
-      isElectron ||
-      (this.browserSettingItem.value &&
-        this.browserSettingItem.value.wantNotifications)
+      isElectron || (entity && entity.value && entity.value.wantNotifications)
     );
   }
 
   init() {
     Pal.instance.setNotificationPermission(this._permission);
-    for (const _distributor of this._notificationDistributors.values()) {
+    for (const _distributor of this._uiNotificationDistributors.values()) {
       const distributor = _distributor as AbstractNotification<any>;
       if (distributor.isSupported()) {
-        this._notificationDistributor = distributor;
+        this._uiNotificationDistributor = distributor;
         break;
       }
     }
   }
+
   addEllipsis(str: string = '', border: number) {
     return str && str.length > border ? `${str.substr(0, border)}...` : str;
   }
 
   async show(title: string, opts: NotificationOpts, force?: boolean) {
-    if (
-      (!this.shouldShowNotification && !force) ||
-      !this._permission.isGranted
-    ) {
+    const { strategy } = opts;
+    delete opts.strategy;
+    const {
+      SOUND_AND_UI_NOTIFICATION,
+      SOUND_ONLY,
+      UI_NOTIFICATION_ONLY,
+    } = NotificationStrategy;
+    switch (strategy) {
+      case SOUND_AND_UI_NOTIFICATION: {
+        if (await this.shouldShowUINotification()) {
+          await this.buildSoundNotification(opts);
+          this.buildUINotification(title, opts, force);
+        }
+        break;
+      }
+      case SOUND_ONLY: {
+        this.buildSoundNotification(opts);
+        break;
+      }
+      case UI_NOTIFICATION_ONLY: {
+        this.buildUINotification(title, opts, force);
+        break;
+      }
+      default: {
+        await this.buildSoundNotification(opts);
+        this.buildUINotification(title, opts, force);
+      }
+    }
+  }
+
+  async buildUINotification(
+    title: string,
+    opts: NotificationOpts,
+    force?: boolean,
+  ) {
+    const shouldShowNotification = await this.shouldShowUINotification();
+    if (!shouldShowNotification && !force) {
       return;
     }
     const { id, scope } = opts.data;
@@ -90,16 +124,40 @@ class NotificationService implements INotificationService {
     }
     customOps.body = this.addEllipsis(customOps.body, this._maximumTxtLength);
     titleFormatted = this.addEllipsis(title, this._maximumTxtLength);
-    this._notificationDistributor.create(titleFormatted, customOps);
+    this._uiNotificationDistributor.create(titleFormatted, customOps);
+  }
+
+  async buildSoundNotification(opts: NotificationOpts) {
+    const scope = opts.data.scope;
+    const source = opts.sound;
+    if (!source) {
+      logger.log('not necessary to play sound');
+      return;
+    }
+    const media = this._soundNotification.create(source, {
+      trackId: scope,
+      autoplay: true,
+    });
+    if (media) {
+      return new Promise(resolve => {
+        delete opts.sound;
+        media.on('loadeddata', resolve);
+        media.on('error', () => {
+          logger.log('failed to load data');
+          resolve();
+        });
+      });
+    }
+    return;
   }
 
   close(scope: string, id: number) {
-    this._notificationDistributor.close(scope, id);
+    this._uiNotificationDistributor.close(scope, id);
   }
 
   clear = () => {
     // todo clear scope
-    this._notificationDistributor.clear();
+    this._uiNotificationDistributor.clear();
   };
 }
 

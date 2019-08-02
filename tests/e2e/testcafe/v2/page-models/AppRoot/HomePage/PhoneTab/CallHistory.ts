@@ -118,6 +118,9 @@ class CallHistoryItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('calllog-message-button', this.self);
   }
 
+  async hoverMessageButton(){
+    await this.t.hover(this.self).hover(this.messageButton);
+  }
 
   async ClickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
@@ -127,12 +130,20 @@ class CallHistoryItem extends BaseWebComponent {
     return this.getSelectorByAutomationId('calllog-call-button', this.self);
   }
 
+  async hoverCallBackButton(){
+    await this.t.hover(this.self).hover(this.callbackButton);
+  }
+
   async ClickCallbackButton() {
     await this.t.hover(this.self).click(this.callbackButton);
   }
 
   get deleteButton() {
     return this.getSelectorByAutomationId('calllog-delete-button');
+  }
+
+  async hoverDeleteButton(){
+    await this.t.hover(this.self).hover(this.deleteButton);
   }
 
   async openMoreMenu() {

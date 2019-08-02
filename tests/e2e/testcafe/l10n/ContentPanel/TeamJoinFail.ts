@@ -48,17 +48,16 @@ async (t: TestController) => {
   await h(t).withLog(`When I search with ${team.name} and click "join" button of ${team.name}`, async () => {
     await searchDialog.typeSearchKeyword(team.name);
     await t.hover(theTeamWhichWithoutMe.self);
-    await t.hover(theTeamWhichWithoutMe.joinButton());
-    await t.click(theTeamWhichWithoutMe.joinButton());
-    await t.expect(joinTeamDialog.cancelButton.exists).ok();
+    await t.click(theTeamWhichWithoutMe.self);
+    // await t.expect(joinTeamDialog.cancelButton.exists).ok();
   });
 
   await h(t).withLog('And I set the team as private', async () => {
     await h(t).scenarioHelper.updateTeam(team, { isPublic: false });
   });
 
-  await h(t).withLog('And I click the join team button', async () => {
-     await t.click(joinTeamDialog.joinButton)
+  await h(t).withLog('And I click the join team button', async ()=> {
+    await t.click(joinTeamDialog.joinButtonByClass());
   });
   await h(t).log('Then I capture screenshot',{screenshotPath:'Jupiter_ContentPanel_JoinTeamFail'});
 });

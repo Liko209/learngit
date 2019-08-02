@@ -20,8 +20,11 @@ const RINGCENTRAL_API = {
   API_EXTENSION_CALLER_ID: `/${API_VERSION}/account/~/extension/~/caller-id`,
   API_SERVICE_INFO: `/${API_VERSION}/account/~/service-info`,
   API_DIALING_PLAN: `/${API_VERSION}/account/~/dialing-plan`,
+  API_STATE_INFO: `/${API_VERSION}/dictionary/state`,
   API_FORWARDING_NUMBERS: `/${API_VERSION}/account/~/extension/~/forwarding-number`,
   BLOCKED_NUMBER: `/${API_VERSION}/account/~/extension/~/caller-blocking/phone-numbers`,
+  API_DEVICE_INFO: `/${API_VERSION}/account/~/extension/~/device`,
+  API_UPDATE_DEVICE: `/${API_VERSION}/account/~/device`,
 
   API_SPECIAL_SERVICE_NUMBER: `/${API_VERSION}/client-info/special-number-rule`,
   API_PHONE_PARSER_DATA: `/${API_VERSION}/number-parser/phonedata.xml`,

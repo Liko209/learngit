@@ -3,7 +3,6 @@
  * @Date: 2018-08-30 11:01:59
  * Copyright © RingCentral. All rights reserved.
  */
-'use strict';
 
 const path = require('path');
 const webpack = require('webpack');
@@ -19,14 +18,19 @@ const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const { GenerateSW } = require('workbox-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const {
+  GenerateSW
+} = require('workbox-webpack-plugin');
+const {
+  BundleAnalyzerPlugin
+} = require('webpack-bundle-analyzer');
 const runtimeCaching = require('./runtimeCaching');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
+// eslint-disable-next-line import/no-dynamic-require
 const appPackage = require(paths.appPackageJson);
-const SentryWebpackPlugin = require('@sentry/webpack-plugin');
+const SentryWebpackPluginWrapper = require('./SentryWebpackPluginWrapper');
 const eslintRules = require('../../.eslintrc');
 
 const argv = process.argv;
@@ -39,9 +43,6 @@ const publicPath = paths.servedPath;
 const shouldUseRelativeAssetPaths = publicPath === './';
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
-const shouldUploadMapToSentry = ['production', 'public'].includes(
-  process.env.JUPITER_ENV,
-);
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -54,18 +55,6 @@ const env = getClientEnvironment(publicUrl);
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
   throw new Error('Production builds must have NODE_ENV=production.');
 }
-
-// Note: defined here because it will be used more than once.
-const cssFilename = 'static/css/[name].[contenthash:8].css';
-
-// ExtractTextPlugin expects the build output to be flat.
-// (See https://github.com/webpack-contrib/extract-text-webpack-plugin/issues/27)
-// However, our output is structured with css, js and media folders.
-// To have this structure working with relative paths, we have to use custom options.
-const extractTextPluginOptions = shouldUseRelativeAssetPaths
-  ? // Making sure that the publicPath goes back to to build folder.
-    { publicPath: Array(cssFilename.split('/').length).join('../') }
-  : {};
 
 // This is the production configuration.
 // It compiles slowly and is focused on producing a fast and minimal bundle.
@@ -88,46 +77,24 @@ module.exports = {
     filename: 'static/js/[name].[chunkhash:8].js',
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
     // We inferred the "public path" (such as / or /my-project) from homepage.
-    publicPath: publicPath,
+    publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
-        .relative(paths.appSrc, info.absoluteResourcePath)
-        .replace(/\\/g, '/'),
+      .relative(paths.appSrc, info.absoluteResourcePath)
+      .replace(/\\/g, '/'),
     globalObject: 'this',
   },
   optimization: {
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          parse: {
-            // we want terser to parse ecma 8 code. However, we don't want it
-            // to apply any minfication steps that turns valid ecma 5 code
-            // into invalid ecma 5 code. This is why the 'compress' and 'output'
-            // sections only apply transformations that are ecma 5 safe
-            // https://github.com/facebook/create-react-app/pull/4234
-            ecma: 8,
+          compress: false,
+          mangle: {
+            keep_fnames: true,
+            keep_classnames: true,
           },
-          compress: {
-            ecma: 5,
-            warnings: false,
-            // Disabled because of an issue with Uglify breaking seemingly valid code:
-            // https://github.com/facebook/create-react-app/issues/2376
-            // Pending further investigation:
-            // https://github.com/mishoo/UglifyJS2/issues/2011
-            comparisons: false,
-            // Disabled because of an issue with Terser breaking valid code:
-            // https://github.com/facebook/create-react-app/issues/5250
-            // Pending futher investigation:
-            // https://github.com/terser-js/terser/issues/120
-            inline: 2,
-          },
-          // mangle: {
-          //   safari10: true
-          // },
-          mangle: false,
           output: {
-            ecma: 5,
             comments: false,
             // Turned on because emoji and regex is not minified properly using default
             // https://github.com/facebook/create-react-app/issues/2488
@@ -144,16 +111,14 @@ module.exports = {
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           parser: safePostCssParser,
-          map: shouldUseSourceMap
-            ? {
-                // `inline: false` forces the sourcemap to be output into a
-                // separate file
-                inline: false,
-                // `annotation: true` appends the sourceMappingURL to the end of
-                // the css file, helping the browser find the sourcemap
-                annotation: true,
-              }
-            : false,
+          map: shouldUseSourceMap ? {
+            // `inline: false` forces the sourcemap to be output into a
+            // separate file
+            inline: false,
+            // `annotation: true` appends the sourceMappingURL to the end of
+            // the css file, helping the browser find the sourcemap
+            annotation: true,
+          } : false,
         },
       }),
     ],
@@ -162,6 +127,7 @@ module.exports = {
     // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
     splitChunks: {
       chunks: 'all',
+      name: false,
       cacheGroups: {
         codeMirror: {
           test: /[\\/]codemirror[\\/]/,
@@ -176,8 +142,15 @@ module.exports = {
           test: /jui\/src\/assets\/country-flag\/(.+)\.svg$/,
           name: 'svg.countryFlagChunks',
         },
+        packages: {
+          test: /[\\/]packages[\\/]/,
+          name: 'packages',
+        },
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+        },
       },
-      name: false,
     },
     // Keep the runtime chunk seperated to enable long term caching
     // https://twitter.com/wSokra/status/969679223278505985
@@ -207,7 +180,7 @@ module.exports = {
       // guards against forgotten dependencies and such.
       PnpWebpackPlugin,
       // Prevents users from importing files from outside of src/ (or node_modules/).
-      // This often causes confusion because we only process files within src/ with babel.
+      // This often causes confusion because we only process files within src/ with ts-loader.
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
@@ -216,7 +189,9 @@ module.exports = {
         [paths.appSrc, paths.depPackages],
         [paths.appPackageJson],
       ),
-      new TsconfigPathsPlugin({ configFile: paths.appTsConfig }),
+      new TsconfigPathsPlugin({
+        configFile: paths.appTsConfig
+      }),
     ],
   },
   resolveLoader: {
@@ -230,10 +205,14 @@ module.exports = {
     strictExportPresence: true,
     rules: [
       // Disable require.ensure as it's not a standard language feature.
-      { parser: { requireEnsure: false } },
+      {
+        parser: {
+          requireEnsure: false
+        }
+      },
       {
         test: /\.(ts|tsx)$/,
-        exclude: /\.test.(ts|tsx)$/,
+        exclude: /\.test[.\w]*.(ts|tsx)$/,
         include: [
           paths.appSrc,
           paths.foundationPkg,
@@ -243,23 +222,18 @@ module.exports = {
           paths.voipPkg,
         ],
         enforce: 'pre',
-        use: [
-          {
-            options: {
-              formatter: require.resolve('react-dev-utils/eslintFormatter'),
-              eslintPath: require.resolve('eslint'),
-              baseConfig: {
-                extends: require.resolve('../../eslint-config'),
-              },
-              ignore: true,
-              failOnError: true,
-              cache: true,
-              emitError: true,
-              ...eslintRules,
-            },
-            loader: require.resolve('eslint-loader'),
+        use: [{
+          options: {
+            formatter: require.resolve('react-dev-utils/eslintFormatter'),
+            eslintPath: require.resolve('eslint'),
+            ignore: true,
+            failOnError: true,
+            cache: true,
+            emitError: true,
+            ...eslintRules,
           },
-        ],
+          loader: require.resolve('eslint-loader'),
+        }],
       },
       {
         // "oneOf" will traverse all following loaders until one will
@@ -280,26 +254,16 @@ module.exports = {
             test: /\.mjs$/,
             type: 'javascript/auto',
           },
-          // Compile .tsx?
           {
             test: /\.(js|jsx|ts|tsx)$/,
-            exclude: excludeNodeModulesExcept([
-              'jui',
-              'sdk',
-              'foundation',
-              'ringcentral-web-phone.+ts$',
-            ]),
-            use: {
-              loader: 'babel-loader',
+            exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
+            use: [{
+              loader: 'ts-loader',
               options: {
-                cacheDirectory: true,
-                cacheCompression: true,
-                compact: true,
-                babelrc: false,
-                presets: [['react-app', { flow: false, typescript: true }]],
-                plugins: ['@babel/plugin-syntax-dynamic-import'],
+                transpileOnly: true,
+                configFile: paths.appTsProdConfig,
               },
-            },
+            }, ],
           },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
@@ -315,14 +279,13 @@ module.exports = {
           // in the main CSS file.
           {
             test: /\.css$/,
-            loader: [
-              {
+            loader: [{
                 loader: MiniCssExtractPlugin.loader,
-                options: Object.assign(
-                  {},
-                  shouldUseRelativeAssetPaths
-                    ? { publicPath: '../../' }
-                    : undefined,
+                options: Object.assign({},
+                  shouldUseRelativeAssetPaths ? {
+                    publicPath: '../../'
+                  } :
+                  undefined,
                 ),
               },
               {
@@ -342,7 +305,9 @@ module.exports = {
                   // https://github.com/facebook/create-react-app/issues/2677
                   ident: 'postcss',
                   plugins: () => [
+                    // eslint-disable-next-line global-require
                     require('postcss-flexbugs-fixes'),
+                    // eslint-disable-next-line global-require
                     require('postcss-preset-env')({
                       autoprefixer: {
                         flexbox: 'no-2009',
@@ -362,8 +327,7 @@ module.exports = {
           },
           {
             test: /jui\/src\/assets\/.*\.svg$/,
-            use: [
-              {
+            use: [{
                 loader: 'svg-sprite-loader',
                 options: {
                   symbolId: 'icon-[name]',
@@ -372,11 +336,20 @@ module.exports = {
               {
                 loader: 'svgo-loader',
                 options: {
-                  plugins: [
-                    { removeTitle: true },
-                    { convertColors: { shorthex: false } },
-                    { convertPathData: true },
-                    { reusePaths: true },
+                  plugins: [{
+                      removeTitle: true
+                    },
+                    {
+                      convertColors: {
+                        shorthex: false
+                      }
+                    },
+                    {
+                      convertPathData: true
+                    },
+                    {
+                      reusePaths: true
+                    },
                   ],
                 },
               },
@@ -403,23 +376,14 @@ module.exports = {
         ],
       },
       {
-        test: /\.worker\.ts$/,
-        // include: paths.appSrc,
+        test: /\.worker\.(ts|js)$/,
         exclude: excludeNodeModulesExcept(['jui', 'sdk', 'foundation']),
-        use: [
-          { loader: 'workerize-loader', options: { inline: false } },
-          {
-            loader: require.resolve('babel-loader'),
-            options: {
-              cacheDirectory: true,
-              // cacheCompression: isEnvProduction,
-              // compact: isEnvProduction,
-              babelrc: false,
-              presets: [['react-app', { flow: false, typescript: true }]],
-              plugins: [['@babel/plugin-syntax-dynamic-import']],
-            },
-          },
-        ],
+        use: [{
+          loader: 'workerize-loader',
+          options: {
+            inline: false
+          }
+        }],
       },
     ],
   },
@@ -478,7 +442,7 @@ module.exports = {
     // having to parse `index.html`.
     new ManifestPlugin({
       fileName: 'asset-manifest.json',
-      publicPath: publicPath,
+      publicPath,
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical
@@ -490,7 +454,7 @@ module.exports = {
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
-      navigateFallback: publicUrl + '/index.html',
+      navigateFallback: `${publicUrl}/index.html`,
       navigateFallbackBlacklist: [
         // Exclude URLs containing a dot, as they're likely a resource in
         // public/ and not a SPA route
@@ -506,14 +470,12 @@ module.exports = {
       importScripts: ['sw-notification.js'],
       runtimeCaching,
     }),
-    shouldUploadMapToSentry
-      ? new SentryWebpackPlugin({
-          release: appPackage.version,
-          include: './build/static/js',
-          urlPrefix: '~/static/js',
-          configFile: './sentryclirc',
-        })
-      : () => {},
+    new SentryWebpackPluginWrapper({
+      release: appPackage.version,
+      include: './build/static/js',
+      urlPrefix: '~/static/js',
+      configFile: '../sentry.properties',
+    }),
     ...[
       argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {},
     ],

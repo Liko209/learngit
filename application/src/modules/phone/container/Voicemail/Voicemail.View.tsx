@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer, Observer } from 'mobx-react';
@@ -48,14 +47,8 @@ class VoicemailWrapper extends Component<
     stickToLastPosition: false,
   };
 
-  private get _height() {
-    const { height } = this.props;
-
-    return height - VOICEMAIL_HEADER;
-  }
-
   private get _noRowsRenderer() {
-    const { t, filterFOCKey } = this.props;
+    const { t, filterFOCKey, height } = this.props;
 
     const message = filterFOCKey
       ? t('phone.noMatchesFound')
@@ -65,10 +58,10 @@ class VoicemailWrapper extends Component<
 
     return (
       <JuiEmptyPage
-        data-test-automation-id='voicemailEmptyPage'
+        data-test-automation-id="voicemailEmptyPage"
         image={image}
         message={message}
-        height={this._height}
+        height={height}
       />
     );
   }
@@ -114,25 +107,25 @@ class VoicemailWrapper extends Component<
   }
 
   render() {
-    const { t, listHandler, isError, onErrorReload } = this.props;
+    const { t, listHandler, isError, onErrorReload, height } = this.props;
 
     return (
       <>
         <JuiConversationPageHeader
           title={t('phone.voicemail')}
-          data-test-automation-id='VoicemailPageHeader'
+          data-test-automation-id="VoicemailPageHeader"
           Right={this._filterRenderer}
         />
-        <PhoneWrapper>
+        <PhoneWrapper pageHeight={height}>
           {isError ? (
-            <ErrorPage onReload={onErrorReload} height={this._height} />
+            <ErrorPage onReload={onErrorReload} height={height} />
           ) : (
             <DataList
               initialDataCount={INITIAL_COUNT}
               listHandler={listHandler}
-              reverse={true}
+              reverse
               InfiniteListProps={Object.assign(this._infiniteListProps, {
-                height: this._height,
+                height,
                 noRowsRenderer: this._noRowsRenderer,
               })}
             >
@@ -153,17 +146,15 @@ class VoicemailComp extends Component<Props> {
 
   render() {
     return (
-      <ReactResizeDetector handleHeight={true} handleWidth={true}>
-        {({
-          width: width,
-          height: height,
-        }: {
-          width: number;
-          height: number;
-        }) => (
+      <ReactResizeDetector handleHeight handleWidth>
+        {({ width, height }: { width: number; height: number }) => (
           <Observer>
             {() => (
-              <VoicemailWrapper height={height} width={width} {...this.props} />
+              <VoicemailWrapper
+                height={height - VOICEMAIL_HEADER}
+                width={width}
+                {...this.props}
+              />
             )}
           </Observer>
         )}
