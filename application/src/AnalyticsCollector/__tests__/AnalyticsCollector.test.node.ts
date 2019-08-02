@@ -42,7 +42,7 @@ describe('analyticsCollector', () => {
           source: 'input box',
           postType: 'text',
           destination: 'team',
-          isAtTeam: false,
+          isAtTeam: 'no',
         },
       );
     });
