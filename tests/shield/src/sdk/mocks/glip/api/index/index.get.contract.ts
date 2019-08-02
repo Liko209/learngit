@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { InitialData } from '../../types';
-import { defineApiPath } from '../../../../../utils';
+import { defineApiPath } from '../../../../utils';
 import { IApiContract } from 'shield/sdk/types';
 
 export interface IGlipIndex extends IApiContract {

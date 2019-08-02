@@ -6,11 +6,13 @@
 
 type ItConfigMap = {
   mode: 'glip' | 'rc';
+  userId: string;
 };
 
 class ItGlobalConfig {
   private _configMap: ItConfigMap = {
     mode: 'glip',
+    userId: '',
   };
 
   set<K extends keyof ItConfigMap>(key: K, value: ItConfigMap[K]) {

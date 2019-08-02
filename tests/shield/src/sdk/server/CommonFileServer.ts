@@ -13,30 +13,45 @@ import url from 'url';
 import path from 'path';
 import fs from 'fs';
 import { createDebug } from 'sdk/__tests__/utils';
+import { globalConfig } from 'shield/sdk/globalConfig';
 
 const debug = createDebug('FileServer');
 const error = createDebug('FileServer', true);
 
+const DATA_BASE_PATH = path.resolve(__dirname, '../../../', './testingData/');
+
 export class CommonFileServer implements IMockServer {
   handleRequest = (request: IJRequest, cb: INetworkRequestExecutorListener) => {
-    const mockJsonPath = this.getMockJsonPath(
+    const commonPath = this.getMockJsonPath(
+      `${DATA_BASE_PATH}/common`,
       request.host,
       request.path,
       request.method,
     );
-    if (fs.existsSync(mockJsonPath)) {
+    const userPath = this.getMockJsonPath(
+      `${DATA_BASE_PATH}/${globalConfig.get('userId')}`,
+      request.host,
+      request.path,
+      request.method,
+    );
+    const filePath = fs.existsSync(userPath)
+      ? userPath
+      : fs.existsSync(commonPath)
+      ? commonPath
+      : '';
+    if (filePath) {
       const result = JSON.parse(
-        fs.readFileSync(`${mockJsonPath}`, {
+        fs.readFileSync(`${commonPath}`, {
           encoding: 'utf8',
         }),
       );
-      debug(`request: ${request.host}${request.path}\n match`);
+      debug(`request: ${request.host}${request.path} match: ${filePath}`);
       cb.onSuccess({ request, ...result.response });
     } else {
       error(
         `request: ${request.host}${
           request.path
-        }\n not file match, ${mockJsonPath} not exist.`,
+        }\n not file match, ${commonPath} not exist.`,
       );
       cb.onFailure({
         request,
@@ -48,13 +63,16 @@ export class CommonFileServer implements IMockServer {
     }
   };
 
-  getMockJsonPath = (host: string, uri: string, method: string) => {
+  getMockJsonPath = (
+    base: string,
+    host: string,
+    uri: string,
+    method: string,
+  ) => {
     const { hostname, protocol } = url.parse(host);
     const relatePath = `${hostname || host}${uri}`;
     const mockDataPath = path.resolve(
-      __dirname,
-      '../../../',
-      './testingData/',
+      base,
       protocol ? protocol : '.',
       `${protocol ? `${protocol}/` : ''}${relatePath.replace(
         /\~/g,

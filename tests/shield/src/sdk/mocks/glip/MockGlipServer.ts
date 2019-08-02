@@ -175,6 +175,8 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
       people: this.personDao.find(),
       groups: await this.groupDao.getGroups(),
       teams: await this.groupDao.getTeams(),
+      public_teams: [],
+      items: [],
       posts: this.postDao.getPosts() || [],
       client_config: this.clientConfigDao.findOne()!,
       timestamp: 1561008777444,
@@ -185,3 +187,4 @@ export class MockGlipServer implements IGlipServerContext, IMockServer {
     });
   }
 }
+

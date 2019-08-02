@@ -507,12 +507,6 @@ class StateDataHandleController {
       team_mention_cursor_offset = 0,
       removed_cursors_team_mention = [],
     } = finalState;
-    console.log({
-      team_mention_cursor,
-      group_team_mention_cursor,
-      team_mention_cursor_offset,
-      removed_cursors_team_mention,
-    });
     const offset = Math.max(team_mention_cursor_offset, team_mention_cursor);
     const removedUnreadCount = removed_cursors_team_mention.filter(index =>
       index > offset ? 1 : 0,
