@@ -91,10 +91,24 @@ export function doPartialUpdate<T extends GlipModel>(
   const updateTarget = dao.getById(id);
   if (updateTarget) {
     const result = dao.put(_.merge({}, updateTarget, model, { _id: id }));
-    cb && cb(result);
+    result && cb && cb(result);
     return result;
   }
   throw 'do partial update fail';
+}
+
+type NullUndefinedAble<T> = T | null | undefined;
+
+function sanitized<T extends NullUndefinedAble<object>>(item: T): T;
+function sanitized<T extends NullUndefinedAble<object[]>>(items: T): T;
+
+function sanitized<T extends NullUndefinedAble<object | object[]>>(items: T) {
+  if (Array.isArray(items)) {
+    return items.map(item => {
+      return item ? _.omit(item, ['$loki']) : item;
+    });
+  }
+  return items ? _.omit(items, ['$loki']) : items;
 }
 
 export {
@@ -106,4 +120,5 @@ export {
   genPostId,
   genStateId,
   genProfileId,
+  sanitized,
 };

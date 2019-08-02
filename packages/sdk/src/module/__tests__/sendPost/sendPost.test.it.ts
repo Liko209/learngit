@@ -10,6 +10,10 @@ import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
 import { Post } from 'sdk/module/post/entity';
 import { IGlipPostPost } from 'shield/sdk/mocks/server/glip/api/post/post.post.contract';
+import { wait } from 'shield/utils/asyncTest';
+import dataDispatcher from 'sdk/component/DataDispatcher';
+import { SOCKET } from 'sdk/service/eventKey';
+
 jest.setTimeout(30 * 1000);
 itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
   let groupService: GroupService;
@@ -21,6 +25,14 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     .glipDataHelper()
     .team.createTeam('Test Team with thomas', [123], { post_cursor: 0 });
   glipData.teams.push(team1);
+  const waitSocketIncoming = async (eventKey: string) => {
+    await new Promise(resolve => {
+      dataDispatcher.once(eventKey, async () => {
+        resolve();
+      });
+    });
+    await wait();
+  };
   beforeAll(async () => {
     await sdk.setup('glip');
     groupService = ServiceLoader.getInstance(ServiceConfig.GROUP_SERVICE);
@@ -42,6 +54,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
       const result = await postService.getPostsByGroupId({
         groupId: team1._id,
       });
+      await waitSocketIncoming(SOCKET.GROUP);
       const groupConfig = await stateService.getById(team1._id);
       expect(result.posts.length).toEqual(1);
       expect(result.posts[0].id > 0).toBeTruthy();
@@ -50,18 +63,16 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
     });
     let sendFailedPost: Post;
     it('send post 2: failed', async () => {
-      helper.mockApi(
-          IGlipPostPost,
-          {
-            status: 401,
-          },
-      );
+      helper.mockApi(IGlipPostPost, {
+        status: 401,
+      });
       await expect(
         postService.sendPost({
           text: 'test post 2',
           groupId: team1._id,
         }),
       ).rejects.not.toBeUndefined();
+
       const result = await postService.getPostsByGroupId({
         groupId: team1._id,
       });
@@ -77,6 +88,7 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
         groupId: team1._id,
       });
 
+      await waitSocketIncoming(SOCKET.GROUP);
       expect(result.posts.length).toEqual(2);
       expect(result.posts[1].text).toEqual(sendFailedPost.text);
       expect(result.posts[1].id > 0).toBeTruthy();
@@ -89,6 +101,8 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
       const result = await postService.getPostsByGroupId({
         groupId: team1._id,
       });
+
+      await waitSocketIncoming(SOCKET.GROUP);
       const groupConfig = await stateService.getById(team1._id);
       expect(result.posts.length).toEqual(3);
       expect(result.posts[2].text).toEqual('test post 3');
@@ -109,6 +123,8 @@ itForSdk('Send post test', ({ helper, sdk, userContext, template }) => {
         text: 'haaaaaa',
         groupId: result.id,
       });
+
+      await waitSocketIncoming(SOCKET.GROUP);
       expect(
         (await stateService.getById(result.id))!.group_post_cursor,
       ).toEqual(1);

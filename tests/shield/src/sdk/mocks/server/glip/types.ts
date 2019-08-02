@@ -13,6 +13,7 @@ import { Profile } from 'sdk/module/profile/entity';
 
 export type GlipBase = {
   _id: number;
+  id?: number;
   created_at: number;
   modified_at: number;
   creator_id: number;
@@ -105,6 +106,7 @@ export type GlipModel =
   | GlipProfile
   | GlipCompany
   | GlipPost
+  | GlipPerson
   | GlipItem
   | GlipGroupState
   | GlipClientConfig;

@@ -24,7 +24,8 @@ class DataDispatcher extends EventEmitter2 {
       Object.keys(entries).map((key: string) => this.emitAsync(
         this._getEmitEvent('SOCKET', key, partial),
         entries[key],
-      )),
+        );
+      }),
     );
   }
 
