@@ -1,8 +1,8 @@
 /*
  * @Author:Andy.Hu
  * @Date: 2019-05-28 15:24:53
- * @Last Modified by: Paynter Chen
- * @Last Modified time: 2019-06-17 15:50:10
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2019-08-02 15:18:10
  */
 
 import { AppRoot } from '../../../v2/page-models/AppRoot/index';
@@ -100,7 +100,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('And I hit the `Enter` key', async () => {
-    await app.homePage.telephonyDialog.hitEnterToMakeCall();
     await app.homePage.confirmE911Form();
     await app.homePage.telephonyDialog.hitEnterToMakeCall();
   });

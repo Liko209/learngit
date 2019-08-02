@@ -312,7 +312,6 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog('When I select item via keyboard', async () => {
     await telephonyDialog.selectItemByKeyboard();
-    await telephonyDialog.hitEnterToMakeCall();
     await app.homePage.confirmE911Form();
     await telephonyDialog.hitEnterToMakeCall();
   });
