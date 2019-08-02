@@ -67,7 +67,7 @@ const RightShellMemberListMoreCount = styled.div`
   width: ${width(8)};
   height: ${height(8)};
   ${typography('caption1')};
-  color: ${palette('grey', 500)};
+  color: ${palette('grey', 600)};
   line-height: ${height(8)};
   text-align: center;
 `;
