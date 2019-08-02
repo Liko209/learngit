@@ -178,8 +178,6 @@ class TelephonyStore {
       length => {
         if (!length) {
           this.resetFirstLetterThroughKeypadForInputString();
-        } else {
-          this.enterFirstLetterThroughKeypadForInputString();
         }
       },
     );

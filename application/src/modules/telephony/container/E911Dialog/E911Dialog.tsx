@@ -11,6 +11,8 @@ import { i18nP } from '@/utils/i18nT';
 import { Dialog } from '@/containers/Dialog';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 
+const Z_INDEX_GREATER_THAN_TOOLTIP = 1500;
+
 type E911DialogProps = {
   id: string;
   content: string;
@@ -62,7 +64,12 @@ function alertE911Dialog({
         }}
       />
     ),
-    modalProps: { 'data-test-automation-id': `${id}Dialog` },
+    modalProps: {
+      'data-test-automation-id': `${id}Dialog`,
+      style: {
+        'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
+      }
+    },
     okBtnProps: { 'data-test-automation-id': `${id}OkButton` },
     cancelBtnProps: { 'data-test-automation-id': `${id}CancelButton` },
     size: 'small',
@@ -86,6 +93,11 @@ function simpleE911Dialog({ id, content, onCancel }: E911DialogProps) {
     </>,
     {
       size: 'small',
+      componentProps: {
+        style: {
+          'z-index': Z_INDEX_GREATER_THAN_TOOLTIP.toString()
+        }
+      }
     },
   );
 }
