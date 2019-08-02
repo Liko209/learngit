@@ -17,9 +17,11 @@ import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiLineSelect } from 'jui/components/Selects/LineSelect';
 import { JuiMenuItem } from 'jui/components';
 import dialogContext from '@/containers/Dialog/DialogContext';
-import { StyledTip, E911Description } from 'jui/pattern/E911';
+import { StyledTip, E911Description, E911Disclaimers } from 'jui/pattern/E911';
+import { RuiFormControl, RuiFormControlLabel } from 'rcui/components/Forms';
+import { RuiCheckbox } from 'rcui/components/Checkbox';
 
-import { E911ViewProps, Country, State, FieldItem } from './types';
+import { E911ViewProps, Country, State, FieldItem, CheckBox } from './types';
 
 type Props = E911ViewProps & WithTranslation;
 
@@ -109,6 +111,42 @@ class E911ViewComponent extends Component<Props> {
     );
   }
 
+  get renderOutOfCountry() {
+    const { checkboxList, t, setCheckBox } = this.props;
+    if (!checkboxList || !checkboxList.length) {
+      return null;
+    }
+
+    return (
+      <>
+        <E911Disclaimers>
+          {t('telephony.e911.outOfCountryTitle')}
+        </E911Disclaimers>
+        <RuiFormControl>
+          {checkboxList.map((item: CheckBox, index: number) => {
+            const { i18text, checked, params } = item;
+            const label = params
+              ? t(i18text, { region: params.name })
+              : t(i18text);
+            return (
+              <RuiFormControlLabel
+                control={
+                  <RuiCheckbox
+                    color="primary"
+                    value={checked}
+                    onChange={setCheckBox(index)}
+                  />
+                }
+                label={t(label)}
+                checked={checked}
+              />
+            );
+          })}
+        </RuiFormControl>
+      </>
+    );
+  }
+
   get renderZipCode() {
     const { value, fields } = this.props;
     const { zip } = value;
@@ -190,6 +228,7 @@ class E911ViewComponent extends Component<Props> {
           {this.renderState}
           {this.renderZipCode}
           <StyledTip>{t('telephony.e911.outOfCountryDisclaimers')}</StyledTip>
+          {this.renderOutOfCountry}
         </JuiDialogContent>
         <JuiDialogActions data-test-automation-id="DialogActions">
           <JuiButton

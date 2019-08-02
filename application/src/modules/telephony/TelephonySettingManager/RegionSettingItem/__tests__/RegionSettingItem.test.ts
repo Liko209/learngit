@@ -6,8 +6,12 @@
 
 import { RegionSettingItemViewModel } from '../RegionSettingItem.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
-jest.mock('@/utils/i18nT', () => (key: string) => key);
 import { Notification } from '@/containers/Notification';
+import { container } from 'framework';
+
+jest.mock('@/utils/i18nT', () => (key: string) => key);
+
+jest.mock('framework');
 
 const currentCountryInfo = {
   id: '1',
@@ -66,8 +70,11 @@ const regionService = {
     return true;
   },
 };
+const telephonyService = {
+  openE911: jest.fn(),
+};
 ServiceLoader.getInstance = jest.fn().mockReturnValue(regionService);
-
+container.get = jest.fn().mockReturnValue(telephonyService);
 describe('RegionSettingItemViewModel', () => {
   describe('loadRegionSetting()', () => {});
 
@@ -191,6 +198,8 @@ describe('RegionSettingItemViewModel', () => {
   });
 
   describe('saveRegion()', () => {
+    jest.useFakeTimers();
+
     it('should return true and show notification when save region successful', async (done: jest.DoneCallback) => {
       Notification.flashToast = jest.fn();
 
@@ -212,9 +221,12 @@ describe('RegionSettingItemViewModel', () => {
       await VM.loadRegionSetting();
 
       const saveState = await VM.saveRegion(VM.dialPlanISOCode, '101');
+      jest.runAllTimers();
+
       expect(VM.areaCodeError).toBeTruthy();
       expect(VM.disabledOkBtn).toBeTruthy();
       expect(saveState).toEqual(false);
+      expect(telephonyService.openE911).toHaveBeenCalled();
       done();
     });
     it('JPT-1807: Display error when failed to match the rules of area code', async (done: jest.DoneCallback) => {

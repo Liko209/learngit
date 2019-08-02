@@ -22,10 +22,18 @@ type E911ViewProps = E911Props & {
   countryOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onSubmit: () => Promise<void>;
   stateOnChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  setCheckBox: (index: number) => () => void;
   value: E911SettingInfo;
   disabled: boolean;
+  checkboxList: CheckBox[];
   fields: FieldsConfig;
   shouldShowSelectState: boolean;
+};
+
+type CheckBox = {
+  i18text: string;
+  checked: boolean;
+  params?: Country;
 };
 
 type Country = CountryRecord | DialingCountryInfo;
@@ -47,4 +55,12 @@ type FieldItem = {
   optional?: boolean;
 };
 
-export { E911Props, E911ViewProps, Country, State, FieldsConfig, FieldItem };
+export {
+  E911Props,
+  E911ViewProps,
+  Country,
+  State,
+  FieldsConfig,
+  FieldItem,
+  CheckBox,
+};
