@@ -18,6 +18,7 @@ fixture('RightRail')
 test(formalName('No "Show all #" link for 1:1 conversation & Can show the underline when hovering on the "Show all #" on the right shelf of conversation & Can open the group/team profile via "Show all #" link', ['Chris.Zhan', 'P1', 'P2', 'JPT-2646', 'JPT-2658', 'JPT-2644']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init()
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -93,6 +94,7 @@ test(formalName('Check whether guest section is showed on the right shelf of con
   const users = h(t).rcData.mainCompany.users;
   const loginUser = h(t).rcData.mainCompany.users[4];
   const guest = h(t).rcData.guestCompany.users[0];
+  await h(t).glip(loginUser).init()
 
   let chat = <IGroup>{
     type: 'DirectMessage',
@@ -374,6 +376,7 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   const users = h(t).rcData.mainCompany.users;
   const guestUsers = h(t).rcData.guestCompany.users;
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init()
 
   let team1 = <IGroup>{
     name: uuid(),
@@ -453,6 +456,7 @@ test(formalName('Check the maximum rows of members/guests are displayed on the r
   const users = h(t).rcData.mainCompany.users;
   const guestUsers = h(t).rcData.guestCompany.users;
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init()
 
   let team = <IGroup>{
     name: uuid(),
