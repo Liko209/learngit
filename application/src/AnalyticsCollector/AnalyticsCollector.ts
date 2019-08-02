@@ -89,7 +89,7 @@ class AnalyticsCollector {
     source: string,
     postType: string,
     destination: string,
-    isAtTeam: boolean,
+    isAtTeam = false,
   ) {
     dataAnalysis.track('Jup_Web/DT_msg_postSent', {
       source,
