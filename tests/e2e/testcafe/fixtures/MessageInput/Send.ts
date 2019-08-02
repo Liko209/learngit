@@ -147,7 +147,7 @@ test.meta(<ITestMeta>{
 // bug id https://jira.ringcentral.com/browse/FIJI-7081
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-420','JPT-2608', 'JPT-2700', "JPT-2610", "JPT-2613"],
+  caseIds: ['JPT-420','JPT-2608', 'JPT-2700', "JPT-2610", "JPT-2613", "JPT-2612", "JPT-423"],
   keywords: ['Send Messages'],
   maintainers: ['Mia.Cai']
 })(`Click outside of the search result list or Esc keyboard can close the search list`,  async (t: TestController) => {
@@ -225,9 +225,9 @@ test.meta(<ITestMeta>{
     await t.expect(conversationPage.messageInputArea.textContent).match(reg);
   });
 
-  await h(t).withLog('And I type @ in the conversation to add more mentioned Items', async () => {
+  await h(t).withLog('And I type @ in the conversation to add more mentioned Items with TAB', async () => {
     await conversationPage.typeAtSymbol();
-    await t.pressKey('Enter');
+    await t.pressKey('Tab');
   });
 
   await h(t).withLog(`Then Only the first mentioned team item is highlighted`, async () => {
@@ -250,7 +250,7 @@ test.meta(<ITestMeta>{
     await conversationPage.postItemById(postId).ensureDismiss();
   });
 
-  await h(t).withLog('Then I should see NO related message', async () => {
+  await h(t).withLog('Then Go Back to conversation', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
@@ -271,10 +271,10 @@ test.meta(<ITestMeta>{
 
 test.meta(<ITestMeta>{
   priority: ['P2'],
-  caseIds: ['JPT-2612'],
+  caseIds: ['JPT-2700'],
   keywords: ['Send Messages'],
   maintainers: ['Ken.Li']
-})(`At Team in group shold not be avaliable`,  async (t: TestController) => {
+})(`Only team has @team section - group does not have @team section`,  async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const teamText = 'Team (notify everyone)';
