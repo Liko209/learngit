@@ -98,10 +98,10 @@ class ColonEmojiViewModel extends StoreViewModel<ColonEmojiProps>
         let emojiId = id;
         if (
           emojiId &&
-          !(ExcludeList.indexOf(id as string) > -1) &&
+          !ExcludeList.includes(id as string) &&
           emojiId
             .toLowerCase()
-            .indexOf((this.searchTerm as string).toLowerCase()) > -1
+            .includes((this.searchTerm as string).toLowerCase())
         ) {
           if (id && ConvertList.indexOf(id.split(':').join('')) > -1) {
             emojiId = this._doUnderscoreTransfer(id);
